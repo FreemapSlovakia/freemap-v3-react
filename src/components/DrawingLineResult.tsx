@@ -69,13 +69,13 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       : undefined,
   );
 
-  const joinWithLineIndex = useSelector(
-    (state: RootState) => state.drawingLines.joinWith?.lineIndex,
+  const joinWith = useSelector(
+    (state: RootState) => state.drawingLines.joinWith,
   );
 
   const interactive = useSelector(selectingModeSelector);
 
-  const interactiveLine = interactive && joinWithLineIndex === undefined;
+  const interactiveLine = interactive && joinWith === undefined;
 
   const { points } = line;
 
@@ -83,7 +83,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   const [touching, setTouching] = useState(false);
 
-  const removeCoords = !!coords && (!selected || touching);
+  const removeCoords = !!coords && ((!selected && !joinWith) || touching);
 
   useEffect(() => {
     if (removeCoords) {
@@ -94,9 +94,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   const map = useMap();
 
   useMapEvent('mousemove', ({ latlng, originalEvent }: LeafletMouseEvent) => {
-    if (!touching && selected) {
+    if (!touching && (selected || joinWith?.lineIndex === index)) {
       setCoords(
-        (originalEvent.target as any)?.classList.contains('leaflet-container')
+        joinWith ||
+          (originalEvent.target as any)?.classList.contains('leaflet-container')
           ? { lat: latlng.lat, lon: latlng.lng }
           : undefined,
       );
@@ -201,6 +202,28 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     return ps;
   }, [points, line.type]);
 
+  let x;
+
+  const futureLinePositions = (drawing || joinWith) &&
+    ps.length > 0 &&
+    coords !== undefined &&
+    !window.preventMapClick && [
+      joinWith?.lineIndex === index
+        ? ((x = points.find((pt) => pt.id === joinWith.pointId)),
+          {
+            lat: x?.lat ?? -1,
+            lng: x?.lon ?? -1,
+          })
+        : {
+            lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
+            lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
+          },
+      { lat: coords.lat, lng: coords.lon },
+      ...(line.type === 'line' || ps.length < 3
+        ? []
+        : [{ lat: ps[0].lat, lng: ps[0].lon }]),
+    ];
+
   return (
     <>
       {ps.length > 2 && line.type === 'line' && (
@@ -267,31 +290,17 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         </Polygon>
       )}
 
-      {drawing &&
-        ps.length > 0 &&
-        coords !== undefined &&
-        !window.preventMapClick && (
-          <Polyline
-            color={colors.selected}
-            weight={4}
-            dashArray="6,8"
-            interactive={false}
-            positions={[
-              {
-                lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
-                lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
-              },
-              { lat: coords.lat, lng: coords.lon },
-              ...(line.type === 'line' || ps.length < 3
-                ? []
-                : [{ lat: ps[0].lat, lng: ps[0].lon }]),
-            ]}
-          />
-        )}
+      {futureLinePositions && (
+        <Polyline
+          color={colors.selected}
+          weight={4}
+          dashArray="6,8"
+          interactive={false}
+          positions={futureLinePositions}
+        />
+      )}
 
-      {(selected ||
-        selectedPointId !== undefined ||
-        joinWithLineIndex !== undefined) &&
+      {(selected || selectedPointId !== undefined || joinWith !== undefined) &&
         ps.map((p, i) => {
           if (i % 2 === 0) {
             if (prev) {
@@ -302,8 +311,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           }
 
           if (
-            joinWithLineIndex !== undefined &&
-            ((i !== 0 && i !== ps.length - 1) || joinWithLineIndex === index)
+            joinWith !== undefined &&
+            (line.type !== 'line' ||
+              (i !== 0 && i !== ps.length - 1) ||
+              joinWith.lineIndex === index)
           ) {
             return null;
           }
@@ -332,7 +343,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                   dispatch(drawingMeasure(true));
                 },
                 click() {
-                  if (joinWithLineIndex !== undefined) {
+                  if (joinWith !== undefined) {
                     dispatch(
                       drawingLineJoinFinish({
                         lineIndex: index,
@@ -355,7 +366,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                 dragend: handleDragEnd,
               }}
             >
-              {line.type === 'line' && (
+              {line.type === 'line' && !joinWith && (
                 <Tooltip className="compact" offset={[-4, 0]} direction="right">
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
