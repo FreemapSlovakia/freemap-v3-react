@@ -86,6 +86,8 @@ const sk: Messages = {
     drawLines: 'Čiara',
     drawPolygons: 'Polygón',
     tracking: 'Sledovanie',
+    linePoint: 'Bod čiary',
+    polygonPoint: 'Bod polygónu',
   },
 
   tools: {
@@ -546,6 +548,11 @@ const sk: Messages = {
       label: 'Popis:',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
     },
+    continue: 'Pokračovať',
+    join: 'Spojiť',
+    split: 'Rozdeliť',
+    stopDrawing: 'Ukončiť kreslenie',
+    selectPointToJoin: 'Zvoľte bod pre spojenie čiar',
   },
 
   settings: {

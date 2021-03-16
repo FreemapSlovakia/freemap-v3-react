@@ -85,6 +85,8 @@ const en: Messages = {
     drawLines: 'Line',
     drawPolygons: 'Polygon',
     tracking: 'Tracking',
+    linePoint: 'Line point',
+    polygonPoint: 'Polygon point',
   },
 
   tools: {
@@ -526,6 +528,11 @@ const en: Messages = {
       label: 'Label:',
       hint: 'To remove label leave its field empty.',
     },
+    continue: 'Continue',
+    join: 'Join',
+    split: 'Split',
+    stopDrawing: 'Stop drawing',
+    selectPointToJoin: 'Select point to join lines',
   },
 
   settings: {

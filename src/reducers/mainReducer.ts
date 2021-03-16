@@ -1,6 +1,10 @@
 import { RootAction } from 'fm3/actions';
 import { authLogout, authSetUser } from 'fm3/actions/authActions';
-import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
+import {
+  drawingLineContinue,
+  drawingLineSetLines,
+  drawingLineStopDrawing,
+} from 'fm3/actions/drawingLineActions';
 import {
   clearMap,
   convertToDrawing,
@@ -77,6 +81,12 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
               ? state.selection
               : null,
         };
+  })
+  .handleAction(drawingLineStopDrawing, (state) => {
+    return {
+      ...state,
+      tool: null,
+    };
   })
   .handleAction(clearMap, (state) => {
     return {
@@ -165,6 +175,10 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     embedFeatures: action.payload,
   }))
+  .handleAction(drawingLineContinue, (state, action) => ({
+    ...state,
+    selection: { type: 'draw-line-poly', id: action.payload.lineIndex },
+  }))
   .handleAction(selectFeature, (state, action) =>
     embed
       ? state
@@ -185,5 +199,8 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
-    selection: null,
+    selection:
+      state.selection?.type === 'line-point'
+        ? { type: 'draw-line-poly', id: state.selection.lineIndex }
+        : null,
   }));

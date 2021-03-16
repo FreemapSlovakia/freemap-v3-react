@@ -60,6 +60,7 @@ import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
+  drawingLinePolys,
   mouseCursorSelector,
   selectingModeSelector,
   showGalleryPickerSelector,
@@ -85,6 +86,7 @@ import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
+import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
@@ -355,6 +357,8 @@ export function Main(): ReactElement {
 
   const sc3 = useScrollClasses('horizontal');
 
+  const drawingLines = useSelector(drawingLinePolys);
+
   return (
     <>
       <style>
@@ -438,6 +442,7 @@ export function Main(): ReactElement {
 
           {/* selections */}
           {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
+          {selectionMenu === 'line-point' && <DrawingLinePointSelection />}
           {selectionMenu === 'draw-points' && <DrawingPointSelection />}
           {selectionMenu === 'objects' && <ObjectSelection />}
           {selectionMenu === 'tracking' && <TrackingSelection />}
@@ -495,9 +500,7 @@ export function Main(): ReactElement {
             <>
               {tool === 'map-details' && <MapDetailsTool />}
               {tool === 'draw-points' && <DrawingPointsTool />}
-              {(tool === 'draw-lines' || tool === 'draw-polygons') && (
-                <DrawingLinesTool />
-              )}
+              {drawingLines && <DrawingLinesTool />}
               {isSelecting && <SelectionTool />}
 
               {showInteractiveLayer && (

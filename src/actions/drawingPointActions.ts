@@ -22,6 +22,6 @@ export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<
   DrawingPoint[]
 >();
 
-export const drawingPointMeasure = createAction(
-  'DRAWING_POINT_MEASURE',
-)<boolean>();
+// NOTE used also for lines and polygons
+
+export const drawingMeasure = createAction('DRAWING_MEASURE')<boolean>();

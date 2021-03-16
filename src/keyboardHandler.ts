@@ -1,4 +1,8 @@
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import {
+  drawingLineJoinStart,
+  drawingLineStopDrawing,
+} from './actions/drawingLineActions';
 import { elevationChartClose } from './actions/elevationChartActions';
 import {
   galleryClear,
@@ -50,80 +54,62 @@ export function attachKeyboardHandler(store: MyStore): void {
         state.gallery.showUploadModal ||
         state.gallery.activeImageId);
 
-    if (state.gallery.showFilter && event.code === 'Escape') {
-      store.dispatch(galleryHideFilter());
-      return;
-    }
-
-    if (state.gallery.showUploadModal && event.code === 'Escape') {
-      store.dispatch(galleryHideUploadModal());
-      return;
-    }
-
-    if (showGalleryViewerSelector(state) && event.code === 'Escape') {
-      if (state.gallery.editModel) {
-        store.dispatch(galleryEditPicture());
-      } else {
-        store.dispatch(galleryClear());
-      }
-
-      event.preventDefault();
-
-      return;
-    }
-
-    if (
-      event.code === 'Escape' &&
-      state.elevationChart.elevationProfilePoints
-    ) {
-      store.dispatch(elevationChartClose());
-
-      return;
-    }
-
-    if (
-      event.code === 'Escape' &&
-      !embed &&
-      !document.body.classList.contains('fm-overlay-backdrop-enable')
-    ) {
-      if (state.main.selectingHomeLocation) {
-        store.dispatch(setSelectingHomeLocation(false));
+    if (event.code === 'Escape') {
+      if (state.gallery.showFilter) {
+        store.dispatch(galleryHideFilter());
+      } else if (state.gallery.showUploadModal) {
+        store.dispatch(galleryHideUploadModal());
+      } else if (showGalleryViewerSelector(state)) {
+        if (state.gallery.editModel) {
+          store.dispatch(galleryEditPicture());
+        } else {
+          store.dispatch(galleryClear());
+        }
 
         event.preventDefault();
-
-        return;
-      } else if (state.gallery.pickingPositionForId) {
-        store.dispatch(gallerySetItemForPositionPicking(null));
-
-        event.preventDefault();
-
-        return;
+      } else if (state.elevationChart.elevationProfilePoints) {
+        store.dispatch(elevationChartClose());
+      } else if (state.drawingLines.joinWith) {
+        store.dispatch(drawingLineJoinStart(undefined));
+      } else if (state.drawingLines.drawing) {
+        store.dispatch(drawingLineStopDrawing());
       } else if (
-        !showingModal &&
-        !state.gallery.showPosition &&
-        state.main.selection
+        !embed &&
+        !document.body.classList.contains('fm-overlay-backdrop-enable')
       ) {
-        // store.dispatch(
-        //   selectFeature(
-        //     state.main.selection.type === 'tracking' ||
-        //       state.main.selection.id === undefined
-        //       ? null
-        //       : { type: state.main.selection.type },
-        //   ),
-        // );
+        if (state.main.selectingHomeLocation) {
+          store.dispatch(setSelectingHomeLocation(false));
 
-        store.dispatch(selectFeature(null));
+          event.preventDefault();
+        } else if (state.gallery.pickingPositionForId) {
+          store.dispatch(gallerySetItemForPositionPicking(null));
 
-        event.preventDefault();
+          event.preventDefault();
+        } else if (
+          !showingModal &&
+          !state.gallery.showPosition &&
+          state.main.selection
+        ) {
+          // store.dispatch(
+          //   selectFeature(
+          //     state.main.selection.type === 'tracking' ||
+          //       state.main.selection.id === undefined
+          //       ? null
+          //       : { type: state.main.selection.type },
+          //   ),
+          // );
 
-        return;
-      } else if (state.main.tool) {
-        store.dispatch(setTool(null));
+          store.dispatch(selectFeature(null));
 
-        event.preventDefault();
+          event.preventDefault();
+        } else if (state.main.tool) {
+          store.dispatch(setTool(null));
 
-        return;
+          event.preventDefault();
+        }
       }
+
+      return;
     }
 
     if (
@@ -217,15 +203,21 @@ export function attachKeyboardHandler(store: MyStore): void {
     }
 
     if (
+      event.code === 'Delete' &&
+      state.drawingLines.joinWith === undefined &&
       !keyTimer &&
       !showingModal &&
       !state.gallery.showPosition &&
       !state.gallery.pickingPositionForId &&
-      !state.main.selectingHomeLocation
+      !state.main.selectingHomeLocation &&
+      (state.main.selection?.type !== 'line-point' ||
+        state.drawingLines.lines[state.main.selection.lineIndex].points.length >
+          (state.drawingLines.lines[state.main.selection.lineIndex].type ===
+          'line'
+            ? 2
+            : 3))
     ) {
-      if (event.code === 'Delete') {
-        store.dispatch(deleteFeature());
-      }
+      store.dispatch(deleteFeature());
     }
 
     if (

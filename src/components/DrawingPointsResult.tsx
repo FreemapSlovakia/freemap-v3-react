@@ -1,6 +1,6 @@
 import {
+  drawingMeasure,
   drawingPointChangePosition,
-  drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
@@ -29,7 +29,7 @@ export function DrawingPointsResult(): ReactElement {
     ({ latlng: { lat, lng: lon } }) => {
       if (activeIndex !== null) {
         dispatch(drawingPointChangePosition({ index: activeIndex, lat, lon }));
-        dispatch(drawingPointMeasure(false));
+        dispatch(drawingMeasure(false));
       }
     },
     [activeIndex, dispatch],
@@ -46,7 +46,7 @@ export function DrawingPointsResult(): ReactElement {
             lon: coords.lng,
           }),
         );
-        dispatch(drawingPointMeasure(true));
+        dispatch(drawingMeasure(true));
       }
     },
     [activeIndex, dispatch],
@@ -59,7 +59,7 @@ export function DrawingPointsResult(): ReactElement {
       new Array(points.length).fill(0).map((_, id) => () => {
         if (id !== activeIndex) {
           dispatch(selectFeature({ type: 'draw-points', id }));
-          dispatch(drawingPointMeasure(true));
+          dispatch(drawingMeasure(true));
         }
       }),
     [points.length, activeIndex, dispatch],

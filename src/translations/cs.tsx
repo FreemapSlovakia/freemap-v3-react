@@ -87,6 +87,8 @@ const cs: Messages = {
     drawLines: 'Čára',
     drawPolygons: 'Polygón',
     tracking: 'Sledování',
+    linePoint: 'Line point', // TODO translate
+    polygonPoint: 'Polygon point', // TODO translate
   },
 
   tools: {
@@ -536,6 +538,11 @@ const cs: Messages = {
       label: 'Popis:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
     },
+    continue: 'Continue', // TODO translate
+    join: 'Join', // TODO translate
+    split: 'Split', // TODO translate
+    stopDrawing: 'Stop drawing', // TODO translate
+    selectPointToJoin: 'Select point to join lines', // TODO translate
   },
 
   settings: {

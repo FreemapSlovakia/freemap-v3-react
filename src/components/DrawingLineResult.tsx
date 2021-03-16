@@ -1,15 +1,18 @@
 import {
   drawingLineAddPoint,
-  drawingLineRemovePoint,
+  drawingLineJoinFinish,
   drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
+import {
+  drawingLinePolys,
+  selectingModeSelector,
+} from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
@@ -31,6 +34,13 @@ const circularIcon = divIcon({
   html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
 });
 
+const selectedCircularIcon = divIcon({
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  tooltipAnchor: [10, 0],
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.selected}"></div>`,
+});
+
 type Props = {
   index: number;
 };
@@ -38,7 +48,7 @@ type Props = {
 export function DrawingLineResult({ index }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const tool = useSelector((state: RootState) => state.main.tool);
+  const drawing = useSelector(drawingLinePolys);
 
   const line = useSelector(
     (state: RootState) => state.drawingLines.lines[index],
@@ -49,10 +59,23 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   const selected = useSelector(
     (state: RootState) =>
       state.main.selection?.type === 'draw-line-poly' &&
-      index === state.main.selection?.id,
+      index === state.main.selection.id,
+  );
+
+  const selectedPointId = useSelector((state: RootState) =>
+    state.main.selection?.type === 'line-point' &&
+    index === state.main.selection.lineIndex
+      ? state.main.selection.pointId
+      : undefined,
+  );
+
+  const joinWithLineIndex = useSelector(
+    (state: RootState) => state.drawingLines.joinWith?.lineIndex,
   );
 
   const interactive = useSelector(selectingModeSelector);
+
+  const interactiveLine = interactive && joinWithLineIndex === undefined;
 
   const { points } = line;
 
@@ -128,7 +151,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
     );
 
-    dispatch(drawingPointMeasure(true));
+    dispatch(drawingMeasure(true));
   }
 
   let prev: Point | null = null;
@@ -152,7 +175,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       }),
     );
 
-    dispatch(drawingPointMeasure(true));
+    dispatch(drawingMeasure(true));
   }
 
   const ps = useMemo(() => {
@@ -183,10 +206,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
-            key={`line-${interactive ? 'a' : 'b'}`}
+            key={`line-${interactiveLine ? 'a' : 'b'}`}
             weight={12}
             opacity={0}
-            interactive={interactive}
+            interactive={interactiveLine}
             bubblingMouseEvents={false}
             eventHandlers={{
               click: handleSelect,
@@ -217,12 +240,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
-          key={`polygon-${interactive ? 'a' : 'b'}`}
+          key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
             color: selected ? colors.selected : colors.normal,
           }}
-          interactive={interactive}
+          interactive={interactiveLine}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
@@ -244,37 +267,45 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         </Polygon>
       )}
 
-      {!!(
+      {drawing &&
         ps.length > 0 &&
-        coords &&
-        !window.preventMapClick &&
-        (tool === 'draw-lines' || tool === 'draw-polygons')
-      ) && (
-        <Polyline
-          color={colors.selected}
-          weight={4}
-          dashArray="6,8"
-          interactive={false}
-          positions={[
-            {
-              lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
-              lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
-            },
-            { lat: coords.lat, lng: coords.lon },
-            ...(line.type === 'line' || ps.length < 3
-              ? []
-              : [{ lat: ps[0].lat, lng: ps[0].lon }]),
-          ]}
-        />
-      )}
+        coords !== undefined &&
+        !window.preventMapClick && (
+          <Polyline
+            color={colors.selected}
+            weight={4}
+            dashArray="6,8"
+            interactive={false}
+            positions={[
+              {
+                lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
+                lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
+              },
+              { lat: coords.lat, lng: coords.lon },
+              ...(line.type === 'line' || ps.length < 3
+                ? []
+                : [{ lat: ps[0].lat, lng: ps[0].lon }]),
+            ]}
+          />
+        )}
 
-      {selected &&
-        ps.map((p, i: number) => {
+      {(selected ||
+        selectedPointId !== undefined ||
+        joinWithLineIndex !== undefined) &&
+        ps.map((p, i) => {
           if (i % 2 === 0) {
             if (prev) {
               dist += distance(p.lat, p.lon, prev.lat, prev.lon);
             }
+
             prev = p;
+          }
+
+          if (
+            joinWithLineIndex !== undefined &&
+            ((i !== 0 && i !== ps.length - 1) || joinWithLineIndex === index)
+          ) {
+            return null;
           }
 
           return i % 2 === 0 ? (
@@ -283,7 +314,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               draggable
               position={{ lat: p.lat, lng: p.lon }}
               // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-              icon={circularIcon}
+              icon={
+                selectedPointId === p.id ? selectedCircularIcon : circularIcon
+              }
               opacity={1}
               eventHandlers={{
                 drag(e) {
@@ -296,11 +329,27 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                     }),
                   );
 
-                  dispatch(drawingPointMeasure(true));
+                  dispatch(drawingMeasure(true));
                 },
                 click() {
-                  dispatch(drawingLineRemovePoint({ index, id: p.id }));
-                  dispatch(drawingPointMeasure(true));
+                  if (joinWithLineIndex !== undefined) {
+                    dispatch(
+                      drawingLineJoinFinish({
+                        lineIndex: index,
+                        pointId: p.id,
+                      }),
+                    );
+
+                    dispatch(drawingMeasure(true));
+                  } else {
+                    dispatch(
+                      selectFeature({
+                        type: 'line-point',
+                        lineIndex: index,
+                        pointId: p.id,
+                      }),
+                    );
+                  }
                 },
                 dragstart: handleDragStart,
                 dragend: handleDragEnd,
@@ -318,7 +367,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               draggable
               position={{ lat: p.lat, lng: p.lon }}
               icon={circularIcon}
-              opacity={0.5}
+              opacity={0.33}
               eventHandlers={{
                 dragstart(e) {
                   addPoint(

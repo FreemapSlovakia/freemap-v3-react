@@ -190,10 +190,12 @@ export const processorMiddleware: Middleware<
   const p = promise.then(
     (res) => {
       isDone = true;
+
       return res;
     },
     (err) => {
       isDone = true;
+
       throw err;
     },
   );

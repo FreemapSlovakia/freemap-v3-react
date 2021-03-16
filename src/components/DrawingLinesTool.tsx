@@ -1,5 +1,5 @@
 import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
@@ -54,7 +54,7 @@ export function DrawingLinesTool(): null {
         }),
       );
 
-      dispatch(drawingPointMeasure(true));
+      dispatch(drawingMeasure(true));
     },
     [linePoints, dispatch, selection, tool],
   );

@@ -4,8 +4,7 @@ import simplify from '@turf/simplify';
 import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
-  drawingLineRemovePoint,
-  drawingLineUpdatePoint,
+  drawingLineJoinFinish,
   Point,
 } from 'fm3/actions/drawingLineActions';
 import {
@@ -148,6 +147,26 @@ export function preGlobalReducer(
         Object.assign(draft.trackViewer, trackViewerCleanState);
       });
     }
+  } else if (
+    isActionOf(drawingLineJoinFinish, action) &&
+    state.drawingLines.joinWith
+  ) {
+    // this is to fix selection on join
+
+    return {
+      ...state,
+      main: {
+        ...state.main,
+        selection: {
+          type: 'draw-line-poly',
+          id:
+            state.drawingLines.joinWith.lineIndex -
+            (action.payload.lineIndex > state.drawingLines.joinWith.lineIndex
+              ? 0
+              : 1),
+        },
+      },
+    };
   } else if (isActionOf(deleteFeature, action)) {
     if (
       state.main.tool === 'track-viewer' ||
@@ -191,6 +210,16 @@ export function preGlobalReducer(
           pickMode: 'start',
         },
       };
+    } else if (state.main.selection?.type === 'line-point') {
+      const { selection } = state.main;
+
+      return produce(state, (draft) => {
+        const line = draft.drawingLines.lines[selection.lineIndex];
+
+        line.points = line.points.filter(
+          (point) => point.id !== selection.pointId,
+        );
+      });
     } else if (state.main.selection?.type === 'draw-line-poly') {
       const {
         drawingLines,
@@ -249,15 +278,6 @@ export function postGlobalReducer(
       draft.main.selection = {
         type: 'draw-line-poly',
         id: index,
-      };
-    });
-  } else if (
-    isActionOf([drawingLineUpdatePoint, drawingLineRemovePoint], action)
-  ) {
-    return produce(state, (draft) => {
-      draft.main.selection = {
-        type: 'draw-line-poly',
-        id: action.payload.index,
       };
     });
   } else if (isActionOf(drawingPointAdd, action)) {
