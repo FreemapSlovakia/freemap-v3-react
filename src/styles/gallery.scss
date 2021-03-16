@@ -1,6 +1,6 @@
 .gallery-image {
   max-width: 100%;
-  max-height: calc(100vh - 300px);
+  max-height: calc(var(--vh, 100vh) - 300px);
   margin: 0 auto;
   display: block;
 

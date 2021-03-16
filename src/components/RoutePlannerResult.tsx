@@ -1,7 +1,7 @@
 import along from '@turf/along';
 import { Feature, lineString, Point, Properties } from '@turf/helpers';
 import length from '@turf/length';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import {
   Alternative,
   RouteAlternativeExtra,
@@ -10,6 +10,7 @@ import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
   routePlannerSetMidpoint,
+  routePlannerSetPickMode,
   routePlannerSetStart,
   RouteStepExtra,
   Step,
@@ -18,6 +19,7 @@ import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePo
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { isSpecial } from 'fm3/transportTypeDefs';
@@ -37,6 +39,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { FaPlay, FaStop } from 'react-icons/fa';
 import {
   CircleMarker,
   Marker,
@@ -113,7 +116,11 @@ export function RoutePlannerResult(): ReactElement {
     (state: RootState) => state.routePlanner.pickMode,
   );
 
-  const selection = useSelector((state: RootState) => state.main.selection);
+  const tool = useSelector((state: RootState) => state.main.tool);
+
+  const interactive0 = tool === 'route-planner'; // draggable
+
+  const interactive1 = useSelector(selectingModeSelector) || interactive0; // markers, lines
 
   const [dragging, setDragging] = useState(false);
 
@@ -121,7 +128,7 @@ export function RoutePlannerResult(): ReactElement {
     ({ latlng }: LeafletMouseEvent) => {
       if (embed || dragging) {
         // nothing
-      } else if (selection?.type !== 'route-planner') {
+      } else if (tool !== 'route-planner') {
         // nothing
       } else if (pickMode === 'start') {
         dispatch(
@@ -135,7 +142,7 @@ export function RoutePlannerResult(): ReactElement {
         );
       }
     },
-    [pickMode, dispatch, selection, dragging],
+    [pickMode, dispatch, tool, dragging],
   );
 
   useMapEvent('click', handlePoiAdd);
@@ -332,17 +339,24 @@ export function RoutePlannerResult(): ReactElement {
   const handleStartPointClick = useCallback(() => {
     // also prevent default
 
-    dispatch(selectFeature({ type: 'route-planner' }));
-  }, [dispatch]);
+    if (tool === 'route-planner') {
+      dispatch(routePlannerSetPickMode('start'));
+    } else {
+      dispatch(setTool('route-planner'));
+    }
+  }, [dispatch, tool]);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
       dispatch(routePlannerSetFinish({ finish: null, move: true }));
-      dispatch(selectFeature({ type: 'route-planner' }));
     }
 
-    dispatch(selectFeature({ type: 'route-planner' }));
-  }, [mode, dispatch]);
+    if (tool === 'route-planner') {
+      dispatch(routePlannerSetPickMode('finish'));
+    } else {
+      dispatch(setTool('route-planner'));
+    }
+  }, [mode, tool, dispatch]);
 
   const [endPointHovering, setEndPointHovering] = useState(false);
 
@@ -372,9 +386,10 @@ export function RoutePlannerResult(): ReactElement {
 
   const handlePolyMouseMove = useCallback(
     (e: LeafletMouseEvent, segment: number, alt: number) => {
-      if (draggingRef.current) {
+      if (!interactive0 || draggingRef.current) {
         return;
       }
+
       if (tRef.current) {
         clearTimeout(tRef.current);
         tRef.current = undefined;
@@ -385,7 +400,7 @@ export function RoutePlannerResult(): ReactElement {
       setDragSegment(segment);
       setDragAlt(alt);
     },
-    [],
+    [interactive0],
   );
 
   const resetOnTimeout = useCallback(() => {
@@ -450,7 +465,7 @@ export function RoutePlannerResult(): ReactElement {
             position: dragSegment,
           }),
         );
-        dispatch(selectFeature({ type: 'route-planner' }));
+        dispatch(setTool('route-planner'));
       }
     },
     [dispatch, dragSegment],
@@ -459,7 +474,7 @@ export function RoutePlannerResult(): ReactElement {
   const changeAlternative = useCallback(
     (index: number) => {
       dispatch(routePlannerSetActiveAlternativeIndex(index));
-      dispatch(selectFeature({ type: 'route-planner' }));
+      dispatch(setTool('route-planner'));
     },
     [dispatch],
   );
@@ -487,11 +502,11 @@ export function RoutePlannerResult(): ReactElement {
       switch (movedPointType) {
         case 'start':
           dispatch(routePlannerSetStart({ start: { lat, lon }, move: true }));
-          dispatch(selectFeature({ type: 'route-planner' }));
+          dispatch(setTool('route-planner'));
           break;
         case 'finish':
           dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
-          dispatch(selectFeature({ type: 'route-planner' }));
+          dispatch(setTool('route-planner'));
 
           break;
         case 'midpoint':
@@ -499,20 +514,12 @@ export function RoutePlannerResult(): ReactElement {
             dispatch(
               routePlannerSetMidpoint({ position, midpoint: { lat, lon } }),
             );
-            dispatch(selectFeature({ type: 'route-planner' }));
+            dispatch(setTool('route-planner'));
           }
           break;
         default:
           throw new Error('unknown pointType');
       }
-    },
-    [dispatch],
-  );
-
-  const handleMidpointClick = useCallback(
-    (position) => {
-      dispatch(routePlannerRemoveMidpoint(position));
-      dispatch(selectFeature({ type: 'route-planner' }));
     },
     [dispatch],
   );
@@ -523,11 +530,14 @@ export function RoutePlannerResult(): ReactElement {
     () =>
       start && (
         <RichMarker
-          faIcon="play"
+          key={
+            'start-' + (interactive0 ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
+          }
+          interactive={interactive1}
+          faIcon={<FaPlay color="#409a40" />}
           zIndexOffset={10}
-          faIconLeftPadding="2px"
           color="#409a40"
-          draggable={!embed}
+          draggable={interactive0 && !embed}
           position={{ lat: start.lat, lng: start.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -543,16 +553,18 @@ export function RoutePlannerResult(): ReactElement {
         </RichMarker>
       ),
     [
-      getSummary,
-      handleDragStart,
-      handleRouteMarkerDragEnd,
-      handleStartPointClick,
-      handleStartPointMouseOut,
-      handleStartPointMouseOver,
-      mode,
       start,
-      startPointHovering,
+      interactive1,
+      interactive0,
+      handleDragStart,
+      handleStartPointClick,
+      handleStartPointMouseOver,
+      handleStartPointMouseOut,
       dragging,
+      mode,
+      getSummary,
+      startPointHovering,
+      handleRouteMarkerDragEnd,
     ],
   );
 
@@ -560,7 +572,11 @@ export function RoutePlannerResult(): ReactElement {
     () =>
       finish && (
         <RichMarker
-          faIcon={mode === 'roundtrip' ? undefined : 'stop'}
+          key={
+            'finish-' + (interactive0 ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
+          }
+          interactive={interactive1}
+          faIcon={mode === 'roundtrip' ? undefined : <FaStop color="#d9534f" />}
           label={
             mode === 'roundtrip'
               ? waypoints[waypoints.length - 1]?.waypoint_index
@@ -568,7 +584,7 @@ export function RoutePlannerResult(): ReactElement {
           }
           color={mode !== 'roundtrip' ? '#d9534f' : undefined}
           zIndexOffset={10}
-          draggable={!embed}
+          draggable={interactive0 && !embed}
           position={{ lat: finish.lat, lng: finish.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -600,6 +616,8 @@ export function RoutePlannerResult(): ReactElement {
       handleEndPointMouseOut,
       handleEndPointMouseOver,
       handleRouteMarkerDragEnd,
+      interactive0,
+      interactive1,
       midpoints.length,
       mode,
       waypoints,
@@ -641,7 +659,8 @@ export function RoutePlannerResult(): ReactElement {
               )
               .map((routeSlice, i: number) => (
                 <Polyline
-                  key={`slice-${i}`}
+                  key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
+                  interactive={interactive1}
                   ref={bringToFront}
                   positions={routeSlice.geometry.coordinates.map(reverse)}
                   weight={10}
@@ -667,7 +686,9 @@ export function RoutePlannerResult(): ReactElement {
               )
               .map((routeSlice, i: number) => (
                 <Polyline
-                  key={`slice-${timestamp}-${alt}-${i}`}
+                  key={`slice-${timestamp}-${alt}-${i}-${
+                    interactive1 ? 'a' : 'b'
+                  }`}
                   ref={bringToFront}
                   positions={routeSlice.geometry.coordinates.map(reverse)}
                   weight={6}
@@ -692,16 +713,17 @@ export function RoutePlannerResult(): ReactElement {
           </Fragment>
         )),
     [
-      activeAlternativeIndex,
-      alternatives,
-      bringToFront,
-      changeAlternative,
-      handlePolyMouseMove,
-      handlePolyMouseOut,
-      maneuverToText,
       special,
+      alternatives,
+      activeAlternativeIndex,
       timestamp,
       dragging,
+      maneuverToText,
+      interactive1,
+      bringToFront,
+      handlePolyMouseOut,
+      changeAlternative,
+      handlePolyMouseMove,
     ],
   );
 
@@ -709,7 +731,8 @@ export function RoutePlannerResult(): ReactElement {
     () =>
       midpoints.map(({ lat, lon }, i) => (
         <RichMarker
-          draggable={!embed}
+          interactive={interactive1}
+          draggable={interactive0 && !embed}
           eventHandlers={
             embed
               ? {}
@@ -719,11 +742,17 @@ export function RoutePlannerResult(): ReactElement {
                     handleRouteMarkerDragEnd('midpoint', i, e);
                   },
                   click() {
-                    handleMidpointClick(i);
+                    if (tool === 'route-planner') {
+                      dispatch(routePlannerRemoveMidpoint(i));
+                    } else {
+                      dispatch(setTool('route-planner'));
+                    }
                   },
                 }
           }
-          key={`midpoint-${i}`}
+          key={`midpoint-${i}-${interactive0 ? 'a' : 'b'}-${
+            interactive1 ? 'a' : 'b'
+          }`}
           zIndexOffset={9}
           label={mode === 'route' ? i + 1 : waypoints[i + 1]?.waypoint_index}
           position={{ lat, lng: lon }}
@@ -736,14 +765,17 @@ export function RoutePlannerResult(): ReactElement {
         </RichMarker>
       )),
     [
-      getPointDetails,
-      handleDragStart,
-      handleMidpointClick,
-      handleRouteMarkerDragEnd,
       midpoints,
+      interactive1,
+      interactive0,
+      handleDragStart,
       mode,
       waypoints,
       dragging,
+      getPointDetails,
+      handleRouteMarkerDragEnd,
+      tool,
+      dispatch,
     ],
   );
 
@@ -751,20 +783,23 @@ export function RoutePlannerResult(): ReactElement {
     <>
       {startMarker}
 
-      {!embed && dragLat !== undefined && dragLon !== undefined && (
-        <Marker
-          draggable={!embed}
-          icon={circularIcon}
-          eventHandlers={{
-            dragstart: handleDragStart,
-            dragend: handleFutureDragEnd,
-            mouseover: handleFutureMouseOver,
-            mouseout: handleFutureMouseOut,
-            click: handleFutureClick,
-          }}
-          position={{ lat: dragLat, lng: dragLon }}
-        />
-      )}
+      {!embed &&
+        interactive0 &&
+        dragLat !== undefined &&
+        dragLon !== undefined && (
+          <Marker
+            draggable={!embed}
+            icon={circularIcon}
+            eventHandlers={{
+              dragstart: handleDragStart,
+              dragend: handleFutureDragEnd,
+              mouseover: handleFutureMouseOver,
+              mouseout: handleFutureMouseOut,
+              click: handleFutureClick,
+            }}
+            position={{ lat: dragLat, lng: dragLon }}
+          />
+        )}
 
       {midpointElements}
 
@@ -795,7 +830,7 @@ function reverse(c: [number, number]) {
   return [c[1], c[0]] as [number, number];
 }
 
-// TODO instead of calling dispatch(selectFeature({ type: 'route-planner' })) implement selecting feature in globalReducer
+// TODO instead of calling dispatch(setTool('route-planner')) implement selecting feature in globalReducer
 
 // TODO do it in processor so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)

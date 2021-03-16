@@ -28,7 +28,6 @@ import { galleryRequestImagesByRadiusProcessor } from './processors/galleryReque
 import { gallerySavePictureProcessor } from './processors/gallerySavePictureProcessor';
 import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
 import { galleryShowImageGaProcessor } from './processors/galleryShowImageGaProcessor';
-import { galleryShowLayerHintProcessor } from './processors/galleryShowLayerHintProcessor';
 import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapProcessor';
 import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor';
 import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
@@ -50,6 +49,7 @@ import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
 import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
+import { openInExternalAppProcessor } from './processors/openInExternalAppProcessor';
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
@@ -87,7 +87,7 @@ import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { galleryReducer } from './reducers/galleryReducer';
-import { globalReducer } from './reducers/globalReducer';
+import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
 import { l10nReducer } from './reducers/l10nReducer';
 import { mainReducer } from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
@@ -136,8 +136,9 @@ const rootReducer = reduceReducers<RootState>(
   // TODO
   // eslint-disable-next-line
   // @ts-ignore
+  preGlobalReducer,
   combinedReducers,
-  globalReducer,
+  postGlobalReducer,
 );
 
 processors.push(
@@ -182,7 +183,6 @@ processors.push(
   galleryRequestImagesByRadiusProcessor,
   gallerySavePictureProcessor,
   galleryShowImageGaProcessor,
-  galleryShowLayerHintProcessor,
   galleryShowOnTheMapProcessor,
   gallerySetItemForPositionPickingProcessor,
   gallerySubmitCommentProcessor,
@@ -206,6 +206,7 @@ processors.push(
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   legendProcessor,
+  openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   urlProcessor,
 );

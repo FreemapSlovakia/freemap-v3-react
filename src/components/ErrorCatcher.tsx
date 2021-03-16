@@ -16,7 +16,7 @@ function Error() {
 
   return m ? (
     <div
-      style={{ padding: '10px' }}
+      className="p-2"
       dangerouslySetInnerHTML={{
         __html: m.errorCatcher.html(errorTicketId ?? '???'),
       }}

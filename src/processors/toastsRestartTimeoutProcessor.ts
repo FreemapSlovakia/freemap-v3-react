@@ -8,6 +8,7 @@ export const toastsRestartTimeoutProcessor: Processor<
   actionCreator: toastsRestartTimeout,
   handle: async ({ getState, action: { payload: id } }) => {
     const tm = timeoutMap.get(id);
+
     if (tm) {
       timeoutMap.delete(id);
       if (tm.timeoutId) {
@@ -15,6 +16,7 @@ export const toastsRestartTimeoutProcessor: Processor<
       }
 
       const toast = getState().toasts.toasts.find((t) => t.id === id);
+
       if (toast?.timeout != undefined) {
         setupTimeout(id, toast.timeout, tm.dispatch);
       }

@@ -13,6 +13,7 @@ export const routePlannerSetFromCurrentPositionProcessor: Processor<
   errorKey: 'routePlanner.gpsError',
   handle: async ({ dispatch, action }) => {
     const { lat, lon } = await getCurrentPosition();
+
     if (action.payload === 'start') {
       dispatch(routePlannerSetStart({ start: { lat, lon } }));
     } else {

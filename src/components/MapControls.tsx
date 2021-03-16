@@ -7,8 +7,9 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
+import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
+import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { MapSwitchButton } from './MapSwitchButton';
 
 export function MapControls(): ReactElement | null {
@@ -66,7 +67,7 @@ export function MapControls(): ReactElement | null {
   const embed = window.self !== window.top;
 
   return (
-    <Card className="fm-toolbar">
+    <Card className="fm-toolbar mx-2 mb-2">
       {(!embed || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />
       )}
@@ -79,7 +80,7 @@ export function MapControls(): ReactElement | null {
           title={m?.main.zoomIn}
           disabled={zoom >= map.getMaxZoom()}
         >
-          <FontAwesomeIcon icon="plus" />
+          <FaPlus />
         </Button>
         <Button
           variant="secondary"
@@ -89,7 +90,7 @@ export function MapControls(): ReactElement | null {
           title={m?.main.zoomOut}
           disabled={zoom <= map.getMinZoom()}
         >
-          <FontAwesomeIcon icon="minus" />
+          <FaMinus />
         </Button>
       </ButtonGroup>
       {(!embed || !embedFeatures.includes('noLocateMe')) && (
@@ -102,7 +103,7 @@ export function MapControls(): ReactElement | null {
           active={locate}
           variant={gpsTracked ? 'warning' : 'secondary'}
         >
-          <FontAwesomeIcon icon="dot-circle-o" />
+          <FaRegDotCircle />
         </Button>
       )}
       {'exitFullscreen' in document && (
@@ -116,9 +117,11 @@ export function MapControls(): ReactElement | null {
               : m?.general.fullscreen
           }
         >
-          <FontAwesomeIcon
-            icon={document.fullscreenElement ? 'compress' : 'expand'}
-          />
+          {document.fullscreenElement ? (
+            <RiFullscreenExitLine />
+          ) : (
+            <RiFullscreenLine />
+          )}
         </Button>
       )}
     </Card>

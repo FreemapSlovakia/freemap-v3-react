@@ -1,5 +1,3 @@
-@import 'variables';
-
 .elevationChart {
   position: absolute;
   z-index: 10001;
@@ -11,7 +9,7 @@
   padding: 10px;
   margin: 10px;
 
-  @media ($smartphone-screen) {
+  @media (max-width: calc(var(--breakpoint-md) - 1px)) {
     width: calc(100% - 20px);
   }
 

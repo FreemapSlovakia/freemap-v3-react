@@ -1,5 +1,4 @@
 import { GalleryTag } from 'fm3/actions/galleryActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { getMessageByKey } from 'fm3/l10nInjector';
 import 'fm3/styles/react-tag-autocomplete.css';
 import { Messages } from 'fm3/translations/messagesInterface';
@@ -9,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { FaRegDotCircle } from 'react-icons/fa';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { DateTime } from '../DateTime';
 
@@ -147,8 +147,7 @@ export function GalleryEditForm({
           />
           <InputGroup.Append>
             <Button onClick={onPositionPick}>
-              <FontAwesomeIcon icon="dot-circle-o" />
-              {m?.gallery.editForm.setLocation}
+              <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
             </Button>
           </InputGroup.Append>
         </InputGroup>

@@ -1,7 +1,7 @@
 .popover-body {
   // max-width: 290px;
   max-height: calc(
-    100vh - 120px
+    var(--vh, 100vh) - 120px
   ); // hack to prevent popovers go outside view on mobiles
   overflow-y: auto;
 }
@@ -21,11 +21,9 @@
   z-index: 10000;
 }
 
-@media (min-width: 768px) {
-  .dropdown-long .dropdown-menu {
-    overflow-x: auto;
-    height: calc(100vh - 64px);
-  }
+.dropdown-long {
+  overflow-x: auto;
+  max-height: calc(var(--vh, 100vh) - 150px);
 }
 
 .accordion > .card > .card-header {
@@ -65,4 +63,23 @@
   kbd {
     display: none;
   }
+}
+
+// let active looks like dark variant
+.btn-secondary:not(:disabled):not(.disabled).active {
+  background-color: #343a40;
+  border-color: #343a40;
+
+  &:hover,
+  &:focus {
+    background-color: #23272b;
+    border-color: #1d2124;
+  }
+  // color: #5a6268;
+  // background-color: #fff;
+  // border-color: #5a6268;
+}
+
+kbd {
+  background-color: #bbb;
 }

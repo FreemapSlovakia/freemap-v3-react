@@ -15,9 +15,9 @@
     width: 100%;
     left: 50%;
     margin-left: -50%;
-    top: 6px;
+    top: 4px;
     text-align: center;
-    font-size: 83%;
+    font-size: 90%;
   }
 
   .circular-leaflet-marker-icon {
@@ -49,5 +49,32 @@ a.leaflet-control-layers-toggle {
   canvas,
   svg {
     z-index: 200;
+  }
+}
+
+.leaflet-marker-wiki-icon {
+  background-color: white;
+  border-radius: 9px;
+  border: 1px solid black;
+
+  & > * {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 3px;
+    left: 0;
+    right: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .leaflet-control-scale {
+    margin-bottom: 4rem !important;
+  }
+}
+
+@media (max-width: 352px) {
+  .leaflet-control-scale {
+    margin-bottom: 7.5rem !important;
   }
 }

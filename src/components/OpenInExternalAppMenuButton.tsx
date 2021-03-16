@@ -11,7 +11,6 @@ interface Props extends LatLon {
   lon: number;
   zoom: number;
   mapType: string;
-  expertMode: boolean;
   placement?: Placement;
   includePoint?: boolean;
   pointTitle?: string;
@@ -25,7 +24,6 @@ export function OpenInExternalAppMenuButton({
   lon,
   zoom,
   mapType,
-  expertMode,
   placement,
   includePoint,
   pointTitle,
@@ -78,7 +76,6 @@ export function OpenInExternalAppMenuButton({
               lon={lon}
               zoom={zoom}
               mapType={mapType}
-              expertMode={expertMode}
               includePoint={includePoint}
               pointTitle={pointTitle}
               pointDescription={pointDescription}

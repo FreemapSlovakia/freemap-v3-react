@@ -20,11 +20,14 @@ export const routePlannerToggleElevationChartProcessor: Processor<
   ],
   handle: async ({ dispatch, getState, action }) => {
     const shown = !!getState().elevationChart.trackGeojson;
+
     const toggling = isActionOf(routePlannerToggleElevationChart, action);
+
     if (toggling && shown) {
       dispatch(elevationChartClose());
     } else if ((!shown && toggling) || (shown && !toggling)) {
       const { alternatives, activeAlternativeIndex } = getState().routePlanner;
+
       dispatch(
         elevationChartSetTrackGeojson(
           lineString(

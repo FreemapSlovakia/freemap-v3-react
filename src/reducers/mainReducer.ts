@@ -3,6 +3,7 @@ import { authLogout, authSetUser } from 'fm3/actions/authActions';
 import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
 import {
   clearMap,
+  convertToDrawing,
   deleteFeature,
   enableUpdatingUrl,
   selectFeature,
@@ -15,9 +16,11 @@ import {
   setHomeLocation,
   setLocation,
   setSelectingHomeLocation,
+  setTool,
   startProgress,
   stopProgress,
   toggleLocate,
+  Tool,
 } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
@@ -31,6 +34,7 @@ interface Location extends LatLon {
 }
 
 export interface MainState {
+  tool: Tool | null;
   activeModal: string | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
@@ -46,6 +50,7 @@ export interface MainState {
 }
 
 const initialState: MainState = {
+  tool: null,
   activeModal: null,
   homeLocation: null,
   progress: [],
@@ -61,10 +66,22 @@ const initialState: MainState = {
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(initialState)
+  .handleAction(setTool, (state, action) => {
+    return embed
+      ? state
+      : {
+          ...state,
+          tool: action.payload,
+          selection:
+            action.payload === state.tool || action.payload === null
+              ? state.selection
+              : null,
+        };
+  })
   .handleAction(clearMap, (state) => {
     return {
       ...state,
-      selection: state.selection ? { type: state.selection.type } : null,
+      selection: null,
     };
   })
   .handleAction(setAppState, (state, action) => {
@@ -154,9 +171,19 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
       : {
           ...state,
           selection: action.payload,
+          tool:
+            action.payload === null &&
+            state.tool !==
+              'route-planner' /* && state.tool !== 'track-viewer' */
+              ? state.tool
+              : null,
         },
   )
+  .handleAction(convertToDrawing, (state) => ({
+    ...state,
+    tool: null,
+  }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
-    selection: state.selection ? { type: state.selection.type } : null,
+    selection: null,
   }));

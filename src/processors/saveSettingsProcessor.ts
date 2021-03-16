@@ -65,11 +65,17 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
     }
 
     dispatch(setHomeLocation(homeLocation));
+
     dispatch(mapSetOverlayOpacity(overlayOpacity));
+
     dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));
+
     dispatch(setExpertMode(expertMode));
+
     dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
+
     dispatch(tipsPreventNextTime(preventTips));
+
     dispatch(
       toastsAdd({
         id: 'settings.saved',
@@ -78,6 +84,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
         timeout: 5000,
       }),
     );
+
     dispatch(setActiveModal(null));
   },
 };

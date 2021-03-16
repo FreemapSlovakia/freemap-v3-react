@@ -4,14 +4,19 @@
   }
 }
 
+.fm-search-dropdown .dropdown-long {
+  height: 300px;
+  max-height: calc(100vh - 130px);
+}
+
 .fm-search-dropdown {
   opacity: 0.8;
-  height: 300px;
-  max-height: calc(100vh - 110px);
   overflow: scroll;
+
   @media (min-width: 768px) {
     max-width: calc(100vw - 160px);
   }
+
   @media (max-width: 767px) {
     max-width: calc(100vw - 80px);
   }

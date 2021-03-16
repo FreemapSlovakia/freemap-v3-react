@@ -1,3 +1,3 @@
-Aktuálny pohľad mapy môžete zdieľať jednoduchým skopírovaním adresy URL, alebo ju môžete vložiť do vašej stránky.
+Aktuálny pohľad mapy môžete zdieľať jednoduchým skopírovaním adresy URL vášho prehliadača.
 
-Zdieľanie nájdete v menu _Ďalšie_ / _Export Mapy_ a _Vložiť do webstránky_.
+Rozšírené možnosti zdieľania nájdete v menu.

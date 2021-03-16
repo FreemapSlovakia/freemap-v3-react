@@ -1,9 +1,9 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -21,7 +21,7 @@ export function AboutModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
+          <FaRegAddressCard /> {m?.more.contacts}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -90,7 +90,7 @@ export function AboutModal({ show }: Props): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close}
+          <FaTimes /> {m?.general.close}
         </Button>
       </Modal.Footer>
     </Modal>

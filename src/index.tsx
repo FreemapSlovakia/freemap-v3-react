@@ -17,9 +17,9 @@ import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
 import { storage } from 'fm3/storage';
 import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
-import 'font-awesome/scss/font-awesome.scss';
 import 'fullscreen-api-polyfill';
 import { render } from 'react-dom';
+import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { assertType, setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
@@ -41,7 +41,9 @@ const store = createReduxStore();
 
 setErrorHandlerStore(store);
 
-loadAppState();
+if (window.self === window.top) {
+  loadAppState();
+}
 
 store.dispatch(authInit());
 
@@ -57,13 +59,28 @@ attachOsmLoginMessageHandler(store);
 
 store.dispatch(enableUpdatingUrl());
 
+// see https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html#comment-4634921967
+function setVh() {
+  document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+}
+
+window.addEventListener('resize', setVh);
+
+setVh();
+
 render(
   <Provider store={store}>
-    <MessagesProvider>
-      <ErrorCatcher>
-        <Main />
-      </ErrorCatcher>
-    </MessagesProvider>
+    <IconContext.Provider
+      value={{
+        style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
+      }}
+    >
+      <MessagesProvider>
+        <ErrorCatcher>
+          <Main />
+        </ErrorCatcher>
+      </MessagesProvider>
+    </IconContext.Provider>
   </Provider>,
   document.getElementById('app'),
 );
@@ -80,6 +97,11 @@ function loadAppState() {
   if (as) {
     try {
       appState = assertType<AppState>(JSON.parse(as));
+
+      // let's reset map to outdoor
+      if (!appState.version && appState.map) {
+        appState.map.mapType = 'X';
+      }
     } catch (e) {
       storage.removeItem('appState');
       throw e;

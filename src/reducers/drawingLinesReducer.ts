@@ -6,11 +6,7 @@ import {
   drawingLineUpdatePoint,
   Line,
 } from 'fm3/actions/drawingLineActions';
-import {
-  clearMap,
-  deleteFeature,
-  selectFeature,
-} from 'fm3/actions/mainActions';
+import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
@@ -77,17 +73,6 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     ...state,
     lines: action.payload.filter(linefilter),
   }))
-  .handleAction(deleteFeature, (state, action) =>
-    produce(state, (draft) => {
-      if (
-        (action.payload.type === 'draw-lines' ||
-          action.payload.type === 'draw-polygons') &&
-        action.payload.id !== undefined
-      ) {
-        draft.lines.splice(action.payload.id, 1);
-      }
-    }),
-  )
   .handleAction(mapsDataLoaded, (_state, action) => {
     return {
       lines: (action.payload.lines ?? initialState.lines).map((line) => ({

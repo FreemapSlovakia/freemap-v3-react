@@ -1,10 +1,10 @@
+import { Tool } from 'fm3/actions/mainActions';
 import { PickMode } from 'fm3/actions/routePlannerActions';
 import { RootState } from 'fm3/storeCreator';
 import { Track } from 'fm3/types/trackingTypes';
 import { createSelector } from 'reselect';
 
-export const toolSelector = (state: RootState): Selection['type'] | undefined =>
-  state.main.selection?.type;
+export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 
 export const mapOverlaysSelector = (state: RootState): string[] =>
   state.map.overlays;
@@ -12,8 +12,9 @@ export const mapOverlaysSelector = (state: RootState): string[] =>
 export const selectingHomeLocationSelector = (state: RootState): boolean =>
   state.main.selectingHomeLocation;
 
-export const routePlannerPickModeSelector = (state: RootState): PickMode =>
-  state.routePlanner.pickMode;
+export const routePlannerPickModeSelector = (
+  state: RootState,
+): PickMode | null => state.routePlanner.pickMode;
 
 export const galleryPickingPositionForIdSelector = (
   state: RootState,
@@ -43,7 +44,7 @@ export const showGalleryPickerSelector = createSelector(
     !selectingHomeLocation,
 );
 
-export const showGalleryViewer = (state: RootState): boolean =>
+export const showGalleryViewerSelector = (state: RootState): boolean =>
   state.gallery.pickingPositionForId === null &&
   state.gallery.activeImageId !== null &&
   !state.gallery.showPosition;
@@ -54,18 +55,20 @@ export const mouseCursorSelector = createSelector(
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   (selectingHomeLocation, tool, routePlannerPickMode, showGalleryPicker) => {
-    if (selectingHomeLocation) {
+    if (selectingHomeLocation || showGalleryPicker) {
       return 'crosshair';
     }
+
     switch (tool) {
       case 'draw-lines':
       case 'draw-polygons':
       case 'map-details':
-      case 'route-planner':
       case 'draw-points':
+        return 'crosshair';
+      case 'route-planner':
         return routePlannerPickMode ? 'crosshair' : 'auto';
       default:
-        return showGalleryPicker ? 'crosshair' : 'auto';
+        return 'auto';
     }
   },
 );
@@ -90,3 +93,15 @@ export const trackingTrackSelector = createSelector(
       ? trackingTracks.find((t) => t.id === trackingActiveTrackId)
       : undefined,
 );
+
+const embed = window.self !== window.top;
+
+export const selectingModeSelector = (state: RootState): boolean =>
+  !embed &&
+  (state.main.tool === null ||
+    state.main.tool === 'track-viewer' ||
+    state.main.tool === 'changesets' ||
+    state.main.tool === 'maps' ||
+    state.main.tool === 'objects' ||
+    (state.main.tool === 'route-planner' &&
+      state.routePlanner.pickMode === null));

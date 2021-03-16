@@ -12,8 +12,8 @@ import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useDropzone } from 'react-dropzone';
+import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = { show: boolean };
 
@@ -75,7 +75,7 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

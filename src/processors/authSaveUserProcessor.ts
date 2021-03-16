@@ -8,8 +8,10 @@ export const authSaveUserProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ getState }) => {
     const { user } = getState().auth;
+
     if (user !== prevUser) {
       prevUser = user;
+
       if (user) {
         storage.setItem('user', JSON.stringify(user));
       } else {

@@ -1,7 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
@@ -9,6 +8,7 @@ import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
 
@@ -94,7 +94,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
               title={m?.general.copyUrl}
               type="button"
             >
-              <FontAwesomeIcon icon="clipboard" />
+              <FaClipboard />
             </Button>
           </span>
         </OverlayTrigger>
@@ -111,7 +111,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           onClick={handleView}
           title={m?.tracking.devices.watch}
         >
-          <FontAwesomeIcon icon="eye" />
+          <FaRegEye />
         </Button>{' '}
         <Button
           size="sm"
@@ -119,7 +119,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           onClick={handleModify}
           title={m?.general.modify}
         >
-          <FontAwesomeIcon icon="edit" />
+          <FaEdit />
         </Button>{' '}
         <Button
           variant="danger"
@@ -128,7 +128,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           onClick={handleDelete}
           title={m?.general.delete}
         >
-          <FontAwesomeIcon icon="close" />
+          <FaTimes />
         </Button>
       </td>
     </tr>

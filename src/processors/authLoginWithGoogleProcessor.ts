@@ -16,6 +16,7 @@ export const authLoginWithGoogleProcessor: Processor = {
       const auth2 = gapi.auth2.getAuthInstance();
 
       const googleUser = await auth2.signIn();
+
       const idToken = googleUser.getAuthResponse().id_token;
 
       const { data } = await httpRequest({

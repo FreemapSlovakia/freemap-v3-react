@@ -5,6 +5,12 @@ import {
   point,
 } from '@turf/helpers';
 import {
+  clearMap,
+  deleteFeature,
+  selectFeature,
+  setTool,
+} from 'fm3/actions/mainActions';
+import {
   mapDetailsSetTrackInfoPoints,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
@@ -16,6 +22,15 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
+
+const cancelType = [
+  getType(clearMap),
+  getType(selectFeature),
+  getType(deleteFeature),
+  getType(setTool),
+
+  getType(mapDetailsSetUserSelectedPosition),
+];
 
 interface OverpassNodeElement extends LatLon {
   type: 'node';
@@ -45,6 +60,7 @@ export const mapDetailsProcessor: Processor = {
   errorKey: 'mapDetails.fetchingError',
   handle: async ({ dispatch, getState }) => {
     const { subtool, userSelectedLat, userSelectedLon } = getState().mapDetails;
+
     if (subtool !== 'track-info') {
       return;
     }
@@ -144,7 +160,7 @@ export const mapDetailsProcessor: Processor = {
             id: 'mapDetails.trackInfo.detail',
             messageKey: 'mapDetails.detail',
             messageParams: { element },
-            cancelType: getType(mapDetailsSetUserSelectedPosition),
+            cancelType,
             style: 'info',
           }),
         );
@@ -164,7 +180,7 @@ export const mapDetailsProcessor: Processor = {
         toastsAdd({
           id: 'mapDetails.trackInfo.detail',
           messageKey: 'mapDetails.notFound',
-          cancelType: getType(mapDetailsSetUserSelectedPosition),
+          cancelType,
           timeout: 5000,
           style: 'info',
         }),

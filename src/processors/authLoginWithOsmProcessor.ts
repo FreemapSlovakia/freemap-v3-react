@@ -49,6 +49,7 @@ export const authLoginWithOsmProcessor: Processor = {
       w.location.href = assertType<LoginResponse>(data).redirect;
     } catch (e) {
       w.close();
+
       throw e;
     }
   },

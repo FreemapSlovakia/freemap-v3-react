@@ -114,21 +114,6 @@ export const processorMiddleware: Middleware<
 
   const result = next(a);
 
-  let promise: Promise<unknown>;
-
-  const loader = lazy[a.type];
-
-  if (loader) {
-    delete lazy[a.type];
-
-    promise = loader().then(({ default: processor }) => {
-      processors.push(processor);
-      return Promise.all(runProcessors());
-    });
-  } else {
-    promise = Promise.all(runProcessors());
-  }
-
   function runProcessors() {
     const promises: Promise<void>[] = [];
 
@@ -145,37 +130,59 @@ export const processorMiddleware: Middleware<
             actionType.some((ac) => isActionOf(ac, a))) ||
           isActionOf(actionType, a))
       ) {
-        const p = handle({ getState, dispatch, action: a, prevState });
+        const handleError = (err: unknown) => {
+          if (axios.isCancel(err)) {
+            console.log('Canceled: ' + errorKey);
+          } else {
+            console.log('Error key: ' + errorKey);
 
-        if (p) {
+            console.error(err);
+
+            dispatch(
+              toastsAdd({
+                id: id ?? Math.random().toString(36).slice(2),
+                messageKey: errorKey,
+                messageParams: err instanceof Error ? { err: err.message } : {},
+
+                style: 'danger',
+              }),
+            );
+          }
+        };
+
+        let promise;
+
+        try {
+          promise = handle({ getState, dispatch, action: a, prevState });
+        } catch (err) {
+          handleError(err);
+        }
+
+        if (promise) {
           promises.push(
-            errorKey === undefined
-              ? p
-              : p.catch((err) => {
-                  if (axios.isCancel(err)) {
-                    console.log('Canceled: ' + errorKey);
-                  } else {
-                    console.log('Error key: ' + errorKey);
-                    console.error(err);
-
-                    dispatch(
-                      toastsAdd({
-                        id: id ?? Math.random().toString(36).slice(2),
-                        messageKey: errorKey,
-                        messageParams:
-                          err instanceof Error ? { err: err.message } : {},
-
-                        style: 'danger',
-                      }),
-                    );
-                  }
-                }),
+            errorKey === undefined ? promise : promise.catch(handleError),
           );
         }
       }
     }
 
     return promises;
+  }
+
+  let promise: Promise<unknown>;
+
+  const loader = lazy[a.type];
+
+  if (loader) {
+    delete lazy[a.type];
+
+    promise = loader().then(({ default: processor }) => {
+      processors.push(processor);
+
+      return Promise.all(runProcessors());
+    });
+  } else {
+    promise = Promise.all(runProcessors());
   }
 
   let isDone = false;

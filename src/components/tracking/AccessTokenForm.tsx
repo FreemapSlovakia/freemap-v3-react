@@ -1,6 +1,5 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
@@ -11,6 +10,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
+import { FaBullseye } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 export function AccessTokenForm(): ReactElement {
@@ -67,7 +67,7 @@ export function AccessTokenForm(): ReactElement {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />{' '}
+          <FaBullseye />{' '}
           {accessToken
             ? m?.tracking.accessTokens.modifyTitle({
                 token: accessToken.token,

@@ -3,13 +3,12 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
@@ -36,9 +35,15 @@ module.exports = {
       fm3: path.resolve(__dirname, 'src'),
       pica: 'pica/dist/pica.js',
     },
+    fallback: {
+      util: require.resolve('util/'), // for typescript-is avter upgrading webpack from 4 to 5
+    },
+  },
+  optimization: {
+    // moduleIds: 'deterministic',
   },
   // more info: https://webpack.js.org/configuration/devtool/
-  devtool: prod ? 'source-map' : 'cheap-module-eval-source-map',
+  devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
       // see https://github.com/Leaflet/Leaflet/issues/7403
@@ -94,7 +99,18 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          prod ? MiniCssExtractPlugin.loader : 'style-loader',
+          prod
+            ? {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + '/'
+                    );
+                  },
+                },
+              }
+            : 'style-loader',
           'css-loader',
           'sass-loader',
         ],
@@ -102,7 +118,18 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          prod ? MiniCssExtractPlugin.loader : 'style-loader',
+          prod
+            ? {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + '/'
+                    );
+                  },
+                },
+              }
+            : 'style-loader',
           'css-loader',
         ],
       },
@@ -164,9 +191,7 @@ module.exports = {
         ),
       },
     }),
-    new WebpackCleanupPlugin({
-      exclude: ['.git/**'],
-    }),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: '!!ejs-loader?esModule=false!src/index.html',
       inject: false,
@@ -177,34 +202,10 @@ module.exports = {
       maximumFileSizeToCacheInBytes: 1,
       exclude: [/.*/],
     }),
-    new FaviconsWebpackPlugin({
-      logo: './images/logo.jpg',
-      inject: true,
-      prefix: './',
-      favicons: {
-        appName: 'Freemap Slovakia', // Your application's name. `string`
-        appShortName: 'Freemap', // Your application's short_name. `string`. Optional. If not set, appName will be used
-        // Your application's description. `string`
-        appDescription:
-          'Freemap je voľne dostupná online mapa Slovenska založená na dátach z OpenStreetMap',
-        developerName: 'Freemap Slovakia', // Your (or your developer's) name. `string`
-        developerURL: 'https://github.com/FreemapSlovakia/', // Your (or your developer's) URL. `string`
-        dir: 'auto', // Primary text direction for name, short_name, and description
-        lang: 'en-US', // Primary language for name and short_name
-        background: '#ffffff', // Background colour for flattened icons. `string`
-        theme_color: '#ffffff', // Theme color user for example in Android's task switcher. `string`
-        display: 'fullscreen', // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
-        appleStatusBarStyle: 'black-translucent', // Color for appleStatusBarStyle : Not implemented (black-translucent | default | black)
-        orientation: 'any', // Default orientation: "any", "natural", "portrait" or "landscape". `string`
-        icons: {
-          favicons: false, // we have separate icno for favicon
-          android: false, // we generate manifest with WebpackPwaManifest
-          coast: false,
-          yandex: false,
-        },
-      },
-    }),
     new WebpackPwaManifest({
+      inject: true,
+      ios: true,
+      publicPath: '/',
       name: 'Freemap Slovakia',
       short_name: 'Freemap',
       description:
@@ -212,6 +213,9 @@ module.exports = {
       background_color: '#ffffff',
       theme_color: '#ffffff',
       'theme-color': '#ffffff',
+      display: 'fullscreen',
+      lang: 'en-US',
+      dir: 'auto',
       icons: [
         {
           src: path.resolve('src/images/freemap-logo-small.png'),
@@ -239,9 +243,9 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'static/**',
+          from: 'static/**/*',
+          to: '[name][ext]',
           globOptions: { dot: true },
-          flatten: true,
         },
       ],
     }),
@@ -259,7 +263,6 @@ module.exports = {
           preset: ['default', { discardComments: { removeAll: true } }],
         },
       }),
-    new webpack.HashedModuleIdsPlugin(),
     new webpack.ContextReplacementPlugin(
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,

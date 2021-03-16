@@ -105,7 +105,9 @@ async function resolveElevationProfilePointsViaApi(
   });
 
   let climbUp = 0;
+
   let climbDown = 0;
+
   let prevEle: number | undefined;
 
   assertType<number[]>(data).forEach((ele: number, i: number) => {
@@ -120,6 +122,7 @@ async function resolveElevationProfilePointsViaApi(
 
     // TODO following are computed data, should not go to store
     Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
+
     prevEle = ele;
   });
 

@@ -15,6 +15,7 @@ export const authLogoutProcessor: Processor = {
     });
 
     dispatch(authLogout());
+
     dispatch(
       toastsAdd({
         id: 'login',

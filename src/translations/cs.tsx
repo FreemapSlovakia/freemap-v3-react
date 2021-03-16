@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('cs', {
@@ -78,6 +78,15 @@ const cs: Messages = {
     deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
     deleted: 'Smazané.',
     saved: 'Uložené.',
+    visual: 'Zobrazení',
+  },
+
+  selections: {
+    objects: 'Objekt (POI)',
+    drawPoints: 'Bod',
+    drawLines: 'Čára',
+    drawPolygons: 'Polygón',
+    tracking: 'Sledování',
   },
 
   tools: {
@@ -87,13 +96,16 @@ const cs: Messages = {
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
     measurement: 'Kreslení a měření',
+    drawPoints: 'Kreslení bodů',
+    drawLines: 'Kreslení čar',
+    drawPolygons: 'Kreslení polygonů',
     trackViewer: 'Prohlížeč tras (GPX)',
     changesets: 'Změny mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
     maps: (
       <>
-        Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
+        Moje mapy <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -320,8 +332,6 @@ const cs: Messages = {
     gpxExport: 'Exportovat do GPX',
     mapExports: 'Mapa pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
-    reportMapError: 'Nahlásit chybu zobrazení v mapě',
-    reportAppError: 'Nahlásit chybu v portálu',
     supportUs: 'Podpořit Freemap',
     help: 'Pomoc',
     back: 'Zpět',
@@ -355,7 +365,8 @@ const cs: Messages = {
 
   gallery: {
     filter: 'Filtr',
-    allPhotos: 'Všechny fotky',
+    showPhotosFrom: 'Prohlížet fotky',
+    showLayer: 'Zobrazit vrstvu',
     upload: 'Nahrát',
     f: {
       firstUploaded: 'od první nahrané',
@@ -416,8 +427,6 @@ const cs: Messages = {
     locationPicking: {
       title: 'Zvolte pozici fotografie',
     },
-    layerHint:
-      'Pro zapnutí vrstvy s fotografiemi zvolte Fotografie z nabídky vrstev (nebo stiskněte klávesy Shift + F).',
     deletingError: ({ err }) => `Nastala chyba při mazání obrázku: ${err}`,
     tagsFetchingError: ({ err }) => `Nastala chyba při nahrávání tagů: ${err}`,
     pictureFetchingError: ({ err }) =>
@@ -925,6 +934,7 @@ const cs: Messages = {
     fetchingError: ({ err }) =>
       `Nastala chyba při zpracování výsledků vyhledávání: ${err}`,
     buttonTitle: 'Hledat',
+    placeholder: 'Hledat v mapě',
   },
 
   embed: {
@@ -1194,8 +1204,7 @@ const cs: Messages = {
         <>
           <p>
             Spravujte svá zařízení, aby vaši polohu mohli sledovat lidé, kterým
-            dáte sledovací token (ten lze vygenerovat tlačítkem{' '}
-            <FontAwesomeIcon icon="key" />
+            dáte sledovací token (ten lze vygenerovat tlačítkem <FaKey />
             ).
           </p>
           <hr />
@@ -1348,7 +1357,14 @@ const cs: Messages = {
               >
                 © přispěvatelé OpenStreetMap
               </Alert.Link>
-              , © SRTM
+              {', SRTM, '}
+              <Alert.Link
+                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LLS: ÚGKK SR
+              </Alert.Link>
             </em>
           </li>
         </ul>{' '}

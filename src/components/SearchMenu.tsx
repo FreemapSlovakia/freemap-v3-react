@@ -1,4 +1,4 @@
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
@@ -8,6 +8,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/search.scss';
@@ -31,8 +32,9 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SafeAnchor from 'react-bootstrap/SafeAnchor';
+import { FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
+import { useDebouncedCallback } from 'use-debounce';
 
 type Props = {
   hidden?: boolean;
@@ -74,24 +76,36 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const callback = useDebouncedCallback((query: string) => {
+    if (query.length < 3) {
+      if (results.length > 0) {
+        dispatch(searchSetResults([]));
+      }
+    } else {
+      dispatch(searchSetQuery({ query }));
+    }
+  }, 1000);
+
+  const flush = callback.flush;
+
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      dispatch(searchSetQuery({ query: value }));
+      flush();
     },
-    [dispatch, value],
+    [flush],
   );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(e.currentTarget.value);
+      const { value } = e.currentTarget;
 
-      if (results.length > 0) {
-        dispatch(searchSetResults([]));
-      }
+      setValue(value);
+
+      callback(value);
     },
-    [setValue, dispatch, results],
+    [callback],
   );
 
   const handleSelect = useCallback(
@@ -168,8 +182,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const handleClearClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();
+
       dispatch(searchSelectResult(null));
+
       dispatch(searchSetResults([]));
+
       setValue('');
     },
     [dispatch],
@@ -222,27 +239,32 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   };
 
+  const sc = useScrollClasses('vertical');
+
   return (
-    <span style={{ display: hidden ? 'none' : 'inline' }}>
-      <Form inline onSubmit={handleSearch}>
+    <>
+      <Form
+        inline
+        onSubmit={handleSearch}
+        style={{ display: hidden ? 'none' : '' }}
+      >
         <Dropdown
           as={ButtonGroup}
-          // className="dropdown-long"
           show={open}
           onSelect={handleSelect}
           onToggle={handleToggle}
         >
           <Dropdown.Toggle as={HideArrow}>
-            <InputGroup>
+            <InputGroup className="flex-nowrap">
               <FormControl
                 className="fm-search-input"
                 onChange={handleChange}
                 value={value}
-                placeholder="Brusno"
+                placeholder={m?.search.placeholder}
                 ref={inputRef}
                 onFocus={handleInputFocus}
               />
-              <InputGroup.Append style={{ width: 'auto' }}>
+              <InputGroup.Append className="w-auto">
                 {!!selectedResult && (
                   <Button
                     variant="secondary"
@@ -250,7 +272,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     title={m?.general.clear}
                     onClick={handleClearClick}
                   >
-                    <FontAwesomeIcon icon="times" />
+                    <FaTimes />
                   </Button>
                 )}
                 <Button
@@ -259,40 +281,49 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   title={m?.search.buttonTitle}
                   disabled={!value}
                 >
-                  <FontAwesomeIcon icon="search" />
+                  <FaSearch />
                 </Button>
               </InputGroup.Append>
             </InputGroup>
           </Dropdown.Toggle>
-          <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
-            {results.map((result) => (
-              <Dropdown.Item
-                key={result.id}
-                eventKey={String(result.id)}
-                active={!!selectedResult && result.id === selectedResult.id}
-                as={HoverableMenuItem}
-              >
-                <span data-id={result.id}>
-                  {result.label}
-                  <br />
-                  {!!(result.class && result.type) && (
-                    <small>
-                      {result.class}={result.type}
-                    </small>
-                  )}
-                </span>
-              </Dropdown.Item>
-            ))}
+          <Dropdown.Menu
+            key={searchSeq}
+            className="fm-search-dropdown"
+            popperConfig={{
+              strategy: 'fixed',
+            }}
+          >
+            <div className="dropdown-long" ref={sc}>
+              <div />
+              {results.map((result) => (
+                <Dropdown.Item
+                  key={result.id}
+                  eventKey={String(result.id)}
+                  active={!!selectedResult && result.id === selectedResult.id}
+                  as={HoverableMenuItem}
+                >
+                  <span data-id={result.id}>
+                    {result.label}
+                    <br />
+                    {!!(result.class && result.type) && (
+                      <small>
+                        {result.class}={result.type}
+                      </small>
+                    )}
+                  </span>
+                </Dropdown.Item>
+              ))}
+            </div>
           </Dropdown.Menu>
         </Dropdown>
-      </Form>{' '}
-      {selectedResult && !embed && (
-        <ButtonGroup>
+      </Form>
+      {selectedResult && !embed && !hidden && (
+        <ButtonGroup className="ml-1">
           <Button
             variant="secondary"
             title={m?.search.routeFrom}
             onClick={() => {
-              dispatch(selectFeature({ type: 'route-planner' }));
+              dispatch(setTool('route-planner'));
 
               dispatch(
                 routePlannerSetStart({
@@ -304,13 +335,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               );
             }}
           >
-            <FontAwesomeIcon icon="play" style={{ color: '#32CD32' }} />
+            <FaPlay color="#32CD32" />
           </Button>
           <Button
             variant="secondary"
             title={m?.search.routeTo}
             onClick={() => {
-              dispatch(selectFeature({ type: 'route-planner' }));
+              dispatch(setTool('route-planner'));
 
               dispatch(
                 routePlannerSetFinish({
@@ -322,10 +353,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               );
             }}
           >
-            <FontAwesomeIcon icon="stop" style={{ color: '#FF6347' }} />
+            <FaStop color="#FF6347" />
           </Button>
         </ButtonGroup>
       )}
-    </span>
+    </>
   );
 }

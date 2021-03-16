@@ -1,21 +1,22 @@
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const routePlannerSetupTransportTypeProcessor: Processor = {
-  actionCreator: selectFeature,
+  actionCreator: setTool,
   handle: async ({ dispatch, getState }) => {
     const {
-      main: { selection },
+      main: { tool },
       routePlanner: { start, finish },
     } = getState();
 
-    if (selection?.type === 'route-planner' && !(start && finish)) {
+    if (tool === 'route-planner' && !(start && finish)) {
       const { mapType } = getState().map;
+
       dispatch(
         routePlannerSetTransportType(
           ['T', 'p', 'X'].includes(mapType)
-            ? 'foot'
+            ? 'foot-osm'
             : mapType === 'K'
             ? 'nordic'
             : ['C', 'M'].includes(mapType)

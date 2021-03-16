@@ -5,11 +5,16 @@ import { AppState } from 'fm3/types/common';
 export const storageProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ getState }) => {
+    if (window.self !== window.top) {
+      return;
+    }
+
     const state = getState();
 
     const mapState = state.map;
 
     const appState: AppState = {
+      version: 1,
       main: {
         homeLocation: state.main.homeLocation,
         expertMode: state.main.expertMode,

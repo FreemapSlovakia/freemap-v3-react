@@ -3,11 +3,10 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import refModals from 'fm3/refModals.json';
-import allTips from 'fm3/tips/index.json';
+import { tips as allTips } from 'fm3/tips';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
-
-const tipKeys = allTips.map(([key]) => key);
+import { is } from 'typescript-is';
 
 let lastActionType: string | undefined;
 
@@ -71,6 +70,7 @@ export const urlProcessor: Processor = {
       trackViewer.osmWayId,
       trackViewer.trackUID,
       maps.id,
+      main.tool,
     ];
 
     if (
@@ -90,8 +90,8 @@ export const urlProcessor: Processor = {
       ],
     ];
 
-    if (main.selection?.type) {
-      queryParts.push(['tool', main.selection?.type]);
+    if (main.tool) {
+      queryParts.push(['tool', main.tool]);
     }
 
     const isMap = maps.id !== undefined;
@@ -243,7 +243,11 @@ export const urlProcessor: Processor = {
       historyParts.push(['show', 'login']);
     }
 
-    if (main.activeModal === 'tips' && tips.tip && tipKeys.includes(tips.tip)) {
+    if (
+      main.activeModal === 'tips' &&
+      tips.tip &&
+      is<typeof allTips[number][0]>(tips.tip)
+    ) {
       historyParts.push(['tip', tips.tip]);
     }
 

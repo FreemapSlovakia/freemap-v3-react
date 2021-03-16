@@ -15,8 +15,8 @@ import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = { show: boolean };
 
@@ -27,11 +27,9 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     const { selection } = state.main;
 
     return selection?.type === 'draw-points' && selection.id !== undefined
-      ? state.drawingPoints.points[selection.id]?.label ?? '???'
-      : (selection?.type === 'draw-lines' ||
-          selection?.type === 'draw-polygons') &&
-        selection.id !== undefined
-      ? state.drawingLines.lines[selection.id]?.label ?? '???'
+      ? state.drawingPoints.points[selection.id]?.label ?? ''
+      : selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? state.drawingLines.lines[selection.id]?.label ?? ''
       : '???';
   });
 
@@ -81,10 +79,10 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit" variant="info">
-            <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
+            <FaCheck /> {m?.general.save}
           </Button>
           <Button variant="dark" type="button" onClick={close}>
-            <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>

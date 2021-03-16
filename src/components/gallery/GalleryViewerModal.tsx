@@ -14,7 +14,6 @@ import {
   gallerySubmitStars,
 } from 'fm3/actions/galleryActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   GalleryEditForm,
   PictureModel,
@@ -38,6 +37,15 @@ import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import {
+  FaExternalLinkAlt,
+  FaPencilAlt,
+  FaRegDotCircle,
+  FaSave,
+  FaTimes,
+  FaTrash,
+} from 'react-icons/fa';
+import { RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
@@ -71,8 +79,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const allTags = useSelector((state: RootState) => state.gallery.tags);
 
   const language = useSelector((state: RootState) => state.l10n.language);
-
-  const expertMode = useSelector((state: RootState) => state.main.expertMode);
 
   const [loading, setLoading] = useState(true);
 
@@ -234,7 +240,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               as="select"
               value={index}
               onChange={handleIndexChange}
-              style={{ width: 'auto', display: 'inline-block' }}
+              className="w-auto d-inline-block"
             >
               {imageIds.map((_, i) => (
                 <option key={i} value={i}>
@@ -374,7 +380,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     onModelChange={handleEditModelChange}
                   />
                   <Button variant="primary" type="submit">
-                    <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
+                    <FaSave /> {m?.general.save}
                   </Button>
                 </form>
               )}
@@ -445,7 +451,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               }}
               active={!!editModel}
             >
-              <FontAwesomeIcon icon="pencil" />
+              <FaPencilAlt />
               <span className="d-none d-sm-inline">
                 {' '}
                 {m?.general.modify} <kbd>M</kbd>
@@ -475,7 +481,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               }}
               variant="danger"
             >
-              <FontAwesomeIcon icon="trash" />
+              <FaTrash />
               <span className="d-none d-sm-inline"> {m?.general.delete}</span>
             </Button>
           </>
@@ -486,7 +492,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             dispatch(galleryShowOnTheMap());
           }}
         >
-          <FontAwesomeIcon icon="dot-circle-o" />
+          <FaRegDotCircle />
           <span className="d-none d-md-inline">
             {' '}
             {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
@@ -494,7 +500,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         </Button>
         {'exitFullscreen' in document && (
           <Button variant="secondary" onClick={handleFullscreen}>
-            <FontAwesomeIcon icon="arrows-alt" />
+            <RiFullscreenLine />
             <span className="d-none d-md-inline"> {m?.general.fullscreen}</span>
           </Button>
         )}
@@ -504,14 +510,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             lon={lon}
             mapType={'X'}
             zoom={14}
-            expertMode={expertMode}
             placement="top"
             includePoint
             pointTitle={title ?? undefined}
             pointDescription={description ?? undefined}
             url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
           >
-            <FontAwesomeIcon icon="external-link" />
+            <FaExternalLinkAlt />
             <span className="d-none d-md-inline">
               {' '}
               {m?.gallery.viewer.openInNewWindow}
@@ -519,7 +524,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           </OpenInExternalAppMenuButton>
         )}
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" />
+          <FaTimes />
           <span className="d-none d-md-inline">
             {' '}
             {m?.general.close} <kbd>Esc</kbd>

@@ -12,16 +12,25 @@ import {
   drawingChangeLabel,
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
-import { convertToDrawing } from 'fm3/actions/mainActions';
+import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import produce from 'immer';
 import { isActionOf } from 'typesafe-actions';
-import { cleanState as routePlannerCleanState } from './routePlannerReducer';
-import { cleanState as trackViewerCleanState } from './trackViewerReducer';
+import {
+  cleanState as routePlannerCleanState,
+  initialState as routePlannerInitialState,
+} from './routePlannerReducer';
+import {
+  cleanState as trackViewerCleanState,
+  initialState as trackViewerInitialState,
+} from './trackViewerReducer';
 
-export function globalReducer(state: RootState, action: RootAction): RootState {
+export function preGlobalReducer(
+  state: RootState,
+  action: RootAction,
+): RootState {
   if (isActionOf(convertToDrawing, action)) {
-    if (state.main.selection?.type === 'route-planner') {
+    if (state.main.tool === 'route-planner') {
       return produce(state, (draft) => {
         const alt =
           draft.routePlanner.alternatives[
@@ -56,27 +65,40 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
         });
 
         draft.main.selection = {
-          type: 'draw-lines',
+          type: 'draw-line-poly',
           id: draft.drawingLines.lines.length - 1,
         };
 
         Object.assign(draft.routePlanner, routePlannerCleanState);
       });
     } else if (state.main.selection?.type === 'objects') {
+      const { selection } = state.main;
+
       return produce(state, (draft) => {
-        for (const object of draft.objects.objects) {
+        const object = draft.objects.objects.find(
+          (object) => object.id === selection.id,
+        );
+
+        if (object) {
           draft.drawingPoints.points.push({
             lat: object.lat,
             lon: object.lon,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
           });
+
+          draft.drawingPoints.change++;
+
+          draft.objects.objects = draft.objects.objects.filter(
+            (object) => object.id !== selection.id,
+          );
+
+          draft.main.selection = {
+            type: 'draw-points',
+            id: draft.drawingPoints.points.length - 1,
+          };
         }
-
-        draft.drawingPoints.change++;
-
-        draft.objects.objects = [];
       });
-    } else if (state.main.selection?.type === 'track-viewer') {
+    } else if (state.main.tool === 'track-viewer') {
       return produce(state, (draft) => {
         if (!draft.trackViewer.trackGeojson) {
           return;
@@ -126,15 +148,106 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
         Object.assign(draft.trackViewer, trackViewerCleanState);
       });
     }
-  } else if (isActionOf(drawingLineAddPoint, action)) {
+  } else if (isActionOf(deleteFeature, action)) {
+    if (
+      state.main.tool === 'track-viewer' ||
+      state.main.tool === 'map-details'
+    ) {
+      const { trackViewer } = state;
+
+      return {
+        ...state,
+        trackViewer: {
+          ...trackViewerInitialState,
+          colorizeTrackBy: trackViewer.colorizeTrackBy,
+          eleSmoothingFactor: trackViewer.eleSmoothingFactor,
+        },
+      };
+    } else if (state.main.selection?.type === 'objects') {
+      const {
+        objects,
+        main: { selection },
+      } = state;
+
+      return {
+        ...state,
+        objects: {
+          ...objects,
+          objects: objects.objects.filter(
+            (object) => object.id !== selection.id,
+          ),
+        },
+      };
+    } else if (state.main.tool === 'route-planner') {
+      const { routePlanner } = state;
+
+      return {
+        ...state,
+        routePlanner: {
+          ...routePlannerInitialState,
+          transportType: routePlanner.transportType,
+          mode: routePlanner.mode,
+          milestones: routePlanner.milestones,
+          pickMode: 'start',
+        },
+      };
+    } else if (state.main.selection?.type === 'draw-line-poly') {
+      const {
+        drawingLines,
+        main: { selection },
+      } = state;
+
+      return {
+        ...state,
+        drawingLines: {
+          ...drawingLines,
+          lines: drawingLines.lines.filter((_, i) => i !== selection.id),
+        },
+      };
+    } else if (state.main.selection?.type === 'draw-points') {
+      const {
+        drawingPoints,
+        main: { selection },
+      } = state;
+
+      return {
+        ...state,
+        drawingPoints: {
+          ...drawingPoints,
+          points: drawingPoints.points.filter((_, i) => i !== selection.id),
+        },
+      };
+    } else if (state.main.selection?.type === 'tracking') {
+      const {
+        tracking,
+        main: { selection },
+      } = state;
+
+      return {
+        ...state,
+        tracking: {
+          ...tracking,
+          trackedDevices: tracking.trackedDevices.filter(
+            (td) => td.id !== selection.id,
+          ),
+        },
+      };
+    }
+  }
+
+  return state;
+}
+
+export function postGlobalReducer(
+  state: RootState,
+  action: RootAction,
+): RootState {
+  if (isActionOf(drawingLineAddPoint, action)) {
     return produce(state, (draft) => {
       const index = action.payload.index ?? draft.drawingLines.lines.length - 1;
 
       draft.main.selection = {
-        type:
-          draft.drawingLines.lines[index].type === 'polygon'
-            ? 'draw-polygons'
-            : 'draw-lines',
+        type: 'draw-line-poly',
         id: index,
       };
     });
@@ -143,10 +256,7 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
   ) {
     return produce(state, (draft) => {
       draft.main.selection = {
-        type:
-          draft.drawingLines.lines[action.payload.index].type === 'polygon'
-            ? 'draw-polygons'
-            : 'draw-lines',
+        type: 'draw-line-poly',
         id: action.payload.index,
       };
     });
@@ -160,11 +270,7 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
   } else if (isActionOf(drawingChangeLabel, action)) {
     return produce(state, (draft) => {
       const selection = draft.main.selection;
-      if (
-        (selection?.type === 'draw-polygons' ||
-          selection?.type === 'draw-lines') &&
-        selection?.id !== undefined
-      ) {
+      if (selection?.type === 'draw-line-poly' && selection?.id !== undefined) {
         draft.drawingLines.lines[selection.id].label = action.payload.label;
       } else if (
         selection?.type === 'draw-points' &&

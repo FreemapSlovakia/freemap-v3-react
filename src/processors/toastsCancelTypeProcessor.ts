@@ -21,14 +21,18 @@ function matches(
   if (test === undefined) {
     return false;
   }
+
   if (typeof test === 'string') {
     return value === test;
   }
+
   if (Array.isArray(test)) {
     return test.some((p) => matches(value, p));
   }
+
   if (test instanceof RegExp) {
     return test.test(value);
   }
+
   throw new Error('unsupported test value');
 }

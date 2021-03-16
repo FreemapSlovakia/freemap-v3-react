@@ -1,6 +1,7 @@
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
-import { selectFeature, Selection, setAppState } from 'fm3/actions/mainActions';
+import { gallerySetFilter } from 'fm3/actions/galleryActions';
+import { Selection, setAppState } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
   mapSetOverlayOpacity,
@@ -41,22 +42,35 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     ...state,
     overlayPaneOpacity: action.payload,
   }))
+  .handleAction(gallerySetFilter, (state) => {
+    return {
+      ...state,
+      overlays: state.overlays.includes('I')
+        ? state.overlays
+        : [...state.overlays, 'I'],
+    };
+  })
   .handleAction(mapRefocus, (state, action) => {
     const newState: MapState = { ...state };
+
     const { zoom, lat, lon, mapType, overlays } = action.payload;
 
     if (zoom) {
       newState.zoom = zoom;
     }
+
     if (lat !== undefined) {
       newState.lat = lat;
     }
+
     if (lon !== undefined) {
       newState.lon = lon;
     }
+
     if (mapType) {
       newState.mapType = mapType;
     }
+
     if (overlays) {
       newState.overlays = overlays;
     }
@@ -72,6 +86,7 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
   })
   .handleAction(authSetUser, (state, action) => {
     const settings = action.payload && action.payload.settings;
+
     return settings
       ? {
           ...state,
@@ -85,30 +100,6 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
               : state.overlayPaneOpacity,
         }
       : state;
-  })
-  .handleAction(selectFeature, (state, action) => {
-    const currentSelection = state.selection;
-    const nextSelection = action.payload;
-    let overlays = [...state.overlays];
-    let removeGalleryOverlayOnGalleryToolQuit = false;
-
-    if (nextSelection?.type === 'photos' && !overlays.includes('I')) {
-      overlays.push('I');
-      removeGalleryOverlayOnGalleryToolQuit = true;
-    } else if (
-      currentSelection?.type === 'photos' &&
-      nextSelection?.type !== 'photos' &&
-      state.removeGalleryOverlayOnGalleryToolQuit
-    ) {
-      overlays = overlays.filter((o) => o !== 'I');
-    }
-
-    return {
-      ...state,
-      overlays,
-      selection: nextSelection,
-      removeGalleryOverlayOnGalleryToolQuit,
-    };
   })
   .handleAction(mapsDataLoaded, (state, { payload: { map } }) => ({
     ...state,

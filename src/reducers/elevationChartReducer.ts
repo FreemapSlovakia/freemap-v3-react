@@ -12,7 +12,7 @@ import {
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { selectFeature, setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
@@ -56,6 +56,7 @@ export const elevationChartReducer = createReducer<
     ...state,
     elevationProfilePoints: action.payload,
   }))
+  .handleAction(setTool, setInitialState)
   .handleAction(selectFeature, setInitialState)
   .handleAction(routePlannerSetResult, setInitialState)
   .handleAction(drawingLineAddPoint, setInitialState)

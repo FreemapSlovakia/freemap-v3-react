@@ -1,10 +1,10 @@
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import { FaChevronLeft } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 export function GalleryShowPositionMenu(): ReactElement | null {
@@ -38,9 +38,9 @@ export function GalleryShowPositionMenu(): ReactElement | null {
   }, [close, showPosition]);
 
   return !showPosition ? null : (
-    <Card className="fm-toolbar">
+    <Card className="fm-toolbar mx-2 mt-2">
       <Button onClick={close}>
-        <FontAwesomeIcon icon="chevron-left" />
+        <FaChevronLeft />
         <span className="d-none d-sm-inline"> {m?.general.back}</span>{' '}
         <kbd>Esc</kbd>
       </Button>

@@ -47,7 +47,7 @@ export function RoadDetails({ way }: Props): ReactElement {
         <dd>{m?.roadDetails.surfaces[surface] ?? surface}</dd>
         {isBicycleMap && <dt>{m?.roadDetails.suitableBikeType}</dt>}
         {isBicycleMap && (
-          <dd style={{ whiteSpace: 'nowrap' }}>
+          <dd className="text-nowrap">
             {m?.roadDetails.bicycleTypes[bicycleType]}
           </dd>
         )}

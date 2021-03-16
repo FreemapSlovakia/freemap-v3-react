@@ -6,9 +6,9 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import { FaQuestion, FaRegCopyright } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Attribution } from './Attribution';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 export function Copyright(): ReactElement {
   const m = useMessages();
@@ -31,10 +31,7 @@ export function Copyright(): ReactElement {
   );
 
   return (
-    <Card
-      className="fm-toolbar"
-      style={{ float: 'right', marginRight: '10px' }}
-    >
+    <Card className="fm-toolbar mr-2 mb-2">
       {showLegendButton && (
         <Button
           className="mr-1"
@@ -42,7 +39,7 @@ export function Copyright(): ReactElement {
           title={m?.more.mapLegend}
           onClick={() => dispatch(setActiveModal('legend'))}
         >
-          <FontAwesomeIcon icon="question" />
+          <FaQuestion />
         </Button>
       )}
       <OverlayTrigger
@@ -64,7 +61,7 @@ export function Copyright(): ReactElement {
         }
       >
         <Button variant="secondary" title={m?.main.copyright}>
-          <FontAwesomeIcon icon="copyright" />
+          <FaRegCopyright />
         </Button>
       </OverlayTrigger>
     </Card>

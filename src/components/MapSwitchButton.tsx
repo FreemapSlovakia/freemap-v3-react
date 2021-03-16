@@ -1,5 +1,6 @@
+import { galleryShowFilter } from 'fm3/actions/galleryActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
@@ -9,12 +10,28 @@ import {
   OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { RootState } from 'fm3/storeCreator';
-import { MouseEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import {
+  MouseEvent,
+  ReactElement,
+  SyntheticEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
+import {
+  FaExclamationTriangle,
+  FaFilter,
+  FaRegCheckCircle,
+  FaRegCheckSquare,
+  FaRegCircle,
+  FaRegMap,
+  FaRegSquare,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 import useMedia from 'use-media';
@@ -22,13 +39,10 @@ import useMedia from 'use-media';
 function getKbdShortcut(key?: [string, boolean]) {
   return (
     key && (
-      <>
-        {' '}
-        <kbd>
-          {key[1] ? 'shift + ' : ''}
-          {key[0].replace(/Key|Digit/, '').toLowerCase()}
-        </kbd>
-      </>
+      <kbd className="ml-1">
+        {key[1] ? '⇧' : ''}
+        {key[0].replace(/Key|Digit/, '').toLowerCase()}
+      </kbd>
     )
   );
 }
@@ -82,8 +96,35 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, mapType],
   );
 
+  const handlePossibleFilterClick = useCallback(
+    (e: SyntheticEvent<unknown, unknown>) => {
+      let x: unknown = e.target;
+
+      while (x instanceof Element) {
+        if (x === e.currentTarget) {
+          break;
+        }
+
+        if (x instanceof SVGElement && x.dataset['filter']) {
+          dispatch(galleryShowFilter());
+          return true;
+        }
+
+        x = x.parentNode;
+      }
+
+      return false;
+    },
+    [dispatch],
+  );
+
   const handleOverlaySelect = useCallback(
-    (overlay) => {
+    (overlay, e: SyntheticEvent<unknown>) => {
+      if (handlePossibleFilterClick(e)) {
+        setShow(false);
+        return;
+      }
+
       const s = new Set(overlays);
 
       if (!is<OverlayLetters>(overlay)) {
@@ -96,7 +137,7 @@ export function MapSwitchButton(): ReactElement {
 
       dispatch(mapRefocus({ overlays: [...s] }));
     },
-    [dispatch, overlays],
+    [dispatch, handlePossibleFilterClick, overlays],
   );
 
   const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -108,6 +149,10 @@ export function MapSwitchButton(): ReactElement {
   };
 
   const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (handlePossibleFilterClick(e)) {
+      return;
+    }
+
     const { type } = e.currentTarget.dataset;
 
     if (!is<OverlayLetters>(type)) {
@@ -134,6 +179,8 @@ export function MapSwitchButton(): ReactElement {
       layer.primary.startsWith('!') &&
       layer.primary !== `!${language}`);
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <>
       <ButtonGroup className="dropup d-none d-sm-inline-flex">
@@ -146,7 +193,7 @@ export function MapSwitchButton(): ReactElement {
             active={mapType === type}
             onClick={handleBaseClick}
           >
-            <FontAwesomeIcon icon={icon} />
+            {icon}
           </Button>
         ))}
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
@@ -158,7 +205,14 @@ export function MapSwitchButton(): ReactElement {
             active={overlays.includes(type)}
             onClick={handleOverlayClick}
           >
-            <FontAwesomeIcon icon={icon} />
+            {icon}
+            {pictureFilterIsActive && type === 'I' && (
+              <FaFilter
+                data-filter="1"
+                title={m?.mapLayers.photoFilterWarning}
+                className="text-warning ml-2"
+              />
+            )}
           </Button>
         ))}
         <Button
@@ -176,7 +230,7 @@ export function MapSwitchButton(): ReactElement {
         title={m?.mapLayers.layers}
         variant="primary"
       >
-        <FontAwesomeIcon icon="map-o" />
+        <FaRegMap />
       </Button>
       <Overlay
         rootClose
@@ -186,7 +240,9 @@ export function MapSwitchButton(): ReactElement {
         target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <Popover.Content>
+          <Popover.Content className="fm-menu-scroller" ref={sc}>
+            <div />
+
             {
               // TODO base and overlay layers have too much duplicate code
               baseLayers
@@ -200,10 +256,8 @@ export function MapSwitchButton(): ReactElement {
                     key={type}
                     onClick={() => handleMapSelect(type)}
                   >
-                    <FontAwesomeIcon
-                      icon={mapType === type ? 'check-circle-o' : 'circle-o'}
-                    />{' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                    {mapType === type ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+                    {icon}{' '}
                     <span
                       style={{
                         textDecoration:
@@ -216,14 +270,10 @@ export function MapSwitchButton(): ReactElement {
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
-                      <>
-                        {' '}
-                        <FontAwesomeIcon
-                          icon="exclamation-triangle"
-                          title={m?.mapLayers.minZoomWarning(minZoom)}
-                          className="text-warning"
-                        />
-                      </>
+                      <FaExclamationTriangle
+                        title={m?.mapLayers.minZoomWarning(minZoom)}
+                        className="text-warning ml-1"
+                      />
                     )}
                   </Dropdown.Item>
                 ))
@@ -241,18 +291,14 @@ export function MapSwitchButton(): ReactElement {
                   eventKey={type}
                   onSelect={handleOverlaySelect}
                 >
-                  <FontAwesomeIcon
-                    icon={
-                      (
-                        type === 'i'
-                          ? !overlays.includes(type)
-                          : overlays.includes(type)
-                      )
-                        ? 'check-square-o'
-                        : 'square-o'
-                    }
-                  />{' '}
-                  <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                  {type === 'i' ? (
+                    !overlays.includes(type)
+                  ) : overlays.includes(type) ? (
+                    <FaRegCheckSquare />
+                  ) : (
+                    <FaRegSquare />
+                  )}{' '}
+                  {icon}{' '}
                   <span
                     style={{
                       textDecoration:
@@ -265,24 +311,17 @@ export function MapSwitchButton(): ReactElement {
                   </span>
                   {getKbdShortcut(key)}
                   {minZoom !== undefined && zoom < minZoom && (
-                    <>
-                      {' '}
-                      <FontAwesomeIcon
-                        icon="exclamation-triangle"
-                        title={m?.mapLayers.minZoomWarning(minZoom)}
-                        className="text-warning"
-                      />
-                    </>
+                    <FaExclamationTriangle
+                      title={m?.mapLayers.minZoomWarning(minZoom)}
+                      className="text-warning ml-1"
+                    />
                   )}
                   {type === 'I' && pictureFilterIsActive && (
-                    <>
-                      {' '}
-                      <FontAwesomeIcon
-                        icon="filter"
-                        title={m?.mapLayers.photoFilterWarning}
-                        className="text-warning"
-                      />
-                    </>
+                    <FaFilter
+                      data-filter="1"
+                      title={m?.mapLayers.photoFilterWarning}
+                      className="text-warning ml-1"
+                    />
                   )}
                 </Dropdown.Item>
               ))}

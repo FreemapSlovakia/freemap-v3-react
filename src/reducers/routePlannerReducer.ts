@@ -1,9 +1,9 @@
 import { RootAction } from 'fm3/actions';
 import {
   clearMap,
-  deleteFeature,
   selectFeature,
   setAppState,
+  setTool,
 } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
@@ -41,7 +41,7 @@ export interface RoutePlannerState {
   start: LatLon | null;
   midpoints: LatLon[];
   finish: LatLon | null;
-  pickMode: PickMode;
+  pickMode: PickMode | null;
   itineraryIsVisible: boolean;
   mode: RouteMode;
   milestones: boolean;
@@ -58,12 +58,12 @@ export const cleanState = {
   start: null,
   midpoints: [],
   finish: null,
-  pickMode: 'start' as PickMode,
+  pickMode: null,
   itineraryIsVisible: false,
   ...clearResult,
 };
 
-const initialState: RoutePlannerState = {
+export const initialState: RoutePlannerState = {
   transportType: null,
   mode: 'route',
   milestones: false,
@@ -85,7 +85,15 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   })
   .handleAction(selectFeature, (state) => ({
     ...state,
-    pickMode: !state.start ? 'start' : 'finish',
+    pickMode: null,
+  }))
+  .handleAction(setTool, (state, action) => ({
+    ...state,
+    pickMode: !state.start
+      ? 'start'
+      : action.payload === 'route-planner'
+      ? state.pickMode
+      : null,
   }))
   .handleAction(clearMap, (state) => ({
     ...initialState,
@@ -119,7 +127,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       !isSpecial(state.transportType) && !action.payload.move && state.start
         ? [state.start, ...state.midpoints]
         : state.midpoints,
-    pickMode: 'finish',
+    pickMode: state.finish ? state.pickMode : 'finish',
   }))
   .handleAction(routePlannerSetFinish, (state, action) =>
     action.payload.finish === null
@@ -202,16 +210,6 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     activeAlternativeIndex: action.payload,
   }))
-  .handleAction(deleteFeature, (state, action) =>
-    action.payload.type === 'route-planner'
-      ? {
-          ...initialState,
-          transportType: state.transportType,
-          mode: state.mode,
-          milestones: state.milestones,
-        }
-      : state,
-  )
   .handleAction(mapsDataLoaded, (_state, { payload: { routePlanner } }) => {
     return {
       ...initialState,

@@ -1,9 +1,9 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -21,9 +21,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
-          {m?.more.supportUs}{' '}
-          <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
+          <FaHeart color="red" /> {m?.more.supportUs} <FaHeart color="red" />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -42,7 +40,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
           <input name="cmd" value="_s-xclick" type="hidden" />
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
           <Button type="submit">
-            <FontAwesomeIcon icon="paypal" /> {m?.supportUs.paypal}
+            <FaPaypal /> {m?.supportUs.paypal}
           </Button>
         </form>
         <br />
@@ -50,10 +48,10 @@ export function SupportUsModal({ show }: Props): ReactElement {
         <hr />
         <p>2% z dane</p>
         <p>
-          Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie
+          Podporiť prevádzku Freemapu môžete aj Vašimi 2% z dane. Bližšie
           informácie a tlačivá potrebné k poukázaniu 2% z dane nájdete na{' '}
-          <a href="http://wiki.freemap.sk/dvepercenta">
-            wiki.freemap.sk/dvepercenta
+          <a href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia">
+            tejto stránke
           </a>
           .
         </p>
@@ -89,7 +87,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

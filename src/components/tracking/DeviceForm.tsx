@@ -1,5 +1,4 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -12,6 +11,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import { FaBullseye, FaSync } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 const types: Record<string, string> = {
@@ -86,7 +86,7 @@ export function DeviceForm(): ReactElement {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />{' '}
+          <FaBullseye />{' '}
           {device
             ? m?.tracking.devices.modifyTitle({
                 name: device.name,
@@ -146,7 +146,7 @@ export function DeviceForm(): ReactElement {
                   active={regenerateToken}
                   onClick={handleRegenerateTokenClick}
                 >
-                  <FontAwesomeIcon icon="refresh" /> Regenerate
+                  <FaSync /> Regenerate
                 </Button>
               </InputGroup.Append>
             )}

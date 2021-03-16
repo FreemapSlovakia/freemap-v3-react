@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('hu', {
@@ -46,7 +46,7 @@ const hu: Messages = {
     delete: 'Törlés',
     remove: 'Eltávolítás',
     close: 'Bezárás',
-    apply: 'Apply', // TODO
+    apply: 'Alkalmaz',
     exitFullscreen: 'Kilépés a teljes képernyős módból',
     fullscreen: 'Teljes képernyő',
     yes: 'Igen',
@@ -70,13 +70,22 @@ const hu: Messages = {
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
     simplifyPrompt:
-      'Please enter simplification factor. Set to zero for no simplification.', // TODO translate
+      'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',
     savingError: ({ err }) => `Mentési hiba: ${err}`,
     loadError: ({ err }) => `Betöltési hiba: ${err}`,
     deleteError: ({ err }) => `Törlési hiba: ${err}`,
-    deleted: 'Deleted.', // TODO translate
-    saved: 'Saved.', // TODO translate
+    deleted: 'Törölve.',
+    saved: 'Elmentve.',
+    visual: 'Megjelenítés',
+  },
+
+  selections: {
+    objects: 'Objektum (érdekes pont, POI)',
+    drawPoints: 'Pont',
+    drawLines: 'Vonal',
+    drawPolygons: 'Sokszög',
+    tracking: 'Követés',
   },
 
   tools: {
@@ -86,14 +95,16 @@ const hu: Messages = {
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
     measurement: 'Rajzolás és mérés',
+    drawPoints: 'Pont rajzolása',
+    drawLines: 'Vonal rajzolása',
+    drawPolygons: 'Sokszög rajzolása',
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
-    tracking: 'Live tracking',
+    tracking: 'Élő követés',
     maps: (
       <>
-        Saját térképeim{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
+        Saját térképeim <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -112,7 +123,7 @@ const hu: Messages = {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
       bikesharing: 'Kerékpármegosztás',
-      imhd: 'Tömegközlekedés (SK/Bratislava)',
+      imhd: 'Tömegközlekedés (Pozsony)',
       'bike-osm': 'Kerékpár (OSM)',
       bike: 'Kerékpártúrázás',
       'foot-stroller': 'Babakocsi / kerekesszék',
@@ -121,7 +132,7 @@ const hu: Messages = {
       foot: 'Gyaloglás',
       'foot-osm': 'Gyaloglás (OSM)',
     },
-    development: 'fejl. alatt',
+    development: 'fejlesztés alatt',
     mode: {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',
@@ -188,8 +199,8 @@ const hu: Messages = {
         // 'notification':
         'exit rotary': 'hajtson ki a körforgalomból', // undocumented
         'exit roundabout': 'hajtson ki a körforgalomból', // undocumented
-        notification: 'notification', // TODO translate
-        'use lane': 'use lane', // TODO translate
+        notification: 'értesítés',
+        'use lane': 'ezt a sávot használja:',
       },
 
       modifiers: {
@@ -229,13 +240,13 @@ const hu: Messages = {
             ))}{' '}
             | Időtartam{' '}
             <b>
-              {total} {numberize(total, ['minutes', 'minute' /*TODO*/])}
+              {total} {numberize(total, ['perc', 'perc'])}
             </b>
             <br />
             Az indulásig van: <b>{home}</b>, séta: <b>{foot}</b>,
             tömegközlekedés: <b>{bus}</b>, várakozás :{' '}
             <b>
-              {wait} {numberize(wait, ['minutes', 'minute' /*TODO*/])}
+              {wait} {numberize(wait, ['perc', 'perc'])}
             </b>
           </>
         ),
@@ -247,7 +258,7 @@ const hu: Messages = {
             <b>{departure}</b> sétáljon{' '}
             {duration !== undefined && (
               <b>
-                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+                {duration} {numberize(duration, ['perc', 'perc'])}
               </b>
             )}{' '}
             {destination === 'TARGET' ? (
@@ -281,7 +292,7 @@ const hu: Messages = {
             sétáljon{' '}
             {duration !== undefined && (
               <b>
-                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+                {duration} {numberize(duration, ['perc', 'perc'])}
               </b>
             )}{' '}
             {destination === 'TARGET' ? (
@@ -296,10 +307,10 @@ const hu: Messages = {
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
-            kerékpározzék{' '}
+            kerékpározzon{' '}
             {duration !== undefined && (
               <b>
-                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+                {duration} {numberize(duration, ['perc', 'perc'])}
               </b>
             )}{' '}
             ide: <b>{destination}</b>
@@ -307,7 +318,7 @@ const hu: Messages = {
         ),
       },
     },
-    imhdAttribution: 'public transport routes', // TODO
+    imhdAttribution: 'tömegközlekedési útvonalak',
   },
 
   more: {
@@ -316,10 +327,8 @@ const hu: Messages = {
     logIn: 'Bejelentkezés',
     settings: 'Beállítások',
     gpxExport: 'Exportálás GPX-be',
-    mapExports: 'Térkép a GPS-készülékek számára', // TODO google-translated
+    mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
-    reportMapError: 'Térképhiba bejelentése',
-    reportAppError: 'Alkalmazáshiba bejelentése',
     supportUs: 'A Freemap támogatása',
     help: 'Súgó',
     back: 'Vissza',
@@ -331,7 +340,7 @@ const hu: Messages = {
     youtube: 'Freemap a YouTubeon',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
-    pdfExport: 'Térkép exportálása', // TODO google-translated
+    pdfExport: 'Térkép exportálása',
   },
 
   main: {
@@ -339,12 +348,12 @@ const hu: Messages = {
     close: 'Bezárás',
     closeTool: 'Eszköz bezárása',
     locateMe: 'Saját pozícióm',
-    locationError: 'Error getting location.', // TODO
+    locationError: 'Nem sikerült megtalálni a helyzetét.',
     zoomIn: 'Nagyítás',
     zoomOut: 'Kicsinyítés',
     devInfo: () => (
       <div>
-        Ez a Freemap Slovakia tesztverziója. A termelési verziót itt találja:{' '}
+        Ez a Freemap Slovakia tesztverziója. A felhasználói verziót itt találja:{' '}
         <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
@@ -353,13 +362,14 @@ const hu: Messages = {
 
   gallery: {
     filter: 'Szűrő',
-    allPhotos: 'Minden fénykép',
+    showPhotosFrom: 'Fényképek megtekintése',
+    showLayer: 'Réteg megjelenítése',
     upload: 'Feltöltés',
     f: {
       firstUploaded: 'az először feltöltöttől',
-      lastUploaded: 'az utoljára feltöltöttől',
-      firstCaptured: 'a legrégebbitől',
-      lastCaptured: 'a legújabbtól',
+      lastUploaded: 'a legutóbb feltöltöttől',
+      firstCaptured: 'a legrégebben készülttől',
+      lastCaptured: 'a legutóbb készülttől',
       leastRated: 'a leggyöngébbre értékelttől',
       mostRated: 'a legjobbra értékelttől',
     },
@@ -415,8 +425,6 @@ const hu: Messages = {
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
     },
-    layerHint:
-      'A fényképeket tartalmazó rátétréteg megjelenítéséhez jelölje ki a Térképrétegek menüből a Fényképeket (vagy nyomja meg a Shift + F billentyűket.',
     deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Hiba történt a címkék beolvasásánál: ${err}`,
@@ -434,13 +442,13 @@ const hu: Messages = {
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
     filterModal: {
-      title: 'Photo filtering', // TODO
-      tag: 'Tag', // TODO
-      createdAt: 'Upload date', // TODO
-      takenAt: 'Capture date', // TODO
-      author: 'Author', // TODO
-      rating: 'Rating', // TODO
-      noTags: 'no tags', // TODO
+      title: 'Fényképek szűrése',
+      tag: 'Címke',
+      createdAt: 'Feltöltés dátuma',
+      takenAt: 'Készítés dátuma',
+      author: 'Szerző',
+      rating: 'Értékelés',
+      noTags: 'nincs címke',
     },
   },
 
@@ -463,13 +471,12 @@ const hu: Messages = {
       </>
     ),
     areaInfo: ({ area }) => (
-      // TODO translate
       <>
-        Area:
+        Terület:
         <div>
           {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
-        <div>{nf33.format(area / 100)}&nbsp;a</div>
+        <div>{nf33.format(area / 100)}&nbsp;ár</div>
         <div>{nf33.format(area / 10000)}&nbsp;ha</div>
         <div>
           {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
@@ -477,9 +484,8 @@ const hu: Messages = {
       </>
     ),
     distanceInfo: ({ length }) => (
-      // TODO translate
       <>
-        Length:
+        Távolság:
         <div>{nf33.format(length * 1000)}&nbsp;m</div>
         <div>{nf33.format(length)}&nbsp;km</div>
       </>
@@ -519,7 +525,7 @@ const hu: Messages = {
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
     info: () => <TrackViewerDetails />,
-    tooBigError: 'The file is too big.', // TODO translate
+    tooBigError: 'Túl nagy a fájl.',
   },
 
   drawing: {
@@ -588,15 +594,14 @@ const hu: Messages = {
     fetchError: ({ err }) =>
       `Hiba történt a módosításkészletek beolvasásánál: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-    // TODO
     details: {
-      author: 'Author:',
-      description: 'Description:',
-      noDescription: 'without description',
-      closedAt: 'Time:',
+      author: 'Szerző:',
+      description: 'Leírás:',
+      noDescription: 'leírás nélküli',
+      closedAt: 'Idő:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
         <p>
-          More details on {osmLink} or {achaviLink}.
+          További részletek itt: {osmLink} vagy itt: {achaviLink}.
         </p>
       ),
     },
@@ -930,6 +935,7 @@ const hu: Messages = {
     routeTo: 'Útvonal ide',
     fetchingError: ({ err }) => `Keresési hiba: ${err}`,
     buttonTitle: 'Keresés',
+    placeholder: 'Keresés a térképen',
   },
 
   embed: {
@@ -978,9 +984,9 @@ const hu: Messages = {
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
-    blockedPopup: 'Browser blocked pop-up window.', // TODO
-    exportedToDropbox: 'GPX file has been saved to Dropboxu.', // TODO
-    exportedToGdrive: 'GPX file has been saved to Google Drive.', // TODO
+    blockedPopup: 'A böngésző blokkolta az előugró ablakot.',
+    exportedToDropbox: 'GPX-fájl elmentve a Dropboxba.',
+    exportedToGdrive: 'GPX-fájl elmentve a Google Drive-ra.',
   },
 
   logIn: {
@@ -989,7 +995,7 @@ const hu: Messages = {
       google: 'Belépés Google-fiókkal',
       osm: 'Belépés OpenStreetMap-fiókkal',
     },
-    enablePopup: 'Please enable pop-up windows for this site in you browser.', // TODO translate
+    enablePopup: 'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
     success: 'Sikeresen bejelentkezett.',
     logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
     logInError2: 'Hiba történt a bejelentkezésnél.',
@@ -1009,17 +1015,17 @@ const hu: Messages = {
     letters: {
       A: 'Autó',
       T: 'Túrázás',
-      C: 'Kerékpár',
+      C: 'Kerékpározás',
       K: 'Síelés',
       S: 'Légifelvétel',
-      Z: 'Ortofotomozaika SR (Aerial, SK)',
+      Z: 'Ortofotó (Szlovákia)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       p: 'OpenTopoMap',
       d: 'Tömegközlekedés',
       h: 'Történelmi térkép',
       X: 'Túrázás + Kerékpár + Síelés',
-      i: 'Interactive layer', // TODO translate
+      i: 'Interaktív réteg',
       I: 'Fényképek',
       l: 'Erdészeti utak (Szlovákia)',
       n1: 'Nevek (autó)',
@@ -1029,7 +1035,7 @@ const hu: Messages = {
       t: 'Turistautak',
       c: 'Kerékpáros útvonalak',
       q: 'OpenSnowMap',
-      r: 'Megjelenítőügyfelek',
+      r: 'Megjelenítőkliensek',
       s0: 'Strava (minden)',
       s1: 'Strava (lovaglás)',
       s2: 'Strava (futás)',
@@ -1116,13 +1122,13 @@ const hu: Messages = {
       footway: 'gyalogút',
       pedestrian: 'sétálóutca',
       unknown: 'ismeretlen',
-      living_street: 'Living street', // TODO translate
-      construction: 'In construction', // TODO translate
+      living_street: 'lakó-pihenő övezet',
+      construction: 'építés alatt',
     },
     bicycleTypes: {
       'road-bike': 'országúti kerékpár',
       'trekking-bike': 'túrakerékpár',
-      'mtb-bike': 'hegyikerékpár (MTB)',
+      'mtb-bike': 'hegyi kerékpár (MTB)',
       'no-bike': 'kerékpárral tilos',
       unknown: 'ismeretlen',
     },
@@ -1146,7 +1152,7 @@ const hu: Messages = {
       ),
     },
     accessToken: {
-      token: 'Figyelési kód',
+      token: 'Figyelőkód',
       timeFrom: 'Ettől',
       timeTo: 'Eddig',
       listingLabel: 'Felsorolási felirat',
@@ -1156,29 +1162,29 @@ const hu: Messages = {
     accessTokens: {
       modalTitle: (deviceName) => (
         <>
-          <i>{deviceName}</i> készülék figyelési kódjai
+          <i>{deviceName}</i> készülék figyelőkódjai
         </>
       ),
       desc: (deviceName) => (
         <p>
-          Határozzon meg figyelési kódokat, hogy <i>{deviceName}</i> készüléke
+          Határozzon meg figyelőkódokat, hogy <i>{deviceName}</i> készüléke
           pozícióját megoszthassa ismerőseivel.
         </p>
       ),
       createTitle: (deviceName) => (
         <>
-          Figyelési kód hozzáadása a(z) <i>{deviceName}</i> készülékhez
+          Figyelőkód hozzáadása a(z) <i>{deviceName}</i> készülékhez
         </>
       ),
       modifyTitle: ({ token, deviceName }) => (
         <>
-          A(z) <i>{deviceName}</i> készülék <i>{token}</i> figyelési kódjának
+          A(z) <i>{deviceName}</i> készülék <i>{token}</i> figyelőkódjának
           módosítása
         </>
       ),
     },
     trackedDevice: {
-      token: 'Figyelési kód',
+      token: 'Figyelőkód',
       label: 'Felirat',
       fromTime: 'Kezdő időpont',
       maxAge: 'Legmagasabb életkor',
@@ -1195,7 +1201,7 @@ const hu: Messages = {
       watchTokens: 'Kódok megtekintése',
       watchPrivately: 'Privát figyelés',
       watch: 'Figyelés',
-      delete: 'Törli az eszközt?', // TODO google-translated
+      delete: 'Törli a készüléket?',
       modifyTitle: ({ name }) => (
         <>
           A(z) <i>{name}</i> készülék követésének módosítása
@@ -1205,8 +1211,8 @@ const hu: Messages = {
         <>
           <p>
             Kezelje készülékeit, hogy mások is láthassák pozícióját, ha megad
-            nekik egy figyelési kódot (amelyet a <FontAwesomeIcon icon="key" />{' '}
-            ikonnal hozhat létre).
+            nekik egy figyelőkódot (amelyet a <FaKey /> ikonnal hozhat
+            létre).
           </p>
           <hr />
           <p>
@@ -1267,7 +1273,7 @@ const hu: Messages = {
           </ul>
           <hr />
           <p>
-            In the case of tracker TK102B, configure it's address to{' '}
+            TK102B GPS tracker nyomvonalrögzítő készülék esetén a következőre állítsa be a címét: {' '}
             <code>
               {process.env['API_URL']
                 ?.replace(/https?:\/\//, '')
@@ -1283,8 +1289,8 @@ const hu: Messages = {
       name: 'Név',
       maxAge: 'Legmagasabb kor',
       maxCount: 'Legmagasabb szám',
-      regenerateToken: 'Regenerátum', // TODO google-translated
-      generatedToken: 'mentéskor generálódik', // TODO google-translated
+      regenerateToken: 'Újragenerálás',
+      generatedToken: 'mentéskor fog generálódni',
     },
     visual: {
       line: 'Vonal',
@@ -1293,7 +1299,7 @@ const hu: Messages = {
     },
     subscribeNotFound: ({ id }) => (
       <>
-        A(z) <i>{id}</i> figyelési kód nem létezik.
+        A(z) <i>{id}</i> figyelőkód nem létezik.
       </>
     ),
     subscribeError: ({ id }) => (
@@ -1303,13 +1309,12 @@ const hu: Messages = {
     ),
   },
   pdfExport: {
-    export: 'Export', // TODO translate
-    exportError: ({ err }) => `Error exporting map: ${err}`, // TODO translate
-    exporting: 'Please wait, exporting map…', // TODO translate
-    // TODO translate
+    export: 'Exportálás',
+    exportError: ({ err }) => `Hiba történt a térkép exportálásakor: ${err}`,
+    exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
     exported: ({ url }) => (
       <>
-        Map export has finished.{' '}
+        A térkép exportálása befelyeződött.{' '}
         <Alert.Link href={url} target="_blank">
           Open.
         </Alert.Link>
@@ -1318,9 +1323,9 @@ const hu: Messages = {
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
-      pinned: 'A kiválasztott sokszöget tartalmazó terület (rajz)', // TODO google-translated
+      pinned: 'A kijelölt sokszöget (rajzot) tartalmazó terület',
     },
-    format: 'Formátum:', // TODO google-translated
+    format: 'Formátum:',
     layersTitle: 'Választható rétegek:',
     layers: {
       contours: 'Szintvonalak',
@@ -1329,11 +1334,11 @@ const hu: Messages = {
       bicycleTrails: 'Kerékpáros útvonalak',
       skiTrails: 'Síútvonalak',
       horseTrails: 'Lovaglóútvonalak',
-      drawing: 'Drawing', // TODO translate
-      plannedRoute: 'Found route', // TODO translate
-      track: 'GPX track', // TODO translate
+      drawing: 'Rajz',
+      plannedRoute: 'Tervezett útvonal',
+      track: 'GPX-nyomvonal',
     },
-    mapScale: 'Map resolution:', // TODO translate
+    mapScale: 'Térkép felbontása:',
     alert: () => (
       <>
         Megjegyzések:
@@ -1361,7 +1366,14 @@ const hu: Messages = {
               >
                 © OpenStreetMap közreműködők
               </Alert.Link>
-              , © SRTM
+              {', SRTM, '}
+              <Alert.Link
+                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LLS: ÚGKK SR
+              </Alert.Link>
             </em>
           </li>
         </ul>{' '}
@@ -1385,26 +1397,24 @@ const hu: Messages = {
     saveError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
   },
 
-  // TODO translate
   legend: {
     body: () => (
       <>
-        Map legend for <i>Hiking + Bicycle + Ski</i>:
+        Jelmagyarázat: <i>Túrázás + Kerékpározás + Síelés</i>:
       </>
     ),
   },
 
-  // TODO translate
   contacts: {
-    ngo: 'Voluntary association',
-    registered: 'Registered at MV/VVS/1-900/90-34343 on 2009-10-02',
-    bankAccount: 'Bank account',
-    generalContact: 'General contacts',
-    board: 'Board',
-    boardMemebers: 'Board members',
-    president: 'President',
-    vicepresident: 'Vice-President',
-    secretary: 'Secretary',
+    ngo: 'Önkéntes egyesület',
+    registered: 'Nyilvántartásba véve 2009. október 2-án, MV/VVS/1-900/90-34343 számmal',
+    bankAccount: 'Bankszámlaszám',
+    generalContact: 'Általános elérhetőség',
+    board: 'Elnökség',
+    boardMemebers: 'Elnökségi tagok',
+    president: 'Elnök',
+    vicepresident: 'Alelnök',
+    secretary: 'Titkár',
   },
 };
 

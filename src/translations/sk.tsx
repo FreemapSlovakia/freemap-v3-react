@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('sk', {
@@ -25,7 +25,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 <p>
   ${
     ticketId
-      ? `Chyba nám bola automaticky reportovaná pod ID <b>${ticketId}</b>.`
+      ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
       : ''
   }
   Chybu môžeš nahlásiť ${
@@ -77,6 +77,15 @@ const sk: Messages = {
     deleteError: ({ err }) => `Chyba mazania: ${err}`,
     deleted: 'Zmazané.',
     saved: 'Uložené.',
+    visual: 'Zobrazenie',
+  },
+
+  selections: {
+    objects: 'Objekt (POI)',
+    drawPoints: 'Bod',
+    drawLines: 'Čiara',
+    drawPolygons: 'Polygón',
+    tracking: 'Sledovanie',
   },
 
   tools: {
@@ -86,13 +95,16 @@ const sk: Messages = {
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
     measurement: 'Kreslenie a meranie',
+    drawPoints: 'Kreslenie bodov',
+    drawLines: 'Kreslenie čiar',
+    drawPolygons: 'Kreslenie polygónov',
     trackViewer: 'Prehliadač trás (GPX)',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
     maps: (
       <>
-        Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
+        Moje mapy <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -173,11 +185,11 @@ const sk: Messages = {
         turn: 'odbočte',
         'new name': 'choďte',
         depart: 'začnite',
-        arrive: 'ukončte',
+        arrive: 'ukončite',
         merge: 'pokračujte',
         // 'ramp':
         'on ramp': 'choďte na príjazdovú cestu',
-        'off ramp': 'opusťte príjazdovú cestu',
+        'off ramp': 'opustite príjazdovú cestu',
         fork: 'zvoľte cestu',
         'end of road': 'pokračujte',
         // 'use lane':
@@ -186,10 +198,10 @@ const sk: Messages = {
         rotary: 'vojdite na okružnú cestu',
         'roundabout turn': 'na kruhovom objazde odbočte',
         // 'notification':
-        'exit rotary': 'opusťte okružnú cestu', // undocumented
-        'exit roundabout': 'opusťte kruhový objazd', // undocumented
+        'exit rotary': 'opustite okružnú cestu', // undocumented
+        'exit roundabout': 'opustite kruhový objazd', // undocumented
         notification: 'poznámka',
-        'use lane': 'použi jazdný pruh',
+        'use lane': 'použite jazdný pruh',
       },
 
       modifiers: {
@@ -319,8 +331,6 @@ const sk: Messages = {
     gpxExport: 'Exportovať do GPX',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
-    reportMapError: 'Nahlásiť chybu zobrazenia v mape',
-    reportAppError: 'Nahlásiť chybu v portáli',
     supportUs: 'Podporiť Freemap',
     help: 'Pomoc',
     back: 'Naspäť',
@@ -352,10 +362,10 @@ const sk: Messages = {
     copyright: 'Licencia',
     p2: () => (
       <>
-        Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie
+        Podporiť prevádzku Freemapu môžete aj Vašimi 2% z dane. Bližšie
         informácie a tlačivá nájdete na{' '}
-        <a href="http://wiki.freemap.sk/dvepercenta">
-          wiki.freemap.sk/dvepercenta
+        <a href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia">
+          tejto stránke
         </a>
         .
       </>
@@ -364,21 +374,22 @@ const sk: Messages = {
 
   gallery: {
     filter: 'Filter',
-    allPhotos: 'Všetky fotky',
+    showPhotosFrom: 'Prezerať fotky',
+    showLayer: 'Zobraziť vrstvu',
     upload: 'Nahrať',
     f: {
       firstUploaded: 'od prvej nahranej',
       lastUploaded: 'od poslednej nahranej',
       firstCaptured: 'od najstaršie odfotenej',
       lastCaptured: 'od najnovšie odfotenej',
-      leastRated: 'od najmenšieho hodnotenia',
-      mostRated: 'od najväčšieho hodnotenia',
+      leastRated: 'od najnižšieho hodnotenia',
+      mostRated: 'od najvyššieho hodnotenia',
     },
     viewer: {
       title: 'Fotografia',
       comments: 'Komentáre',
       newComment: 'Nový komentár',
-      addComment: 'Pridaj',
+      addComment: 'Pridať',
       yourRating: 'Tvoje hodnotenie:',
       showOnTheMap: 'Ukázať na mape',
       openInNewWindow: 'Otvoriť v…',
@@ -408,14 +419,14 @@ const sk: Messages = {
       uploading: (n) => `Nahrávam (${n})`,
       upload: 'Nahrať',
       rules: `
-        <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
+        <p>Potiahnite sem fotky alebo kliknite sem pre ich výber.</p>
         <ul>
-          <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10MB. Väčšie súbory server odmietne.</li>
-          <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania vymazané.</li>
+          <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10 MB. Väčšie súbory server odmietne.</li>
+          <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania odstránené.</li>
           <li>Zvýšenú pozornosť venujte tomu, aby ste nahrávali výlučne vlastnú tvorbu.</li>
           <li>Nahraté fotografie sú ďalej šírené pod licenciou CC-BY-SA 2.0.</li>
           <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
-          <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu vymazať, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
+          <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu odstrániť, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
         </ul>
       `,
@@ -425,8 +436,6 @@ const sk: Messages = {
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
     },
-    layerHint:
-      'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
     deletingError: ({ err }) => `Nastala chyba pri mazaní obrázka: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Nastala chyba pri načítavaní tagov: ${err}`,
@@ -442,7 +451,7 @@ const sk: Messages = {
       'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
     missingPositionError: 'Chýba pozícia.',
     invalidPositionError: 'Nesprávny formát súradníc.',
-    invalidTakenAt: 'Nevalidný dátum a čas fotenia.',
+    invalidTakenAt: 'Neplatný dátum a čas fotenia.',
     filterModal: {
       title: 'Filter fotografií',
       tag: 'Tag',
@@ -517,7 +526,7 @@ const sk: Messages = {
     },
     uploadModal: {
       title: 'Nahrať trasu',
-      drop: 'Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.',
+      drop: 'Potiahnite sem .gpx súbor alebo kliknite sem pre jeho výber.',
     },
     shareToast: 'Trasa bola uložená na server a môžete ju zdieľať.',
     fetchingError: ({ err }) =>
@@ -579,7 +588,7 @@ const sk: Messages = {
         label: (value) =>
           `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
         info:
-          'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
+          'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
@@ -631,7 +640,7 @@ const sk: Messages = {
       5: 'Zdravotníctvo',
       6: 'Obchody',
       7: 'Energetika',
-      8: 'Ubytovanie a Stravovanie',
+      8: 'Ubytovanie a stravovanie',
       9: 'Turizmus, turistika',
       10: 'Územné členenie',
       11: 'Ostatné',
@@ -733,19 +742,19 @@ const sk: Messages = {
       94: 'Farmárske produkty',
       95: 'Kvetinárstvo',
       96: 'Obrazy',
-      98: 'funeral_directors',
+      98: 'Pohrebný ústav',
       99: 'Nábytok',
       100: 'Záhradné centrum',
       101: 'Rozličný tovar',
       102: 'Darčeková predajňa',
-      103: 'glaziery',
+      103: 'Sklenárstvo',
       104: 'Ovocie, zelenina',
       105: 'Kaderníctvo',
       106: 'Železiarstvo',
       107: 'Načúvacie pomôcky',
       108: 'HI-FI',
       109: 'Zmrzlina',
-      110: 'interior_decoration',
+      110: 'Bytové doplnky',
       111: 'Zlatníctvo',
       112: 'Kiosk',
       113: 'Kuchynské potreby',
@@ -753,14 +762,14 @@ const sk: Messages = {
       115: 'Nákupné centrum',
       116: 'Masáže',
       117: 'Mobilné telefóny',
-      118: 'money_lender',
+      118: 'Pôžičky',
       119: 'Motocykle',
       120: 'Hudobné nástroje',
       121: 'Noviny',
       122: 'Optika',
       124: 'Outdoor',
       125: 'Farby',
-      126: 'pawnbroker',
+      126: 'Záložňa',
       127: 'Zvieratá',
       128: 'Plody mora',
       129: 'Second hand',
@@ -770,9 +779,9 @@ const sk: Messages = {
       133: 'Tetovanie',
       134: 'Hračkárstvo',
       135: 'Stavebniny',
-      136: 'vacant',
+      136: 'Prázdne priestory',
       137: 'Vysávače',
-      138: 'variety_store',
+      138: 'Zmiešaný tovar',
       139: 'Video/DVD',
       140: 'ZOO',
       141: 'Horská chata',
@@ -815,31 +824,31 @@ const sk: Messages = {
       179: 'Mini-golf',
       180: 'Tanec',
       181: 'Základná škola',
-      182: '9pin',
+      182: 'Kužeľky',
       183: 'Bowling',
-      184: 'Americký futbal',
+      184: 'Americký futbal (ragby)',
       185: 'Lukostreľba',
       186: 'Atletika',
-      187: 'australian_football',
+      187: 'Austrálsky futbal (ragby)',
       188: 'Baseball',
-      189: 'Basketball',
+      189: 'Basketbal',
       190: 'Plážový volejbal',
       191: 'Bmx',
-      192: 'Boules',
+      192: 'Guľové športy',
       193: 'Bowls',
-      194: 'canadian_football',
+      194: 'Kanadský futbal (ragby)',
       195: 'Kanoe',
       196: 'Šach',
       197: 'Lezenie',
       198: 'Kriket',
-      199: 'cricket_nets',
-      200: 'croquet',
+      199: 'Tréning kriketu',
+      200: 'Kroket',
       201: 'Bicyklovanie',
       202: 'Potápanie',
       203: 'Preteky psov',
       204: 'Jazdenie na koni',
       205: 'Futbal',
-      206: 'gaelic_football',
+      206: 'Írske ragby',
       207: 'Golf',
       208: 'Gymnastika',
       209: 'Hokej',
@@ -849,14 +858,14 @@ const sk: Messages = {
       213: 'korfball',
       214: 'Motorky',
       215: 'Multi',
-      216: 'orienteering',
-      217: 'paddle_tennis',
+      216: 'Orientačné preteky',
+      217: 'Padel',
       218: 'Paragliding',
-      219: 'pelota',
-      220: 'racquet',
-      221: 'rowing',
-      222: 'rugby_league',
-      223: 'rugby_union',
+      219: 'Pelota',
+      220: 'Raketbal',
+      221: 'Veslovanie',
+      222: 'Ligové ragby',
+      223: 'Európske ragby',
       224: 'Streľba',
       225: 'Korčuľovanie',
       226: 'Skateboard',
@@ -935,11 +944,12 @@ const sk: Messages = {
     fetchingError: ({ err }) =>
       `Nastala chyba pri spracovaní výsledkov vyhľadávania: ${err}`,
     buttonTitle: 'Hľadať',
+    placeholder: 'Hľadať v mape',
   },
 
   embed: {
     code: 'Vložte na vašu stránku tento html kód:',
-    example: 'Výsledok bude vyzerať následovne:',
+    example: 'Výsledok bude vyzerať nasledovne:',
     dimensions: 'Veľkosť:',
     height: 'Výška:',
     width: 'Šírka:',
@@ -958,17 +968,17 @@ const sk: Messages = {
 
   supportUs: {
     explanation:
-      'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardware a služby komerčných spoločností.',
+      'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardvér a služby komerčných spoločností.',
     account: 'Bankové spojenie:',
     paypal: 'Prispieť cez PayPal',
     thanks: 'Za každý príspevok vám budeme veľmi vďační.',
-    registration: 'Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009',
+    registration: 'Registrované na MV/VVS/1-900/90-34343 dňa 2. 10. 2009',
   },
 
   gpxExport: {
     export: 'Stiahnuť',
     exportToDrive: 'Uložiť do Google Drive',
-    exportToDropbox: 'Uložit do Dropboxu',
+    exportToDropbox: 'Uložiť do Dropboxu',
     exportError: ({ err }) => `Chyba exportovania GPX: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
@@ -995,7 +1005,7 @@ const sk: Messages = {
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
     enablePopup:
-      'Prosím, povoľte vo vašom prehliadači pop-up okná pre túto stránku.',
+      'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     success: 'Boli ste úspešne prihlásený.',
     logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
     logInError2: 'Nepodarilo sa prihlásiť.',
@@ -1198,7 +1208,7 @@ const sk: Messages = {
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
       watch: 'Sledovať',
-      delete: 'Zmazať zariadenie?',
+      delete: 'Odstrániť zariadenie?',
       modifyTitle: ({ name }) => (
         <>
           Upraviť zariadenie <i>{name}</i>
@@ -1209,7 +1219,7 @@ const sk: Messages = {
           <p>
             Tu môžete spravovať svoje zariadenia. Ostatní môžu sledovať ich
             pozíciu, ak k nim vytvoríte sledovacie tokeny, pomocou tlačidla{' '}
-            <FontAwesomeIcon icon="key" />.
+            <FaKey />.
           </p>
           <hr />
           <p>
@@ -1270,7 +1280,7 @@ const sk: Messages = {
           </ul>
           <hr />
           <p>
-            V prípade trackera TK102B, nakonfigurujte ho na adresu{' '}
+            V prípade trackera TK102B ho nakonfigurujte na adresu{' '}
             <code>
               {process.env['API_URL']
                 ?.replace(/https?:\/\//, '')
@@ -1329,7 +1339,7 @@ const sk: Messages = {
       shading: 'Tieňovaný reliéf',
       hikingTrails: 'Turistické trasy',
       bicycleTrails: 'Cyklotrasy',
-      skiTrails: 'Lyžiarské trasy',
+      skiTrails: 'Lyžiarske trasy',
       horseTrails: 'Jazdecké trasy',
       drawing: 'Kreslenie',
       plannedRoute: 'Vyhľadanú trasu',
@@ -1340,7 +1350,7 @@ const sk: Messages = {
       <>
         Upozornenia:
         <ul>
-          <li>Exportuje sa nová outdoorova mapa.</li>
+          <li>Exportuje sa nová outdoorová mapa.</li>
           <li>Export mapy môže trvať aj desiatky sekúnd.</li>
           <li>
             Pri publikovaní mapy je nutné uviesť jej licenciu:
@@ -1362,7 +1372,14 @@ const sk: Messages = {
               >
                 © prispievatelia OpenStreetMap
               </Alert.Link>
-              , © SRTM
+              {', SRTM, '}
+              <Alert.Link
+                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LLS: ÚGKK SR
+              </Alert.Link>
             </em>
           </li>
         </ul>{' '}
@@ -1378,10 +1395,10 @@ const sk: Messages = {
     delete: 'Zmazať',
     namePrompt: 'Názov mapy:',
     deleteConfirm: 'Naozaj si prajete vymazať túto mapu?',
-    fetchError: ({ err }) => `Nastala chyba pri načítavani mapy: ${err}`,
-    fetchListError: ({ err }) => `Nastala chyba pri načítavani máp: ${err}`,
+    fetchError: ({ err }) => `Nastala chyba pri načítavaní mapy: ${err}`,
+    fetchListError: ({ err }) => `Nastala chyba pri načítavaní máp: ${err}`,
     deleteError: ({ err }) => `Nastala chyba pri mazaní mapy: ${err}`,
-    renameError: ({ err }) => `Nastala chyba pri premenovávani mapy: ${err}`,
+    renameError: ({ err }) => `Nastala chyba pri premenovávaní mapy: ${err}`,
     createError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
     saveError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
   },
@@ -1396,7 +1413,7 @@ const sk: Messages = {
 
   contacts: {
     ngo: 'Občianske združenie',
-    registered: 'Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009',
+    registered: 'Registrované na MV/VVS/1-900/90-34343 dňa 2. 10. 2009',
     bankAccount: 'Bankové spojenie',
     generalContact: 'Všeobecné kontakty',
     board: 'Predstavenstvo',

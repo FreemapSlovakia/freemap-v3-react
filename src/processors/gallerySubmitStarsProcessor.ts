@@ -17,6 +17,7 @@ export const gallerySubmitStarsProcessor: Processor<
     }
 
     const stars = action.payload;
+
     const { id } = image;
 
     window.ga('send', 'event', 'Gallery', 'submitStars', stars);

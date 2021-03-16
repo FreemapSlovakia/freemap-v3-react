@@ -7,8 +7,10 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   handle: async ({ action }) => {
     const le = getMapLeafletElement();
+
     if (le && action.payload) {
       const { geojson } = action.payload;
+
       le.fitBounds(
         geoJSON(geojson).getBounds(),
         geojson.type === 'Point' ? { maxZoom: 14 } : {},
