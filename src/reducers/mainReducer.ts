@@ -10,6 +10,7 @@ import {
   convertToDrawing,
   deleteFeature,
   enableUpdatingUrl,
+  Modal,
   selectFeature,
   Selection,
   setActiveModal,
@@ -39,7 +40,7 @@ interface Location extends LatLon {
 
 export interface MainState {
   tool: Tool | null;
-  activeModal: string | null;
+  activeModal: Modal | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
   location: Location | null;

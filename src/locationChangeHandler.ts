@@ -20,6 +20,7 @@ import {
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import {
+  Modal,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -46,7 +47,6 @@ import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
-import refModals from 'fm3/refModals.json';
 import { tips } from 'fm3/tips';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
@@ -360,14 +360,14 @@ export const handleLocationChange = (
   }
 
   const activeModal = getState().main.activeModal;
-  if (typeof query['show'] === 'string' && refModals.includes(query['show'])) {
-    if (query['show'] !== activeModal) {
-      dispatch(setActiveModal(query['show']));
+
+  const { show } = query;
+
+  if (is<Modal>(show)) {
+    if (show !== activeModal) {
+      dispatch(setActiveModal(show));
     }
-  } else if (
-    typeof activeModal === 'string' &&
-    refModals.includes(activeModal)
-  ) {
+  } else if (is<Modal>(activeModal)) {
     dispatch(setActiveModal(null));
   }
 

@@ -2,7 +2,6 @@ import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import refModals from 'fm3/refModals.json';
 import { tips as allTips } from 'fm3/tips';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
@@ -226,7 +225,7 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (main.activeModal && refModals.includes(main.activeModal)) {
+    if (main.activeModal) {
       historyParts.push(['show', main.activeModal]);
     }
 

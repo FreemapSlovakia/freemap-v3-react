@@ -13,9 +13,23 @@ export type Tool =
   | 'map-details'
   | 'maps';
 
+export type Modal =
+  | 'legend'
+  | 'upload-track'
+  | 'edit-label'
+  | 'about'
+  | 'export-gpx'
+  | 'export-pdf'
+  | 'settings'
+  | 'embed'
+  | 'supportUs'
+  | 'tracking-watched'
+  | 'tracking-my'
+  | 'tips';
+
 export const setTool = createAction('SET_TOOL')<Tool | null>();
 
-export const setActiveModal = createAction('SET_ACTIVE_MODAL')<string | null>();
+export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();
 
 export const setHomeLocation = createAction('SET_HOME_LOCATION')<{
   lat: number;
