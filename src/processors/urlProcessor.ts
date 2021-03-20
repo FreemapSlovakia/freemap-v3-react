@@ -1,4 +1,5 @@
 import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
+import { ShowModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -225,7 +226,7 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (main.activeModal) {
+    if (is<ShowModal>(main.activeModal)) {
       historyParts.push(['show', main.activeModal]);
     }
 

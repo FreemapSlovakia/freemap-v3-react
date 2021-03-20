@@ -27,6 +27,8 @@ export type Modal =
   | 'tracking-my'
   | 'tips';
 
+export type ShowModal = Exclude<Modal, 'tips' | 'edit-label'>;
+
 export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();

@@ -20,11 +20,11 @@ import {
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import {
-  Modal,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setTool,
+  ShowModal,
   Tool,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
@@ -363,11 +363,11 @@ export const handleLocationChange = (
 
   const { show } = query;
 
-  if (is<Modal>(show)) {
+  if (is<ShowModal>(show)) {
     if (show !== activeModal) {
       dispatch(setActiveModal(show));
     }
-  } else if (is<Modal>(activeModal)) {
+  } else if (is<ShowModal>(activeModal)) {
     dispatch(setActiveModal(null));
   }
 
