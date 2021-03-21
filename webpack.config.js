@@ -18,7 +18,7 @@ const fastDev = !prod && !process.env.DISABLE_FAST_DEV;
 const renderer = new marked.Renderer();
 
 renderer.link = (href, title, text) =>
-  `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
+  `<a href="${href}" title="${title ?? ''}">${text}</a>`;
 
 module.exports = {
   mode: prod ? 'production' : 'development',
