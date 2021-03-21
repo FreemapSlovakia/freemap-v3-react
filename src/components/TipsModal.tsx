@@ -114,7 +114,7 @@ export function TipsModal({ show }: Props): ReactElement {
   }, [loaded, ref]);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
           <FaRegLightbulb />
