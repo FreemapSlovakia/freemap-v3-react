@@ -1,4 +1,5 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -46,12 +47,17 @@ export function SupportUsModal({ show }: Props): ReactElement {
         <br />
         <p>{m?.supportUs.thanks}</p>
         <hr />
-        <p>2% z dane</p>
         <p>
-          Podporiť prevádzku Freemapu môžete aj Vašimi 2% z dane. Bližšie
-          informácie a tlačivá potrebné k poukázaniu 2% z dane nájdete na{' '}
-          <a href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia">
-            tejto stránke
+          Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
+          <a
+            href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia"
+            onClick={(e) => {
+              e.preventDefault();
+
+              dispatch(tipsShow('dvePercenta'));
+            }}
+          >
+            2% z dane
           </a>
           .
         </p>

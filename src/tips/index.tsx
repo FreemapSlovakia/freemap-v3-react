@@ -25,3 +25,5 @@ export const tips = [
   ['planner', 'Vyhľadávač trás', <FaMapSigns />],
   ['dvePercenta', 'Dve percentá', <FaPercent />],
 ] as const;
+
+export type Tip = typeof tips[number][0];

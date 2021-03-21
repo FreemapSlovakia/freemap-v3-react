@@ -5,8 +5,9 @@ import { httpRequest } from 'fm3/authAxios';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { storage } from 'fm3/storage';
+import { Tip } from 'fm3/tips';
 import { User } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assertType, is } from 'typescript-is';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
@@ -54,7 +55,9 @@ export const authInitProcessor: Processor = {
         !getState().tips.preventTips &&
         ['sk', 'cs'].includes(getState().l10n.language)
       ) {
-        dispatch(tipsShow(storage.getItem('tip') || 'freemap'));
+        const tip = storage.getItem('tip');
+
+        dispatch(tipsShow(tip && is<Tip>(tip) ? tip : 'freemap'));
 
         dispatch(setActiveModal('tips'));
       }

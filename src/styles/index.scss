@@ -380,3 +380,15 @@ body.fm-overlay-backdrop-enable {
   opacity: 1;
   transition: opacity 0.5s;
 }
+
+.markdown {
+  & table {
+    margin-bottom: 1rem;
+  }
+
+  & th,
+  & td {
+    border: 1px solid black;
+    padding: 0 0.5em;
+  }
+}

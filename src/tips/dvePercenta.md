@@ -19,6 +19,6 @@ Vaše 2% z dane nám pomôžu udržať v prevádzke hardvér, nami poskytované 
 
 Ak vypisujete vyhlásenie sami, zarovnajte IČO doprava.
 
-Pokiaľ ste zamestnanec, [tu si môžete stiahnuť tlačivá potrebné k poukázaniu 2% z dane](https://download.freemap.sk/Vyhlasenie-2percenta-2020.pdf). Za Freemap Slovakia sú údaje v tlačivách predvyplnené.
+Pokiaľ ste zamestnanec, môžete si stiahnuť [tlačivá potrebné k poukázaniu 2% z dane](https://download.freemap.sk/Vyhlasenie-2percenta-2020.pdf), v ktorých sú za Freemap Slovakia údaje už predvyplnené.
 
 **Ďakujeme**

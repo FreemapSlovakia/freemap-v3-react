@@ -20,7 +20,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { tips } from 'fm3/tips';
+import { Tip, tips } from 'fm3/tips';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import {
   Fragment,
@@ -138,7 +138,7 @@ export function MoreMenuButton(): ReactElement {
     (tip: string | null) => {
       close();
 
-      if (tip !== null) {
+      if (is<Tip>(tip)) {
         dispatch(tipsShow(tip));
       }
     },

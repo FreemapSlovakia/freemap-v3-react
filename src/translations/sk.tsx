@@ -362,12 +362,11 @@ const sk: Messages = {
       </div>
     ),
     copyright: 'Licencia',
-    p2: () => (
+    p2: ({ onClick }) => (
       <>
-        Podporiť prevádzku Freemapu môžete aj Vašimi 2% z dane. Bližšie
-        informácie a tlačivá nájdete na{' '}
-        <a href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia">
-          tejto stránke
+        Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
+        <a href="/?tip=dvePercenta" onClick={onClick}>
+          2% z dane
         </a>
         .
       </>

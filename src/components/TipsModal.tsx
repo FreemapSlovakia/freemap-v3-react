@@ -133,6 +133,7 @@ export function TipsModal({ show }: Props): ReactElement {
         {tipText ? (
           <div
             ref={setRef}
+            className="markdown"
             style={loading ? { opacity: 0.5, cursor: 'progress' } : {}}
             dangerouslySetInnerHTML={{ __html: tipText }}
           />
