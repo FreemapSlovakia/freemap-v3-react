@@ -67,6 +67,52 @@ export function TipsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
+  const [ref, setRef] = useState<HTMLDivElement | null>(null);
+
+  const loaded = !loading && !!tipText && !!ref;
+
+  // effect is to handle local hrefs properly
+  useEffect(() => {
+    if (loaded) {
+      for (const a of Array.from(ref?.querySelectorAll('a') ?? [])) {
+        a.onclick = (e) => {
+          const { href } = a;
+
+          if (
+            !href.startsWith(process.env['BASE_URL'] ?? '~') &&
+            href.match(/^\w+:/)
+          ) {
+            return;
+          }
+
+          e.preventDefault();
+
+          const url = new URL(document.location.href);
+
+          const sp = url.searchParams;
+
+          new URL(href).searchParams.forEach((value, key) => {
+            if (value) {
+              sp.set(key, value);
+            } else {
+              sp.delete(key);
+            }
+          });
+
+          url.search = sp.toString();
+
+          const stringUrl = url.toString();
+
+          history.pushState(undefined, '', stringUrl);
+
+          window.dispatchEvent(
+            new PopStateEvent('popstate', { state: { sq: stringUrl } }),
+          );
+        };
+      }
+    }
+  }, [loaded, ref]);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -86,6 +132,7 @@ export function TipsModal({ show }: Props): ReactElement {
       <Modal.Body>
         {tipText ? (
           <div
+            ref={setRef}
             style={loading ? { opacity: 0.5, cursor: 'progress' } : {}}
             dangerouslySetInnerHTML={{ __html: tipText }}
           />
