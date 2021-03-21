@@ -5,6 +5,7 @@ import {
   FaCertificate,
   FaExternalLinkAlt,
   FaMapSigns,
+  FaPercent,
   FaRegKeyboard,
   FaRoad,
   FaShareAlt,
@@ -22,4 +23,5 @@ export const tips = [
   ['galleryUpload', 'Galéria fotografií', <FaCamera />],
   ['gpxViewer', 'Prehliadač trás GPX', <FaRoad />],
   ['planner', 'Vyhľadávač trás', <FaMapSigns />],
+  ['dvePercenta', 'Dve percentá', <FaPercent />],
 ] as const;
