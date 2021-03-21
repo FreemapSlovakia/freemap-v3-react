@@ -363,11 +363,11 @@ export const handleLocationChange = (
 
   const { show } = query;
 
-  if (is<ShowModal>(show)) {
+  if (is<ShowModal>(show) && show) {
     if (show !== activeModal) {
       dispatch(setActiveModal(show));
     }
-  } else if (is<ShowModal>(activeModal)) {
+  } else if (is<ShowModal>(activeModal) && activeModal) {
     dispatch(setActiveModal(null));
   }
 

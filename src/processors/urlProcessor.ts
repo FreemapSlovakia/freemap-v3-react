@@ -226,7 +226,7 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (is<ShowModal>(main.activeModal)) {
+    if (is<ShowModal>(main.activeModal) && main.activeModal) {
       historyParts.push(['show', main.activeModal]);
     }
 
