@@ -346,6 +346,8 @@ const hu: Messages = {
   },
 
   main: {
+    title: process.env['TITLE_SK'] ?? '', // TODO
+    description: process.env['DESC_SK'] ?? '', // TODO
     clearMap: 'Térképelemek törlése',
     close: 'Bezárás',
     closeTool: 'Eszköz bezárása',

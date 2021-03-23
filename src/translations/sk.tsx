@@ -348,6 +348,8 @@ const sk: Messages = {
   },
 
   main: {
+    title: process.env['TITLE_SK'] ?? '',
+    description: process.env['DESC_SK'] ?? '',
     clearMap: 'Vyčistiť mapu',
     close: 'Zavrieť',
     closeTool: 'Zavrieť nástroj',

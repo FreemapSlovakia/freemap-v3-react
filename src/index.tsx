@@ -23,6 +23,7 @@ import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { assertType, setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
+import { AppHelmet } from './components/AppHelmet';
 import { MessagesProvider } from './components/TranslationProvider';
 import { AppState } from './types/common';
 
@@ -77,7 +78,9 @@ render(
     >
       <MessagesProvider>
         <ErrorCatcher>
-          <Main />
+          <AppHelmet>
+            <Main />
+          </AppHelmet>
         </ErrorCatcher>
       </MessagesProvider>
     </IconContext.Provider>

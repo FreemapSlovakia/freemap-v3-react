@@ -349,6 +349,8 @@ const cs: Messages = {
   },
 
   main: {
+    title: process.env['TITLE_SK'] ?? '', // TODO
+    description: process.env['DESC_SK'] ?? '', // TODO
     clearMap: 'Vyčistit mapu',
     close: 'Zavřít',
     closeTool: 'Zavřít nástroj',

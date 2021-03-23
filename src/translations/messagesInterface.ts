@@ -288,6 +288,8 @@ export type Messages = {
     pdfExport: string;
   };
   main: {
+    title: string;
+    description: string;
     clearMap: string;
     close: string;
     closeTool: string;

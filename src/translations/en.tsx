@@ -345,6 +345,8 @@ const en: Messages = {
   },
 
   main: {
+    title: process.env['TITLE_SK'] ?? '', // TODO
+    description: process.env['DESC_SK'] ?? '', // TODO
     clearMap: 'Clear map elements',
     close: 'Close',
     closeTool: 'Close tool',
