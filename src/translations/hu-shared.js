@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
   title: 'Freemap Slovakia - digital map', // TODO translate
   description:
     // TODO google translated

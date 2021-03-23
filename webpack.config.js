@@ -25,6 +25,23 @@ const renderer = new marked.Renderer();
 renderer.link = (href, title, text) =>
   `<a href="${href}" title="${title ?? ''}">${text}</a>`;
 
+const htmlPluginProps = {
+  filename: 'index.html',
+  template: 'index.ejs',
+  inject: false,
+  templateParameters: {
+    lang: 'en',
+    title: enMessages.title,
+    description: enMessages.description,
+    errorHtml:
+      '<h1>Problem starting application</h1>' +
+      '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      'JavaScript enabled browser is required to run this application.',
+    loadingMessage: 'Loading…',
+  },
+};
+
 module.exports = {
   mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
@@ -193,26 +210,14 @@ module.exports = {
         ] || null,
     }),
     new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
     new HtmlWebpackPlugin({
+      ...htmlPluginProps,
       filename: 'index-en.html',
-      template: 'index.ejs',
-      inject: false,
-      templateParameters: {
-        lang: 'en',
-        title: enMessages.title,
-        description: enMessages.description,
-        errorHtml:
-          '<h1>Problem starting application</h1>' +
-          '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          'JavaScript enabled browser is required to run this application.',
-        loadingMessage: 'Loading…',
-      },
     }),
     new HtmlWebpackPlugin({
+      ...htmlPluginProps,
       filename: 'index-sk.html',
-      template: 'index.ejs',
-      inject: false,
       templateParameters: {
         lang: 'sk',
         title: skMessages.title,
@@ -226,9 +231,8 @@ module.exports = {
       },
     }),
     new HtmlWebpackPlugin({
+      ...htmlPluginProps,
       filename: 'index-cs.html',
-      template: 'index.ejs',
-      inject: false,
       templateParameters: {
         lang: 'cs',
         title: csMessages.title,
@@ -242,9 +246,8 @@ module.exports = {
       },
     }),
     new HtmlWebpackPlugin({
+      ...htmlPluginProps,
       filename: 'index-hu.html',
-      template: 'index.ejs',
-      inject: false,
       templateParameters: {
         lang: 'hu',
         title: huMessages.title,

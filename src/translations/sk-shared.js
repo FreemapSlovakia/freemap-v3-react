@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
   title: 'Freemap Slovakia - digitálna mapa',
   description: `Detailná cyklistická, turistická, bežkárska a jazdecká mapa strednej Európy
 (Slovenska, Česka, Maďarska, Chorvátska, Slovinska, Rumunska, Bulharska, Bosny a Hercegoviny, Rakúska, Švajčiarska severného Talianska a Zakarpatskej Rusi).
