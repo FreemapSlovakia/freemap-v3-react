@@ -212,6 +212,8 @@
               margin-top: 0;
             "
           >
+            <%= loadingMessage %>
+
             <noscript>
               <div
                 style="
@@ -224,10 +226,6 @@
                 <%= nojsMessage %>
               </div>
             </noscript>
-
-            <script>
-              document.write('<%= loadingMessage %>');
-            </script>
           </div>
         </div>
       </div>
