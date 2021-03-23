@@ -19,7 +19,6 @@ import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
 import { render } from 'react-dom';
-import { HelmetProvider } from 'react-helmet-async';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { assertType, setDefaultGetErrorObject } from 'typescript-is';
@@ -78,9 +77,7 @@ render(
     >
       <MessagesProvider>
         <ErrorCatcher>
-          <HelmetProvider>
-            <Main />
-          </HelmetProvider>
+          <Main />
         </ErrorCatcher>
       </MessagesProvider>
     </IconContext.Provider>

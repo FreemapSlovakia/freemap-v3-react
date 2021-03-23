@@ -87,7 +87,6 @@ import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
-import { AppHelmet } from './AppHelmet';
 import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
@@ -98,6 +97,7 @@ import { MoreMenuButton } from './MoreMenuButton';
 import { ObjectSelection } from './ObjectSelection';
 import { SelectionTool } from './SelectionTool';
 import { TrackingSelection } from './TrackingSelection';
+import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
 
 const embed = window.self !== window.top;
@@ -363,10 +363,10 @@ export function Main(): ReactElement {
 
   const YellowBar = m?.main.p2;
 
+  useHtmlMeta();
+
   return (
     <>
-      <AppHelmet />
-
       <style>
         {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
       </style>
