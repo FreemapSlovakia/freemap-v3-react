@@ -20,6 +20,16 @@ const renderer = new marked.Renderer();
 renderer.link = (href, title, text) =>
   `<a href="${href}" title="${title ?? ''}">${text}</a>`;
 
+const skTitle = 'Freemap Slovakia - digitálna mapa Slovenska';
+const skDescription = `Detailná cyklistická, turistická, bežkárska a jazdecká mapa strednej Európy
+(Slovenska, Česka, Maďarska, Chorvátska, Slovinska, Rumunska, Bulharska, Bosny a Hercegoviny, Rakúska, Švajčiarska severného Talianska a Zakarpatskej Rusi).
+Mapa obsahuje značené turistické, cyklistické, bežkárske a jazdecké chodníky.
+Je založená na databáze OpenStreetMap a preto je neustále aktualizovaná.
+Rôzne podklady ako Strava heatmap, lesné cesty NLC, ortofoto, satelitný podklad, verejná doprava, wikipédia, fotografie.
+Funkcie ako vyhľadávanie (podľa názvu alebo POI podľa kategórie), plánovanie trás (pešo, cyklo, kočík, vozík, ...), anotácia mapy (kreslenie, body/značky v mape), meranie (vzdialenosti, výšky, plochy, polohy), zobrazenie vlastných GPX záznamov, vlastné mapy, živé sledovanie (tracking), export do GPX, tlač máp, exportovanie mapy do PDF.
+Vloženie mapy do vlastnej stránky.
+Alternatíva k mapám ako hiking.sk alebo mapy.cz.`;
+
 module.exports = {
   mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
@@ -189,20 +199,13 @@ module.exports = {
             process.env.DEPLOYMENT
           ] || null,
         ),
-        TITLE_SK: JSON.stringify('Freemap Slovakia - digitálna mapa Slovenska'),
-        DESC_SK: JSON.stringify(`Detailná cyklistická, turistická, bežkárska a jazdecká mapa strednej Európy
-(Slovenska, Česka, Maďarska, Chorvátska, Slovinska, Rumunska, Bulharska, Bosny a Hercegoviny, Rakúska, Švajčiarska severného Talianska a Zakarpatskej Rusi).
-Mapa obsahuje značené turistické, cyklistické, bežkárske a jazdecké chodníky.
-Je založená na databáze OpenStreetMap a preto je neustále aktualizovaná.
-Rôzne podklady ako Strava heatmap, lesné cesty NLC, ortofoto, satelitný podklad, verejná doprava, wikipédia, fotografie.
-Funkcie ako vyhľadávanie (podľa názvu alebo POI podľa kategórie), plánovanie trás (pešo, cyklo, kočík, vozík, ...), anotácia mapy (kreslenie, body/značky v mape), meranie (vzdialenosti, výšky, plochy, polohy), zobrazenie vlastných GPX záznamov, vlastné mapy, živé sledovanie (tracking), export do GPX, tlač máp, exportovanie mapy do PDF.
-Vloženie mapy do vlastnej stránky.
-Alternatíva k mapám ako hiking.sk alebo mapy.cz.`),
+        TITLE_SK: JSON.stringify(skTitle),
+        DESC_SK: JSON.stringify(skDescription),
       },
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: '!!ejs-loader?esModule=false!src/index.html',
+      template: '!!ejs-compiled-loader?esModule=false!src/index.html',
       inject: false,
     }),
     // TODO we use InjectManifest only to generate sw.js. Find simpler way to do it.
