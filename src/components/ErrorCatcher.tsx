@@ -28,7 +28,6 @@ export class ErrorCatcher extends Component<unknown, State> {
   state: State = {};
 
   componentDidCatch(error: Error): void {
-    console.error(error);
     this.setState({ error });
   }
 

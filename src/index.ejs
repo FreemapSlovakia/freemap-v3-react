@@ -1,13 +1,6 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="<%= lang %>">
   <head>
-    <!-- prettier-ignore -->
-    <%
-    const title = process.env['TITLE_SK'];
-
-    const description = process.env['DESC_SK'];
-    %>
-
     <title><%= title %></title>
 
     <meta charset="UTF-8" />
@@ -59,7 +52,7 @@
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
 
     <!-- prettier-ignore -->
-    <%-
+    <%=
       [
         '57x57',
         '60x60',
@@ -87,7 +80,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Freemap" />
     <!-- prettier-ignore -->
-    <%-
+    <%=
       [
         [320, 568, 2, 'portrait'],
         [375, 667, 2, 'portrait'],
@@ -122,7 +115,7 @@
     <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
 
-    <%- htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
+    <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
     <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
@@ -219,14 +212,21 @@
               margin-top: 0;
             "
           >
+            <noscript>
+              <div
+                style="
+                  margin: 20px;
+                  padding: 20px;
+                  border: 6px solid red;
+                  font-family: Arial, Helvetica, sans-serif;
+                "
+              >
+                <%= nojsMessage %>
+              </div>
+            </noscript>
+
             <script>
-              document.write(
-                lang === 'sk'
-                  ? 'Načítavam…'
-                  : lang === 'cs'
-                  ? 'Načítám…'
-                  : 'Loading…',
-              );
+              document.write('<%= loadingMessage %>');
             </script>
           </div>
         </div>
@@ -252,38 +252,8 @@
         ) {
           console.error('Startup error.', e);
 
-          var html;
-
-          if (lang === 'hu') {
-            html =
-              '  <h1>Hiba történt az alkalmazás elindításánál</h1>\n' +
-              '  <p>\n' +
-              '    Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.\n' +
-              '  </p>\n';
-          } else if (lang === 'sk') {
-            html =
-              '  <h1>Aplikáciu sa nepodarilo spustiť</h1>\n' +
-              '  <p>\n' +
-              '    Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).\n' +
-              '  <p>\n';
-          } else if (lang === 'cs') {
-            html =
-              '  <h1>Aplikaci se nepodařilo spustit</h1>\n' +
-              '  <p>\n' +
-              '    Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).\n' +
-              '  <p>\n';
-          } else {
-            html =
-              '  <h1>Problem starting application</h1>\n' +
-              '  <p>\n' +
-              '    Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).\n' +
-              '  </p>\n';
-          }
-
           app.innerHTML =
-            '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;">\n' +
-            html +
-            '</div>';
+            '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
         }
       };
 
@@ -310,17 +280,5 @@
     </script>
 
     <script async src="https://www.google-analytics.com/analytics.js"></script>
-
-    <noscript>
-      Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.
-      <br />
-      ~~~
-      <br />
-      JavaScript enabled browser is required to run this application.
-      <br />
-      ~~~
-      <br />
-      Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.
-    </noscript>
   </body>
 </html>

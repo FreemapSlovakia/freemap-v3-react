@@ -7,6 +7,8 @@ import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaFlask, FaKey } from 'react-icons/fa';
+// @ts-ignore
+import shared from './en-shared';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('en', {
@@ -345,8 +347,8 @@ const en: Messages = {
   },
 
   main: {
-    title: process.env['TITLE_SK'] ?? '', // TODO
-    description: process.env['DESC_SK'] ?? '', // TODO
+    title: shared.title,
+    description: shared.description,
     clearMap: 'Clear map elements',
     close: 'Close',
     closeTool: 'Close tool',

@@ -8,6 +8,8 @@ import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
+// @ts-ignore
+import shared from './sk-shared';
 
 const nf01 = Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -348,8 +350,8 @@ const sk: Messages = {
   },
 
   main: {
-    title: process.env['TITLE_SK'] ?? '',
-    description: process.env['DESC_SK'] ?? '',
+    title: shared.title,
+    description: shared.description,
     clearMap: 'Vyčistiť mapu',
     close: 'Zavrieť',
     closeTool: 'Zavrieť nástroj',

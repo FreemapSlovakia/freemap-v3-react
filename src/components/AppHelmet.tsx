@@ -1,23 +1,17 @@
 import { useMessages } from 'fm3/l10nInjector';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
-type Props = { children: JSX.Element };
-
-export function AppHelmet({ children }: Props): JSX.Element {
+export function AppHelmet(): null | JSX.Element {
   const m = useMessages();
 
-  return !m ? (
-    children
-  ) : (
+  return !m ? null : (
     <Helmet>
-      <title>{m.main.title}</title>
+      <title>{m?.main.title}</title>
 
-      <meta property="og:title" content={m.main.title} />
+      <meta property="og:title" content={m?.main.title} />
 
-      <meta name="description" content={m.main.description} />
-      <meta property="og:description" content={m.main.description} />
-
-      {children}
+      <meta name="description" content={m?.main.description} />
+      <meta property="og:description" content={m?.main.description} />
     </Helmet>
   );
 }

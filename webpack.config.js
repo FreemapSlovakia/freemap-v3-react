@@ -11,6 +11,11 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
+const skMessages = require('./src/translations/sk-shared.js');
+const csMessages = require('./src/translations/cs-shared.js');
+const enMessages = require('./src/translations/en-shared.js');
+const huMessages = require('./src/translations/hu-shared.js');
+
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
 const fastDev = !prod && !process.env.DISABLE_FAST_DEV;
@@ -19,17 +24,6 @@ const renderer = new marked.Renderer();
 
 renderer.link = (href, title, text) =>
   `<a href="${href}" title="${title ?? ''}">${text}</a>`;
-
-const skTitle = 'Freemap Slovakia - digitálna mapa Slovenska';
-
-const skDescription = `Detailná cyklistická, turistická, bežkárska a jazdecká mapa strednej Európy
-(Slovenska, Česka, Maďarska, Chorvátska, Slovinska, Rumunska, Bulharska, Bosny a Hercegoviny, Rakúska, Švajčiarska severného Talianska a Zakarpatskej Rusi).
-Mapa obsahuje značené turistické, cyklistické, bežkárske a jazdecké chodníky.
-Je založená na databáze OpenStreetMap a preto je neustále aktualizovaná.
-Rôzne podklady ako Strava heatmap, lesné cesty NLC, ortofoto, satelitný podklad, verejná doprava, wikipédia, fotografie.
-Funkcie ako vyhľadávanie (podľa názvu alebo POI podľa kategórie), plánovanie trás (pešo, cyklo, kočík, vozík, ...), anotácia mapy (kreslenie, body/značky v mape), meranie (vzdialenosti, výšky, plochy, polohy), zobrazenie vlastných GPX záznamov, vlastné mapy, živé sledovanie (tracking), export do GPX, tlač máp, exportovanie mapy do PDF.
-Vloženie mapy do vlastnej stránky.
-Alternatíva k mapám ako hiking.sk alebo mapy.cz.`.replace(/\n/g, ' ');
 
 module.exports = {
   mode: prod ? 'production' : 'development',
@@ -176,40 +170,94 @@ module.exports = {
       },
       async: fastDev,
     }),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react
-        BROWSER: JSON.stringify(true),
-        DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
-        FM_MAPSERVER_URL: JSON.stringify(process.env.FM_MAPSERVER_URL),
-        MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(15),
-        BASE_URL: JSON.stringify(
-          {
-            www: 'https://www.freemap.sk',
-            next: 'https://next.freemap.sk',
-          }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:9000',
-        ),
-        API_URL: JSON.stringify(
-          {
-            www: 'https://backend.freemap.sk',
-            next: 'https://backend.freemap.sk',
-          }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
-        ),
-        GA_TRACKING_CODE: JSON.stringify(
-          { www: 'UA-89861822-3', next: 'UA-89861822-4' }[
-            process.env.DEPLOYMENT
-          ] || null,
-        ),
-        TITLE_SK: JSON.stringify(skTitle),
-        DESC_SK: JSON.stringify(skDescription),
-      },
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: prod ? 'production' : null, // for react
+      BROWSER: true,
+      DEPLOYMENT: process.env.DEPLOYMENT ?? null,
+      FM_MAPSERVER_URL:
+        process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk',
+      MAX_GPX_TRACK_SIZE_IN_MB: 15,
+      BASE_URL:
+        {
+          www: 'https://www.freemap.sk',
+          next: 'https://next.freemap.sk',
+        }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:9000',
+      API_URL:
+        {
+          www: 'https://backend.freemap.sk',
+          next: 'https://backend.freemap.sk',
+        }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
+      GA_TRACKING_CODE:
+        { www: 'UA-89861822-3', next: 'UA-89861822-4' }[
+          process.env.DEPLOYMENT
+        ] || null,
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: '!!ejs-compiled-loader?esModule=false!src/index.html',
+      filename: 'index-en.html',
+      template: 'index.ejs',
       inject: false,
+      templateParameters: {
+        lang: 'en',
+        title: enMessages.title,
+        description: enMessages.description,
+        errorHtml:
+          '<h1>Problem starting application</h1>' +
+          '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+        nojsMessage:
+          'JavaScript enabled browser is required to run this application.',
+        loadingMessage: 'Loading…',
+      },
     }),
-    // TODO we use InjectManifest only to generate sw.js. Find simpler way to do it.
+    new HtmlWebpackPlugin({
+      filename: 'index-sk.html',
+      template: 'index.ejs',
+      inject: false,
+      templateParameters: {
+        lang: 'sk',
+        title: skMessages.title,
+        description: skMessages.description,
+        errorHtml:
+          '<h1>Aplikáciu sa nepodarilo spustiť</h1>' +
+          '<p>Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
+        nojsMessage:
+          'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
+        loadingMessage: 'Načítavam…',
+      },
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'index-cs.html',
+      template: 'index.ejs',
+      inject: false,
+      templateParameters: {
+        lang: 'cs',
+        title: csMessages.title,
+        description: csMessages.description,
+        errorHtml:
+          '<h1>Aplikaci se nepodařilo spustit</h1>' +
+          '<p>Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
+        nojsMessage:
+          'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
+        loadingMessage: 'Načítám…',
+      },
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'index-hu.html',
+      template: 'index.ejs',
+      inject: false,
+      templateParameters: {
+        lang: 'hu',
+        title: huMessages.title,
+        description: huMessages.description,
+        errorHtml:
+          '<h1>Hiba történt az alkalmazás elindításánál</h1>' +
+          '<p>Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.</p>',
+        nojsMessage:
+          'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
+        loadingMessage: 'Loading…', // TODO translate
+      },
+    }),
+    // TODO we use InjectManifest only to generate sw.js. Find a simpler way to do it.
     new WorkboxPlugin.InjectManifest({
       swSrc: '../sw/sw.ts',
       maximumFileSizeToCacheInBytes: 1,
