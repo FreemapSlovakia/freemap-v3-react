@@ -12,11 +12,11 @@ Priame stiahnutie mapy Slovenska a Freemap štýlu pre program Locus Map a OruxM
 
 Locus Map:
 
-- [mapa Slovenska V5](locus-actions://http/proxy.freemap.sk/locus/locus-map-sk-v5.xml)
-- [mapa Českej republiky V5](locus-actions://http/proxy.freemap.sk/locus/locus-map-cz-v5.xml)
-- [štýl pre mapu V5](locus-actions://http/proxy.freemap.sk/locus/locus-theme-v5.xml)
-- [mapa Slovenska V3](locus-actions://http/download.freemap.sk/LocusMap/map_freemap_slovakia.xml) (staršia verzia)
-- [štýl pre mapu V3](locus-actions://http/download.freemap.sk/LocusMap/theme_freemap_slovakia.xml) (staršia verzia)
+- [mapa Slovenska V5](locus-actions://https/proxy.freemap.sk/locus/locus-map-sk-v5.xml)
+- [mapa Českej republiky V5](locus-actions://https/proxy.freemap.sk/locus/locus-map-cz-v5.xml)
+- [štýl pre mapu V5](locus-actions://https/proxy.freemap.sk/locus/locus-theme-v5.xml)
+- [mapa Slovenska V3](locus-actions://https/download.freemap.sk/LocusMap/map_freemap_slovakia.xml) (staršia verzia)
+- [štýl pre mapu V3](locus-actions://https/download.freemap.sk/LocusMap/theme_freemap_slovakia.xml) (staršia verzia)
 
 OruxMaps:
 
@@ -28,9 +28,9 @@ OruxMaps:
 
 Pokiaľ používate inú aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge, môžete si ručne stiahnuť nasledovné súbory. Tie potom musíte uložiť do priečinka, kde si to aplikácia vyžaduje. Kde konkrétne to je, zistíte buď priamo v aplikácií, alebo na web stránke aplikácie.
 
-- [mapa Slovenska V5](http://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
-- [mapa Českej republiky V5](http://proxy.freemap.sk/locus/freemapV5-czech.zip)
-- [štýl pre mapu V5](http://proxy.freemap.sk/locus/freemapV5.zip)
+- [mapa Slovenska V5](https://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
+- [mapa Českej republiky V5](https://proxy.freemap.sk/locus/freemapV5-czech.zip)
+- [štýl pre mapu V5](https://proxy.freemap.sk/locus/freemapV5.zip)
 
 Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
 
@@ -41,25 +41,25 @@ Táto turisticko-cyklistická mapa je vytvorená z dát projektu OpenStreetMap. 
 _freemapSKtopo_ - obsahuje mapu Slovenska s turistickými a cyklo trasami (aktualizovaná každý pondelok a štvrtok)
 
 - inštalátor pre MS Windows MapSource/BaseCamp:
-  - [UTF8 mapa](http://download.freemap.sk/garmin/freemapSKtopo.exe)
-  - [Latin1 mapa](http://download.freemap.sk/garmin/freemapSKtopo.latin1.exe)
+  - [UTF8 mapa](https://download.freemap.sk/garmin/freemapSKtopo.exe)
+  - [Latin1 mapa](https://download.freemap.sk/garmin/freemapSKtopo.latin1.exe)
 - inštalátor mapy pre MacOS X BaseCamp:
-  - [UTF8 mapa](http://download.freemap.sk/garmin/freemapSKtopo.gmapi.zip)
-  - [Latin1 mapa](http://download.freemap.sk/garmin/freemapSKtopo.gmapi.latin1.zip)
+  - [UTF8 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapi.zip)
+  - [Latin1 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapi.latin1.zip)
 - iba gmapsupp.img súbor:
-  - [UTF8 mapa](http://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.zip)
-  - [Latin1 mapa](http://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.latin1.zip)
+  - [UTF8 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.zip)
+  - [Latin1 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.latin1.zip)
 
 _freemapCZtopo_ - obsahuje mapu Českej republiky s turistickými a cyklo trasami (aktualizovaná každý pondelok a štvrtok)
 
 - inštalátor pre MS Windows MapSource/BaseCamp:
-  - [Latin1 mapa](http://download.freemap.sk/garmin/freemapCZtopo.latin1.exe)
+  - [Latin1 mapa](https://download.freemap.sk/garmin/freemapCZtopo.latin1.exe)
 - inštalátor mapy pre MacOS X BaseCamp:
-  - [Latin1 mapa](http://download.freemap.sk/garmin/freemapCZtopo.gmapi.latin1.zip)
+  - [Latin1 mapa](https://download.freemap.sk/garmin/freemapCZtopo.gmapi.latin1.zip)
 - iba gmapsupp.img súbor:
-  - [Latin1 mapa](http://download.freemap.sk/garmin//freemapCZtopo.gmapsupp.latin1.zip)
+  - [Latin1 mapa](https://download.freemap.sk/garmin//freemapCZtopo.gmapsupp.latin1.zip)
 
-**Poznámka:** zariadenie Edge 1000 a GPSMap 64 (prípadne ďalšie) nezobrazujú mapu. Mapa používa unicode pre ukladanie znakov a tieto zariadenia s tím majú problém. Pokiaľ Vám zariadenie píše, že je "mapa zamknutá" [stiahnite si](http://download.freemap.sk/garmin) súbor, ktorý má v názve "latin1" a postupujte podľa návodu nižšie.
+**Poznámka:** zariadenie Edge 1000 a GPSMap 64 (prípadne ďalšie) nezobrazujú mapu. Mapa používa unicode pre ukladanie znakov a tieto zariadenia s tím majú problém. Pokiaľ Vám zariadenie píše, že je "mapa zamknutá" [stiahnite si](https://download.freemap.sk/garmin) súbor, ktorý má v názve "latin1" a postupujte podľa návodu nižšie.
 Viac o probléme zamknutej mapy na anglickom [Garmin fóre](https://forums.garmin.com/showthread.php?94680-Edge-1000-cannot-read-mkgmap-%28OSM%29-created-Unicode-maps).
 Taktiež v prípade ak vlastníte staršie zariadenie, ktoré miesto písmen s diakritikou zobrazuje nezmyselné znaky, použite verziu, ktorá má v názve "latin1".
 
@@ -67,7 +67,7 @@ Taktiež v prípade ak vlastníte staršie zariadenie, ktoré miesto písmen s d
 
 Prvá možnosť je za pomoci programov MapSource alebo BaseCamp, dodávaných spolu so zariadením.
 
-1.  Stiahnite si zo stránky [http://download.freemap.sk/garmin](http://download.freemap.sk/garmin) mapu [freemapSKtopo.exe](http://download.freemap.sk/garmin/freemapSKtopo.exe) alebo alternatívne [freemapSKtopo.latin1.exe](http://download.freemap.sk/garmin/freemapSKtopo.latin1.exe) (obsahuje windows inštalátor pre MapSource/BaseCamp).
+1.  Stiahnite si zo stránky [https://download.freemap.sk/garmin](https://download.freemap.sk/garmin) mapu [freemapSKtopo.exe](https://download.freemap.sk/garmin/freemapSKtopo.exe) alebo alternatívne [freemapSKtopo.latin1.exe](https://download.freemap.sk/garmin/freemapSKtopo.latin1.exe) (obsahuje windows inštalátor pre MapSource/BaseCamp).
 2.  Po spustení sa Vás inštalátor opýta, kam mapu uložiť
 3.  Pripojte zariadenie k PC a spustite MapSource/BaseCamp.
 4.  Vyberte si freemapSKtopo mapu, upravte mierku zobrazenia tak, aby ste videli celé Slovensko
@@ -77,7 +77,7 @@ Prvá možnosť je za pomoci programov MapSource alebo BaseCamp, dodávaných sp
 
 Ďalšou možnosťou ako dostať mapu do zariadenie je použiť súbor **gmapsupp.img**. Tento postup je možné použiť aj v prípade ak nie ste majiteľom počítača s OS Windows.
 
-1.  Stiahnite si zo stránky [http://download.freemap.sk/garmin](http://download.freemap.sk/garmin) mapu [freemapSKtopo.gmapsupp.zip](http://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.zip) alebo alternatívne [freemapSKtopo.gmapsupp.latin1.zip](http://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.latin1.zip).
+1.  Stiahnite si zo stránky [https://download.freemap.sk/garmin](https://download.freemap.sk/garmin) mapu [freemapSKtopo.gmapsupp.zip](https://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.zip) alebo alternatívne [freemapSKtopo.gmapsupp.latin1.zip](https://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.latin1.zip).
 2.  Rozbaľte zip súbor. (Obsahuje gmapsupp.img a informacia.txt)
 3.  Súbor gmapsupp.img stačí nakopírovať do zariadenia do priečinku Garmin alebo na pamäťovú kartu, tiež priečinok Garmin. Ak už máte taký súbor a obsahuje inú mapu **odporúčame si pôvodnú mapu zazálohovať v počítači**. Pokiaľ sa nejedná o staršie Garmin zariadenie, tak je možné používať aj viac img súborov súčasne. Stačí ak stiahnutý gmapsupp.img premenujete na napr. freemap.img a tento súbor uložíte do priečinka Garmin.
 
@@ -91,7 +91,7 @@ Na inštaláciu budete potrebovať:
 
 - [Garmin BaseCamp pre MacOS X](http://www8.garmin.com/support/download_details.jsp?id=4449)
 - [MapInstall a MapManager pre MacOS X](http://www8.garmin.com/support/download_details.jsp?id=3825)
-- [Aktuálne freemap mapové súbory](http://download.freemap.sk/garmin/) (`freemapSKtopo.gmapsupp.zip` a `freemapSKtopo.gmapi.zip`)
+- [Aktuálne freemap mapové súbory](https://download.freemap.sk/garmin/) (`freemapSKtopo.gmapsupp.zip` a `freemapSKtopo.gmapi.zip`)
 
 _Inštalácia do programu BaseCamp_
 

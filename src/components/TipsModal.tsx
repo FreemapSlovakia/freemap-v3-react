@@ -74,7 +74,11 @@ export function TipsModal({ show }: Props): ReactElement {
   // effect is to handle local hrefs properly
   useEffect(() => {
     if (loaded) {
-      for (const a of Array.from(ref?.querySelectorAll('a') ?? [])) {
+      for (const elem of Array.from(
+        ref?.querySelectorAll('a[href^="http"]') ?? [],
+      )) {
+        const a = elem as HTMLAnchorElement;
+
         a.onclick = (e) => {
           const { href } = a;
 
