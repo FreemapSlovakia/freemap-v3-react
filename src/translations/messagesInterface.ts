@@ -286,6 +286,7 @@ export type Messages = {
     github: string;
     automaticLanguage: string;
     pdfExport: string;
+    osmWiki: string;
   };
   main: {
     title: string;

@@ -343,6 +343,7 @@ const en: Messages = {
     github: 'Freemap on GitHub',
     automaticLanguage: 'Automatic',
     pdfExport: 'Export map',
+    osmWiki: 'OpenStreetMap documentation',
   },
 
   main: {

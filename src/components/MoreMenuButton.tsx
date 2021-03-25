@@ -481,6 +481,18 @@ export function MoreMenuButton(): ReactElement {
                   <FaRegAddressCard /> {m?.more.contacts}
                 </Dropdown.Item>
 
+                <Dropdown.Item
+                  href={`https://wiki.openstreetmap.org/wiki/${
+                    language === 'en'
+                      ? ''
+                      : language[0].toUpperCase() + language[1] + ':'
+                  }Main_Page`}
+                  onSelect={close}
+                  target="_blank"
+                >
+                  <FaBook /> {m?.more.osmWiki}
+                </Dropdown.Item>
+
                 {skCz && (
                   <Dropdown.Item
                     href="https://groups.google.com/forum/#!forum/osm_sk"

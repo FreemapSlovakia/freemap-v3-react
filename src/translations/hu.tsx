@@ -344,6 +344,7 @@ const hu: Messages = {
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
     pdfExport: 'Térkép exportálása',
+    osmWiki: 'OpenStreetMap documentation', // TODO translate
   },
 
   main: {

@@ -346,6 +346,7 @@ const sk: Messages = {
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
     pdfExport: 'Exportovať mapu',
+    osmWiki: 'Dokumentačný projekt OpenStreetMap',
   },
 
   main: {
