@@ -86,7 +86,9 @@ export function MapSwitchButton(): ReactElement {
   }, []);
 
   const handleMapSelect = useCallback(
-    (mapType1: string) => {
+    (mapType1: string | null, e: SyntheticEvent<unknown>) => {
+      e.preventDefault();
+
       setShow(false);
 
       if (mapType !== mapType1 && is<BaseLayerLetters>(mapType1)) {
@@ -253,8 +255,10 @@ export function MapSwitchButton(): ReactElement {
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key }) => (
                   <Dropdown.Item
+                    href={`?layers=${type}`}
                     key={type}
-                    onClick={() => handleMapSelect(type)}
+                    eventKey={type}
+                    onSelect={handleMapSelect}
                   >
                     {mapType === type ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
                     {icon}{' '}
@@ -288,6 +292,7 @@ export function MapSwitchButton(): ReactElement {
               .map(({ type, icon, minZoom, key }) => (
                 <Dropdown.Item
                   key={type}
+                  as="button"
                   eventKey={type}
                   onSelect={handleOverlaySelect}
                 >
