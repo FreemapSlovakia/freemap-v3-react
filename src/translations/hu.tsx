@@ -7,9 +7,8 @@ import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaFlask, FaKey } from 'react-icons/fa';
+import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
-
-const shared = require('./hu-shared');
 
 const nf01 = Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,

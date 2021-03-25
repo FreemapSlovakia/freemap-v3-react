@@ -8,8 +8,7 @@ import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
-
-const shared = require('./sk-shared');
+import shared from './sk-shared.json';
 
 const nf01 = Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
