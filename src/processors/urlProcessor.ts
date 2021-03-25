@@ -1,5 +1,5 @@
 import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
-import { ShowModal } from 'fm3/actions/mainActions';
+import { basicModals, ShowModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -226,20 +226,17 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (is<ShowModal>(main.activeModal) && main.activeModal) {
-      historyParts.push(['show', main.activeModal]);
-    }
-
     if (gallery.showFilter) {
       historyParts.push(['show', 'gallery-filter']);
-    }
-
-    if (gallery.showUploadModal) {
+    } else if (gallery.showUploadModal) {
       historyParts.push(['show', 'gallery-upload']);
-    }
-
-    if (auth.chooseLoginMethod) {
+    } else if (auth.chooseLoginMethod) {
       historyParts.push(['show', 'login']);
+    } else if (
+      is<ShowModal>(main.activeModal) &&
+      basicModals.includes(main.activeModal)
+    ) {
+      historyParts.push(['show', main.activeModal]);
     }
 
     if (

@@ -1,33 +1,39 @@
 import { AppState, LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 
-export type Tool =
-  | 'objects'
-  | 'route-planner'
-  | 'draw-lines'
-  | 'draw-polygons'
-  | 'route-planner'
-  | 'track-viewer'
-  | 'draw-points'
-  | 'changesets'
-  | 'map-details'
-  | 'maps';
+export const tools = [
+  'objects',
+  'route-planner',
+  'draw-lines',
+  'draw-polygons',
+  'route-planner',
+  'track-viewer',
+  'draw-points',
+  'changesets',
+  'map-details',
+  'maps',
+] as const;
 
-export type Modal =
-  | 'legend'
-  | 'upload-track'
-  | 'edit-label'
-  | 'about'
-  | 'export-gpx'
-  | 'export-pdf'
-  | 'settings'
-  | 'embed'
-  | 'supportUs'
-  | 'tracking-watched'
-  | 'tracking-my'
-  | 'tips';
+export type Tool = typeof tools[number];
 
-export type ShowModal = Exclude<Modal, 'tips' | 'edit-label'>;
+const specialModals = ['tips', 'edit-label'] as const;
+
+export const basicModals = [
+  'legend',
+  'upload-track',
+  'about',
+  'export-gpx',
+  'export-pdf',
+  'settings',
+  'embed',
+  'supportUs',
+  'tracking-watched',
+  'tracking-my',
+] as const;
+
+export type Modal = typeof basicModals[number] | typeof specialModals[number];
+
+export type ShowModal = typeof basicModals[number];
 
 export const setTool = createAction('SET_TOOL')<Tool | null>();
 

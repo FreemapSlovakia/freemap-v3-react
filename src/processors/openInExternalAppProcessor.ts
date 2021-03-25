@@ -3,16 +3,27 @@ import buffer from '@turf/buffer';
 import { point } from '@turf/helpers';
 import axios from 'axios';
 import { openInExternalApp } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import {
+  getGoogleUrl,
+  getHikingSkUrl,
+  getIdUrl,
+  getMapillaryUrl,
+  getMapyCzUrl,
+  getOmaUrl,
+  getOpenStreetCamUrl,
+  getOsmUrl,
+  getTwitterUrl,
+  getZbgisUrl,
+} from 'fm3/externalUrlUtils';
 import { loadFb } from 'fm3/fbLoader';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { CRS } from 'leaflet';
 import popupCentered from 'popup-centered';
-import qs, { StringifiableRecord } from 'query-string';
 
 export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   actionCreator: openInExternalApp,
-  handle: async ({ action, getState }) => {
+  handle: async ({ action, getState, dispatch }) => {
     const {
       where,
       lat: lat0,
@@ -37,53 +48,37 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       case 'window':
         window.open(url);
         break;
-      case 'facebook': {
-        const { href } = location;
 
+      case 'facebook':
         loadFb().then(() => {
           FB.ui({
             method: 'share',
             hashtag: '#openstreetmap',
-            href,
+            href: location.href,
           });
         });
+
         break;
-      }
+
       case 'twitter':
-        popupCentered(
-          `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-            location.href,
-          )}`,
-          'twitter',
-          575,
-          280,
-        );
+        popupCentered(getTwitterUrl(), 'twitter', 575, 280);
         break;
+
       case 'copy':
         navigator.clipboard.writeText(location.href);
         // TODO success toast
         break;
+
       case 'osm.org':
-        if (includePoint) {
-          window.open(
-            `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=${zoom}`,
-          );
-        } else {
-          window.open(
-            `https://www.openstreetmap.org/#map=${Math.min(
-              zoom,
-              19,
-            )}/${lat.toFixed(5)}/${lon.toFixed(5)}`,
-          );
-        }
+        window.open(getOsmUrl(lat, lon, zoom, includePoint));
+
         break;
+
       case 'osm.org/id':
-        window.open(
-          `https://www.openstreetmap.org/edit?editor=id#map=${zoom}/${lat.toFixed(
-            5,
-          )}/${lon.toFixed(5)}`,
-        );
+        window.open(getIdUrl(lat, lon, zoom));
+
         break;
+
       case 'josm': {
         const leaflet = getMapLeafletElement();
         if (leaflet) {
@@ -123,64 +118,42 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         }
         break;
       }
+
       case 'zbgis':
-        window.open(
-          `https://zbgis.skgeodesy.sk/mkzbgis?bm=zbgis&z=${zoom}&c=${lon},${lat}`,
-        );
+        window.open(getZbgisUrl(lat, lon, zoom));
         break;
+
       case 'hiking.sk': {
-        const point = CRS.EPSG3857.project({ lat, lng: lon });
-
-        const params: StringifiableRecord = {
-          zoom: zoom > 15 ? 15 : zoom,
-          lon: point.x,
-          lat: point.y,
-          layers: '00B00FFFTTFTTTTFFFFFFTTT',
-        };
-
-        if (includePoint) {
-          params['x'] = lon;
-          params['y'] = lat;
-        }
-
-        window.open(`https://mapy.hiking.sk/?${qs.stringify(params)}`);
+        window.open(getHikingSkUrl(lat, lon, zoom, includePoint));
 
         break;
       }
+
       case 'google':
-        if (includePoint) {
-          window.open(
-            `http://maps.google.com/maps?&z=${zoom}&q=loc:${lat}+${lon}`,
-          );
-        } else {
-          window.open(`https://www.google.com/maps/@${lat},${lon},${zoom}z`);
-        }
+        window.open(getGoogleUrl(lat, lon, zoom, includePoint));
 
         break;
+
       case 'mapy.cz':
-        window.open(
-          `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
-            zoom > 19 ? 19 : zoom
-          }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`,
-        );
+        window.open(getMapyCzUrl(lat, lon, zoom, includePoint));
 
         break;
+
       case 'oma.sk':
-        window.open(
-          `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`,
-        );
+        window.open(getOmaUrl(lat, lon, zoom, mapType));
 
         break;
+
       case 'openstreetcam':
-        window.open(`https://openstreetcam.org/map/@${lat},${lon},${zoom}z`);
+        window.open(getOpenStreetCamUrl(lat, lon, zoom));
 
         break;
+
       case 'mapillary':
-        window.open(
-          `https://www.mapillary.com/app/?lat=${lat}&lng=${lon}&z=${zoom}`,
-        );
+        window.open(getMapillaryUrl(lat, lon, zoom));
 
         break;
+
       case 'url':
         (navigator as any)
           .share({
@@ -188,11 +161,18 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
             text: pointDescription,
             url: url || window.location,
           })
-          .catch((error: unknown) => {
-            console.error(error);
-          }); // TODO toast
+          .catch((err: unknown) => {
+            dispatch(
+              toastsAdd({
+                messageKey: 'general.processorError',
+                messageParams: { err },
+                style: 'danger',
+              }),
+            );
+          });
 
         break;
+
       case 'image':
         {
           const nav = navigator as any;
@@ -227,6 +207,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         }
 
         break;
+
       default:
         break;
     }

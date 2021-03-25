@@ -11,10 +11,10 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
-const skMessages = require('./src/translations/sk-shared.js');
-const csMessages = require('./src/translations/cs-shared.js');
-const enMessages = require('./src/translations/en-shared.js');
-const huMessages = require('./src/translations/hu-shared.js');
+const skMessages = require('./src/translations/sk-shared.json');
+const csMessages = require('./src/translations/cs-shared.json');
+const enMessages = require('./src/translations/en-shared.json');
+const huMessages = require('./src/translations/hu-shared.json');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 

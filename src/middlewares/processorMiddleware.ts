@@ -220,7 +220,6 @@ export const processorMiddleware: Middleware<
 
         dispatch(
           toastsAdd({
-            id: Math.random().toString(36).slice(2),
             style: 'danger',
             messageKey: 'general.processorError',
             messageParams: {

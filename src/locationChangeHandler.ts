@@ -20,12 +20,14 @@ import {
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import {
+  basicModals,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setTool,
   ShowModal,
   Tool,
+  tools,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import {
@@ -200,8 +202,8 @@ export const handleLocationChange = (
       ? 'draw-polygons'
       : query['tool'] === 'measure-dist'
       ? 'draw-lines'
-      : is<Tool>(query['tool'])
-      ? query['tool']
+      : tools.includes(query['tool'] as Tool)
+      ? (query['tool'] as Tool)
       : null;
 
   if (getState().main.tool !== tool) {
@@ -367,7 +369,7 @@ export const handleLocationChange = (
     if (show !== activeModal) {
       dispatch(setActiveModal(show));
     }
-  } else if (is<ShowModal>(activeModal) && activeModal) {
+  } else if (is<ShowModal>(activeModal) && basicModals.includes(activeModal)) {
     dispatch(setActiveModal(null));
   }
 

@@ -10,6 +10,7 @@ import {
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import {
   clearMap,
+  Modal,
   setActiveModal,
   setTool,
   Tool,
@@ -25,6 +26,7 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import {
   Fragment,
   ReactElement,
+  SyntheticEvent,
   useCallback,
   useEffect,
   useRef,
@@ -135,7 +137,9 @@ export function MoreMenuButton(): ReactElement {
   );
 
   const handleTipSelect = useCallback(
-    (tip: string | null) => {
+    (tip: string | null, e: SyntheticEvent<unknown>) => {
+      e.preventDefault();
+
       close();
 
       if (is<Tip>(tip)) {
@@ -153,8 +157,8 @@ export function MoreMenuButton(): ReactElement {
 
   const m = useMessages();
 
-  const eh = useCallback(
-    (e) => {
+  useEffect(() => {
+    const eh = (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
         e.stopPropagation();
         e.preventDefault();
@@ -165,22 +169,26 @@ export function MoreMenuButton(): ReactElement {
           close();
         }
       }
-    },
-    [submenu],
-  );
+    };
 
-  useEffect(() => {
+    if (show) {
+      // fix menu position
+      window.dispatchEvent(new Event('resize'));
+    }
+
     document.body.removeEventListener('keyup', eh);
 
     if (submenu && show) {
       document.body.addEventListener('keyup', eh);
     }
-  }, [eh, submenu, show]);
+  }, [submenu, show]);
 
   const tool = useSelector((state: RootState) => state.main.tool);
 
   const handleToolSelect = useCallback(
-    (tool: string | null) => {
+    (tool: string | null, e: SyntheticEvent<unknown>) => {
+      e.preventDefault();
+
       if (is<Tool | null>(tool)) {
         close();
 
@@ -216,7 +224,7 @@ export function MoreMenuButton(): ReactElement {
         <Dropdown.Header>
           {icon} {title}
         </Dropdown.Header>
-        <Dropdown.Item onSelect={handleBackClick}>
+        <Dropdown.Item as="button" onSelect={handleBackClick}>
           <FaChevronLeft /> {m?.more.back} <kbd>Esc</kbd>
         </Dropdown.Item>
         <Dropdown.Divider />
@@ -224,9 +232,14 @@ export function MoreMenuButton(): ReactElement {
     );
   }
 
-  function setToolAndClose(tool: Tool | null) {
-    dispatch(setTool(tool));
+  function setToolAndClose(tool: string | null, e: SyntheticEvent<unknown>) {
+    e.preventDefault();
+
     close();
+
+    if (is<Tool>(tool)) {
+      dispatch(setTool(tool));
+    }
   }
 
   function close() {
@@ -239,6 +252,16 @@ export function MoreMenuButton(): ReactElement {
   );
 
   const sc = useScrollClasses('vertical');
+
+  const showModal = (modal: string | null, e: SyntheticEvent<unknown>) => {
+    e.preventDefault();
+
+    close();
+
+    if (is<Modal>(modal)) {
+      dispatch(setActiveModal(modal));
+    }
+  };
 
   return (
     <>
@@ -265,6 +288,7 @@ export function MoreMenuButton(): ReactElement {
             {submenu === null ? (
               <Fragment key="main">
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     setSubmenu('language');
                   }}
@@ -274,6 +298,7 @@ export function MoreMenuButton(): ReactElement {
 
                 {user ? (
                   <Dropdown.Item
+                    as="button"
                     onSelect={() => {
                       close();
                       dispatch(authStartLogout());
@@ -293,10 +318,9 @@ export function MoreMenuButton(): ReactElement {
                 )}
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(setActiveModal('settings'));
-                  }}
+                  eventKey="settings"
+                  href="?show=settings"
+                  onSelect={showModal}
                 >
                   <FaCog /> {m?.more.settings} <kbd>e</kbd> <kbd>s</kbd>
                 </Dropdown.Item>
@@ -304,6 +328,7 @@ export function MoreMenuButton(): ReactElement {
                 <Dropdown.Divider />
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     close();
                     dispatch(clearMap());
@@ -313,6 +338,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     setSubmenu('drawing');
                   }}
@@ -322,6 +348,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     setSubmenu('photos');
                   }}
@@ -339,6 +366,7 @@ export function MoreMenuButton(): ReactElement {
                     ({ tool: newTool, icon, msgKey, kbd }) =>
                       newTool && (
                         <Dropdown.Item
+                          href={`?tool=${tool}`}
                           key={newTool}
                           eventKey={newTool}
                           onSelect={handleToolSelect}
@@ -356,6 +384,7 @@ export function MoreMenuButton(): ReactElement {
                   )}
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     setSubmenu('tracking');
                   }}
@@ -367,6 +396,7 @@ export function MoreMenuButton(): ReactElement {
                 <Dropdown.Divider />
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     setSubmenu('openExternally');
                   }}
@@ -376,37 +406,33 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(setActiveModal('export-pdf'));
-                  }}
+                  href="?show=export-pdf"
+                  eventKey="export-pdf"
+                  onSelect={showModal}
                 >
                   <FaRegFilePdf /> {m?.more.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(setActiveModal('export-gpx'));
-                  }}
+                  eventKey="export-gpx"
+                  href="?show=export-gpx"
+                  onSelect={showModal}
                 >
                   <FaDownload /> {m?.more.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    dispatch(tipsShow('exports'));
-                    close();
-                  }}
+                  eventKey="exports"
+                  href="?tip=exports"
+                  onSelect={handleTipSelect}
                 >
                   <FaMobileAlt /> {m?.more.mapExports}
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(setActiveModal('embed'));
-                  }}
+                  eventKey="embed"
+                  href="?show=embed"
+                  onSelect={showModal}
                 >
                   <FaCode /> {m?.more.embedMap} <kbd>e</kbd> <kbd>e</kbd>
                 </Dropdown.Item>
@@ -414,6 +440,7 @@ export function MoreMenuButton(): ReactElement {
                 <Dropdown.Divider />
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     setSubmenu('help');
                   }}
@@ -422,10 +449,9 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(setActiveModal('supportUs'));
-                  }}
+                  href="?show=supportUs"
+                  eventKey="supportUs"
+                  onSelect={showModal}
                 >
                   <FaHeart color="red" /> {m?.more.supportUs}{' '}
                   <FaHeart color="red" />
@@ -439,28 +465,26 @@ export function MoreMenuButton(): ReactElement {
                   mapType,
                 ) && (
                   <Dropdown.Item
-                    onSelect={() => {
-                      close();
-                      dispatch(setActiveModal('legend'));
-                    }}
+                    href="?show=legend"
+                    eventKey="legend"
+                    onSelect={showModal}
                   >
                     <FaRegMap /> {m?.more.mapLegend}
                   </Dropdown.Item>
                 )}
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(setActiveModal('about'));
-                  }}
+                  eventKey="about"
+                  href="?show=about"
+                  onSelect={showModal}
                 >
                   <FaRegAddressCard /> {m?.more.contacts}
                 </Dropdown.Item>
 
                 {skCz && (
                   <Dropdown.Item
-                    onSelect={close}
                     href="https://groups.google.com/forum/#!forum/osm_sk"
+                    onSelect={close}
                     target="_blank"
                   >
                     <FaUsers /> Fórum slovenskej OSM komunity
@@ -476,6 +500,7 @@ export function MoreMenuButton(): ReactElement {
                     {tips.map(([key, name, icon]) => (
                       <Dropdown.Item
                         key={key}
+                        href={`?tip=${key}`}
                         onSelect={handleTipSelect}
                         eventKey={key}
                       >
@@ -511,6 +536,7 @@ export function MoreMenuButton(): ReactElement {
                 />
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
@@ -518,6 +544,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   eventKey="en"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'en'}
@@ -526,6 +553,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   eventKey="sk"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'sk'}
@@ -534,6 +562,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   eventKey="cs"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'cs'}
@@ -542,8 +571,9 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  eventKey="hu"
+                  as="button"
                   onSelect={handleLanguageClick}
+                  eventKey="hu"
                   active={chosenLanguage === 'hu'}
                 >
                   Magyar
@@ -554,7 +584,9 @@ export function MoreMenuButton(): ReactElement {
                 <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
                 <Dropdown.Item
-                  onSelect={() => {
+                  href="?show=gallery-filter"
+                  onSelect={(_, e) => {
+                    e.preventDefault();
                     dispatch(galleryShowFilter());
                     close();
                   }}
@@ -564,7 +596,9 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
+                  href="?show=gallery-upload"
+                  onSelect={(_, e) => {
+                    e.preventDefault();
                     dispatch(galleryShowUploadModal());
                     close();
                   }}
@@ -573,6 +607,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     dispatch(
                       mapRefocus({
@@ -599,6 +634,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Header>
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     dispatch(galleryList('-createdAt'));
                     close();
@@ -608,6 +644,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     dispatch(galleryList('-takenAt'));
                     close();
@@ -617,6 +654,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   onSelect={() => {
                     dispatch(galleryList('-rating'));
                     close();
@@ -633,19 +671,17 @@ export function MoreMenuButton(): ReactElement {
                 />
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    dispatch(setActiveModal('tracking-watched'));
-                    close();
-                  }}
+                  href="?show=tracking-watched"
+                  eventKey="tracking-watched"
+                  onSelect={showModal}
                 >
                   <FaRegEye /> {m?.tracking.trackedDevices.button}
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => {
-                    dispatch(setActiveModal('tracking-my'));
-                    close();
-                  }}
+                  href="?show=tracking-my"
+                  eventKey="'tracking-my'"
+                  onSelect={showModal}
                 >
                   <FaMobileAlt /> {m?.tracking.devices.button}
                 </Dropdown.Item>
@@ -657,6 +693,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Header>
 
                 <Dropdown.Item
+                  as="button"
                   active={trackingDisplay === 'true,false'}
                   onSelect={() => {
                     dispatch(trackingActions.setShowPoints(true));
@@ -672,6 +709,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   active={trackingDisplay === 'false,true'}
                   onSelect={() => {
                     dispatch(trackingActions.setShowPoints(false));
@@ -687,6 +725,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  as="button"
                   active={trackingDisplay === 'true,true'}
                   onSelect={() => {
                     dispatch(trackingActions.setShowPoints(true));
@@ -709,7 +748,9 @@ export function MoreMenuButton(): ReactElement {
                 />
 
                 <Dropdown.Item
-                  onSelect={() => setToolAndClose('draw-points')}
+                  href="?tool=draw-points"
+                  eventKey="draw-points"
+                  onSelect={setToolAndClose}
                   active={tool === 'draw-points'}
                 >
                   <FaMapMarkerAlt /> {m?.measurement.elevation} <kbd>g</kbd>{' '}
@@ -717,7 +758,9 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => setToolAndClose('draw-lines')}
+                  href="?tool=draw-lines"
+                  eventKey="draw-lines"
+                  onSelect={setToolAndClose}
                   active={tool === 'draw-lines'}
                 >
                   <MdTimeline /> {m?.measurement.distance} <kbd>g</kbd>{' '}
@@ -725,7 +768,9 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={() => setToolAndClose('draw-polygons')}
+                  href="?tool=draw-polygons"
+                  eventKey="draw-polygons"
+                  onSelect={setToolAndClose}
                   active={tool === 'draw-polygons'}
                 >
                   <FaDrawPolygon /> {m?.measurement.area} <kbd>g</kbd>{' '}
