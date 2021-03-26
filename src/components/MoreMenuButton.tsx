@@ -482,11 +482,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  href={`https://wiki.openstreetmap.org/wiki/${
-                    language === 'en'
-                      ? ''
-                      : language[0].toUpperCase() + language[1] + ':'
-                  }Main_Page`}
+                  href={m?.more.wikiLink}
                   onSelect={close}
                   target="_blank"
                 >

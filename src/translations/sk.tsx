@@ -347,6 +347,7 @@ const sk: Messages = {
     automaticLanguage: 'Automaticky',
     pdfExport: 'Exportovať mapu',
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
+    wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
   },
 
   main: {

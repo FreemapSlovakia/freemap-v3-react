@@ -287,6 +287,7 @@ export type Messages = {
     automaticLanguage: string;
     pdfExport: string;
     osmWiki: string;
+    wikiLink: string;
   };
   main: {
     title: string;

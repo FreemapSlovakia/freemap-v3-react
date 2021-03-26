@@ -345,6 +345,7 @@ const hu: Messages = {
     automaticLanguage: 'Automatikus',
     pdfExport: 'Térkép exportálása',
     osmWiki: 'OpenStreetMap documentation', // TODO translate
+    wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
   },
 
   main: {

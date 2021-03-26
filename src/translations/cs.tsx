@@ -348,6 +348,7 @@ const cs: Messages = {
     automaticLanguage: 'Automaticky',
     pdfExport: 'Exportovat mapu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
+    wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
   },
 
   main: {

@@ -344,6 +344,7 @@ const en: Messages = {
     automaticLanguage: 'Automatic',
     pdfExport: 'Export map',
     osmWiki: 'OpenStreetMap documentation',
+    wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
 
   main: {
