@@ -117,6 +117,8 @@ export function TipsModal({ show }: Props): ReactElement {
     }
   }, [loaded, ref]);
 
+  useEffect(() => {}, []);
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>

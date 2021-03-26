@@ -42,7 +42,7 @@ self.addEventListener('fetch', (event) => {
               : url?.pathname === FALLBACK_LOGO_URL
               ? FALLBACK_LOGO_URL
               : '_',
-          )) || new Response(null, { status: 404 })
+          )) || err
         );
       }
     }),

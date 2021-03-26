@@ -39,8 +39,7 @@ export function getHikingSkUrl(
     params['y'] = lat;
   }
 
-  const url = `https://mapy.hiking.sk/?${qs.stringify(params)}`;
-  return url;
+  return `https://mapy.hiking.sk/?${qs.stringify(params)}`;
 }
 
 export function getGoogleUrl(

@@ -41,9 +41,11 @@ export type Messages = {
     savingError: ({ err }: Err) => string;
     loadError: ({ err }: Err) => string;
     deleteError: ({ err }: Err) => string;
+    operationError: ({ err }: Err) => string;
     saved: string;
     deleted: string;
     visual: string;
+    copyOk: string;
   };
   selections: {
     objects: string;

@@ -76,9 +76,11 @@ const sk: Messages = {
     savingError: ({ err }) => `Chyba ukladania: ${err}`,
     loadError: ({ err }) => `Chyba načítania: ${err}`,
     deleteError: ({ err }) => `Chyba mazania: ${err}`,
+    operationError: ({ err }) => `Chyba operácie: ${err}`,
     deleted: 'Zmazané.',
     saved: 'Uložené.',
     visual: 'Zobrazenie',
+    copyOk: 'Skopírovane do schránky.',
   },
 
   selections: {

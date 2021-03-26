@@ -1,6 +1,7 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { copyToClipboard } from 'fm3/clipboardUtils';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Device as DeviceType } from 'fm3/types/trackingTypes';
@@ -76,10 +77,11 @@ export function Device({ device }: Props): ReactElement {
   }, [device.id, dispatch]);
 
   const handleCopyClick = useCallback(() => {
-    navigator.clipboard.writeText(
+    copyToClipboard(
+      dispatch,
       `${process.env['API_URL']}/tracking/track/${device.token}`,
     );
-  }, [device.token]);
+  }, [device.token, dispatch]);
 
   return (
     <tr>

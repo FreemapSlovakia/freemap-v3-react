@@ -1,9 +1,9 @@
 import bbox from '@turf/bbox';
 import buffer from '@turf/buffer';
 import { point } from '@turf/helpers';
-import axios from 'axios';
 import { openInExternalApp } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { copyToClipboard } from 'fm3/clipboardUtils';
 import {
   getGoogleUrl,
   getHikingSkUrl,
@@ -65,8 +65,8 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'copy':
-        navigator.clipboard.writeText(location.href);
-        // TODO success toast
+        copyToClipboard(dispatch, location.href);
+
         break;
 
       case 'osm.org':
@@ -81,6 +81,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'josm': {
         const leaflet = getMapLeafletElement();
+
         if (leaflet) {
           let left: number;
           let right: number;
@@ -100,20 +101,49 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
             bottom = bounds.getSouth();
           }
 
-          axios
-            .get(`http://localhost:8111/load_and_zoom`, {
-              params: { left, right, top, bottom },
-            })
-            .then(() => {
+          const url = new URL('http://localhost:18111/load_and_zoom');
+
+          url.search = new URLSearchParams({
+            left: String(left),
+            right: String(right),
+            top: String(top),
+            bottom: String(bottom),
+          }).toString();
+
+          function assertOk(res: Response) {
+            if (!res.ok) {
+              throw new Error(
+                'Error response from localhost:8111: ' + res.status,
+              );
+            }
+          }
+
+          fetch(url.toString())
+            .then((res) => {
+              assertOk(res);
+
               if (includePoint) {
-                axios.get(`http://localhost:8111/add_node`, {
-                  params: {
-                    lat,
-                    lon,
-                    addtags: `name=${pointTitle}`,
-                  },
+                const url = new URL('http://localhost:18111/add_node');
+
+                url.search = new URLSearchParams({
+                  lat: String(lat),
+                  lon: String(lon),
+                  addtags: `name=${pointTitle}`,
+                }).toString();
+
+                return fetch(url.toString()).then((res) => {
+                  assertOk(res);
                 });
               }
+            })
+            .catch((err) => {
+              dispatch(
+                toastsAdd({
+                  messageKey: 'general.operationError',
+                  messageParams: { err },
+                  style: 'danger',
+                }),
+              );
             });
         }
         break;
@@ -164,7 +194,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
           .catch((err: unknown) => {
             dispatch(
               toastsAdd({
-                messageKey: 'general.processorError',
+                messageKey: 'general.operationError',
                 messageParams: { err },
                 style: 'danger',
               }),
@@ -202,7 +232,13 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
           };
 
           share().catch((err) => {
-            console.error(err); // TODO toast
+            dispatch(
+              toastsAdd({
+                messageKey: 'general.operationError',
+                messageParams: { err },
+                style: 'danger',
+              }),
+            );
           });
         }
 
