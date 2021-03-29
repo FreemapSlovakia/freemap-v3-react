@@ -117,7 +117,15 @@ export function TipsModal({ show }: Props): ReactElement {
     }
   }, [loaded, ref]);
 
-  useEffect(() => {}, []);
+  // useEffect(() => {
+  //   fetch(
+  //     'https://wiki.openstreetmap.org/w/api.php?action=parse&page=Main_Page&format=json&prop=text',
+  //   )
+  //     .then((response) => response.json())
+  //     .then((json) => {
+  //       setTipText(json.parse.text['*']);
+  //     });
+  // }, [tip]);
 
   return (
     <Modal show={show} onHide={close} size="lg">

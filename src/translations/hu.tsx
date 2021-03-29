@@ -76,9 +76,11 @@ const hu: Messages = {
     savingError: ({ err }) => `Mentési hiba: ${err}`,
     loadError: ({ err }) => `Betöltési hiba: ${err}`,
     deleteError: ({ err }) => `Törlési hiba: ${err}`,
+    operationError: ({ err }) => `Operation error: ${err}`, // TODO translate
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
+    copyOk: 'Copied to clipboard.', // TODO translate
   },
 
   selections: {

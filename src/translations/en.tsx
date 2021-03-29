@@ -75,9 +75,11 @@ const en: Messages = {
     savingError: ({ err }) => `Save error: ${err}`,
     loadError: ({ err }) => `Loading error: ${err}`,
     deleteError: ({ err }) => `Deleting error: ${err}`,
+    operationError: ({ err }) => `Operation error: ${err}`,
     deleted: 'Deleted.',
     saved: 'Saved.',
     visual: 'Display',
+    copyOk: 'Copied to clipboard.',
   },
 
   selections: {

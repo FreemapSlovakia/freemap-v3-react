@@ -77,9 +77,11 @@ const cs: Messages = {
     savingError: ({ err }) => `Chyba ukládání: ${err}`,
     loadError: ({ err }) => `Chyba nahrávání: ${err}`,
     deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
+    operationError: ({ err }) => `Operation error: ${err}`,
     deleted: 'Smazané.',
     saved: 'Uložené.',
     visual: 'Zobrazení',
+    copyOk: 'Zkopírováno do schránky.',
   },
 
   selections: {
