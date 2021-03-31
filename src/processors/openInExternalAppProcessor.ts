@@ -123,7 +123,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               assertOk(res);
 
               if (includePoint) {
-                const url = new URL('http://localhost:18111/add_node');
+                const url = new URL('http://localhost:8111/add_node');
 
                 url.search = new URLSearchParams({
                   lat: String(lat),
