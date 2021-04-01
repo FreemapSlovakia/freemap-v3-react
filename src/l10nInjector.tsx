@@ -22,7 +22,7 @@ export function getMessageByKey(m: Messages | undefined, key: string): unknown {
     if (cur instanceof Object) {
       cur = (cur as Record<string, unknown>)[item];
     } else {
-      return '???';
+      return '…';
     }
   }
 

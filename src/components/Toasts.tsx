@@ -16,19 +16,21 @@ import { useDispatch, useSelector } from 'react-redux';
 function tx(m: Messages | undefined, { name, nameKey }: ToastAction) {
   if (name !== undefined) {
     return name;
-  } else if (nameKey) {
+  }
+
+  if (nameKey) {
     const v = getMessageByKey(m, nameKey);
 
     if (typeof v === 'string') {
       return v;
-    } else if (v instanceof Function) {
+    }
+
+    if (v instanceof Function) {
       return v.call(undefined);
-    } else {
-      return '???';
     }
   }
 
-  return '???';
+  return '…';
 }
 
 export function Toasts(): ReactElement {
@@ -62,7 +64,7 @@ export function Toasts(): ReactElement {
             } else if (v instanceof Function) {
               msg = v.call(undefined, messageParams);
             } else {
-              msg = '???';
+              msg = '…';
             }
           }
 

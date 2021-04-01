@@ -51,7 +51,7 @@ export function Copyright(): ReactElement {
         className="mr-1"
         ref={buttonRef}
         onClick={handleButtonClick}
-        title={m?.mapLayers.layers}
+        title={m?.more.mapLegend + ', Privacy policy'}
         variant="secondary"
       >
         <FaQuestion />
