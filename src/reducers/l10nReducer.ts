@@ -21,7 +21,7 @@ const initialState: L10nState = {
 export const l10nReducer = createReducer<L10nState, RootAction>(initialState)
   .handleAction(authSetUser, (state, action) => ({
     ...state,
-    chosenLanguage: action.payload?.language ?? state.language,
+    chosenLanguage: action.payload?.language ?? state.chosenLanguage,
   }))
   .handleAction(l10nSetChosenLanguage, (state, action) => ({
     ...state,
