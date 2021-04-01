@@ -133,6 +133,8 @@ export function SettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
+  const DeleteInfo = m?.settings.account.DeleteInfo;
+
   return (
     <Modal show={show && !selectingHomeLocation} onHide={close}>
       <form
@@ -311,6 +313,9 @@ export function SettingsModal({ show }: Props): ReactElement {
             <Tab title={m?.settings.tab.account} eventKey="2" className="pt-2">
               {user ? (
                 <>
+                  <Alert variant="warning">
+                    {DeleteInfo && <DeleteInfo />}
+                  </Alert>
                   <FormGroup>
                     <FormLabel>{m?.settings.account.name}</FormLabel>
                     <FormControl

@@ -595,6 +595,15 @@ const sk: Messages = {
       email: 'E-Mail',
       noAuthInfo: 'Dostupné iba pre prihlásených používateľov.',
       sendGalleryEmails: 'Upozorni emailom na komentáre k fotke',
+      DeleteInfo: () => (
+        <>
+          Ak si prajete zmazať svoj účet, kontaktujte nás prosím na{' '}
+          <Alert.Link href="mailto:freemap@freemap.sk">
+            freemap@freemap.sk
+          </Alert.Link>
+          .
+        </>
+      ),
     },
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',

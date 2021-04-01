@@ -567,6 +567,15 @@ const en: Messages = {
       email: 'Email',
       noAuthInfo: 'Only for logged-in users.',
       sendGalleryEmails: 'Notify photo comments via email',
+      DeleteInfo: () => (
+        <>
+          If you wish to delete your account, please contact us at{' '}
+          <Alert.Link href="mailto:freemap@freemap.sk">
+            freemap@freemap.sk
+          </Alert.Link>
+          .
+        </>
+      ),
     },
     general: {
       tips:

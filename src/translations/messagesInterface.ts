@@ -468,6 +468,7 @@ export type Messages = {
       email: string;
       noAuthInfo: string;
       sendGalleryEmails: string;
+      DeleteInfo: () => JSX.Element;
     };
     general: {
       tips: string;

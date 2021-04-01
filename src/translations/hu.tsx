@@ -577,6 +577,16 @@ const hu: Messages = {
       email: 'E-mail',
       noAuthInfo: 'Csak bejelentkezett felhasználóknak.',
       sendGalleryEmails: 'Notify photo comments via email', // TODO translate
+      DeleteInfo: () => (
+        // TODO translate
+        <>
+          If you wish to delete your account, please contact us at{' '}
+          <Alert.Link href="mailto:freemap@freemap.sk">
+            freemap@freemap.sk
+          </Alert.Link>
+          .
+        </>
+      ),
     },
     general: {
       tips:
