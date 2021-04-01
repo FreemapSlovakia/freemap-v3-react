@@ -59,8 +59,10 @@ export function sendError(errDetails: ErrorDetails): void {
 
   const state = store?.getState();
 
-  // TODO window.ga was null
-  window.ga?.('send', 'event', 'Error', 'error', errDetails.kind);
+  window.gtag?.('event', 'error', {
+    event_category: 'Error',
+    value: errDetails.kind,
+  });
 
   axios
     .post(
