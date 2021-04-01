@@ -366,6 +366,11 @@ const en: Messages = {
       </div>
     ),
     copyright: 'Copyright',
+    cookieConsent: {
+      message: 'Some of the application functions may require cookies.',
+      acceptAll: 'Accept all',
+      acceptMinumum: 'Accept only necessary',
+    },
   },
 
   gallery: {

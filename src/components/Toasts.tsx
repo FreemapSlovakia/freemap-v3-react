@@ -41,7 +41,15 @@ export function Toasts(): ReactElement {
   const items = useMemo(
     () =>
       toasts.map(
-        ({ id, actions, style, message, messageKey, messageParams }) => {
+        ({
+          id,
+          actions,
+          style,
+          message,
+          messageKey,
+          messageParams,
+          noClose,
+        }) => {
           let msg: ReactNode;
 
           if (message !== undefined) {
@@ -63,6 +71,7 @@ export function Toasts(): ReactElement {
             actions,
             style,
             msg,
+            noClose,
           };
         },
       ),
@@ -87,13 +96,14 @@ export function Toasts(): ReactElement {
 
   return (
     <div className="fm-toasts">
-      {items.map(({ id, actions, style, msg }) => {
+      {items.map(({ id, actions, style, msg, noClose }) => {
         return (
           <Toast
             key={id}
             id={id}
             message={msg}
             style={style}
+            noClose={noClose}
             onAction={handleAction}
             actions={actions.map((action) => ({
               ...action,

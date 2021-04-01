@@ -6,7 +6,8 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
-interface Props extends Pick<ResolvedToast, 'id' | 'actions' | 'style'> {
+interface Props
+  extends Pick<ResolvedToast, 'id' | 'actions' | 'style' | 'noClose'> {
   onAction: (id: string, action?: RootAction | RootAction[]) => void;
   onTimeoutStop: (id: string) => void;
   onTimeoutRestart: (id: string) => void;
@@ -21,6 +22,7 @@ export function Toast({
   style,
   onTimeoutStop,
   onTimeoutRestart,
+  noClose,
 }: Props): ReactElement {
   const handleMouseEnter = useCallback(() => {
     onTimeoutStop(id);
@@ -36,9 +38,8 @@ export function Toast({
 
   const defaultAction = actions.find(({ name }) => !name);
 
-  const clickHandler = defaultAction
-    ? () => onAction(id, defaultAction.action)
-    : undefined;
+  const clickHandler =
+    defaultAction && (() => onAction(id, defaultAction.action));
 
   const buttonActions = actions.filter(({ name }) => name);
 
@@ -50,7 +51,7 @@ export function Toast({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClose={handleAlertDismiss}
-      dismissible
+      dismissible={!noClose}
     >
       {typeof message === 'string' && message.startsWith('!HTML!') ? (
         <div dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
@@ -64,7 +65,7 @@ export function Toast({
             {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
               <Button
                 className={i > 0 ? 'ml-2' : ''}
-                key={name}
+                key={i}
                 variant={buttonStyle}
                 onClick={() => onAction(id, action)}
               >

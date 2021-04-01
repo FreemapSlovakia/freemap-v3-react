@@ -136,6 +136,30 @@
         });
     </script>
 
+    <% if (process.env['GA_TRACKING_CODE']) { %>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+        if (dataLayer) {
+          dataLayer.push(arguments);
+        }
+      }
+
+      gtag('js', new Date());
+
+      gtag('config', '<%= process.env["GA_TRACKING_CODE"] %>');
+    </script>
+
+    <% } else { %>
+
+    <script>
+      function gtag() {}
+    </script>
+
+    <% } %>
+
     <!-- <script
       data-ad-client="ca-pub-2465248996193624"
       async
@@ -276,7 +300,5 @@
     <script>
       console.log('Post-entry.');
     </script>
-
-    <script async src="https://www.google-analytics.com/analytics.js"></script>
   </body>
 </html>

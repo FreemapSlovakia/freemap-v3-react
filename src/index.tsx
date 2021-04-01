@@ -1,6 +1,7 @@
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import {
+  allowCookies,
   enableUpdatingUrl,
   setAppState,
   setEmbedFeatures,
@@ -9,7 +10,6 @@ import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
 import { Main } from 'fm3/components/Main';
 import 'fm3/fbLoader';
 import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
-import 'fm3/googleAnalytics';
 import { history } from 'fm3/historyHolder';
 import { attachKeyboardHandler } from 'fm3/keyboardHandler';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
@@ -23,8 +23,13 @@ import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { assertType, setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
+import { ToastAction, toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
 import { AppState } from './types/common';
+
+if (process.env['GA_TRACKING_CODE']) {
+  window.gtag('config', process.env['GA_TRACKING_CODE']);
+}
 
 setDefaultGetErrorObject(() => null);
 
@@ -67,6 +72,47 @@ function setVh() {
 window.addEventListener('resize', setVh);
 
 setVh();
+
+let cookieConsentResult;
+
+try {
+  cookieConsentResult = JSON.parse(
+    window.localStorage.getItem('cookieConsentResult') ?? 'null',
+  );
+} catch {
+  cookieConsentResult = null;
+}
+
+if (Array.isArray(cookieConsentResult)) {
+  store.dispatch(allowCookies(cookieConsentResult));
+} else {
+  const actions: ToastAction[] = [];
+
+  if (process.env['GA_TRACKING_CODE']) {
+    actions.push({
+      nameKey: 'main.cookieConsent.acceptAll',
+      action: allowCookies(['gtag']),
+      style: 'primary',
+    });
+  }
+
+  actions.push({
+    nameKey: process.env['GA_TRACKING_CODE']
+      ? 'main.cookieConsent.acceptMinumum'
+      : 'general.ok',
+    action: allowCookies([]),
+    style: 'secondary',
+  });
+
+  store.dispatch(
+    toastsAdd({
+      messageKey: 'main.cookieConsent.message',
+      style: 'warning',
+      noClose: true,
+      actions,
+    }),
+  );
+}
 
 render(
   <Provider store={store}>

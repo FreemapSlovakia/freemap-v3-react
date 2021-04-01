@@ -369,6 +369,11 @@ const sk: Messages = {
       </div>
     ),
     copyright: 'Licencia',
+    cookieConsent: {
+      message: 'Niektoré funkcie môžu vyžadovať cookies.',
+      acceptAll: 'Prijať všetky',
+      acceptMinumum: 'Prijať len nutné',
+    },
     // p2: () => {
     //   return (
     //     <>

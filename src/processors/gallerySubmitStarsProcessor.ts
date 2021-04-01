@@ -20,7 +20,10 @@ export const gallerySubmitStarsProcessor: Processor<
 
     const { id } = image;
 
-    window.ga('send', 'event', 'Gallery', 'submitStars', stars);
+    window.gtag('event', 'submitStars', {
+      event_category: 'Gallery',
+      value: stars,
+    });
 
     await httpRequest({
       getState,

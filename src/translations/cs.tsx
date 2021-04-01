@@ -370,6 +370,11 @@ const cs: Messages = {
       </div>
     ),
     copyright: 'Licence',
+    cookieConsent: {
+      message: 'Některé funkce mohou vyžadovat cookies.',
+      acceptAll: 'Přijmout všechna',
+      acceptMinumum: 'Přijmout jen nutné',
+    },
   },
 
   gallery: {

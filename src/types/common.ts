@@ -31,7 +31,6 @@ export interface User {
 
 declare global {
   interface Window {
-    ga: UniversalAnalytics.ga;
     FB: fb.FacebookStatic;
     fbAsyncInit?: () => void;
     handleGoogleAuthApiLoad?: () => void;

@@ -16,7 +16,9 @@ export const gallerySubmitCommentProcessor: Processor = {
 
     const { id } = image;
 
-    window.ga('send', 'event', 'Gallery', 'submitComment');
+    window.gtag('event', 'submitComment', {
+      event_category: 'Gallery',
+    });
 
     await httpRequest({
       getState,

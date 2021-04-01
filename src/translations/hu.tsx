@@ -367,6 +367,12 @@ const hu: Messages = {
       </div>
     ),
     copyright: 'Szerzői jog',
+    // TODO translate
+    cookieConsent: {
+      message: 'Some of the application functions may require cookies.',
+      acceptAll: 'Accept all',
+      acceptMinumum: 'Accept only necessary',
+    },
   },
 
   gallery: {

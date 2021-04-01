@@ -26,6 +26,7 @@ export interface Toast {
   actions?: ToastAction[];
   id?: string;
   cancelType?: string | string[] | RegExp;
+  noClose?: boolean;
 }
 
 export type ResolvedToast = Toast & {

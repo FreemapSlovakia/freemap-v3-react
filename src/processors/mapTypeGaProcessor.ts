@@ -13,15 +13,23 @@ export const mapTypeGaProcessor: Processor = {
     } = getState();
 
     if (prevMapType !== mapType) {
-      window.ga('set', 'dimension1', mapType);
+      window.gtag('set', {
+        mapType: 'mapType',
+      });
 
-      window.ga('send', 'event', 'Map', 'setMapType', mapType);
+      window.gtag('event', 'setMapType', {
+        event_category: 'Map',
+        value: mapType,
+      });
 
       prevMapType = mapType;
     }
 
     if ([...prevOverlays].sort().join(',') !== [...overlays].sort().join(',')) {
-      window.ga('send', 'event', 'Map', 'setOverlays', overlays);
+      window.gtag('event', 'setOverlays', {
+        event_category: 'Map',
+        value: overlays,
+      });
 
       prevOverlays = overlays;
     }

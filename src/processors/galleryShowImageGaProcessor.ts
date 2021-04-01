@@ -9,7 +9,10 @@ export const galleryShowImageGaProcessor: Processor = {
     } = getState();
 
     if (image) {
-      window.ga('send', 'event', 'Gallery', 'showPhoto', image.id);
+      window.gtag('event', 'showPhoto' as any, {
+        event_category: 'Gallery',
+        value: image.id,
+      });
     }
   },
 };

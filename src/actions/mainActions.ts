@@ -183,3 +183,5 @@ export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   pointDescription?: string;
   url?: string;
 }>();
+
+export const allowCookies = createAction('ALLOW_COOKIES')<string[]>();

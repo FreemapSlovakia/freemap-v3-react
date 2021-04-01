@@ -1,6 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import { authSetUser } from 'fm3/actions/authActions';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { allowCookies, selectFeature } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { storage } from 'fm3/storage';
 import { RootState } from 'fm3/storeCreator';
@@ -14,19 +13,33 @@ export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
 }) => (next: Dispatch) => (action: RootAction): unknown => {
   const result = next(action);
 
-  if (isActionOf(authSetUser, action)) {
-    const {
-      auth: { user },
-    } = getState();
-
-    if (user) {
-      window.ga('send', 'event', 'Auth', 'setUser', user.id);
-    }
-  } else if (isActionOf(selectFeature, action)) {
+  if (isActionOf(selectFeature, action)) {
     const { selection } = getState().main;
 
     if (selection) {
-      window.ga('send', 'event', 'Tool', 'setTool', selection.type);
+      window.gtag('event', 'setTool', {
+        event_category: 'Main',
+        value: selection.type,
+      });
+    }
+  } else if (isActionOf(allowCookies, action)) {
+    localStorage.setItem('cookieConsentResult', JSON.stringify(action.payload));
+
+    if (action.payload.includes('gtag') && process.env['GA_TRACKING_CODE']) {
+      const js = document.createElement('script');
+
+      js.async = true;
+
+      js.src =
+        'https://www.googletagmanager.com/gtag/js?id=' +
+        process.env['GA_TRACKING_CODE'];
+
+      const fjs = document.getElementsByTagName('script')[0];
+      if (fjs?.parentNode) {
+        fjs.parentNode.insertBefore(js, fjs);
+      }
+    } else {
+      delete (window as any)['dataLayer'];
     }
   } else if (isActionOf(tipsShow, action)) {
     const { tip } = getState().tips;
