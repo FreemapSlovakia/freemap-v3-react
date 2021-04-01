@@ -1440,3 +1440,15 @@ function numberize(n: number, words: [string, string]) {
 }
 
 export default hu;
+
+/*
+// TODO translate on the server:
+
+Freemap Photos
+
+Photo comment at ${webUrl}
+
+User ${ctx.state.user.name} commented ${own ? 'your' : 'a'} photo ${picTitle} at ${picUrl}:
+
+If you no longer wish to be notified about photo comments, configure it at ${unsubscribeUrl} in the Account tab.
+*/
