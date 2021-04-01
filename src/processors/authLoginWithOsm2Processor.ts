@@ -14,7 +14,12 @@ export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
       getState,
       method: 'POST',
       url: '/auth/login2',
-      data: action.payload,
+      data: {
+        ...action.payload,
+        language: getState().l10n.chosenLanguage,
+        preventTips: getState().tips.preventTips,
+        // homeLocation: getState().main.homeLocation,
+      },
       expectedStatus: 200,
     });
 

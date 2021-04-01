@@ -25,7 +25,12 @@ export const authLoginWithGoogleProcessor: Processor = {
         url: `/auth/login-google`,
         cancelActions: [],
         expectedStatus: 200,
-        data: { idToken },
+        data: {
+          idToken,
+          language: getState().l10n.chosenLanguage,
+          preventTips: getState().tips.preventTips,
+          // homeLocation: getState().main.homeLocation,
+        },
       });
 
       const user = assertType<User>(data);

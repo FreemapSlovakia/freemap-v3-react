@@ -26,6 +26,7 @@ export interface User {
   lat?: number | null;
   lon?: number | null;
   notValidated?: boolean;
+  language?: string | null;
 }
 
 declare global {

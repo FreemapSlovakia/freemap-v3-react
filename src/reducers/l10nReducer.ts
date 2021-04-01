@@ -1,4 +1,5 @@
 import { RootAction } from 'fm3/actions';
+import { authSetUser } from 'fm3/actions/authActions';
 import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
@@ -18,6 +19,10 @@ const initialState: L10nState = {
 };
 
 export const l10nReducer = createReducer<L10nState, RootAction>(initialState)
+  .handleAction(authSetUser, (state, action) => ({
+    ...state,
+    chosenLanguage: action.payload?.language ?? state.language,
+  }))
   .handleAction(l10nSetChosenLanguage, (state, action) => ({
     ...state,
     chosenLanguage: action.payload,

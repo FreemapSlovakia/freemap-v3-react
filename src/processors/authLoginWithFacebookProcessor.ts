@@ -38,7 +38,12 @@ export const authLoginWithFacebookProcessor: Processor = {
       url: `/auth/login-fb`,
       cancelActions: [],
       expectedStatus: 200,
-      data: { accessToken: response.authResponse.accessToken },
+      data: {
+        accessToken: response.authResponse.accessToken,
+        language: getState().l10n.chosenLanguage,
+        preventTips: getState().tips.preventTips,
+        // homeLocation: getState().main.homeLocation,
+      },
     });
 
     const user = assertType<User>(data);
