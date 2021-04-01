@@ -1,8 +1,8 @@
-import { Tip } from 'fm3/tips';
+import { TipKey } from 'fm3/tips';
 import { createAction } from 'typesafe-actions';
 
 export const tipsShow = createAction('TIPS_SHOW')<
-  Tip | 'next' | 'prev' | null
+  TipKey | 'next' | 'prev' | null
 >();
 
 export const tipsPreventNextTime = createAction('TIPS_PREVENT_NEXT_TIME')<{

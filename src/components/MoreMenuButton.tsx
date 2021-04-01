@@ -21,7 +21,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Tip, tips } from 'fm3/tips';
+import { TipKey, tips } from 'fm3/tips';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import {
   Fragment,
@@ -142,7 +142,7 @@ export function MoreMenuButton(): ReactElement {
 
       close();
 
-      if (is<Tip>(tip)) {
+      if (is<TipKey>(tip)) {
         dispatch(tipsShow(tip));
       }
     },
@@ -505,16 +505,18 @@ export function MoreMenuButton(): ReactElement {
                     <Dropdown.Header>
                       <FaRegLightbulb /> {m?.more.tips}
                     </Dropdown.Header>
-                    {tips.map(([key, name, icon]) => (
-                      <Dropdown.Item
-                        key={key}
-                        href={`?tip=${key}`}
-                        onSelect={handleTipSelect}
-                        eventKey={key}
-                      >
-                        {icon} {name}
-                      </Dropdown.Item>
-                    ))}
+                    {tips.map(([key, name, icon, hidden]) =>
+                      hidden ? null : (
+                        <Dropdown.Item
+                          key={key}
+                          href={`?tip=${key}`}
+                          onSelect={handleTipSelect}
+                          eventKey={key}
+                        >
+                          {icon} {name}
+                        </Dropdown.Item>
+                      ),
+                    )}
                   </>
                 )}
               </Fragment>

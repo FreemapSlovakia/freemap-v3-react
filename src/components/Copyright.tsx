@@ -1,12 +1,15 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import { FaQuestion, FaRegCopyright } from 'react-icons/fa';
+import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Attribution } from './Attribution';
 
@@ -30,18 +33,65 @@ export function Copyright(): ReactElement {
     ).includes(state.map.mapType),
   );
 
+  const [show, setShow] = useState(false);
+
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  const handleButtonClick = useCallback(() => {
+    setShow(true);
+  }, []);
+
+  const handleHide = useCallback(() => {
+    setShow(false);
+  }, []);
+
   return (
     <Card className="fm-toolbar mr-2 mb-2">
-      {showLegendButton && (
-        <Button
-          className="mr-1"
-          variant="secondary"
-          title={m?.more.mapLegend}
-          onClick={() => dispatch(setActiveModal('legend'))}
-        >
-          <FaQuestion />
-        </Button>
-      )}
+      <Button
+        className="mr-1"
+        ref={buttonRef}
+        onClick={handleButtonClick}
+        title={m?.mapLayers.layers}
+        variant="secondary"
+      >
+        <FaQuestion />
+      </Button>
+      <Overlay
+        rootClose
+        placement="top"
+        show={show}
+        onHide={handleHide}
+        target={buttonRef.current}
+      >
+        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+          <Popover.Content>
+            {showLegendButton && (
+              <Dropdown.Item
+                key="legend"
+                href="?show=legend"
+                onSelect={(_, e) => {
+                  e.preventDefault();
+                  setShow(false);
+                  dispatch(setActiveModal('legend'));
+                }}
+              >
+                <FaRegMap /> {m?.more.mapLegend}
+              </Dropdown.Item>
+            )}
+            <Dropdown.Item
+              key="privacyPolicy"
+              href="?tip=privacyPolicy"
+              onSelect={(_, e) => {
+                e.preventDefault();
+                setShow(false);
+                dispatch(tipsShow('privacyPolicy'));
+              }}
+            >
+              <FaLock /> Privacy policy
+            </Dropdown.Item>
+          </Popover.Content>
+        </Popover>
+      </Overlay>
       <OverlayTrigger
         trigger="click"
         rootClose

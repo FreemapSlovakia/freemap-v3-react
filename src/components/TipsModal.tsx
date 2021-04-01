@@ -24,12 +24,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
-export function TipsModal({ show }: Props): ReactElement {
+export function TipsModal({ show }: Props): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const tip = useSelector((state: RootState) => state.tips.tip);
+  const tipKey = useSelector((state: RootState) => state.tips.tip);
 
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +38,7 @@ export function TipsModal({ show }: Props): ReactElement {
   useEffect(() => {
     setLoading(true);
 
-    import(/* webpackChunkName: "tip-[request]" */ `fm3/tips/${tip}.md`)
+    import(/* webpackChunkName: "tip-[request]" */ `fm3/tips/${tipKey}.md`)
       .then(({ default: tipText }) => {
         setTipText(tipText);
       })
@@ -48,7 +48,7 @@ export function TipsModal({ show }: Props): ReactElement {
       .then(() => {
         setLoading(false);
       });
-  }, [tip, m]);
+  }, [tipKey, m]);
 
   const handleNextTimePrevent = useCallback(
     (e: FormEvent<HTMLInputElement>) => {
@@ -59,11 +59,7 @@ export function TipsModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const [, title, icon] = useMemo(
-    () =>
-      tips.find(([key]) => key === tip) ?? [undefined, undefined, undefined],
-    [tip],
-  );
+  const tip = useMemo(() => tips.find(([key]) => key === tipKey), [tipKey]);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -129,13 +125,23 @@ export function TipsModal({ show }: Props): ReactElement {
   //     });
   // }, [tip]);
 
+  if (!tip) {
+    return null;
+  }
+
+  const [, title, icon, hidden] = tip;
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegLightbulb />
-          {m?.more.tips}
-          {'\u00A0 | \u00A0'}
+          {!hidden && (
+            <>
+              <FaRegLightbulb />
+              {m?.more.tips}
+              {'\u00A0 | \u00A0'}
+            </>
+          )}
           {title && icon ? (
             <>
               {icon} {title}
@@ -158,30 +164,33 @@ export function TipsModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <FormCheck
-          className="w-100"
-          id="chk-prevent"
-          onChange={handleNextTimePrevent}
-          type="checkbox"
-          label={m?.tips.prevent}
-        />
-
-        <Button
-          variant="secondary"
-          onClick={() => {
-            dispatch(tipsShow('prev'));
-          }}
-        >
-          <FaChevronLeft /> {m?.tips.previous}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => {
-            dispatch(tipsShow('next'));
-          }}
-        >
-          <FaChevronRight /> {m?.tips.next}
-        </Button>
+        {!hidden && (
+          <>
+            <FormCheck
+              className="w-100"
+              id="chk-prevent"
+              onChange={handleNextTimePrevent}
+              type="checkbox"
+              label={m?.tips.prevent}
+            />
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(tipsShow('prev'));
+              }}
+            >
+              <FaChevronLeft /> {m?.tips.previous}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(tipsShow('next'));
+              }}
+            >
+              <FaChevronRight /> {m?.tips.next}
+            </Button>
+          </>
+        )}
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>

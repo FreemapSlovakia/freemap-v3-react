@@ -149,7 +149,10 @@ export function attachKeyboardHandler(store: MyStore): void {
       }
     }
 
-    if (state.main.activeModal === 'tips') {
+    if (
+      state.main.activeModal === 'tips' &&
+      state.tips.tip !== 'privacyPolicy'
+    ) {
       if (event.code === 'ArrowLeft') {
         store.dispatch(tipsShow('prev'));
         event.preventDefault();

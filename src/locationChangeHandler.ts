@@ -49,7 +49,7 @@ import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
-import { Tip } from 'fm3/tips';
+import { TipKey } from 'fm3/tips';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
@@ -373,7 +373,7 @@ export const handleLocationChange = (
     dispatch(setActiveModal(null));
   }
 
-  if (typeof query['tip'] === 'string' && is<Tip>(query['tip'])) {
+  if (typeof query['tip'] === 'string' && is<TipKey>(query['tip'])) {
     if (
       getState().main.activeModal !== 'tips' ||
       getState().tips.tip !== query['tip']

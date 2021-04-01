@@ -5,7 +5,7 @@ import { httpRequest } from 'fm3/authAxios';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { storage } from 'fm3/storage';
-import { Tip } from 'fm3/tips';
+import { TipKey } from 'fm3/tips';
 import { User } from 'fm3/types/common';
 import { assertType, is } from 'typescript-is';
 
@@ -60,7 +60,7 @@ export const authInitProcessor: Processor = {
       ) {
         const tip = storage.getItem('tip');
 
-        dispatch(tipsShow(tip && is<Tip>(tip) ? tip : 'freemap'));
+        dispatch(tipsShow(tip && is<TipKey>(tip) ? tip : 'freemap'));
 
         dispatch(setActiveModal('tips'));
       }
