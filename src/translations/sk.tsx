@@ -369,15 +369,24 @@ const sk: Messages = {
       </div>
     ),
     copyright: 'Licencia',
-    p2: ({ onClick }) => (
-      <>
-        Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
-        <a href="/?tip=dvePercenta" onClick={onClick}>
-          2% z dane
-        </a>
-        .
-      </>
-    ),
+    // p2: () => {
+    //   return (
+    //     <>
+    //       Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
+    //       <a
+    //         href="/?tip=dvePercenta"
+    //         onClick={(e) => {
+    //           e.preventDefault();
+
+    //           dispatch(tipsShow('dvePercenta'));
+    //         }}
+    //       >
+    //         2% z dane
+    //       </a>
+    //       .
+    //     </>
+    //   );
+    // },
   },
 
   gallery: {

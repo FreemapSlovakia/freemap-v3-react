@@ -1,6 +1,6 @@
 import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
 import { LatLon } from 'fm3/types/common';
-import { MouseEvent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 type Err = { err: string };
 
@@ -303,7 +303,7 @@ export type Messages = {
     zoomOut: string;
     devInfo: () => JSX.Element;
     copyright: string;
-    p2?: ({ onClick }: { onClick?: (e: MouseEvent) => void }) => JSX.Element;
+    YellowBar?: () => JSX.Element;
   };
   gallery: {
     filter: string;

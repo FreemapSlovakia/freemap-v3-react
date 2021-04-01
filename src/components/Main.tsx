@@ -7,7 +7,6 @@ import {
 } from 'fm3/actions/galleryActions';
 import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetData,
@@ -361,7 +360,7 @@ export function Main(): ReactElement {
 
   const drawingLines = useSelector(drawingLinePolys);
 
-  const YellowBar = m?.main.p2;
+  const YellowBar = m?.main.YellowBar;
 
   useHtmlMeta();
 
@@ -387,15 +386,7 @@ export function Main(): ReactElement {
         {showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
-            {YellowBar && (
-              <YellowBar
-                onClick={(e) => {
-                  e.preventDefault();
-
-                  dispatch(tipsShow('dvePercenta'));
-                }}
-              />
-            )}
+            {YellowBar && <YellowBar />}
           </div>
         )}
         <div className="menus">
