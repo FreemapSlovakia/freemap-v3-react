@@ -383,10 +383,10 @@ export function Main(): ReactElement {
       <Toasts />
 
       <div className="header">
-        {showInfoBar && language === 'sk' && !embed && (
+        {YellowBar && showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
-            {YellowBar && <YellowBar />}
+            <YellowBar />
           </div>
         )}
         <div className="menus">
