@@ -32,7 +32,7 @@ export const tipsReducer = createReducer<TipsState, RootAction>(initialState)
   // }))
   .handleAction(tipsPreventNextTime, (state, action) => ({
     ...state,
-    preventTips: action.payload,
+    preventTips: action.payload.value,
   }))
   .handleAction(authSetUser, (state, action) => {
     const user = action.payload;

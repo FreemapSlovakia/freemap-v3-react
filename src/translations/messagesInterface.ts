@@ -462,6 +462,7 @@ export type Messages = {
       name: string;
       email: string;
       noAuthInfo: string;
+      sendGalleryEmails: string;
     };
     general: {
       tips: string;

@@ -76,6 +76,10 @@ export function SettingsModal({ show }: Props): ReactElement {
 
   const [email, setEmail] = useState(user?.email ?? '');
 
+  const [sendGalleryEmails, setSendGalleryEmails] = useState(
+    user?.sendGalleryEmails ?? true,
+  );
+
   const [preventTips, setPreventTips] = useState(init.preventTips);
 
   const [selectedOverlay, setSelectedOverlay] = useState('t');
@@ -107,7 +111,10 @@ export function SettingsModal({ show }: Props): ReactElement {
     eleSmoothingFactor !== init.eleSmoothingFactor ||
     preventTips !== init.preventTips ||
     overlayPaneOpacity !== init.overlayPaneOpacity ||
-    (user && (name !== (user.name ?? '') || email !== (user.email ?? ''))) ||
+    (user &&
+      (name !== (user.name ?? '') ||
+        email !== (user.email ?? '') ||
+        sendGalleryEmails !== user?.sendGalleryEmails)) ||
     overlayLayers.some(
       ({ type }) =>
         (overlayOpacity[type] || 1) !== (init.overlayOpacity[type] || 1),
@@ -143,6 +150,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                 ? {
                     name: name.trim() || null,
                     email: email.trim() || null,
+                    sendGalleryEmails,
                   }
                 : null,
               preventTips,
@@ -325,6 +333,15 @@ export function SettingsModal({ show }: Props): ReactElement {
                       maxLength={255}
                     />
                   </FormGroup>
+                  <FormCheck
+                    id="chk-galEmails"
+                    type="checkbox"
+                    onChange={(e) => {
+                      setSendGalleryEmails(e.currentTarget.checked);
+                    }}
+                    checked={sendGalleryEmails}
+                    label={m?.settings.account.sendGalleryEmails}
+                  />
                 </>
               ) : (
                 <Alert variant="warning">

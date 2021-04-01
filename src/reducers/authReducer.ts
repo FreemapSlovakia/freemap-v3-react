@@ -27,6 +27,7 @@ export const authReducer = createReducer<AuthState, RootAction>(initialState)
     user: action.payload && {
       name: action.payload.name,
       email: action.payload.email,
+      sendGalleryEmails: action.payload.sendGalleryEmails,
       id: action.payload.id,
       authToken: action.payload.authToken,
       isAdmin: action.payload.isAdmin,

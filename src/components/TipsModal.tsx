@@ -52,7 +52,9 @@ export function TipsModal({ show }: Props): ReactElement {
 
   const handleNextTimePrevent = useCallback(
     (e: FormEvent<HTMLInputElement>) => {
-      dispatch(tipsPreventNextTime(e.currentTarget.checked));
+      dispatch(
+        tipsPreventNextTime({ value: e.currentTarget.checked, save: true }),
+      );
     },
     [dispatch],
   );

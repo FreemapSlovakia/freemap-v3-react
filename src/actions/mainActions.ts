@@ -99,7 +99,11 @@ export const saveSettings = createAction('SAVE_SETTINGS')<{
   overlayPaneOpacity: number;
   expertMode: boolean;
   trackViewerEleSmoothingFactor: number;
-  user: { name: string | null; email: string | null } | null;
+  user: {
+    name: string | null;
+    email: string | null;
+    sendGalleryEmails: boolean;
+  } | null;
   preventTips: boolean;
 }>();
 

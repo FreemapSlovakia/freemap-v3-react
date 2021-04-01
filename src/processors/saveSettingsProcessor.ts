@@ -42,26 +42,20 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
           {
             name: user.name,
             email: user.email,
+            sendGalleryEmails: user.sendGalleryEmails,
+            preventTips,
             settings: {
               overlayOpacity,
               overlayPaneOpacity,
               expertMode,
               trackViewerEleSmoothingFactor,
             },
-            preventTips,
           },
           homeLocation ? { lat: homeLocation.lat, lon: homeLocation.lon } : {},
         ),
       });
 
-      dispatch(
-        authSetUser(
-          Object.assign({}, getState().auth.user, {
-            name: user.name,
-            email: user.email,
-          }),
-        ),
-      );
+      dispatch(authSetUser(Object.assign({}, getState().auth.user, user)));
     }
 
     dispatch(setHomeLocation(homeLocation));
@@ -74,7 +68,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
 
     dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
 
-    dispatch(tipsPreventNextTime(preventTips));
+    dispatch(tipsPreventNextTime({ value: preventTips, save: false }));
 
     dispatch(
       toastsAdd({

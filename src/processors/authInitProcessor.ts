@@ -47,7 +47,10 @@ export const authInitProcessor: Processor = {
     ) {
       if (!getState().auth.user) {
         dispatch(
-          tipsPreventNextTime(storage.getItem('preventTips') === 'true'),
+          tipsPreventNextTime({
+            value: storage.getItem('preventTips') === 'true',
+            save: false,
+          }),
         );
       }
 

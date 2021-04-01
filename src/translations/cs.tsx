@@ -571,6 +571,7 @@ const cs: Messages = {
       name: 'Jméno',
       email: 'E-Mail',
       noAuthInfo: 'Dostupné pouze pro přihlášené uživatele.',
+      sendGalleryEmails: 'Upozorni emailem na komentáře k fotce',
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',

@@ -12,6 +12,7 @@ export interface LatLon {
 export interface User {
   name: string;
   email: string | null;
+  sendGalleryEmails: boolean;
   id: number;
   authToken: string;
   isAdmin: boolean;

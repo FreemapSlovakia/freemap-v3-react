@@ -589,6 +589,7 @@ const sk: Messages = {
       name: 'Meno',
       email: 'E-Mail',
       noAuthInfo: 'Dostupné iba pre prihlásených používateľov.',
+      sendGalleryEmails: 'Upozorni emailom na komentáre k fotke',
     },
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',

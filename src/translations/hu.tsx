@@ -570,6 +570,7 @@ const hu: Messages = {
       name: 'Név',
       email: 'E-mail',
       noAuthInfo: 'Csak bejelentkezett felhasználóknak.',
+      sendGalleryEmails: 'Notify photo comments via email', // TODO translate
     },
     general: {
       tips:

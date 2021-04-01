@@ -371,7 +371,7 @@ const en: Messages = {
   gallery: {
     filter: 'Filter',
     showPhotosFrom: 'View photos',
-    showLayer: 'Zobrazit vrstvu',
+    showLayer: 'Show the layer',
     upload: 'Upload',
     f: {
       firstUploaded: 'from first uploaded',
@@ -561,6 +561,7 @@ const en: Messages = {
       name: 'Name',
       email: 'Email',
       noAuthInfo: 'Only for logged-in users.',
+      sendGalleryEmails: 'Notify photo comments via email',
     },
     general: {
       tips:
