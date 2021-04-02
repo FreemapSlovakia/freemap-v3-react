@@ -101,7 +101,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
             bottom = bounds.getSouth();
           }
 
-          const url = new URL('http://localhost:18111/load_and_zoom');
+          const url = new URL('http://localhost:8111/load_and_zoom');
 
           url.search = new URLSearchParams({
             left: String(left),
