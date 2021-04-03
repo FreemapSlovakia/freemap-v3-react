@@ -115,9 +115,7 @@ export const urlProcessor: Processor = {
           .join(',')}`,
       ]);
 
-      if (routePlanner.transportType) {
-        historyParts.push(['transport', routePlanner.transportType]);
-      }
+      historyParts.push(['transport', routePlanner.transportType]);
 
       if (routePlanner.mode !== 'route') {
         historyParts.push(['route-mode', routePlanner.mode]);

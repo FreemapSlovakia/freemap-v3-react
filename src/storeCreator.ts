@@ -56,7 +56,6 @@ import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
-import { routePlannerSetupTransportTypeProcessor } from './processors/routePlannerSetupTransportTypeProcessor';
 import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
 import * as rpcProcessors from './processors/rpcProcessors';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
@@ -209,7 +208,7 @@ processors.push(
   galleryUploadModalProcessor,
   galleryUploadModalTransformer,
   routePlannerRefocusMapProcessor,
-  routePlannerSetupTransportTypeProcessor,
+
   routePlannerToggleElevationChartProcessor,
   routePlannerSetFromCurrentPositionProcessor,
   ...Object.values(trackingAccessTokenProcessors),

@@ -165,7 +165,7 @@ export const routePlannerSetParams = createAction('ROUTE_PLANNER_SET_PARAMS')<{
   start: LatLon | null;
   finish: LatLon | null;
   midpoints: LatLon[];
-  transportType: TransportType | null;
+  transportType: TransportType;
   mode?: RouteMode | null;
   milestones?: boolean;
 }>();

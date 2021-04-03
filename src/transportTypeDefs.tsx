@@ -100,6 +100,6 @@ export function isTransportType(candidate: string): candidate is TransportType {
   return !!transportTypeDefs.find((def) => def.type === candidate);
 }
 
-export function isSpecial(transportType: TransportType | null): boolean {
-  return transportType !== null && specials.includes(transportType);
+export function isSpecial(transportType: TransportType): boolean {
+  return specials.includes(transportType);
 }

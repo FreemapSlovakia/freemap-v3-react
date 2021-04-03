@@ -33,7 +33,7 @@ export interface RoutePlannerState {
   waypoints: Waypoint[];
   activeAlternativeIndex: number;
   timestamp: number | null;
-  transportType: TransportType | null;
+  transportType: TransportType;
   start: LatLon | null;
   midpoints: LatLon[];
   finish: LatLon | null;
@@ -61,7 +61,7 @@ export const cleanState = {
 };
 
 export const routePlannerInitialState: RoutePlannerState = {
-  transportType: null,
+  transportType: 'foot-osm',
   mode: 'route',
   milestones: false,
   preventHint: false,

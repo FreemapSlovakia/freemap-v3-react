@@ -36,6 +36,7 @@ import {
   FaStop,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { is } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
 
 export function RoutePlannerMenu(): ReactElement {
@@ -133,9 +134,9 @@ export function RoutePlannerMenu(): ReactElement {
         className="ml-1"
         id="transport-type"
         onSelect={(transportType) => {
-          dispatch(
-            routePlannerSetTransportType(transportType as TransportType),
-          );
+          if (is<TransportType>(transportType)) {
+            dispatch(routePlannerSetTransportType(transportType));
+          }
         }}
       >
         <Dropdown.Toggle variant="secondary">
