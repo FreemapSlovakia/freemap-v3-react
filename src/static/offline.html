@@ -48,13 +48,30 @@
       </div>
     </div>
     <script>
-      const language = JSON.parse(localStorage.getItem('appState')).language;
+      let language;
+
+      try {
+        language = navigator.language.replace(/-.*/, '');
+        language = JSON.parse(localStorage.getItem('appState')).language;
+      } catch (err) {
+        // nothing
+      }
+
+      var t1 = document.getElementById('t1');
+
+      var t2 = document.getElementById('t2');
 
       if (language === 'sk') {
-        document.getElementById('t1').textContent = 'Ste offline.';
-        document.getElementById('t2').textContent =
+        t1.textContent = 'Ste offline.';
+
+        t2.textContent =
           'Prosím pripojte sa na internet, aby ste mohli používať aplikáciu Freemap.';
-      }
+      } else if (language === 'cs') {
+        t1.textContent = 'Jste offline.';
+
+        t2.textContent =
+          'Prosím připojte se na internet, abyste mohli používat aplikaci Freemap.';
+      } // TODO hungarian translation
     </script>
   </body>
 </html>
