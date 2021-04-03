@@ -278,7 +278,7 @@ export function createReduxStore(): MyStore {
 
   return createStore(
     rootReducer as CR,
-    persisted,
+    initial,
     composeWithDevTools(
       applyMiddleware(
         loggerMiddleware,
