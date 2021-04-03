@@ -79,30 +79,48 @@ import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadT
 import { urlProcessor } from './processors/urlProcessor';
 import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
 import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
-import { authInitialState, authReducer } from './reducers/authReducer';
+import {
+  authInitialState,
+  authReducer,
+  AuthState,
+} from './reducers/authReducer';
 import { changesetReducer } from './reducers/changesetsReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { galleryReducer } from './reducers/galleryReducer';
 import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
-import { l10nInitialState, l10nReducer } from './reducers/l10nReducer';
-import { mainInitialState, mainReducer } from './reducers/mainReducer';
+import {
+  l10nInitialState,
+  l10nReducer,
+  L10nState,
+} from './reducers/l10nReducer';
+import {
+  mainInitialState,
+  mainReducer,
+  MainState,
+} from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
-import { mapInitialState, mapReducer } from './reducers/mapReducer';
+import { mapInitialState, mapReducer, MapState } from './reducers/mapReducer';
 import { mapsReducer } from './reducers/mapsReducer';
 import { objectsReducer } from './reducers/objectsReducer';
 import {
   routePlannerInitialState,
   routePlannerReducer,
+  RoutePlannerState,
 } from './reducers/routePlannerReducer';
 import { searchReducer } from './reducers/searchReducer';
-import { tipsInitialState, tipsReducer } from './reducers/tipsReducer';
+import {
+  tipsInitialState,
+  tipsReducer,
+  TipsState,
+} from './reducers/tipsReducer';
 import { toastsReducer } from './reducers/toastsReducer';
 import { trackingReducer } from './reducers/trackingReducer';
 import {
   trackViewerInitialState,
   trackViewerReducer,
+  TrackViewerState,
 } from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
 import { wikiReducer } from './reducers/wikiReducer';
@@ -217,42 +235,46 @@ export function createReduxStore(): MyStore {
   let persisted: Partial<RootState> = {};
 
   try {
-    const data = storage.getItem('store');
-
-    if (data) {
-      persisted = JSON.parse(data);
-
-      if (!is<Partial<RootState>>(persisted)) {
-        persisted = {};
-      }
-    }
+    persisted = JSON.parse(storage.getItem('store') ?? '{}');
   } catch {
     // nothing
   }
 
-  Object.assign(persisted, {
-    map: Object.assign({}, mapInitialState, persisted.map),
+  const initial: Partial<RootState> = {};
 
-    l10n: Object.assign({}, l10nInitialState, persisted.l10n),
+  if (is<Partial<MapState>>(persisted.map)) {
+    initial.map = { ...mapInitialState, ...persisted.map };
+  }
 
-    tips: Object.assign({}, tipsInitialState, persisted.tips),
+  if (is<Partial<L10nState>>(persisted.l10n)) {
+    initial.l10n = { ...l10nInitialState, ...persisted.l10n };
+  }
 
-    auth: Object.assign({}, authInitialState, persisted.auth),
+  if (is<Partial<TipsState>>(persisted.tips)) {
+    initial.tips = { ...tipsInitialState, ...persisted.tips };
+  }
 
-    main: Object.assign({}, mainInitialState, persisted.main),
+  if (is<Partial<AuthState>>(persisted.auth)) {
+    initial.auth = { ...authInitialState, ...persisted.auth };
+  }
 
-    routePlanner: Object.assign(
-      {},
-      routePlannerInitialState,
-      persisted.routePlanner,
-    ),
+  if (is<Partial<MainState>>(persisted.main)) {
+    initial.main = { ...mainInitialState, ...persisted.main };
+  }
 
-    trackViewer: Object.assign(
-      {},
-      trackViewerInitialState,
-      persisted.trackViewer,
-    ),
-  });
+  if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {
+    initial.routePlanner = {
+      ...routePlannerInitialState,
+      ...persisted.routePlanner,
+    };
+  }
+
+  if (is<Partial<TrackViewerState>>(persisted.trackViewer)) {
+    initial.trackViewer = {
+      ...trackViewerInitialState,
+      ...persisted.trackViewer,
+    };
+  }
 
   return createStore(
     rootReducer as CR,
