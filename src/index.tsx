@@ -147,7 +147,9 @@ const cookieConsentResult = store.getState().main.cookieConsentResult;
 
 console.log({ cookieConsentResult });
 
-if (cookieConsentResult !== null) {
+if (window.self !== window.top) {
+  // nothing for ebed
+} else if (cookieConsentResult !== null) {
   store.dispatch(allowCookies(cookieConsentResult));
 } else {
   const actions: ToastAction[] = [];
