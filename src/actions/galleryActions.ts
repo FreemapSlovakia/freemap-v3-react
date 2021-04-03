@@ -158,10 +158,6 @@ export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE')();
 
 export const galleryList = createAction('GALLERY_LIST')<GalleryListOrder>();
 
-export const galleryPreventLayerHint = createAction(
-  'GALLERY_PREVENT_LAYER_HINT',
-)();
-
 export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',
 )();

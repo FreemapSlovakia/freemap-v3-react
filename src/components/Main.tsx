@@ -164,7 +164,7 @@ export function Main(): ReactElement {
   const language = useSelector((state: RootState) => state.l10n.language);
 
   const isUserValidated = useSelector(
-    (state: RootState) => state.auth.user && !state.auth.user.notValidated,
+    (state: RootState) => state.auth.validated,
   );
 
   const [showInfoBar, setShowInfoBar] = useState(true);

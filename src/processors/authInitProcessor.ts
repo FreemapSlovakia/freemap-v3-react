@@ -1,26 +1,17 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { TipKey } from 'fm3/tips';
 import { User } from 'fm3/types/common';
-import storage from 'local-storage-fallback';
 import { assertType, is } from 'typescript-is';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
   errorKey: 'logIn.verifyError',
   handle: async ({ getState, dispatch }) => {
-    try {
-      const user = JSON.parse(storage.getItem('user') ?? '');
-
-      dispatch(authSetUser({ ...user, notValidated: true }));
-    } catch (e) {
-      // ignore JSON parsing error
-    }
-
     const { user } = getState().auth;
 
     if (user) {
@@ -45,20 +36,11 @@ export const authInitProcessor: Processor = {
         .split('&')
         .every((x: string) => /^(map|layers)=|^$/.test(x))
     ) {
-      if (!getState().auth.user) {
-        dispatch(
-          tipsPreventNextTime({
-            value: storage.getItem('preventTips') === 'true',
-            save: false,
-          }),
-        );
-      }
-
       if (
         !getState().tips.preventTips &&
         ['sk', 'cs'].includes(getState().l10n.language)
       ) {
-        const tip = storage.getItem('tip');
+        const tip = getState().tips.lastTip;
 
         dispatch(tipsShow(tip && is<TipKey>(tip) ? tip : 'freemap'));
 

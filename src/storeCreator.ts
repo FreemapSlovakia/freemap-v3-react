@@ -1,7 +1,9 @@
+import storage from 'local-storage-fallback';
 import reduceReducers from 'reduce-reducers';
 import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { StateType } from 'typesafe-actions';
+import { is } from 'typescript-is';
 import { RootAction } from './actions';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
@@ -14,14 +16,12 @@ import { utilityMiddleware } from './middlewares/utilityMiddleware';
 import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
 import { authInitProcessor } from './processors/authInitProcessor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
-import { authSaveUserProcessor } from './processors/authSaveUserProcessor';
 import { cancelProcessor } from './processors/cancelProcessor';
 import { changesetsProcessor } from './processors/changesetsProcessor';
 import { elevationChartProcessor } from './processors/elevationChartProcessor';
 import { errorProcessor } from './processors/errorProcessor';
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
 import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor';
-import { galleryPreventLayerHintProcessor } from './processors/galleryPreventLayerHintProcessor';
 import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor';
 import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor';
 import { galleryRequestImagesByRadiusProcessor } from './processors/galleryRequestImagesByRadiusProcessor';
@@ -54,7 +54,6 @@ import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
-import { routePlannerPreventHintProcssor } from './processors/routePlannerPreventHintProcssor';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { routePlannerSetupTransportTypeProcessor } from './processors/routePlannerSetupTransportTypeProcessor';
@@ -63,7 +62,6 @@ import * as rpcProcessors from './processors/rpcProcessors';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
 import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
 import { searchProcessor } from './processors/searchProcessor';
-import { storageProcessor } from './processors/storageProcessor';
 import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
 import { toastsAddProcessor } from './processors/toastsAddProcessor';
 import { toastsCancelTypeProcessor } from './processors/toastsCancelTypeProcessor';
@@ -81,25 +79,31 @@ import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadT
 import { urlProcessor } from './processors/urlProcessor';
 import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
 import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
-import { authReducer } from './reducers/authReducer';
+import { authInitialState, authReducer } from './reducers/authReducer';
 import { changesetReducer } from './reducers/changesetsReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { galleryReducer } from './reducers/galleryReducer';
 import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
-import { l10nReducer } from './reducers/l10nReducer';
-import { mainReducer } from './reducers/mainReducer';
+import { l10nInitialState, l10nReducer } from './reducers/l10nReducer';
+import { mainInitialState, mainReducer } from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
-import { mapReducer } from './reducers/mapReducer';
+import { mapInitialState, mapReducer } from './reducers/mapReducer';
 import { mapsReducer } from './reducers/mapsReducer';
 import { objectsReducer } from './reducers/objectsReducer';
-import { routePlannerReducer } from './reducers/routePlannerReducer';
+import {
+  routePlannerInitialState,
+  routePlannerReducer,
+} from './reducers/routePlannerReducer';
 import { searchReducer } from './reducers/searchReducer';
-import { tipsReducer } from './reducers/tipsReducer';
+import { tipsInitialState, tipsReducer } from './reducers/tipsReducer';
 import { toastsReducer } from './reducers/toastsReducer';
 import { trackingReducer } from './reducers/trackingReducer';
-import { trackViewerReducer } from './reducers/trackViewerReducer';
+import {
+  trackViewerInitialState,
+  trackViewerReducer,
+} from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
 import { wikiReducer } from './reducers/wikiReducer';
 
@@ -155,7 +159,6 @@ processors.push(
   mapDetailsProcessor,
   changesetsProcessor,
   authInitProcessor,
-  authSaveUserProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
   objectsFetchProcessor,
@@ -163,7 +166,6 @@ processors.push(
   osmLoadWayProcessor,
   osmLoadRelationProcessor,
   mapTypeGaProcessor,
-  storageProcessor,
   toastsAddProcessor,
   toastsCancelTypeProcessor,
   toastsRemoveProcessor,
@@ -177,7 +179,6 @@ processors.push(
   routePlannerFindRouteProcessor,
   galleryDeletePictureProcessor,
   galleryFetchUsersProcessor,
-  galleryPreventLayerHintProcessor,
   galleryRequestImageProcessor,
   galleryRequestImagesByOrderProcessor,
   galleryRequestImagesByRadiusProcessor,
@@ -189,7 +190,6 @@ processors.push(
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
   galleryUploadModalTransformer,
-  routePlannerPreventHintProcssor,
   routePlannerRefocusMapProcessor,
   routePlannerSetupTransportTypeProcessor,
   routePlannerToggleElevationChartProcessor,
@@ -214,8 +214,49 @@ processors.push(
 export type MyStore = Store<RootState, RootAction>;
 
 export function createReduxStore(): MyStore {
+  let persisted: Partial<RootState> = {};
+
+  try {
+    const data = storage.getItem('store');
+
+    if (data) {
+      persisted = JSON.parse(data);
+
+      if (!is<Partial<RootState>>(persisted)) {
+        persisted = {};
+      }
+    }
+  } catch {
+    // nothing
+  }
+
+  Object.assign(persisted, {
+    map: Object.assign({}, mapInitialState, persisted.map),
+
+    l10n: Object.assign({}, l10nInitialState, persisted.l10n),
+
+    tips: Object.assign({}, tipsInitialState, persisted.tips),
+
+    auth: Object.assign({}, authInitialState, persisted.auth),
+
+    main: Object.assign({}, mainInitialState, persisted.main),
+
+    routePlanner: Object.assign(
+      {},
+      routePlannerInitialState,
+      persisted.routePlanner,
+    ),
+
+    trackViewer: Object.assign(
+      {},
+      trackViewerInitialState,
+      persisted.trackViewer,
+    ),
+  });
+
   return createStore(
     rootReducer as CR,
+    persisted,
     composeWithDevTools(
       applyMiddleware(
         loggerMiddleware,

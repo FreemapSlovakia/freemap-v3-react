@@ -1,6 +1,6 @@
 import { FeatureCollection, Geometries } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
-import { clearMap, setAppState } from 'fm3/actions/mainActions';
+import { clearMap } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   osmClear,
@@ -47,7 +47,7 @@ export const cleanState = {
   gpxUrl: null, // TODO to separate reducer (?)
 };
 
-export const initialState: TrackViewerState = {
+export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
   eleSmoothingFactor: undefined, // TODO to settings reducer
 
@@ -55,12 +55,9 @@ export const initialState: TrackViewerState = {
 };
 
 export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
-  initialState,
+  trackViewerInitialState,
 )
-  .handleAction(clearMap, () => initialState)
-  .handleAction(setAppState, (state, action) => {
-    return { ...state, ...action.payload.trackViewer };
-  })
+  .handleAction(clearMap, () => trackViewerInitialState)
   .handleAction(trackViewerSetData, (state, action) => ({
     ...state,
     ...action.payload,
@@ -81,7 +78,7 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
     ...state,
     gpxUrl: action.payload,
   }))
-  .handleAction(osmClear, () => initialState)
+  .handleAction(osmClear, () => trackViewerInitialState)
   .handleAction(osmLoadNode, (state, action) => ({
     ...state,
     osmNodeId: action.payload,
@@ -114,5 +111,5 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
     }),
   )
   .handleAction(mapsDataLoaded, (_state, { payload: { trackViewer } }) => {
-    return trackViewer ?? initialState;
+    return trackViewer ?? trackViewerInitialState;
   });

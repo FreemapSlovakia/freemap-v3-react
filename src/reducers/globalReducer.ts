@@ -17,11 +17,11 @@ import produce from 'immer';
 import { isActionOf } from 'typesafe-actions';
 import {
   cleanState as routePlannerCleanState,
-  initialState as routePlannerInitialState,
+  routePlannerInitialState as routePlannerInitialState,
 } from './routePlannerReducer';
 import {
   cleanState as trackViewerCleanState,
-  initialState as trackViewerInitialState,
+  trackViewerInitialState as trackViewerInitialState,
 } from './trackViewerReducer';
 
 export function preGlobalReducer(

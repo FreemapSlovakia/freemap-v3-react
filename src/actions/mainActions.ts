@@ -1,4 +1,4 @@
-import { AppState, LatLon } from 'fm3/types/common';
+import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 
 export const tools = [
@@ -73,8 +73,6 @@ export interface PdfExportOptions {
 export type Destination = 'download' | 'gdrive' | 'dropbox';
 
 export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
-
-export const setAppState = createAction('SET_APP_STATE')<AppState>();
 
 export const exportGpx = createAction('EXPORT_GPX')<{
   exportables: string[];
@@ -184,4 +182,4 @@ export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   url?: string;
 }>();
 
-export const allowCookies = createAction('ALLOW_COOKIES')<string[]>();
+export const allowCookies = createAction('ALLOW_COOKIES')<boolean>();

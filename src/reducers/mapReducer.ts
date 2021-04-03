@@ -1,7 +1,7 @@
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { Selection, setAppState } from 'fm3/actions/mainActions';
+import { Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
   mapSetOverlayOpacity,
@@ -17,7 +17,7 @@ export interface MapState extends MapStateBase {
   gpsTracked: boolean;
 }
 
-const initialState: MapState = {
+export const mapInitialState: MapState = {
   mapType: 'X',
   lat: 48.70714,
   lon: 19.4995,
@@ -30,10 +30,7 @@ const initialState: MapState = {
   gpsTracked: false,
 };
 
-export const mapReducer = createReducer<MapState, RootAction>(initialState)
-  .handleAction(setAppState, (state, action) => {
-    return { ...state, ...action.payload.map };
-  })
+export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
   .handleAction(mapSetOverlayOpacity, (state, action) => ({
     ...state,
     overlayOpacity: action.payload,

@@ -1,15 +1,11 @@
 import { RootAction } from 'fm3/actions';
-import {
-  clearMap,
-  selectFeature,
-  setAppState,
-  setTool,
-} from 'fm3/actions/mainActions';
+import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
   PickMode,
   routePlannerAddMidpoint,
+  routePlannerPreventHint,
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
@@ -45,6 +41,7 @@ export interface RoutePlannerState {
   itineraryIsVisible: boolean;
   mode: RouteMode;
   milestones: boolean;
+  preventHint: boolean;
 }
 
 const clearResult = {
@@ -63,25 +60,29 @@ export const cleanState = {
   ...clearResult,
 };
 
-export const initialState: RoutePlannerState = {
+export const routePlannerInitialState: RoutePlannerState = {
   transportType: null,
   mode: 'route',
   milestones: false,
+  preventHint: false,
   ...cleanState,
 };
 
 export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
-  initialState,
+  routePlannerInitialState,
 )
+  .handleAction(routePlannerPreventHint, (state) => {
+    return {
+      ...state,
+      preventHint: true,
+    };
+  })
   .handleAction(routePlannerToggleMilestones, (state, action) => {
     return {
       ...state,
       milestones:
         action.payload === undefined ? !state.milestones : action.payload,
     };
-  })
-  .handleAction(setAppState, (state, action) => {
-    return { ...state, ...action.payload.routePlanner };
   })
   .handleAction(selectFeature, (state) => ({
     ...state,
@@ -96,7 +97,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       : null,
   }))
   .handleAction(clearMap, (state) => ({
-    ...initialState,
+    ...routePlannerInitialState,
     transportType: state.transportType,
     mode: state.mode,
   }))
@@ -104,7 +105,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     ...(action.payload.start === null || action.payload.finish === null
       ? {
-          ...initialState,
+          ...routePlannerInitialState,
           transportType: state.transportType,
           mode: state.mode,
         }
@@ -212,13 +213,15 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   }))
   .handleAction(mapsDataLoaded, (_state, { payload: { routePlanner } }) => {
     return {
-      ...initialState,
-      transportType: routePlanner?.transportType ?? initialState.transportType,
-      start: routePlanner?.start ?? initialState.start,
-      midpoints: routePlanner?.midpoints ?? initialState.midpoints,
-      finish: routePlanner?.finish ?? initialState.finish,
-      pickMode: routePlanner?.pickMode ?? initialState.pickMode,
-      mode: routePlanner?.mode ?? initialState.mode,
-      milestones: routePlanner?.milestones ?? initialState.milestones,
+      ...routePlannerInitialState,
+      transportType:
+        routePlanner?.transportType ?? routePlannerInitialState.transportType,
+      start: routePlanner?.start ?? routePlannerInitialState.start,
+      midpoints: routePlanner?.midpoints ?? routePlannerInitialState.midpoints,
+      finish: routePlanner?.finish ?? routePlannerInitialState.finish,
+      pickMode: routePlanner?.pickMode ?? routePlannerInitialState.pickMode,
+      mode: routePlanner?.mode ?? routePlannerInitialState.mode,
+      milestones:
+        routePlanner?.milestones ?? routePlannerInitialState.milestones,
     };
   });

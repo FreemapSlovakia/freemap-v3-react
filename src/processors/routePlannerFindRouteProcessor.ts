@@ -19,7 +19,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import storage from 'local-storage-fallback';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
@@ -116,8 +115,7 @@ export const routePlannerFindRouteProcessor: Processor = {
 
     if (code === 'Ok') {
       const showHint =
-        // TODO ??? !getState().routePlanner.shapePoints &&
-        !storage.getItem('routePlannerPreventHint') &&
+        !getState().routePlanner.preventHint &&
         !midpoints.length &&
         isActionOf([routePlannerSetStart, routePlannerSetFinish], action);
 

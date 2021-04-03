@@ -29,7 +29,7 @@ export function GalleryModals(): ReactElement {
     (state: RootState) =>
       state.gallery.showUploadModal &&
       !!state.auth.user &&
-      !state.auth.user.notValidated &&
+      state.auth.validated &&
       state.gallery.pickingPositionForId === null,
   );
 

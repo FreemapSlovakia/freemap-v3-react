@@ -1,6 +1,5 @@
 import { RootAction } from 'fm3/actions';
 import { allowCookies, selectFeature } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import { RootState } from 'fm3/storeCreator';
 import storage from 'local-storage-fallback';
 import { Dispatch, Middleware } from 'redux';
@@ -23,9 +22,7 @@ export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
       });
     }
   } else if (isActionOf(allowCookies, action)) {
-    storage.setItem('cookieConsentResult', JSON.stringify(action.payload));
-
-    if (action.payload.includes('gtag')) {
+    if (action.payload) {
       window.gtag('consent' as any, 'update', {
         ad_storage: 'granted',
         analytics_storage: 'granted',
@@ -35,15 +32,55 @@ export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
 
       window?.fbq('consent', 'grant');
     }
-  } else if (isActionOf(tipsShow, action)) {
-    const { tip } = getState().tips;
+  }
 
-    if (tip) {
-      storage.setItem('tip', tip);
-    } else {
-      storage.removeItem('tip');
-    }
+  const state = getState();
+
+  if (state.main.cookieConsentResult !== null) {
+    persistSelectedState(state);
   }
 
   return result;
 };
+
+function persistSelectedState(state: RootState) {
+  if (window.self !== window.top) {
+    return;
+  }
+
+  storage.setItem(
+    'store',
+    JSON.stringify({
+      l10n: {
+        chosenLanguage: state.l10n.chosenLanguage,
+      },
+      main: {
+        cookieConsentResult: state.main.cookieConsentResult,
+        homeLocation: state.main.homeLocation,
+        expertMode: state.main.expertMode,
+      },
+      tips: {
+        tip: state.tips.tip,
+      },
+      routePlanner: {
+        preventHint: state.routePlanner.preventHint,
+        transportType: state.routePlanner.transportType,
+      },
+      auth: {
+        user: state.auth.user,
+      },
+      trackViewer: {
+        eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+      },
+      map: {
+        overlayOpacity: state.map.overlayOpacity,
+        overlayPaneOpacity: state.map.overlayPaneOpacity,
+        mapType: state.map.mapType,
+        lat: state.map.lat,
+        lon: state.map.lon,
+        zoom: state.map.zoom,
+        overlays: state.map.overlays,
+      },
+    } as Partial<RootState>),
+  );
+}

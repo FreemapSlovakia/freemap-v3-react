@@ -6,6 +6,7 @@ import {
   drawingLineStopDrawing,
 } from 'fm3/actions/drawingLineActions';
 import {
+  allowCookies,
   clearMap,
   convertToDrawing,
   deleteFeature,
@@ -14,7 +15,6 @@ import {
   selectFeature,
   Selection,
   setActiveModal,
-  setAppState,
   setEmbedFeatures,
   setErrorTicketId,
   setExpertMode,
@@ -52,9 +52,10 @@ export interface MainState {
   eleSmoothingFactor: number;
   embedFeatures: string[];
   selection: Selection | null;
+  cookieConsentResult: boolean | null;
 }
 
-const initialState: MainState = {
+export const mainInitialState: MainState = {
   tool: null,
   activeModal: null,
   homeLocation: null,
@@ -68,9 +69,12 @@ const initialState: MainState = {
   eleSmoothingFactor: 5,
   embedFeatures: [],
   selection: null,
+  cookieConsentResult: null,
 };
 
-export const mainReducer = createReducer<MainState, RootAction>(initialState)
+export const mainReducer = createReducer<MainState, RootAction>(
+  mainInitialState,
+)
   .handleAction(setTool, (state, action) => {
     return embed
       ? state
@@ -94,9 +98,6 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
       ...state,
       selection: null,
     };
-  })
-  .handleAction(setAppState, (state, action) => {
-    return { ...state, ...action.payload.main };
   })
   .handleAction(authSetUser, (state, action) => {
     const p = action.payload;
@@ -197,6 +198,10 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(convertToDrawing, (state) => ({
     ...state,
     tool: null,
+  }))
+  .handleAction(allowCookies, (state, action) => ({
+    ...state,
+    cookieConsentResult: action.payload,
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,

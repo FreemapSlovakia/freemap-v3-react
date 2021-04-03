@@ -6,15 +6,19 @@ import { createReducer } from 'typesafe-actions';
 
 export interface TipsState {
   tip: TipKey | null;
+  lastTip: TipKey | null;
   preventTips: boolean;
 }
 
-const initialState: TipsState = {
+export const tipsInitialState: TipsState = {
   tip: null,
+  lastTip: null,
   preventTips: false,
 };
 
-export const tipsReducer = createReducer<TipsState, RootAction>(initialState)
+export const tipsReducer = createReducer<TipsState, RootAction>(
+  tipsInitialState,
+)
   .handleAction(tipsShow, (state, action) => {
     const next = {
       ...state,
@@ -34,6 +38,10 @@ export const tipsReducer = createReducer<TipsState, RootAction>(initialState)
       } else if (action.payload === 'prev') {
         next.tip = tips[(ft(next.tip) + tips.length - 1) % tips.length][0];
       }
+    }
+
+    if (next.tip) {
+      next.lastTip = next.tip;
     }
 
     return next;
