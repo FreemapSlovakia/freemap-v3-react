@@ -373,9 +373,9 @@ const cs: Messages = {
     copyright: 'Licence',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Některé funkce mohou vyžadovat cookies. Přijmout cookies:"
-        local="Lokálních nastavení a přihlášení pomocí sociálních sítí"
-        analytics="Analytické"
+        prompt="Některé funkce mohou vyžadovat cookies. Přijmout:"
+        local="Cookies lokálních nastavení a přihlášení pomocí sociálních sítí"
+        analytics="Analytické cookies"
       />
     ),
   },

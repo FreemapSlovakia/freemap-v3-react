@@ -371,9 +371,9 @@ const sk: Messages = {
     copyright: 'Licencia',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Niektoré funkcie môžu vyžadovať cookies. Prijať cookies:"
-        local="Lokálnych nastavení a prihlásenia pomocou sociálnych sietí"
-        analytics="Analytické"
+        prompt="Niektoré funkcie môžu vyžadovať cookies. Prijať:"
+        local="Cookies lokálnych nastavení a prihlásenia pomocou sociálnych sietí"
+        analytics="Analytické cookies"
       />
     ),
     // p2: () => {

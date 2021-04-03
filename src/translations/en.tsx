@@ -369,9 +369,9 @@ const en: Messages = {
     copyright: 'Copyright',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Some features may require cookies. Accept cookies:"
-        local="Local settings and login via social networks"
-        analytics="Analytics"
+        prompt="Some features may require cookies. Accept:"
+        local="Cookies of local settings and login via social networks"
+        analytics="Analytics cookies"
       />
     ),
   },
