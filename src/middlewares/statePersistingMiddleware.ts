@@ -1,38 +1,16 @@
 import { RootAction } from 'fm3/actions';
-import { applyCookieConsent, selectFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import storage from 'local-storage-fallback';
 import { Dispatch, Middleware } from 'redux';
-import { isActionOf } from 'typesafe-actions';
 
-// TODO to processors
-
-export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
-  getState,
-}) => (next: Dispatch) => (action: RootAction): unknown => {
+export const statePersistingMiddleware: Middleware<
+  RootAction | null,
+  RootState,
+  Dispatch<RootAction>
+> = ({ getState }) => (next: Dispatch) => (
+  action: RootAction,
+): RootAction | null => {
   const result = next(action);
-
-  if (isActionOf(selectFeature, action)) {
-    const { selection } = getState().main;
-
-    if (selection) {
-      window.gtag('event', 'setTool', {
-        event_category: 'Main',
-        value: selection.type,
-      });
-    }
-  } else if (isActionOf(applyCookieConsent, action)) {
-    if (getState().main.cookieConsentResult) {
-      window.gtag('consent' as any, 'update', {
-        ad_storage: 'granted',
-        analytics_storage: 'granted',
-      });
-
-      // FB PIXEL
-
-      window?.fbq('consent', 'grant');
-    }
-  }
 
   const state = getState();
 

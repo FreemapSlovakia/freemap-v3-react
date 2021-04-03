@@ -9,15 +9,10 @@ export const errorHandlingMiddleware: Middleware<
   Dispatch<RootAction>
 > = () => (next: Dispatch) => (action: RootAction): RootAction | null => {
   try {
-    // TODO
-    // if (action.type === at.UNHANDLED_LOGIC_ERROR) {
-    //   sendError({ kind: 'unhandledLogic', error: action.payload });
-    //   return null;
-    // }
-
     return next(action);
   } catch (error) {
     sendError({ kind: 'reducer', error, action });
+
     return null;
   }
 };

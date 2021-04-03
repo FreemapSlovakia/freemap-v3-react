@@ -11,13 +11,14 @@ import {
   processorMiddleware,
   processors,
 } from './middlewares/processorMiddleware';
+import { statePersistingMiddleware } from './middlewares/statePersistingMiddleware';
 import { trackingMiddleware } from './middlewares/trackingMiddleware';
-import { utilityMiddleware } from './middlewares/utilityMiddleware';
 import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
 import { authInitProcessor } from './processors/authInitProcessor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
 import { cancelProcessor } from './processors/cancelProcessor';
 import { changesetsProcessor } from './processors/changesetsProcessor';
+import { cookieConsentProcessor } from './processors/cookieConsentProcessor';
 import { elevationChartProcessor } from './processors/elevationChartProcessor';
 import { errorProcessor } from './processors/errorProcessor';
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
@@ -61,6 +62,7 @@ import * as rpcProcessors from './processors/rpcProcessors';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
 import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
 import { searchProcessor } from './processors/searchProcessor';
+import { setToolProcessor } from './processors/setToolProcessor';
 import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
 import { toastsAddProcessor } from './processors/toastsAddProcessor';
 import { toastsCancelTypeProcessor } from './processors/toastsCancelTypeProcessor';
@@ -165,6 +167,8 @@ const rootReducer = reduceReducers<RootState>(
 processors.push(
   errorProcessor,
   cancelProcessor,
+  setToolProcessor,
+  cookieConsentProcessor,
   authLogoutProcessor,
   mapRefocusProcessor,
   searchProcessor,
@@ -208,7 +212,6 @@ processors.push(
   galleryUploadModalProcessor,
   galleryUploadModalTransformer,
   routePlannerRefocusMapProcessor,
-
   routePlannerToggleElevationChartProcessor,
   routePlannerSetFromCurrentPositionProcessor,
   ...Object.values(trackingAccessTokenProcessors),
@@ -280,12 +283,12 @@ export function createReduxStore(): MyStore {
     initial,
     composeWithDevTools(
       applyMiddleware(
-        loggerMiddleware,
         errorHandlingMiddleware,
+        loggerMiddleware,
+        statePersistingMiddleware,
         webSocketMiddleware,
         processorMiddleware,
         trackingMiddleware,
-        utilityMiddleware,
       ),
     ),
   );
