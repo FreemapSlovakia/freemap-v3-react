@@ -28,7 +28,7 @@ export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
         analytics_storage: 'granted',
       });
 
-      // FB PIXEL; NOTE we will use `gtag` for all such features
+      // FB PIXEL
 
       window?.fbq('consent', 'grant');
     }
