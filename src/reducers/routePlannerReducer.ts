@@ -98,6 +98,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   }))
   .handleAction(clearMap, (state) => ({
     ...routePlannerInitialState,
+    preventHint: state.preventHint,
     transportType: state.transportType,
     mode: state.mode,
   }))
@@ -106,6 +107,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...(action.payload.start === null || action.payload.finish === null
       ? {
           ...routePlannerInitialState,
+          preventHint: state.preventHint,
           transportType: state.transportType,
           mode: state.mode,
         }
@@ -211,9 +213,10 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     activeAlternativeIndex: action.payload,
   }))
-  .handleAction(mapsDataLoaded, (_state, { payload: { routePlanner } }) => {
+  .handleAction(mapsDataLoaded, (state, { payload: { routePlanner } }) => {
     return {
       ...routePlannerInitialState,
+      preventHint: state.preventHint,
       transportType:
         routePlanner?.transportType ?? routePlannerInitialState.transportType,
       start: routePlanner?.start ?? routePlannerInitialState.start,
