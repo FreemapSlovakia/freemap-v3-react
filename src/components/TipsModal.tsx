@@ -125,6 +125,10 @@ export function TipsModal({ show }: Props): ReactElement | null {
   //     });
   // }, [tip]);
 
+  const cookieConsentResult = useSelector(
+    (state: RootState) => state.main.cookieConsentResult,
+  );
+
   if (!tip) {
     return null;
   }
@@ -172,6 +176,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
               onChange={handleNextTimePrevent}
               type="checkbox"
               label={m?.tips.prevent}
+              disabled={cookieConsentResult === null}
             />
             <Button
               variant="secondary"

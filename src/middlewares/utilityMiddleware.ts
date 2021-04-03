@@ -61,6 +61,7 @@ function persistSelectedState(state: RootState) {
       },
       tips: {
         lastTip: state.tips.lastTip,
+        preventTips: state.tips.preventTips,
       },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,
