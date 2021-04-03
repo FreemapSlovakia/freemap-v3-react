@@ -30,6 +30,7 @@
       "gapi.auth2",
       "gtag.js",
       "facebook-js-sdk",
+      "facebook-pixel",
       "google.picker",
       "trackjs"
     ]

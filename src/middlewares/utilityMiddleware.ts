@@ -25,21 +25,15 @@ export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
   } else if (isActionOf(allowCookies, action)) {
     localStorage.setItem('cookieConsentResult', JSON.stringify(action.payload));
 
-    if (action.payload.includes('gtag') && process.env['GA_TRACKING_CODE']) {
-      const js = document.createElement('script');
+    if (action.payload.includes('gtag')) {
+      window.gtag('consent' as any, 'update', {
+        ad_storage: 'granted',
+        analytics_storage: 'granted',
+      });
 
-      js.async = true;
+      // FB PIXEL; NOTE we will use `gtag` for all such features
 
-      js.src =
-        'https://www.googletagmanager.com/gtag/js?id=' +
-        process.env['GA_TRACKING_CODE'];
-
-      const fjs = document.getElementsByTagName('script')[0];
-      if (fjs?.parentNode) {
-        fjs.parentNode.insertBefore(js, fjs);
-      }
-    } else {
-      delete (window as any)['dataLayer'];
+      window?.fbq('consent', 'grant');
     }
   } else if (isActionOf(tipsShow, action)) {
     const { tip } = getState().tips;

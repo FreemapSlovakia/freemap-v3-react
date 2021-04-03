@@ -136,20 +136,28 @@
         });
     </script>
 
-    <% if (process.env['GA_TRACKING_CODE']) { %>
+    <% if (process.env['GA_MEASUREMENT_ID']) { %>
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=<%= process.env['GA_MEASUREMENT_ID'] %>"
+    ></script>
 
     <script>
       window.dataLayer = window.dataLayer || [];
 
       function gtag() {
-        if (window.dataLayer) {
-          window.dataLayer.push(arguments);
-        }
+        dataLayer.push(arguments);
       }
 
       gtag('js', new Date());
 
-      gtag('config', '<%= process.env["GA_TRACKING_CODE"] %>');
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+      });
+
+      gtag('config', '<%= process.env["GA_MEASUREMENT_ID"] %>');
     </script>
 
     <% } else { %>
@@ -166,6 +174,8 @@
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
     ></script> -->
 
+    <% if (process.env['FB_APP_ID']) { %>
+
     <!-- Facebook Pixel Code -->
     <!-- prettier-ignore -->
     <script>
@@ -180,9 +190,19 @@
 
       fbq.disablePushState = true;
 
-      fbq('init', '681854635902254');
+      fbq('consent', 'revoke');
+      fbq('init', '<%= process.env["FB_APP_ID"] %>');
       fbq('track', 'PageView');
     </script>
+
+    <% } else { %>
+
+    <script>
+      function fbq() {}
+    </script>
+
+    <% } %>
+
     <!-- prettier-ignore -->
     <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=681854635902254&ev=PageView&noscript=1"

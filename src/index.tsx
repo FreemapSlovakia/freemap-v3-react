@@ -27,8 +27,8 @@ import { ToastAction, toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
 import { AppState } from './types/common';
 
-if (process.env['GA_TRACKING_CODE']) {
-  window.gtag('config', process.env['GA_TRACKING_CODE']);
+if (process.env['GA_MEASUREMENT_ID']) {
+  window.gtag('config', process.env['GA_MEASUREMENT_ID']);
 }
 
 setDefaultGetErrorObject(() => null);
@@ -88,7 +88,10 @@ if (Array.isArray(cookieConsentResult)) {
 } else {
   const actions: ToastAction[] = [];
 
-  if (process.env['GA_TRACKING_CODE']) {
+  const canUseExtraCookies =
+    process.env['GA_MEASUREMENT_ID'] || process.env['FB_APP_ID'];
+
+  if (canUseExtraCookies) {
     actions.push({
       nameKey: 'main.cookieConsent.acceptAll',
       action: allowCookies(['gtag']),
@@ -97,7 +100,7 @@ if (Array.isArray(cookieConsentResult)) {
   }
 
   actions.push({
-    nameKey: process.env['GA_TRACKING_CODE']
+    nameKey: canUseExtraCookies
       ? 'main.cookieConsent.acceptMinumum'
       : 'general.ok',
     action: allowCookies([]),
