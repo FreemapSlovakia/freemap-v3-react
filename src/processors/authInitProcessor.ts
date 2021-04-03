@@ -1,5 +1,4 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
 import { getTip, tipsShow } from 'fm3/actions/tipsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { history } from 'fm3/historyHolder';
@@ -42,11 +41,11 @@ export const authInitProcessor: Processor = {
       if (!getState().tips.preventTips && ['sk', 'cs'].includes(lang)) {
         const tip = getState().tips.lastTip;
 
-        dispatch(
-          tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
-        );
-
-        dispatch(setActiveModal('tips'));
+        setTimeout(() => {
+          dispatch(
+            tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
+          );
+        });
       }
     }
   },
