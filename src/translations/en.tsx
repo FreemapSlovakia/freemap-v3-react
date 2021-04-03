@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
+import { CookieConsent } from 'fm3/components/CookieConsent';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
@@ -366,11 +367,13 @@ const en: Messages = {
       </div>
     ),
     copyright: 'Copyright',
-    cookieConsent: {
-      message: 'Some of the application functions may require cookies.',
-      acceptAll: 'Accept all',
-      acceptMinumum: 'Accept only necessary',
-    },
+    cookieConsent: () => (
+      <CookieConsent
+        prompt="Some features may require cookies. Accept cookies:"
+        local="Local settings and login via social networks"
+        analytics="Analytics"
+      />
+    ),
   },
 
   gallery: {

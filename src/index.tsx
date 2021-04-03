@@ -1,6 +1,6 @@
 // import { errorSetError } from 'fm3/actions/errorActions';
 import {
-  allowCookies,
+  applyCookieConsent,
   enableUpdatingUrl,
   setEmbedFeatures,
 } from 'fm3/actions/mainActions';
@@ -22,7 +22,7 @@ import { Provider } from 'react-redux';
 import { is, setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
-import { ToastAction, toastsAdd } from './actions/toastsActions';
+import { toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
 import { MainState } from './reducers/mainReducer';
 import { MapState } from './reducers/mapReducer';
@@ -150,35 +150,19 @@ console.log({ cookieConsentResult });
 if (window.self !== window.top) {
   // nothing for ebed
 } else if (cookieConsentResult !== null) {
-  store.dispatch(allowCookies(cookieConsentResult));
+  store.dispatch(applyCookieConsent());
 } else {
-  const actions: ToastAction[] = [];
-
-  const canUseExtraCookies =
-    process.env['GA_MEASUREMENT_ID'] || process.env['FB_APP_ID'];
-
-  if (canUseExtraCookies) {
-    actions.push({
-      nameKey: 'main.cookieConsent.acceptAll',
-      action: allowCookies(true),
-      style: 'primary',
-    });
-  }
-
-  actions.push({
-    nameKey: canUseExtraCookies
-      ? 'main.cookieConsent.acceptMinumum'
-      : 'general.ok',
-    action: allowCookies(false),
-    style: 'secondary',
-  });
-
   store.dispatch(
     toastsAdd({
-      messageKey: 'main.cookieConsent.message',
+      messageKey: 'main.cookieConsent',
       style: 'warning',
-      noClose: true,
-      actions,
+      actions: [
+        {
+          nameKey: 'general.ok',
+          action: applyCookieConsent(),
+          style: 'secondary',
+        },
+      ],
     }),
   );
 }

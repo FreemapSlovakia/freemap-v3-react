@@ -6,7 +6,7 @@ import {
   drawingLineStopDrawing,
 } from 'fm3/actions/drawingLineActions';
 import {
-  allowCookies,
+  applyCookieConsent,
   clearMap,
   convertToDrawing,
   deleteFeature,
@@ -15,6 +15,7 @@ import {
   selectFeature,
   Selection,
   setActiveModal,
+  setAnalyticCookiesAllowed,
   setEmbedFeatures,
   setErrorTicketId,
   setExpertMode,
@@ -53,6 +54,7 @@ export interface MainState {
   embedFeatures: string[];
   selection: Selection | null;
   cookieConsentResult: boolean | null;
+  analyticCookiesAllowed: boolean;
 }
 
 export const mainInitialState: MainState = {
@@ -70,6 +72,7 @@ export const mainInitialState: MainState = {
   embedFeatures: [],
   selection: null,
   cookieConsentResult: null,
+  analyticCookiesAllowed: true,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -199,9 +202,13 @@ export const mainReducer = createReducer<MainState, RootAction>(
     ...state,
     tool: null,
   }))
-  .handleAction(allowCookies, (state, action) => ({
+  .handleAction(applyCookieConsent, (state) => ({
     ...state,
-    cookieConsentResult: action.payload,
+    cookieConsentResult: state.analyticCookiesAllowed,
+  }))
+  .handleAction(setAnalyticCookiesAllowed, (state, action) => ({
+    ...state,
+    analyticCookiesAllowed: action.payload,
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,

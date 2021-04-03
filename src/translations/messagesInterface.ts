@@ -304,11 +304,7 @@ export type Messages = {
     devInfo: () => JSX.Element;
     copyright: string;
     YellowBar?: () => JSX.Element;
-    cookieConsent: {
-      message: string;
-      acceptAll: string;
-      acceptMinumum: string;
-    };
+    cookieConsent: () => JSX.Element;
   };
   gallery: {
     filter: string;

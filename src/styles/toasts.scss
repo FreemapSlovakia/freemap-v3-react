@@ -4,7 +4,7 @@
   bottom: 52px;
   z-index: 100000;
 
-  max-width: 350px;
+  // max-width: calc(350px);
   overflow: hidden;
   font-size: 0.875rem;
   // background-color: hsla(0, 0%, 100%, 0.85);
@@ -19,5 +19,5 @@
 .fm-toast {
   margin: 10px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-  max-width: 380px;
+  max-width: calc(max(380px, 25vw));
 }

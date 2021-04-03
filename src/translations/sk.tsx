@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
+import { CookieConsent } from 'fm3/components/CookieConsent';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
@@ -351,7 +352,6 @@ const sk: Messages = {
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
   },
-
   main: {
     title: shared.title,
     description: shared.description,
@@ -369,11 +369,13 @@ const sk: Messages = {
       </div>
     ),
     copyright: 'Licencia',
-    cookieConsent: {
-      message: 'Niektoré funkcie môžu vyžadovať cookies.',
-      acceptAll: 'Prijať všetky',
-      acceptMinumum: 'Prijať len nutné',
-    },
+    cookieConsent: () => (
+      <CookieConsent
+        prompt="Niektoré funkcie môžu vyžadovať cookies. Prijať cookies:"
+        local="Lokálnych nastavení a prihlásenia pomocou sociálnych sietí"
+        analytics="Analytické"
+      />
+    ),
     // p2: () => {
     //   return (
     //     <>

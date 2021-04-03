@@ -182,4 +182,8 @@ export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   url?: string;
 }>();
 
-export const allowCookies = createAction('ALLOW_COOKIES')<boolean>();
+export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT')();
+
+export const setAnalyticCookiesAllowed = createAction(
+  'SET_ANALYTICS_COOKIES_ALLOWED',
+)<boolean>();

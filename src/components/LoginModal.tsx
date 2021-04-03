@@ -5,12 +5,13 @@ import {
   authLoginWithOsm,
 } from 'fm3/actions/authActions';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FaFacebook, FaGoogle, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { SiOpenstreetmap } from 'react-icons/si';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
@@ -35,6 +36,10 @@ export function LoginModal({ show }: Props): ReactElement {
     dispatch(authLoginWithOsm());
   }, [dispatch]);
 
+  const cookieConsentResult = useSelector(
+    (state: RootState) => state.main.cookieConsentResult,
+  );
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -48,6 +53,7 @@ export function LoginModal({ show }: Props): ReactElement {
           size="lg"
           block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
+          disabled={cookieConsentResult === null}
         >
           <FaFacebook /> {m?.logIn.with.facebook}
         </Button>
@@ -56,6 +62,7 @@ export function LoginModal({ show }: Props): ReactElement {
           size="lg"
           block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
+          disabled={cookieConsentResult === null}
         >
           <FaGoogle /> {m?.logIn.with.google}
         </Button>
