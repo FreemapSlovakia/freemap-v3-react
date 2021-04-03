@@ -14,10 +14,10 @@ import { history } from 'fm3/historyHolder';
 import { attachKeyboardHandler } from 'fm3/keyboardHandler';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
 import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
-import { storage } from 'fm3/storage';
 import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
+import storage from 'local-storage-fallback';
 import { render } from 'react-dom';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
@@ -77,7 +77,7 @@ let cookieConsentResult;
 
 try {
   cookieConsentResult = JSON.parse(
-    window.localStorage.getItem('cookieConsentResult') ?? 'null',
+    storage.getItem('cookieConsentResult') ?? 'null',
   );
 } catch {
   cookieConsentResult = null;

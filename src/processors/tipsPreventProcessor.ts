@@ -1,7 +1,7 @@
 import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { storage } from 'fm3/storage';
+import storage from 'local-storage-fallback';
 
 export const tipsPreventProcessor: Processor<typeof tipsPreventNextTime> = {
   actionCreator: tipsPreventNextTime,

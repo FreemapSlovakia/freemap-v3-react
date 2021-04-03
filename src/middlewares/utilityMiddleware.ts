@@ -1,8 +1,8 @@
 import { RootAction } from 'fm3/actions';
 import { allowCookies, selectFeature } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
-import { storage } from 'fm3/storage';
 import { RootState } from 'fm3/storeCreator';
+import storage from 'local-storage-fallback';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 
@@ -23,7 +23,7 @@ export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
       });
     }
   } else if (isActionOf(allowCookies, action)) {
-    localStorage.setItem('cookieConsentResult', JSON.stringify(action.payload));
+    storage.setItem('cookieConsentResult', JSON.stringify(action.payload));
 
     if (action.payload.includes('gtag')) {
       window.gtag('consent' as any, 'update', {

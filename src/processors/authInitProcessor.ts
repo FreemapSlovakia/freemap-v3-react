@@ -4,9 +4,9 @@ import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { storage } from 'fm3/storage';
 import { TipKey } from 'fm3/tips';
 import { User } from 'fm3/types/common';
+import storage from 'local-storage-fallback';
 import { assertType, is } from 'typescript-is';
 
 export const authInitProcessor: Processor = {

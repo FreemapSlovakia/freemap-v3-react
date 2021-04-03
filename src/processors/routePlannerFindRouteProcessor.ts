@@ -18,8 +18,8 @@ import {
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { storage } from 'fm3/storage';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
+import storage from 'local-storage-fallback';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 

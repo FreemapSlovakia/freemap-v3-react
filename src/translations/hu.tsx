@@ -1458,13 +1458,24 @@ function numberize(n: number, words: [string, string]) {
 export default hu;
 
 /*
-// TODO translate on the server:
+// TODO translate elsewhere in the code:
 
-Freemap Photos
+English: Freemap Photos
+Translation: ...
 
-Photo comment at ${webUrl}
+English: Photo comment at ${webUrl}
+Hungarian: ...
 
-User ${ctx.state.user.name} commented ${own ? 'your' : 'a'} photo ${picTitle} at ${picUrl}:
+English: User ${ctx.state.user.name} commented ${own ? 'your' : 'a'} photo ${picTitle} at ${picUrl}:
+Hungarian: ...
 
-If you no longer wish to be notified about photo comments, configure it at ${unsubscribeUrl} in the Account tab.
+English: If you no longer wish to be notified about photo comments, configure it at ${unsubscribeUrl} in the Account tab.
+Hungarian: ...
+
+English: You are offline.
+Hungarian: ...
+
+English: Please go online to use Freemap application.
+Hungarian: ...
+
 */

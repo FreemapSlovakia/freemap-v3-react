@@ -1,6 +1,6 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { storage } from 'fm3/storage';
 import { User } from 'fm3/types/common';
+import storage from 'local-storage-fallback';
 
 let prevUser: User | null = null;
 
