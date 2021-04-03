@@ -1,12 +1,13 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
+import { getTip, tipsShow } from 'fm3/actions/tipsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { TipKey } from 'fm3/tips';
 import { User } from 'fm3/types/common';
 import { assertType, is } from 'typescript-is';
+import { getEffectiveChosenLanguage } from './l10nSetLanguageProcessor';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
@@ -36,13 +37,14 @@ export const authInitProcessor: Processor = {
         .split('&')
         .every((x: string) => /^(map|layers)=|^$/.test(x))
     ) {
-      if (
-        !getState().tips.preventTips &&
-        ['sk', 'cs'].includes(getState().l10n.language)
-      ) {
+      const lang = getEffectiveChosenLanguage(getState().l10n.chosenLanguage);
+
+      if (!getState().tips.preventTips && ['sk', 'cs'].includes(lang)) {
         const tip = getState().tips.lastTip;
 
-        dispatch(tipsShow(tip && is<TipKey>(tip) ? tip : 'freemap'));
+        dispatch(
+          tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
+        );
 
         dispatch(setActiveModal('tips'));
       }

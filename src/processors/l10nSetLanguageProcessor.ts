@@ -15,12 +15,7 @@ export const l10nSetLanguageProcessor: Processor = {
 
     const isSetUser = isActionOf(authSetUser, action);
 
-    const language =
-      chosenLanguage ||
-      [...(navigator.languages || []), navigator.language]
-        .map((lang) => simplify(lang))
-        .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
-      'en';
+    const language = getEffectiveChosenLanguage(chosenLanguage);
 
     const [translations] = await Promise.all([
       import(
@@ -45,6 +40,19 @@ export const l10nSetLanguageProcessor: Processor = {
     dispatch(l10nSetLanguage(language));
   },
 };
+
+// TOD move to some util
+export function getEffectiveChosenLanguage(
+  chosenLanguage: string | null,
+): string {
+  return (
+    chosenLanguage ||
+    [...(navigator.languages || []), navigator.language]
+      .map((lang) => simplify(lang))
+      .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
+    'en'
+  );
+}
 
 function simplify(lang: string | null | undefined) {
   return lang?.replace(/-.*/, '');

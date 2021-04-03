@@ -60,7 +60,7 @@ function persistSelectedState(state: RootState) {
         expertMode: state.main.expertMode,
       },
       tips: {
-        tip: state.tips.tip,
+        lastTip: state.tips.lastTip,
       },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,
