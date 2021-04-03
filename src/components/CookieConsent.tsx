@@ -24,6 +24,7 @@ export function CookieConsent({
         id="chkCookieSocialLogin"
         type="checkbox"
         label={local}
+        checked
         disabled
       />
       <FormCheck
