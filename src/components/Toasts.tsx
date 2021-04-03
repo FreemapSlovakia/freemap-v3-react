@@ -42,41 +42,43 @@ export function Toasts(): ReactElement {
 
   const items = useMemo(
     () =>
-      toasts.map(
-        ({
-          id,
-          actions,
-          style,
-          message,
-          messageKey,
-          messageParams,
-          noClose,
-        }) => {
-          let msg: ReactNode;
-
-          if (message !== undefined) {
-            msg = message;
-          } else if (messageKey) {
-            const v = getMessageByKey(m, messageKey);
-
-            if (typeof v === 'string') {
-              msg = v;
-            } else if (v instanceof Function) {
-              msg = v.call(undefined, messageParams);
-            } else {
-              msg = '…';
-            }
-          }
-
-          return {
+      toasts
+        .map(
+          ({
             id,
             actions,
             style,
-            msg,
+            message,
+            messageKey,
+            messageParams,
             noClose,
-          };
-        },
-      ),
+          }) => {
+            let msg: ReactNode;
+
+            if (message !== undefined) {
+              msg = message;
+            } else if (messageKey) {
+              const v = getMessageByKey(m, messageKey);
+
+              if (typeof v === 'string') {
+                msg = v;
+              } else if (v instanceof Function) {
+                msg = v.call(undefined, messageParams);
+              } else {
+                msg = '…';
+              }
+            }
+
+            return {
+              id,
+              actions,
+              style,
+              msg,
+              noClose,
+            };
+          },
+        )
+        .reverse(),
     [m, toasts],
   );
 
