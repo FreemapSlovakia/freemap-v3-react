@@ -232,7 +232,7 @@ processors.push(
 export type MyStore = Store<RootState, RootAction>;
 
 export function createReduxStore(): MyStore {
-  let persisted: Partial<RootState> = {};
+  let persisted: Partial<Record<keyof RootState, unknown>> = {};
 
   try {
     persisted = JSON.parse(storage.getItem('store') ?? '{}');
