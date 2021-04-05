@@ -168,7 +168,8 @@ export type ExternalTargets =
   | 'openstreetcam'
   | 'mapillary'
   | 'url'
-  | 'image';
+  | 'image'
+  | 'peakfinder';
 
 export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   where: ExternalTargets;

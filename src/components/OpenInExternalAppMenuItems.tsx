@@ -8,6 +8,7 @@ import {
   getOmaUrl,
   getOpenStreetCamUrl,
   getOsmUrl,
+  getPeakfinderUrl,
   getTwitterUrl,
   getZbgisUrl,
 } from 'fm3/externalUrlUtils';
@@ -197,11 +198,30 @@ export function OpenInExternalAppDropdownItems({
         )}
       </Dropdown.Item>
       <Dropdown.Item
+        href={getPeakfinderUrl(lat, lon)}
+        target="_blank"
+        onSelect={handleSelect}
+      >
+        Peakfinder
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <kbd>j</kbd> <kbd>p</kbd>
+          </>
+        )}
+      </Dropdown.Item>
+      <Dropdown.Item
         href={getMapillaryUrl(lat, lon, zoom)}
         target="_blank"
         onSelect={handleSelect}
       >
         Mapillary
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <kbd>j</kbd> <kbd>l</kbd>
+          </>
+        )}
       </Dropdown.Item>
       <Dropdown.Item
         href={getOpenStreetCamUrl(lat, lon, zoom)}
@@ -229,7 +249,7 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>h</kbd>
           </>
         )}
-      </Dropdown.Item>{' '}
+      </Dropdown.Item>
       <Dropdown.Item
         href={getZbgisUrl(lat, lon, zoom)}
         target="_blank"

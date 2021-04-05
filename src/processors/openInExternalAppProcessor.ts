@@ -13,6 +13,7 @@ import {
   getOmaUrl,
   getOpenStreetCamUrl,
   getOsmUrl,
+  getPeakfinderUrl,
   getTwitterUrl,
   getZbgisUrl,
 } from 'fm3/externalUrlUtils';
@@ -161,6 +162,11 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'google':
         window.open(getGoogleUrl(lat, lon, zoom, includePoint));
+
+        break;
+
+      case 'peakfinder':
+        window.open(getPeakfinderUrl(lat, lon));
 
         break;
 

@@ -42,6 +42,10 @@ export function getHikingSkUrl(
   return `https://mapy.hiking.sk/?${qs.stringify(params)}`;
 }
 
+export function getPeakfinderUrl(lat: number, lon: number): string {
+  return `https://www.peakfinder.org/?lat=${lat}&lng=${lon}`;
+}
+
 export function getGoogleUrl(
   lat: number,
   lon: number,

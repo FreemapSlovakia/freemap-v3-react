@@ -1,35 +1,35 @@
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Overlay, { Placement } from 'react-bootstrap/esm/Overlay';
 import Popover from 'react-bootstrap/Popover';
+import { useSelector } from 'react-redux';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
 interface Props extends LatLon {
   lat: number;
   lon: number;
-  zoom: number;
-  mapType: string;
   placement?: Placement;
   includePoint?: boolean;
   pointTitle?: string;
   pointDescription?: string;
   url?: string;
+  className?: string;
   children: JSX.Element | JSX.Element[];
 }
 
 export function OpenInExternalAppMenuButton({
   lat,
   lon,
-  zoom,
-  mapType,
   placement,
   includePoint,
   pointTitle,
   pointDescription,
   url,
   children,
+  className,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -51,6 +51,10 @@ export function OpenInExternalAppMenuButton({
 
   const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
 
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
   return (
     <>
       <Button
@@ -58,6 +62,7 @@ export function OpenInExternalAppMenuButton({
         ref={buttonRef}
         onClick={handleButtonClick}
         title={m?.external.openInExternal}
+        className={className}
       >
         {children}
       </Button>

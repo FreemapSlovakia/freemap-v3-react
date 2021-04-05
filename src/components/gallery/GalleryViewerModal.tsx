@@ -508,8 +508,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           <OpenInExternalAppMenuButton
             lat={lat}
             lon={lon}
-            mapType={'X'}
-            zoom={14}
             placement="top"
             includePoint
             pointTitle={title ?? undefined}

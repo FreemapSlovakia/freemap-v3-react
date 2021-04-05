@@ -299,6 +299,12 @@ export function attachKeyboardHandler(store: MyStore): void {
         } else if (event.code === 'KeyZ') {
           store.dispatch(openInExternalApp({ where: 'zbgis' }));
           return;
+        } else if (event.code === 'KeyP') {
+          store.dispatch(openInExternalApp({ where: 'peakfinder' }));
+          return;
+        } else if (event.code === 'KeyL') {
+          store.dispatch(openInExternalApp({ where: 'mapillary' }));
+          return;
         }
       } else if (initCode === 'KeyP') {
         if (event.code === 'KeyL') {
