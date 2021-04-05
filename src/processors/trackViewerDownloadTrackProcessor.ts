@@ -20,7 +20,9 @@ export const trackViewerDownloadTrackProcessor: Processor = {
 
     dispatch(
       trackViewerSetData({
-        trackGpx: atob(assertType<{ data: string }>(data).data),
+        trackGpx: decodeURIComponent(
+          escape(atob(assertType<{ data: string }>(data).data)),
+        ),
       }),
     );
   },
