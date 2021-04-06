@@ -3,7 +3,7 @@ declare var self: ServiceWorkerGlobalScope & { __WB_MANIFEST: unknown };
 const CACHE_NAME = 'offline-html';
 
 const FALLBACK_HTML_URL = '/offline.html';
-const FALLBACK_LOGO_URL = '/freemap-logo.png';
+const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
