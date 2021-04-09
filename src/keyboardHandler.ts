@@ -46,16 +46,18 @@ export function attachKeyboardHandler(store: MyStore): void {
     const state = store.getState();
 
     const showingModal =
-      !state.gallery.showPosition &&
-      !state.gallery.pickingPositionForId &&
-      !state.main.selectingHomeLocation &&
-      (state.gallery.showFilter ||
-        !!state.main.activeModal ||
-        state.gallery.showUploadModal ||
-        state.gallery.activeImageId);
+      state.gallery.showFilter ||
+      !!state.main.activeModal ||
+      state.gallery.showUploadModal ||
+      state.gallery.activeImageId ||
+      state.main.selectingHomeLocation ||
+      state.gallery.pickingPositionForId ||
+      state.gallery.showPosition;
 
     if (event.code === 'Escape') {
-      if (state.gallery.showFilter) {
+      if (document.body.classList.contains('fm-overlay-backdrop-enable')) {
+        // nothing
+      } else if (state.gallery.showFilter) {
         store.dispatch(galleryHideFilter());
       } else if (state.gallery.showUploadModal) {
         store.dispatch(galleryHideUploadModal());
@@ -73,40 +75,31 @@ export function attachKeyboardHandler(store: MyStore): void {
         store.dispatch(drawingLineJoinStart(undefined));
       } else if (state.drawingLines.drawing) {
         store.dispatch(drawingLineStopDrawing());
-      } else if (
-        !embed &&
-        !document.body.classList.contains('fm-overlay-backdrop-enable')
-      ) {
-        if (state.main.selectingHomeLocation) {
-          store.dispatch(setSelectingHomeLocation(false));
+      } else if (state.main.selectingHomeLocation) {
+        store.dispatch(setSelectingHomeLocation(false));
 
-          event.preventDefault();
-        } else if (state.gallery.pickingPositionForId) {
-          store.dispatch(gallerySetItemForPositionPicking(null));
+        event.preventDefault();
+      } else if (state.gallery.pickingPositionForId) {
+        store.dispatch(gallerySetItemForPositionPicking(null));
 
-          event.preventDefault();
-        } else if (
-          !showingModal &&
-          !state.gallery.showPosition &&
-          state.main.selection
-        ) {
-          // store.dispatch(
-          //   selectFeature(
-          //     state.main.selection.type === 'tracking' ||
-          //       state.main.selection.id === undefined
-          //       ? null
-          //       : { type: state.main.selection.type },
-          //   ),
-          // );
+        event.preventDefault();
+      } else if (!showingModal && state.main.selection) {
+        // store.dispatch(
+        //   selectFeature(
+        //     state.main.selection.type === 'tracking' ||
+        //       state.main.selection.id === undefined
+        //       ? null
+        //       : { type: state.main.selection.type },
+        //   ),
+        // );
 
-          store.dispatch(selectFeature(null));
+        store.dispatch(selectFeature(null));
 
-          event.preventDefault();
-        } else if (state.main.tool) {
-          store.dispatch(setTool(null));
+        event.preventDefault();
+      } else if (!showingModal && state.main.tool) {
+        store.dispatch(setTool(null));
 
-          event.preventDefault();
-        }
+        event.preventDefault();
       }
 
       return;
@@ -210,9 +203,6 @@ export function attachKeyboardHandler(store: MyStore): void {
       state.drawingLines.joinWith === undefined &&
       !keyTimer &&
       !showingModal &&
-      !state.gallery.showPosition &&
-      !state.gallery.pickingPositionForId &&
-      !state.main.selectingHomeLocation &&
       (state.main.selection?.type !== 'line-point' ||
         state.drawingLines.lines[state.main.selection.lineIndex].points.length >
           (state.drawingLines.lines[state.main.selection.lineIndex].type ===
