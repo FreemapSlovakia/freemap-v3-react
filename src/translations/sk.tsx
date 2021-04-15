@@ -82,6 +82,7 @@ const sk: Messages = {
     saved: 'Uložené.',
     visual: 'Zobrazenie',
     copyOk: 'Skopírovane do schránky.',
+    noCookies: 'Táto funkcionalita vyžaduje prijatie súhlasu cookies.',
   },
 
   selections: {

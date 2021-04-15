@@ -8,8 +8,15 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/esm/Alert';
 import Modal from 'react-bootstrap/Modal';
-import { FaFacebook, FaGoogle, FaSignInAlt, FaTimes } from 'react-icons/fa';
+import {
+  FaExclamationTriangle,
+  FaFacebook,
+  FaGoogle,
+  FaSignInAlt,
+  FaTimes,
+} from 'react-icons/fa';
 import { SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -47,7 +54,14 @@ export function LoginModal({ show }: Props): ReactElement {
           <FaSignInAlt /> {m?.more.logIn}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
+        {cookieConsentResult === null && (
+          <Alert variant="warning">
+            <FaExclamationTriangle /> {m?.general.noCookies}
+          </Alert>
+        )}
+
         <Button
           onClick={loginWithFacebook}
           size="lg"
@@ -57,6 +71,7 @@ export function LoginModal({ show }: Props): ReactElement {
         >
           <FaFacebook /> {m?.logIn.with.facebook}
         </Button>
+
         <Button
           onClick={loginWithGoogle}
           size="lg"
@@ -66,15 +81,18 @@ export function LoginModal({ show }: Props): ReactElement {
         >
           <FaGoogle /> {m?.logIn.with.google}
         </Button>
+
         <Button
           onClick={loginWithOsm}
           size="lg"
           block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
+          disabled={cookieConsentResult === null}
         >
           <SiOpenstreetmap /> {m?.logIn.with.osm}
         </Button>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>

@@ -83,6 +83,7 @@ const cs: Messages = {
     saved: 'Uložené.',
     visual: 'Zobrazení',
     copyOk: 'Zkopírováno do schránky.',
+    noCookies: 'Tato funkcionalita vyžaduje přijetí souhlasu cookies. ',
   },
 
   selections: {

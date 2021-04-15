@@ -46,6 +46,7 @@ export type Messages = {
     deleted: string;
     visual: string;
     copyOk: string;
+    noCookies: string;
   };
   selections: {
     objects: string;

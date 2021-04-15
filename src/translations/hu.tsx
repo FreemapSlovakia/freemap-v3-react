@@ -82,6 +82,7 @@ const hu: Messages = {
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
     copyOk: 'Copied to clipboard.', // TODO translate
+    noCookies: 'This functionality requires accepting the cookies consent.', // TODO translate
   },
 
   selections: {

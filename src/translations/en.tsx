@@ -81,6 +81,7 @@ const en: Messages = {
     saved: 'Saved.',
     visual: 'Display',
     copyOk: 'Copied to clipboard.',
+    noCookies: 'This functionality requires accepting the cookies consent.',
   },
 
   selections: {

@@ -17,6 +17,7 @@ import Modal from 'react-bootstrap/Modal';
 import {
   FaChevronLeft,
   FaChevronRight,
+  FaExclamationTriangle,
   FaRegLightbulb,
   FaTimes,
 } from 'react-icons/fa';
@@ -155,6 +156,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
           )}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         {tipText ? (
           <div
@@ -167,6 +169,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
           m?.general.loading
         )}
       </Modal.Body>
+
       <Modal.Footer>
         {!hidden && (
           <>
@@ -175,9 +178,22 @@ export function TipsModal({ show }: Props): ReactElement | null {
               id="chk-prevent"
               onChange={handleNextTimePrevent}
               type="checkbox"
-              label={m?.tips.prevent}
+              label={
+                <>
+                  {m?.tips.prevent}{' '}
+                  {cookieConsentResult === null ? (
+                    <FaExclamationTriangle
+                      className="text-warning"
+                      title={m?.general.noCookies}
+                    />
+                  ) : (
+                    ''
+                  )}
+                </>
+              }
               disabled={cookieConsentResult === null}
             />
+
             <Button
               variant="secondary"
               onClick={() => {
