@@ -327,7 +327,7 @@ export const urlProcessor: Processor = {
         { sq },
       );
 
-      if (window.parent !== window.self) {
+      if (window.fmEmbedded) {
         window.parent.postMessage(
           {
             freemap: {
