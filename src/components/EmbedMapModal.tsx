@@ -18,9 +18,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const [width, setWidth] = useState('500');
+  const [width, setWidth] = useState('640');
 
-  const [height, setHeight] = useState('300');
+  const [height, setHeight] = useState('480');
 
   const [enableSearch, setEnableSearch] = useState(true);
 

@@ -12,6 +12,7 @@ import {
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
 import { useMessages } from 'fm3/l10nInjector';
+import { trackGeojsonIsSuitableForElevationChart } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/trackViewer.scss';
 import { ReactElement, useCallback } from 'react';
@@ -47,8 +48,8 @@ export function TrackViewerMenu(): ReactElement {
     (state: RootState) => state.trackViewer.colorizeTrackBy,
   );
 
-  const trackGeojsonIsSuitableForElevationChart = useSelector(
-    (state: RootState) => isSuitableForElevationChart(state),
+  const enableElevationChart = useSelector(
+    trackGeojsonIsSuitableForElevationChart,
   );
 
   const handleConvertToDrawing = useCallback(() => {
@@ -71,7 +72,7 @@ export function TrackViewerMenu(): ReactElement {
         <FaUpload />
         <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
       </Button>
-      {trackGeojsonIsSuitableForElevationChart && (
+      {enableElevationChart && (
         <Button
           className="ml-1"
           variant="secondary"
@@ -87,7 +88,7 @@ export function TrackViewerMenu(): ReactElement {
           </span>
         </Button>
       )}
-      {trackGeojsonIsSuitableForElevationChart && (
+      {enableElevationChart && (
         <Dropdown
           className="ml-1"
           onSelect={(approach) => {
@@ -119,7 +120,7 @@ export function TrackViewerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       )}
-      {trackGeojsonIsSuitableForElevationChart && (
+      {enableElevationChart && (
         <Button
           className="ml-1"
           variant="secondary"
@@ -167,16 +168,4 @@ export function TrackViewerMenu(): ReactElement {
       {hasTrack && <DeleteButton />}
     </>
   );
-}
-
-function isSuitableForElevationChart(state: RootState) {
-  const { trackGeojson } = state.trackViewer;
-  if (trackGeojson && trackGeojson.features) {
-    const firstGeojsonFeature = trackGeojson.features[0];
-    return (
-      firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString'
-    );
-  }
-
-  return false;
 }

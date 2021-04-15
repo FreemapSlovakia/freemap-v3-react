@@ -341,7 +341,7 @@ export function RoutePlannerMenu(): ReactElement {
         )}
       </ButtonGroup>
 
-      {!!routeFound && (
+      {routeFound && (
         <>
           <Button
             className="ml-1"

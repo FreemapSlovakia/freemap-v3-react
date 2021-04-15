@@ -109,3 +109,19 @@ export const drawingLinePolys = (state: RootState): boolean =>
   state.drawingLines.drawing ||
   state.main.tool === 'draw-lines' ||
   state.main.tool === 'draw-polygons';
+
+export const trackGeojsonIsSuitableForElevationChart = (
+  state: RootState,
+): boolean => {
+  const { trackGeojson } = state.trackViewer;
+
+  if (trackGeojson && trackGeojson.features) {
+    const firstGeojsonFeature = trackGeojson.features[0];
+
+    return (
+      firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString'
+    );
+  }
+
+  return false;
+};

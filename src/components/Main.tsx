@@ -7,10 +7,12 @@ import {
 } from 'fm3/actions/galleryActions';
 import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
+  trackViewerToggleElevationChart,
 } from 'fm3/actions/trackViewerActions';
 import {
   AsyncAboutModal,
@@ -64,6 +66,7 @@ import {
   mouseCursorSelector,
   selectingModeSelector,
   showGalleryPickerSelector,
+  trackGeojsonIsSuitableForElevationChart,
 } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
@@ -81,7 +84,7 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import CloseButton from 'react-bootstrap/CloseButton';
 import { useDropzone } from 'react-dropzone';
-import { FaTimes } from 'react-icons/fa';
+import { FaChartArea, FaTimes } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
@@ -360,6 +363,16 @@ export function Main(): ReactElement {
 
   const YellowBar = m?.main.YellowBar;
 
+  const elevationChartActive = useSelector(
+    (state: RootState) => !!state.elevationChart.trackGeojson,
+  );
+
+  const trackFound = useSelector(trackGeojsonIsSuitableForElevationChart);
+
+  const routeFound = useSelector(
+    (state: RootState) => !!state.routePlanner.alternatives.length,
+  );
+
   useHtmlMeta();
 
   return (
@@ -406,6 +419,41 @@ export function Main(): ReactElement {
               )}
             </Card>
           </div>
+
+          {window.fmEmbedded && (trackFound || routeFound) && (
+            <Card className="fm-toolbar mx-2 mt-2">
+              <ButtonToolbar>
+                {trackFound && (
+                  <Button
+                    variant="secondary"
+                    active={elevationChartActive}
+                    onClick={() => dispatch(trackViewerToggleElevationChart())}
+                  >
+                    <FaChartArea />
+                    <span className="d-none d-sm-inline">
+                      {' '}
+                      {m?.general.elevationProfile}
+                    </span>
+                  </Button>
+                )}
+                {routeFound && (
+                  <Button
+                    className={trackFound ? 'ml-1' : ''}
+                    variant="secondary"
+                    onClick={() => dispatch(routePlannerToggleElevationChart())}
+                    active={elevationChartActive}
+                    title={m?.general.elevationProfile ?? '…'}
+                  >
+                    <FaChartArea />
+                    <span className="d-none d-sm-inline">
+                      {' '}
+                      {m?.general.elevationProfile ?? '…'}
+                    </span>
+                  </Button>
+                )}
+              </ButtonToolbar>
+            </Card>
+          )}
 
           {/* tool menus */}
           {showMenu && tool && (
