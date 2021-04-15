@@ -35,8 +35,6 @@ let keyTimer: number | null = null;
 
 let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | null = null;
 
-const embed = window.self !== window.top;
-
 export function attachKeyboardHandler(store: MyStore): void {
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     if (event.ctrlKey || event.altKey || event.metaKey || event.isComposing) {
@@ -160,7 +158,7 @@ export function attachKeyboardHandler(store: MyStore): void {
     if (
       !keyTimer &&
       !showingModal &&
-      (!embed || !state.main.embedFeatures.includes('noMapSwitch'))
+      (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
       const baseLayer = baseLayers.find(
         (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
@@ -228,7 +226,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         initCode = null;
       }
     } else if (
-      !embed &&
+      !window.fmEmbedded &&
       !keyTimer &&
       (event.code === 'KeyG' ||
         event.code === 'KeyE' ||

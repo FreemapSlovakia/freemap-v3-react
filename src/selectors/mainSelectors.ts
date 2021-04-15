@@ -94,10 +94,8 @@ export const trackingTrackSelector = createSelector(
       : undefined,
 );
 
-const embed = window.self !== window.top;
-
 export const selectingModeSelector = (state: RootState): boolean =>
-  !embed &&
+  !window.fmEmbedded &&
   !state.drawingLines.drawing &&
   (state.main.tool === null ||
     state.main.tool === 'track-viewer' ||

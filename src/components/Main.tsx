@@ -99,8 +99,6 @@ import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
 
-const embed = window.self !== window.top;
-
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -226,7 +224,7 @@ export function Main(): ReactElement {
   }, [dispatch, lat, lon, map, zoom]);
 
   const handleLogoClick = useCallback(() => {
-    if (embed) {
+    if (window.fmEmbedded) {
       window.open(window.location.href, '_blank');
     } else {
       dispatch(
@@ -383,7 +381,7 @@ export function Main(): ReactElement {
       <Toasts />
 
       <div className="header">
-        {YellowBar && showInfoBar && language === 'sk' && !embed && (
+        {YellowBar && showInfoBar && language === 'sk' && !window.fmEmbedded && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
             <YellowBar />
@@ -399,8 +397,8 @@ export function Main(): ReactElement {
                 className={progress ? 'in-progress' : 'idle'}
                 onClick={handleLogoClick}
               />
-              {!embed && showMenu && <MoreMenuButton />}
-              {(!embed || embedFeatures.includes('search')) && (
+              {!window.fmEmbedded && showMenu && <MoreMenuButton />}
+              {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                 <SearchMenu
                   hidden={!showMenu}
                   preventShortcut={!!activeModal}

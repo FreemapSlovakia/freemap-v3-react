@@ -68,8 +68,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const tRef = useRef<number>();
 
-  const embed = window.self !== window.top;
-
   const [value, setValue] = useState('');
 
   const [open, setOpen] = useState(false);
@@ -317,7 +315,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       </Form>
-      {selectedResult && !embed && !hidden && (
+      {selectedResult && !window.fmEmbedded && !hidden && (
         <ButtonGroup className="ml-1">
           <Button
             variant="secondary"

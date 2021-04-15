@@ -33,8 +33,6 @@ import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
-const embed = window.self !== window.top;
-
 interface Location extends LatLon {
   accuracy: number;
 }
@@ -79,7 +77,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
   mainInitialState,
 )
   .handleAction(setTool, (state, action) => {
-    return embed
+    return window.fmEmbedded
       ? state
       : {
           ...state,
@@ -185,7 +183,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
     selection: { type: 'draw-line-poly', id: action.payload.lineIndex },
   }))
   .handleAction(selectFeature, (state, action) =>
-    embed
+    window.fmEmbedded
       ? state
       : {
           ...state,

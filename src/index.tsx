@@ -41,12 +41,12 @@ if (window.location.search === '?reset-local-storage') {
   storage.clear();
 }
 
-document.body.classList.add(window.self === window.top ? 'full' : 'embedded');
+document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 
 // TODO compatibility code, delete in the future
 try {
   if (
-    window.self === window.top &&
+    !window.fmEmbedded &&
     !storage.getItem('store') &&
     (storage.getItem('cookieConsentResult') ||
       storage.getItem('tip') ||
@@ -147,7 +147,7 @@ const cookieConsentResult = store.getState().main.cookieConsentResult;
 
 console.log({ cookieConsentResult });
 
-if (window.self !== window.top) {
+if (window.fmEmbedded) {
   // nothing for ebed
 } else if (cookieConsentResult !== null) {
   store.dispatch(applyCookieConsent());

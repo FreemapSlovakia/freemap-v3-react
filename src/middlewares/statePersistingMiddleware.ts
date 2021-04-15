@@ -22,7 +22,7 @@ export const statePersistingMiddleware: Middleware<
 };
 
 function persistSelectedState(state: RootState) {
-  if (window.self !== window.top) {
+  if (window.fmEmbedded) {
     return;
   }
 

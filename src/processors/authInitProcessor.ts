@@ -30,7 +30,7 @@ export const authInitProcessor: Processor = {
 
     // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
     if (
-      window.self === window.top &&
+      !window.fmEmbedded &&
       history.location.search
         .substring(1)
         .split('&')

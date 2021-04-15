@@ -49,8 +49,6 @@ import {
 } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
-const embed = window.self !== window.top;
-
 const circularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
@@ -126,7 +124,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const handlePoiAdd = useCallback(
     ({ latlng }: LeafletMouseEvent) => {
-      if (embed || dragging) {
+      if (window.fmEmbedded || dragging) {
         // nothing
       } else if (tool !== 'route-planner') {
         // nothing
@@ -537,7 +535,7 @@ export function RoutePlannerResult(): ReactElement {
           faIcon={<FaPlay color="#409a40" />}
           zIndexOffset={10}
           color="#409a40"
-          draggable={interactive0 && !embed}
+          draggable={interactive0 && !window.fmEmbedded}
           position={{ lat: start.lat, lng: start.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -584,7 +582,7 @@ export function RoutePlannerResult(): ReactElement {
           }
           color={mode !== 'roundtrip' ? '#d9534f' : undefined}
           zIndexOffset={10}
-          draggable={interactive0 && !embed}
+          draggable={interactive0 && !window.fmEmbedded}
           position={{ lat: finish.lat, lng: finish.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -732,9 +730,9 @@ export function RoutePlannerResult(): ReactElement {
       midpoints.map(({ lat, lon }, i) => (
         <RichMarker
           interactive={interactive1}
-          draggable={interactive0 && !embed}
+          draggable={interactive0 && !window.fmEmbedded}
           eventHandlers={
-            embed
+            window.fmEmbedded
               ? {}
               : {
                   dragstart: handleDragStart,
@@ -783,12 +781,12 @@ export function RoutePlannerResult(): ReactElement {
     <>
       {startMarker}
 
-      {!embed &&
+      {!window.fmEmbedded &&
         interactive0 &&
         dragLat !== undefined &&
         dragLon !== undefined && (
           <Marker
-            draggable={!embed}
+            draggable={!window.fmEmbedded}
             icon={circularIcon}
             eventHandlers={{
               dragstart: handleDragStart,

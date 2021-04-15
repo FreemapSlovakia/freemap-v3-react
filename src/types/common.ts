@@ -29,6 +29,7 @@ declare global {
     fbAsyncInit?: () => void;
     preventMapClick?: boolean;
     translations?: Messages;
+    fmEmbedded: boolean;
   }
 }
 

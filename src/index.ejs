@@ -127,7 +127,7 @@
           onError: function (payload) {
             // prettier-ignore
             return (
-              window.self === window.top &&
+              !fmEbedded &&
               !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker/.test(
                 payload.message
               )
@@ -221,6 +221,8 @@
     </style>
 
     <script>
+      fmEbedded = window.self !== window.top;
+
       var langs = navigator.languages || [navigator.language];
 
       var lang = langs

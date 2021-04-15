@@ -12,8 +12,6 @@ import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { RichMarker } from './RichMarker';
 
-const embed = window.self !== window.top;
-
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
 
@@ -83,7 +81,7 @@ export function DrawingPointsResult(): ReactElement {
             }}
             position={{ lat, lng: lon }}
             color={activeIndex === i ? colors.selected : undefined}
-            draggable={!embed && activeIndex === i}
+            draggable={!window.fmEmbedded && activeIndex === i}
             interactive={interactive}
           >
             {label && (

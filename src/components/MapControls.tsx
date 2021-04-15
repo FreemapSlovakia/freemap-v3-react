@@ -64,11 +64,9 @@ export function MapControls(): ReactElement | null {
     return null;
   }
 
-  const embed = window.self !== window.top;
-
   return (
     <Card className="fm-toolbar mx-2 mb-2">
-      {(!embed || !embedFeatures.includes('noMapSwitch')) && (
+      {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />
       )}
       <ButtonGroup className="ml-1">
@@ -93,7 +91,7 @@ export function MapControls(): ReactElement | null {
           <FaMinus />
         </Button>
       </ButtonGroup>
-      {(!embed || !embedFeatures.includes('noLocateMe')) && (
+      {(!window.fmEmbedded || !embedFeatures.includes('noLocateMe')) && (
         <Button
           className="ml-1"
           onClick={() => {
