@@ -43,14 +43,20 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     const state = store.getState();
 
+    const suspendedModal =
+      state.main.selectingHomeLocation ||
+      state.gallery.pickingPositionForId ||
+      state.gallery.showPosition;
+
     const showingModal =
       state.gallery.showFilter ||
       !!state.main.activeModal ||
       state.gallery.showUploadModal ||
-      state.gallery.activeImageId ||
-      state.main.selectingHomeLocation ||
-      state.gallery.pickingPositionForId ||
-      state.gallery.showPosition;
+      state.gallery.activeImageId;
+    //  ||
+    // state.main.selectingHomeLocation ||
+    // state.gallery.pickingPositionForId ||
+    // state.gallery.showPosition;
 
     if (event.code === 'Escape') {
       if (document.body.classList.contains('fm-overlay-backdrop-enable')) {
@@ -81,7 +87,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         store.dispatch(gallerySetItemForPositionPicking(null));
 
         event.preventDefault();
-      } else if (!showingModal && state.main.selection) {
+      } else if (!showingModal && !suspendedModal && state.main.selection) {
         // store.dispatch(
         //   selectFeature(
         //     state.main.selection.type === 'tracking' ||
@@ -94,7 +100,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         store.dispatch(selectFeature(null));
 
         event.preventDefault();
-      } else if (!showingModal && state.main.tool) {
+      } else if (!showingModal && !suspendedModal && state.main.tool) {
         store.dispatch(setTool(null));
 
         event.preventDefault();
@@ -157,7 +163,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       !keyTimer &&
-      !showingModal &&
+      (!showingModal || suspendedModal) &&
       (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
       const baseLayer = baseLayers.find(
@@ -170,7 +176,9 @@ export function attachKeyboardHandler(store: MyStore): void {
         (!baseLayer.showOnlyInExpertMode || store.getState().main.expertMode)
       ) {
         store.dispatch(mapRefocus({ mapType: baseLayer.type }));
+
         event.preventDefault();
+
         return;
       }
 
@@ -184,14 +192,19 @@ export function attachKeyboardHandler(store: MyStore): void {
         (!overlayLayer.showOnlyInExpertMode || store.getState().main.expertMode)
       ) {
         const { type } = overlayLayer;
+
         const next = new Set(state.map.overlays);
+
         if (next.has(type)) {
           next.delete(type);
         } else {
           next.add(type);
         }
+
         store.dispatch(mapRefocus({ overlays: [...next] }));
+
         event.preventDefault();
+
         return;
       }
     }
@@ -201,6 +214,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       state.drawingLines.joinWith === undefined &&
       !keyTimer &&
       !showingModal &&
+      !suspendedModal &&
       (state.main.selection?.type !== 'line-point' ||
         state.drawingLines.lines[state.main.selection.lineIndex].points.length >
           (state.drawingLines.lines[state.main.selection.lineIndex].type ===
@@ -211,14 +225,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       store.dispatch(deleteFeature());
     }
 
-    if (
-      state.main.activeModal ||
-      state.gallery.showUploadModal ||
-      state.main.selectingHomeLocation ||
-      state.gallery.activeImageId ||
-      state.gallery.showPosition ||
-      state.gallery.pickingPositionForId
-    ) {
+    if (showingModal || suspendedModal) {
       if (keyTimer) {
         window.clearTimeout(keyTimer);
 
