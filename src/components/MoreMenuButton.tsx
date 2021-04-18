@@ -690,7 +690,7 @@ export function MoreMenuButton(): ReactElement {
 
                 <Dropdown.Item
                   href="?show=tracking-my"
-                  eventKey="'tracking-my'"
+                  eventKey="tracking-my"
                   onSelect={showModal}
                 >
                   <FaMobileAlt /> {m?.tracking.devices.button}
