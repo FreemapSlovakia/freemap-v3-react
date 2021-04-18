@@ -1177,6 +1177,8 @@ const cs: Messages = {
           Sleduj zařízení <i>{name}</i>
         </>
       ),
+      storageWarning:
+        'Pozor, seznam zařízení je promítnut pouze do URL. Pokud si ho přejete uložit, využijte funkci "Moje mapy".',
     },
     accessToken: {
       token: 'Sledovací token',

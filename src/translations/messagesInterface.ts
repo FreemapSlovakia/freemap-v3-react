@@ -657,6 +657,7 @@ export type Messages = {
       desc: string;
       modifyTitle: (name: ReactNode) => JSX.Element;
       createTitle: (name: ReactNode) => JSX.Element;
+      storageWarning: string;
     };
     accessToken: {
       token: string;

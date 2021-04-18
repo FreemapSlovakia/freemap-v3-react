@@ -1169,6 +1169,8 @@ const en: Messages = {
           Watch Device <i>{name}</i>
         </>
       ),
+      storageWarning:
+        'Please note that the list of devices is only reflected in the URL. If you want to save it, use the "My Maps" function.',
     },
     accessToken: {
       token: 'Watch Token',

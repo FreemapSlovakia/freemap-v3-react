@@ -1186,6 +1186,8 @@ const hu: Messages = {
           <i>{name}</i> készülék figyelése
         </>
       ),
+      storageWarning:
+        'Please note that the list of devices is only reflected in the URL. If you want to save it, use the "My Maps" function.', // TODO translate
     },
     accessToken: {
       token: 'Figyelőkód',

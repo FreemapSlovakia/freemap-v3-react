@@ -1198,6 +1198,8 @@ const sk: Messages = {
           Sledovať zariadenie <i>{name}</i>
         </>
       ),
+      storageWarning:
+        'Pozor, zoznam zariadení je premietnutý len do URL. Ak si ho prajete uložiť, využite funkciu "Moje mapy".',
     },
     accessToken: {
       token: 'Token sledovania',
