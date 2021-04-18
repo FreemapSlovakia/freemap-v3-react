@@ -74,6 +74,7 @@ const sk: Messages = {
     simplifyPrompt:
       'Prosím zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
     copyUrl: 'Kopírovať URL',
+    copyPageUrl: 'Kopírovať URL stránky',
     savingError: ({ err }) => `Chyba ukladania: ${err}`,
     loadError: ({ err }) => `Chyba načítania: ${err}`,
     deleteError: ({ err }) => `Chyba mazania: ${err}`,
@@ -553,7 +554,8 @@ const sk: Messages = {
       title: 'Nahrať trasu',
       drop: 'Potiahnite sem .gpx súbor alebo kliknite sem pre jeho výber.',
     },
-    shareToast: 'Trasa bola uložená na server a môžete ju zdieľať.',
+    shareToast:
+      'Trasa bola uložená na server a môžete ju zdieľať skopirovaním URL stránky.',
     fetchingError: ({ err }) =>
       `Nastala chyba pri získavaní záznamu trasy: ${err}`,
     savingError: ({ err }) => `Nepodarilo sa uložiť trasu: ${err}`,
@@ -1199,7 +1201,7 @@ const sk: Messages = {
         </>
       ),
       storageWarning:
-        'Pozor, zoznam zariadení je premietnutý len do URL. Ak si ho prajete uložiť, využite funkciu "Moje mapy".',
+        'Pozor, zoznam zariadení je premietnutý len do URL stránky. Ak si ho prajete uložiť, využite funkciu "Moje mapy".',
     },
     accessToken: {
       token: 'Token sledovania',

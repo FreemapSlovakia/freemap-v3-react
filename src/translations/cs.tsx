@@ -75,6 +75,7 @@ const cs: Messages = {
     simplifyPrompt:
       'Prosím zadejte faktor zjednodušení. Zadejte nulu pro vynechání zjednodušení.',
     copyUrl: 'Kopírovat URL',
+    copyPageUrl: 'Kopírovat URL stránky',
     savingError: ({ err }) => `Chyba ukládání: ${err}`,
     loadError: ({ err }) => `Chyba nahrávání: ${err}`,
     deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
@@ -536,7 +537,8 @@ const cs: Messages = {
       title: 'Nahrát trasu',
       drop: 'Přetáhněte sem .gpx soubor, nebo sem klikněte pro jeho výběr.',
     },
-    shareToast: 'Trasa byla uložena na server a můžete ji sdílet.',
+    shareToast:
+      'Trasa byla uložena na server a můžete ji sdílet zkopírovaním URL stránky.',
     fetchingError: ({ err }) =>
       `Nastala chyba při získávání záznamu trasy: ${err}`,
     savingError: ({ err }) => `Nepodařilo se uložit trasu: ${err}`,
@@ -1178,7 +1180,7 @@ const cs: Messages = {
         </>
       ),
       storageWarning:
-        'Pozor, seznam zařízení je promítnut pouze do URL. Pokud si ho přejete uložit, využijte funkci "Moje mapy".',
+        'Pozor, seznam zařízení je promítnut pouze do URL stránky. Pokud si ho přejete uložit, využijte funkci "Moje mapy".',
     },
     accessToken: {
       token: 'Sledovací token',

@@ -73,6 +73,7 @@ const en: Messages = {
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',
+    copyPageUrl: 'Copy page URL',
     savingError: ({ err }) => `Save error: ${err}`,
     loadError: ({ err }) => `Loading error: ${err}`,
     deleteError: ({ err }) => `Deleting error: ${err}`,
@@ -527,7 +528,8 @@ const en: Messages = {
       title: 'Upload the track',
       drop: 'Drop your .gpx file here or click here to select it.',
     },
-    shareToast: 'The track has been saved to the server and can be shared.',
+    shareToast:
+      'The track has been saved to the server and can be shared by copying page URL.',
     fetchingError: ({ err }) => `Error fetching track data: ${err}`,
     savingError: ({ err }) => `Error saving the track: ${err}`,
     loadingError: 'Error loading file.',
@@ -1170,7 +1172,7 @@ const en: Messages = {
         </>
       ),
       storageWarning:
-        'Please note that the list of devices is only reflected in the URL. If you want to save it, use the "My Maps" function.',
+        'Please note that the list of devices is only reflected in the page URL. If you want to save it, use the "My Maps" function.',
     },
     accessToken: {
       token: 'Watch Token',

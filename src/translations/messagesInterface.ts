@@ -38,6 +38,7 @@ export type Messages = {
     convertToDrawing: string;
     simplifyPrompt: string;
     copyUrl: string;
+    copyPageUrl: string;
     savingError: ({ err }: Err) => string;
     loadError: ({ err }: Err) => string;
     deleteError: ({ err }: Err) => string;

@@ -74,6 +74,7 @@ const hu: Messages = {
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',
+    copyPageUrl: 'URL másolása', // TODO update
     savingError: ({ err }) => `Mentési hiba: ${err}`,
     loadError: ({ err }) => `Betöltési hiba: ${err}`,
     deleteError: ({ err }) => `Törlési hiba: ${err}`,
@@ -536,7 +537,7 @@ const hu: Messages = {
       title: 'A nyomvonal feltöltése',
       drop: 'Húzza ide a .gpx fájlt vagy kattintson ide a kijelöléséhez.',
     },
-    shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.',
+    shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.', // TODO update translation
     fetchingError: ({ err }) =>
       `Hiba történt a nyomvonal adatainak beolvasásakor: ${err}`,
     savingError: ({ err }) => `Hiba történt a nyomvonal mentésekor: ${err}`,
@@ -1187,7 +1188,7 @@ const hu: Messages = {
         </>
       ),
       storageWarning:
-        'Please note that the list of devices is only reflected in the URL. If you want to save it, use the "My Maps" function.', // TODO translate
+        'Please note that the list of devices is only reflected in the page URL. If you want to save it, use the "My Maps" function.', // TODO translate
     },
     accessToken: {
       token: 'Figyelőkód',

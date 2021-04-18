@@ -119,7 +119,7 @@ export function OpenInExternalAppDropdownItems({
       )}
       {!url && hasClipboard && (
         <Dropdown.Item as="button" eventKey="copy" onSelect={handleSelect}>
-          <FaClipboard /> {m?.general.copyUrl}
+          <FaClipboard /> {m?.general.copyPageUrl}
           {showKbdShortcut && (
             <>
               {' '}
