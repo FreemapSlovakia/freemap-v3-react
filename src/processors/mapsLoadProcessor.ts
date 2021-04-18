@@ -15,100 +15,101 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
   actionCreator: mapsLoad,
   errorKey: 'maps.fetchError',
   handle: async ({ getState, dispatch, action: { payload } }) => {
-    if (payload.id !== undefined) {
-      const { data } = await httpRequest({
-        getState,
-        method: 'GET',
-        url: `/maps/${payload.id}`,
-        expectedStatus: 200,
-      });
+    if (payload.id === undefined) {
+      return;
+    }
 
-      const map = assertType<{ data: StringDates<MapData<Line | OldLine>> }>(
-        data,
-      ).data;
+    const { data } = await httpRequest({
+      getState,
+      method: 'GET',
+      url: `/maps/${payload.id}`,
+      expectedStatus: 200,
+    });
 
-      if (map.map) {
-        if (payload.ignoreMap) {
-          delete map.map.lat;
-          delete map.map.lon;
-          delete map.map.zoom;
-        }
+    const map = assertType<{ data: StringDates<MapData<Line | OldLine>> }>(data)
+      .data;
 
-        if (payload.ignoreLayers) {
-          delete map.map.mapType;
-          delete map.map.overlays;
-        }
+    if (map.map) {
+      if (payload.ignoreMap) {
+        delete map.map.lat;
+        delete map.map.lon;
+        delete map.map.zoom;
       }
 
-      dispatch(
-        mapsDataLoaded({
-          ...map,
-          // get rid of OldLines
-          lines: map.lines?.map(
-            (line) =>
-              ({
-                ...line,
-                type:
-                  line.type === 'area'
-                    ? 'polyline'
-                    : line.type === 'distance'
-                    ? 'line'
-                    : line.type,
-              } as Line),
-          ),
-          tracking: map.tracking && {
-            ...map.tracking,
-            trackedDevices: map.tracking.trackedDevices.map((device) => ({
-              ...device,
-              fromTime: device.fromTime ? new Date(device.fromTime) : null,
-            })),
-          },
-          galleryFilter: map.galleryFilter && {
-            ...map.galleryFilter,
-            createdAtFrom:
-              map.galleryFilter.createdAtFrom === undefined
-                ? undefined
-                : new Date(map.galleryFilter.createdAtFrom),
-            createdAtTo:
-              map.galleryFilter.createdAtTo === undefined
-                ? undefined
-                : new Date(map.galleryFilter.createdAtTo),
-            takenAtFrom:
-              map.galleryFilter.takenAtFrom === undefined
-                ? undefined
-                : new Date(map.galleryFilter.takenAtFrom),
-            takenAtTo:
-              map.galleryFilter.takenAtTo === undefined
-                ? undefined
-                : new Date(map.galleryFilter.takenAtTo),
-          },
-          trackViewer: map.trackViewer && {
-            ...map.trackViewer,
-            startPoints: map.trackViewer.startPoints.map((point) => ({
-              ...point,
-              startTime:
-                point.startTime === undefined
-                  ? undefined
-                  : new Date(point.startTime),
-              finishTime:
-                point.finishTime === undefined
-                  ? undefined
-                  : new Date(point.finishTime),
-            })),
-            finishPoints: map.trackViewer.finishPoints.map((point) => ({
-              ...point,
-              startTime:
-                point.startTime === undefined
-                  ? undefined
-                  : new Date(point.startTime),
-              finishTime:
-                point.finishTime === undefined
-                  ? undefined
-                  : new Date(point.finishTime),
-            })),
-          },
-        }),
-      );
+      if (payload.ignoreLayers) {
+        delete map.map.mapType;
+        delete map.map.overlays;
+      }
     }
+
+    dispatch(
+      mapsDataLoaded({
+        ...map,
+        // get rid of OldLines
+        lines: map.lines?.map(
+          (line) =>
+            ({
+              ...line,
+              type:
+                line.type === 'area'
+                  ? 'polyline'
+                  : line.type === 'distance'
+                  ? 'line'
+                  : line.type,
+            } as Line),
+        ),
+        tracking: map.tracking && {
+          ...map.tracking,
+          trackedDevices: map.tracking.trackedDevices.map((device) => ({
+            ...device,
+            fromTime: device.fromTime ? new Date(device.fromTime) : null,
+          })),
+        },
+        galleryFilter: map.galleryFilter && {
+          ...map.galleryFilter,
+          createdAtFrom:
+            map.galleryFilter.createdAtFrom === undefined
+              ? undefined
+              : new Date(map.galleryFilter.createdAtFrom),
+          createdAtTo:
+            map.galleryFilter.createdAtTo === undefined
+              ? undefined
+              : new Date(map.galleryFilter.createdAtTo),
+          takenAtFrom:
+            map.galleryFilter.takenAtFrom === undefined
+              ? undefined
+              : new Date(map.galleryFilter.takenAtFrom),
+          takenAtTo:
+            map.galleryFilter.takenAtTo === undefined
+              ? undefined
+              : new Date(map.galleryFilter.takenAtTo),
+        },
+        trackViewer: map.trackViewer && {
+          ...map.trackViewer,
+          startPoints: map.trackViewer.startPoints.map((point) => ({
+            ...point,
+            startTime:
+              point.startTime === undefined
+                ? undefined
+                : new Date(point.startTime),
+            finishTime:
+              point.finishTime === undefined
+                ? undefined
+                : new Date(point.finishTime),
+          })),
+          finishPoints: map.trackViewer.finishPoints.map((point) => ({
+            ...point,
+            startTime:
+              point.startTime === undefined
+                ? undefined
+                : new Date(point.startTime),
+            finishTime:
+              point.finishTime === undefined
+                ? undefined
+                : new Date(point.finishTime),
+          })),
+        },
+      }),
+    );
   },
 };

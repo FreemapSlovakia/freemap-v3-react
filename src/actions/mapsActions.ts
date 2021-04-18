@@ -44,7 +44,9 @@ export const mapsLoad = createAction('MAPS_LOAD')<{
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();
 
-export const mapsSetList = createAction('MAPS_SET_LIST')<MapMeta[]>();
+export const mapsSetList = createAction('MAPS_SET_LIST')<
+  MapMeta[] | undefined
+>();
 
 export const mapsCreate = createAction('MAPS_CREATE')();
 

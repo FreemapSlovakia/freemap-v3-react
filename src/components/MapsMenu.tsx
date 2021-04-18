@@ -26,33 +26,35 @@ export function MapsMenu(): ReactElement {
 
   return (
     <>
-      <Dropdown
-        className="ml-1"
-        onSelect={(id) => {
-          dispatch(mapsLoad({ id: id ? Number(id) : undefined }));
-        }}
-      >
-        <Dropdown.Toggle
-          id="maps-dropdown"
-          variant="secondary"
-          disabled={!authenticated}
-        >
-          {maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
-        </Dropdown.Toggle>
-        <Dropdown.Menu
-          popperConfig={{
-            strategy: 'fixed',
+      {maps && (
+        <Dropdown
+          className="ml-1"
+          onSelect={(id) => {
+            dispatch(mapsLoad({ id: id ? Number(id) : undefined }));
           }}
         >
-          <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
+          <Dropdown.Toggle
+            id="maps-dropdown"
+            variant="secondary"
+            disabled={!authenticated}
+          >
+            {maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
+          </Dropdown.Toggle>
+          <Dropdown.Menu
+            popperConfig={{
+              strategy: 'fixed',
+            }}
+          >
+            <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
 
-          {maps.map((map) => (
-            <Dropdown.Item key={map.id} eventKey={String(map.id)}>
-              {map.name}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+            {maps.map((map) => (
+              <Dropdown.Item key={map.id} eventKey={String(map.id)}>
+                {map.name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
       {authenticated && id !== undefined && (
         <Button
           className="ml-1"
@@ -65,17 +67,19 @@ export function MapsMenu(): ReactElement {
           <span className="d-none d-md-inline"> {m?.maps.save}</span>
         </Button>
       )}
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={() => {
-          dispatch(mapsCreate());
-        }}
-        disabled={!authenticated}
-      >
-        <FaPlus />
-        <span className="d-none d-md-inline"> {m?.maps.create}</span>
-      </Button>
+      {authenticated && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(mapsCreate());
+          }}
+          disabled={!authenticated}
+        >
+          <FaPlus />
+          <span className="d-none d-md-inline"> {m?.maps.create}</span>
+        </Button>
+      )}
       {authenticated && id !== undefined && (
         <Button
           className="ml-1"
