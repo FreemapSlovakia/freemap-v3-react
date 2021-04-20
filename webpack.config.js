@@ -10,6 +10,7 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const cssnano = require('cssnano');
 
 const skMessages = require('./src/translations/sk-shared.json');
 const csMessages = require('./src/translations/cs-shared.json');
@@ -326,7 +327,7 @@ module.exports = {
       }),
     prod &&
       new OptimizeCssAssetsPlugin({
-        cssProcessor: require('cssnano'),
+        cssProcessor: cssnano(),
         cssProcessorPluginOptions: {
           preset: ['default', { discardComments: { removeAll: true } }],
         },
