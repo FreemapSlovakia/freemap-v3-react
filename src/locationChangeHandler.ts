@@ -20,14 +20,12 @@ import {
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import {
-  basicModals,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setTool,
   ShowModal,
   Tool,
-  tools,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import {
@@ -60,6 +58,7 @@ import { RootAction } from './actions';
 import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
+import { basicModals, tools } from './constants';
 import { MyStore } from './storeCreator';
 import { isTransportType } from './transportTypeDefs';
 import { LatLon } from './types/common';

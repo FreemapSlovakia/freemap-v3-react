@@ -1,6 +1,7 @@
 import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
-import { basicModals, ShowModal } from 'fm3/actions/mainActions';
+import { ShowModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import { basicModals } from 'fm3/constants';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { tips as allTips } from 'fm3/tips';

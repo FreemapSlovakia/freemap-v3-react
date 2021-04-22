@@ -1,35 +1,10 @@
+import { basicModals, tools } from 'fm3/constants';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
-
-export const tools = [
-  'objects',
-  'route-planner',
-  'draw-lines',
-  'draw-polygons',
-  'route-planner',
-  'track-viewer',
-  'draw-points',
-  'changesets',
-  'map-details',
-  'maps',
-] as const;
 
 export type Tool = typeof tools[number];
 
 const specialModals = ['tips', 'edit-label'] as const;
-
-export const basicModals = [
-  'legend',
-  'upload-track',
-  'about',
-  'export-gpx',
-  'export-pdf',
-  'settings',
-  'embed',
-  'supportUs',
-  'tracking-watched',
-  'tracking-my',
-] as const;
 
 export type Modal = typeof basicModals[number] | typeof specialModals[number];
 
