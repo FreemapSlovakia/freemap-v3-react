@@ -10,7 +10,6 @@ import {
 } from 'fm3/actions/searchActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
@@ -56,15 +55,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const results = useSelector((state: RootState) => state.search.results);
+  const results = useSelector((state) => state.search.results);
 
-  const selectedResult = useSelector(
-    (state: RootState) => state.search.selectedResult,
-  );
+  const selectedResult = useSelector((state) => state.search.selectedResult);
 
-  const searchSeq = useSelector((state: RootState) => state.search.searchSeq);
+  const searchSeq = useSelector((state) => state.search.searchSeq);
 
-  // const inProgress = useSelector((state: RootState) => state.search.inProgress);
+  // const inProgress = useSelector((state) => state.search.inProgress);
 
   const tRef = useRef<number>();
 

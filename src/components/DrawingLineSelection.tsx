@@ -6,7 +6,6 @@ import {
 } from 'fm3/actions/elevationChartActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import {
@@ -24,16 +23,16 @@ export function DrawingLineSelection(): ReactElement | null {
 
   const m = useMessages();
 
-  const drawing = useSelector((state: RootState) => state.drawingLines.drawing);
+  const drawing = useSelector((state) => state.drawingLines.drawing);
 
-  const line = useSelector((state: RootState) =>
+  const line = useSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'
       ? state.drawingLines.lines[state.main.selection.id]
       : undefined,
   );
 
   const elevationChartTrackGeojson = useSelector(
-    (state: RootState) => state.elevationChart.trackGeojson,
+    (state) => state.elevationChart.trackGeojson,
   );
 
   const toggleElevationChart = useCallback(() => {

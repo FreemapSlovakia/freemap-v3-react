@@ -4,10 +4,10 @@ import axios, {
   AxiosResponse,
   CancelTokenSource,
 } from 'axios';
+import { DefaultRootState } from 'react-redux';
 import { ActionCreator } from 'typesafe-actions';
 import { clearMap } from './actions/mainActions';
 import { CancelItem, cancelRegister } from './cancelRegister';
-import { RootState } from './storeCreator';
 
 export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
   const cfg: AxiosRequestConfig = {
@@ -22,7 +22,7 @@ export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
 }
 
 export function getAuthAxios(
-  getState: () => RootState,
+  getState: () => DefaultRootState,
   expectedStatus?: number | number[],
 ): AxiosInstance {
   const instance = getAxios(expectedStatus);
@@ -44,7 +44,7 @@ export function getAuthAxios(
 }
 
 interface HttpRequestParams extends Omit<AxiosRequestConfig, 'cancelToken'> {
-  getState: () => RootState;
+  getState: () => DefaultRootState;
   expectedStatus?: number | number[];
   cancelActions?: ActionCreator<string>[];
 }

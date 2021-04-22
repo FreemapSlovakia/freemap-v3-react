@@ -1,4 +1,3 @@
-import { RootState } from 'fm3/storeCreator';
 import { Feature } from 'geojson';
 import { LatLng, marker } from 'leaflet';
 import { ReactElement } from 'react';
@@ -15,9 +14,7 @@ const pointToLayer = (_: Feature, latLng: LatLng) =>
   });
 
 export function SearchResults(): ReactElement | null {
-  const selectedResult = useSelector(
-    (state: RootState) => state.search.selectedResult,
-  );
+  const selectedResult = useSelector((state) => state.search.selectedResult);
 
   return !selectedResult ? null : (
     <GeoJSON

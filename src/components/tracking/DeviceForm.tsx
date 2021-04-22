@@ -1,7 +1,6 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -25,7 +24,7 @@ export function DeviceForm(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const device = useSelector((state: RootState) =>
+  const device = useSelector((state) =>
     state.tracking.modifiedDeviceId
       ? state.tracking.devices.find(
           (device) => device.id === state.tracking.modifiedDeviceId,

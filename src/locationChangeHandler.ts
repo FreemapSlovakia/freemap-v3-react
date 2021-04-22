@@ -53,13 +53,14 @@ import { TipKey } from 'fm3/tips';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { is } from 'typescript-is';
 import { RootAction } from './actions';
 import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
-import { MyStore, RootState } from './storeCreator';
+import { MyStore } from './storeCreator';
 import { isTransportType } from './transportTypeDefs';
 import { LatLon } from './types/common';
 import { TrackedDevice } from './types/trackingTypes';
@@ -511,7 +512,7 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
 }
 
 function handleGallery(
-  getState: () => RootState,
+  getState: () => DefaultRootState,
   dispatch: Dispatch<RootAction>,
   query: ParsedQuery<string>,
 ) {
@@ -616,7 +617,7 @@ function handleGallery(
 }
 
 function handleInfoPoint(
-  getState: () => RootState,
+  getState: () => DefaultRootState,
   dispatch: Dispatch,
   query: queryString.ParsedQuery<string>,
 ) {

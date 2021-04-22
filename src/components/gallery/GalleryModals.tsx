@@ -6,7 +6,6 @@ import {
 } from 'fm3/components/AsyncComponents';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/gallery.scss';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useEffect } from 'react';
@@ -16,17 +15,15 @@ export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
 
   const isPickingPosition = useSelector(
-    (state: RootState) => state.gallery.pickingPositionForId !== null,
+    (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const showFilter = useSelector(
-    (state: RootState) => state.gallery.showFilter,
-  );
+  const showFilter = useSelector((state) => state.gallery.showFilter);
 
   const showGalleryViewer = useSelector(showGalleryViewerSelector);
 
   const showUploadModal = useSelector(
-    (state: RootState) =>
+    (state) =>
       state.gallery.showUploadModal &&
       !!state.auth.user &&
       state.auth.validated &&

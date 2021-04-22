@@ -1,6 +1,5 @@
 import { distance, smoothElevations } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
@@ -8,23 +7,17 @@ import { useSelector } from 'react-redux';
 export function TrackViewerDetails(): ReactElement | null {
   const m = useMessages();
 
-  const startPoints = useSelector(
-    (state: RootState) => state.trackViewer.startPoints,
-  );
+  const startPoints = useSelector((state) => state.trackViewer.startPoints);
 
-  const finishPoints = useSelector(
-    (state: RootState) => state.trackViewer.finishPoints,
-  );
+  const finishPoints = useSelector((state) => state.trackViewer.finishPoints);
 
-  const trackGeojson = useSelector(
-    (state: RootState) => state.trackViewer.trackGeojson,
-  );
+  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
 
   const eleSmoothingFactor = useSelector(
-    (state: RootState) => state.main.eleSmoothingFactor,
+    (state) => state.main.eleSmoothingFactor,
   );
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   if (!trackGeojson) {
     return null;

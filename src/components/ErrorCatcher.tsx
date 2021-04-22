@@ -1,5 +1,4 @@
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { Component, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -10,9 +9,7 @@ interface State {
 function Error() {
   const m = useMessages();
 
-  const errorTicketId = useSelector(
-    (state: RootState) => state.main.errorTicketId,
-  );
+  const errorTicketId = useSelector((state) => state.main.errorTicketId);
 
   return m ? (
     <div

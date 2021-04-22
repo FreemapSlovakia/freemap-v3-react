@@ -6,7 +6,6 @@ import {
 } from 'fm3/components/tracking/TrackingPoint';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
@@ -19,19 +18,15 @@ export function TrackingResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
-  const showLine = useSelector((state: RootState) => state.tracking.showLine);
+  const showLine = useSelector((state) => state.tracking.showLine);
 
-  const showPoints = useSelector(
-    (state: RootState) => state.tracking.showPoints,
-  );
+  const showPoints = useSelector((state) => state.tracking.showPoints);
 
-  const trackedDevices = useSelector(
-    (state: RootState) => state.tracking.trackedDevices,
-  );
+  const trackedDevices = useSelector((state) => state.tracking.trackedDevices);
 
-  const tracks = useSelector((state: RootState) => state.tracking.tracks);
+  const tracks = useSelector((state) => state.tracking.tracks);
 
   const tracks1 = useMemo(() => {
     const tdMap = new Map(trackedDevices.map((td) => [td.id, td]));
@@ -42,7 +37,7 @@ export function TrackingResult(): ReactElement {
     }));
   }, [trackedDevices, tracks]);
 
-  const activeTrackId = useSelector((state: RootState) =>
+  const activeTrackId = useSelector((state) =>
     state.main.selection?.type === 'tracking'
       ? state.main.selection?.id
       : undefined,

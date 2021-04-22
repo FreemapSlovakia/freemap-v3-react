@@ -1,17 +1,16 @@
 import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
 import { drawingMeasure } from 'fm3/actions/drawingPointActions';
-import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
 export function DrawingLinesTool(): null {
-  const selection = useSelector((state: RootState) => state.main.selection);
+  const selection = useSelector((state) => state.main.selection);
 
-  const tool = useSelector((state: RootState) => state.main.tool);
+  const tool = useSelector((state) => state.main.tool);
 
-  const linePoints = useSelector((state: RootState) =>
+  const linePoints = useSelector((state) =>
     state.main.selection?.type !== 'draw-line-poly'
       ? []
       : state.drawingLines.lines[state.main.selection.id].points,

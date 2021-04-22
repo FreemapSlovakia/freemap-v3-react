@@ -4,7 +4,6 @@ import {
   drawingLineSplit,
 } from 'fm3/actions/drawingLineActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/esm/Card';
@@ -20,16 +19,16 @@ export function DrawingLinePointSelection(): ReactElement | null {
 
   const m = useMessages();
 
-  const selection = useSelector((state: RootState) => state.main.selection);
+  const selection = useSelector((state) => state.main.selection);
 
-  const line = useSelector((state: RootState) =>
+  const line = useSelector((state) =>
     state.main.selection?.type === 'line-point'
       ? state.drawingLines.lines[state.main.selection.lineIndex]
       : undefined,
   );
 
   const joining = useSelector(
-    (state: RootState) => state.drawingLines.joinWith !== undefined,
+    (state) => state.drawingLines.joinWith !== undefined,
   );
 
   if (

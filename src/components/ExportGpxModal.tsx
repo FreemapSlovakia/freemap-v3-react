@@ -4,7 +4,6 @@ import {
   setActiveModal,
 } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -47,7 +46,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const initExportables = useSelector((state: RootState) => {
+  const initExportables = useSelector((state) => {
     const exportables: string[] = [];
 
     // if (state.search.selectedResult) {

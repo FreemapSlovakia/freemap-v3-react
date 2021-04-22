@@ -3,7 +3,6 @@ import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { FormEvent, ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
@@ -18,7 +17,7 @@ export function AccessTokenForm(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const accessToken = useSelector((state: RootState) =>
+  const accessToken = useSelector((state) =>
     state.tracking.modifiedAccessTokenId
       ? state.tracking.accessTokens.find(
           (accessToken) =>
@@ -28,7 +27,7 @@ export function AccessTokenForm(): ReactElement {
   );
 
   const deviceName = useSelector(
-    (state: RootState) =>
+    (state) =>
       (
         state.tracking.devices.find(
           (device) => device.id === state.tracking.accessTokensDeviceId,

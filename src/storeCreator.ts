@@ -1,4 +1,5 @@
 import storage from 'local-storage-fallback';
+import { DefaultRootState } from 'react-redux';
 import reduceReducers from 'reduce-reducers';
 import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
@@ -153,9 +154,12 @@ const combinedReducers = combineReducers(reducers);
 
 type CR = typeof combinedReducers;
 
-export type RootState = StateType<CR>;
+declare module 'react-redux' {
+  // eslint-disable-next-line
+  export interface DefaultRootState extends StateType<CR> {}
+}
 
-const rootReducer = reduceReducers<RootState>(
+const rootReducer = reduceReducers<DefaultRootState>(
   // TODO
   // eslint-disable-next-line
   // @ts-ignore
@@ -231,10 +235,10 @@ processors.push(
   urlProcessor,
 );
 
-export type MyStore = Store<RootState, RootAction>;
+export type MyStore = Store<DefaultRootState, RootAction>;
 
 export function createReduxStore(): MyStore {
-  let persisted: Partial<Record<keyof RootState, unknown>> = {};
+  let persisted: Partial<Record<keyof DefaultRootState, unknown>> = {};
 
   try {
     persisted = JSON.parse(storage.getItem('store') ?? '{}');
@@ -242,7 +246,7 @@ export function createReduxStore(): MyStore {
     // nothing
   }
 
-  const initial: Partial<RootState> = {};
+  const initial: Partial<DefaultRootState> = {};
 
   if (is<Partial<MapState>>(persisted.map)) {
     initial.map = { ...mapInitialState, ...persisted.map };

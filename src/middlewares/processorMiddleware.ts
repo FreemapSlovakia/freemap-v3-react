@@ -15,8 +15,8 @@ import {
 } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
-import { RootState } from 'fm3/storeCreator';
 import { MessagePaths } from 'fm3/types/common';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import {
   Action,
@@ -28,14 +28,14 @@ import {
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
-    prevState: RootState;
-    getState: () => RootState;
+    prevState: DefaultRootState;
+    getState: () => DefaultRootState;
     dispatch: Dispatch;
     action: ActionType<T>;
   }) => Action | null | undefined | void;
   handle?: (params: {
-    prevState: RootState;
-    getState: () => RootState;
+    prevState: DefaultRootState;
+    getState: () => DefaultRootState;
     dispatch: Dispatch;
     action: ActionType<T>;
   }) => void | Promise<void>;
@@ -85,7 +85,7 @@ const lazy: Record<string, () => Promise<{ default: Processor }>> = {
 
 export const processorMiddleware: Middleware<
   unknown,
-  RootState,
+  DefaultRootState,
   Dispatch<RootAction>
 > = ({ getState, dispatch }) => (next: Dispatch) => (
   action: Action,

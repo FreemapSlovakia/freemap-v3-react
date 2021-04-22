@@ -1,6 +1,5 @@
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -12,9 +11,7 @@ export function GalleryShowPositionMenu(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const showPosition = useSelector(
-    (state: RootState) => state.gallery.showPosition,
-  );
+  const showPosition = useSelector((state) => state.gallery.showPosition);
 
   const close = useCallback(() => {
     dispatch(galleryCancelShowOnTheMap());

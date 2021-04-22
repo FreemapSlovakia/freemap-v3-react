@@ -6,28 +6,22 @@ import {
   OverlayLayerDef,
   overlayLayers,
 } from 'fm3/mapDefinitions';
-// import { BingLayer } from 'react-leaflet-bing';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import missingTile from '../images/missing-tile-256x256.png';
 
 export function Layers(): ReactElement {
-  const overlays = useSelector((state: RootState) => state.map.overlays);
+  const overlays = useSelector((state) => state.map.overlays);
 
-  const mapType = useSelector((state: RootState) => state.map.mapType);
+  const mapType = useSelector((state) => state.map.mapType);
 
-  const overlayOpacity = useSelector(
-    (state: RootState) => state.map.overlayOpacity,
-  );
+  const overlayOpacity = useSelector((state) => state.map.overlayOpacity);
 
-  const galleryFilter = useSelector((state: RootState) => state.gallery.filter);
+  const galleryFilter = useSelector((state) => state.gallery.filter);
 
-  const galleryDirtySeq = useSelector(
-    (state: RootState) => state.gallery.dirtySeq,
-  );
+  const galleryDirtySeq = useSelector((state) => state.gallery.dirtySeq);
 
-  const isAdmin = useSelector((state: RootState) => !!state.auth.user?.isAdmin);
+  const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
 
   const getTileLayer = ({
     type,

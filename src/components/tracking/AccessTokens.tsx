@@ -1,7 +1,6 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useEffect } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -15,12 +14,10 @@ export function AccessTokens(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const accessTokens = useSelector(
-    (state: RootState) => state.tracking.accessTokens,
-  );
+  const accessTokens = useSelector((state) => state.tracking.accessTokens);
 
   const deviceName = useSelector(
-    (state: RootState) =>
+    (state) =>
       (
         state.tracking.devices.find(
           (device) => device.id === state.tracking.accessTokensDeviceId,

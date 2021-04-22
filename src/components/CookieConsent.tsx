@@ -1,5 +1,4 @@
 import { setAnalyticCookiesAllowed } from 'fm3/actions/mainActions';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +13,7 @@ export function CookieConsent({
   const dispatch = useDispatch();
 
   const analyticCookiesAllowed = useSelector(
-    (state: RootState) => state.main.analyticCookiesAllowed,
+    (state) => state.main.analyticCookiesAllowed,
   );
 
   return (

@@ -6,7 +6,6 @@ import {
   mapsSave,
 } from 'fm3/actions/mapsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -16,11 +15,11 @@ import { useDispatch, useSelector } from 'react-redux';
 export function MapsMenu(): ReactElement {
   const m = useMessages();
 
-  const maps = useSelector((state: RootState) => state.maps.maps);
+  const maps = useSelector((state) => state.maps.maps);
 
-  const id = useSelector((state: RootState) => state.maps.id);
+  const id = useSelector((state) => state.maps.id);
 
-  const authenticated = useSelector((state: RootState) => !!state.auth.user);
+  const authenticated = useSelector((state) => !!state.auth.user);
 
   const dispatch = useDispatch();
 

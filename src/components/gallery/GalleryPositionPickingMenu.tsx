@@ -3,7 +3,6 @@ import {
   gallerySetItemForPositionPicking,
 } from 'fm3/actions/galleryActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -16,7 +15,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
   const pickingPosition = useSelector(
-    (state: RootState) => state.gallery.pickingPositionForId !== null,
+    (state) => state.gallery.pickingPositionForId !== null,
   );
 
   return !pickingPosition ? null : (

@@ -20,7 +20,6 @@ import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { TipKey, tips } from 'fm3/tips';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import {
@@ -89,25 +88,23 @@ type Submenu =
   | null;
 
 export function MoreMenuButton(): ReactElement {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
-  const chosenLanguage = useSelector(
-    (state: RootState) => state.l10n.chosenLanguage,
-  );
+  const chosenLanguage = useSelector((state) => state.l10n.chosenLanguage);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
-  const mapType = useSelector((state: RootState) => state.map.mapType);
+  const mapType = useSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state: RootState) => state.map.overlays);
+  const overlays = useSelector((state) => state.map.overlays);
 
-  const lat = useSelector((state: RootState) => state.map.lat);
+  const lat = useSelector((state) => state.map.lat);
 
-  const lon = useSelector((state: RootState) => state.map.lon);
+  const lon = useSelector((state) => state.map.lon);
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
-  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+  const expertMode = useSelector((state) => state.main.expertMode);
 
   const [show, setShow] = useState(false);
 
@@ -183,7 +180,7 @@ export function MoreMenuButton(): ReactElement {
     }
   }, [submenu, show]);
 
-  const tool = useSelector((state: RootState) => state.main.tool);
+  const tool = useSelector((state) => state.main.tool);
 
   const handleToolSelect = useCallback(
     (tool: string | null, e: SyntheticEvent<unknown>) => {
@@ -207,7 +204,7 @@ export function MoreMenuButton(): ReactElement {
   ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
   const filterIsActive = useSelector(
-    (state: RootState) =>
+    (state) =>
       Object.values(state.gallery.filter).filter((v) => v !== undefined)
         .length > 0,
   );
@@ -247,8 +244,7 @@ export function MoreMenuButton(): ReactElement {
   }
 
   const trackingDisplay = useSelector(
-    (state: RootState) =>
-      state.tracking.showPoints + ',' + state.tracking.showLine,
+    (state) => state.tracking.showPoints + ',' + state.tracking.showLine,
   );
 
   const sc = useScrollClasses('vertical');

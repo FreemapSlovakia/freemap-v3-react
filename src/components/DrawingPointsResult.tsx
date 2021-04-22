@@ -5,7 +5,6 @@ import {
 import { selectFeature } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { DragEndEvent, Point } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
@@ -17,7 +16,7 @@ export function DrawingPointsResult(): ReactElement {
 
   const interactive0 = useSelector(selectingModeSelector);
 
-  const activeIndex = useSelector((state: RootState) =>
+  const activeIndex = useSelector((state) =>
     state.main.selection?.type === 'draw-points'
       ? state.main.selection.id ?? null
       : null,
@@ -50,7 +49,7 @@ export function DrawingPointsResult(): ReactElement {
     [activeIndex, dispatch],
   );
 
-  const points = useSelector((state: RootState) => state.drawingPoints.points);
+  const points = useSelector((state) => state.drawingPoints.points);
 
   const onSelects = useMemo(
     () =>
@@ -63,7 +62,7 @@ export function DrawingPointsResult(): ReactElement {
     [points.length, activeIndex, dispatch],
   );
 
-  const change = useSelector((state: RootState) => state.drawingPoints.change);
+  const change = useSelector((state) => state.drawingPoints.change);
 
   return (
     <>

@@ -13,7 +13,6 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { trackGeojsonIsSuitableForElevationChart } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/trackViewer.scss';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -36,16 +35,14 @@ export function TrackViewerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const hasTrack = useSelector(
-    (state: RootState) => !!state.trackViewer.trackGeojson,
-  );
+  const hasTrack = useSelector((state) => !!state.trackViewer.trackGeojson);
 
   const elevationChartActive = useSelector(
-    (state: RootState) => !!state.elevationChart.trackGeojson,
+    (state) => !!state.elevationChart.trackGeojson,
   );
 
   const colorizeTrackBy = useSelector(
-    (state: RootState) => state.trackViewer.colorizeTrackBy,
+    (state) => state.trackViewer.colorizeTrackBy,
   );
 
   const enableElevationChart = useSelector(

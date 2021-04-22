@@ -1,7 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useEffect } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -16,7 +15,7 @@ export function Devices(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const devices = useSelector((state: RootState) => state.tracking.devices);
+  const devices = useSelector((state) => state.tracking.devices);
 
   useEffect(() => {
     dispatch(trackingActions.loadDevices());

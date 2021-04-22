@@ -12,8 +12,8 @@ import {
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
 import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
-import { RootState } from 'fm3/storeCreator';
 import produce from 'immer';
+import { DefaultRootState } from 'react-redux';
 import { isActionOf } from 'typesafe-actions';
 import {
   cleanState as routePlannerCleanState,
@@ -25,9 +25,9 @@ import {
 } from './trackViewerReducer';
 
 export function preGlobalReducer(
-  state: RootState,
+  state: DefaultRootState,
   action: RootAction,
-): RootState {
+): DefaultRootState {
   if (isActionOf(convertToDrawing, action)) {
     if (state.main.tool === 'route-planner') {
       return produce(state, (draft) => {
@@ -268,9 +268,9 @@ export function preGlobalReducer(
 }
 
 export function postGlobalReducer(
-  state: RootState,
+  state: DefaultRootState,
   action: RootAction,
-): RootState {
+): DefaultRootState {
   if (isActionOf(drawingLineAddPoint, action)) {
     return produce(state, (draft) => {
       const index = action.payload.index ?? draft.drawingLines.lines.length - 1;

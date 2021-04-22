@@ -1,6 +1,5 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -16,7 +15,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',

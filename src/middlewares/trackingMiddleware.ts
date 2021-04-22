@@ -3,8 +3,8 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
-import { RootState } from 'fm3/storeCreator';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
@@ -15,10 +15,13 @@ type HasTokenOrDeviceId =
   | { token: 'string'; deviceId?: undefined }
   | { token?: undefined; deviceId: number };
 
-export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
-  dispatch,
-  getState,
-}) => (next: Dispatch) => (action: RootAction): unknown => {
+export const trackingMiddleware: Middleware<
+  unknown,
+  DefaultRootState,
+  Dispatch
+> = ({ dispatch, getState }) => (next: Dispatch) => (
+  action: RootAction,
+): unknown => {
   if (
     isActionOf(setActiveModal, action) &&
     action.payload === 'tracking-my' &&

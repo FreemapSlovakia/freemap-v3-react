@@ -1,7 +1,6 @@
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import {
   ChangeEvent,
   ReactElement,
@@ -29,12 +28,12 @@ import { useDispatch, useSelector } from 'react-redux';
 type Props = { show: boolean };
 
 export function ExportPdfModal({ show }: Props): ReactElement {
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
-  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+  const expertMode = useSelector((state) => state.main.expertMode);
 
   const canExportByPolygon = useSelector(
-    (state: RootState) =>
+    (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
       state.main.selection.id !== undefined,
   );

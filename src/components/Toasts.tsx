@@ -7,7 +7,6 @@ import {
 } from 'fm3/actions/toastsActions';
 import { Toast } from 'fm3/components/Toast';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/toasts.scss';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
@@ -38,7 +37,7 @@ export function Toasts(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const toasts = useSelector((state: RootState) => state.toasts.toasts);
+  const toasts = useSelector((state) => state.toasts.toasts);
 
   const items = useMemo(
     () =>

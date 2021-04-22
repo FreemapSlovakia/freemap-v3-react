@@ -1,5 +1,4 @@
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -51,9 +50,9 @@ export function OpenInExternalAppMenuButton({
 
   const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
 
-  const mapType = useSelector((state: RootState) => state.map.mapType);
+  const mapType = useSelector((state) => state.map.mapType);
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
   return (
     <>

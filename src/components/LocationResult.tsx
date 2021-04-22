@@ -1,4 +1,3 @@
-import { RootState } from 'fm3/storeCreator';
 import { divIcon } from 'leaflet';
 import { ReactElement } from 'react';
 import { Circle, Marker } from 'react-leaflet';
@@ -16,7 +15,7 @@ const circularIcon = divIcon({
 });
 
 export function LocationResult(): ReactElement | null {
-  const gpsLocation = useSelector((state: RootState) => state.main.location);
+  const gpsLocation = useSelector((state) => state.main.location);
 
   return !gpsLocation ? null : (
     <>

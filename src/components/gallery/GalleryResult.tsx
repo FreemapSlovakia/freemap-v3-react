@@ -1,6 +1,5 @@
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 import { RichMarker } from 'fm3/components/RichMarker';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/gallery.scss';
 import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
@@ -10,19 +9,15 @@ import { useDispatch, useSelector } from 'react-redux';
 export function GalleryResult(): ReactElement {
   const dispatch = useDispatch();
 
-  const image = useSelector((state: RootState) => state.gallery.image);
+  const image = useSelector((state) => state.gallery.image);
 
   const isPickingPosition = useSelector(
-    (state: RootState) => state.gallery.pickingPositionForId !== null,
+    (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const pickingPosition = useSelector(
-    (state: RootState) => state.gallery.pickingPosition,
-  );
+  const pickingPosition = useSelector((state) => state.gallery.pickingPosition);
 
-  const showPosition = useSelector(
-    (state: RootState) => state.gallery.showPosition,
-  );
+  const showPosition = useSelector((state) => state.gallery.showPosition);
 
   const handlePositionPick = useCallback(
     (lat: number, lon: number) => {

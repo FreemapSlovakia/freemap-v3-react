@@ -1,7 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -18,15 +17,15 @@ export function Copyright(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const mapType = useSelector((state: RootState) => state.map.mapType);
+  const mapType = useSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state: RootState) => state.map.overlays);
+  const overlays = useSelector((state) => state.map.overlays);
 
   // const imhd = useSelector(
-  //   (state: RootState) => state.routePlanner.transportType === 'imhd',
+  //   (state) => state.routePlanner.transportType === 'imhd',
   // );
 
-  const showLegendButton = useSelector((state: RootState) =>
+  const showLegendButton = useSelector((state) =>
     (['sk', 'cs'].includes(state.l10n.language)
       ? ['A', 'K', 'T', 'C', 'X', 'O']
       : ['X', 'O']

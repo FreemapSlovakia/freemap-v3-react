@@ -1,5 +1,4 @@
 import { setSelectingHomeLocation } from 'fm3/actions/mainActions';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -10,7 +9,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
   const selectingHomeLocation = useSelector(
-    (state: RootState) => state.main.selectingHomeLocation,
+    (state) => state.main.selectingHomeLocation,
   );
 
   return !selectingHomeLocation ? null : (

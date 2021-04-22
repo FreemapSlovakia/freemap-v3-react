@@ -7,7 +7,7 @@ import {
   wsSend,
   wsStateChanged,
 } from 'fm3/actions/websocketActions';
-import { RootState } from 'fm3/storeCreator';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 
@@ -27,10 +27,13 @@ function resetRestarter() {
   }, 45000);
 }
 
-export const webSocketMiddleware: Middleware<unknown, RootState, Dispatch> = ({
-  dispatch,
-  getState,
-}) => (next: Dispatch) => (action: RootAction): unknown => {
+export const webSocketMiddleware: Middleware<
+  unknown,
+  DefaultRootState,
+  Dispatch
+> = ({ dispatch, getState }) => (next: Dispatch) => (
+  action: RootAction,
+): unknown => {
   if (isActionOf(wsOpen, action)) {
     if (ws && ws.readyState !== WebSocket.CLOSED) {
       dispatch(wsInvalidState(action.payload));

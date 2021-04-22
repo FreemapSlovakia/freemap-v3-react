@@ -4,7 +4,6 @@ import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { getPoiType } from 'fm3/poiTypes';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import { Popup } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,11 +15,11 @@ export function ObjectsResult(): ReactElement {
 
   const interactive = useSelector(selectingModeSelector);
 
-  const objects = useSelector((state: RootState) => state.objects.objects);
+  const objects = useSelector((state) => state.objects.objects);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
-  const activeId = useSelector((state: RootState) =>
+  const activeId = useSelector((state) =>
     state.main.selection?.type === 'objects'
       ? state.main.selection.id ?? null
       : null,

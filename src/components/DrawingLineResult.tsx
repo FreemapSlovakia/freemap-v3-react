@@ -13,7 +13,6 @@ import {
   drawingLinePolys,
   selectingModeSelector,
 } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
 import { Fragment, ReactElement, useEffect, useMemo, useState } from 'react';
@@ -50,28 +49,24 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   const drawing = useSelector(drawingLinePolys);
 
-  const line = useSelector(
-    (state: RootState) => state.drawingLines.lines[index],
-  );
+  const line = useSelector((state) => state.drawingLines.lines[index]);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const selected = useSelector(
-    (state: RootState) =>
+    (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
       index === state.main.selection.id,
   );
 
-  const selectedPointId = useSelector((state: RootState) =>
+  const selectedPointId = useSelector((state) =>
     state.main.selection?.type === 'line-point' &&
     index === state.main.selection.lineIndex
       ? state.main.selection.pointId
       : undefined,
   );
 
-  const joinWith = useSelector(
-    (state: RootState) => state.drawingLines.joinWith,
-  );
+  const joinWith = useSelector((state) => state.drawingLines.joinWith);
 
   const interactive = useSelector(selectingModeSelector);
 

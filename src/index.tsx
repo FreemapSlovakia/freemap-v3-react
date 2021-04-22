@@ -12,13 +12,13 @@ import { history } from 'fm3/historyHolder';
 import { attachKeyboardHandler } from 'fm3/keyboardHandler';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
 import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
-import { createReduxStore, RootState } from 'fm3/storeCreator';
+import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';
 import { render } from 'react-dom';
 import { IconContext } from 'react-icons/lib';
-import { Provider } from 'react-redux';
+import { DefaultRootState, Provider } from 'react-redux';
 import { is, setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
@@ -54,7 +54,7 @@ try {
       storage.getItem('appState') ||
       storage.getItem('user'))
   ) {
-    let appState: Partial<RootState> = {};
+    let appState: Partial<DefaultRootState> = {};
 
     try {
       const value = storage.getItem('appState');
@@ -100,7 +100,7 @@ try {
           chosenLanguage: (appState as any)['language'],
         },
         map: is<Partial<MapState>>(appState.map) ? appState.map : undefined,
-      } as RootState),
+      } as DefaultRootState),
     );
   }
 } catch {

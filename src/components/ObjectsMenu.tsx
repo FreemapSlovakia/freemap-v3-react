@@ -4,7 +4,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { RootState } from 'fm3/storeCreator';
 import {
   ChangeEvent,
   Fragment,
@@ -23,7 +22,7 @@ export function ObjectsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
   const [filter, setFilter] = useState('');
 

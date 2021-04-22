@@ -3,7 +3,6 @@ import {
   gallerySetFilter,
 } from 'fm3/actions/galleryActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import {
   ChangeEvent,
   FormEvent,
@@ -28,11 +27,11 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
-  const filter = useSelector((state: RootState) => state.gallery.filter);
+  const filter = useSelector((state) => state.gallery.filter);
 
-  const users = useSelector((state: RootState) => state.gallery.users);
+  const users = useSelector((state) => state.gallery.users);
 
-  const tags = useSelector((state: RootState) => state.gallery.tags);
+  const tags = useSelector((state) => state.gallery.tags);
 
   const [tag, setTag] = useState('');
 

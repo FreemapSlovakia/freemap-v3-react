@@ -13,7 +13,6 @@ import {
   getZbgisUrl,
 } from 'fm3/externalUrlUtils';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -57,7 +56,7 @@ export function OpenInExternalAppDropdownItems({
 
   const dispatch = useDispatch();
 
-  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+  const expertMode = useSelector((state) => state.main.expertMode);
 
   const handleSelect = useCallback(
     (where: string | null) => {

@@ -13,7 +13,7 @@ import { httpRequest } from 'fm3/authAxios';
 import { containsElevations, distance } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
-import { RootState } from 'fm3/storeCreator';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { assertType } from 'typescript-is';
 
@@ -68,7 +68,7 @@ function resolveElevationProfilePointsLocally(
 }
 
 async function resolveElevationProfilePointsViaApi(
-  getState: () => RootState,
+  getState: () => DefaultRootState,
   trackGeojson: Feature<LineString>,
   dispatch: Dispatch<RootAction>,
 ) {

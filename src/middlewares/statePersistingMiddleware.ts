@@ -1,11 +1,11 @@
 import { RootAction } from 'fm3/actions';
-import { RootState } from 'fm3/storeCreator';
 import storage from 'local-storage-fallback';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 
 export const statePersistingMiddleware: Middleware<
   RootAction | null,
-  RootState,
+  DefaultRootState,
   Dispatch<RootAction>
 > = ({ getState }) => (next: Dispatch) => (
   action: RootAction,
@@ -21,7 +21,7 @@ export const statePersistingMiddleware: Middleware<
   return result;
 };
 
-function persistSelectedState(state: RootState) {
+function persistSelectedState(state: DefaultRootState) {
   if (window.fmEmbedded) {
     return;
   }
@@ -60,6 +60,6 @@ function persistSelectedState(state: RootState) {
         zoom: state.map.zoom,
         overlays: state.map.overlays,
       },
-    } as Partial<RootState>),
+    } as Partial<DefaultRootState>),
   );
 }

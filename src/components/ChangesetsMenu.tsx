@@ -3,7 +3,6 @@ import {
   changesetsSetDays,
 } from 'fm3/actions/changesetsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -16,12 +15,12 @@ export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
 
   const [authorName, setAuthorName] = useState<string | null>(
-    useSelector((state: RootState) => state.changesets.authorName),
+    useSelector((state) => state.changesets.authorName),
   );
 
-  const days = useSelector((state: RootState) => state.changesets.days || 3);
+  const days = useSelector((state) => state.changesets.days || 3);
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
   const canSearchWithThisAmountOfDays = (amountOfDays: number) => {
     return (

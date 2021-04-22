@@ -1,5 +1,4 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +20,7 @@ import { TrackedDevices } from './TrackedDevices';
 type Props = { show: boolean };
 
 export function TrackingModal({ show }: Props): ReactElement {
-  const view = useSelector((state: RootState) =>
+  const view = useSelector((state) =>
     state.main.activeModal === 'tracking-my'
       ? state.tracking.modifiedDeviceId !== undefined
         ? 'deviceForm'

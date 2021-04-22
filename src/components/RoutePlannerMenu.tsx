@@ -16,7 +16,6 @@ import {
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
 import { MouseEvent, ReactElement, useCallback, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -44,41 +43,34 @@ export function RoutePlannerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const milestones = useSelector(
-    (state: RootState) => state.routePlanner.milestones,
-  );
+  const milestones = useSelector((state) => state.routePlanner.milestones);
 
-  const homeLocation = useSelector(
-    (state: RootState) => state.main.homeLocation,
-  );
+  const homeLocation = useSelector((state) => state.main.homeLocation);
 
   const transportType = useSelector(
-    (state: RootState) => state.routePlanner.transportType,
+    (state) => state.routePlanner.transportType,
   );
 
-  const mode = useSelector((state: RootState) => state.routePlanner.mode);
+  const mode = useSelector((state) => state.routePlanner.mode);
 
-  const pickPointMode = useSelector(
-    (state: RootState) => state.routePlanner.pickMode,
-  );
+  const pickPointMode = useSelector((state) => state.routePlanner.pickMode);
 
   const routeFound = useSelector(
-    (state: RootState) => !!state.routePlanner.alternatives.length,
+    (state) => !!state.routePlanner.alternatives.length,
   );
 
   const elevationProfileIsVisible = useSelector(
-    (state: RootState) => !!state.elevationChart.trackGeojson,
+    (state) => !!state.elevationChart.trackGeojson,
   );
 
-  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+  const expertMode = useSelector((state) => state.main.expertMode);
 
   const canSwap = useSelector(
-    (state: RootState) =>
-      !!(state.routePlanner.start && state.routePlanner.finish),
+    (state) => !!(state.routePlanner.start && state.routePlanner.finish),
   );
 
   const canDelete = useSelector(
-    (state: RootState) =>
+    (state) =>
       !!(
         state.routePlanner.start ||
         state.routePlanner.finish ||

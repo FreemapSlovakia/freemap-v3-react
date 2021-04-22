@@ -1,7 +1,6 @@
 import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import {
   ChangeEvent,
   FormEvent,
@@ -23,7 +22,7 @@ type Props = { show: boolean };
 export function DrawingEditLabelModal({ show }: Props): ReactElement {
   const m = useMessages();
 
-  const label = useSelector((state: RootState) => {
+  const label = useSelector((state) => {
     const { selection } = state.main;
 
     return selection?.type === 'draw-points' && selection.id !== undefined

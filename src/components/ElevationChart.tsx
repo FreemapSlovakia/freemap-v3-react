@@ -4,7 +4,6 @@ import {
   elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/elevationChart.scss';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -18,10 +17,10 @@ export function ElevationChart(): ReactElement | null {
   const dispatch = useDispatch();
 
   const elevationProfilePoints = useSelector(
-    (state: RootState) => state.elevationChart.elevationProfilePoints,
+    (state) => state.elevationChart.elevationProfilePoints,
   );
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   if (!elevationProfilePoints) {
     return null;

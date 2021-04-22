@@ -5,7 +5,6 @@ import {
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
@@ -17,11 +16,9 @@ import { getType } from 'typesafe-actions';
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
 export function ChangesetsResult(): ReactElement {
-  const changesets = useSelector(
-    (state: RootState) => state.changesets.changesets,
-  );
+  const changesets = useSelector((state) => state.changesets.changesets);
 
-  const days = useSelector((state: RootState) => state.changesets.days);
+  const days = useSelector((state) => state.changesets.days);
 
   const opacityOf = useCallback(
     (changeset: Changeset, now: Date) => {

@@ -12,7 +12,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
@@ -30,19 +29,15 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const items = useSelector((state: RootState) => state.gallery.items);
+  const items = useSelector((state) => state.gallery.items);
 
-  const uploading = useSelector(
-    (state: RootState) => !!state.gallery.uploadingId,
-  );
+  const uploading = useSelector((state) => !!state.gallery.uploadingId);
 
-  const allTags = useSelector((state: RootState) => state.gallery.tags);
+  const allTags = useSelector((state) => state.gallery.tags);
 
-  const showPreview = useSelector(
-    (state: RootState) => state.gallery.showPreview,
-  );
+  const showPreview = useSelector((state) => state.gallery.showPreview);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const handleItemMerge = useCallback(
     (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {

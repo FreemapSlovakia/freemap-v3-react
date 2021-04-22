@@ -4,7 +4,6 @@ import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { FormEvent, ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -21,7 +20,7 @@ export function TrackedDeviceForm(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { device, forceNew } = useSelector((state: RootState) => {
+  const { device, forceNew } = useSelector((state) => {
     let device: TrackedDevice | undefined;
     let forceNew = false;
 

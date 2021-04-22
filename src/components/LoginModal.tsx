@@ -5,7 +5,6 @@ import {
   authLoginWithOsm,
 } from 'fm3/actions/authActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/esm/Alert';
@@ -44,7 +43,7 @@ export function LoginModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   const cookieConsentResult = useSelector(
-    (state: RootState) => state.main.cookieConsentResult,
+    (state) => state.main.cookieConsentResult,
   );
 
   return (

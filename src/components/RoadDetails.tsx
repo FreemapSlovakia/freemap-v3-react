@@ -4,7 +4,6 @@ import {
   resolveTrackClass,
   resolveTrackSurface,
 } from 'fm3/osmOntologyTools';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { useSelector } from 'react-redux';
@@ -22,9 +21,9 @@ type Props = {
 export function RoadDetails({ way }: Props): ReactElement {
   const m = useMessages();
 
-  const mapType = useSelector((state: RootState) => state.map.mapType);
+  const mapType = useSelector((state) => state.map.mapType);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const dateFormat = new Intl.DateTimeFormat(language, {
     day: '2-digit',

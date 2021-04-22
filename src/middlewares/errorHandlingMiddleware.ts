@@ -1,11 +1,11 @@
 import { RootAction } from 'fm3/actions';
 import { sendError } from 'fm3/globalErrorHandler';
-import { RootState } from 'fm3/storeCreator';
+import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 
 export const errorHandlingMiddleware: Middleware<
   RootAction | null,
-  RootState,
+  DefaultRootState,
   Dispatch<RootAction>
 > = () => (next: Dispatch) => (action: RootAction): RootAction | null => {
   try {

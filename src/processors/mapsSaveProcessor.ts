@@ -2,7 +2,7 @@ import { MapData, mapsSave } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { RootState } from 'fm3/storeCreator';
+import { DefaultRootState } from 'react-redux';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
@@ -26,7 +26,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   },
 };
 
-export function getMapDataFromState(state: RootState): MapData {
+export function getMapDataFromState(state: DefaultRootState): MapData {
   const {
     tracking,
     drawingLines,

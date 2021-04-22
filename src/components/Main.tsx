@@ -68,7 +68,6 @@ import {
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -107,66 +106,56 @@ export function Main(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const lat = useSelector((state: RootState) => state.map.lat);
+  const lat = useSelector((state) => state.map.lat);
 
-  const lon = useSelector((state: RootState) => state.map.lon);
+  const lon = useSelector((state) => state.map.lon);
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
-  const mapType = useSelector((state: RootState) => state.map.mapType);
+  const mapType = useSelector((state) => state.map.mapType);
 
   const showInteractiveLayer = useSelector(
-    (state: RootState) => !state.map.overlays.includes('i'),
+    (state) => !state.map.overlays.includes('i'),
   );
 
-  const selectionType = useSelector(
-    (state: RootState) => state.main.selection?.type,
-  );
+  const selectionType = useSelector((state) => state.main.selection?.type);
 
-  const tool = useSelector((state: RootState) => state.main.tool);
+  const tool = useSelector((state) => state.main.tool);
 
-  const embedFeatures = useSelector(
-    (state: RootState) => state.main.embedFeatures,
-  );
+  const embedFeatures = useSelector((state) => state.main.embedFeatures);
 
-  const activeModal = useSelector((state: RootState) => state.main.activeModal);
+  const activeModal = useSelector((state) => state.main.activeModal);
 
-  const progress = useSelector(
-    (state: RootState) => !!state.main.progress.length,
-  );
+  const progress = useSelector((state) => !!state.main.progress.length);
 
   const mouseCursor = useSelector(mouseCursorSelector);
 
-  const authenticated = useSelector((state: RootState) => !!state.auth.user);
+  const authenticated = useSelector((state) => !!state.auth.user);
 
   const showElevationChart = useSelector(
-    (state: RootState) => !!state.elevationChart.elevationProfilePoints,
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const showGalleryPicker = useSelector((state: RootState) =>
+  const showGalleryPicker = useSelector((state) =>
     showGalleryPickerSelector(state),
   );
 
-  const showLoginModal = useSelector(
-    (state: RootState) => state.auth.chooseLoginMethod,
-  );
+  const showLoginModal = useSelector((state) => state.auth.chooseLoginMethod);
 
   const showMenu = useSelector(
-    (state: RootState) =>
+    (state) =>
       !state.main.selectingHomeLocation &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition,
   );
 
   const overlayPaneOpacity = useSelector(
-    (state: RootState) => state.map.overlayPaneOpacity,
+    (state) => state.map.overlayPaneOpacity,
   );
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
-  const isUserValidated = useSelector(
-    (state: RootState) => state.auth.validated,
-  );
+  const isUserValidated = useSelector((state) => state.auth.validated);
 
   const [showInfoBar, setShowInfoBar] = useState(true);
 
@@ -364,13 +353,13 @@ export function Main(): ReactElement {
   const YellowBar = m?.main.YellowBar;
 
   const elevationChartActive = useSelector(
-    (state: RootState) => !!state.elevationChart.trackGeojson,
+    (state) => !!state.elevationChart.trackGeojson,
   );
 
   const trackFound = useSelector(trackGeojsonIsSuitableForElevationChart);
 
   const routeFound = useSelector(
-    (state: RootState) => !!state.routePlanner.alternatives.length,
+    (state) => !!state.routePlanner.alternatives.length,
   );
 
   useHtmlMeta();

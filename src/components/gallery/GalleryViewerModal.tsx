@@ -19,7 +19,6 @@ import {
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/gallery.scss';
 import {
   ChangeEvent,
@@ -58,27 +57,23 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const imageIds = useSelector((state: RootState) => state.gallery.imageIds);
+  const imageIds = useSelector((state) => state.gallery.imageIds);
 
-  const image = useSelector((state: RootState) => state.gallery.image);
+  const image = useSelector((state) => state.gallery.image);
 
-  const activeImageId2 = useSelector(
-    (state: RootState) => state.gallery.activeImageId,
-  );
+  const activeImageId2 = useSelector((state) => state.gallery.activeImageId);
 
-  const comment = useSelector((state: RootState) => state.gallery.comment);
+  const comment = useSelector((state) => state.gallery.comment);
 
-  const editModel = useSelector((state: RootState) => state.gallery.editModel);
+  const editModel = useSelector((state) => state.gallery.editModel);
 
-  const saveErrors = useSelector(
-    (state: RootState) => state.gallery.saveErrors,
-  );
+  const saveErrors = useSelector((state) => state.gallery.saveErrors);
 
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
-  const allTags = useSelector((state: RootState) => state.gallery.tags);
+  const allTags = useSelector((state) => state.gallery.tags);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const [loading, setLoading] = useState(true);
 

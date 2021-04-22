@@ -1,10 +1,9 @@
 import { useSelector } from 'react-redux';
-import { RootState } from './storeCreator';
 import { Messages } from './translations/messagesInterface';
 
 export function useMessages(): Messages | undefined {
   // force applying english language on load
-  useSelector((state: RootState) => state.l10n.counter);
+  useSelector((state) => state.l10n.counter);
 
   return window.translations;
 }

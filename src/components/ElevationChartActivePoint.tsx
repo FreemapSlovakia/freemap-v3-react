@@ -1,6 +1,5 @@
 import { RichMarker } from 'fm3/components/RichMarker';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
 import { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
@@ -11,10 +10,10 @@ export function ElevationChartActivePoint(): ReactElement | null {
   const m = useMessages();
 
   const elevationChartActivePoint = useSelector(
-    (state: RootState) => state.elevationChart.activePoint,
+    (state) => state.elevationChart.activePoint,
   );
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const nf0 = Intl.NumberFormat(language, {
     minimumFractionDigits: 0,

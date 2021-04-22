@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
@@ -22,7 +21,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
 
   const [legend, setLegend] = useState<Item[]>([]);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   useEffect(() => {
     axios

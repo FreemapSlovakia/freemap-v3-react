@@ -1,6 +1,5 @@
 import { mapDetailsSetSubtool } from 'fm3/actions/mapDetailsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaRoad } from 'react-icons/fa';
@@ -12,11 +11,9 @@ export function MapDetailsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const subtool = useSelector((state: RootState) => state.mapDetails.subtool);
+  const subtool = useSelector((state) => state.mapDetails.subtool);
 
-  const canDelete = useSelector(
-    (state: RootState) => !!state.trackViewer.trackGeojson,
-  );
+  const canDelete = useSelector((state) => !!state.trackViewer.trackGeojson);
 
   return (
     <>

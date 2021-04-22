@@ -1,6 +1,5 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
@@ -13,7 +12,7 @@ export function DrawingPointSelection(): ReactElement | null {
 
   const m = useMessages();
 
-  const point = useSelector((state: RootState) =>
+  const point = useSelector((state) =>
     state.main.selection?.type === 'draw-points'
       ? state.drawingPoints.points[state.main.selection.id]
       : undefined,

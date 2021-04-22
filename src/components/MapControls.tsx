@@ -2,7 +2,6 @@ import { toggleLocate } from 'fm3/actions/mainActions';
 import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -17,15 +16,13 @@ export function MapControls(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
-  const embedFeatures = useSelector(
-    (state: RootState) => state.main.embedFeatures,
-  );
+  const embedFeatures = useSelector((state) => state.main.embedFeatures);
 
-  const locate = useSelector((state: RootState) => state.main.locate);
+  const locate = useSelector((state) => state.main.locate);
 
-  const gpsTracked = useSelector((state: RootState) => state.map.gpsTracked);
+  const gpsTracked = useSelector((state) => state.map.gpsTracked);
 
   const onMapRefocus = useCallback(
     (changes: Partial<MapViewState>) => {

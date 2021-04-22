@@ -48,3 +48,9 @@ export const actions = {
 };
 
 export type RootAction = Action; // much slower but typesafe:  ActionType<typeof actions>;
+
+declare module 'typesafe-actions' {
+  interface Types {
+    RootAction: RootAction;
+  }
+}

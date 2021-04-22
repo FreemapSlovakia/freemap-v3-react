@@ -20,7 +20,6 @@ import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { isSpecial } from 'fm3/transportTypeDefs';
 import {
@@ -60,43 +59,33 @@ export function RoutePlannerResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const start = useSelector((state: RootState) => state.routePlanner.start);
+  const start = useSelector((state) => state.routePlanner.start);
 
-  const finish = useSelector((state: RootState) => state.routePlanner.finish);
+  const finish = useSelector((state) => state.routePlanner.finish);
 
-  const midpoints = useSelector(
-    (state: RootState) => state.routePlanner.midpoints,
-  );
+  const midpoints = useSelector((state) => state.routePlanner.midpoints);
 
-  const alternatives = useSelector(
-    (state: RootState) => state.routePlanner.alternatives,
-  );
+  const alternatives = useSelector((state) => state.routePlanner.alternatives);
 
-  const waypoints = useSelector(
-    (state: RootState) => state.routePlanner.waypoints,
-  );
+  const waypoints = useSelector((state) => state.routePlanner.waypoints);
 
   const activeAlternativeIndex = useSelector(
-    (state: RootState) => state.routePlanner.activeAlternativeIndex,
+    (state) => state.routePlanner.activeAlternativeIndex,
   );
 
   const transportType = useSelector(
-    (state: RootState) => state.routePlanner.transportType,
+    (state) => state.routePlanner.transportType,
   );
 
-  const mode = useSelector((state: RootState) => state.routePlanner.mode);
+  const mode = useSelector((state) => state.routePlanner.mode);
 
-  const timestamp = useSelector(
-    (state: RootState) => state.routePlanner.timestamp,
-  );
+  const timestamp = useSelector((state) => state.routePlanner.timestamp);
 
-  const showMilestones = useSelector(
-    (state: RootState) => state.routePlanner.milestones,
-  );
+  const showMilestones = useSelector((state) => state.routePlanner.milestones);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
-  const zoom = useSelector((state: RootState) => state.map.zoom);
+  const zoom = useSelector((state) => state.map.zoom);
 
   const tRef = useRef<number>();
 
@@ -110,11 +99,9 @@ export function RoutePlannerResult(): ReactElement {
 
   const [dragAlt, setDragAlt] = useState<number>();
 
-  const pickMode = useSelector(
-    (state: RootState) => state.routePlanner.pickMode,
-  );
+  const pickMode = useSelector((state) => state.routePlanner.pickMode);
 
-  const tool = useSelector((state: RootState) => state.main.tool);
+  const tool = useSelector((state) => state.main.tool);
 
   const interactive0 = tool === 'route-planner'; // draggable
 

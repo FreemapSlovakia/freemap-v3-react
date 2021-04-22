@@ -10,7 +10,6 @@ import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { RootState } from 'fm3/storeCreator';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
@@ -23,31 +22,25 @@ interface GetFeatures {
 }
 
 export function TrackViewerResult(): ReactElement | null {
-  const trackGeojson = useSelector(
-    (state: RootState) => state.trackViewer.trackGeojson,
-  );
+  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
 
-  const startPoints = useSelector(
-    (state: RootState) => state.trackViewer.startPoints,
-  );
+  const startPoints = useSelector((state) => state.trackViewer.startPoints);
 
-  const finishPoints = useSelector(
-    (state: RootState) => state.trackViewer.finishPoints,
-  );
+  const finishPoints = useSelector((state) => state.trackViewer.finishPoints);
 
   const displayingElevationChart = useSelector(
-    (state: RootState) => state.elevationChart.trackGeojson !== null,
+    (state) => state.elevationChart.trackGeojson !== null,
   );
 
   const colorizeTrackBy = useSelector(
-    (state: RootState) => state.trackViewer.colorizeTrackBy,
+    (state) => state.trackViewer.colorizeTrackBy,
   );
 
   const eleSmoothingFactor = useSelector(
-    (state: RootState) => state.main.eleSmoothingFactor,
+    (state) => state.main.eleSmoothingFactor,
   );
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const [infoLat] = useState<number>();
 

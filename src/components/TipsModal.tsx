@@ -1,7 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { tips } from 'fm3/tips';
 import {
   FormEvent,
@@ -30,7 +29,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const tipKey = useSelector((state: RootState) => state.tips.tip);
+  const tipKey = useSelector((state) => state.tips.tip);
 
   const [loading, setLoading] = useState(false);
 
@@ -127,7 +126,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
   // }, [tip]);
 
   const cookieConsentResult = useSelector(
-    (state: RootState) => state.main.cookieConsentResult,
+    (state) => state.main.cookieConsentResult,
   );
 
   if (!tip) {

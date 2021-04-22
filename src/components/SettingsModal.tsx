@@ -7,7 +7,6 @@ import { latLonToString } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { overlayLayers } from 'fm3/mapDefinitions';
-import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
@@ -36,25 +35,21 @@ type Props = { show: boolean };
 
 export function SettingsModal({ show }: Props): ReactElement {
   const init = {
-    homeLocation: useSelector((state: RootState) => state.main.homeLocation),
-    overlayOpacity: useSelector((state: RootState) => state.map.overlayOpacity),
-    overlayPaneOpacity: useSelector(
-      (state: RootState) => state.map.overlayPaneOpacity,
-    ),
-    expertMode: useSelector((state: RootState) => state.main.expertMode),
-    eleSmoothingFactor: useSelector(
-      (state: RootState) => state.main.eleSmoothingFactor,
-    ),
-    preventTips: useSelector((state: RootState) => state.tips.preventTips),
+    homeLocation: useSelector((state) => state.main.homeLocation),
+    overlayOpacity: useSelector((state) => state.map.overlayOpacity),
+    overlayPaneOpacity: useSelector((state) => state.map.overlayPaneOpacity),
+    expertMode: useSelector((state) => state.main.expertMode),
+    eleSmoothingFactor: useSelector((state) => state.main.eleSmoothingFactor),
+    preventTips: useSelector((state) => state.tips.preventTips),
   };
 
   const selectingHomeLocation = useSelector(
-    (state: RootState) => state.main.selectingHomeLocation,
+    (state) => state.main.selectingHomeLocation,
   );
 
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
-  const language = useSelector((state: RootState) => state.l10n.language);
+  const language = useSelector((state) => state.l10n.language);
 
   const m = useMessages();
 
