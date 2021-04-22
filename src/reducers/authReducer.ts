@@ -17,7 +17,7 @@ export interface AuthState {
   user: User | null;
 }
 
-export const authInitialState = {
+export const authInitialState: AuthState = {
   chooseLoginMethod: false,
   validated: false,
   user: null,

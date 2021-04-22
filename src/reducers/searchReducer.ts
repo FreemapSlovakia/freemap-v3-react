@@ -13,8 +13,7 @@ export interface SearchState {
   searchSeq: number;
 }
 
-const initialState = {
-  query: null,
+const initialState: SearchState = {
   results: [],
   searchSeq: 0,
   selectedResult: null,
