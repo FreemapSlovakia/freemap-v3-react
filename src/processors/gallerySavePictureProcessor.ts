@@ -25,6 +25,8 @@ export const gallerySavePictureProcessor: Processor = {
       url: `/gallery/pictures/${id}`,
       data: {
         ...editModel,
+        title: editModel.title || null,
+        description: editModel.description || null,
         position: parseCoordinates(editModel.dirtyPosition),
         takenAt: editModel.takenAt ? new Date(editModel.takenAt) : null,
       },
