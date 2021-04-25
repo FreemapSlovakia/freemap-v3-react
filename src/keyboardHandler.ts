@@ -5,6 +5,7 @@ import {
 } from './actions/drawingLineActions';
 import { elevationChartClose } from './actions/elevationChartActions';
 import {
+  galleryCancelShowOnTheMap,
   galleryClear,
   galleryEditPicture,
   galleryHideFilter,
@@ -63,6 +64,8 @@ export function attachKeyboardHandler(store: MyStore): void {
         // nothing
       } else if (state.gallery.showFilter) {
         store.dispatch(galleryHideFilter());
+      } else if (state.gallery.pickingPositionForId) {
+        store.dispatch(gallerySetItemForPositionPicking(null));
       } else if (state.gallery.showUploadModal) {
         store.dispatch(galleryHideUploadModal());
       } else if (showGalleryViewerSelector(state)) {
@@ -81,12 +84,8 @@ export function attachKeyboardHandler(store: MyStore): void {
         store.dispatch(drawingLineStopDrawing());
       } else if (state.main.selectingHomeLocation) {
         store.dispatch(setSelectingHomeLocation(false));
-
-        event.preventDefault();
-      } else if (state.gallery.pickingPositionForId) {
-        store.dispatch(gallerySetItemForPositionPicking(null));
-
-        event.preventDefault();
+      } else if (state.gallery.showPosition) {
+        store.dispatch(galleryCancelShowOnTheMap());
       } else if (!showingModal && !suspendedModal && state.main.selection) {
         // store.dispatch(
         //   selectFeature(
