@@ -491,6 +491,7 @@ export function Main(): ReactElement {
           <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
         </div>
+        {showElevationChart && <AsyncElevationChart />}
       </div>
 
       <div className="fm-type-zoom-control">
@@ -592,7 +593,6 @@ export function Main(): ReactElement {
           <AsyncLoginModal show={showLoginModal} />
           <GalleryModals />
         </MapContainer>
-        {showElevationChart && <AsyncElevationChart />}
       </div>
       <div className="fm-overlay-backdrop" />
     </>
