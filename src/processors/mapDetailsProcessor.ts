@@ -10,10 +10,7 @@ import {
   selectFeature,
   setTool,
 } from 'fm3/actions/mainActions';
-import {
-  mapDetailsSetTrackInfoPoints,
-  mapDetailsSetUserSelectedPosition,
-} from 'fm3/actions/mapDetailsActions';
+import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -185,7 +182,8 @@ export const mapDetailsProcessor: Processor = {
           style: 'info',
         }),
       );
-      dispatch(mapDetailsSetTrackInfoPoints(null));
+
+      // dispatch(mapDetailsSetTrackInfoPoints(null));
     }
   },
 };

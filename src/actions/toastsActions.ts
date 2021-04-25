@@ -12,7 +12,7 @@ export interface ToastAction {
 export interface Toast {
   message?: string;
   messageKey?: MessagePaths;
-  messageParams?: Record<string, unknown>;
+  messageParams?: Record<string, any>; // after upgrading redux Record<string, unknown> doesn't work here
   timeout?: number;
   style?:
     | 'primary'

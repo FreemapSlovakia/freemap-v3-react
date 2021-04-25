@@ -2,7 +2,6 @@ import { RootAction } from 'fm3/actions';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
 import {
   mapDetailsSetSubtool,
-  mapDetailsSetTrackInfoPoints,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
 import { createReducer } from 'typesafe-actions';
@@ -11,14 +10,14 @@ export interface MapDetailsState {
   userSelectedLat: number | null;
   userSelectedLon: number | null;
   subtool: string | null;
-  trackInfoPoints: unknown | null;
+  // trackInfoPoints: unknown | null;
 }
 
 const initialState: MapDetailsState = {
   userSelectedLat: null,
   userSelectedLon: null,
   subtool: null,
-  trackInfoPoints: null,
+  // trackInfoPoints: null,
 };
 
 export const mapDetailsReducer = createReducer<MapDetailsState, RootAction>(
@@ -34,10 +33,10 @@ export const mapDetailsReducer = createReducer<MapDetailsState, RootAction>(
     userSelectedLat: action.payload.lat,
     userSelectedLon: action.payload.lon,
   }))
-  .handleAction(mapDetailsSetTrackInfoPoints, (state, action) => ({
-    ...state,
-    trackInfoPoints: action.payload,
-  }))
+  // .handleAction(mapDetailsSetTrackInfoPoints, (state, action) => ({
+  //   ...state,
+  //   trackInfoPoints: action.payload,
+  // }))
   .handleAction(setTool, (state, action) =>
     action.payload === 'map-details'
       ? { ...state, subtool: 'track-info' }
