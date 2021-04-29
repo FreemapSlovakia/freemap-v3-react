@@ -10,7 +10,7 @@ import { assertType } from 'typescript-is';
 export const galleryFetchUsersProcessor: Processor = {
   actionCreator: galleryShowFilter,
   errorKey: 'gallery.tagsFetchingError',
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { data } = await httpRequest({
       getState,
       method: 'GET',

@@ -6,7 +6,7 @@ import {
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import { setActiveModal, setTool } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
+import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
@@ -163,7 +163,9 @@ export function Main(): ReactElement {
 
   useEffect(() => {
     setMapLeafletElement(map);
-  }, [map]);
+
+    dispatch(mapSetLeafletReady(map !== null));
+  }, [dispatch, map]);
 
   useEffect(() => {
     const style = map?.getContainer().style;

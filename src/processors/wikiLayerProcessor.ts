@@ -1,4 +1,3 @@
-import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -6,7 +5,6 @@ import { cancelRegister } from 'fm3/cancelRegister';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement, OverpassResult } from 'fm3/types/common';
-import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse {
@@ -19,40 +17,36 @@ interface WikiResponse {
   };
 }
 
-let prev = false;
-
-// TODO move to some util
-const delay = (ms: number) =>
-  new Promise<void>((resolve) => {
-    window.setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-
 export const wikiLayerProcessor: Processor = {
-  actionCreator: [mapRefocus, enableUpdatingUrl /* for initial */],
+  actionCreator: '*',
   errorKey: 'general.loadError',
-  handle: async ({ getState, dispatch, action }) => {
-    const moved =
-      isActionOf(mapRefocus, action) &&
-      ['lat', 'lon', 'zoom'].some((prop) => prop in action.payload);
+  handle: async ({ getState, dispatch, prevState }) => {
+    const le = getMapLeafletElement();
 
-    const {
-      map: { overlays, zoom },
-      wiki: { points },
-    } = getState();
-
-    const curr = overlays.includes('w');
-
-    const changed = prev != curr;
-
-    prev = curr;
-
-    if (!changed && !moved) {
+    if (!le) {
       return;
     }
 
-    if (!curr || zoom < 12) {
+    const {
+      map: { overlays, lat, lon, zoom, mapLeafletReady },
+      wiki: { points },
+    } = getState();
+
+    const prevMap = prevState.map;
+
+    const ok0 = mapLeafletReady && overlays.includes('w');
+
+    const ok = ok0 && zoom >= 12;
+
+    const prevOk0 = prevMap.mapLeafletReady && prevMap.overlays.includes('w');
+
+    const prevOk = prevOk0 && prevMap.zoom >= 12;
+
+    if (`${lat},${lon},${ok}` === `${prevMap.lat},${prevMap.lon},${prevOk}`) {
+      return;
+    }
+
+    if (prevOk && !ok) {
       if (points.length) {
         dispatch(wikiSetPoints([]));
       }
@@ -60,18 +54,7 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
-    let le = getMapLeafletElement();
-
-    if (!le) {
-      await delay(1);
-      le = getMapLeafletElement();
-    }
-
-    if (!le) {
-      return;
-    }
-
-    const b = le.getBounds();
+    const bounds = le.getBounds();
 
     // debouncing
     try {
@@ -79,9 +62,10 @@ export const wikiLayerProcessor: Processor = {
         const to = window.setTimeout(
           () => {
             cancelRegister.delete(cancelItem);
+
             resolve();
           },
-          changed ? 0 : 1000,
+          prevOk0 === ok0 ? 1000 : 0,
         );
 
         const cancelItem = {
@@ -104,7 +88,7 @@ export const wikiLayerProcessor: Processor = {
       method: 'POST',
       url: 'https://overpass.freemap.sk/api/interpreter',
       data:
-        `[out:json][bbox:${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}];(` +
+        `[out:json][bbox:${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}];(` +
         `node[~"^wikipedia$|^wikidata$"~"."];` +
         `way[~"^wikipedia$|^wikidata$"~"."];` +
         `relation[~"^wikipedia$|^wikidata$"~"."];` +

@@ -4,6 +4,7 @@ import { gallerySetFilter } from 'fm3/actions/galleryActions';
 import { Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
+  mapSetLeafletReady,
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
   MapStateBase,
@@ -15,6 +16,7 @@ export interface MapState extends MapStateBase {
   selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
+  mapLeafletReady: boolean;
 }
 
 export const mapInitialState: MapState = {
@@ -28,6 +30,7 @@ export const mapInitialState: MapState = {
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
+  mapLeafletReady: false,
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
@@ -98,6 +101,10 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
         }
       : state;
   })
+  .handleAction(mapSetLeafletReady, (state, { payload }) => ({
+    ...state,
+    mapLeafletReady: payload,
+  }))
   .handleAction(mapsDataLoaded, (state, { payload: { map } }) => ({
     ...state,
     lat: map?.lat ?? state.lat,

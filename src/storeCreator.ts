@@ -8,14 +8,15 @@ import { is } from 'typescript-is';
 import { RootAction } from './actions';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
-import {
-  processorMiddleware,
-  processors,
-} from './middlewares/processorMiddleware';
+import { createProcessorMiddleware } from './middlewares/processorMiddleware';
 import { statePersistingMiddleware } from './middlewares/statePersistingMiddleware';
-import { trackingMiddleware } from './middlewares/trackingMiddleware';
-import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
+import { createTrackingMiddleware } from './middlewares/trackingMiddleware';
+import { createWebsocketMiddleware } from './middlewares/webSocketMiddleware';
 import { authInitProcessor } from './processors/authInitProcessor';
+import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
+import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
+import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
+import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
 import { cancelProcessor } from './processors/cancelProcessor';
 import { changesetsProcessor } from './processors/changesetsProcessor';
@@ -24,6 +25,7 @@ import { elevationChartProcessor } from './processors/elevationChartProcessor';
 import { errorProcessor } from './processors/errorProcessor';
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
 import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor';
+import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor';
 import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor';
 import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor';
 import { galleryRequestImagesByRadiusProcessor } from './processors/galleryRequestImagesByRadiusProcessor';
@@ -37,6 +39,7 @@ import {
   galleryUploadModalProcessor,
   galleryUploadModalTransformer,
 } from './processors/galleryUploadModalProcessor';
+import { gpxExportProcessor } from './processors/gpxExportProcessor';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
 import { legendProcessor } from './processors/legendProcessor';
 import { locateProcessor } from './processors/locateProcessor';
@@ -55,6 +58,7 @@ import { openInExternalAppProcessor } from './processors/openInExternalAppProces
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
+import { exportPdfProcessor } from './processors/pdfExportProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
@@ -168,7 +172,9 @@ const rootReducer = reduceReducers<DefaultRootState>(
   postGlobalReducer,
 );
 
-processors.push(
+const processorMiddleware = createProcessorMiddleware();
+
+processorMiddleware.processors.push(
   errorProcessor,
   cancelProcessor,
   setToolProcessor,
@@ -215,6 +221,7 @@ processors.push(
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
   galleryUploadModalTransformer,
+  galleryItemUploadProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
   routePlannerSetFromCurrentPositionProcessor,
@@ -232,6 +239,12 @@ processors.push(
   legendProcessor,
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
+  gpxExportProcessor,
+  exportPdfProcessor,
+  authLoginWithFacebookProcessor,
+  authLoginWithGoogleProcessor,
+  authLoginWithOsmProcessor,
+  authLoginWithOsm2Processor,
   urlProcessor,
 );
 
@@ -290,9 +303,9 @@ export function createReduxStore(): MyStore {
         errorHandlingMiddleware,
         loggerMiddleware,
         statePersistingMiddleware,
-        webSocketMiddleware,
+        createWebsocketMiddleware(),
         processorMiddleware,
-        trackingMiddleware,
+        createTrackingMiddleware(),
       ),
     ),
   );

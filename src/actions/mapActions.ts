@@ -25,3 +25,5 @@ export const mapSetOverlayOpacity = createAction('MAP_SET_OVERLAY_OPACITY')<{
 export const mapSetOverlayPaneOpacity = createAction(
   'MAP_SET_OVERLAY_PANE_OPACITY',
 )<number>();
+
+export const mapSetLeafletReady = createAction('MAP_LEAFLET_READY')<boolean>();
