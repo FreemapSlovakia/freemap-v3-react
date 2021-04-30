@@ -5,8 +5,7 @@ import { trackingTrackSelector } from 'fm3/selectors/mainSelectors';
 import { isActionOf } from 'typesafe-actions';
 
 export const trackingFollowProcessor: Processor = {
-  actionCreator: '*',
-  handle: async ({ dispatch, getState, action, prevState }) => {
+  async handle({ dispatch, getState, action, prevState }) {
     const track = trackingTrackSelector(getState());
 
     const differs = trackingTrackSelector(prevState) !== track;

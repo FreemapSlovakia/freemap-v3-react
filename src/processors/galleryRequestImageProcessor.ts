@@ -12,7 +12,7 @@ import { assertType } from 'typescript-is';
 export const galleryRequestImageProcessor: Processor = {
   actionCreator: galleryRequestImage,
   errorKey: 'gallery.pictureFetchingError',
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { data } = await httpRequest({
       getState,
       method: 'GET',

@@ -25,6 +25,7 @@ export const changesetsProcessor: Processor = {
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
     const le = getMapLeafletElement();
+
     const state = getState();
 
     if (!le || state.changesets.days === null) {

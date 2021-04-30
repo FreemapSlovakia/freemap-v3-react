@@ -4,7 +4,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const errorProcessor: Processor<typeof setErrorTicketId> = {
   actionCreator: setErrorTicketId,
-  handle: async ({ dispatch, action }) => {
+  async handle({ dispatch, action }) {
     dispatch(
       toastsAdd({
         messageKey: 'general.internalError',

@@ -30,7 +30,10 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
     action: ActionType<T>;
   }) => Action | null | undefined | void;
   handle?: ProcessorHandler<T>;
-  actionCreator: T | T[] | '*';
+  actionCreator?: T | T[];
+  actionPredicate?(action: ActionType<T>): boolean;
+  statePredicate?(state: DefaultRootState): boolean;
+  stateChangePredicate?(state: DefaultRootState): unknown;
   errorKey?: MessagePaths;
   id?: string; // toast collapse key
 }
@@ -49,13 +52,20 @@ export function createProcessorMiddleware(): MW {
 
     let a: Action = action;
 
-    for (const { actionCreator: actionType, transform } of processors) {
+    for (const {
+      actionCreator: actionType,
+      transform,
+      statePredicate,
+      actionPredicate,
+    } of processors) {
       if (
         transform &&
-        (actionType === '*' ||
+        (!actionType ||
           (Array.isArray(actionType) &&
             actionType.some((ac) => isActionOf(ac, a))) ||
-          isActionOf(actionType, a))
+          isActionOf(actionType, a)) &&
+        (!statePredicate || statePredicate(getState())) &&
+        (!actionPredicate || actionPredicate(action))
       ) {
         const a1 = transform({ getState, dispatch, action: a, prevState });
 
@@ -73,14 +83,27 @@ export function createProcessorMiddleware(): MW {
       const promises: Promise<void>[] = [];
 
       for (const processor of processors) {
-        const { actionCreator: actionType, handle, errorKey, id } = processor;
+        const {
+          actionCreator: actionType,
+          handle,
+          errorKey,
+          id,
+          statePredicate,
+          stateChangePredicate,
+          actionPredicate,
+        } = processor;
 
         if (
           handle &&
-          (actionType === '*' ||
+          (!actionType ||
             (Array.isArray(actionType) &&
               actionType.some((ac) => isActionOf(ac, a))) ||
-            isActionOf(actionType, a))
+            isActionOf(actionType, a)) &&
+          (!statePredicate || statePredicate(getState())) &&
+          (!stateChangePredicate ||
+            stateChangePredicate(getState()) !==
+              stateChangePredicate(prevState)) &&
+          (!actionPredicate || actionPredicate(action))
         ) {
           const handleError = (err: unknown) => {
             if (axios.isCancel(err)) {

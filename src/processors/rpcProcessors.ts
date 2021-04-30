@@ -38,28 +38,23 @@ interface Call {
 const callMap = new Map<number | string, Call>();
 
 export const rpcWsStateProcessor: Processor = {
-  actionCreator: '*',
-  handle: async ({ dispatch, getState, prevState }) => {
-    const oldState = prevState.websocket.state;
+  statePredicate: (state) => state.websocket.state !== 1,
+  stateChangePredicate: (state) => state.websocket.state,
+  async handle({ dispatch }) {
+    const values = callMap.values();
 
-    const { state } = getState().websocket;
+    callMap.clear();
 
-    if (oldState !== state && state !== 1) {
-      const values = callMap.values();
-
-      callMap.clear();
-
-      for (const call of values) {
-        dispatch(
-          rpcResponse({
-            type: 'error',
-            method: call.method,
-            params: call.params,
-            error: { code: -31000, message: 'connection closed' },
-            tag: call.tag,
-          }),
-        );
-      }
+    for (const call of values) {
+      dispatch(
+        rpcResponse({
+          type: 'error',
+          method: call.method,
+          params: call.params,
+          error: { code: -31000, message: 'connection closed' },
+          tag: call.tag,
+        }),
+      );
     }
   },
 };

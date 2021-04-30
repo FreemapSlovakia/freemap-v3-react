@@ -11,7 +11,7 @@ import { getEffectiveChosenLanguage } from './l10nSetLanguageProcessor';
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
   errorKey: 'logIn.verifyError',
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { user } = getState().auth;
 
     if (user) {

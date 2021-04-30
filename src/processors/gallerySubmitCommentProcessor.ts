@@ -8,8 +8,9 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
   errorKey: 'gallery.commentAddingError',
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { image } = getState().gallery;
+
     if (!image) {
       return;
     }

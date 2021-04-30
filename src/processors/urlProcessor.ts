@@ -14,7 +14,6 @@ let lastActionType: string | undefined;
 let previous: unknown[] = [];
 
 export const urlProcessor: Processor = {
-  actionCreator: '*',
   handle: async ({ getState, action }) => {
     const {
       map,

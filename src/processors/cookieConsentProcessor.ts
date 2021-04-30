@@ -3,16 +3,15 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const cookieConsentProcessor: Processor = {
   actionCreator: applyCookieConsent,
-  handle: async ({ getState }) => {
-    if (getState().main.cookieConsentResult) {
-      window.gtag('consent' as any, 'update', {
-        ad_storage: 'granted',
-        analytics_storage: 'granted',
-      });
+  statePredicate: (state) => !!state.main.cookieConsentResult,
+  async handle() {
+    window.gtag('consent' as any, 'update', {
+      ad_storage: 'granted',
+      analytics_storage: 'granted',
+    });
 
-      // FB PIXEL
+    // FB PIXEL
 
-      window?.fbq('consent', 'grant');
-    }
+    window?.fbq('consent', 'grant');
   },
 };

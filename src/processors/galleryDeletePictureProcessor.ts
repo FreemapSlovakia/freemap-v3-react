@@ -11,8 +11,9 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const galleryDeletePictureProcessor: Processor = {
   actionCreator: galleryDeletePicture,
   errorKey: 'gallery.deletingError',
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { image } = getState().gallery;
+
     if (!image) {
       return;
     }

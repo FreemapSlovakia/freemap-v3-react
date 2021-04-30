@@ -4,8 +4,9 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const gallerySetItemForPositionPickingProcessor: Processor = {
   actionCreator: gallerySetItemForPositionPicking,
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { pickingPosition } = getState().gallery;
+
     if (pickingPosition) {
       dispatch(
         mapRefocus({ lat: pickingPosition.lat, lon: pickingPosition.lon }),

@@ -13,7 +13,7 @@ export const galleryRequestImagesByOrderProcessor: Processor<
 > = {
   actionCreator: galleryList,
   errorKey: 'gallery.picturesFetchingError',
-  handle: async ({ getState, dispatch, action }) => {
+  async handle({ getState, dispatch, action }) {
     const { data } = await httpRequest({
       getState,
       method: 'GET',

@@ -6,7 +6,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const authLogoutProcessor: Processor = {
   actionCreator: authStartLogout,
   errorKey: 'logIn.logOutError',
-  handle: async ({ dispatch, getState }) => {
+  async handle({ dispatch, getState }) {
     await httpRequest({
       getState,
       method: 'post',

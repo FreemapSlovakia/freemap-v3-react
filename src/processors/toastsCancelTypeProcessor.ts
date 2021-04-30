@@ -2,7 +2,6 @@ import { toastsRemove } from 'fm3/actions/toastsActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const toastsCancelTypeProcessor: Processor = {
-  actionCreator: '*',
   handle: async ({ dispatch, getState, action }) => {
     getState()
       .toasts.toasts.filter(({ cancelType }) =>

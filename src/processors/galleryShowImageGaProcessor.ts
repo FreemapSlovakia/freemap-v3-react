@@ -3,7 +3,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const galleryShowImageGaProcessor: Processor = {
   actionCreator: gallerySetImage,
-  handle: async ({ getState }) => {
+  async handle({ getState }) {
     const {
       gallery: { image },
     } = getState();

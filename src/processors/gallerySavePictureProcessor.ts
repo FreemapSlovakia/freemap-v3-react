@@ -10,7 +10,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,
   errorKey: 'gallery.savingError',
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { image, editModel, saveErrors } = getState().gallery;
 
     if (!image || !editModel || saveErrors.length) {

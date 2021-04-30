@@ -3,7 +3,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const galleryItemUploadProcessor: Processor = {
   actionCreator: galleryUpload,
-  handle: async (...params) => {
+  async handle(...params) {
     (
       await import(
         /* webpackChunkName: "galleryItemUploadProcessorHandler" */ './galleryItemUploadProcessorHandler'

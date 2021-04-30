@@ -4,7 +4,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const galleryShowOnTheMapProcessor: Processor = {
   actionCreator: galleryShowOnTheMap,
-  handle: async ({ getState, dispatch }) => {
+  async handle({ getState, dispatch }) {
     const { image } = getState().gallery;
 
     if (image) {

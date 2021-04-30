@@ -18,9 +18,8 @@ interface WikiResponse {
 }
 
 export const wikiLayerProcessor: Processor = {
-  actionCreator: '*',
   errorKey: 'general.loadError',
-  handle: async ({ getState, dispatch, prevState }) => {
+  async handle({ getState, dispatch, prevState }) {
     const le = getMapLeafletElement();
 
     if (!le) {
