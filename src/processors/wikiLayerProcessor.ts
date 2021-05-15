@@ -45,9 +45,11 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
-    if (prevOk && !ok) {
-      if (points.length) {
-        dispatch(wikiSetPoints([]));
+    if (!ok) {
+      if (prevOk) {
+        if (points.length) {
+          dispatch(wikiSetPoints([]));
+        }
       }
 
       return;
