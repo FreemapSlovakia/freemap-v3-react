@@ -12,8 +12,7 @@ import {
   FaClipboard,
   FaEdit,
   FaKey,
-  FaMobile,
-  FaRegEye,
+  FaMobileAlt,
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -70,11 +69,6 @@ export function Device({ device }: Props): ReactElement {
     dispatch(trackingActions.showAccessTokens(device.id));
   }, [device.id, dispatch]);
 
-  const handleView = useCallback(() => {
-    dispatch(setActiveModal('tracking-watched'));
-    dispatch(trackingActions.modifyTrackedDevice(device.id));
-  }, [device.id, dispatch]);
-
   const handleCopyClick = useCallback(() => {
     copyToClipboard(
       dispatch,
@@ -117,7 +111,7 @@ export function Device({ device }: Props): ReactElement {
                     <FaClipboard />
                   </Button>
                 ) : (
-                  <FaMobile />
+                  <FaMobileAlt />
                 )}
               </span>
             </OverlayTrigger>
@@ -150,7 +144,7 @@ export function Device({ device }: Props): ReactElement {
         >
           <FaKey />
         </Button>{' '}
-        <Button
+        {/* <Button
           size="sm"
           type="button"
           variant="secondary"
@@ -158,7 +152,7 @@ export function Device({ device }: Props): ReactElement {
           title={m?.tracking.devices.watchPrivately}
         >
           <FaRegEye />
-        </Button>{' '}
+        </Button>{' '} */}
         <Button
           variant="danger"
           size="sm"

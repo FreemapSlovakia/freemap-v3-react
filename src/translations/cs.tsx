@@ -1197,10 +1197,10 @@ const cs: Messages = {
         </>
       ),
       desc: (deviceName) => (
-        <p>
+        <>
           Vytvořte sledovací tokeny, abyste mohli sdílet polohu{' '}
           <i>{deviceName}</i> s přáteli.
-        </p>
+        </>
       ),
       createTitle: (deviceName) => (
         <>

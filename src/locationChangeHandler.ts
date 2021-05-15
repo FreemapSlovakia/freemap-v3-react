@@ -407,8 +407,7 @@ export const handleLocationChange = (
   const parsedTd: TrackedDevice[] = [];
 
   for (const tracking of trackings) {
-    const [id0, ...parts] = tracking.split('/');
-    const id = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
+    const [id, ...parts] = tracking.split('/');
     let fromTime: Date | null = null;
     let maxAge: number | null = null;
     let maxCount: number | null = null;
@@ -457,7 +456,7 @@ export const handleLocationChange = (
     }
 
     parsedTd.push({
-      id,
+      token: id,
       fromTime,
       maxAge,
       maxCount,
@@ -502,7 +501,7 @@ export const handleLocationChange = (
 // TODO use some generic deep compare fn
 function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
   return (
-    td1.id === td2.id &&
+    td1.token === td2.token &&
     td1.fromTime?.getTime() === td2.fromTime?.getTime() &&
     td1.maxAge === td2.maxAge &&
     td1.maxCount === td2.maxCount &&

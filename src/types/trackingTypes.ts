@@ -16,7 +16,7 @@ export interface EditedDevice extends DeviceBase {
 }
 
 export interface TrackedDevice {
-  id: number | string;
+  token: string;
   color?: string | null;
   width?: number | null;
   label?: string | null;
@@ -41,7 +41,7 @@ export interface AccessToken extends AccessTokenBase {
 }
 
 export interface Track {
-  id: string | number;
+  token: string;
   label?: string | null;
   color?: string | null;
   width?: number | null;

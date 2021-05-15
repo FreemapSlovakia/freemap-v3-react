@@ -19,10 +19,10 @@ import { is } from 'typescript-is';
 export interface TrackingState {
   devices: Device[];
   accessTokens: AccessToken[];
-  accessTokensDeviceId: number | null | undefined;
+  accessTokensDeviceId: number | undefined;
   modifiedDeviceId: number | null | undefined;
   modifiedAccessTokenId: number | null | undefined;
-  modifiedTrackedDeviceId: undefined | null | number | string;
+  modifiedTrackedDeviceId: undefined | null | string;
   trackedDevices: TrackedDevice[];
   tracks: Track[];
   showLine: boolean;
@@ -42,10 +42,6 @@ const initialState: TrackingState = {
   showPoints: true,
 };
 
-type HasTokenOrDeviceId =
-  | { token: string; deviceId: undefined }
-  | { token: undefined; deviceId: number };
-
 export const trackingReducer = createReducer<TrackingState, RootAction>(
   initialState,
 )
@@ -59,75 +55,66 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     modifiedAccessTokenId: undefined,
     modifiedTrackedDeviceId: undefined,
   }))
-  .handleAction(trackingActions.setDevices, (state, action) => ({
+  .handleAction(trackingActions.setDevices, (state, { payload }) => ({
     ...state,
-    devices: action.payload,
+    devices: payload,
     accessTokens: [],
   }))
-  .handleAction(trackingActions.modifyDevice, (state, action) => ({
+  .handleAction(trackingActions.modifyDevice, (state, { payload }) => ({
     ...state,
-    modifiedDeviceId: action.payload,
+    modifiedDeviceId: payload,
   }))
-  .handleAction(trackingActions.setAccessTokens, (state, action) => ({
+  .handleAction(trackingActions.setAccessTokens, (state, { payload }) => ({
     ...state,
-    accessTokens: action.payload,
+    accessTokens: payload,
   }))
-  .handleAction(trackingActions.modifyAccessToken, (state, action) => ({
+  .handleAction(trackingActions.modifyAccessToken, (state, { payload }) => ({
     ...state,
-    modifiedAccessTokenId: action.payload,
+    modifiedAccessTokenId: payload,
   }))
-  .handleAction(trackingActions.showAccessTokens, (state, action) => ({
+  .handleAction(trackingActions.showAccessTokens, (state, { payload }) => ({
     ...state,
-    accessTokensDeviceId: action.payload,
+    accessTokensDeviceId: payload,
   }))
-  .handleAction(trackingActions.setTrackedDevices, (state, action) => ({
+  .handleAction(trackingActions.setTrackedDevices, (state, { payload }) => ({
     ...state,
-    trackedDevices: action.payload,
+    trackedDevices: payload,
   }))
-  .handleAction(trackingActions.modifyTrackedDevice, (state, action) => ({
+  .handleAction(trackingActions.modifyTrackedDevice, (state, { payload }) => ({
     ...state,
-    modifiedTrackedDeviceId: action.payload,
+    modifiedTrackedDeviceId: payload,
   }))
-  .handleAction(trackingActions.saveTrackedDevice, (state, action) => ({
+  .handleAction(trackingActions.saveTrackedDevice, (state, { payload }) => ({
     ...state,
     trackedDevices: [
       ...state.trackedDevices.filter(
-        (d) => d.id !== state.modifiedTrackedDeviceId,
+        (d) => d.token !== state.modifiedTrackedDeviceId,
       ),
-      action.payload,
+      payload,
     ],
     modifiedTrackedDeviceId: undefined,
   }))
-  .handleAction(trackingActions.deleteTrackedDevice, (state, action) => ({
+  .handleAction(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
     ...state,
-    trackedDevices: state.trackedDevices.filter((d) => d.id !== action.payload),
+    trackedDevices: state.trackedDevices.filter((d) => d.token !== payload),
   }))
-  .handleAction(trackingActions.view, (state, action) =>
-    produce(state, (draft) => {
-      if (!draft.trackedDevices.find((d) => d.id === action.payload)) {
-        draft.trackedDevices.push({
-          id: action.payload,
-        });
-      }
-    }),
-  )
-  .handleAction(trackingActions.setShowPoints, (state, action) => ({
+  .handleAction(trackingActions.setShowPoints, (state, { payload }) => ({
     ...state,
-    showPoints: action.payload,
+    showPoints: payload,
   }))
-  .handleAction(trackingActions.setShowLine, (state, action) => ({
+  .handleAction(trackingActions.setShowLine, (state, { payload }) => ({
     ...state,
-    showLine: action.payload,
+    showLine: payload,
   }))
-  .handleAction(wsStateChanged, (state, action) =>
-    action.payload.state === 1 ? state : { ...state, tracks: [] },
+  .handleAction(wsStateChanged, (state, { payload }) =>
+    payload.state === 1 ? state : { ...state, tracks: [] },
   )
   .handleAction(rpcResponse, (state, action) => {
     const { payload } = action;
 
     const { params } = payload;
 
-    if (!is<HasTokenOrDeviceId>(params)) {
+    if (!is<{ token: string }>(params)) {
       return state;
     }
 
@@ -136,18 +123,18 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       payload.type === 'result' &&
       is<StringDates<TrackPoint[]>>(payload.result)
     ) {
-      const tid = params.token || params.deviceId;
+      const { token } = params;
 
-      if (tid === undefined) {
+      if (token === undefined) {
         throw new Error();
       }
 
       return {
         ...state,
         tracks: [
-          ...state.tracks.filter(({ id }) => id !== tid),
+          ...state.tracks.filter(({ token: id }) => id !== token),
           {
-            id: tid,
+            token: token,
             trackPoints: payload.result.map((tp) => ({
               ...tp,
               ts: new Date(tp.ts),
@@ -163,32 +150,30 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     ) {
       return {
         ...state,
-        tracks: state.tracks.filter(
-          (track) => track.id !== params.token || params.deviceId,
-        ),
+        tracks: state.tracks.filter((track) => track.token !== params.token),
       };
     }
 
     return state;
   })
-  .handleAction(rpcEvent, (state, action) => {
+  .handleAction(rpcEvent, (state, { payload: { method, params } }) => {
     if (
-      action.payload.method === 'tracking.addPoint' &&
-      is<TrackPoint & HasTokenOrDeviceId>(action.payload.params)
+      method === 'tracking.addPoint' &&
+      is<TrackPoint & { token: string }>(params)
     ) {
-      const { token, deviceId, ts, ...rest } = action.payload.params;
+      const { token, ts, ...rest } = params;
 
       return produce(state, (draft) => {
-        const key = token || deviceId;
+        const key = token;
 
         if (key === undefined) {
           return;
         }
 
-        let track = draft.tracks.find((t) => t.id === key);
+        let track = draft.tracks.find((t) => t.token === key);
 
         if (!track) {
-          track = { id: key, trackPoints: [] };
+          track = { token: key, trackPoints: [] };
 
           draft.tracks.push(track);
         }

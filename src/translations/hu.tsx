@@ -1205,10 +1205,10 @@ const hu: Messages = {
         </>
       ),
       desc: (deviceName) => (
-        <p>
+        <>
           Határozzon meg figyelőkódokat, hogy <i>{deviceName}</i> készüléke
           pozícióját megoszthassa ismerőseivel.
-        </p>
+        </>
       ),
       createTitle: (deviceName) => (
         <>

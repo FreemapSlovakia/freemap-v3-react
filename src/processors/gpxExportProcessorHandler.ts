@@ -527,11 +527,11 @@ function toLatLon(latLon: LatLon) {
 const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
 function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
-  const tdMap = new Map(trackedDevices.map((td) => [td.id, td]));
+  const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
 
   const tracks1 = tracks.map((track) => ({
     ...track,
-    ...(tdMap.get(track.id) || {}),
+    ...(tdMap.get(track.token) || {}),
   }));
 
   for (const track of tracks1) {

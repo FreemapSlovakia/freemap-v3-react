@@ -9,10 +9,6 @@ import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
 
-type HasTokenOrDeviceId =
-  | { token: 'string'; deviceId?: undefined }
-  | { token?: undefined; deviceId: number };
-
 export function createTrackingMiddleware(): Middleware<
   unknown,
   DefaultRootState,
@@ -42,7 +38,7 @@ export function createTrackingMiddleware(): Middleware<
       if (
         payload.method === 'tracking.subscribe' &&
         payload.type === 'error' &&
-        is<HasTokenOrDeviceId>(payload.params)
+        is<{ token: string }>(payload.params)
       ) {
         dispatch(
           toastsAdd({
@@ -52,7 +48,7 @@ export function createTrackingMiddleware(): Middleware<
                 ? 'tracking.subscribeNotFound'
                 : 'tracking.subscribeError',
             messageParams: {
-              id: payload.params.token || payload.params.deviceId,
+              id: payload.params.token,
             },
             style: payload.error.code === 404 ? 'warning' : 'danger',
           }),
@@ -124,7 +120,7 @@ export function createTrackingMiddleware(): Middleware<
 }
 
 function mangle(td: TrackedDevice) {
-  const { id, ...rest } = td;
+  const { token: id, ...rest } = td;
 
   const isDeviceId = /^\d+$/.test(id.toString());
 

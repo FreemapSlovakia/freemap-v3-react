@@ -92,7 +92,7 @@ export const trackingTrackSelector = createSelector(
   trackingActiveTrackIdSelector,
   (trackingTracks, trackingActiveTrackId) =>
     trackingActiveTrackId
-      ? trackingTracks.find((t) => t.id === trackingActiveTrackId)
+      ? trackingTracks.find((t) => t.token === trackingActiveTrackId)
       : undefined,
 );
 

@@ -257,7 +257,7 @@ export function preGlobalReducer(
         tracking: {
           ...tracking,
           trackedDevices: tracking.trackedDevices.filter(
-            (td) => td.id !== selection.id,
+            (td) => td.token !== selection.id,
           ),
         },
       };

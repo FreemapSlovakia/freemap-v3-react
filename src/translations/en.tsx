@@ -1189,10 +1189,10 @@ const en: Messages = {
         </>
       ),
       desc: (deviceName) => (
-        <p>
+        <>
           Define watch tokens to share position of your device{' '}
           <i>{deviceName}</i> with your friends.
-        </p>
+        </>
       ),
       createTitle: (deviceName) => (
         <>

@@ -250,7 +250,7 @@ export const urlProcessor: Processor = {
     }
 
     for (const {
-      id,
+      token: id,
       label,
       color,
       width,

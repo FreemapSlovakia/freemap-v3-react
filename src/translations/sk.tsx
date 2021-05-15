@@ -1218,10 +1218,10 @@ const sk: Messages = {
         </>
       ),
       desc: (deviceName) => (
-        <p>
+        <>
           Zadefinujte tokeny sledovania, aby ste mohli zdieľať pozíciu vášho
           zariadenia <i>{deviceName}</i> s vašimi priateľmi.
-        </p>
+        </>
       ),
       createTitle: (deviceName) => (
         <>

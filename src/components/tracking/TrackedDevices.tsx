@@ -44,7 +44,7 @@ export function TrackedDevices(): ReactElement {
           </thead>
           <tbody>
             {devices.map((device) => (
-              <TrackedDevice key={device.id} device={device} />
+              <TrackedDevice key={device.token} device={device} />
             ))}
           </tbody>
         </Table>

@@ -13,12 +13,10 @@ export const trackingActions = {
   >(),
 
   modifyTrackedDevice: createAction('TRACKING_MODIFY_TRACKED_DEVICE')<
-    string | number | null | undefined
+    string | null | undefined
   >(),
 
-  deleteTrackedDevice: createAction('TRACKING_DELETE_TRACKED_DEVICE')<
-    string | number
-  >(),
+  deleteTrackedDevice: createAction('TRACKING_DELETE_TRACKED_DEVICE')<string>(),
 
   saveTrackedDevice: createAction(
     'TRACKING_SAVE_TRACKED_DEVICE',
@@ -51,10 +49,8 @@ export const trackingActions = {
   loadAccessTokens: createAction('TRACKING_LOAD_ACCESS_TOKENS')(),
 
   showAccessTokens: createAction('TRACKING_SHOW_ACCESS_TOKENS')<
-    number | null | undefined
+    number | undefined
   >(),
-
-  view: createAction('TRACKING_VIEW')<number>(),
 
   setShowPoints: createAction('TRACKING_SET_SHOW_POINTS')<boolean>(),
 

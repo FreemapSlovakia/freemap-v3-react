@@ -29,11 +29,11 @@ export function TrackingResult(): ReactElement {
   const tracks = useSelector((state) => state.tracking.tracks);
 
   const tracks1 = useMemo(() => {
-    const tdMap = new Map(trackedDevices.map((td) => [td.id, td]));
+    const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
 
     return tracks.map((track) => ({
       ...track,
-      ...(tdMap.get(track.id) || {}),
+      ...tdMap.get(track.token),
     }));
   }, [trackedDevices, tracks]);
 
@@ -70,14 +70,14 @@ export function TrackingResult(): ReactElement {
         const color = track.color || '#7239a8';
         const width = track.width || 4;
 
-        let handleClick = clickHandlerMemo.current[track.id];
+        let handleClick = clickHandlerMemo.current[track.token];
 
         if (!handleClick) {
           handleClick = () => {
-            dispatch(selectFeature({ type: 'tracking', id: track.id }));
+            dispatch(selectFeature({ type: 'tracking', id: track.token }));
           };
 
-          clickHandlerMemo.current[track.id] = handleClick;
+          clickHandlerMemo.current[track.token] = handleClick;
         }
 
         const segments: TrackPoint[][] = [];
@@ -114,7 +114,7 @@ export function TrackingResult(): ReactElement {
             : null;
 
         return (
-          <Fragment key={`trk-${track.id}`}>
+          <Fragment key={`trk-${track.token}`}>
             {lastPoint && typeof lastPoint.accuracy === 'number' && (
               <Circle
                 weight={2}
@@ -167,7 +167,7 @@ export function TrackingResult(): ReactElement {
                     click: handleClick,
                   }}
                   faIcon={
-                    track.id === activeTrackId ? (
+                    track.token === activeTrackId ? (
                       <FaUser color={color} />
                     ) : (
                       <FaRegUser color={color} />
