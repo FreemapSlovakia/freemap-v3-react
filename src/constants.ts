@@ -14,6 +14,7 @@ export const basicModals = [
   'supportUs',
   'tracking-watched',
   'tracking-my',
+  'maps',
 ] as const;
 
 export const tools = [
@@ -26,5 +27,4 @@ export const tools = [
   'draw-points',
   'changesets',
   'map-details',
-  'maps',
 ] as const;

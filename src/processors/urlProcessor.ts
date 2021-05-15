@@ -151,15 +151,15 @@ export const urlProcessor: Processor = {
     }
 
     if (gallery.activeImageId) {
-      historyParts.push(['image', gallery.activeImageId]);
+      queryParts.push(['image', gallery.activeImageId]);
     }
 
     if (changesets.days) {
-      historyParts.push(['changesets-days', changesets.days]);
+      queryParts.push(['changesets-days', changesets.days]);
     }
 
     if (changesets.authorName) {
-      historyParts.push(['changesets-author', changesets.authorName]);
+      queryParts.push(['changesets-author', changesets.authorName]);
     }
 
     if (drawingPoints.points.length) {
@@ -225,16 +225,16 @@ export const urlProcessor: Processor = {
     }
 
     if (gallery.showFilter) {
-      historyParts.push(['show', 'gallery-filter']);
+      queryParts.push(['show', 'gallery-filter']);
     } else if (gallery.showUploadModal) {
-      historyParts.push(['show', 'gallery-upload']);
+      queryParts.push(['show', 'gallery-upload']);
     } else if (auth.chooseLoginMethod) {
-      historyParts.push(['show', 'login']);
+      queryParts.push(['show', 'login']);
     } else if (
       is<ShowModal>(main.activeModal) &&
       basicModals.includes(main.activeModal)
     ) {
-      historyParts.push(['show', main.activeModal]);
+      queryParts.push(['show', main.activeModal]);
     }
 
     if (
@@ -242,11 +242,11 @@ export const urlProcessor: Processor = {
       tips.tip &&
       is<typeof allTips[number][0]>(tips.tip)
     ) {
-      historyParts.push(['tip', tips.tip]);
+      queryParts.push(['tip', tips.tip]);
     }
 
     if (main.embedFeatures.length) {
-      historyParts.push(['embed', main.embedFeatures.join(',')]);
+      queryParts.push(['embed', main.embedFeatures.join(',')]);
     }
 
     for (const {
@@ -301,7 +301,7 @@ export const urlProcessor: Processor = {
       main.selection?.type === 'tracking' &&
       main.selection?.id !== undefined
     ) {
-      historyParts.push(['follow', main.selection?.id]);
+      queryParts.push(['follow', main.selection?.id]);
     }
 
     const sq = isMap ? serializeQuery(historyParts) : undefined;

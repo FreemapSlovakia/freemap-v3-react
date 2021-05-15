@@ -253,6 +253,12 @@ export function attachKeyboardHandler(store: MyStore): void {
           return;
         }
 
+        if (event.code === 'KeyM') {
+          store.dispatch(setActiveModal('maps'));
+          event.preventDefault();
+          return;
+        }
+
         const toolDefinition = toolDefinitions.find(
           (td) => td.kbd === event.code,
         );

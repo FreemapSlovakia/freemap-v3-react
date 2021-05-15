@@ -7,7 +7,7 @@ import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { FaFlask, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 import shared from './sk-shared.json';
 
@@ -110,11 +110,7 @@ const sk: Messages = {
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
-    maps: (
-      <>
-        Moje mapy <FaFlask className="text-warning" />
-      </>
-    ),
+    maps: 'Moje mapy',
   },
 
   routePlanner: {

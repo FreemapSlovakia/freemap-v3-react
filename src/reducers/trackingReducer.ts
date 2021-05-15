@@ -186,10 +186,13 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
 
     return state;
   })
-  .handleAction(mapsDataLoaded, (state, { payload: { tracking } }) => {
+  .handleAction(mapsDataLoaded, (state, { payload: { tracking, merge } }) => {
     return {
       ...state,
-      trackedDevices: tracking?.trackedDevices ?? initialState.trackedDevices,
+      trackedDevices: [
+        ...(merge ? state.trackedDevices : []),
+        ...(tracking?.trackedDevices ?? initialState.trackedDevices),
+      ],
       showLine: tracking?.showLine ?? initialState.showLine,
       showPoints: tracking?.showPoints ?? initialState.showPoints,
     };

@@ -72,7 +72,7 @@ export type Messages = {
     changesets: string;
     mapDetails: string;
     tracking: string;
-    maps: JSX.Element;
+    maps: string;
   };
   routePlanner: {
     milestones: string;

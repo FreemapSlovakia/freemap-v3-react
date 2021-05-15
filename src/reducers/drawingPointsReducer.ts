@@ -25,25 +25,28 @@ export const drawingPointsReducer = createReducer<
   RootAction
 >(initialState)
   .handleAction(clearMap, () => initialState)
-  .handleAction(drawingPointAdd, (state, action) => ({
+  .handleAction(drawingPointAdd, (state, { payload }) => ({
     ...state,
-    points: [...state.points, action.payload],
+    points: [...state.points, payload],
     change: state.change + 1,
   }))
-  .handleAction(drawingPointChangePosition, (state, action) =>
+  .handleAction(drawingPointChangePosition, (state, { payload }) =>
     produce(state, (draft) => {
-      const point = draft.points[action.payload.index];
-      point.lat = action.payload.lat;
-      point.lon = action.payload.lon;
+      const point = draft.points[payload.index];
+      point.lat = payload.lat;
+      point.lon = payload.lon;
     }),
   )
-  .handleAction(drawingPointSetAll, (state, action) => ({
+  .handleAction(drawingPointSetAll, (state, { payload }) => ({
     ...state,
-    points: action.payload,
+    points: payload,
   }))
-  .handleAction(mapsDataLoaded, (_state, action) => {
+  .handleAction(mapsDataLoaded, (state, { payload }) => {
     return {
       ...initialState,
-      points: action.payload.points ?? initialState.points,
+      points: [
+        ...(payload.merge ? state.points : []),
+        ...(payload.points ?? initialState.points),
+      ],
     };
   });

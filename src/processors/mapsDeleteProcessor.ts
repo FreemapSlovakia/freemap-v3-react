@@ -1,28 +1,26 @@
-import { deleteFeature } from 'fm3/actions/mainActions';
-import { mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import { mapsDelete, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
-  actionCreator: deleteFeature,
+export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
+  actionCreator: mapsDelete,
   errorKey: 'maps.deleteError',
-  handle: async ({ getState, dispatch }) => {
-    if (
-      getState().main.tool !== 'maps' ||
-      !window.confirm(window.translations?.maps.deleteConfirm)
-    ) {
+  handle: async ({ getState, dispatch, action }) => {
+    if (!window.confirm(window.translations?.maps.deleteConfirm)) {
       return;
     }
 
     await httpRequest({
       getState,
       method: 'DELETE',
-      url: `/maps/${getState().maps.id}`,
+      url: `/maps/${action.payload}`,
       expectedStatus: 204,
     });
 
-    dispatch(mapsLoad({}));
+    if (getState().maps.id === action.payload) {
+      dispatch(mapsLoad({})); // detach
+    }
 
     dispatch(mapsLoadList());
 

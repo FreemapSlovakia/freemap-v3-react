@@ -1,15 +1,9 @@
-import { deleteFeature } from 'fm3/actions/mainActions';
-import {
-  mapsCreate,
-  mapsLoad,
-  mapsRename,
-  mapsSave,
-} from 'fm3/actions/mapsActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { mapsLoad, mapsSave } from 'fm3/actions/mapsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { FaPencilAlt, FaPlus, FaSave, FaTrash } from 'react-icons/fa';
+import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 export function MapsMenu(): ReactElement {
@@ -21,91 +15,40 @@ export function MapsMenu(): ReactElement {
 
   const authenticated = useSelector((state) => !!state.auth.user);
 
+  const map = maps.find((map) => map.id === id);
+
   const dispatch = useDispatch();
 
   return (
     <>
-      {maps && (
-        <Dropdown
-          className="ml-1"
-          onSelect={(id) => {
-            dispatch(mapsLoad({ id: id ? Number(id) : undefined }));
-          }}
-        >
-          <Dropdown.Toggle
-            id="maps-dropdown"
-            variant="secondary"
-            disabled={!authenticated}
-          >
-            {maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
-          </Dropdown.Toggle>
-          <Dropdown.Menu
-            popperConfig={{
-              strategy: 'fixed',
-            }}
-          >
-            <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
+      <Button
+        variant="primary"
+        onClick={() => dispatch(setActiveModal('maps'))}
+      >
+        <FaRegMap />
+      </Button>
 
-            {maps.map((map) => (
-              <Dropdown.Item key={map.id} eventKey={String(map.id)}>
-                {map.name}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
+      <span className="align-self-center ml-1 mr-2">{map?.name}</span>
+
       {authenticated && id !== undefined && (
         <Button
           className="ml-1"
           variant="secondary"
-          onClick={() => {
-            dispatch(mapsSave());
-          }}
+          onClick={() => dispatch(mapsSave(undefined))}
+          title={m?.maps.save}
         >
           <FaSave />
-          <span className="d-none d-md-inline"> {m?.maps.save}</span>
         </Button>
       )}
-      {authenticated && (
-        <Button
-          className="ml-1"
-          variant="secondary"
-          onClick={() => {
-            dispatch(mapsCreate());
-          }}
-          disabled={!authenticated}
-        >
-          <FaPlus />
-          <span className="d-none d-md-inline"> {m?.maps.create}</span>
-        </Button>
-      )}
-      {authenticated && id !== undefined && (
-        <Button
-          className="ml-1"
-          variant="secondary"
-          onClick={() => {
-            dispatch(mapsRename());
-          }}
-        >
-          <FaPencilAlt />
-          <span className="d-none d-md-inline"> {m?.maps.rename}</span>
-        </Button>
-      )}
-      {authenticated && id !== undefined && (
-        <Button
-          className="ml-1"
-          variant="danger"
-          onClick={() => {
-            dispatch(deleteFeature());
-          }}
-        >
-          <FaTrash />
-          <span className="d-none d-md-inline">
-            {' '}
-            {m?.maps.delete} <kbd>Del</kbd>
-          </span>
-        </Button>
-      )}
+
+      <Button
+        className="ml-1"
+        variant="secondary"
+        onClick={() => dispatch(mapsLoad({ id: undefined }))}
+      >
+        <FaUnlink />
+        {/* <span className="d-none d-md-inline"> {m?.maps.save}</span> */}
+      </Button>
     </>
   );
 }

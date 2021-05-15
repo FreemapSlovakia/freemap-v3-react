@@ -94,6 +94,7 @@ import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
+import { MapsModal } from './MapsModal';
 import { MoreMenuButton } from './MoreMenuButton';
 import { ObjectSelection } from './ObjectSelection';
 import { SelectionTool } from './SelectionTool';
@@ -350,6 +351,8 @@ export function Main(): ReactElement {
 
   const sc3 = useScrollClasses('horizontal');
 
+  const sc4 = useScrollClasses('horizontal');
+
   const drawingLines = useSelector(drawingLinePolys);
 
   const YellowBar = m?.main.YellowBar;
@@ -365,6 +368,8 @@ export function Main(): ReactElement {
   );
 
   useHtmlMeta();
+
+  const hasMap = useSelector((state) => state.maps.id !== undefined);
 
   return (
     <>
@@ -476,7 +481,17 @@ export function Main(): ReactElement {
                   {tool === 'track-viewer' && <TrackViewerMenu />}
                   {tool === 'changesets' && <ChangesetsMenu />}
                   {tool === 'map-details' && <MapDetailsMenu />}
-                  {tool === 'maps' && <MapsMenu />}
+                </ButtonToolbar>
+              </Card>
+            </div>
+          )}
+
+          {showMenu && hasMap && (
+            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc4}>
+              <div />
+              <Card className="fm-toolbar mx-2 mt-2">
+                <ButtonToolbar>
+                  <MapsMenu />
                 </ButtonToolbar>
               </Card>
             </div>
@@ -593,6 +608,7 @@ export function Main(): ReactElement {
           <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
           <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
           <AsyncLoginModal show={showLoginModal} />
+          <MapsModal show={activeModal === 'maps'} />
           <GalleryModals />
         </MapContainer>
       </div>

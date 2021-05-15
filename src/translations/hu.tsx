@@ -7,7 +7,7 @@ import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { FaFlask, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
 
@@ -110,11 +110,7 @@ const hu: Messages = {
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Élő követés',
-    maps: (
-      <>
-        Saját térképeim <FaFlask className="text-warning" />
-      </>
-    ),
+    maps: 'Saját térképeim',
   },
 
   routePlanner: {

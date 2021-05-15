@@ -333,6 +333,18 @@ export function MoreMenuButton(): ReactElement {
                   <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
                 </Dropdown.Item>
 
+                {user && (
+                  <Dropdown.Item
+                    as="button"
+                    onSelect={() => {
+                      close();
+                      dispatch(setActiveModal('maps'));
+                    }}
+                  >
+                    <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
+                  </Dropdown.Item>
+                )}
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -388,9 +400,7 @@ export function MoreMenuButton(): ReactElement {
                   <FaBullseye /> {m?.tools.tracking}
                   <FaChevronRight />
                 </Dropdown.Item>
-
                 <Dropdown.Divider />
-
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -400,7 +410,6 @@ export function MoreMenuButton(): ReactElement {
                   <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
                   <FaChevronRight />
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   href="?show=export-pdf"
                   eventKey="export-pdf"
@@ -408,7 +417,6 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FaRegFilePdf /> {m?.more.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   eventKey="export-gpx"
                   href="?show=export-gpx"
@@ -416,7 +424,6 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FaDownload /> {m?.more.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   eventKey="exports"
                   href="?tip=exports"
@@ -424,7 +431,6 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FaMobileAlt /> {m?.more.mapExports}
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   eventKey="embed"
                   href="?show=embed"
@@ -432,9 +438,7 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FaCode /> {m?.more.embedMap} <kbd>e</kbd> <kbd>e</kbd>
                 </Dropdown.Item>
-
                 <Dropdown.Divider />
-
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -443,7 +447,6 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FaBook /> {m?.more.help} <FaChevronRight />
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   href="?show=supportUs"
                   eventKey="supportUs"

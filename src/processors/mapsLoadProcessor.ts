@@ -44,6 +44,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
 
     dispatch(
       mapsDataLoaded({
+        merge: payload.merge,
         ...map,
         // get rid of OldLines
         lines: map.lines?.map(
