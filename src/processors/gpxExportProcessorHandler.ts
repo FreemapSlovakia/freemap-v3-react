@@ -331,8 +331,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
         await httpRequest({
           getState,
           method: 'POST',
-          url:
-            'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+          url: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
           headers: { Authorization: `Bearer ${ar.access_token}` },
           data: formData,
           expectedStatus: 200,

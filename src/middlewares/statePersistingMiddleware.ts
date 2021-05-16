@@ -7,19 +7,20 @@ export const statePersistingMiddleware: Middleware<
   RootAction | null,
   DefaultRootState,
   Dispatch<RootAction>
-> = ({ getState }) => (next: Dispatch) => (
-  action: RootAction,
-): RootAction | null => {
-  const result = next(action);
+> =
+  ({ getState }) =>
+  (next: Dispatch) =>
+  (action: RootAction): RootAction | null => {
+    const result = next(action);
 
-  const state = getState();
+    const state = getState();
 
-  if (state.main.cookieConsentResult !== null) {
-    persistSelectedState(state);
-  }
+    if (state.main.cookieConsentResult !== null) {
+      persistSelectedState(state);
+    }
 
-  return result;
-};
+    return result;
+  };
 
 function persistSelectedState(state: DefaultRootState) {
   if (window.fmEmbedded) {

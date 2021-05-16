@@ -188,8 +188,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'S',
-    url:
-      'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     subdomains: ['server', 'services'],
     icon: <FaPlane />,
     minZoom: 0,
@@ -332,13 +331,15 @@ export const overlayLayers: OverlayLayerDef[] = [
     errorTileUrl: transparent1x1,
     // adminOnly: true,
   },
-  ...([
-    ['s0', 'both'],
-    ['s1', 'ride'],
-    ['s2', 'run'],
-    ['s3', 'water'],
-    ['s4', 'winter'],
-  ] as const).map(([type, stravaType]) => ({
+  ...(
+    [
+      ['s0', 'both'],
+      ['s1', 'ride'],
+      ['s2', 'run'],
+      ['s3', 'water'],
+      ['s4', 'winter'],
+    ] as const
+  ).map(([type, stravaType]) => ({
     type,
     icon: <FaStrava />,
     url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/bluered/{z}/{x}/{y}.png?px=${
@@ -405,11 +406,13 @@ export const overlayLayers: OverlayLayerDef[] = [
     showOnlyInExpertMode: true,
     zIndex: 3,
   },
-  ...([
-    ['n1', ['Digit1', false], ''],
-    ['n2', ['Digit2', false], 'h'],
-    ['n3', ['Digit3', false], 'c'],
-  ] as const).map(([type, key, suffix]) => ({
+  ...(
+    [
+      ['n1', ['Digit1', false], ''],
+      ['n2', ['Digit2', false], 'h'],
+      ['n3', ['Digit3', false], 'c'],
+    ] as const
+  ).map(([type, key, suffix]) => ({
     type,
     icon: <FaFont />,
     url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,

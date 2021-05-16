@@ -38,23 +38,17 @@ function loadPreview(
     canvas.width = width;
     canvas.height = height;
 
-    const transformations: [
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-    ][] = [
-      [1, 0, 0, 1, 0, 0],
-      [-1, 0, 0, 1, width, 0],
-      [-1, 0, 0, -1, width, height],
-      [1, 0, 0, -1, 0, height],
-      [0, 1, 1, 0, 0, 0],
-      [0, 1, -1, 0, height, 0],
-      [0, -1, -1, 0, height, width],
-      [0, -1, 1, 0, 0, width],
-    ];
+    const transformations: [number, number, number, number, number, number][] =
+      [
+        [1, 0, 0, 1, 0, 0],
+        [-1, 0, 0, 1, width, 0],
+        [-1, 0, 0, -1, width, height],
+        [1, 0, 0, -1, 0, height],
+        [0, 1, 1, 0, 0, 0],
+        [0, 1, -1, 0, height, 0],
+        [0, -1, -1, 0, height, width],
+        [0, -1, 1, 0, 0, width],
+      ];
 
     pica()
       .resize(img, canvas)

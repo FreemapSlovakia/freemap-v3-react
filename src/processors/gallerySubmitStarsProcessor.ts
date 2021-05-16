@@ -5,36 +5,35 @@ import {
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const gallerySubmitStarsProcessor: Processor<
-  typeof gallerySubmitStars
-> = {
-  actionCreator: gallerySubmitStars,
-  errorKey: 'gallery.ratingError',
-  handle: async ({ getState, dispatch, action }) => {
-    const { image } = getState().gallery;
-    if (!image) {
-      return;
-    }
+export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
+  {
+    actionCreator: gallerySubmitStars,
+    errorKey: 'gallery.ratingError',
+    handle: async ({ getState, dispatch, action }) => {
+      const { image } = getState().gallery;
+      if (!image) {
+        return;
+      }
 
-    const stars = action.payload;
+      const stars = action.payload;
 
-    const { id } = image;
+      const { id } = image;
 
-    window.gtag('event', 'submitStars', {
-      event_category: 'Gallery',
-      value: stars,
-    });
+      window.gtag('event', 'submitStars', {
+        event_category: 'Gallery',
+        value: stars,
+      });
 
-    await httpRequest({
-      getState,
-      method: 'POST',
-      url: `/gallery/pictures/${id}/rating`,
-      data: { stars },
-      expectedStatus: 204,
-    });
+      await httpRequest({
+        getState,
+        method: 'POST',
+        url: `/gallery/pictures/${id}/rating`,
+        data: { stars },
+        expectedStatus: 204,
+      });
 
-    if (getState().gallery.activeImageId === id) {
-      dispatch(galleryRequestImage(id));
-    }
-  },
-};
+      if (getState().gallery.activeImageId === id) {
+        dispatch(galleryRequestImage(id));
+      }
+    },
+  };

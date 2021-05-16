@@ -6,9 +6,8 @@ export interface DrawingPoint {
   label?: string;
 }
 
-export const drawingPointAdd = createAction(
-  'DRAWING_POINT_ADD',
-)<DrawingPoint>();
+export const drawingPointAdd =
+  createAction('DRAWING_POINT_ADD')<DrawingPoint>();
 
 export const drawingPointChangePosition = createAction(
   'DRAWING_POINT_CHANGE_POSITION',

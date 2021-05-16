@@ -628,8 +628,7 @@ const sk: Messages = {
       trackViewerEleSmoothing: {
         label: (value) =>
           `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
-        info:
-          'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
+        info: 'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
@@ -1187,8 +1186,7 @@ const sk: Messages = {
     trackedDevices: {
       button: 'Sledované zariadenia',
       modalTitle: 'Sledované zariadenia',
-      desc:
-        'Tu môžete spravovať sledované zariadenia, aby ste videli pozíciu svojich priateľov.',
+      desc: 'Tu môžete spravovať sledované zariadenia, aby ste videli pozíciu svojich priateľov.',
       modifyTitle: (name) => (
         <>
           Upraviť sledované zariadenie <i>{name}</i>

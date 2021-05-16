@@ -611,8 +611,7 @@ const cs: Messages = {
       trackViewerEleSmoothing: {
         label: (value) =>
           `Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných metrů v prohlížeči tras: ${value}`,
-        info:
-          'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
+        info: 'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
       },
     },
     saveSuccess: 'Změny byly uloženy.',

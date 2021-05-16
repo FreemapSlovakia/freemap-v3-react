@@ -5,43 +5,42 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { Device } from 'fm3/types/trackingTypes';
 import { assertType } from 'typescript-is';
 
-export const saveDeviceProcessor: Processor<
-  typeof trackingActions.saveDevice
-> = {
-  actionCreator: trackingActions.saveDevice,
-  errorKey: 'general.savingError',
-  handle: async ({ dispatch, getState, action }) => {
-    const { modifiedDeviceId } = getState().tracking;
+export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
+  {
+    actionCreator: trackingActions.saveDevice,
+    errorKey: 'general.savingError',
+    handle: async ({ dispatch, getState, action }) => {
+      const { modifiedDeviceId } = getState().tracking;
 
-    if (modifiedDeviceId) {
-      await httpRequest({
-        getState,
-        method: 'put',
-        url: `/tracking/devices/${modifiedDeviceId}`,
-        data: action.payload,
-      });
+      if (modifiedDeviceId) {
+        await httpRequest({
+          getState,
+          method: 'put',
+          url: `/tracking/devices/${modifiedDeviceId}`,
+          data: action.payload,
+        });
 
-      dispatch(trackingActions.modifyDevice(undefined));
-    } else {
-      await httpRequest({
-        getState,
-        method: 'post',
-        url: '/tracking/devices',
-        data: action.payload,
-      });
+        dispatch(trackingActions.modifyDevice(undefined));
+      } else {
+        await httpRequest({
+          getState,
+          method: 'post',
+          url: '/tracking/devices',
+          data: action.payload,
+        });
 
-      dispatch(trackingActions.modifyDevice(undefined));
-    }
+        dispatch(trackingActions.modifyDevice(undefined));
+      }
 
-    dispatch(
-      toastsAdd({
-        style: 'success',
-        timeout: 5000,
-        messageKey: 'general.saved',
-      }),
-    );
-  },
-};
+      dispatch(
+        toastsAdd({
+          style: 'success',
+          timeout: 5000,
+          messageKey: 'general.saved',
+        }),
+      );
+    },
+  };
 
 export const loadDevicesProcessor: Processor<
   typeof trackingActions.loadDevices

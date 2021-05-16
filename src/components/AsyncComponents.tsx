@@ -26,9 +26,9 @@ function useShow(show: boolean) {
 }
 
 const LoginModal = lazy(() =>
-  import(
-    /* webpackChunkName: "loginModal" */ 'fm3/components/LoginModal'
-  ).then(({ LoginModal }) => ({ default: LoginModal })),
+  import(/* webpackChunkName: "loginModal" */ 'fm3/components/LoginModal').then(
+    ({ LoginModal }) => ({ default: LoginModal }),
+  ),
 );
 
 export const AsyncLoginModal = ({ show }: ShowProps): ReactElement => (
@@ -118,9 +118,9 @@ export const AsyncEmbedMapModal = ({ show }: ShowProps): ReactElement | null =>
   );
 
 const TipsModal = lazy(() =>
-  import(
-    /* webpackChunkName: "tipsModal" */ 'fm3/components/TipsModal'
-  ).then(({ TipsModal }) => ({ default: TipsModal })),
+  import(/* webpackChunkName: "tipsModal" */ 'fm3/components/TipsModal').then(
+    ({ TipsModal }) => ({ default: TipsModal }),
+  ),
 );
 
 export const AsyncTipsModal = ({ show }: ShowProps): ReactElement | null =>
@@ -131,9 +131,9 @@ export const AsyncTipsModal = ({ show }: ShowProps): ReactElement | null =>
   );
 
 const AboutModal = lazy(() =>
-  import(
-    /* webpackChunkName: "aboutModal" */ 'fm3/components/AboutModal'
-  ).then(({ AboutModal }) => ({ default: AboutModal })),
+  import(/* webpackChunkName: "aboutModal" */ 'fm3/components/AboutModal').then(
+    ({ AboutModal }) => ({ default: AboutModal }),
+  ),
 );
 
 export const AsyncAboutModal = ({ show }: ShowProps): ReactElement | null =>

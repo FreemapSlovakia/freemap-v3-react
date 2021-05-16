@@ -583,8 +583,7 @@ const en: Messages = {
       ),
     },
     general: {
-      tips:
-        'Show tips on page opening (only if Slovak or Czech language is selected)',
+      tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
     },
     expertInfo: `
       <div style="text-align: left">
@@ -602,8 +601,7 @@ const en: Messages = {
       trackViewerEleSmoothing: {
         label: (value) =>
           `Smoothing level for computing total climb/descend in Track viewer: ${value}`,
-        info:
-          'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
+        info: 'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
       },
     },
     saveSuccess: 'Settings have been saved.',

@@ -128,14 +128,8 @@ export const handleLocationChange = (
       isTransportType(query['transport']) &&
       pointsOk
     ) {
-      const {
-        start,
-        finish,
-        midpoints,
-        transportType,
-        mode,
-        milestones,
-      } = getState().routePlanner;
+      const { start, finish, midpoints, transportType, mode, milestones } =
+        getState().routePlanner;
 
       const latLons = points
         .map((point) => (point ? { lat: point[0], lon: point[1] } : null))
@@ -623,11 +617,12 @@ function handleInfoPoint(
 
   const emp = query['elevation-measurement-point']; // for compatibility
 
-  const ips = (!drawingPoint
-    ? []
-    : Array.isArray(drawingPoint)
-    ? drawingPoint
-    : [drawingPoint]
+  const ips = (
+    !drawingPoint
+      ? []
+      : Array.isArray(drawingPoint)
+      ? drawingPoint
+      : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
     .map((ip) => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility

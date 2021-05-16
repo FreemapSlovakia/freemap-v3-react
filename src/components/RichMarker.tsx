@@ -64,7 +64,7 @@ export class MarkerLeafletIcon extends Icon<
   }
 
   createShadow(oldIcon?: HTMLElement): HTMLElement {
-    return oldIcon || ((null as any) as HTMLElement);
+    return oldIcon || (null as any as HTMLElement);
   }
 }
 

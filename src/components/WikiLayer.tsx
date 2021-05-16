@@ -29,7 +29,7 @@ class WikiIcon extends Icon {
   }
 
   createShadow(oldIcon?: HTMLElement) {
-    return oldIcon || ((null as any) as HTMLElement);
+    return oldIcon || (null as any as HTMLElement);
   }
 }
 

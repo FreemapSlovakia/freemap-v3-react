@@ -40,9 +40,8 @@ export function ElevationChart(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  const { climbUp, climbDown } = elevationProfilePoints[
-    elevationProfilePoints.length - 1
-  ];
+  const { climbUp, climbDown } =
+    elevationProfilePoints[elevationProfilePoints.length - 1];
 
   const [width, setWidth] = useState(300);
 

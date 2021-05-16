@@ -19,9 +19,11 @@ export const osmLoadNodeProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const nodes = (assertType<OsmResult>(data).elements.filter(
-      (el) => el.type === 'node',
-    ) as OsmNode[]).map((node) => [node.lon, node.lat]);
+    const nodes = (
+      assertType<OsmResult>(data).elements.filter(
+        (el) => el.type === 'node',
+      ) as OsmNode[]
+    ).map((node) => [node.lon, node.lat]);
 
     dispatch(
       trackViewerSetData({

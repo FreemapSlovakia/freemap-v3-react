@@ -262,8 +262,11 @@ export function RoutePlannerResult(): ReactElement {
 
   const getSummary = useCallback(
     (showDiff?: boolean) => {
-      const { distance = undefined, duration = undefined, extra = undefined } =
-        alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+      const {
+        distance = undefined,
+        duration = undefined,
+        extra = undefined,
+      } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
       return isSpecial(transportType) && extra?.numbers ? (
         <Tooltip direction="top" offset={[0, -36]} permanent>

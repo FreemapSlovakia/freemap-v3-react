@@ -26,8 +26,8 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
       expectedStatus: 200,
     });
 
-    const map = assertType<{ data: StringDates<MapData<Line | OldLine>> }>(data)
-      .data;
+    const map =
+      assertType<{ data: StringDates<MapData<Line | OldLine>> }>(data).data;
 
     console.log('MMMMMMMMMMMMM', payload, data);
 

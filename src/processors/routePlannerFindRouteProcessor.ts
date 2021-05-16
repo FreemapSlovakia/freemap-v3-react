@@ -39,13 +39,8 @@ export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
   errorKey: 'routePlanner.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
-    const {
-      start,
-      finish,
-      midpoints,
-      transportType,
-      mode,
-    } = getState().routePlanner;
+    const { start, finish, midpoints, transportType, mode } =
+      getState().routePlanner;
 
     if (!start || !finish || !transportType) {
       return;

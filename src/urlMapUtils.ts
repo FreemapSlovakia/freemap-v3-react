@@ -12,9 +12,8 @@ export function getMapStateFromUrl(
   location: Location,
 ): Partial<MapViewState> & Pick<MapViewState, 'overlays'> {
   {
-    const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
-      location,
-    );
+    const transformedParams =
+      getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
 
     if (transformedParams) {
       return transformedParams;
@@ -31,9 +30,8 @@ export function getMapStateFromUrl(
 
   const query = queryString.parse(location.search);
 
-  const [zoomFrag, latFrag, lonFrag] = (typeof query['map'] === 'string'
-    ? query['map']
-    : ''
+  const [zoomFrag, latFrag, lonFrag] = (
+    typeof query['map'] === 'string' ? query['map'] : ''
   ).split('/');
 
   const lat = undefineNaN(parseFloat(latFrag));

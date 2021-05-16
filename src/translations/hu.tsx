@@ -593,8 +593,7 @@ const hu: Messages = {
       ),
     },
     general: {
-      tips:
-        'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
+      tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
     },
     expertInfo: `
       <div style="text-align: left">
@@ -612,8 +611,7 @@ const hu: Messages = {
       trackViewerEleSmoothing: {
         label: (value) =>
           `A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: ${value}`,
-        info:
-          '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
+        info: '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
       },
     },
     saveSuccess: 'A beállítások el lettek mentve.',

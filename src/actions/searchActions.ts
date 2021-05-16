@@ -12,14 +12,14 @@ export interface SearchResult {
   osmType?: 'node' | 'way' | 'relation';
 }
 
-export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
-  query: string;
-  fromUrl?: boolean;
-}>();
+export const searchSetQuery =
+  createAction('SEARCH_SET_QUERY')<{
+    query: string;
+    fromUrl?: boolean;
+  }>();
 
-export const searchSetResults = createAction('SEARCH_SET_RESULTS')<
-  SearchResult[]
->();
+export const searchSetResults =
+  createAction('SEARCH_SET_RESULTS')<SearchResult[]>();
 
 export const searchSelectResult = createAction(
   'SEARCH_SELECT_RESULT',

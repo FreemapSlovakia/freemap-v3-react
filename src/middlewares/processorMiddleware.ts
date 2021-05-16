@@ -13,14 +13,13 @@ import {
   isActionOf,
 } from 'typesafe-actions';
 
-export type ProcessorHandler<
-  T extends ActionCreator = ActionCreator
-> = (params: {
-  prevState: DefaultRootState;
-  getState: () => DefaultRootState;
-  dispatch: Dispatch;
-  action: ActionType<T>;
-}) => void | Promise<void>;
+export type ProcessorHandler<T extends ActionCreator = ActionCreator> =
+  (params: {
+    prevState: DefaultRootState;
+    getState: () => DefaultRootState;
+    dispatch: Dispatch;
+    action: ActionType<T>;
+  }) => void | Promise<void>;
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
@@ -45,156 +44,157 @@ type MW = Middleware<unknown, DefaultRootState, Dispatch<RootAction>> & {
 export function createProcessorMiddleware(): MW {
   const processors: Processor[] = [];
 
-  const processorMiddleware: MW = ({ getState, dispatch }) => (
-    next: Dispatch,
-  ) => (action: Action): unknown => {
-    const prevState = getState();
+  const processorMiddleware: MW =
+    ({ getState, dispatch }) =>
+    (next: Dispatch) =>
+    (action: Action): unknown => {
+      const prevState = getState();
 
-    let a: Action = action;
+      let a: Action = action;
 
-    for (const {
-      actionCreator: actionType,
-      transform,
-      statePredicate,
-      actionPredicate,
-    } of processors) {
-      if (
-        transform &&
-        (!actionType ||
-          (Array.isArray(actionType) &&
-            actionType.some((ac) => isActionOf(ac, a))) ||
-          isActionOf(actionType, a)) &&
-        (!statePredicate || statePredicate(getState())) &&
-        (!actionPredicate || actionPredicate(action))
-      ) {
-        const a1 = transform({ getState, dispatch, action: a, prevState });
-
-        if (!a1) {
-          return undefined;
-        }
-
-        a = a1;
-      }
-    }
-
-    const result = next(a);
-
-    function runProcessors() {
-      const promises: Promise<void>[] = [];
-
-      for (const processor of processors) {
-        const {
-          actionCreator: actionType,
-          handle,
-          errorKey,
-          id,
-          statePredicate,
-          stateChangePredicate,
-          actionPredicate,
-        } = processor;
-
+      for (const {
+        actionCreator: actionType,
+        transform,
+        statePredicate,
+        actionPredicate,
+      } of processors) {
         if (
-          handle &&
+          transform &&
           (!actionType ||
             (Array.isArray(actionType) &&
               actionType.some((ac) => isActionOf(ac, a))) ||
             isActionOf(actionType, a)) &&
           (!statePredicate || statePredicate(getState())) &&
-          (!stateChangePredicate ||
-            stateChangePredicate(getState()) !==
-              stateChangePredicate(prevState)) &&
           (!actionPredicate || actionPredicate(action))
         ) {
-          const handleError = (err: unknown) => {
-            if (axios.isCancel(err)) {
-              console.log('Canceled: ' + errorKey);
-            } else {
-              console.log('Error key: ' + errorKey);
+          const a1 = transform({ getState, dispatch, action: a, prevState });
 
-              console.error(err);
-
-              dispatch(
-                toastsAdd({
-                  id: id ?? Math.random().toString(36).slice(2),
-                  messageKey: errorKey,
-                  messageParams:
-                    err instanceof Error ? { err: err.message } : {},
-
-                  style: 'danger',
-                }),
-              );
-            }
-          };
-
-          let promise;
-
-          try {
-            promise = handle({ getState, dispatch, action: a, prevState });
-          } catch (err) {
-            handleError(err);
+          if (!a1) {
+            return undefined;
           }
 
-          if (promise) {
-            promises.push(
-              errorKey === undefined ? promise : promise.catch(handleError),
-            );
-          }
+          a = a1;
         }
       }
 
-      return promises;
-    }
+      const result = next(a);
 
-    const promise = Promise.all(runProcessors());
+      function runProcessors() {
+        const promises: Promise<void>[] = [];
 
-    let isDone = false;
+        for (const processor of processors) {
+          const {
+            actionCreator: actionType,
+            handle,
+            errorKey,
+            id,
+            statePredicate,
+            stateChangePredicate,
+            actionPredicate,
+          } = processor;
 
-    const p = promise.then(
-      (res) => {
-        isDone = true;
+          if (
+            handle &&
+            (!actionType ||
+              (Array.isArray(actionType) &&
+                actionType.some((ac) => isActionOf(ac, a))) ||
+              isActionOf(actionType, a)) &&
+            (!statePredicate || statePredicate(getState())) &&
+            (!stateChangePredicate ||
+              stateChangePredicate(getState()) !==
+                stateChangePredicate(prevState)) &&
+            (!actionPredicate || actionPredicate(action))
+          ) {
+            const handleError = (err: unknown) => {
+              if (axios.isCancel(err)) {
+                console.log('Canceled: ' + errorKey);
+              } else {
+                console.log('Error key: ' + errorKey);
 
-        return res;
-      },
-      (err) => {
-        isDone = true;
+                console.error(err);
 
-        throw err;
-      },
-    );
+                dispatch(
+                  toastsAdd({
+                    id: id ?? Math.random().toString(36).slice(2),
+                    messageKey: errorKey,
+                    messageParams:
+                      err instanceof Error ? { err: err.message } : {},
 
-    setTimeout(() => {
-      if (isDone) {
-        return;
+                    style: 'danger',
+                  }),
+                );
+              }
+            };
+
+            let promise;
+
+            try {
+              promise = handle({ getState, dispatch, action: a, prevState });
+            } catch (err) {
+              handleError(err);
+            }
+
+            if (promise) {
+              promises.push(
+                errorKey === undefined ? promise : promise.catch(handleError),
+              );
+            }
+          }
+        }
+
+        return promises;
       }
 
-      const pid = Math.random();
+      const promise = Promise.all(runProcessors());
 
-      dispatch(startProgress(pid));
+      let isDone = false;
 
-      p.then(
-        () => {
-          dispatch(stopProgress(pid));
+      const p = promise.then(
+        (res) => {
+          isDone = true;
+
+          return res;
         },
-        (error) => {
-          dispatch(stopProgress(pid));
+        (err) => {
+          isDone = true;
 
-          sendError({ kind: 'processor', error, action });
-
-          dispatch(
-            toastsAdd({
-              style: 'danger',
-              messageKey: 'general.processorError',
-              messageParams: {
-                err: error,
-              },
-            }),
-          );
+          throw err;
         },
       );
-    });
 
-    return result;
-  };
+      setTimeout(() => {
+        if (isDone) {
+          return;
+        }
+
+        const pid = Math.random();
+
+        dispatch(startProgress(pid));
+
+        p.then(
+          () => {
+            dispatch(stopProgress(pid));
+          },
+          (error) => {
+            dispatch(stopProgress(pid));
+
+            sendError({ kind: 'processor', error, action });
+
+            dispatch(
+              toastsAdd({
+                style: 'danger',
+                messageKey: 'general.processorError',
+                messageParams: {
+                  err: error,
+                },
+              }),
+            );
+          },
+        );
+      });
+
+      return result;
+    };
 
   processorMiddleware.processors = processors;
 

@@ -10,6 +10,5 @@ export interface ObjectsResult {
 
 export const objectsSetFilter = createAction('OBJECTS_SET_FILTER')<number>();
 
-export const objectsSetResult = createAction('OBJECTS_SET_RESULT')<
-  ObjectsResult[]
->();
+export const objectsSetResult =
+  createAction('OBJECTS_SET_RESULT')<ObjectsResult[]>();

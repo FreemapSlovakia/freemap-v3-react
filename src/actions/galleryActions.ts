@@ -91,9 +91,10 @@ export const galleryAddItem = createAction('GALLERY_ADD_ITEM')<GalleryItem>();
 
 export const galleryRemoveItem = createAction('GALLERY_REMOVE_ITEM')<number>();
 
-export const galleryMergeItem = createAction('GALLERY_SET_ITEM')<
-  Pick<GalleryItem, 'id'> & Partial<GalleryItem>
->();
+export const galleryMergeItem =
+  createAction('GALLERY_SET_ITEM')<
+    Pick<GalleryItem, 'id'> & Partial<GalleryItem>
+  >();
 
 export const gallerySetItemError = createAction('GALLERY_SET_ITEM_ERROR')<{
   id: number;
@@ -118,9 +119,8 @@ export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY')();
 
 export const gallerySetTags = createAction('GALLERY_SET_TAGS')<GalleryTag[]>();
 
-export const gallerySetUsers = createAction('GALLERY_SET_USERS')<
-  GalleryUser[]
->();
+export const gallerySetUsers =
+  createAction('GALLERY_SET_USERS')<GalleryUser[]>();
 
 export const gallerySetComment = createAction('GALLERY_SET_COMMENT')<string>();
 
@@ -150,9 +150,8 @@ export const galleryHideUploadModal = createAction(
   'GALLERY_HIDE_UPLOAD_MODAL',
 )();
 
-export const gallerySetFilter = createAction(
-  'GALLERY_SET_FILTER',
-)<GalleryFilter>();
+export const gallerySetFilter =
+  createAction('GALLERY_SET_FILTER')<GalleryFilter>();
 
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE')();
 

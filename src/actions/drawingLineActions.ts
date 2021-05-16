@@ -31,10 +31,11 @@ export const drawingLineSetLines = createAction('DRAWING_LINE_SET_LINES')<
   Line[]
 >();
 
-export const drawingLineSplit = createAction('DRAWING_LINE_SPLIT')<{
-  lineIndex: number;
-  pointId: number;
-}>();
+export const drawingLineSplit =
+  createAction('DRAWING_LINE_SPLIT')<{
+    lineIndex: number;
+    pointId: number;
+  }>();
 
 export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<
   | undefined
