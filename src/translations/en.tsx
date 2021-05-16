@@ -66,6 +66,7 @@ const en: Messages = {
     minutes: 'minutes',
     meters: 'meters',
     createdAt: 'Created At',
+    modifiedAt: 'Modified At',
     actions: 'Actions',
     add: 'Add new',
     clear: 'Clear',
@@ -83,6 +84,8 @@ const en: Messages = {
     visual: 'Display',
     copyOk: 'Copied to clipboard.',
     noCookies: 'This functionality requires accepting the cookies consent.',
+    name: 'Name',
+    load: 'Load',
   },
 
   selections: {
@@ -324,8 +327,8 @@ const en: Messages = {
     imhdAttribution: 'public transport routes',
   },
 
-  more: {
-    more: 'More',
+  mainMenu: {
+    title: 'Main menu',
     logOut: (name) => `Log out ${name}`,
     logIn: 'Log in',
     settings: 'Settings',
@@ -1397,19 +1400,27 @@ const en: Messages = {
   },
 
   maps: {
-    noMap: 'No map',
-    create: 'Save as…',
+    noMapFound: 'No map found',
     save: 'Save',
-    rename: 'Rename',
     delete: 'Delete',
-    namePrompt: 'Map name:',
-    deleteConfirm: 'Are you sure to delete this map?',
+    disconnect: 'Disconnect',
+    deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
     fetchError: ({ err }) => `Error loading map: ${err}`,
     fetchListError: ({ err }) => `Error loading maps: ${err}`,
     deleteError: ({ err }) => `Error deleting map: ${err}`,
     renameError: ({ err }) => `Error renaming map: ${err}`,
     createError: ({ err }) => `Error saving map: ${err}`,
     saveError: ({ err }) => `Error saving map: ${err}`,
+    loadToEmpty: 'Load to empty map',
+    loadInclMapAndPosition:
+      'Load including saved background map and its position',
+    savedMaps: 'Saved maps',
+    newMap: 'New map',
+    SomeMap: ({ name }) => (
+      <>
+        Map <i>{name}</i>
+      </>
+    ),
   },
 
   legend: {

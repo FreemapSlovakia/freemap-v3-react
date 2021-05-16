@@ -161,7 +161,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
         <>
           <Modal.Header closeButton>
             <Modal.Title>
-              <FaDownload /> {m?.more.gpxExport}
+              <FaDownload /> {m?.mainMenu.gpxExport}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>

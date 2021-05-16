@@ -75,6 +75,11 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
+  const filteredMaps = sortedMaps.filter(
+    (map) =>
+      !filter || map.name.toLowerCase().includes(filter.toLowerCase().trim()),
+  );
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
@@ -87,17 +92,17 @@ export function MapsModal({ show }: Props): ReactElement {
         <Card className="mb-2">
           <Card.Body>
             <Card.Title>
-              {mapName ? (
-                <>
-                  Mapa <i>{mapName}</i>
-                </>
+              {!mapName ? (
+                m?.maps.newMap
+              ) : m ? (
+                <m.maps.SomeMap name={mapName} />
               ) : (
-                'Nová mapa'
+                mapName
               )}
             </Card.Title>
             <form>
               <FormGroup>
-                <FormLabel>Názov</FormLabel>
+                <FormLabel>{m?.general.name}</FormLabel>
                 <FormControl
                   value={name}
                   onChange={(e) => setName(e.currentTarget.value)}
@@ -111,7 +116,7 @@ export function MapsModal({ show }: Props): ReactElement {
                   onClick={() => dispatch(mapsSave({ name }))}
                   disabled={!name}
                 >
-                  <FaSave /> Uložiť
+                  <FaSave /> {m?.maps.save}
                 </Button>
 
                 {id && (
@@ -120,7 +125,7 @@ export function MapsModal({ show }: Props): ReactElement {
                     className="ml-1 mb-1"
                     onClick={() => dispatch(mapsLoad({ id: undefined }))}
                   >
-                    <FaUnlink /> Odpojiť
+                    <FaUnlink /> {m?.maps.disconnect}
                   </Button>
                 )}
               </div>
@@ -130,7 +135,7 @@ export function MapsModal({ show }: Props): ReactElement {
 
         <Card>
           <Card.Body>
-            <Card.Title>Uložené mapy</Card.Title>
+            <Card.Title>{m?.maps.savedMaps}</Card.Title>
 
             <div
               className="overflow-auto"
@@ -153,43 +158,37 @@ export function MapsModal({ show }: Props): ReactElement {
                           />
                         </InputGroup>
                       </div>
-                      Názov
+                      {m?.general.name}
                     </th>
-                    <th>Vytvorené</th>
-                    <th>Zmenené</th>
+                    <th>{m?.general.createdAt}</th>
+                    <th>{m?.general.modifiedAt}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedMaps
-                    .filter(
-                      (map) =>
-                        !filter ||
-                        map.name
-                          .toLowerCase()
-                          .includes(filter.toLowerCase().trim()),
-                    )
-                    .map((map) => (
-                      <tr
-                        role="button"
-                        key={map.id}
-                        className={
-                          map === selectedMap
-                            ? 'table-active'
-                            : map.id === id
-                            ? 'table-success'
-                            : undefined
-                        }
-                        onClick={() =>
-                          setSelected((s) =>
-                            s === map.id ? undefined : map.id,
-                          )
-                        }
-                      >
-                        <td>{map.name}</td>
-                        <td>{dateFormat.format(map.createdAt)}</td>
-                        <td>{dateFormat.format(map.modifiedAt)}</td>
-                      </tr>
-                    ))}
+                  {!filteredMaps
+                    ? m?.maps.noMapFound
+                    : filteredMaps.map((map) => (
+                        <tr
+                          role="button"
+                          key={map.id}
+                          className={
+                            map === selectedMap
+                              ? 'table-active'
+                              : map.id === id
+                              ? 'table-success'
+                              : undefined
+                          }
+                          onClick={() =>
+                            setSelected((s) =>
+                              s === map.id ? undefined : map.id,
+                            )
+                          }
+                        >
+                          <td>{map.name}</td>
+                          <td>{dateFormat.format(map.createdAt)}</td>
+                          <td>{dateFormat.format(map.modifiedAt)}</td>
+                        </tr>
+                      ))}
                 </tbody>
               </Table>
             </div>
@@ -199,7 +198,7 @@ export function MapsModal({ show }: Props): ReactElement {
               type="checkbox"
               checked={clear}
               onChange={() => setClear((b) => !b)}
-              label="Načítať do čistej mapy"
+              label={m?.maps.loadToEmpty}
             />
 
             <FormCheck
@@ -207,7 +206,7 @@ export function MapsModal({ show }: Props): ReactElement {
               type="checkbox"
               checked={inclPosition}
               onChange={() => setInclPosition((b) => !b)}
-              label="Načítať vrátane uloženej podkladoveju mapy a pozície"
+              label={m?.maps.loadInclMapAndPosition}
             />
 
             <div className="mt-2">
@@ -225,7 +224,7 @@ export function MapsModal({ show }: Props): ReactElement {
                   )
                 }
               >
-                <FaCloudDownloadAlt /> Načítať
+                <FaCloudDownloadAlt /> {m?.general.load}
               </Button>
 
               <Button
@@ -235,7 +234,9 @@ export function MapsModal({ show }: Props): ReactElement {
                 onClick={() => {
                   if (
                     window.confirm(
-                      m?.maps.deleteConfirm + ': ' + selectedMap?.name,
+                      m?.maps.deleteConfirm(
+                        selectedMap ? selectedMap.name : mapName ?? '???',
+                      ),
                     )
                   ) {
                     dispatch(mapsDelete(selectedMap?.id));

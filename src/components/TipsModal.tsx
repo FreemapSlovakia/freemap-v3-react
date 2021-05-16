@@ -142,7 +142,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
           {!hidden && (
             <>
               <FaRegLightbulb />
-              {m?.more.tips}
+              {m?.mainMenu.tips}
               {'\u00A0 | \u00A0'}
             </>
           )}

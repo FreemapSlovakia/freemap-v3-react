@@ -92,10 +92,10 @@ import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
+import { MainMenuButton } from './MainMenuButton';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
 import { MapsModal } from './MapsModal';
-import { MoreMenuButton } from './MoreMenuButton';
 import { ObjectSelection } from './ObjectSelection';
 import { SelectionTool } from './SelectionTool';
 import { TrackingSelection } from './TrackingSelection';
@@ -196,11 +196,13 @@ export function Main(): ReactElement {
         const newZoom = m.getZoom();
 
         if (
-          ([
-            [lat, newLat],
-            [lon, newLon],
-            [zoom, newZoom],
-          ] as const).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
+          (
+            [
+              [lat, newLat],
+              [lon, newLon],
+              [zoom, newZoom],
+            ] as const
+          ).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
         ) {
           dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
         }
@@ -406,7 +408,7 @@ export function Main(): ReactElement {
                 className={progress ? 'in-progress' : 'idle'}
                 onClick={handleLogoClick}
               />
-              {!window.fmEmbedded && showMenu && <MoreMenuButton />}
+              {!window.fmEmbedded && showMenu && <MainMenuButton />}
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                 <SearchMenu
                   hidden={!showMenu}

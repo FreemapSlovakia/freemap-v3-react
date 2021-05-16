@@ -22,7 +22,8 @@ export function SupportUsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaHeart color="red" /> {m?.more.supportUs} <FaHeart color="red" />
+          <FaHeart color="red" /> {m?.mainMenu.supportUs}{' '}
+          <FaHeart color="red" />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

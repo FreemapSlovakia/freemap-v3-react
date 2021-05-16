@@ -24,6 +24,7 @@ export function MapsMenu(): ReactElement {
       <Button
         variant="primary"
         onClick={() => dispatch(setActiveModal('maps'))}
+        title={m?.tools.maps}
       >
         <FaRegMap />
       </Button>
@@ -45,9 +46,9 @@ export function MapsMenu(): ReactElement {
         className="ml-1"
         variant="secondary"
         onClick={() => dispatch(mapsLoad({ id: undefined }))}
+        title={m?.maps.disconnect}
       >
         <FaUnlink />
-        {/* <span className="d-none d-md-inline"> {m?.maps.save}</span> */}
       </Button>
     </>
   );

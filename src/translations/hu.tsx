@@ -66,7 +66,8 @@ const hu: Messages = {
     seconds: 'másodperc',
     minutes: 'perc',
     meters: 'méter',
-    createdAt: 'Létrehozva:',
+    createdAt: 'Létrehozva',
+    modifiedAt: 'Modified At', // TODO translate
     actions: 'Műveletek',
     add: 'Új hozzáadása',
     clear: 'Törlés',
@@ -84,6 +85,8 @@ const hu: Messages = {
     visual: 'Megjelenítés',
     copyOk: 'Copied to clipboard.', // TODO translate
     noCookies: 'This functionality requires accepting the cookies consent.', // TODO translate
+    name: 'Name', // TODO translate
+    load: 'Load', // TODO translate
   },
 
   selections: {
@@ -325,8 +328,8 @@ const hu: Messages = {
     imhdAttribution: 'tömegközlekedési útvonalak',
   },
 
-  more: {
-    more: 'Továbbiak',
+  mainMenu: {
+    title: 'Main menu', // TODO translate
     logOut: (name) => `Kijelentkezés: ${name}`,
     logIn: 'Bejelentkezés',
     settings: 'Beállítások',
@@ -1417,19 +1420,27 @@ const hu: Messages = {
   },
 
   maps: {
-    noMap: 'Nincs térkép',
-    create: 'Mentés másként…',
+    noMapFound: 'Nincs térkép', // TODO No map found
     save: 'Mentés',
-    rename: 'Átnevezés',
     delete: 'Törlés',
-    namePrompt: 'Térkép neve:',
-    deleteConfirm: 'Biztosan törli ezt a térképet?',
+    disconnect: 'Disconnect', // TODO
+    deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`, // TODO
     fetchError: ({ err }) => `Hiba történt a térkép betöltéskor: ${err}`,
     fetchListError: ({ err }) => `Hiba történt a térképek betöltéskor: ${err}`,
     deleteError: ({ err }) => `Hiba történt a térkép törlésekor: ${err}`,
     renameError: ({ err }) => `Hiba történt a térkép átnevezésekor: ${err}`,
     createError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
     saveError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
+    loadToEmpty: 'Load to empty map',
+    loadInclMapAndPosition:
+      'Load including saved background map and its position',
+    savedMaps: 'Saved maps',
+    newMap: 'New map',
+    SomeMap: ({ name }) => (
+      <>
+        Map <i>{name}</i>
+      </>
+    ),
   },
 
   legend: {
