@@ -6,19 +6,15 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   actionCreator: mapsDelete,
   errorKey: 'maps.deleteError',
-  handle: async ({ getState, dispatch, action }) => {
-    if (!window.confirm(window.translations?.maps.deleteConfirm)) {
-      return;
-    }
-
+  handle: async ({ getState, dispatch, action: { payload: id } }) => {
     await httpRequest({
       getState,
       method: 'DELETE',
-      url: `/maps/${action.payload}`,
+      url: `/maps/${id ?? getState().maps.id}`,
       expectedStatus: 204,
     });
 
-    if (getState().maps.id === action.payload) {
+    if (!id || getState().maps.id === id) {
       dispatch(mapsLoad({})); // detach
     }
 

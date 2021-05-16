@@ -53,7 +53,7 @@ export const mapsSave = createAction('MAPS_SAVE')<
   { name: string; asCopy?: boolean } | undefined
 >();
 
-export const mapsDelete = createAction('MAPS_DELETE')<string>();
+export const mapsDelete = createAction('MAPS_DELETE')<string | undefined>();
 
 export const mapsRename = createAction('MAPS_RENAME')();
 
