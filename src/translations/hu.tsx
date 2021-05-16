@@ -1421,8 +1421,8 @@ const hu: Messages = {
     noMapFound: 'Nincs térkép', // TODO No map found
     save: 'Mentés',
     delete: 'Törlés',
-    disconnect: 'Disconnect', // TODO
-    deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`, // TODO
+    disconnect: 'Disconnect', // TODO translate
+    deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`, // TODO translate
     fetchError: ({ err }) => `Hiba történt a térkép betöltéskor: ${err}`,
     fetchListError: ({ err }) => `Hiba történt a térképek betöltéskor: ${err}`,
     deleteError: ({ err }) => `Hiba történt a térkép törlésekor: ${err}`,
@@ -1439,6 +1439,7 @@ const hu: Messages = {
         Map <i>{name}</i>
       </>
     ),
+    unauthenticatedError: 'Please log-in to access My maps functionality.', // TODO translate
   },
 
   legend: {

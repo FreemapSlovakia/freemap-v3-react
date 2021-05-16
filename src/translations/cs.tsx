@@ -1429,6 +1429,7 @@ const cs: Messages = {
         Mapa <i>{name}</i>
       </>
     ),
+    unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
   },
 
   legend: {

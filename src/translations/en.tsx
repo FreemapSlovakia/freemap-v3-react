@@ -1419,6 +1419,7 @@ const en: Messages = {
         Map <i>{name}</i>
       </>
     ),
+    unauthenticatedError: 'Please log-in to access My maps functionality.',
   },
 
   legend: {

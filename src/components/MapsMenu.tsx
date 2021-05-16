@@ -9,13 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 export function MapsMenu(): ReactElement {
   const m = useMessages();
 
-  const maps = useSelector((state) => state.maps.maps);
+  const mapName = useSelector((state) => state.maps.name);
 
   const id = useSelector((state) => state.maps.id);
 
   const authenticated = useSelector((state) => !!state.auth.user);
-
-  const map = maps.find((map) => map.id === id);
 
   const dispatch = useDispatch();
 
@@ -29,7 +27,7 @@ export function MapsMenu(): ReactElement {
         <FaRegMap />
       </Button>
 
-      <span className="align-self-center ml-1 mr-2">{map?.name}</span>
+      <span className="align-self-center ml-1 mr-2">{mapName}</span>
 
       {authenticated && id !== undefined && (
         <Button

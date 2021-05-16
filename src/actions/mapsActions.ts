@@ -58,4 +58,6 @@ export const mapsDelete = createAction('MAPS_DELETE')<string | undefined>();
 export const mapsRename = createAction('MAPS_RENAME')();
 
 export const mapsDataLoaded =
-  createAction('MAPS_DATA_LOADED')<MapData & { merge?: boolean }>();
+  createAction('MAPS_DATA_LOADED')<
+    MapData & { merge?: boolean; name: string }
+  >();

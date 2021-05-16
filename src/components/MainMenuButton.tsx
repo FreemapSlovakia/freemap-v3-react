@@ -333,17 +333,15 @@ export function MainMenuButton(): ReactElement {
                   <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
                 </Dropdown.Item>
 
-                {user && (
-                  <Dropdown.Item
-                    as="button"
-                    onSelect={() => {
-                      close();
-                      dispatch(setActiveModal('maps'));
-                    }}
-                  >
-                    <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
-                  </Dropdown.Item>
-                )}
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('maps'));
+                  }}
+                >
+                  <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
+                </Dropdown.Item>
 
                 <Dropdown.Item
                   as="button"

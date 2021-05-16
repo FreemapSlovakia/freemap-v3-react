@@ -764,6 +764,7 @@ export type Messages = {
     savedMaps: string;
     newMap: string;
     SomeMap(props: { name: string }): JSX.Element;
+    unauthenticatedError: string;
   };
   legend: {
     body: () => JSX.Element;

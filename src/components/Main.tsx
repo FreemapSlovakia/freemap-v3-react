@@ -371,7 +371,7 @@ export function Main(): ReactElement {
 
   useHtmlMeta();
 
-  const hasMap = useSelector((state) => state.maps.id !== undefined);
+  const showMapsMenu = useSelector((state) => state.maps.id !== undefined);
 
   return (
     <>
@@ -488,7 +488,7 @@ export function Main(): ReactElement {
             </div>
           )}
 
-          {showMenu && hasMap && (
+          {showMenu && showMapsMenu && (
             <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc4}>
               <div />
               <Card className="fm-toolbar mx-2 mt-2">

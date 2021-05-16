@@ -1450,6 +1450,7 @@ const sk: Messages = {
         Mapa <i>{name}</i>
       </>
     ),
+    unauthenticatedError: 'Pre funkciu Moje mapy musíte byť prihlásený.',
   },
 
   legend: {

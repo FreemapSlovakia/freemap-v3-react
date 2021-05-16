@@ -48,6 +48,7 @@ import { mapRefocusProcessor } from './processors/mapRefocusProcessor';
 import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
 import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
 import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
+import { mapdModalTransformer } from './processors/mapsModalProcessor';
 import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
@@ -226,6 +227,7 @@ processorMiddleware.processors.push(
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
+  mapdModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,
   mapsDeleteProcessor,

@@ -27,29 +27,32 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
     });
 
     const map =
-      assertType<{ data: StringDates<MapData<Line | OldLine>> }>(data).data;
+      assertType<{ name: string; data: StringDates<MapData<Line | OldLine>> }>(
+        data,
+      );
 
-    console.log('MMMMMMMMMMMMM', payload, data);
+    const mapData = map.data;
 
-    if (map.map) {
+    if (mapData.map) {
       if (payload.ignoreMap) {
-        delete map.map.lat;
-        delete map.map.lon;
-        delete map.map.zoom;
+        delete mapData.map.lat;
+        delete mapData.map.lon;
+        delete mapData.map.zoom;
       }
 
       if (payload.ignoreLayers) {
-        delete map.map.mapType;
-        delete map.map.overlays;
+        delete mapData.map.mapType;
+        delete mapData.map.overlays;
       }
     }
 
     dispatch(
       mapsDataLoaded({
+        name: map.name,
         merge: payload.merge,
-        ...map,
+        ...mapData,
         // get rid of OldLines
-        lines: map.lines?.map(
+        lines: mapData.lines?.map(
           (line) =>
             ({
               ...line,
@@ -61,35 +64,35 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
                   : line.type,
             } as Line),
         ),
-        tracking: map.tracking && {
-          ...map.tracking,
-          trackedDevices: map.tracking.trackedDevices.map((device) => ({
+        tracking: mapData.tracking && {
+          ...mapData.tracking,
+          trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
             ...device,
             fromTime: device.fromTime ? new Date(device.fromTime) : null,
           })),
         },
-        galleryFilter: map.galleryFilter && {
-          ...map.galleryFilter,
+        galleryFilter: mapData.galleryFilter && {
+          ...mapData.galleryFilter,
           createdAtFrom:
-            map.galleryFilter.createdAtFrom === undefined
+            mapData.galleryFilter.createdAtFrom === undefined
               ? undefined
-              : new Date(map.galleryFilter.createdAtFrom),
+              : new Date(mapData.galleryFilter.createdAtFrom),
           createdAtTo:
-            map.galleryFilter.createdAtTo === undefined
+            mapData.galleryFilter.createdAtTo === undefined
               ? undefined
-              : new Date(map.galleryFilter.createdAtTo),
+              : new Date(mapData.galleryFilter.createdAtTo),
           takenAtFrom:
-            map.galleryFilter.takenAtFrom === undefined
+            mapData.galleryFilter.takenAtFrom === undefined
               ? undefined
-              : new Date(map.galleryFilter.takenAtFrom),
+              : new Date(mapData.galleryFilter.takenAtFrom),
           takenAtTo:
-            map.galleryFilter.takenAtTo === undefined
+            mapData.galleryFilter.takenAtTo === undefined
               ? undefined
-              : new Date(map.galleryFilter.takenAtTo),
+              : new Date(mapData.galleryFilter.takenAtTo),
         },
-        trackViewer: map.trackViewer && {
-          ...map.trackViewer,
-          startPoints: map.trackViewer.startPoints.map((point) => ({
+        trackViewer: mapData.trackViewer && {
+          ...mapData.trackViewer,
+          startPoints: mapData.trackViewer.startPoints.map((point) => ({
             ...point,
             startTime:
               point.startTime === undefined
@@ -100,7 +103,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
                 ? undefined
                 : new Date(point.finishTime),
           })),
-          finishPoints: map.trackViewer.finishPoints.map((point) => ({
+          finishPoints: mapData.trackViewer.finishPoints.map((point) => ({
             ...point,
             startTime:
               point.startTime === undefined
