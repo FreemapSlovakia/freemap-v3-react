@@ -371,7 +371,9 @@ export function Main(): ReactElement {
 
   useHtmlMeta();
 
-  const showMapsMenu = useSelector((state) => state.maps.id !== undefined);
+  const showMapsMenu = useSelector(
+    (state) => state.maps.id !== undefined && state.maps.name !== undefined,
+  );
 
   return (
     <>
