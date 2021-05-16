@@ -5,7 +5,6 @@ import {
   FaMapMarkerAlt,
   FaMapSigns,
   FaPencilAlt,
-  FaRegMap,
   FaRoad,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
@@ -22,12 +21,6 @@ export interface ToolDefinition {
 }
 
 export const toolDefinitions: ToolDefinition[] = [
-  {
-    tool: 'maps',
-    icon: <FaRegMap />,
-    msgKey: 'maps',
-    kbd: 'KeyM',
-  },
   {
     tool: 'route-planner',
     icon: <FaMapSigns />,

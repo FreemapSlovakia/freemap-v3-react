@@ -29,6 +29,8 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
     const map = assertType<{ data: StringDates<MapData<Line | OldLine>> }>(data)
       .data;
 
+    console.log('MMMMMMMMMMMMM', payload, data);
+
     if (map.map) {
       if (payload.ignoreMap) {
         delete map.map.lat;
@@ -44,6 +46,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
 
     dispatch(
       mapsDataLoaded({
+        merge: payload.merge,
         ...map,
         // get rid of OldLines
         lines: map.lines?.map(

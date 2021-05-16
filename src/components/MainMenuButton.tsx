@@ -87,7 +87,7 @@ type Submenu =
   | 'drawing'
   | null;
 
-export function MoreMenuButton(): ReactElement {
+export function MainMenuButton(): ReactElement {
   const user = useSelector((state) => state.auth.user);
 
   const chosenLanguage = useSelector((state) => state.l10n.chosenLanguage);
@@ -222,7 +222,7 @@ export function MoreMenuButton(): ReactElement {
           {icon} {title}
         </Dropdown.Header>
         <Dropdown.Item as="button" onSelect={handleBackClick}>
-          <FaChevronLeft /> {m?.more.back} <kbd>Esc</kbd>
+          <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
         </Dropdown.Item>
         <Dropdown.Divider />
       </>
@@ -264,7 +264,7 @@ export function MoreMenuButton(): ReactElement {
       <Button
         ref={button}
         onClick={handleButtonClick}
-        title={m?.more.more}
+        title={m?.mainMenu.title}
         variant="primary"
         className="mr-1"
       >
@@ -300,7 +300,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(authStartLogout());
                     }}
                   >
-                    <FaSignOutAlt /> {m?.more.logOut(user.name)}
+                    <FaSignOutAlt /> {m?.mainMenu.logOut(user.name)}
                   </Dropdown.Item>
                 ) : (
                   <Dropdown.Item
@@ -309,7 +309,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(authChooseLoginMethod());
                     }}
                   >
-                    <FaSignInAlt /> {m?.more.logIn}
+                    <FaSignInAlt /> {m?.mainMenu.logIn}
                   </Dropdown.Item>
                 )}
 
@@ -318,7 +318,7 @@ export function MoreMenuButton(): ReactElement {
                   href="?show=settings"
                   onSelect={showModal}
                 >
-                  <FaCog /> {m?.more.settings} <kbd>e</kbd> <kbd>s</kbd>
+                  <FaCog /> {m?.mainMenu.settings} <kbd>e</kbd> <kbd>s</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
@@ -332,6 +332,18 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
                 </Dropdown.Item>
+
+                {user && (
+                  <Dropdown.Item
+                    as="button"
+                    onSelect={() => {
+                      close();
+                      dispatch(setActiveModal('maps'));
+                    }}
+                  >
+                    <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
+                  </Dropdown.Item>
+                )}
 
                 <Dropdown.Item
                   as="button"
@@ -388,9 +400,7 @@ export function MoreMenuButton(): ReactElement {
                   <FaBullseye /> {m?.tools.tracking}
                   <FaChevronRight />
                 </Dropdown.Item>
-
                 <Dropdown.Divider />
-
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -400,62 +410,57 @@ export function MoreMenuButton(): ReactElement {
                   <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
                   <FaChevronRight />
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   href="?show=export-pdf"
                   eventKey="export-pdf"
                   onSelect={showModal}
                 >
-                  <FaRegFilePdf /> {m?.more.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
+                  <FaRegFilePdf /> {m?.mainMenu.pdfExport} <kbd>e</kbd>{' '}
+                  <kbd>p</kbd>
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   eventKey="export-gpx"
                   href="?show=export-gpx"
                   onSelect={showModal}
                 >
-                  <FaDownload /> {m?.more.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
+                  <FaDownload /> {m?.mainMenu.gpxExport} <kbd>e</kbd>{' '}
+                  <kbd>g</kbd>
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   eventKey="exports"
                   href="?tip=exports"
                   onSelect={handleTipSelect}
                 >
-                  <FaMobileAlt /> {m?.more.mapExports}
+                  <FaMobileAlt /> {m?.mainMenu.mapExports}
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   eventKey="embed"
                   href="?show=embed"
                   onSelect={showModal}
                 >
-                  <FaCode /> {m?.more.embedMap} <kbd>e</kbd> <kbd>e</kbd>
+                  <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
                 </Dropdown.Item>
-
                 <Dropdown.Divider />
-
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
                     setSubmenu('help');
                   }}
                 >
-                  <FaBook /> {m?.more.help} <FaChevronRight />
+                  <FaBook /> {m?.mainMenu.help} <FaChevronRight />
                 </Dropdown.Item>
-
                 <Dropdown.Item
                   href="?show=supportUs"
                   eventKey="supportUs"
                   onSelect={showModal}
                 >
-                  <FaHeart color="red" /> {m?.more.supportUs}{' '}
+                  <FaHeart color="red" /> {m?.mainMenu.supportUs}{' '}
                   <FaHeart color="red" />
                 </Dropdown.Item>
               </Fragment>
             ) : submenu === 'help' ? (
               <Fragment key="help">
-                <SubmenuHeader icon={<FaBook />} title={m?.more.help} />
+                <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
                 {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
                   mapType,
@@ -465,7 +470,7 @@ export function MoreMenuButton(): ReactElement {
                     eventKey="legend"
                     onSelect={showModal}
                   >
-                    <FaRegMap /> {m?.more.mapLegend}
+                    <FaRegMap /> {m?.mainMenu.mapLegend}
                   </Dropdown.Item>
                 )}
 
@@ -474,15 +479,15 @@ export function MoreMenuButton(): ReactElement {
                   href="?show=about"
                   onSelect={showModal}
                 >
-                  <FaRegAddressCard /> {m?.more.contacts}
+                  <FaRegAddressCard /> {m?.mainMenu.contacts}
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  href={m?.more.wikiLink}
+                  href={m?.mainMenu.wikiLink}
                   onSelect={close}
                   target="_blank"
                 >
-                  <FaBook /> {m?.more.osmWiki}
+                  <FaBook /> {m?.mainMenu.osmWiki}
                 </Dropdown.Item>
 
                 {skCz && (
@@ -499,7 +504,7 @@ export function MoreMenuButton(): ReactElement {
                   <>
                     <Dropdown.Divider />
                     <Dropdown.Header>
-                      <FaRegLightbulb /> {m?.more.tips}
+                      <FaRegLightbulb /> {m?.mainMenu.tips}
                     </Dropdown.Header>
                     {tips.map(([key, name, icon, hidden]) =>
                       hidden ? null : (
@@ -546,7 +551,7 @@ export function MoreMenuButton(): ReactElement {
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
-                  {m?.more.automaticLanguage}
+                  {m?.mainMenu.automaticLanguage}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -795,7 +800,7 @@ export function MoreMenuButton(): ReactElement {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: '#3b5998' }}
-                    title={m?.more.facebook}
+                    title={m?.mainMenu.facebook}
                   >
                     <FaFacebook />
                   </a>{' '}
@@ -805,7 +810,7 @@ export function MoreMenuButton(): ReactElement {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: '#0084b4' }}
-                    title={m?.more.twitter}
+                    title={m?.mainMenu.twitter}
                   >
                     <FaTwitter />
                   </a>{' '}
@@ -815,7 +820,7 @@ export function MoreMenuButton(): ReactElement {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: '#ff0000' }}
-                    title={m?.more.youtube}
+                    title={m?.mainMenu.youtube}
                   >
                     <FaYoutube />
                   </a>{' '}
@@ -825,7 +830,7 @@ export function MoreMenuButton(): ReactElement {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: '#333' }}
-                    title={m?.more.github}
+                    title={m?.mainMenu.github}
                   >
                     <FaGithub />
                   </a>

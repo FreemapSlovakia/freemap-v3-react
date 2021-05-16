@@ -50,7 +50,7 @@ export function Copyright(): ReactElement {
         className="mr-1"
         ref={buttonRef}
         onClick={handleButtonClick}
-        title={m?.more.mapLegend + ', Privacy policy'}
+        title={m?.mainMenu.mapLegend + ', Privacy policy'}
         variant="secondary"
       >
         <FaQuestion />
@@ -74,7 +74,7 @@ export function Copyright(): ReactElement {
                   dispatch(setActiveModal('legend'));
                 }}
               >
-                <FaRegMap /> {m?.more.mapLegend}
+                <FaRegMap /> {m?.mainMenu.mapLegend}
               </Dropdown.Item>
             )}
             <Dropdown.Item

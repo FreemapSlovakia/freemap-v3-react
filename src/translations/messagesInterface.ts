@@ -32,6 +32,7 @@ export type Messages = {
     minutes: string;
     meters: string;
     createdAt: string;
+    modifiedAt: string;
     actions: string;
     add: string;
     clear: string;
@@ -48,6 +49,8 @@ export type Messages = {
     visual: string;
     copyOk: string;
     noCookies: string;
+    name: string;
+    load: string;
   };
   selections: {
     objects: string;
@@ -72,7 +75,7 @@ export type Messages = {
     changesets: string;
     mapDetails: string;
     tracking: string;
-    maps: JSX.Element;
+    maps: string;
   };
   routePlanner: {
     milestones: string;
@@ -270,8 +273,8 @@ export type Messages = {
     };
     imhdAttribution: string;
   };
-  more: {
-    more: string;
+  mainMenu: {
+    title: string;
     logOut: (name: string) => string;
     logIn: string;
     settings: string;
@@ -745,19 +748,22 @@ export type Messages = {
     alert: () => JSX.Element;
   };
   maps: {
-    noMap: string;
-    create: string;
+    noMapFound: string;
     save: string;
-    rename: string;
     delete: string;
-    namePrompt: string;
-    deleteConfirm: string;
+    disconnect: string;
+    deleteConfirm: (name: string) => string;
     fetchError: ({ err }: Err) => string;
     fetchListError: ({ err }: Err) => string;
     deleteError: ({ err }: Err) => string;
     renameError: ({ err }: Err) => string;
     createError: ({ err }: Err) => string;
     saveError: ({ err }: Err) => string;
+    loadToEmpty: string;
+    loadInclMapAndPosition: string;
+    savedMaps: string;
+    newMap: string;
+    SomeMap(props: { name: string }): JSX.Element;
   };
   legend: {
     body: () => JSX.Element;

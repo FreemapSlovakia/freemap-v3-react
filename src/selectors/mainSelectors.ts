@@ -102,7 +102,6 @@ export const selectingModeSelector = (state: DefaultRootState): boolean =>
   (state.main.tool === null ||
     state.main.tool === 'track-viewer' ||
     state.main.tool === 'changesets' ||
-    state.main.tool === 'maps' ||
     state.main.tool === 'objects' ||
     (state.main.tool === 'route-planner' &&
       state.routePlanner.pickMode === null));

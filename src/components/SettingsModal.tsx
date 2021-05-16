@@ -157,7 +157,7 @@ export function SettingsModal({ show }: Props): ReactElement {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.more.settings}
+            <FaCog /> {m?.mainMenu.settings}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

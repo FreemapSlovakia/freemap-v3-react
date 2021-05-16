@@ -45,11 +45,9 @@ import { legendProcessor } from './processors/legendProcessor';
 import { locateProcessor } from './processors/locateProcessor';
 import { mapDetailsProcessor } from './processors/mapDetailsProcessor';
 import { mapRefocusProcessor } from './processors/mapRefocusProcessor';
-import { mapsCreateProcessor } from './processors/mapsCreateProcessor';
 import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
 import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
 import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
-import { mapsRenameProcessor } from './processors/mapsRenameProcessor';
 import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
@@ -231,9 +229,7 @@ processorMiddleware.processors.push(
   mapsLoadListProcessor,
   mapsLoadProcessor,
   mapsDeleteProcessor,
-  mapsCreateProcessor,
   mapsSaveProcessor,
-  mapsRenameProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   legendProcessor,

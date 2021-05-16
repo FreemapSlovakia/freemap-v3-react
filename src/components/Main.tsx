@@ -92,9 +92,10 @@ import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
+import { MainMenuButton } from './MainMenuButton';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
-import { MoreMenuButton } from './MoreMenuButton';
+import { MapsModal } from './MapsModal';
 import { ObjectSelection } from './ObjectSelection';
 import { SelectionTool } from './SelectionTool';
 import { TrackingSelection } from './TrackingSelection';
@@ -195,11 +196,13 @@ export function Main(): ReactElement {
         const newZoom = m.getZoom();
 
         if (
-          ([
-            [lat, newLat],
-            [lon, newLon],
-            [zoom, newZoom],
-          ] as const).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
+          (
+            [
+              [lat, newLat],
+              [lon, newLon],
+              [zoom, newZoom],
+            ] as const
+          ).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
         ) {
           dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
         }
@@ -350,6 +353,8 @@ export function Main(): ReactElement {
 
   const sc3 = useScrollClasses('horizontal');
 
+  const sc4 = useScrollClasses('horizontal');
+
   const drawingLines = useSelector(drawingLinePolys);
 
   const YellowBar = m?.main.YellowBar;
@@ -365,6 +370,8 @@ export function Main(): ReactElement {
   );
 
   useHtmlMeta();
+
+  const hasMap = useSelector((state) => state.maps.id !== undefined);
 
   return (
     <>
@@ -401,7 +408,7 @@ export function Main(): ReactElement {
                 className={progress ? 'in-progress' : 'idle'}
                 onClick={handleLogoClick}
               />
-              {!window.fmEmbedded && showMenu && <MoreMenuButton />}
+              {!window.fmEmbedded && showMenu && <MainMenuButton />}
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                 <SearchMenu
                   hidden={!showMenu}
@@ -476,7 +483,17 @@ export function Main(): ReactElement {
                   {tool === 'track-viewer' && <TrackViewerMenu />}
                   {tool === 'changesets' && <ChangesetsMenu />}
                   {tool === 'map-details' && <MapDetailsMenu />}
-                  {tool === 'maps' && <MapsMenu />}
+                </ButtonToolbar>
+              </Card>
+            </div>
+          )}
+
+          {showMenu && hasMap && (
+            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc4}>
+              <div />
+              <Card className="fm-toolbar mx-2 mt-2">
+                <ButtonToolbar>
+                  <MapsMenu />
                 </ButtonToolbar>
               </Card>
             </div>
@@ -593,6 +610,7 @@ export function Main(): ReactElement {
           <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
           <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
           <AsyncLoginModal show={showLoginModal} />
+          <MapsModal show={activeModal === 'maps'} />
           <GalleryModals />
         </MapContainer>
       </div>

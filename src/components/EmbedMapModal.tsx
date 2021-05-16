@@ -116,7 +116,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCode /> {m?.more.embedMap}
+          <FaCode /> {m?.mainMenu.embedMap}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

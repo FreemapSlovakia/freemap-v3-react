@@ -1,19 +1,31 @@
-import { MapData, mapsSave } from 'fm3/actions/mapsActions';
+import {
+  MapData,
+  mapsLoad,
+  mapsLoadList,
+  mapsSave,
+} from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { DefaultRootState } from 'react-redux';
+import { assertType } from 'typescript-is';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   errorKey: 'maps.saveError',
-  handle: async ({ getState, dispatch }) => {
-    await httpRequest({
+  handle: async ({ getState, dispatch, action }) => {
+    const { id } = getState().maps;
+
+    const { data } = await httpRequest({
       getState,
-      method: 'PATCH',
-      url: `/maps/${getState().maps.id}`,
-      expectedStatus: 204,
-      data: { data: getMapDataFromState(getState()) },
+      method: id ? 'PATCH' : 'POST',
+      url: `/maps/${id ?? ''}`,
+      expectedStatus: [200, 204],
+      data: {
+        name: action.payload?.name,
+        data: getMapDataFromState(getState()),
+        public: true, // TODO
+      },
     });
 
     dispatch(
@@ -23,10 +35,16 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         messageKey: 'general.saved',
       }),
     );
+
+    dispatch(mapsLoadList());
+
+    if (!id) {
+      dispatch(mapsLoad({ id: assertType<{ id: string }>(data).id })); // TODO skip loading in this case
+    }
   },
 };
 
-export function getMapDataFromState(state: DefaultRootState): MapData {
+function getMapDataFromState(state: DefaultRootState): MapData {
   const {
     tracking,
     drawingLines,

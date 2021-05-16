@@ -50,7 +50,7 @@ export function LoginModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaSignInAlt /> {m?.more.logIn}
+          <FaSignInAlt /> {m?.mainMenu.logIn}
         </Modal.Title>
       </Modal.Header>
 

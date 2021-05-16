@@ -198,7 +198,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegFilePdf /> {m?.more.pdfExport}
+          <FaRegFilePdf /> {m?.mainMenu.pdfExport}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

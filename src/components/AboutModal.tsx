@@ -21,7 +21,7 @@ export function AboutModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegAddressCard /> {m?.more.contacts}
+          <FaRegAddressCard /> {m?.mainMenu.contacts}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

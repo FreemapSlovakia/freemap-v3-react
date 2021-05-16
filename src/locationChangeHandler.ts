@@ -77,9 +77,8 @@ export const handleLocationChange = (
   const parsedQuery = queryString.parse(search);
 
   const id =
-    (typeof parsedQuery['id'] === 'string'
-      ? parseInt(parsedQuery['id'], 10)
-      : undefined) || undefined;
+    (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
+    undefined;
 
   if (id !== getState().maps.id) {
     dispatch(

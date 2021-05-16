@@ -7,7 +7,7 @@ import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { FaFlask, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 import shared from './sk-shared.json';
 
@@ -67,6 +67,7 @@ const sk: Messages = {
     minutes: 'minúty',
     meters: 'metre',
     createdAt: 'Vytvorené',
+    modifiedAt: 'Zmenené',
     actions: 'Akcie',
     add: 'Pridať nové',
     clear: 'Vyčistiť',
@@ -84,6 +85,8 @@ const sk: Messages = {
     visual: 'Zobrazenie',
     copyOk: 'Skopírovane do schránky.',
     noCookies: 'Táto funkcionalita vyžaduje prijatie súhlasu cookies.',
+    name: 'Názov',
+    load: 'Načítať',
   },
 
   selections: {
@@ -110,11 +113,7 @@ const sk: Messages = {
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
-    maps: (
-      <>
-        Moje mapy <FaFlask className="text-warning" />
-      </>
-    ),
+    maps: 'Moje mapy',
   },
 
   routePlanner: {
@@ -331,8 +330,8 @@ const sk: Messages = {
     imhdAttribution: 'trasy liniek MHD',
   },
 
-  more: {
-    more: 'Ďalšie',
+  mainMenu: {
+    title: 'Hlavné menu',
     logOut: (name) => `Odhlásiť ${name}`,
     logIn: 'Prihlásenie',
     settings: 'Nastavenia',
@@ -1432,19 +1431,27 @@ const sk: Messages = {
   },
 
   maps: {
-    noMap: 'Žiadna mapa',
-    create: 'Uložiť ako…',
+    noMapFound: 'Žiadna mapa nenájdena',
     save: 'Uložiť',
-    rename: 'Premenovať',
     delete: 'Zmazať',
-    namePrompt: 'Názov mapy:',
-    deleteConfirm: 'Naozaj si prajete vymazať túto mapu?',
+    disconnect: 'Odpojiť',
+    deleteConfirm: (name) => `Naozaj si prajete vymazať mapu ${name}?`,
     fetchError: ({ err }) => `Nastala chyba pri načítavaní mapy: ${err}`,
     fetchListError: ({ err }) => `Nastala chyba pri načítavaní máp: ${err}`,
     deleteError: ({ err }) => `Nastala chyba pri mazaní mapy: ${err}`,
     renameError: ({ err }) => `Nastala chyba pri premenovávaní mapy: ${err}`,
     createError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
     saveError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
+    loadToEmpty: 'Načítať do čistej mapy',
+    loadInclMapAndPosition:
+      'Načítať vrátane uloženej podkladoveju mapy a jej pozície',
+    savedMaps: 'Uložené mapy',
+    newMap: 'Nová mapa',
+    SomeMap: ({ name }) => (
+      <>
+        Mapa <i>{name}</i>
+      </>
+    ),
   },
 
   legend: {

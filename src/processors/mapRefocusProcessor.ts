@@ -1,19 +1,15 @@
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const mapRefocusProcessor: Processor<typeof mapRefocus> = {
-  actionCreator: mapRefocus,
-  handle: async ({ getState, action }) => {
-    if (
-      action.payload.lat === undefined &&
-      action.payload.lon === undefined &&
-      action.payload.zoom === undefined
-    ) {
-      return;
-    }
+export const mapRefocusProcessor: Processor = {
+  handle: async ({ getState, prevState }) => {
+    const prevMap = prevState.map;
 
     const { zoom, lat, lon } = getState().map;
+
+    if (prevMap.lat === lat && prevMap.lon === lon && prevMap.zoom === zoom) {
+      return;
+    }
 
     const map = getMapLeafletElement();
 

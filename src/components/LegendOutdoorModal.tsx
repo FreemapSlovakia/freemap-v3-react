@@ -55,7 +55,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegMap /> {m?.more.mapLegend}
+          <FaRegMap /> {m?.mainMenu.mapLegend}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

@@ -125,19 +125,22 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         }
       }),
   )
-  .handleAction(mapsDataLoaded, (_state, action) => ({
+  .handleAction(mapsDataLoaded, (state, { payload }) => ({
     joinWith: undefined,
     drawing: false,
-    lines: (action.payload.lines ?? initialState.lines).map((line) => ({
-      ...line,
-      type:
-        // compatibility
-        (line.type as string) === 'area'
-          ? 'polygon'
-          : (line.type as string) === 'distance'
-          ? 'line'
-          : line.type,
-    })),
+    lines: [
+      ...(payload.merge ? state.lines : []),
+      ...(payload.lines ?? initialState.lines).map((line) => ({
+        ...line,
+        type:
+          // compatibility
+          (line.type as string) === 'area'
+            ? 'polygon'
+            : (line.type as string) === 'distance'
+            ? 'line'
+            : line.type,
+      })),
+    ],
   }))
   .handleAction(drawingLineJoinStart, (state, action) => ({
     ...state,
