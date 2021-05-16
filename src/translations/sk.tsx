@@ -1442,7 +1442,7 @@ const sk: Messages = {
     saveError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
     loadToEmpty: 'Načítať do čistej mapy',
     loadInclMapAndPosition:
-      'Načítať vrátane uloženej podkladoveju mapy a jej pozície',
+      'Načítať vrátane uloženej podkladovej mapy a jej pozície',
     savedMaps: 'Uložené mapy',
     newMap: 'Nová mapa',
     SomeMap: ({ name }) => (

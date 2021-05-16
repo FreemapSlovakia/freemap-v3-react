@@ -67,7 +67,7 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const [clear, setClear] = useState(true);
 
-  const [inclPosition, setInclPosition] = useState(false);
+  const [inclPosition, setInclPosition] = useState(true);
 
   const selectedMap = selected
     ? maps.find((map) => map.id === selected)
