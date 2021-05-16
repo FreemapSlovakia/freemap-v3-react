@@ -4,7 +4,7 @@
   "description": "Freemap web portal.",
   "dependencies": {
     "@mapbox/togeojson": "0.16.0",
-    "@react-leaflet/core": "1.0.2",
+    "@react-leaflet/core": "1.1.0",
     "@turf/along": "6.3.0",
     "@turf/area": "6.3.0",
     "@turf/bbox": "6.3.0",
@@ -38,7 +38,7 @@
     "react-dom": "17.0.2",
     "react-dropzone": "11.3.2",
     "react-icons": "4.2.0",
-    "react-leaflet": "3.1.0",
+    "react-leaflet": "3.2.0",
     "react-overlays": "5.0.1",
     "react-redux": "7.2.4",
     "react-stars": "2.2.5",
