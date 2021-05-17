@@ -14,7 +14,7 @@ import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   errorKey: 'maps.saveError',
-  handle: async ({ getState, dispatch, action }) => {
+  async handle({ getState, dispatch, action }) {
     if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
       await handleTrackUpload({
         dispatch,

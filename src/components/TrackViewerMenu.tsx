@@ -37,6 +37,8 @@ export function TrackViewerMenu(): ReactElement {
 
   const hasTrack = useSelector((state) => !!state.trackViewer.trackGeojson);
 
+  const canUpload = useSelector((state) => !state.trackViewer.trackUID);
+
   const elevationChartActive = useSelector(
     (state) => !!state.elevationChart.trackGeojson,
   );
@@ -136,7 +138,7 @@ export function TrackViewerMenu(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
         </Button>
       )}
-      {hasTrack && (
+      {canUpload && (
         <Button
           className="ml-1"
           variant="secondary"
