@@ -28,30 +28,29 @@ import { createReducer } from 'typesafe-actions';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
 
-export interface RoutePlannerState {
+export interface RoutePlannerCleanResultState {
   alternatives: Alternative[];
   waypoints: Waypoint[];
   activeAlternativeIndex: number;
   timestamp: number | null;
-  transportType: TransportType;
+}
+
+export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   start: LatLon | null;
   midpoints: LatLon[];
   finish: LatLon | null;
   pickMode: PickMode | null;
   itineraryIsVisible: boolean;
-  mode: RouteMode;
-  milestones: boolean;
-  preventHint: boolean;
 }
 
-const clearResult = {
+const clearResult: RoutePlannerCleanResultState = {
   alternatives: [],
   waypoints: [],
   activeAlternativeIndex: 0,
   timestamp: null,
 };
 
-export const cleanState = {
+export const cleanState: RoutePlannerCleanState = {
   start: null,
   midpoints: [],
   finish: null,
@@ -59,6 +58,13 @@ export const cleanState = {
   itineraryIsVisible: false,
   ...clearResult,
 };
+
+export interface RoutePlannerState extends RoutePlannerCleanState {
+  transportType: TransportType;
+  mode: RouteMode;
+  milestones: boolean;
+  preventHint: boolean;
+}
 
 export const routePlannerInitialState: RoutePlannerState = {
   transportType: 'foot-osm',

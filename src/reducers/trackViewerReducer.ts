@@ -19,11 +19,10 @@ import {
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 
-export interface TrackViewerState {
+export interface TrackViewerStateBase {
   trackGeojson: FeatureCollection<Geometries> | null;
   trackGpx: string | null;
   trackUID: string | null;
-  colorizeTrackBy: null | 'elevation' | 'steepness';
   gpxUrl: string | null;
 
   osmNodeId: number | null;
@@ -32,7 +31,11 @@ export interface TrackViewerState {
   eleSmoothingFactor?: number;
 }
 
-export const cleanState = {
+export interface TrackViewerState extends TrackViewerStateBase {
+  colorizeTrackBy: null | 'elevation' | 'steepness';
+}
+
+export const cleanState: TrackViewerStateBase = {
   trackGeojson: null,
   trackGpx: null,
   trackUID: null,
