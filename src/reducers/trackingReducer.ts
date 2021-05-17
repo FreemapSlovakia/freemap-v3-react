@@ -164,16 +164,14 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       const { token, ts, ...rest } = params;
 
       return produce(state, (draft) => {
-        const key = token;
-
-        if (key === undefined) {
+        if (token === undefined) {
           return;
         }
 
-        let track = draft.tracks.find((t) => t.token === key);
+        let track = draft.tracks.find((t) => t.token === token);
 
         if (!track) {
-          track = { token: key, trackPoints: [] };
+          track = { token, trackPoints: [] };
 
           draft.tracks.push(track);
         }
