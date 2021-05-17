@@ -38,6 +38,8 @@ const getErrorMarkup = (ticketId?: string) => `
   Thank you.
 </p>`;
 
+const outdoorMap = 'Hiking, Bicycle, Ski, Riding';
+
 const en: Messages = {
   general: {
     iso: 'en_US',
@@ -1043,7 +1045,7 @@ const en: Messages = {
       p: 'OpenTopoMap',
       d: 'Public transport (ÖPNV)',
       h: 'Historic',
-      X: 'Hiking + Bicycle + Ski',
+      X: outdoorMap,
       i: 'Interactive layer',
       I: 'Photos',
       l: 'Forest tracks NLC (SK)',
@@ -1359,7 +1361,9 @@ const en: Messages = {
       <>
         Notes:
         <ul>
-          <li>Exported will be new outdoor map.</li>
+          <li>
+            Exported will be <i>{outdoorMap}</i> map.
+          </li>
           <li>Export of the map may last tens of seconds.</li>
           <li>
             Before sharing exported map accompain it with the following
@@ -1425,7 +1429,7 @@ const en: Messages = {
   legend: {
     body: () => (
       <>
-        Map legend for <i>Hiking + Bicycle + Ski</i>:
+        Map legend for <i>{outdoorMap}</i>:
       </>
     ),
   },

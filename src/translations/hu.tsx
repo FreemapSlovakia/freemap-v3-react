@@ -38,6 +38,8 @@ const getErrorMarkup = (ticketId?: string) => `
   Köszönjük!
 </p>`;
 
+const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
+
 const hu: Messages = {
   general: {
     iso: 'hu_HU',
@@ -1058,7 +1060,7 @@ const hu: Messages = {
       p: 'OpenTopoMap',
       d: 'Tömegközlekedés',
       h: 'Történelmi térkép',
-      X: 'Túrázás + Kerékpár + Síelés',
+      X: outdoorMap,
       i: 'Interaktív réteg',
       I: 'Fényképek',
       l: 'Erdészeti utak (Szlovákia)',
@@ -1379,7 +1381,9 @@ const hu: Messages = {
       <>
         Megjegyzések:
         <ul>
-          <li>A új szabadtéri térkép fog exportáltatni.</li>
+          <li>
+            A <i>{outdoorMap}</i> fog exportáltatni.
+          </li>
           <li>A térkép exportálása több tucat másodpercet is igénybe vehet.</li>
           <li>
             Megosztás előtt a térképet lássa el a következő szerzői jogi
@@ -1445,7 +1449,7 @@ const hu: Messages = {
   legend: {
     body: () => (
       <>
-        Jelmagyarázat: <i>Túrázás + Kerékpározás + Síelés</i>:
+        Jelmagyarázat: <i>{outdoorMap}</i>:
       </>
     ),
   },

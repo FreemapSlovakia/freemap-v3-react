@@ -40,6 +40,8 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 </p>
 `;
 
+const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
+
 const cs: Messages = {
   general: {
     iso: 'cs_CZ',
@@ -1055,7 +1057,7 @@ const cs: Messages = {
       p: 'OpenTopoMap',
       d: 'Veřejná doprava (ÖPNV)',
       h: 'Historická',
-      X: 'Turistika + Cyklo + Běžky',
+      X: outdoorMap,
       i: 'Interaktivní vrstva',
       I: 'Fotografie',
       l: 'Lesní cesty NLC (SK)',
@@ -1370,7 +1372,9 @@ const cs: Messages = {
       <>
         Upozornění:
         <ul>
-          <li>Exportuje se nová outdoorová mapa.</li>
+          <li>
+            Exportuje se mapa <i>{outdoorMap}</i>.
+          </li>
           <li>Export mapy může trvat i desítky sekund.</li>
           <li>
             Při publikované mapy je do ní nutno uvést její licenci:
@@ -1435,7 +1439,7 @@ const cs: Messages = {
   legend: {
     body: () => (
       <>
-        Legenda k mapě <i>Turistika + Cyklo + Běžky</i>:
+        Legenda k mapě <i>{outdoorMap}</i>:
       </>
     ),
   },
