@@ -34,6 +34,14 @@ export function SupportUsModal({ show }: Props): ReactElement {
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
+        <div>
+          <img
+            className="d-block mx-auto w-50 mt-2"
+            src="/pay_by_square.png"
+            alt=""
+          />
+        </div>
+        <hr />
         <form
           action="https://www.paypal.com/cgi-bin/webscr"
           method="post"
@@ -41,12 +49,10 @@ export function SupportUsModal({ show }: Props): ReactElement {
         >
           <input name="cmd" value="_s-xclick" type="hidden" />
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
-          <Button type="submit">
+          <Button className="d-block mx-auto" type="submit">
             <FaPaypal /> {m?.supportUs.paypal}
           </Button>
         </form>
-        <br />
-        <p>{m?.supportUs.thanks}</p>
         <hr />
         <p>
           Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
@@ -62,6 +68,8 @@ export function SupportUsModal({ show }: Props): ReactElement {
           </a>
           .
         </p>
+        <hr />
+        <p>{m?.supportUs.thanks}</p>
         <hr />
         <address>
           Občianske združenie
