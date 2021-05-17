@@ -9,6 +9,7 @@ import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { useStartFinishPoints } from 'fm3/hooks/startFinishPointsHook';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
@@ -24,9 +25,7 @@ interface GetFeatures {
 export function TrackViewerResult(): ReactElement | null {
   const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
 
-  const startPoints = useSelector((state) => state.trackViewer.startPoints);
-
-  const finishPoints = useSelector((state) => state.trackViewer.finishPoints);
+  const [startPoints, finishPoints] = useStartFinishPoints();
 
   const displayingElevationChart = useSelector(
     (state) => state.elevationChart.trackGeojson !== null,

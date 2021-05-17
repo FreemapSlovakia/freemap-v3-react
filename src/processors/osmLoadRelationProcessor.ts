@@ -91,8 +91,6 @@ export const osmLoadRelationProcessor: Processor = {
     dispatch(
       trackViewerSetData({
         trackGeojson,
-        startPoints: [],
-        finishPoints: [],
       }),
     );
   },

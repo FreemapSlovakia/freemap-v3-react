@@ -1,4 +1,5 @@
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { useStartFinishPoints } from 'fm3/hooks/startFinishPointsHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { ReactElement } from 'react';
@@ -7,9 +8,7 @@ import { useSelector } from 'react-redux';
 export function TrackViewerDetails(): ReactElement | null {
   const m = useMessages();
 
-  const startPoints = useSelector((state) => state.trackViewer.startPoints);
-
-  const finishPoints = useSelector((state) => state.trackViewer.finishPoints);
+  const [startPoints, finishPoints] = useStartFinishPoints();
 
   const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
 

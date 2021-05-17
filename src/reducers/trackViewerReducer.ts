@@ -10,7 +10,6 @@ import {
 } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import {
-  TrackPoint,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
@@ -24,8 +23,6 @@ export interface TrackViewerState {
   trackGeojson: FeatureCollection<Geometries> | null;
   trackGpx: string | null;
   trackUID: string | null;
-  startPoints: TrackPoint[];
-  finishPoints: TrackPoint[];
   colorizeTrackBy: null | 'elevation' | 'steepness';
   gpxUrl: string | null;
 
@@ -39,8 +36,6 @@ export const cleanState = {
   trackGeojson: null,
   trackGpx: null,
   trackUID: null,
-  startPoints: [],
-  finishPoints: [],
   osmNodeId: null,
   osmWayId: null,
   osmRelationId: null,

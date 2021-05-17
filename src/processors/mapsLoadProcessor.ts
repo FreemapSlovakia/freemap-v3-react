@@ -90,31 +90,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
               ? undefined
               : new Date(mapData.galleryFilter.takenAtTo),
         },
-        trackViewer: mapData.trackViewer && {
-          ...mapData.trackViewer,
-          startPoints: mapData.trackViewer.startPoints.map((point) => ({
-            ...point,
-            startTime:
-              point.startTime === undefined
-                ? undefined
-                : new Date(point.startTime),
-            finishTime:
-              point.finishTime === undefined
-                ? undefined
-                : new Date(point.finishTime),
-          })),
-          finishPoints: mapData.trackViewer.finishPoints.map((point) => ({
-            ...point,
-            startTime:
-              point.startTime === undefined
-                ? undefined
-                : new Date(point.startTime),
-            finishTime:
-              point.finishTime === undefined
-                ? undefined
-                : new Date(point.finishTime),
-          })),
-        },
+        trackViewer: mapData.trackViewer,
       }),
     );
   },

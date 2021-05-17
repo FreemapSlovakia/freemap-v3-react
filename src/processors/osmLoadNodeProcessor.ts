@@ -31,8 +31,6 @@ export const osmLoadNodeProcessor: Processor = {
           type: 'FeatureCollection',
           features: nodes.map((node) => point(node)),
         },
-        startPoints: [],
-        finishPoints: [],
       }),
     );
   },

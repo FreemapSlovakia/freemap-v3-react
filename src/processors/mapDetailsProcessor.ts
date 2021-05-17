@@ -168,8 +168,6 @@ export const mapDetailsProcessor: Processor = {
       dispatch(
         trackViewerSetData({
           trackGeojson: geojson,
-          startPoints: [],
-          finishPoints: [],
         }),
       );
     } else {

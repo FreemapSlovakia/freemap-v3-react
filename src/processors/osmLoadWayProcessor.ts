@@ -37,8 +37,6 @@ export const osmLoadWayProcessor: Processor = {
           type: 'FeatureCollection',
           features: Object.keys(ways).map((id) => lineString(ways[id])),
         },
-        startPoints: [],
-        finishPoints: [],
       }),
     );
   },
