@@ -9,11 +9,23 @@ import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { DefaultRootState } from 'react-redux';
 import { assertType } from 'typescript-is';
+import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   errorKey: 'maps.saveError',
   handle: async ({ getState, dispatch, action }) => {
+    if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
+      await handleTrackUpload({
+        dispatch,
+        getState,
+      });
+
+      dispatch(action);
+
+      return;
+    }
+
     const { id } = getState().maps;
 
     const { data } = await httpRequest({
