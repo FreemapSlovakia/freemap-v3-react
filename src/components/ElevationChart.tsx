@@ -5,7 +5,14 @@ import {
 } from 'fm3/actions/elevationChartActions';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/elevationChart.scss';
-import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+  Fragment,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -116,10 +123,8 @@ export function ElevationChart(): ReactElement | null {
 
   useEffect(() => {
     const ro = new ResizeObserver((e) => {
-      if (ref2) {
-        setWidth(e[0].contentRect.width);
-        setHeight(e[0].contentRect.height - ref2.offsetHeight);
-      }
+      setWidth(e[0].contentRect.width);
+      setHeight(e[0].contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
     if (ref) {
@@ -178,6 +183,7 @@ export function ElevationChart(): ReactElement | null {
 
         {mouseX !== undefined && (
           <line
+            key="mousex"
             x1={mouseX}
             x2={mouseX}
             y1={mt}
@@ -187,8 +193,8 @@ export function ElevationChart(): ReactElement | null {
           />
         )}
 
-        {yLines.map((y) => (
-          <>
+        {yLines.map((y, i) => (
+          <Fragment key={'y' + i}>
             <line
               x1={ml}
               x2={width - mr}
@@ -222,11 +228,11 @@ export function ElevationChart(): ReactElement | null {
                 {nf0.format(y)}
               </text>
             )}
-          </>
+          </Fragment>
         ))}
 
-        {xLines.map((x) => (
-          <>
+        {xLines.map((x, i) => (
+          <Fragment key={'x' + i}>
             <line
               x1={mapX(x)}
               x2={mapX(x)}
@@ -261,38 +267,38 @@ export function ElevationChart(): ReactElement | null {
                 {nf1.format(x / 1000)}
               </text>
             )}
-
-            {/* x-axis */}
-            <line
-              x1={ml}
-              x2={ml}
-              y1={mt}
-              y2={height - mb}
-              stroke="black"
-              strokeWidth={1}
-            />
-
-            {/* y-axis */}
-            <line
-              x1={ml}
-              x2={width - mr}
-              y1={height - mb}
-              y2={height - mb}
-              stroke="black"
-              strokeWidth={1}
-            />
-
-            <rect
-              x={ml}
-              y={mt}
-              width={width - ml - mr}
-              height={height - mt - mb}
-              onMouseMove={handleMouseMove}
-              onMouseOut={handleMouseOut}
-              opacity={0}
-            />
-          </>
+          </Fragment>
         ))}
+
+        {/* x-axis */}
+        <line
+          x1={ml}
+          x2={ml}
+          y1={mt}
+          y2={height - mb}
+          stroke="black"
+          strokeWidth={1}
+        />
+
+        {/* y-axis */}
+        <line
+          x1={ml}
+          x2={width - mr}
+          y1={height - mb}
+          y2={height - mb}
+          stroke="black"
+          strokeWidth={1}
+        />
+
+        <rect
+          x={ml}
+          y={mt}
+          width={width - ml - mr}
+          height={height - mt - mb}
+          onMouseMove={handleMouseMove}
+          onMouseOut={handleMouseOut}
+          opacity={0}
+        />
       </svg>
 
       {typeof climbUp === 'number' && typeof climbDown === 'number' && (
