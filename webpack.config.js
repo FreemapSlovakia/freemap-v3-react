@@ -82,8 +82,8 @@ module.exports = {
         },
       },
       {
-        // babelify some very modern libraries
-        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first|leaflet)\/.*\.js$/,
+        // babelify some too modern libraries
+        test: /\bnode_modules\/.*\/?(exifreader|strict-uri-encode|query-string|split-on-first|leaflet|@?react-leaflet)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
@@ -91,7 +91,7 @@ module.exports = {
               '@babel/preset-env',
               {
                 targets: {
-                  browsers: ['> 2%'],
+                  browsers: ['> 0.5%'],
                 },
               },
             ],
