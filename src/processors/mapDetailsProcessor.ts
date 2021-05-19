@@ -27,13 +27,6 @@ const cancelType = [
 
 interface OverpassBaseElement {
   id: number;
-  bounds: {
-    minlat: number;
-    minlon: number;
-    maxlat: number;
-    maxlon: number;
-  };
-
   tags?: Record<string, string>;
 }
 
