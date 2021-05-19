@@ -252,10 +252,30 @@ const naturalNames: Record<string, string> = {
 
 const tourismNames: Record<string, string> = {
   viewpoint: 'Výhľad',
+  information: 'Informácie',
+  hotel: 'Hotel',
+  attraction: 'Atrakcia',
+  artwork: 'Umenie',
+  guest_house: 'Apartmán',
+  picnic_site: 'Miesto na piknik',
+  camp_site: 'Kemp',
+  museum: 'Múzeum',
+  chalet: 'Chata',
+  hostel: 'Hostel',
+  motel: 'Motel',
+  zoo: 'ZOO',
 };
 
 const leisureNames: Record<string, string> = {
   firepit: 'Ohnisko',
+  pitch: 'Ihrisko',
+  swimming_pool: 'Bazén',
+  park: 'Park',
+  garden: 'Záhrada',
+  playground: 'Ihrisko',
+  track: 'Dráha',
+  picnic_table: 'Pikniková stôl',
+  stadium: 'Štadión',
 };
 
 const landuseNames: Record<string, string> = {
@@ -266,6 +286,14 @@ const landuseNames: Record<string, string> = {
   allotments: 'Zahradkárska oblasť',
   farmland: 'Pole',
   farmyard: 'Družstvo',
+  grass: 'Tráva',
+  meadow: 'Lúka',
+  orchard: 'Sad',
+  vineyard: 'Vinica',
+  cemetery: 'Cintorín',
+  reservoir: 'Rezervoár',
+  quarry: 'Lom',
+  millitary: 'Vojenská oblasť',
 };
 
 const waterwayNames: Record<string, string> = {
@@ -273,12 +301,41 @@ const waterwayNames: Record<string, string> = {
   stream: 'Potok',
   ditch: 'Kanál',
   drain: 'Odtok',
+  waterfall: 'Vodopád',
+  riverbank: 'Breh',
+  dam: 'Priehrada',
 };
 
 const amenityNames: Record<string, string> = {
   hunting_stand: 'Poľovnícky posed',
   toilets: 'WC',
   shelter: 'Prístrešok',
+  bench: 'Lavička',
+  atm: 'Bankomat',
+  bank: 'Banka',
+  fuel: 'Čerpacia stanica',
+  hospital: 'Nemocnica',
+  place_of_worship: 'Miesto uctievania',
+  restaurant: 'Reštaurácia',
+  school: 'Škola',
+  waste_basket: 'Odpadkový kôš',
+  cafe: 'Kaviareň',
+  fast_food: 'Rýchle občerstvenie',
+  bicycle_parking: 'Parkovanie pre bicykle',
+  pharmacy: 'Lekáreň',
+  post_box: 'Poštová schránka',
+  recycling: 'Recyklovanie',
+  kindergarten: 'Škôlka',
+  drinking_water: 'Pitná voda',
+  bar: 'Bar',
+  post_office: 'Pošta',
+  townhall: 'Mestská radnica, obecný úrad',
+  pub: 'Krčma',
+  fountain: 'Fontána',
+  police: 'Policia',
+  waste_disposal: 'Odpadkový kôš',
+  library: 'Knižnica',
+  bus_station: 'Autobusová stanica',
 };
 
 const routeNames: Record<string, string> = {
@@ -286,8 +343,12 @@ const routeNames: Record<string, string> = {
   foot: 'Pešia trasa',
   bicycle: 'Cyklotrasa',
   ski: 'Lyžiarská trasa',
+  piste: 'Bežkárska trasa trasa',
   horse: 'Jazdecká trasa',
   railway: 'Železničná trasa',
+  tram: 'Električková trasa',
+  bus: 'Trasa autobusu',
+  mtb: 'Trasa pre horské bicykle',
 };
 
 const adminLevelNames: Record<string, string> = {
@@ -319,6 +380,11 @@ const highwayNames: Record<string, string> = {
   primary_link: 'Napojenie na cestu prvej triedy',
   secondaty_link: 'Napojenie na cestu druhej triedy',
   tertiary_link: 'Napojenie na cestu tretej triedy',
+  motorway_link: 'Napojenie na ďiaľnicu',
+  trunk_link: 'Napojenie na cestu pre motorové vozidlá',
+  construction: 'Cesta vo výstavbe',
+  crossing: 'Prechod',
+  cycleway: 'Cyklochodník',
 };
 
 function getName(element: OverpassElement) {
