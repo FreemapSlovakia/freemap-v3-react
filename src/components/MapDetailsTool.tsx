@@ -2,27 +2,23 @@ import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function MapDetailsTool(): null {
   const dispatch = useDispatch();
-
-  const subtool = useSelector((state) => state.mapDetails.subtool);
 
   useMapEvent(
     'click',
     useCallback(
       ({ latlng }: LeafletMouseEvent) => {
-        if (subtool !== null) {
-          dispatch(
-            mapDetailsSetUserSelectedPosition({
-              lat: latlng.lat,
-              lon: latlng.lng,
-            }),
-          );
-        }
+        dispatch(
+          mapDetailsSetUserSelectedPosition({
+            lat: latlng.lat,
+            lon: latlng.lng,
+          }),
+        );
       },
-      [dispatch, subtool],
+      [dispatch],
     ),
   );
 
