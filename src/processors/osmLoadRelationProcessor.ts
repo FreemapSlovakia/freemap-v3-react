@@ -1,3 +1,4 @@
+import center from '@turf/center';
 import {
   Feature,
   featureCollection,
@@ -7,22 +8,22 @@ import {
   Point,
 } from '@turf/helpers';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmNode, OsmRelation, OsmResult, OsmWay } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
-export const osmLoadRelationProcessor: Processor = {
+export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
   errorKey: 'osm.fetchingError',
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ dispatch, getState, action }) => {
+    const id = action.payload;
+
     const { data } = await httpRequest({
       getState,
       method: 'GET',
-      url: `//api.openstreetmap.org/api/0.6/relation/${
-        getState().trackViewer.osmRelationId
-      }/full`,
+      url: `//api.openstreetmap.org/api/0.6/relation/${id}/full`,
       expectedStatus: 200,
     });
 
@@ -44,7 +45,11 @@ export const osmLoadRelationProcessor: Processor = {
 
     const features: Feature<Point | LineString>[] = [];
 
+    let tags: Record<string, string> | undefined = undefined;
+
     for (const relation of relations) {
+      tags = relation.tags;
+
       for (const member of relation.members) {
         const { ref, type } = member;
 
@@ -86,11 +91,21 @@ export const osmLoadRelationProcessor: Processor = {
       }
     }
 
+    // TODO add support for areas
+
     const trackGeojson = featureCollection(features);
 
+    const c = center(trackGeojson);
+
     dispatch(
-      trackViewerSetData({
-        trackGeojson,
+      searchSelectResult({
+        osmType: 'relation',
+        id,
+        tags,
+        label: 'TODO',
+        geojson: trackGeojson,
+        lon: c.geometry.coordinates[0],
+        lat: c.geometry.coordinates[1],
       }),
     );
   },

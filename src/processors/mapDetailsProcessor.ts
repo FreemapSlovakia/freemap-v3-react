@@ -90,6 +90,9 @@ export const mapDetailsProcessor: Processor = {
       return;
     }
 
+    const kvFilter =
+      '[~"^amenity|highway|waterway|border|landuse|route|building|man_made|natural|leisure|information|shop|tourism|barrier|sport|place|power|boundary|railway|aerialway$"~"."]';
+
     const [{ data }, { data: data1 }] = await Promise.all([
       httpRequest({
         getState,
@@ -98,7 +101,7 @@ export const mapDetailsProcessor: Processor = {
         headers: { 'Content-Type': 'text/plain' },
         data:
           '[out:json];(' +
-          `nwr(around:33,${userSelectedLat},${userSelectedLon})[~"^amenity|highway|waterway|border|landuse|route|building|man_made|natural|leisure|information|shop|tourism|barrier|sport|place|power|boundary|railway|aerialway$"~"."];` +
+          `nwr(around:33,${userSelectedLat},${userSelectedLon})${kvFilter};` +
           ');out geom body;',
         expectedStatus: 200,
       }),
@@ -109,14 +112,12 @@ export const mapDetailsProcessor: Processor = {
         headers: { 'Content-Type': 'text/plain' },
         data: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;
-          nwr(pivot.a)[~"^amenity|highway|waterway|border|landuse|route|building|man_made|natural|leisure|information|shop|tourism|barrier|sport|place|power|boundary|railway|aerialway$"~"."];
+          nwr(pivot.a)${kvFilter};
           out geom body;
           `,
         expectedStatus: 200,
       }),
     ]);
-
-    console.log({ data, data1 });
 
     const oRes = assertType<OverpassResult>(data);
 
@@ -126,24 +127,17 @@ export const mapDetailsProcessor: Processor = {
 
     const sr: SearchResult[] = [];
 
-    function toGeometry(geom: NodeGeom | WayGeom) {
-      if (geom.type === 'node') {
-        return point([geom.lon, geom.lat]);
-      } else {
-        return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
-      }
-    }
-
     for (const element of elements) {
       switch (element.type) {
         case 'node':
           sr.push({
             lat: element.lat,
             lon: element.lon,
-            geojson: toGeometry(element),
+            geojson: toGeometry(element).geometry,
             id: element.id,
             label: getName(element),
             osmType: 'node',
+            tags: element.tags,
           });
 
           break;
@@ -156,10 +150,11 @@ export const mapDetailsProcessor: Processor = {
             sr.push({
               lat,
               lon,
-              geojson,
+              geojson: geojson.geometry,
               id: element.id,
               label: getName(element),
               osmType: 'way',
+              tags: element.tags,
             });
           }
 
@@ -179,10 +174,11 @@ export const mapDetailsProcessor: Processor = {
             sr.push({
               lat,
               lon,
-              geojson,
+              geojson: geojson.geometry,
               id: element.id,
               label: getName(element),
               osmType: 'relation',
+              tags: element.tags,
             });
           }
 
@@ -191,6 +187,8 @@ export const mapDetailsProcessor: Processor = {
     }
 
     if (elements.length > 0) {
+      dispatch(setTool(null));
+
       dispatch(searchSetResults(sr));
     } else {
       dispatch(
@@ -205,6 +203,14 @@ export const mapDetailsProcessor: Processor = {
     }
   },
 };
+
+function toGeometry(geom: NodeGeom | WayGeom) {
+  if (geom.type === 'node') {
+    return point([geom.lon, geom.lat]);
+  } else {
+    return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
+  }
+}
 
 const colorNames: Record<string, string> = {
   red: 'Čevená',

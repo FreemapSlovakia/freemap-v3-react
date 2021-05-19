@@ -511,7 +511,7 @@ export type Messages = {
   mapDetails: {
     notFound: string;
     fetchingError: ({ err }: Err) => string;
-    detail: ({ element }: { element: any }) => JSX.Element;
+    detail: ({ tags }: { tags?: Record<string, string> }) => JSX.Element;
   };
   objects: {
     type: string;

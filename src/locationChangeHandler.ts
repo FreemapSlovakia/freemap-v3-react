@@ -314,20 +314,20 @@ export const handleLocationChange = (
   const osmNode = query['osm-node'];
   const osmNodeId = typeof osmNode === 'string' && parseInt(osmNode, 10);
   if (osmNodeId) {
-    if (osmNodeId !== getState().trackViewer.osmNodeId) {
+    if (osmNodeId !== getState().search.osmNodeId) {
       dispatch(osmLoadNode(osmNodeId));
     }
-  } else if (getState().trackViewer.osmNodeId) {
+  } else if (getState().search.osmNodeId) {
     dispatch(osmClear());
   }
 
   const osmWay = query['osm-way'];
   const osmWayId = typeof osmWay === 'string' && parseInt(osmWay, 10);
   if (osmWayId) {
-    if (osmWayId !== getState().trackViewer.osmWayId) {
+    if (osmWayId !== getState().search.osmWayId) {
       dispatch(osmLoadWay(osmWayId));
     }
-  } else if (getState().trackViewer.osmWayId) {
+  } else if (getState().search.osmWayId) {
     dispatch(osmClear());
   }
 
@@ -336,10 +336,10 @@ export const handleLocationChange = (
     typeof osmRelation === 'string' && parseInt(osmRelation, 10);
 
   if (osmRelationId) {
-    if (osmRelationId !== getState().trackViewer.osmRelationId) {
+    if (osmRelationId !== getState().search.osmRelationId) {
       dispatch(osmLoadRelation(osmRelationId));
     }
-  } else if (getState().trackViewer.osmRelationId) {
+  } else if (getState().search.osmRelationId) {
     dispatch(osmClear());
   }
 

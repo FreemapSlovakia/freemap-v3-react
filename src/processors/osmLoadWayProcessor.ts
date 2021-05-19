@@ -1,21 +1,22 @@
-import { lineString } from '@turf/helpers';
+import center from '@turf/center';
+import { featureCollection, lineString } from '@turf/helpers';
 import { osmLoadWay } from 'fm3/actions/osmActions';
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
-export const osmLoadWayProcessor: Processor = {
+export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
   errorKey: 'osm.fetchingError',
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ dispatch, getState, action }) => {
+    const id = action.payload;
+
     const { data } = await httpRequest({
       getState,
       method: 'GET',
-      url: `//api.openstreetmap.org/api/0.6/way/${
-        getState().trackViewer.osmWayId
-      }/full`,
+      url: `//api.openstreetmap.org/api/0.6/way/${id}/full`,
       expectedStatus: 200,
     });
 
@@ -23,20 +24,34 @@ export const osmLoadWayProcessor: Processor = {
 
     const ways: Record<string, [number, number][]> = {};
 
-    for (const item of assertType<OsmResult>(data).elements) {
+    const { elements } = assertType<OsmResult>(data);
+
+    let tags: Record<string, string> | undefined = undefined;
+
+    for (const item of elements) {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
         ways[item.id] = item.nodes.map((ref) => nodes[ref]);
+        tags = item.tags;
       }
     }
 
+    const f = featureCollection(
+      Object.keys(ways).map((id) => lineString(ways[id])),
+    );
+
+    const c = center(f);
+
     dispatch(
-      trackViewerSetData({
-        trackGeojson: {
-          type: 'FeatureCollection',
-          features: Object.keys(ways).map((id) => lineString(ways[id])),
-        },
+      searchSelectResult({
+        osmType: 'way',
+        id,
+        tags,
+        label: 'TODO',
+        geojson: f,
+        lon: c.geometry.coordinates[0],
+        lat: c.geometry.coordinates[1],
       }),
     );
   },

@@ -2,11 +2,11 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
-import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Table from 'react-bootstrap/Table';
 import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
@@ -646,7 +646,18 @@ const hu: Messages = {
     notFound: 'Itt nincs út.',
     fetchingError: ({ err }) =>
       `Hiba történt az út adatainak beolvasásakor: ${err}`,
-    detail: ({ element }) => <RoadDetails way={element} />,
+    detail: ({ tags = {} }) => (
+      <Table striped bordered size="small">
+        <tbody>
+          {Object.entries(tags).map(([k, v]) => (
+            <tr key={k}>
+              <th>{k}</th>
+              <td>{v}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    ),
   },
 
   objects: {

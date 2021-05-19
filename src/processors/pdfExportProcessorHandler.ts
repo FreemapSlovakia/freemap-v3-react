@@ -2,6 +2,7 @@ import {
   Feature,
   FeatureCollection,
   Geometries,
+  GeometryCollection,
   lineString,
   point,
   polygon,
@@ -22,6 +23,7 @@ const geometryTypeMapping = {
   MultiLineString: 'polyline',
   Point: 'point',
   MultiPoint: 'point',
+  GeometryCollection: 'geometrycollection',
 } as const;
 
 const handle: ProcessorHandler<typeof exportPdf> = async ({
@@ -83,7 +85,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     }
   }
 
-  const features: Feature<Geometries>[] = [];
+  const features: Feature<Geometries | GeometryCollection>[] = [];
 
   if (drawing) {
     for (let i = 0; i < lines.length; i++) {
@@ -148,10 +150,14 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     }
   }
 
-  const f: Record<'polygon' | 'polyline' | 'point', Feature[]> = {
+  const f: Record<
+    'polygon' | 'polyline' | 'point' | 'geometrycollection',
+    Feature[]
+  > = {
     polygon: [],
     polyline: [],
     point: [],
+    geometrycollection: [],
   };
 
   for (const feature of features) {

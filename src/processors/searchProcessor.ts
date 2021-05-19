@@ -1,6 +1,7 @@
-import { point } from '@turf/helpers';
+import { Geometries, GeometryCollection, point } from '@turf/helpers';
 import { clearMap } from 'fm3/actions/mainActions';
 import {
+  SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
@@ -10,18 +11,18 @@ import { parseCoordinates } from 'fm3/coordinatesParser';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
-import { GeoJsonObject } from 'geojson';
 import { assertType } from 'typescript-is';
 
 interface NominatimResult {
   osm_id: number;
-  geojson: GeoJsonObject;
+  geojson: Geometries | GeometryCollection;
   osm_type: 'node' | 'way' | 'relation';
   lat: string;
   lon: string;
   display_name: string;
   class: string;
   type: string;
+  extratags?: Record<string, string>;
 }
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
@@ -51,7 +52,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
           {
             id: -1,
             label: query.toUpperCase(),
-            geojson: point([coords.lon, coords.lat]),
+            geojson: point([coords.lon, coords.lat]).geometry,
             lat: coords.lat,
             lon: coords.lon,
           },
@@ -72,6 +73,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         q: query,
         format: 'json',
         polygon_geojson: 1,
+        extratags: 1,
+        namedetails: 0, // TODO maybe use some more details
         limit: 20,
         'accept-language': getState().l10n.language,
         viewbox: action.payload.fromUrl ? undefined : bbox,
@@ -85,7 +88,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         (item) =>
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,
       )
-      .map((item) => {
+      .map((item): SearchResult => {
         return {
           id: item.osm_id,
           label: item.display_name,
@@ -95,6 +98,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
           class: item.class,
           type: item.type,
           osmType: item.osm_type,
+          tags: item.extratags,
         };
       });
 

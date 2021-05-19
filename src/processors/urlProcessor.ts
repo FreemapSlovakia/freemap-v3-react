@@ -29,6 +29,7 @@ export const urlProcessor: Processor = {
       auth,
       tracking,
       maps,
+      search,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -64,9 +65,9 @@ export const urlProcessor: Processor = {
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
       trackViewer.gpxUrl,
-      trackViewer.osmNodeId,
-      trackViewer.osmRelationId,
-      trackViewer.osmWayId,
+      search.osmNodeId,
+      search.osmRelationId,
+      search.osmWayId,
       trackViewer.trackUID,
       maps.id,
       main.tool,
@@ -134,16 +135,16 @@ export const urlProcessor: Processor = {
       historyParts.push(['gpx-url', trackViewer.gpxUrl]);
     }
 
-    if (trackViewer.osmNodeId) {
-      historyParts.push(['osm-node', trackViewer.osmNodeId]);
+    if (search.osmNodeId) {
+      historyParts.push(['osm-node', search.osmNodeId]);
     }
 
-    if (trackViewer.osmWayId) {
-      historyParts.push(['osm-way', trackViewer.osmWayId]);
+    if (search.osmWayId) {
+      historyParts.push(['osm-way', search.osmWayId]);
     }
 
-    if (trackViewer.osmRelationId) {
-      historyParts.push(['osm-relation', trackViewer.osmRelationId]);
+    if (search.osmRelationId) {
+      historyParts.push(['osm-relation', search.osmRelationId]);
     }
 
     if (trackViewer.colorizeTrackBy) {
@@ -306,11 +307,11 @@ export const urlProcessor: Processor = {
 
     const sq = isMap ? serializeQuery(historyParts) : undefined;
 
-    const search = serializeQuery(queryParts);
+    const urlSearch = serializeQuery(queryParts);
 
     if (
       (isMap && sq !== history.location.state?.sq) ||
-      search !== window.location.search
+      urlSearch !== window.location.search
     ) {
       const method =
         lastActionType &&
@@ -321,7 +322,7 @@ export const urlProcessor: Processor = {
       history[method](
         {
           pathname: '/',
-          search: search,
+          search: urlSearch,
           hash: '',
         },
         { sq },

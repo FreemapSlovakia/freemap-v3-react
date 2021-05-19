@@ -70,9 +70,7 @@ export interface OsmResult {
 
 interface OverpassElementBase {
   id: number;
-  tags: {
-    [key: string]: string;
-  };
+  tags: Record<string, string>;
 }
 
 interface OverpassNodeElement extends OverpassElementBase, LatLon {

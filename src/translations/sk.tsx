@@ -2,11 +2,11 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
-import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Table from 'react-bootstrap/Table';
 import { FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 import shared from './sk-shared.json';
@@ -663,7 +663,18 @@ const sk: Messages = {
     notFound: 'Nebola nájdená žiadna cesta.',
     fetchingError: ({ err }) =>
       `Nastala chyba pri získavaní detailov o ceste: ${err}`,
-    detail: ({ element }) => <RoadDetails way={element} />,
+    detail: ({ tags = {} }) => (
+      <Table striped bordered size="small">
+        <tbody>
+          {Object.entries(tags).map(([k, v]) => (
+            <tr key={k}>
+              <th>{k}</th>
+              <td>{v}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    ),
   },
 
   objects: {

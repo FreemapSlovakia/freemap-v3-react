@@ -1,15 +1,25 @@
-import { GeoJsonObject } from 'geojson';
+import {
+  Feature,
+  FeatureCollection,
+  Geometries,
+  GeometryCollection,
+} from '@turf/helpers';
 import { createAction } from 'typesafe-actions';
 
 export interface SearchResult {
   id: number;
   label: string;
-  geojson: GeoJsonObject;
+  geojson:
+    | Geometries
+    | GeometryCollection
+    | Feature<Geometries | GeometryCollection>
+    | FeatureCollection<Geometries | GeometryCollection>;
   lat: number;
   lon: number;
   class?: string;
   type?: string;
   osmType?: 'node' | 'way' | 'relation';
+  tags?: Record<string, string>;
 }
 
 export const searchSetQuery =
