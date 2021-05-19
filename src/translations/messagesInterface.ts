@@ -509,7 +509,6 @@ export type Messages = {
     };
   };
   mapDetails: {
-    road: string;
     notFound: string;
     fetchingError: ({ err }: Err) => string;
     detail: ({ element }: { element: any }) => JSX.Element;

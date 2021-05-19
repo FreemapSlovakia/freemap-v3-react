@@ -26,7 +26,7 @@ Features:
 1. Run webserver which also compiles the source files on change:
 
    ```bash
-   npm run livereload
+   npm start
    ```
 
 1. Install [development CA certificate](./ssl/Freemap_CA.crt) to your browser.

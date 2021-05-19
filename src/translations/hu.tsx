@@ -643,7 +643,6 @@ const hu: Messages = {
   },
 
   mapDetails: {
-    road: 'Út adatai',
     notFound: 'Itt nincs út.',
     fetchingError: ({ err }) =>
       `Hiba történt az út adatainak beolvasásakor: ${err}`,

@@ -11,6 +11,7 @@
     "@turf/bbox-polygon": "6.3.0",
     "@turf/boolean-contains": "6.3.0",
     "@turf/buffer": "6.3.0",
+    "@turf/center": "6.3.0",
     "@turf/flatten": "6.3.0",
     "@turf/helpers": "6.3.0",
     "@turf/invariant": "6.3.0",
@@ -131,6 +132,6 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "livereload": "webpack serve --https --key ssl/freemap.sk.key --cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --content-base=src --inline"
+    "start": "webpack serve --https --key ssl/freemap.sk.key --cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --content-base=src --inline"
   }
 }

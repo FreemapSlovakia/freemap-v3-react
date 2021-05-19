@@ -643,7 +643,6 @@ const cs: Messages = {
   },
 
   mapDetails: {
-    road: 'Info o cestě',
     notFound: 'Nebyla nalezena žádná cesta.',
     fetchingError: ({ err }) =>
       `Nastala chyba při získávání detailů o cestě: ${err}`,

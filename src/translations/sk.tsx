@@ -660,7 +660,6 @@ const sk: Messages = {
   },
 
   mapDetails: {
-    road: 'Info o ceste',
     notFound: 'Nebola nájdená žiadna cesta.',
     fetchingError: ({ err }) =>
       `Nastala chyba pri získavaní detailov o ceste: ${err}`,

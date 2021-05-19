@@ -632,7 +632,6 @@ const en: Messages = {
   },
 
   mapDetails: {
-    road: 'Road info',
     notFound: 'No road found.',
     fetchingError: ({ err }) => `Error fetching road details: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,

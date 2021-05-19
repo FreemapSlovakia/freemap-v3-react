@@ -1,9 +1,5 @@
-import {
-  featureCollection,
-  Geometries,
-  lineString,
-  point,
-} from '@turf/helpers';
+import center from '@turf/center';
+import { geometryCollection, lineString, point } from '@turf/helpers';
 import {
   clearMap,
   deleteFeature,
@@ -11,8 +7,8 @@ import {
   setTool,
 } from 'fm3/actions/mainActions';
 import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
+import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -29,24 +25,54 @@ const cancelType = [
   getType(mapDetailsSetUserSelectedPosition),
 ];
 
-interface OverpassNodeElement extends LatLon {
+interface OverpassBaseElement {
+  id: number;
+  bounds: {
+    minlat: number;
+    minlon: number;
+    maxlat: number;
+    maxlon: number;
+  };
+
+  tags?: Record<string, string>;
+}
+
+interface NodeGeom extends LatLon {
   type: 'node';
 }
 
-interface OverpassWayElement {
+interface WayGeom {
   type: 'way';
   geometry: LatLon[];
 }
 
-interface OverpassRelationElement {
-  type: 'relation';
-  members: OverpassElement[];
+interface OverpassNode extends OverpassBaseElement, NodeGeom {}
+
+interface OverpassWay extends OverpassBaseElement, WayGeom {
+  nodes: number[];
 }
 
-type OverpassElement =
-  | OverpassNodeElement
-  | OverpassWayElement
-  | OverpassRelationElement;
+interface MemeberBase {
+  ref: number;
+  role: string;
+}
+
+interface WayMemeber extends MemeberBase, WayGeom {}
+
+interface NodeMemeber extends MemeberBase, NodeGeom {}
+
+interface RelationMemeber extends MemeberBase {
+  type: 'relation';
+}
+
+type Member = RelationMemeber | WayMemeber | NodeMemeber;
+
+interface OverpassRelation extends OverpassBaseElement {
+  type: 'relation';
+  members: Member[];
+}
+
+type OverpassElement = OverpassNode | OverpassWay | OverpassRelation;
 
 interface OverpassResult {
   elements: OverpassElement[];
@@ -56,11 +82,7 @@ export const mapDetailsProcessor: Processor = {
   actionCreator: mapDetailsSetUserSelectedPosition,
   errorKey: 'mapDetails.fetchingError',
   handle: async ({ dispatch, getState }) => {
-    const { subtool, userSelectedLat, userSelectedLon } = getState().mapDetails;
-
-    if (subtool !== 'track-info') {
-      return;
-    }
+    const { userSelectedLat, userSelectedLon } = getState().mapDetails;
 
     const le = getMapLeafletElement();
 
@@ -74,10 +96,8 @@ export const mapDetailsProcessor: Processor = {
       url: 'https://overpass.freemap.sk/api/interpreter',
       data:
         '[out:json];(' +
-        // + `node(around:33,${userSelectedLat},${userSelectedLon});`
-        `way(around:33,${userSelectedLat},${userSelectedLon})[highway];` +
-        // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
-        ');out geom meta;',
+        `nwr(around:33,${userSelectedLat},${userSelectedLon})[~"^amenity|highway|waterway|border|landuse|route|building|man_made|natural|leisure|information$"~"."];` +
+        ');out geom body;',
       expectedStatus: 200,
     });
 
@@ -113,63 +133,78 @@ export const mapDetailsProcessor: Processor = {
     //   // ),
     // ]);
 
+    console.log({ data });
+
     const oRes = assertType<OverpassResult>(data);
 
     const elements = [...oRes.elements, ...data1.elements];
 
-    if (elements.length > 0) {
-      const geojson = featureCollection<Geometries>(
-        elements.map((element) => {
-          switch (element.type) {
-            case 'node':
-              return point([element.lon, element.lat]);
-            case 'way':
-              return lineString(
-                element.geometry.map(({ lat, lon }) => [lon, lat]),
-              );
-            case 'relation': {
-              // TODO
-              // const f = featureCollection<Geometries>(
-              //   element.members
-              //     .filter(({ type }) =>
-              //       ['way', 'node' /* TODO , 'relation' */].includes(type),
-              //     )
-              //     .map((member) =>
-              //       member.type === 'way'
-              //         ? lineString(
-              //             member.geometry.map(({ lat, lon }) => [lon, lat]),
-              //           )
-              //         : member.type === 'node'
-              //         ? point([member.lon, member.lat])
-              //         : point([0, 0]),
-              //     ),
-              // );
+    const sr: SearchResult[] = [];
 
-              return point([0, 0]);
-            }
+    function toGeometry(geom: NodeGeom | WayGeom) {
+      if (geom.type === 'node') {
+        return point([geom.lon, geom.lat]);
+      } else {
+        return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
+      }
+    }
+
+    for (const element of elements) {
+      switch (element.type) {
+        case 'node':
+          if (isInteresting(element)) {
+            sr.push({
+              lat: element.lat,
+              lon: element.lon,
+              geojson: toGeometry(element),
+              id: element.id,
+              label: element.tags?.['name'] ?? '???',
+            });
           }
-        }),
-      );
+          break;
+        case 'way':
+          if (isInteresting(element)) {
+            const geojson = toGeometry(element);
 
-      (oRes.elements || []).forEach((element) => {
-        dispatch(
-          toastsAdd({
-            id: 'mapDetails.trackInfo.detail',
-            messageKey: 'mapDetails.detail',
-            messageParams: { element },
-            cancelType,
-            style: 'info',
-          }),
-        );
-      });
+            const [lon, lat] = center(geojson).geometry.coordinates;
 
-      // dispatch(mapDetailsSetTrackInfoPoints(geojson));
+            sr.push({
+              lat,
+              lon,
+              geojson,
+              id: element.id,
+              label: element.tags?.['name'] ?? '???',
+            });
+          }
 
-      dispatch(
-        trackViewerSetData({
-          trackGeojson: geojson,
-        }),
-      );
+          break;
+        case 'relation':
+          {
+            const geojson = geometryCollection(
+              element.members
+                .filter((member) => member.type !== 'relation')
+                .map(
+                  (member) => toGeometry(member as WayGeom | NodeGeom).geometry,
+                ),
+            );
+
+            const [lon, lat] = center(geojson).geometry.coordinates;
+
+            sr.push({
+              lat,
+              lon,
+              geojson,
+              id: element.id,
+              label: element.tags?.['name'] ?? '???',
+            });
+          }
+
+          break;
+      }
+    }
+
+    if (elements.length > 0) {
+      dispatch(searchSetResults(sr));
     } else {
       dispatch(
         toastsAdd({
@@ -180,8 +215,22 @@ export const mapDetailsProcessor: Processor = {
           style: 'info',
         }),
       );
-
-      // dispatch(mapDetailsSetTrackInfoPoints(null));
     }
   },
 };
+
+function isInteresting(element: OverpassElement) {
+  return (
+    !!element.tags &&
+    Object.keys(element.tags).some(
+      (key) =>
+        key !== 'attribution' &&
+        key !== 'created_by' &&
+        key !== 'source' &&
+        key !== 'odbl' &&
+        key.indexOf('source:') !== 0 &&
+        key.indexOf('source_ref') !== 0 && // purposely exclude colon
+        key.indexOf('tiger:') !== 0,
+    )
+  );
+}
