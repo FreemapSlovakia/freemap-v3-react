@@ -647,7 +647,7 @@ const hu: Messages = {
     fetchingError: ({ err }) =>
       `Hiba történt az út adatainak beolvasásakor: ${err}`,
     detail: ({ tags = {} }) => (
-      <Table striped bordered size="small">
+      <Table striped bordered size="sm">
         <tbody>
           {Object.entries(tags).map(([k, v]) => (
             <tr key={k}>

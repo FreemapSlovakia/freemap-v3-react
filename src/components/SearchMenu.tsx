@@ -199,12 +199,22 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           handleSelect((ch as any).props['data-id'], undefined, true);
         }
 
+        function handleBlur() {
+          if (tRef.current) {
+            window.clearTimeout(tRef.current);
+
+            tRef.current = undefined;
+          }
+        }
+
         return (
           <SafeAnchor
             ref={ref}
             {...props}
             onFocus={handleFocus}
             onMouseMove={handleFocus}
+            onMouseOut={handleBlur}
+            onBlur={handleBlur}
           >
             {children}
           </SafeAnchor>

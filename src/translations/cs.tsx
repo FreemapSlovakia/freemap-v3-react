@@ -647,7 +647,7 @@ const cs: Messages = {
     fetchingError: ({ err }) =>
       `Nastala chyba při získávání detailů o cestě: ${err}`,
     detail: ({ tags = {} }) => (
-      <Table striped bordered size="small">
+      <Table striped bordered size="sm">
         <tbody>
           {Object.entries(tags).map(([k, v]) => (
             <tr key={k}>

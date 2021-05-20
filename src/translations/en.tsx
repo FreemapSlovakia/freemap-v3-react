@@ -635,7 +635,7 @@ const en: Messages = {
     notFound: 'No road found.',
     fetchingError: ({ err }) => `Error fetching road details: ${err}`,
     detail: ({ tags = {} }) => (
-      <Table striped bordered size="small">
+      <Table striped bordered size="sm">
         <tbody>
           {Object.entries(tags).map(([k, v]) => (
             <tr key={k}>
