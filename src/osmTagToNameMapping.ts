@@ -67,6 +67,7 @@ export const osmTagToNameMapping: Node = {
     route: {
       '*': 'Trasa',
       route: {
+        '*': 'Trasa {}',
         hiking: 'Turistická trasa',
         foot: 'Pešia trasa',
         bicycle: 'Cyklotrasa',
@@ -114,6 +115,7 @@ export const osmTagToNameMapping: Node = {
     shelter: {
       '*': 'Prístrešok',
       shelter_type: {
+        '*': 'Prístrešok {}',
         basic_hut: 'Jednoduchá chata, bivak',
         changing_rooms: 'Prezliekáreň',
         field_shelter: 'Polný prístrešok',
@@ -153,7 +155,7 @@ export const osmTagToNameMapping: Node = {
     bus_station: 'Autobusová stanica',
   },
   waterway: {
-    '*': 'Vodný tok',
+    '*': 'Vodný tok {}',
     river: 'Rieka',
     stream: 'Potok',
     ditch: 'Kanál',
@@ -218,6 +220,7 @@ export const osmTagToNameMapping: Node = {
     clearcut: 'Rúbanisko',
   },
   power: {
+    '*': '{}',
     pole: 'Elektrický stĺp',
     tower: 'Veža vysokého napätia',
     line: 'Elektrické vedenie',
@@ -301,6 +304,18 @@ export const osmTagToNameMapping: Node = {
     hostel: 'Hostel',
     motel: 'Motel',
     zoo: 'ZOO',
+  },
+  place: {
+    '*': 'Miesto {}',
+    locality: 'Lokalita',
+    village: 'Dedina',
+    city: 'Veľkomesto',
+    town: 'Mesto',
+    country: 'Krajina',
+    state: 'Štát',
+    suburb: 'Predmestie',
+    hamlet: 'Osada',
+    isolated_dwelling: 'Samota',
   },
 };
 

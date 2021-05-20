@@ -294,32 +294,3 @@ function getName(element: OverpassElement) {
     .replace(/""/g, '')
     .trim();
 }
-
-// console.log(
-//   'RRRRRRRRRRR',
-//   // resolveGenericName(mapping, {
-//   //   amenity: 'shelter',
-//   //   shelter_type: 'weather_shelter',
-//   // }),
-//   // resolveGenericName(mapping, {
-//   //   highway: 'foo',
-//   // }),
-//   // ';',
-//   // resolveGenericName(mapping, {
-//   //   highway: 'service',
-//   // }),
-//   // ';',
-//   // resolveGenericName(mapping, {
-//   //   highway: 'service',
-//   //   service: 'driveway',
-//   // }),
-//   // ';',
-//   // resolveGenericName(mapping, {
-//   //   highway: 'service',
-//   //   service: 'bla',
-//   // }),
-//   // resolveGenericName(mapping, {
-//   //   leisure: 'pitch',
-//   //   sport: 'soccer',
-//   // }),
-// );
