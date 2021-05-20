@@ -12,7 +12,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { Node, osmTagToNameMapping } from 'fm3/osmTagToNameMapping';
+import { colorNames, Node, osmTagToNameMapping } from 'fm3/osmTagToNameMapping';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -205,20 +205,6 @@ function toGeometry(geom: NodeGeom | WayGeom) {
     return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
   }
 }
-
-const colorNames: Record<string, string> = {
-  red: 'Čevená',
-  blue: 'Modrá',
-  green: 'Zelená',
-  yellow: 'Žltá',
-  orange: 'Oranžová',
-  purple: 'Fialová',
-  violet: 'Fialová',
-  white: 'Biela',
-  black: 'Čierna',
-  gray: 'Sivá',
-  brown: 'Hnedá',
-};
 
 const typeSymbol = {
   way: '─',

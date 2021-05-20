@@ -303,3 +303,17 @@ export const osmTagToNameMapping: Node = {
     zoo: 'ZOO',
   },
 };
+
+export const colorNames: Record<string, string> = {
+  red: 'Čevená',
+  blue: 'Modrá',
+  green: 'Zelená',
+  yellow: 'Žltá',
+  orange: 'Oranžová',
+  purple: 'Fialová',
+  violet: 'Fialová',
+  white: 'Biela',
+  black: 'Čierna',
+  gray: 'Sivá',
+  brown: 'Hnedá',
+};
