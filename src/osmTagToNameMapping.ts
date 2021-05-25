@@ -163,9 +163,10 @@ export const osmTagToNameMapping: Node = {
   },
   waterway: {
     '*': 'Vodný tok {}',
+    canal: 'Kanál',
     river: 'Rieka',
     stream: 'Potok',
-    ditch: 'Kanál',
+    ditch: 'Priekopa',
     drain: 'Odtok',
     waterfall: 'Vodopád',
     riverbank: 'Breh',
@@ -218,6 +219,7 @@ export const osmTagToNameMapping: Node = {
     tree: 'Strom',
     plateau: 'Planina',
     arch: 'Skalné okno',
+    scree: 'Suťovisko'
   },
   man_made: {
     '*': '{}',
