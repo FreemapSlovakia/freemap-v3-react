@@ -137,7 +137,7 @@ export const osmTagToNameMapping: Node = {
     hospital: 'Nemocnica',
     clinic: 'Poliklinika',
     doctors: 'Lekárska ordinácia',
-    dentist: 'Zubná ordinácia'
+    dentist: 'Zubná ordinácia',
     place_of_worship: 'Miesto uctievania',
     restaurant: 'Reštaurácia',
     pub: 'Krčma',
@@ -219,7 +219,7 @@ export const osmTagToNameMapping: Node = {
     tree: 'Strom',
     plateau: 'Planina',
     arch: 'Skalné okno',
-    scree: 'Suťovisko'
+    scree: 'Suťovisko',
   },
   man_made: {
     '*': '{}',
@@ -242,7 +242,7 @@ export const osmTagToNameMapping: Node = {
         bell_tower: 'Zvonica',
         cooling: 'Chladiarenska veža',
       },
-    },    
+    },
   },
   power: {
     '*': '{}',
@@ -351,7 +351,7 @@ export const osmTagToNameMapping: Node = {
     motel: 'Motel',
     chalet: 'Chata',
     camp_site: 'Kemp',
-    caravan_site: 'Autokemp pre karavány'
+    caravan_site: 'Autokemp pre karavány',
     attraction: 'Atrakcia',
     artwork: {
       '*': 'Umenie',
