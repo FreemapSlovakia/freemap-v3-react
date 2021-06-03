@@ -1073,6 +1073,7 @@ const en: Messages = {
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
+      '5': 'Hillshading DMR 5.0',
     },
     type: {
       map: 'map',

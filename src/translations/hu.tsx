@@ -1088,6 +1088,7 @@ const hu: Messages = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
+      '5': 'Hillshading DMR 5.0', // TODO translate
     },
     type: {
       map: 'térkép',
