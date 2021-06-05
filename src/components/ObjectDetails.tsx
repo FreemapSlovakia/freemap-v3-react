@@ -1,3 +1,4 @@
+import { getName } from 'fm3/osmNameResolver';
 import { ReactElement } from 'react';
 import Table from 'react-bootstrap/Table';
 
@@ -12,6 +13,35 @@ type Props = ObjectDetailBasicProps & {
   historyText: string;
 };
 
+// TODO add others
+const keys = new Set([
+  'admin_level',
+  'amenity',
+  'barrier',
+  'boundary',
+  'building',
+  'bus',
+  'cusine',
+  'highway',
+  'information',
+  'landuse',
+  'leaf_type',
+  'man_made',
+  'office',
+  'public_transport',
+  'railway',
+  'route',
+  'service',
+  'shelter',
+  'shop',
+  'sport',
+  'tactile_paving',
+  'tourism',
+  'type',
+  'vending',
+  'waterway',
+]);
+
 export function ObjectDetails({
   id,
   tags,
@@ -21,6 +51,7 @@ export function ObjectDetails({
 }: Props): ReactElement {
   return (
     <>
+      <p className="lead">{getName({ type, tags }, false)}</p>
       <p>
         <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a> (
         <a href={`https://www.openstreetmap.org/${type}/${id}/history`}>
@@ -33,8 +64,44 @@ export function ObjectDetails({
         <tbody>
           {Object.entries(tags).map(([k, v]) => (
             <tr key={k}>
-              <th>{k}</th>
-              <td>{v}</td>
+              <th>
+                <a
+                  href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(
+                    k,
+                  )}`}
+                >
+                  {k}
+                </a>
+              </th>
+              <td>
+                {k === 'wikidata' ? (
+                  <a
+                    href={`https://www.wikidata.org/entity/${encodeURIComponent(
+                      v,
+                    )}`}
+                  >
+                    {v}
+                  </a>
+                ) : k === 'wikipedia' ? (
+                  <a
+                    href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
+                      v,
+                    )}`}
+                  >
+                    {v}
+                  </a>
+                ) : keys.has(k) ? (
+                  <a
+                    href={`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
+                      k,
+                    )}=${encodeURIComponent(v)}`}
+                  >
+                    {v}
+                  </a>
+                ) : (
+                  v
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

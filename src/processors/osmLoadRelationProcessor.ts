@@ -47,8 +47,14 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
     let tags: Record<string, string> | undefined = undefined;
 
+    let first = true;
+
     for (const relation of relations) {
-      tags = relation.tags;
+      if (first) {
+        tags = relation.tags;
+
+        first = false;
+      }
 
       for (const member of relation.members) {
         const { ref, type } = member;

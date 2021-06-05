@@ -12,7 +12,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { colorNames, Node, osmTagToNameMapping } from 'fm3/osmTagToNameMapping';
+import { getName } from 'fm3/osmNameResolver';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -204,93 +204,4 @@ function toGeometry(geom: NodeGeom | WayGeom) {
   } else {
     return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
   }
-}
-
-const typeSymbol = {
-  way: '─',
-  node: '•',
-  relation: '▦',
-};
-
-function resolveGenericName(
-  m: Node,
-  tags: Record<string, string>,
-): string | undefined {
-  const parts = [];
-
-  for (const [k, v] of Object.entries(tags)) {
-    const valMapping = m[k];
-
-    if (!valMapping) {
-      continue;
-    }
-
-    if (typeof valMapping === 'string') {
-      parts.push(valMapping.replace('{}', v));
-      continue;
-    }
-
-    if (valMapping[v]) {
-      const subkeyMapping = valMapping[v];
-
-      if (typeof subkeyMapping === 'string') {
-        parts.push(subkeyMapping.replace('{}', v));
-        continue;
-      }
-
-      const res = resolveGenericName(subkeyMapping, tags);
-
-      if (res) {
-        parts.push(res.replace('{}', v));
-        continue;
-      }
-
-      if (typeof subkeyMapping['*'] === 'string') {
-        parts.push(subkeyMapping['*'].replace('{}', v));
-        continue;
-      }
-    }
-
-    if (typeof valMapping['*'] === 'string') {
-      parts.push(valMapping['*'].replace('{}', v));
-      continue;
-    }
-  }
-
-  return parts.length === 0 ? undefined : parts.join('; ');
-}
-
-function getName(element: OverpassElement) {
-  if (!element.tags) {
-    return '???';
-  }
-
-  const name = element.tags['name'];
-
-  const ref = element.tags['ref'];
-
-  const operator = element.tags['operator'];
-
-  let subj: string | undefined = resolveGenericName(
-    osmTagToNameMapping,
-    element.tags,
-  );
-
-  if (element.type === 'relation' && element.tags['type'] === 'route') {
-    const color =
-      colorNames[
-        (element.tags['osmc:symbol'] ?? '').replace(/:.*/, '') ||
-          (element.tags['color'] ?? '')
-      ] ?? '';
-
-    subj = color + ' ' + subj;
-  }
-
-  return (
-    typeSymbol[element.type] +
-    ' ' +
-    ((subj ?? '???') + ' "' + (name ?? ref ?? operator ?? '') + '"')
-  )
-    .replace(/""/g, '')
-    .trim();
 }
