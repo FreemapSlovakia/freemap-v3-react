@@ -91,10 +91,9 @@ export const galleryAddItem = createAction('GALLERY_ADD_ITEM')<GalleryItem>();
 
 export const galleryRemoveItem = createAction('GALLERY_REMOVE_ITEM')<number>();
 
-export const galleryMergeItem =
-  createAction('GALLERY_SET_ITEM')<
-    Pick<GalleryItem, 'id'> & Partial<GalleryItem>
-  >();
+export const galleryMergeItem = createAction('GALLERY_SET_ITEM')<
+  Pick<GalleryItem, 'id'> & Partial<GalleryItem>
+>();
 
 export const gallerySetItemError = createAction('GALLERY_SET_ITEM_ERROR')<{
   id: number;
