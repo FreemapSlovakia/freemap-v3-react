@@ -208,6 +208,7 @@ export function preGlobalReducer(
           mode: routePlanner.mode,
           milestones: routePlanner.milestones,
           pickMode: 'start',
+          preventHint: routePlanner.preventHint,
         },
       };
     } else if (state.main.selection?.type === 'line-point') {
