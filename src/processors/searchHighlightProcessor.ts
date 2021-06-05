@@ -26,14 +26,19 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           16,
       });
 
-      if (action.payload.tags) {
+      const { id, tags, osmType } = action.payload;
+
+      if (tags) {
         dispatch(
           toastsAdd({
             id: 'mapDetails.tags',
             messageKey: 'mapDetails.detail',
-            messageParams: { tags: action.payload.tags },
+            messageParams: {
+              id,
+              type: osmType,
+              tags,
+            },
             cancelType: [getType(clearMap), getType(searchSetResults)],
-            timeout: 5000,
             style: 'info',
           }),
         );

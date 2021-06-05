@@ -22,10 +22,11 @@ export interface SearchResult {
   tags?: Record<string, string>;
 }
 
-export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
-  query: string;
-  fromUrl?: boolean;
-}>();
+export const searchSetQuery =
+  createAction('SEARCH_SET_QUERY')<{
+    query: string;
+    fromUrl?: boolean;
+  }>();
 
 export const searchSetResults =
   createAction('SEARCH_SET_RESULTS')<SearchResult[]>();

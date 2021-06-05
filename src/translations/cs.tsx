@@ -2,11 +2,11 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import { ObjectDetailBasicProps, ObjectDetails } from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import Table from 'react-bootstrap/Table';
 import { FaKey } from 'react-icons/fa';
 import shared from './cs-shared.json';
 import { Messages } from './messagesInterface';
@@ -646,17 +646,12 @@ const cs: Messages = {
     notFound: 'Nebyla nalezena žádná cesta.',
     fetchingError: ({ err }) =>
       `Nastala chyba při získávání detailů o cestě: ${err}`,
-    detail: ({ tags = {} }) => (
-      <Table striped bordered size="sm">
-        <tbody>
-          {Object.entries(tags).map(([k, v]) => (
-            <tr key={k}>
-              <th>{k}</th>
-              <td>{v}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    detail: (props: ObjectDetailBasicProps) => (
+      <ObjectDetails
+        {...props}
+        openText="Otevřít na OpenStreetMap.org"
+        historyText="historie"
+      />
     ),
   },
 
