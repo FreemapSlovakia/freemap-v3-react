@@ -14,7 +14,7 @@ type Props = ObjectDetailBasicProps & {
 };
 
 // TODO add others
-const keys = new Set([
+const categoryKeys = new Set([
   'admin_level',
   'amenity',
   'barrier',
@@ -23,10 +23,14 @@ const keys = new Set([
   'bus',
   'cusine',
   'highway',
+  'historic',
   'information',
   'landuse',
   'leaf_type',
+  'leisure',
   'man_made',
+  'natural',
+  'network',
   'office',
   'public_transport',
   'railway',
@@ -39,6 +43,8 @@ const keys = new Set([
   'tourism',
   'type',
   'vending',
+  'wall',
+  'water',
   'waterway',
 ]);
 
@@ -90,7 +96,7 @@ export function ObjectDetails({
                   >
                     {v}
                   </a>
-                ) : keys.has(k) ? (
+                ) : categoryKeys.has(k) ? (
                   <a
                     href={`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
                       k,
