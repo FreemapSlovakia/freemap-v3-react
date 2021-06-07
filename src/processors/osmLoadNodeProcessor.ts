@@ -20,7 +20,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
 
     const { elements } = assertType<OsmResult>(data);
 
-    const tags: Record<string, string> | undefined = elements[0].tags;
+    const tags: Record<string, string> = elements[0].tags ?? {};
 
     const nodes = (
       elements.filter((el) => el.type === 'node') as OsmNode[]
@@ -31,7 +31,6 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
         osmType: 'way',
         id,
         tags,
-        label: 'TODO',
         geojson: { type: 'Point', coordinates: nodes[0] },
         lon: nodes[0][0],
         lat: nodes[0][1],

@@ -26,14 +26,14 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
     const { elements } = assertType<OsmResult>(data);
 
-    let tags: Record<string, string> | undefined = undefined;
+    let tags: Record<string, string> = {};
 
     for (const item of elements) {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
         ways[item.id] = item.nodes.map((ref) => nodes[ref]);
-        tags = item.tags;
+        tags = item.tags ?? {};
       }
     }
 
@@ -48,7 +48,6 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
         osmType: 'way',
         id,
         tags,
-        label: 'TODO',
         geojson: f,
         lon: c.geometry.coordinates[0],
         lat: c.geometry.coordinates[1],

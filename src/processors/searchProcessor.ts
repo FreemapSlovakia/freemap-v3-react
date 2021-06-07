@@ -51,10 +51,11 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         searchSetResults([
           {
             id: -1,
-            label: query.toUpperCase(),
+            tags: { name: query.toUpperCase() },
             geojson: point([coords.lon, coords.lat]).geometry,
             lat: coords.lat,
             lon: coords.lon,
+            osmType: 'node',
           },
         ]),
       );
@@ -91,14 +92,15 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       .map((item): SearchResult => {
         return {
           id: item.osm_id,
-          label: item.display_name,
           geojson: item.geojson,
           lat: Number.parseFloat(item.lat),
           lon: Number.parseFloat(item.lon),
-          class: item.class,
-          type: item.type,
           osmType: item.osm_type,
-          tags: item.extratags,
+          tags: {
+            name: item.display_name,
+            [item.class]: item.type,
+            ...item.extratags,
+          },
         };
       });
 

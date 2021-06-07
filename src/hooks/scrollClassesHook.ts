@@ -70,7 +70,9 @@ export function useScrollClasses(
       }
 
       if (e) {
-        lastKnownScrollPositionRef.current = e.scrollLeft;
+        e.scrollTo(0, 0);
+
+        lastKnownScrollPositionRef.current = 0; // e.scrollLeft;
 
         e.addEventListener('scroll', handleScrollEvent);
 

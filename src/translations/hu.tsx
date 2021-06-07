@@ -92,6 +92,7 @@ const hu: Messages = {
     noCookies: 'This functionality requires accepting the cookies consent.', // TODO translate
     name: 'Name', // TODO translate
     load: 'Load', // TODO translate
+    unnamed: 'No name', // TODO translate
   },
 
   selections: {

@@ -45,13 +45,13 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
     const features: Feature<Point | LineString>[] = [];
 
-    let tags: Record<string, string> | undefined = undefined;
+    let tags: Record<string, string> = {};
 
     let first = true;
 
     for (const relation of relations) {
       if (first) {
-        tags = relation.tags;
+        tags = relation.tags ?? {};
 
         first = false;
       }
@@ -108,7 +108,6 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
         osmType: 'relation',
         id,
         tags,
-        label: 'TODO',
         geojson: trackGeojson,
         lon: c.geometry.coordinates[0],
         lat: c.geometry.coordinates[1],

@@ -8,7 +8,6 @@ import { createAction } from 'typesafe-actions';
 
 export interface SearchResult {
   id: number;
-  label: string;
   geojson:
     | Geometries
     | GeometryCollection
@@ -16,10 +15,8 @@ export interface SearchResult {
     | FeatureCollection<Geometries | GeometryCollection>;
   lat: number;
   lon: number;
-  class?: string;
-  type?: string;
-  osmType?: 'node' | 'way' | 'relation';
-  tags?: Record<string, string>;
+  osmType: 'node' | 'way' | 'relation';
+  tags: Record<string, string>;
 }
 
 export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{

@@ -10,6 +10,7 @@ import {
 } from 'fm3/actions/searchActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
+import { getName } from 'fm3/osmNameResolver';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
@@ -38,6 +39,12 @@ import { useDebouncedCallback } from 'use-debounce';
 type Props = {
   hidden?: boolean;
   preventShortcut?: boolean;
+};
+
+const typeSymbol = {
+  way: '─',
+  node: '•',
+  relation: '▦',
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
@@ -300,24 +307,27 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           >
             <div className="dropdown-long" ref={sc}>
               <div />
-              {results.map((result) => (
-                <Dropdown.Item
-                  key={result.id}
-                  eventKey={String(result.id)}
-                  active={!!selectedResult && result.id === selectedResult.id}
-                  as={HoverableMenuItem}
-                >
-                  <span data-id={result.id}>
-                    {result.label}
-                    <br />
-                    {!!(result.class && result.type) && (
-                      <small>
-                        {result.class}={result.type}
-                      </small>
-                    )}
-                  </span>
-                </Dropdown.Item>
-              ))}
+              {results.map((result) => {
+                const [subject, name] = getName({
+                  type: result.osmType,
+                  tags: result.tags,
+                });
+
+                return (
+                  <Dropdown.Item
+                    key={result.id}
+                    eventKey={String(result.id)}
+                    active={!!selectedResult && result.id === selectedResult.id}
+                    as={HoverableMenuItem}
+                  >
+                    <span data-id={result.id}>
+                      {typeSymbol[result.osmType]} {name || m?.general.unnamed}
+                      <br />
+                      <small>{subject}</small>
+                    </span>
+                  </Dropdown.Item>
+                );
+              })}
             </div>
           </Dropdown.Menu>
         </Dropdown>

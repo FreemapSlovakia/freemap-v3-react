@@ -12,7 +12,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { getName } from 'fm3/osmNameResolver';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -129,9 +128,8 @@ export const mapDetailsProcessor: Processor = {
             lon: element.lon,
             geojson: toGeometry(element).geometry,
             id: element.id,
-            label: getName(element),
             osmType: 'node',
-            tags: element.tags,
+            tags: element.tags ?? {},
           });
 
           break;
@@ -146,9 +144,8 @@ export const mapDetailsProcessor: Processor = {
               lon,
               geojson: geojson.geometry,
               id: element.id,
-              label: getName(element),
               osmType: 'way',
-              tags: element.tags,
+              tags: element.tags ?? {},
             });
           }
 
@@ -170,9 +167,8 @@ export const mapDetailsProcessor: Processor = {
               lon,
               geojson: geojson.geometry,
               id: element.id,
-              label: getName(element),
               osmType: 'relation',
-              tags: element.tags,
+              tags: element.tags ?? {},
             });
           }
 

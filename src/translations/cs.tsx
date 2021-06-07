@@ -2,7 +2,10 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
-import { ObjectDetailBasicProps, ObjectDetails } from 'fm3/components/ObjectDetails';
+import {
+  ObjectDetailBasicProps,
+  ObjectDetails,
+} from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
@@ -90,6 +93,7 @@ const cs: Messages = {
     noCookies: 'Tato funkcionalita vyžaduje přijetí souhlasu cookies.',
     name: 'Název',
     load: 'Načíst',
+    unnamed: 'Bez názvu',
   },
 
   selections: {

@@ -1,11 +1,5 @@
 import { colorNames, Node, osmTagToNameMapping } from 'fm3/osmTagToNameMapping';
 
-const typeSymbol = {
-  way: '─',
-  node: '•',
-  relation: '▦',
-};
-
 export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
@@ -54,20 +48,13 @@ export function resolveGenericName(
   return parts.length === 0 ? undefined : parts.join('; ');
 }
 
-export function getName(
-  {
-    tags,
-    type,
-  }: {
-    tags?: Record<string, string>;
-    type: 'relation' | 'way' | 'node';
-  },
-  addTypeSymbol = true,
-): string {
-  if (!tags) {
-    return '???';
-  }
-
+export function getName({
+  tags,
+  type,
+}: {
+  tags: Record<string, string>;
+  type: 'relation' | 'way' | 'node';
+}): [subject: string, name: string] {
   const name = tags['name'];
 
   const ref = tags['ref'];
@@ -85,11 +72,5 @@ export function getName(
     subj = color + ' ' + subj;
   }
 
-  return (
-    (addTypeSymbol ? typeSymbol[type] : '') +
-    ' ' +
-    ((subj ?? '???') + ' "' + (name ?? ref ?? operator ?? '') + '"')
-  )
-    .replace(/""/g, '')
-    .trim();
+  return [subj ?? '???', name ?? ref ?? operator];
 }

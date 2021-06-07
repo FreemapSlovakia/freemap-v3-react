@@ -91,6 +91,7 @@ const en: Messages = {
     noCookies: 'This functionality requires accepting the cookies consent.',
     name: 'Name',
     load: 'Load',
+    unnamed: 'No name',
   },
 
   selections: {

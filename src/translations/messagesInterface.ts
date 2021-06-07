@@ -51,6 +51,7 @@ export type Messages = {
     noCookies: string;
     name: string;
     load: string;
+    unnamed: string;
   };
   selections: {
     objects: string;

@@ -92,6 +92,7 @@ const sk: Messages = {
     noCookies: 'Táto funkcionalita vyžaduje prijatie súhlasu cookies.',
     name: 'Názov',
     load: 'Načítať',
+    unnamed: 'Bez názvu',
   },
 
   selections: {
