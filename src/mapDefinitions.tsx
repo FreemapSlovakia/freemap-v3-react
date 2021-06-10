@@ -77,6 +77,7 @@ export const baseLayerLetters = [
   'd',
   'h',
   'X',
+  '4',
   '5',
 ] as const;
 
@@ -288,6 +289,25 @@ export const baseLayers: BaseLayerDef[] = [
     showOnlyInExpertMode: true,
     attribution: [],
     key: ['Digit9', true],
+  },
+  {
+    type: '4',
+    url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minNativeZoom: 0,
+    maxNativeZoom: isHdpi ? 17 : 18,
+    icon: <GiHills />,
+    attribution: [
+      {
+        type: 'data',
+        name: 'LLS: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    key: ['Digit4', false],
+    errorTileUrl: white1x1,
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
+    showOnlyInExpertMode: true,
   },
   {
     type: '5',

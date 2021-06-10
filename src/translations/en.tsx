@@ -1072,7 +1072,8 @@ const en: Messages = {
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
-      '5': 'Hillshading DMR 5.0',
+      '4': 'Light Hillshading DMR 5.0',
+      '5': 'Gray Hillshading DMR 5.0',
     },
     type: {
       map: 'map',

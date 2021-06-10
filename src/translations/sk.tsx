@@ -1102,7 +1102,8 @@ const sk: Messages = {
       s3: 'Strava (Vodné aktivity)',
       s4: 'Strava (Zimné aktivity)',
       w: 'Wikipedia',
-      '5': 'Tieňovanie DMR 5.0',
+      '4': 'Svetlé tieňovanie DMR 5.0',
+      '5': 'Sivé tieňovanie DMR 5.0',
     },
     type: {
       map: 'mapa',
