@@ -374,7 +374,7 @@ function Result({ value }: { value: SearchResult }) {
   >();
 
   const suppLang = useSelector((state) =>
-    state.l10n.language === 'sk' ? 'sk' : 'en',
+    ['sk', 'cs'].includes(state.l10n.language) ? 'sk' : 'en',
   );
 
   useEffect(() => {
