@@ -1,5 +1,4 @@
-// eslint-disable-next-line
-export interface Node extends Record<string, Node | string> {}
+import { Node } from './types';
 
 export const osmTagToNameMapping: Node = {
   highway: {

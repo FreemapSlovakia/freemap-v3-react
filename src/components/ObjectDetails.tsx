@@ -1,7 +1,8 @@
 import { useMessages } from 'fm3/l10nInjector';
-import { getName } from 'fm3/osmNameResolver';
-import { ReactElement } from 'react';
+import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
+import { ReactElement, useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
+import { useSelector } from 'react-redux';
 
 export type ObjectDetailBasicProps = {
   id: number;
@@ -58,12 +59,22 @@ export function ObjectDetails({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const [subject, name] = getName({ type, tags });
+  const [subjectAndName, setSubjectAndName] = useState<
+    [string, string] | undefined
+  >();
+
+  const suppLang = useSelector((state) =>
+    ['sk', 'cs'].includes(state.l10n.language) ? 'sk' : 'en',
+  );
+
+  useEffect(() => {
+    getNameFromOsmElement(tags, type, suppLang).then(setSubjectAndName); // TODO catch
+  }, [suppLang, tags, type]);
 
   return (
     <>
       <p className="lead">
-        {subject} <i>{name || m?.general.unnamed}</i>
+        {subjectAndName?.[0]} <i>{subjectAndName?.[1] || m?.general.unnamed}</i>
       </p>
       <p>
         <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a> (

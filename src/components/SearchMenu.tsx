@@ -4,13 +4,14 @@ import {
   routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
 import {
+  SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { getName } from 'fm3/osmNameResolver';
+import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
@@ -307,27 +308,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           >
             <div className="dropdown-long" ref={sc}>
               <div />
-              {results.map((result) => {
-                const [subject, name] = getName({
-                  type: result.osmType,
-                  tags: result.tags,
-                });
-
-                return (
-                  <Dropdown.Item
-                    key={result.id}
-                    eventKey={String(result.id)}
-                    active={!!selectedResult && result.id === selectedResult.id}
-                    as={HoverableMenuItem}
-                  >
-                    <span data-id={result.id}>
-                      {typeSymbol[result.osmType]} {name || m?.general.unnamed}
-                      <br />
-                      <small>{subject}</small>
-                    </span>
-                  </Dropdown.Item>
-                );
-              })}
+              {results.map((result) => (
+                <Dropdown.Item
+                  key={result.id}
+                  eventKey={String(result.id)}
+                  active={!!selectedResult && result.id === selectedResult.id}
+                  as={HoverableMenuItem}
+                >
+                  <Result value={result} />
+                </Dropdown.Item>
+              ))}
             </div>
           </Dropdown.Menu>
         </Dropdown>
@@ -373,5 +363,31 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </ButtonGroup>
       )}
     </>
+  );
+}
+
+function Result({ value }: { value: SearchResult }) {
+  const m = useMessages();
+
+  const [subjectAndName, setSubjectAndName] = useState<
+    [string, string] | undefined
+  >();
+
+  const suppLang = useSelector((state) =>
+    state.l10n.language === 'sk' ? 'sk' : 'en',
+  );
+
+  useEffect(() => {
+    getNameFromOsmElement(value.tags, value.osmType, suppLang).then(
+      setSubjectAndName,
+    ); // TODO catch
+  }, [suppLang, value.tags, value.osmType]);
+
+  return (
+    <span data-id={value.id}>
+      {typeSymbol[value.osmType]} {subjectAndName?.[1] || m?.general.unnamed}
+      <br />
+      <small>{subjectAndName?.[0]}</small>
+    </span>
   );
 }

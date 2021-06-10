@@ -1,6 +1,6 @@
-import { colorNames, Node, osmTagToNameMapping } from 'fm3/osmTagToNameMapping';
+import { Node } from './types';
 
-export function resolveGenericName(
+function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
 ): string | undefined {
@@ -48,18 +48,20 @@ export function resolveGenericName(
   return parts.length === 0 ? undefined : parts.join('; ');
 }
 
-export function getName({
-  tags,
-  type,
-}: {
-  tags: Record<string, string>;
-  type: 'relation' | 'way' | 'node';
-}): [subject: string, name: string] {
+export async function getNameFromOsmElement(
+  tags: Record<string, string>,
+  type: 'relation' | 'way' | 'node',
+  lang: string,
+): Promise<[subject: string, name: string]> {
   const name = tags['name'];
 
   const ref = tags['ref'];
 
   const operator = tags['operator'];
+
+  const { osmTagToNameMapping, colorNames } = (await import(
+    `./osmTagToNameMapping-${lang}.ts`
+  )) as { osmTagToNameMapping: Node; colorNames: Record<string, string> };
 
   let subj: string | undefined = resolveGenericName(osmTagToNameMapping, tags);
 
