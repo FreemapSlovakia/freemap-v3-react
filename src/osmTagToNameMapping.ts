@@ -295,7 +295,7 @@ export const osmTagToNameMapping: Node = {
     stationery: 'Papiernictvo',
     copyshop: 'Copy centrum',
     funeral_directors: 'Pohrebná služba',
-    pet: 'Predaj zieracích potrieb',
+    pet: 'Potreby pre zvieratá',
     toys: 'Hračkárstvo',
   },
   historic: {
