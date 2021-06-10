@@ -11,7 +11,7 @@ import {
 } from 'fm3/actions/searchActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
+import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
@@ -369,19 +369,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const [subjectAndName, setSubjectAndName] = useState<
-    [string, string] | undefined
-  >();
-
-  const suppLang = useSelector((state) =>
-    ['sk', 'cs'].includes(state.l10n.language) ? 'sk' : 'en',
-  );
-
-  useEffect(() => {
-    getNameFromOsmElement(value.tags, value.osmType, suppLang).then(
-      setSubjectAndName,
-    ); // TODO catch
-  }, [suppLang, value.tags, value.osmType]);
+  const subjectAndName = useOsmNameResolver(value.osmType, value.tags);
 
   return (
     <span data-id={value.id}>

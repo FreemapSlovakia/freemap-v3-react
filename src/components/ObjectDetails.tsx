@@ -1,8 +1,7 @@
 import { useMessages } from 'fm3/l10nInjector';
-import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
-import { ReactElement, useEffect, useState } from 'react';
+import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
+import { ReactElement } from 'react';
 import Table from 'react-bootstrap/Table';
-import { useSelector } from 'react-redux';
 
 export type ObjectDetailBasicProps = {
   id: number;
@@ -59,17 +58,7 @@ export function ObjectDetails({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const [subjectAndName, setSubjectAndName] = useState<
-    [string, string] | undefined
-  >();
-
-  const suppLang = useSelector((state) =>
-    ['sk', 'cs'].includes(state.l10n.language) ? 'sk' : 'en',
-  );
-
-  useEffect(() => {
-    getNameFromOsmElement(tags, type, suppLang).then(setSubjectAndName); // TODO catch
-  }, [suppLang, tags, type]);
+  const subjectAndName = useOsmNameResolver(type, tags);
 
   return (
     <>
