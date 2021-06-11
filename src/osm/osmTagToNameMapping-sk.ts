@@ -382,7 +382,7 @@ export const osmTagToNameMapping: Node = {
 };
 
 export const colorNames: Record<string, string> = {
-  red: 'Čevená',
+  red: 'Červená',
   blue: 'Modrá',
   green: 'Zelená',
   yellow: 'Žltá',
