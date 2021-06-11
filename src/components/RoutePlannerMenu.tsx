@@ -114,7 +114,12 @@ export function RoutePlannerMenu(): ReactElement {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
     if (tolerance !== null) {
-      dispatch(convertToDrawing(Number(tolerance)));
+      dispatch(
+        convertToDrawing({
+          type: 'planned-route',
+          tolerance: Number(tolerance || '0') / 100000,
+        }),
+      );
     }
   }, [dispatch, m]);
 

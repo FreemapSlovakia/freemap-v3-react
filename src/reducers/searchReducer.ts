@@ -24,7 +24,7 @@ export interface SearchState {
   osmRelationId: number | null;
 }
 
-const initialState: SearchState = {
+export const searchInitialState: SearchState = {
   results: [],
   searchSeq: 0,
   selectedResult: null,
@@ -35,24 +35,24 @@ const initialState: SearchState = {
 };
 
 export const searchReducer = createReducer<SearchState, RootAction>(
-  initialState,
+  searchInitialState,
 )
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMap, () => searchInitialState)
   .handleAction(searchSetResults, (state, action) => ({
     ...state,
     results: action.payload,
     searchSeq: state.searchSeq + 1,
   }))
   .handleAction(osmLoadNode, (_state, action) => ({
-    ...initialState,
+    ...searchInitialState,
     osmNodeId: action.payload,
   }))
   .handleAction(osmLoadWay, (_state, action) => ({
-    ...initialState,
+    ...searchInitialState,
     osmWayId: action.payload,
   }))
   .handleAction(osmLoadRelation, (_state, action) => ({
-    ...initialState,
+    ...searchInitialState,
     osmRelationId: action.payload,
   }))
   .handleAction(searchSelectResult, (state, action) =>

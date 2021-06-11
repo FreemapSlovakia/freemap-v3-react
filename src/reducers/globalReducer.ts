@@ -19,6 +19,7 @@ import {
   cleanState as routePlannerCleanState,
   routePlannerInitialState as routePlannerInitialState,
 } from './routePlannerReducer';
+import { searchInitialState } from './searchReducer';
 import {
   cleanState as trackViewerCleanState,
   trackViewerInitialState as trackViewerInitialState,
@@ -29,7 +30,9 @@ export function preGlobalReducer(
   action: RootAction,
 ): DefaultRootState {
   if (isActionOf(convertToDrawing, action)) {
-    if (state.main.tool === 'route-planner') {
+    const payload = action.payload;
+
+    if (payload.type === 'planned-route') {
       return produce(state, (draft) => {
         const alt =
           draft.routePlanner.alternatives[
@@ -46,11 +49,11 @@ export function preGlobalReducer(
 
         const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
 
-        if (action.payload !== undefined) {
+        if (payload.tolerance) {
           simplify(ls, {
             mutate: true,
             highQuality: true,
-            tolerance: action.payload / 100000,
+            tolerance: payload.tolerance,
           });
         }
 
@@ -70,12 +73,10 @@ export function preGlobalReducer(
 
         Object.assign(draft.routePlanner, routePlannerCleanState);
       });
-    } else if (state.main.selection?.type === 'objects') {
-      const { selection } = state.main;
-
+    } else if (payload.type === 'objects') {
       return produce(state, (draft) => {
         const object = draft.objects.objects.find(
-          (object) => object.id === selection.id,
+          (object) => object.id === payload.id,
         );
 
         if (object) {
@@ -88,7 +89,7 @@ export function preGlobalReducer(
           draft.drawingPoints.change++;
 
           draft.objects.objects = draft.objects.objects.filter(
-            (object) => object.id !== selection.id,
+            (object) => object.id !== payload.id,
           );
 
           draft.main.selection = {
@@ -97,7 +98,7 @@ export function preGlobalReducer(
           };
         }
       });
-    } else if (state.main.tool === 'track-viewer') {
+    } else if (payload.type === 'track') {
       return produce(state, (draft) => {
         if (!draft.trackViewer.trackGeojson) {
           return;
@@ -108,14 +109,13 @@ export function preGlobalReducer(
         );
 
         for (const feature of features) {
-          const { geometry } =
-            action.payload === undefined
-              ? feature
-              : simplify(feature, {
-                  mutate: false,
-                  highQuality: true,
-                  tolerance: action.payload / 100000,
-                });
+          const { geometry } = payload.tolerance
+            ? simplify(feature, {
+                mutate: false,
+                highQuality: true,
+                tolerance: payload.tolerance,
+              })
+            : feature;
 
           if (geometry?.type === 'Point') {
             draft.drawingPoints.points.push({
@@ -145,6 +145,50 @@ export function preGlobalReducer(
         }
 
         Object.assign(draft.trackViewer, trackViewerCleanState);
+      });
+    } else if (payload.type === 'search-result') {
+      return produce(state, (draft) => {
+        // TODO very similar to route conversion - use functions
+
+        if (!draft.search.selectedResult?.geojson) {
+          return;
+        }
+
+        const { features } = turfFlatten(
+          draft.search.selectedResult.geojson as AllGeoJSON,
+        );
+
+        for (const feature of features) {
+          const { geometry } = feature;
+
+          if (geometry?.type === 'Point') {
+            draft.drawingPoints.points.push({
+              label: feature.properties?.['name'],
+              lat: geometry.coordinates[1],
+              lon: geometry.coordinates[0],
+            });
+          } else if (geometry?.type == 'LineString') {
+            let id = 0;
+
+            const points: Point[] = [];
+
+            for (const node of geometry.coordinates) {
+              points.push({
+                lat: node[1],
+                lon: node[0],
+                id: id++,
+              });
+            }
+
+            draft.drawingLines.lines.push({
+              type: 'line',
+              label: feature.properties?.['name'],
+              points,
+            });
+          }
+        }
+
+        draft.search = searchInitialState;
       });
     }
   } else if (

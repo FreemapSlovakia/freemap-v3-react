@@ -124,7 +124,10 @@ export type Selection =
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
 
 export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
-  number | undefined
+  | ObjectsSelection
+  | { type: 'planned-route'; tolerance: number }
+  | { type: 'track'; tolerance: number }
+  | { type: 'search-result' }
 >();
 
 export type ExternalTargets =

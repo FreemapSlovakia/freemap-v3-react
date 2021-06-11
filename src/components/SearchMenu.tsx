@@ -1,4 +1,4 @@
-import { setTool } from 'fm3/actions/mainActions';
+import { convertToDrawing, setTool } from 'fm3/actions/mainActions';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
@@ -33,7 +33,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SafeAnchor from 'react-bootstrap/SafeAnchor';
-import { FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
+import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -323,44 +323,57 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </Dropdown>
       </Form>
       {selectedResult && !window.fmEmbedded && !hidden && (
-        <ButtonGroup className="ml-1">
-          <Button
-            variant="secondary"
-            title={m?.search.routeFrom}
-            onClick={() => {
-              dispatch(setTool('route-planner'));
+        <>
+          <ButtonGroup className="ml-1">
+            <Button
+              variant="secondary"
+              title={m?.search.routeFrom}
+              onClick={() => {
+                dispatch(setTool('route-planner'));
 
-              dispatch(
-                routePlannerSetStart({
-                  start: {
-                    lat: selectedResult.lat,
-                    lon: selectedResult.lon,
-                  },
-                }),
-              );
-            }}
-          >
-            <FaPlay color="#32CD32" />
-          </Button>
-          <Button
-            variant="secondary"
-            title={m?.search.routeTo}
-            onClick={() => {
-              dispatch(setTool('route-planner'));
+                dispatch(
+                  routePlannerSetStart({
+                    start: {
+                      lat: selectedResult.lat,
+                      lon: selectedResult.lon,
+                    },
+                  }),
+                );
+              }}
+            >
+              <FaPlay color="#32CD32" />
+            </Button>
+            <Button
+              variant="secondary"
+              title={m?.search.routeTo}
+              onClick={() => {
+                dispatch(setTool('route-planner'));
 
-              dispatch(
-                routePlannerSetFinish({
-                  finish: {
-                    lat: selectedResult.lat,
-                    lon: selectedResult.lon,
-                  },
-                }),
-              );
-            }}
+                dispatch(
+                  routePlannerSetFinish({
+                    finish: {
+                      lat: selectedResult.lat,
+                      lon: selectedResult.lon,
+                    },
+                  }),
+                );
+              }}
+            >
+              <FaStop color="#FF6347" />
+            </Button>
+          </ButtonGroup>
+
+          <Button
+            className="ml-1"
+            title={m?.general.convertToDrawing}
+            variant="secondary"
+            onClick={() =>
+              dispatch(convertToDrawing({ type: 'search-result' }))
+            }
           >
-            <FaStop color="#FF6347" />
+            <FaPencilAlt />
           </Button>
-        </ButtonGroup>
+        </>
       )}
     </>
   );

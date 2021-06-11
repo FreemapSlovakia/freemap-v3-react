@@ -3,13 +3,15 @@ import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
 export function ObjectSelection(): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const selection = useSelector((state) => state.main.selection);
 
   return (
     <Selection
@@ -21,7 +23,8 @@ export function ObjectSelection(): ReactElement {
         className="ml-1"
         variant="secondary"
         onClick={() => {
-          dispatch(convertToDrawing(undefined));
+          selection?.type === 'objects' &&
+            dispatch(convertToDrawing(selection));
         }}
         title={m?.general.convertToDrawing}
       >
