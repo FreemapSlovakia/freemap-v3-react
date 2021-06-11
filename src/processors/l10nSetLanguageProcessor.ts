@@ -5,7 +5,6 @@ import {
 } from 'fm3/actions/l10nActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { Messages } from 'fm3/translations/messagesInterface';
 import { isActionOf } from 'typesafe-actions';
 
 export const l10nSetLanguageProcessor: Processor = {
@@ -13,31 +12,27 @@ export const l10nSetLanguageProcessor: Processor = {
   handle: async ({ dispatch, getState, action }) => {
     const { chosenLanguage } = getState().l10n;
 
-    const isSetUser = isActionOf(authSetUser, action);
-
     const language = getEffectiveChosenLanguage(chosenLanguage);
 
-    const [translations] = await Promise.all([
-      import(
+    window.translations = (
+      await import(
         /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.tsx`
-      ) as Promise<{ default: Messages }>,
-
-      !isSetUser && getState().auth.user
-        ? httpRequest({
-            getState,
-            method: 'PATCH',
-            url: '/auth/settings',
-            expectedStatus: 204,
-            data: {
-              language: chosenLanguage,
-            },
-          })
-        : null,
-    ]);
-
-    window.translations = translations.default;
+      )
+    ).default;
 
     dispatch(l10nSetLanguage(language));
+
+    if (!isActionOf(authSetUser, action) && getState().auth.user) {
+      await httpRequest({
+        getState,
+        method: 'PATCH',
+        url: '/auth/settings',
+        expectedStatus: 204,
+        data: {
+          language: chosenLanguage,
+        },
+      });
+    }
   },
 };
 
