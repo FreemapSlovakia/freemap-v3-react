@@ -58,6 +58,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             geojson: point([coords.lon, coords.lat], tags),
             osmType: 'node',
             tags,
+            detailed: true,
           },
         ]),
       );

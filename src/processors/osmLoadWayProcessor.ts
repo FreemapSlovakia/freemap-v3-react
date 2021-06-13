@@ -2,7 +2,7 @@ import { lineString, polygon } from '@turf/helpers';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
-import { positionsEqual } from 'fm3/geoutils';
+import { positionsEqual, shouldBeArea } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -40,10 +40,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
               positionsEqual(
                 coordinates[0],
                 coordinates[coordinates.length - 1],
-              ) &&
-              tags['area'] !== 'no' &&
-              !tags['barrier'] &&
-              !tags['gihgway'] // taken from https://wiki.openstreetmap.org/wiki/Key:area
+              ) && shouldBeArea(tags)
                 ? polygon([coordinates], item.tags)
                 : lineString(coordinates, item.tags),
             tags,

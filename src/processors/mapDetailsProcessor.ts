@@ -1,7 +1,10 @@
 import {
-  geometryCollection,
+  Feature,
+  featureCollection,
+  Geometries,
   lineString,
   point,
+  polygon,
   Properties,
 } from '@turf/helpers';
 import {
@@ -14,6 +17,7 @@ import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions
 import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
+import { mergeLines, shouldBeArea } from 'fm3/geoutils';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
@@ -146,19 +150,20 @@ export const mapDetailsProcessor: Processor = {
 
           break;
         case 'relation':
-          sr.push({
-            geojson: geometryCollection(
-              element.members
-                .filter((member) => member.type !== 'relation')
-                .map(
-                  (member) => toGeometry(member as WayGeom | NodeGeom).geometry,
-                ),
+          {
+            const features = element.members
+              .filter((member) => member.type !== 'relation')
+              .map((member) => toGeometry(member as WayGeom | NodeGeom));
+
+            mergeLines<Geometries>(features, tags);
+
+            sr.push({
+              geojson: featureCollection(features, tags),
+              id: element.id,
+              osmType: 'relation',
               tags,
-            ),
-            id: element.id,
-            osmType: 'relation',
-            tags,
-          });
+            });
+          }
 
           break;
       }
@@ -182,13 +187,17 @@ export const mapDetailsProcessor: Processor = {
   },
 };
 
-function toGeometry(geom: NodeGeom | WayGeom, properties?: Properties) {
+function toGeometry(
+  geom: NodeGeom | WayGeom,
+  properties?: Properties,
+): Feature<Geometries> {
   if (geom.type === 'node') {
     return point([geom.lon, geom.lat], properties);
   } else {
-    return lineString(
-      geom.geometry.map((coord) => [coord.lon, coord.lat]),
-      properties,
-    );
+    const coords = geom.geometry.map((coord) => [coord.lon, coord.lat]);
+
+    return shouldBeArea(properties)
+      ? polygon([coords], properties)
+      : lineString(coords, properties);
   }
 }

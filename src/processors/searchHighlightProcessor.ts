@@ -1,4 +1,4 @@
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, convertToDrawing } from 'fm3/actions/mainActions';
 import {
   osmLoadNode,
   osmLoadRelation,
@@ -45,7 +45,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           16,
       });
 
-      if (detailed) {
+      if (detailed && id !== -1) {
         dispatch(
           toastsAdd({
             id: 'mapDetails.tags',
@@ -55,7 +55,14 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
               type: osmType,
               tags,
             },
-            cancelType: [getType(clearMap), getType(searchSetResults)],
+            cancelType: [
+              getType(clearMap),
+              getType(searchSetResults),
+              getType(osmLoadNode),
+              getType(osmLoadWay),
+              getType(osmLoadRelation),
+              getType(convertToDrawing),
+            ],
             style: 'info',
           }),
         );

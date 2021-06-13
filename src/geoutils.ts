@@ -286,3 +286,10 @@ export function mergeLines<T extends Geometries>(
     break;
   }
 }
+
+export function shouldBeArea(tags?: Properties): boolean {
+  return (
+    // taken from https://wiki.openstreetmap.org/wiki/Key:area
+    !!tags && tags['area'] !== 'no' && !tags['barrier'] && !tags['highway']
+  );
+}

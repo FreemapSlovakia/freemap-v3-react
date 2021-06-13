@@ -135,7 +135,7 @@ export const urlProcessor: Processor = {
       historyParts.push(['gpx-url', trackViewer.gpxUrl]);
     }
 
-    if (search.osmNodeId) {
+    if (search.osmNodeId && search.osmNodeId > 0) {
       historyParts.push(['osm-node', search.osmNodeId]);
     }
 

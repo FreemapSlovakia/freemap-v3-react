@@ -3,7 +3,7 @@ import { searchSelectResult } from 'fm3/actions/searchActions';
 import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
 import { escapeHtml } from 'fm3/stringUtils';
 import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
-import { ReactElement, useCallback } from 'react';
+import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
@@ -36,14 +36,14 @@ function annotateFeature(
       );
 
       layer.addEventListener('mouseover', () => {
-        if (layer instanceof Path) {
-          layer.setStyle({ opacity: 0.5 });
+        if (layer instanceof Path || layer instanceof Polygon) {
+          layer.setStyle({ opacity: 0.5, fillOpacity: 0.125 });
         }
       });
 
       layer.addEventListener('mouseout', () => {
-        if (layer instanceof Path) {
-          layer.setStyle({ opacity: 0 }); // default color
+        if (layer instanceof Path || layer instanceof Polygon) {
+          layer.setStyle({ opacity: 1, fillOpacity: 0.25 });
         }
       });
     },
@@ -68,17 +68,15 @@ export function SearchResults(): ReactElement | null {
   );
 
   return !selectedResult ? null : (
-    <>
+    <Fragment key={selectedResultSeq}>
       <GeoJSON
         interactive={false}
-        key={selectedResultSeq}
         data={selectedResult.geojson}
         style={{ weight: 5 }}
         filter={(feature) => feature.geometry.type === 'LineString'}
       />
       <GeoJSON
         interactive
-        key={selectedResultSeq}
         data={selectedResult.geojson}
         style={{ weight: 15, opacity: 0, color: '#fff' }}
         onEachFeature={cachedAnnotateFeature}
@@ -91,7 +89,6 @@ export function SearchResults(): ReactElement | null {
       />
       <GeoJSON
         interactive
-        key={selectedResultSeq}
         data={selectedResult.geojson}
         style={{ weight: 5 }}
         pointToLayer={pointToLayer}
@@ -103,6 +100,6 @@ export function SearchResults(): ReactElement | null {
           },
         }}
       />
-    </>
+    </Fragment>
   );
 }
