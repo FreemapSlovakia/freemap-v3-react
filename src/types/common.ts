@@ -61,7 +61,7 @@ export interface OsmWay extends OsmElement {
 
 export interface OsmRelation extends OsmElement {
   type: 'relation';
-  members: { type: 'node' | 'way' | 'relation'; ref: number }[];
+  members: { type: 'node' | 'way' | 'relation'; ref: number; role?: string }[];
 }
 
 export interface OsmResult {

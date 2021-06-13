@@ -3,6 +3,7 @@ import { Node } from './types';
 export const osmTagToNameMapping: Node = {
   highway: {
     '*': 'Cesta {}',
+    bus_stop: 'Autobusová zastávka',
     track: {
       '*': 'Lesná / poľná cesta',
       tracktype: {
@@ -378,6 +379,9 @@ export const osmTagToNameMapping: Node = {
     suburb: 'Predmestie',
     hamlet: 'Osada',
     isolated_dwelling: 'Samota',
+  },
+  public_transport: {
+    stop_position: 'Zastávka',
   },
 };
 

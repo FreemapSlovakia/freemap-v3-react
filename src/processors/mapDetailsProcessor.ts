@@ -1,5 +1,10 @@
 import center from '@turf/center';
-import { geometryCollection, lineString, point } from '@turf/helpers';
+import {
+  geometryCollection,
+  lineString,
+  point,
+  Properties,
+} from '@turf/helpers';
 import {
   clearMap,
   deleteFeature,
@@ -106,8 +111,7 @@ export const mapDetailsProcessor: Processor = {
         data: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;
           nwr(pivot.a)${kvFilter};
-          out geom body;
-          `,
+          out geom body;`,
         expectedStatus: 200,
       }),
     ]);
@@ -126,26 +130,26 @@ export const mapDetailsProcessor: Processor = {
           sr.push({
             lat: element.lat,
             lon: element.lon,
-            geojson: toGeometry(element).geometry,
+            geojson: toGeometry(element, element.tags),
             id: element.id,
             osmType: 'node',
-            tags: element.tags ?? {},
+            detailed: true,
           });
 
           break;
         case 'way':
           {
-            const geojson = toGeometry(element);
+            const geojson = toGeometry(element, element.tags);
 
             const [lon, lat] = center(geojson).geometry.coordinates;
 
             sr.push({
               lat,
               lon,
-              geojson: geojson.geometry,
+              geojson,
               id: element.id,
               osmType: 'way',
-              tags: element.tags ?? {},
+              detailed: true,
             });
           }
 
@@ -158,6 +162,7 @@ export const mapDetailsProcessor: Processor = {
                 .map(
                   (member) => toGeometry(member as WayGeom | NodeGeom).geometry,
                 ),
+              element.tags,
             );
 
             const [lon, lat] = center(geojson).geometry.coordinates;
@@ -165,10 +170,9 @@ export const mapDetailsProcessor: Processor = {
             sr.push({
               lat,
               lon,
-              geojson: geojson.geometry,
+              geojson,
               id: element.id,
               osmType: 'relation',
-              tags: element.tags ?? {},
             });
           }
 
@@ -194,10 +198,13 @@ export const mapDetailsProcessor: Processor = {
   },
 };
 
-function toGeometry(geom: NodeGeom | WayGeom) {
+function toGeometry(geom: NodeGeom | WayGeom, properties?: Properties) {
   if (geom.type === 'node') {
-    return point([geom.lon, geom.lat]);
+    return point([geom.lon, geom.lat], properties);
   } else {
-    return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
+    return lineString(
+      geom.geometry.map((coord) => [coord.lon, coord.lat]),
+      properties,
+    );
   }
 }

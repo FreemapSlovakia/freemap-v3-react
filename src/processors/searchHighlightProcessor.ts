@@ -1,5 +1,10 @@
 import { clearMap } from 'fm3/actions/mainActions';
 import {
+  osmLoadNode,
+  osmLoadRelation,
+  osmLoadWay,
+} from 'fm3/actions/osmActions';
+import {
   searchSelectResult,
   searchSetResults,
 } from 'fm3/actions/searchActions';
@@ -16,7 +21,21 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     const le = getMapLeafletElement();
 
     if (le && action.payload) {
-      const { geojson } = action.payload;
+      const { id, osmType, detailed, geojson } = action.payload;
+
+      if (!detailed) {
+        switch (osmType) {
+          case 'node':
+            dispatch(osmLoadNode(id));
+            break;
+          case 'way':
+            dispatch(osmLoadWay(id));
+            break;
+          case 'relation':
+            dispatch(osmLoadRelation(id));
+            break;
+        }
+      }
 
       const { mapType } = getState().map;
 
@@ -26,23 +45,22 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           16,
       });
 
-      const { id, tags, osmType } = action.payload;
-
-      if (tags) {
-        dispatch(
-          toastsAdd({
-            id: 'mapDetails.tags',
-            messageKey: 'mapDetails.detail',
-            messageParams: {
-              id,
-              type: osmType,
-              tags,
-            },
-            cancelType: [getType(clearMap), getType(searchSetResults)],
-            style: 'info',
-          }),
-        );
-      }
+      dispatch(
+        toastsAdd({
+          id: 'mapDetails.tags',
+          messageKey: 'mapDetails.detail',
+          messageParams: {
+            id,
+            type: osmType,
+            tags:
+              (geojson.type === 'Feature'
+                ? geojson.properties
+                : geojson.features[0]?.properties) ?? {},
+          },
+          cancelType: [getType(clearMap), getType(searchSetResults)],
+          style: 'info',
+        }),
+      );
     }
   },
 };

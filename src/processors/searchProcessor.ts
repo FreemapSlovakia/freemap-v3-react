@@ -1,4 +1,4 @@
-import { Geometries, GeometryCollection, point } from '@turf/helpers';
+import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
 import { clearMap } from 'fm3/actions/mainActions';
 import {
   SearchResult,
@@ -51,11 +51,13 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         searchSetResults([
           {
             id: -1,
-            tags: { name: query.toUpperCase() },
-            geojson: point([coords.lon, coords.lat]).geometry,
+            geojson: point([coords.lon, coords.lat], {
+              name: query.toUpperCase(),
+            }),
             lat: coords.lat,
             lon: coords.lon,
             osmType: 'node',
+            detailed: true,
           },
         ]),
       );
@@ -92,15 +94,14 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       .map((item): SearchResult => {
         return {
           id: item.osm_id,
-          geojson: item.geojson,
-          lat: Number.parseFloat(item.lat),
-          lon: Number.parseFloat(item.lon),
-          osmType: item.osm_type,
-          tags: {
+          geojson: feature(item.geojson, {
             name: item.display_name,
             [item.class]: item.type,
             ...item.extratags,
-          },
+          }),
+          lat: Number.parseFloat(item.lat),
+          lon: Number.parseFloat(item.lon),
+          osmType: item.osm_type,
         };
       });
 

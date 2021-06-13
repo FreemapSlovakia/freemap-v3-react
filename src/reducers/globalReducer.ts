@@ -5,6 +5,7 @@ import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
+  Line,
   Point,
 } from 'fm3/actions/drawingLineActions';
 import {
@@ -104,9 +105,7 @@ export function preGlobalReducer(
           return;
         }
 
-        const { features } = turfFlatten(
-          draft.trackViewer.trackGeojson as AllGeoJSON,
-        );
+        const { features } = turfFlatten(draft.trackViewer.trackGeojson);
 
         for (const feature of features) {
           const { geometry } = payload.tolerance
@@ -158,6 +157,8 @@ export function preGlobalReducer(
           draft.search.selectedResult.geojson as AllGeoJSON,
         );
 
+        const lines: Line[] = [];
+
         for (const feature of features) {
           const { geometry } = feature;
 
@@ -167,7 +168,7 @@ export function preGlobalReducer(
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
-          } else if (geometry?.type == 'LineString') {
+          } else if (geometry?.type === 'LineString') {
             let id = 0;
 
             const points: Point[] = [];
@@ -180,13 +181,37 @@ export function preGlobalReducer(
               });
             }
 
-            draft.drawingLines.lines.push({
+            lines.push({
+              type: 'line',
+              // label: feature.properties?.['name'], // ignore street names
+              points,
+            });
+          } else if (geometry?.type === 'Polygon') {
+            let id = 0;
+
+            const points: Point[] = [];
+
+            // TODO add suport for inner rings
+
+            for (const node of geometry.coordinates[0]) {
+              points.push({
+                lat: node[1],
+                lon: node[0],
+                id: id++,
+              });
+            }
+
+            lines.push({
               type: 'line',
               label: feature.properties?.['name'],
               points,
             });
           }
         }
+
+        mergeLines(lines);
+
+        draft.drawingLines.lines.push(...lines);
 
         draft.search = searchInitialState;
       });
@@ -347,4 +372,63 @@ export function postGlobalReducer(
   }
 
   return state;
+}
+
+// TODO to utils
+
+function eq(pt1: Point, pt2: Point) {
+  return pt1.lat === pt2.lat && pt1.lon === pt2.lon;
+}
+
+function renumber(line: Line) {
+  line.points.forEach((point, i) => {
+    point.id = i;
+  });
+}
+
+function mergeLines(lines: Line[]) {
+  restart: for (;;) {
+    for (let i = 0; i < lines.length - 1; i++) {
+      const line1 = lines[i];
+
+      for (let j = i + 1; j < lines.length; j++) {
+        const line2 = lines[j];
+
+        if (eq(line1.points[0], line2.points[0])) {
+          line1.points.unshift(...line2.points.slice(1).reverse());
+          renumber(line1);
+          lines.splice(j, 1);
+          continue restart;
+        }
+
+        if (eq(line1.points[0], line2.points[line2.points.length - 1])) {
+          line1.points.splice(0, 1).unshift(...line2.points.slice(1));
+          renumber(line1);
+          lines.splice(j, 1);
+          continue restart;
+        }
+
+        if (eq(line1.points[line1.points.length - 1], line2.points[0])) {
+          line1.points.push(...line2.points.slice(1));
+          renumber(line1);
+          lines.splice(j, 1);
+          continue restart;
+        }
+
+        if (
+          eq(
+            line1.points[line1.points.length - 1],
+            line2.points[line2.points.length - 1],
+          )
+        ) {
+          line1.points.push(...line2.points.reverse().slice(1));
+          renumber(line1);
+          lines.splice(j, 1);
+          continue restart;
+        }
+      }
+    }
+
+    break;
+  }
 }

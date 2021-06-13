@@ -204,7 +204,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         function handleFocus() {
           const ch = Children.only(children);
 
-          handleSelect((ch as any).props['data-id'], undefined, true);
+          handleSelect((ch as any).props.value.id, undefined, true);
         }
 
         function handleBlur() {
@@ -220,7 +220,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             ref={ref}
             {...props}
             onFocus={handleFocus}
-            onMouseMove={handleFocus}
+            onMouseOver={handleFocus}
             onMouseOut={handleBlur}
             onBlur={handleBlur}
           >
@@ -382,10 +382,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const subjectAndName = useOsmNameResolver(value.osmType, value.tags);
+  const subjectAndName = useOsmNameResolver(
+    value.osmType,
+    (value.geojson.type === 'Feature'
+      ? value.geojson.properties
+      : value.geojson.features[0]?.properties) ?? {},
+  );
 
   return (
-    <span data-id={value.id}>
+    <span>
       {typeSymbol[value.osmType]} {subjectAndName?.[1] || m?.general.unnamed}
       <br />
       <small>{subjectAndName?.[0]}</small>

@@ -1,5 +1,5 @@
 import center from '@turf/center';
-import { featureCollection, lineString } from '@turf/helpers';
+import { lineString } from '@turf/helpers';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -22,36 +22,30 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
     const nodes: Record<string, [number, number]> = {};
 
-    const ways: Record<string, [number, number][]> = {};
-
     const { elements } = assertType<OsmResult>(data);
-
-    let tags: Record<string, string> = {};
 
     for (const item of elements) {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
-        ways[item.id] = item.nodes.map((ref) => nodes[ref]);
-        tags = item.tags ?? {};
+        const geojson = lineString(
+          item.nodes.map((ref) => nodes[ref]),
+          item.tags,
+        );
+
+        const c = center(geojson);
+
+        dispatch(
+          searchSelectResult({
+            osmType: 'way',
+            id,
+            geojson,
+            lon: c.geometry.coordinates[0],
+            lat: c.geometry.coordinates[1],
+            detailed: true,
+          }),
+        );
       }
     }
-
-    const f = featureCollection(
-      Object.keys(ways).map((id) => lineString(ways[id])),
-    );
-
-    const c = center(f);
-
-    dispatch(
-      searchSelectResult({
-        osmType: 'way',
-        id,
-        tags,
-        geojson: f,
-        lon: c.geometry.coordinates[0],
-        lat: c.geometry.coordinates[1],
-      }),
-    );
   },
 };

@@ -3,6 +3,7 @@ import { Node } from './types';
 export const osmTagToNameMapping: Node = {
   highway: {
     '*': 'Road {}',
+    bus_stop: 'Bus stop',
     track: {
       '*': 'Forest road',
       tracktype: {

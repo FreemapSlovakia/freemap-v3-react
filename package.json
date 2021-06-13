@@ -10,6 +10,7 @@
     "@turf/bbox": "6.3.0",
     "@turf/bbox-polygon": "6.3.0",
     "@turf/boolean-contains": "6.3.0",
+    "@turf/boolean-within": "6.3.0",
     "@turf/buffer": "6.3.0",
     "@turf/center": "6.3.0",
     "@turf/flatten": "6.3.0",

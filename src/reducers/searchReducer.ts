@@ -17,6 +17,7 @@ export interface SearchState {
   results: SearchResult[];
   selectedResult: SearchResult | null;
   searchSeq: number;
+  searchResultSeq: number;
 
   // TODO these data are derived - remove
   osmNodeId: number | null;
@@ -24,14 +25,19 @@ export interface SearchState {
   osmRelationId: number | null;
 }
 
-export const searchInitialState: SearchState = {
-  results: [],
+export const searchInitialState0 = {
   searchSeq: 0,
-  selectedResult: null,
+  searchResultSeq: 0,
 
   osmNodeId: null,
   osmWayId: null,
   osmRelationId: null,
+};
+
+export const searchInitialState: SearchState = {
+  ...searchInitialState0,
+  results: [],
+  selectedResult: null,
 };
 
 export const searchReducer = createReducer<SearchState, RootAction>(
@@ -43,16 +49,19 @@ export const searchReducer = createReducer<SearchState, RootAction>(
     results: action.payload,
     searchSeq: state.searchSeq + 1,
   }))
-  .handleAction(osmLoadNode, (_state, action) => ({
-    ...searchInitialState,
+  .handleAction(osmLoadNode, (state, action) => ({
+    ...state,
+    ...searchInitialState0,
     osmNodeId: action.payload,
   }))
-  .handleAction(osmLoadWay, (_state, action) => ({
-    ...searchInitialState,
+  .handleAction(osmLoadWay, (state, action) => ({
+    ...state,
+    ...searchInitialState0,
     osmWayId: action.payload,
   }))
-  .handleAction(osmLoadRelation, (_state, action) => ({
-    ...searchInitialState,
+  .handleAction(osmLoadRelation, (state, action) => ({
+    ...state,
+    ...searchInitialState0,
     osmRelationId: action.payload,
   }))
   .handleAction(searchSelectResult, (state, action) =>
@@ -62,6 +71,8 @@ export const searchReducer = createReducer<SearchState, RootAction>(
       draft.osmRelationId = null;
 
       draft.selectedResult = action.payload;
+
+      draft.searchResultSeq = draft.searchResultSeq + 1;
 
       switch (action.payload?.osmType) {
         case 'node':

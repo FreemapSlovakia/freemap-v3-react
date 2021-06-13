@@ -9,14 +9,12 @@ import { createAction } from 'typesafe-actions';
 export interface SearchResult {
   id: number;
   geojson:
-    | Geometries
-    | GeometryCollection
     | Feature<Geometries | GeometryCollection>
     | FeatureCollection<Geometries | GeometryCollection>;
   lat: number;
   lon: number;
   osmType: 'node' | 'way' | 'relation';
-  tags: Record<string, string>;
+  detailed?: true;
 }
 
 export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{

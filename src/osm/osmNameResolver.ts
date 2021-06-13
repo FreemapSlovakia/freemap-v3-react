@@ -74,5 +74,9 @@ export async function getNameFromOsmElement(
     subj = color + ' ' + subj;
   }
 
-  return [subj ?? '???', name ?? ref ?? operator];
+  return [
+    subj ??
+      (process.env['NODE_ENV'] === 'production' ? '' : JSON.stringify(tags)),
+    name ?? ref ?? operator,
+  ];
 }
