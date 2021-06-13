@@ -1,3 +1,4 @@
+import center from '@turf/center';
 import { convertToDrawing, setTool } from 'fm3/actions/mainActions';
 import {
   routePlannerSetFinish,
@@ -331,11 +332,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
+                const c = center(selectedResult.geojson).geometry.coordinates;
+
                 dispatch(
                   routePlannerSetStart({
                     start: {
-                      lat: selectedResult.lat,
-                      lon: selectedResult.lon,
+                      lat: c[1],
+                      lon: c[0],
                     },
                   }),
                 );
@@ -349,11 +352,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
+                const c = center(selectedResult.geojson).geometry.coordinates;
+
                 dispatch(
                   routePlannerSetFinish({
                     finish: {
-                      lat: selectedResult.lat,
-                      lon: selectedResult.lon,
+                      lat: c[1],
+                      lon: c[0],
                     },
                   }),
                 );

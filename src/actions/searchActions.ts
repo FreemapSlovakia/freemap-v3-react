@@ -11,8 +11,6 @@ export interface SearchResult {
   geojson:
     | Feature<Geometries | GeometryCollection>
     | FeatureCollection<Geometries | GeometryCollection>;
-  lat: number;
-  lon: number;
   osmType: 'node' | 'way' | 'relation';
   detailed?: true;
 }

@@ -54,8 +54,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             geojson: point([coords.lon, coords.lat], {
               name: query.toUpperCase(),
             }),
-            lat: coords.lat,
-            lon: coords.lon,
             osmType: 'node',
             detailed: true,
           },
@@ -99,8 +97,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             [item.class]: item.type,
             ...item.extratags,
           }),
-          lat: Number.parseFloat(item.lat),
-          lon: Number.parseFloat(item.lon),
           osmType: item.osm_type,
         };
       });

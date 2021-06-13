@@ -1,4 +1,3 @@
-import center from '@turf/center';
 import {
   Feature,
   featureCollection,
@@ -94,17 +93,11 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
     mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
 
-    const geojson = featureCollection([...polyFeatures, ...features]);
-
-    const c = center(geojson);
-
     dispatch(
       searchSelectResult({
         osmType: 'relation',
         id,
-        geojson,
-        lon: c.geometry.coordinates[0],
-        lat: c.geometry.coordinates[1],
+        geojson: featureCollection([...polyFeatures, ...features]),
         detailed: true,
       }),
     );

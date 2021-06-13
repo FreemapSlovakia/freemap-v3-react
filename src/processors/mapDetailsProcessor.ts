@@ -1,4 +1,3 @@
-import center from '@turf/center';
 import {
   geometryCollection,
   lineString,
@@ -128,8 +127,6 @@ export const mapDetailsProcessor: Processor = {
       switch (element.type) {
         case 'node':
           sr.push({
-            lat: element.lat,
-            lon: element.lon,
             geojson: toGeometry(element, element.tags),
             id: element.id,
             osmType: 'node',
@@ -138,43 +135,27 @@ export const mapDetailsProcessor: Processor = {
 
           break;
         case 'way':
-          {
-            const geojson = toGeometry(element, element.tags);
-
-            const [lon, lat] = center(geojson).geometry.coordinates;
-
-            sr.push({
-              lat,
-              lon,
-              geojson,
-              id: element.id,
-              osmType: 'way',
-              detailed: true,
-            });
-          }
+          sr.push({
+            geojson: toGeometry(element, element.tags),
+            id: element.id,
+            osmType: 'way',
+            detailed: true,
+          });
 
           break;
         case 'relation':
-          {
-            const geojson = geometryCollection(
+          sr.push({
+            geojson: geometryCollection(
               element.members
                 .filter((member) => member.type !== 'relation')
                 .map(
                   (member) => toGeometry(member as WayGeom | NodeGeom).geometry,
                 ),
               element.tags,
-            );
-
-            const [lon, lat] = center(geojson).geometry.coordinates;
-
-            sr.push({
-              lat,
-              lon,
-              geojson,
-              id: element.id,
-              osmType: 'relation',
-            });
-          }
+            ),
+            id: element.id,
+            osmType: 'relation',
+          });
 
           break;
       }

@@ -1,4 +1,3 @@
-import center from '@turf/center';
 import { lineString, polygon } from '@turf/helpers';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
@@ -31,23 +30,20 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       } else if (item.type === 'way') {
         const coordinates = item.nodes.map((ref) => nodes[ref]);
 
-        const geojson =
-          positionsEqual(coordinates[0], coordinates[coordinates.length - 1]) &&
-          item.tags?.['area'] !== 'no' &&
-          !item.tags?.['barrier'] &&
-          !item.tags?.['gihgway'] // taken from https://wiki.openstreetmap.org/wiki/Key:area
-            ? polygon([coordinates], item.tags)
-            : lineString(coordinates, item.tags);
-
-        const c = center(geojson);
-
         dispatch(
           searchSelectResult({
             osmType: 'way',
             id,
-            geojson,
-            lon: c.geometry.coordinates[0],
-            lat: c.geometry.coordinates[1],
+            geojson:
+              positionsEqual(
+                coordinates[0],
+                coordinates[coordinates.length - 1],
+              ) &&
+              item.tags?.['area'] !== 'no' &&
+              !item.tags?.['barrier'] &&
+              !item.tags?.['gihgway'] // taken from https://wiki.openstreetmap.org/wiki/Key:area
+                ? polygon([coordinates], item.tags)
+                : lineString(coordinates, item.tags),
             detailed: true,
           }),
         );
