@@ -37,13 +37,13 @@ function annotateFeature(
 
       layer.addEventListener('mouseover', () => {
         if (layer instanceof Path) {
-          layer.setStyle({ color: '#66bbff' });
+          layer.setStyle({ opacity: 0.5 });
         }
       });
 
       layer.addEventListener('mouseout', () => {
         if (layer instanceof Path) {
-          layer.setStyle({ color: '#3388ff' }); // default color
+          layer.setStyle({ opacity: 0 }); // default color
         }
       });
     },
@@ -68,18 +68,41 @@ export function SearchResults(): ReactElement | null {
   );
 
   return !selectedResult ? null : (
-    <GeoJSON
-      interactive
-      key={selectedResultSeq}
-      data={selectedResult.geojson}
-      style={{ weight: 5 }}
-      pointToLayer={pointToLayer}
-      onEachFeature={cachedAnnotateFeature}
-      eventHandlers={{
-        click() {
-          dispatch(searchSelectResult(selectedResult));
-        },
-      }}
-    />
+    <>
+      <GeoJSON
+        interactive={false}
+        key={selectedResultSeq}
+        data={selectedResult.geojson}
+        style={{ weight: 5 }}
+        filter={(feature) => feature.geometry.type === 'LineString'}
+      />
+      <GeoJSON
+        interactive
+        key={selectedResultSeq}
+        data={selectedResult.geojson}
+        style={{ weight: 15, opacity: 0, color: '#fff' }}
+        onEachFeature={cachedAnnotateFeature}
+        filter={(feature) => feature.geometry.type === 'LineString'}
+        eventHandlers={{
+          click() {
+            dispatch(searchSelectResult(selectedResult));
+          },
+        }}
+      />
+      <GeoJSON
+        interactive
+        key={selectedResultSeq}
+        data={selectedResult.geojson}
+        style={{ weight: 5 }}
+        pointToLayer={pointToLayer}
+        onEachFeature={cachedAnnotateFeature}
+        filter={(feature) => feature.geometry.type !== 'LineString'}
+        eventHandlers={{
+          click() {
+            dispatch(searchSelectResult(selectedResult));
+          },
+        }}
+      />
+    </>
   );
 }

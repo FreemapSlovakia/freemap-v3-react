@@ -68,7 +68,7 @@ export async function getNameFromOsmElement(
   if (type === 'relation' && tags['type'] === 'route') {
     const color =
       colorNames[
-        (tags['osmc:symbol'] ?? '').replace(/:.*/, '') || (tags['color'] ?? '')
+        (tags['osmc:symbol'] ?? '').replace(/:.*/, '') || (tags['colour'] ?? '')
       ] ?? '';
 
     subj = color + ' ' + subj;
