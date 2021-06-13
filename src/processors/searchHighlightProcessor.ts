@@ -21,7 +21,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     const le = getMapLeafletElement();
 
     if (le && action.payload) {
-      const { id, osmType, detailed, geojson } = action.payload;
+      const { id, osmType, detailed, geojson, tags } = action.payload;
 
       if (!detailed) {
         switch (osmType) {
@@ -45,22 +45,21 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           16,
       });
 
-      dispatch(
-        toastsAdd({
-          id: 'mapDetails.tags',
-          messageKey: 'mapDetails.detail',
-          messageParams: {
-            id,
-            type: osmType,
-            tags:
-              (geojson.type === 'Feature'
-                ? geojson.properties
-                : geojson.features[0]?.properties) ?? {},
-          },
-          cancelType: [getType(clearMap), getType(searchSetResults)],
-          style: 'info',
-        }),
-      );
+      if (detailed) {
+        dispatch(
+          toastsAdd({
+            id: 'mapDetails.tags',
+            messageKey: 'mapDetails.detail',
+            messageParams: {
+              id,
+              type: osmType,
+              tags,
+            },
+            cancelType: [getType(clearMap), getType(searchSetResults)],
+            style: 'info',
+          }),
+        );
+      }
     }
   },
 };

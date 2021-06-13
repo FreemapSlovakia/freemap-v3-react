@@ -3,6 +3,7 @@ import {
   FeatureCollection,
   Geometries,
   GeometryCollection,
+  Properties,
 } from '@turf/helpers';
 import { createAction } from 'typesafe-actions';
 
@@ -12,6 +13,7 @@ export interface SearchResult {
     | Feature<Geometries | GeometryCollection>
     | FeatureCollection<Geometries | GeometryCollection>;
   osmType: 'node' | 'way' | 'relation';
+  tags: Properties;
   detailed?: true;
 }
 

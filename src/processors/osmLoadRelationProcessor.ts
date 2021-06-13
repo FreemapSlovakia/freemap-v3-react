@@ -54,7 +54,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       return;
     }
 
-    const tags: Record<string, string> | undefined = relation.tags;
+    const tags: Record<string, string> = relation.tags ?? {};
 
     for (const member of relation.members) {
       const { ref, type } = member;
@@ -98,6 +98,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
         osmType: 'relation',
         id,
         geojson: featureCollection([...polyFeatures, ...features]),
+        tags,
         detailed: true,
       }),
     );

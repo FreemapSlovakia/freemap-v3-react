@@ -32,6 +32,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
         osmType: 'node',
         id,
         geojson: point(nodes[0], tags),
+        tags,
         detailed: true,
       }),
     );

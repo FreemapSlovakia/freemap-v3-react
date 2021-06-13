@@ -124,22 +124,24 @@ export const mapDetailsProcessor: Processor = {
     const sr: SearchResult[] = [];
 
     for (const element of elements) {
+      const tags = element.tags ?? {};
+
       switch (element.type) {
         case 'node':
           sr.push({
-            geojson: toGeometry(element, element.tags),
+            geojson: toGeometry(element, tags),
             id: element.id,
             osmType: 'node',
-            detailed: true,
+            tags,
           });
 
           break;
         case 'way':
           sr.push({
-            geojson: toGeometry(element, element.tags),
+            geojson: toGeometry(element, tags),
             id: element.id,
             osmType: 'way',
-            detailed: true,
+            tags,
           });
 
           break;
@@ -151,10 +153,11 @@ export const mapDetailsProcessor: Processor = {
                 .map(
                   (member) => toGeometry(member as WayGeom | NodeGeom).geometry,
                 ),
-              element.tags,
+              tags,
             ),
             id: element.id,
             osmType: 'relation',
+            tags,
           });
 
           break;

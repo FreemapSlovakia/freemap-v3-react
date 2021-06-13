@@ -30,6 +30,8 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       } else if (item.type === 'way') {
         const coordinates = item.nodes.map((ref) => nodes[ref]);
 
+        const tags = item.tags ?? {};
+
         dispatch(
           searchSelectResult({
             osmType: 'way',
@@ -39,11 +41,12 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
                 coordinates[0],
                 coordinates[coordinates.length - 1],
               ) &&
-              item.tags?.['area'] !== 'no' &&
-              !item.tags?.['barrier'] &&
-              !item.tags?.['gihgway'] // taken from https://wiki.openstreetmap.org/wiki/Key:area
+              tags['area'] !== 'no' &&
+              !tags['barrier'] &&
+              !tags['gihgway'] // taken from https://wiki.openstreetmap.org/wiki/Key:area
                 ? polygon([coordinates], item.tags)
                 : lineString(coordinates, item.tags),
+            tags,
             detailed: true,
           }),
         );

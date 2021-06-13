@@ -12,7 +12,7 @@ function pointToLayer(_: Feature, latLng: LatLng) {
   return marker(latLng, {
     icon: new MarkerLeafletIcon({
       ...markerIconOptions,
-      icon: <MarkerIcon />,
+      icon: <MarkerIcon color="#3388ff" />,
     }),
   });
 }

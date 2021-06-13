@@ -47,15 +47,17 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     }
 
     if (coords) {
+      const tags = {
+        name: query.toUpperCase(),
+      };
+
       dispatch(
         searchSetResults([
           {
             id: -1,
-            geojson: point([coords.lon, coords.lat], {
-              name: query.toUpperCase(),
-            }),
+            geojson: point([coords.lon, coords.lat], tags),
             osmType: 'node',
-            detailed: true,
+            tags,
           },
         ]),
       );
@@ -90,14 +92,17 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,
       )
       .map((item): SearchResult => {
+        const tags = {
+          name: item.display_name,
+          [item.class]: item.type,
+          ...item.extratags,
+        };
+
         return {
           id: item.osm_id,
-          geojson: feature(item.geojson, {
-            name: item.display_name,
-            [item.class]: item.type,
-            ...item.extratags,
-          }),
+          geojson: feature(item.geojson, tags),
           osmType: item.osm_type,
+          tags,
         };
       });
 
