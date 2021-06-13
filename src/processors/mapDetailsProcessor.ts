@@ -95,7 +95,12 @@ export const mapDetailsProcessor: Processor = {
 
     const oRes1 = assertType<OverpassResult>(data1);
 
-    const elements = [...oRes1.elements, ...oRes.elements].reverse();
+    const res1Set = new Set(oRes1.elements.map((item) => item.id));
+
+    const elements = [
+      ...oRes1.elements,
+      ...oRes.elements.filter((item) => res1Set.has(item.id)), // remove dupes
+    ].reverse();
 
     const sr: SearchResult[] = [];
 

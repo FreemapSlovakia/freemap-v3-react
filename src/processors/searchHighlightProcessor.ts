@@ -19,7 +19,7 @@ export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
     if (!action.payload) {
-      return;
+      return action;
     }
 
     const { id, osmType } = action.payload;
