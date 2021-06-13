@@ -1,8 +1,9 @@
 import center from '@turf/center';
-import { lineString } from '@turf/helpers';
+import { lineString, polygon } from '@turf/helpers';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
+import { positionsEqual } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -28,10 +29,15 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
-        const geojson = lineString(
-          item.nodes.map((ref) => nodes[ref]),
-          item.tags,
-        );
+        const coordinates = item.nodes.map((ref) => nodes[ref]);
+
+        const geojson =
+          positionsEqual(coordinates[0], coordinates[coordinates.length - 1]) &&
+          item.tags?.['area'] !== 'no' &&
+          !item.tags?.['barrier'] &&
+          !item.tags?.['gihgway'] // taken from https://wiki.openstreetmap.org/wiki/Key:area
+            ? polygon([coordinates], item.tags)
+            : lineString(coordinates, item.tags);
 
         const c = center(geojson);
 

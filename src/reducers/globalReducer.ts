@@ -13,6 +13,7 @@ import {
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
 import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
+import { mergeLines } from 'fm3/geoutils';
 import produce from 'immer';
 import { DefaultRootState } from 'react-redux';
 import { isActionOf } from 'typesafe-actions';
@@ -159,6 +160,8 @@ export function preGlobalReducer(
 
         const lines: Line[] = [];
 
+        mergeLines(features);
+
         for (const feature of features) {
           const { geometry } = feature;
 
@@ -208,8 +211,6 @@ export function preGlobalReducer(
             });
           }
         }
-
-        mergeLines(lines);
 
         draft.drawingLines.lines.push(...lines);
 
@@ -372,63 +373,4 @@ export function postGlobalReducer(
   }
 
   return state;
-}
-
-// TODO to utils
-
-function eq(pt1: Point, pt2: Point) {
-  return pt1.lat === pt2.lat && pt1.lon === pt2.lon;
-}
-
-function renumber(line: Line) {
-  line.points.forEach((point, i) => {
-    point.id = i;
-  });
-}
-
-function mergeLines(lines: Line[]) {
-  restart: for (;;) {
-    for (let i = 0; i < lines.length - 1; i++) {
-      const line1 = lines[i];
-
-      for (let j = i + 1; j < lines.length; j++) {
-        const line2 = lines[j];
-
-        if (eq(line1.points[0], line2.points[0])) {
-          line1.points.unshift(...line2.points.slice(1).reverse());
-          renumber(line1);
-          lines.splice(j, 1);
-          continue restart;
-        }
-
-        if (eq(line1.points[0], line2.points[line2.points.length - 1])) {
-          line1.points.splice(0, 1).unshift(...line2.points.slice(1));
-          renumber(line1);
-          lines.splice(j, 1);
-          continue restart;
-        }
-
-        if (eq(line1.points[line1.points.length - 1], line2.points[0])) {
-          line1.points.push(...line2.points.slice(1));
-          renumber(line1);
-          lines.splice(j, 1);
-          continue restart;
-        }
-
-        if (
-          eq(
-            line1.points[line1.points.length - 1],
-            line2.points[line2.points.length - 1],
-          )
-        ) {
-          line1.points.push(...line2.points.reverse().slice(1));
-          renumber(line1);
-          lines.splice(j, 1);
-          continue restart;
-        }
-      }
-    }
-
-    break;
-  }
 }

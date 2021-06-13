@@ -79,7 +79,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
             ).push(
               lineString(
                 w.nodes.map((ref) => [nodes[ref].lon, nodes[ref].lat]),
-                w.tags,
+                member.role === 'outer' ? tags : w.tags,
               ),
             );
           }
@@ -91,8 +91,6 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           break;
       }
     }
-
-    // TODO add support for areas
 
     mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
 
