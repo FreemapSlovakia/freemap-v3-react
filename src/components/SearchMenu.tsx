@@ -129,7 +129,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             setOpen(false);
           }
         },
-        preserve ? 300 : 0,
+        preserve ? 500 : 0,
       );
     },
     [results, dispatch],
@@ -220,11 +220,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             ref={ref}
             {...props}
             onFocus={handleFocus}
-            onMouseOver={handleFocus}
+            onMouseOverCapture={handleFocus}
             onMouseOut={handleBlur}
             onBlur={handleBlur}
           >
-            {children}
+            <div className="pe-none">{children}</div>
           </SafeAnchor>
         );
       }),
