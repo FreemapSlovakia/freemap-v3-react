@@ -1,13 +1,4 @@
 import {
-  Feature,
-  featureCollection,
-  Geometries,
-  lineString,
-  point,
-  polygon,
-  Properties,
-} from '@turf/helpers';
-import {
   clearMap,
   deleteFeature,
   selectFeature,
@@ -17,10 +8,8 @@ import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions
 import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { mergeLines, shouldBeArea } from 'fm3/geoutils';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
@@ -38,13 +27,12 @@ interface OverpassBaseElement {
   tags?: Record<string, string>;
 }
 
-interface NodeGeom extends LatLon {
+interface NodeGeom {
   type: 'node';
 }
 
 interface WayGeom {
   type: 'way';
-  geometry: LatLon[];
 }
 
 interface OverpassNode extends OverpassBaseElement, NodeGeom {}
@@ -53,24 +41,8 @@ interface OverpassWay extends OverpassBaseElement, WayGeom {
   nodes: number[];
 }
 
-interface MemeberBase {
-  ref: number;
-  role: string;
-}
-
-interface WayMemeber extends MemeberBase, WayGeom {}
-
-interface NodeMemeber extends MemeberBase, NodeGeom {}
-
-interface RelationMemeber extends MemeberBase {
-  type: 'relation';
-}
-
-type Member = RelationMemeber | WayMemeber | NodeMemeber;
-
 interface OverpassRelation extends OverpassBaseElement {
   type: 'relation';
-  members: Member[];
 }
 
 type OverpassElement = OverpassNode | OverpassWay | OverpassRelation;
@@ -103,7 +75,7 @@ export const mapDetailsProcessor: Processor = {
         data:
           '[out:json];(' +
           `nwr(around:33,${userSelectedLat},${userSelectedLon})${kvFilter};` +
-          ');out geom body;',
+          ');out tags;',
         expectedStatus: 200,
       }),
       httpRequest({
@@ -114,7 +86,7 @@ export const mapDetailsProcessor: Processor = {
         data: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;
           nwr(pivot.a)${kvFilter};
-          out geom body;`,
+          out tags;`,
         expectedStatus: 200,
       }),
     ]);
@@ -133,7 +105,6 @@ export const mapDetailsProcessor: Processor = {
       switch (element.type) {
         case 'node':
           sr.push({
-            geojson: toGeometry(element, tags),
             id: element.id,
             osmType: 'node',
             tags,
@@ -142,7 +113,6 @@ export const mapDetailsProcessor: Processor = {
           break;
         case 'way':
           sr.push({
-            geojson: toGeometry(element, tags),
             id: element.id,
             osmType: 'way',
             tags,
@@ -151,14 +121,7 @@ export const mapDetailsProcessor: Processor = {
           break;
         case 'relation':
           {
-            const features = element.members
-              .filter((member) => member.type !== 'relation')
-              .map((member) => toGeometry(member as WayGeom | NodeGeom));
-
-            mergeLines<Geometries>(features, tags);
-
             sr.push({
-              geojson: featureCollection(features, tags),
               id: element.id,
               osmType: 'relation',
               tags,
@@ -186,18 +149,3 @@ export const mapDetailsProcessor: Processor = {
     }
   },
 };
-
-function toGeometry(
-  geom: NodeGeom | WayGeom,
-  properties?: Properties,
-): Feature<Geometries> {
-  if (geom.type === 'node') {
-    return point([geom.lon, geom.lat], properties);
-  } else {
-    const coords = geom.geometry.map((coord) => [coord.lon, coord.lat]);
-
-    return shouldBeArea(properties)
-      ? polygon([coords], properties)
-      : lineString(coords, properties);
-  }
-}

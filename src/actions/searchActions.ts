@@ -9,7 +9,7 @@ import { createAction } from 'typesafe-actions';
 
 export interface SearchResult {
   id: number;
-  geojson:
+  geojson?:
     | Feature<Geometries | GeometryCollection>
     | FeatureCollection<Geometries | GeometryCollection>;
   osmType: 'node' | 'way' | 'relation';

@@ -21,6 +21,7 @@ function annotateFeature(
   feature: Feature<GeometryObject>,
   layer: Layer,
   language: string,
+  isBg: boolean,
 ) {
   getNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
     (text) => {
@@ -36,14 +37,14 @@ function annotateFeature(
       );
 
       layer.addEventListener('mouseover', () => {
-        if (layer instanceof Path || layer instanceof Polygon) {
+        if (layer instanceof Path) {
           layer.setStyle({ opacity: 0.5, fillOpacity: 0.125 });
         }
       });
 
       layer.addEventListener('mouseout', () => {
-        if (layer instanceof Path || layer instanceof Polygon) {
-          layer.setStyle({ opacity: 1, fillOpacity: 0.25 });
+        if (layer instanceof Path) {
+          layer.setStyle({ opacity: isBg ? 0 : 1, fillOpacity: 0.25 });
         }
       });
     },
@@ -61,13 +62,19 @@ export function SearchResults(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const cachedAnnotateFeature = useCallback(
+  const cachedAnnotateFeatureBg = useCallback(
     (feature: Feature<GeometryObject>, layer: Layer) =>
-      annotateFeature(feature, layer, language),
+      annotateFeature(feature, layer, language, true),
     [language],
   );
 
-  return !selectedResult ? null : (
+  const cachedAnnotateFeature = useCallback(
+    (feature: Feature<GeometryObject>, layer: Layer) =>
+      annotateFeature(feature, layer, language, false),
+    [language],
+  );
+
+  return !selectedResult?.geojson ? null : (
     <Fragment key={selectedResultSeq}>
       <GeoJSON
         interactive={false}
@@ -79,7 +86,7 @@ export function SearchResults(): ReactElement | null {
         interactive
         data={selectedResult.geojson}
         style={{ weight: 15, opacity: 0, color: '#fff' }}
-        onEachFeature={cachedAnnotateFeature}
+        onEachFeature={cachedAnnotateFeatureBg}
         filter={(feature) => feature.geometry.type === 'LineString'}
         eventHandlers={{
           click() {

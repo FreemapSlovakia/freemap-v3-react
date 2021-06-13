@@ -64,7 +64,10 @@ import { routePlannerSetFromCurrentPositionProcessor } from './processors/routeP
 import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
 import * as rpcProcessors from './processors/rpcProcessors';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
-import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
+import {
+  searchHighlightProcessor,
+  searchHighlightTrafo,
+} from './processors/searchHighlightProcessor';
 import { searchProcessor } from './processors/searchProcessor';
 import { setToolProcessor } from './processors/setToolProcessor';
 import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
@@ -181,6 +184,7 @@ processorMiddleware.processors.push(
   authLogoutProcessor,
   mapRefocusProcessor,
   searchProcessor,
+  searchHighlightTrafo,
   searchHighlightProcessor,
   tipsPreventProcessor,
   locateProcessor,

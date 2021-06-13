@@ -332,16 +332,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
-                const c = center(selectedResult.geojson).geometry.coordinates;
+                if (selectedResult.geojson) {
+                  const c = center(selectedResult.geojson).geometry.coordinates;
 
-                dispatch(
-                  routePlannerSetStart({
-                    start: {
-                      lat: c[1],
-                      lon: c[0],
-                    },
-                  }),
-                );
+                  dispatch(
+                    routePlannerSetStart({
+                      start: {
+                        lat: c[1],
+                        lon: c[0],
+                      },
+                    }),
+                  );
+                }
               }}
             >
               <FaPlay color="#32CD32" />
@@ -352,16 +354,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
-                const c = center(selectedResult.geojson).geometry.coordinates;
+                if (selectedResult.geojson) {
+                  const c = center(selectedResult.geojson).geometry.coordinates;
 
-                dispatch(
-                  routePlannerSetFinish({
-                    finish: {
-                      lat: c[1],
-                      lon: c[0],
-                    },
-                  }),
-                );
+                  dispatch(
+                    routePlannerSetFinish({
+                      finish: {
+                        lat: c[1],
+                        lon: c[0],
+                      },
+                    }),
+                  );
+                }
               }}
             >
               <FaStop color="#FF6347" />
@@ -387,12 +391,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const subjectAndName = useOsmNameResolver(
-    value.osmType,
-    (value.geojson.type === 'Feature'
-      ? value.geojson.properties
-      : value.geojson.features[0]?.properties) ?? {},
-  );
+  const subjectAndName = useOsmNameResolver(value.osmType, value.tags ?? {});
 
   return (
     <span>
