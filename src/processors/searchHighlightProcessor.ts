@@ -18,7 +18,7 @@ import { getType } from 'typesafe-actions';
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
-    if (!action.payload) {
+    if (!action.payload || action.payload.detailed) {
       return action;
     }
 
