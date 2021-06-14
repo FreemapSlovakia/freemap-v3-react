@@ -22,30 +22,11 @@ const cancelType = [
   getType(mapDetailsSetUserSelectedPosition),
 ];
 
-interface OverpassBaseElement {
+interface OverpassElement {
   id: number;
+  type: 'node' | 'way' | 'relation';
   tags?: Record<string, string>;
 }
-
-interface NodeGeom {
-  type: 'node';
-}
-
-interface WayGeom {
-  type: 'way';
-}
-
-interface OverpassNode extends OverpassBaseElement, NodeGeom {}
-
-interface OverpassWay extends OverpassBaseElement, WayGeom {
-  nodes: number[];
-}
-
-interface OverpassRelation extends OverpassBaseElement {
-  type: 'relation';
-}
-
-type OverpassElement = OverpassNode | OverpassWay | OverpassRelation;
 
 interface OverpassResult {
   elements: OverpassElement[];
@@ -99,7 +80,7 @@ export const mapDetailsProcessor: Processor = {
 
     const elements = [
       ...oRes1.elements,
-      ...oRes.elements.filter((item) => res1Set.has(item.id)), // remove dupes
+      ...oRes.elements.filter((item) => !res1Set.has(item.id)), // remove dupes
     ].reverse();
 
     const sr: SearchResult[] = [];

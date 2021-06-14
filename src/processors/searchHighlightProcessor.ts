@@ -63,9 +63,11 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
 
     if (geojson) {
       le.fitBounds(geoJSON(geojson).getBounds(), {
-        maxZoom:
+        maxZoom: Math.min(
+          18,
           baseLayers.find((layer) => layer.type === mapType)?.maxNativeZoom ??
-          16,
+            16,
+        ),
       });
     }
 
