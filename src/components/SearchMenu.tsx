@@ -146,9 +146,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   useEffect(() => {
     if (results.length) {
-      setOpen(true);
-      if (inputRef.current) {
-        inputRef.current.focus();
+      if (!inputRef.current || document.activeElement === inputRef.current) {
+        setOpen(true);
+      } else {
+        inputRef.current?.focus();
       }
     } else {
       setOpen(false);
@@ -232,18 +233,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [handleSelect],
   );
 
-  // ugly hack not to close dropdown on open
-  const justOpenedRef = useRef(false);
-
   const handleInputFocus = useCallback(() => {
     setOpen(results.length > 0);
-    justOpenedRef.current = true;
   }, [results]);
 
   const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
-    if (justOpenedRef.current) {
-      justOpenedRef.current = false;
-    } else if (!isOpen) {
+    if (document.activeElement !== inputRef.current && !isOpen) {
       setOpen(false);
 
       if (e) {

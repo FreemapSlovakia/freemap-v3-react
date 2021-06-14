@@ -36,6 +36,7 @@ export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
 
 export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
+
   handle: async ({ action, dispatch, getState }) => {
     const le = getMapLeafletElement();
 

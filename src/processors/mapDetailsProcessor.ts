@@ -119,7 +119,7 @@ export const mapDetailsProcessor: Processor = {
     }
 
     if (elements.length > 0) {
-      dispatch(setTool(null));
+      // dispatch(setTool(null));
 
       dispatch(searchSetResults(sr));
     } else {

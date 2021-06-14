@@ -160,6 +160,9 @@ export const osmTagToNameMapping: Node = {
     waste_disposal: 'Odpadkový kôš',
     library: 'Knižnica',
     bus_station: 'Autobusová stanica',
+    vending_machine: 'Automat',
+    parking: 'Parkovanie',
+    telephone: 'Telefón',
   },
   waterway: {
     '*': 'Vodný tok {}',
@@ -186,9 +189,10 @@ export const osmTagToNameMapping: Node = {
     orchard: 'Sad',
     vineyard: 'Vinica',
     cemetery: 'Cintorín',
-    reservoir: 'Priehrada/nádrž',
+    reservoir: 'Priehrada / nádrž',
     quarry: 'Lom',
     millitary: 'Vojenská oblasť',
+    religions: 'Cirkevný pozemok',
   },
   leisure: {
     '*': '{}',
@@ -220,6 +224,7 @@ export const osmTagToNameMapping: Node = {
     plateau: 'Planina',
     arch: 'Skalné okno',
     scree: 'Suťovisko',
+    tree_row: 'Stromoradie / vetrolam',
   },
   man_made: {
     '*': '{}',

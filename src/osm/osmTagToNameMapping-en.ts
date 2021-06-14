@@ -161,6 +161,9 @@ export const osmTagToNameMapping: Node = {
     waste_disposal: 'Waste disposal',
     library: 'Library',
     bus_station: 'Bus station',
+    vending_machine: 'Vending machine',
+    parking: 'Parking',
+    telephone: 'Telephone',
   },
   waterway: {
     '*': 'Waterway {}',
@@ -190,6 +193,7 @@ export const osmTagToNameMapping: Node = {
     reservoir: 'Reservoir',
     quarry: 'Quarry',
     millitary: 'Military area',
+    religions: 'Religious land', // TODO
   },
   leisure: {
     '*': '{}',
@@ -221,6 +225,7 @@ export const osmTagToNameMapping: Node = {
     plateau: 'Plateau',
     arch: 'Rock arch',
     scree: 'Scree',
+    tree_row: 'Tree row',
   },
   man_made: {
     '*': '{}',

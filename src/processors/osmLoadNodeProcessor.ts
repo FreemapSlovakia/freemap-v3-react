@@ -1,4 +1,5 @@
 import { point } from '@turf/helpers';
+import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadNode } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -17,6 +18,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/node/${id}`,
       expectedStatus: 200,
+      cancelActions: [clearMap, searchSelectResult],
     });
 
     const { elements } = assertType<OsmResult>(data);

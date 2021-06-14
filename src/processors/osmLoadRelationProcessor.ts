@@ -7,6 +7,7 @@ import {
   Point,
   Polygon,
 } from '@turf/helpers';
+import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -26,6 +27,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/relation/${id}/full`,
       expectedStatus: 200,
+      cancelActions: [clearMap, searchSelectResult],
     });
 
     const nodes: Record<number, OsmNode> = {};

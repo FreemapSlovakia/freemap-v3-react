@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 export function MapDetailsTool(): ReactElement | null {
   const dispatch = useDispatch();
 
+  const [latLon, setLatLon] = useState<LatLon>();
+
   useMapEvent(
     'click',
     useCallback(
@@ -23,10 +25,9 @@ export function MapDetailsTool(): ReactElement | null {
     ),
   );
 
-  const [latLon, setLatLon] = useState<LatLon>();
-
-  const handleMouseMove = useCallback(
-    ({ latlng, originalEvent }: LeafletMouseEvent) => {
+  useMapEvent(
+    'mousemove',
+    useCallback(({ latlng, originalEvent }: LeafletMouseEvent) => {
       if (
         originalEvent.target &&
         (originalEvent.target as HTMLElement).classList.contains(
@@ -37,11 +38,15 @@ export function MapDetailsTool(): ReactElement | null {
       } else {
         setLatLon(undefined);
       }
-    },
-    [],
+    }, []),
   );
 
-  useMapEvent('mousemove', handleMouseMove);
+  useMapEvent(
+    'mouseout',
+    useCallback(() => {
+      setLatLon(undefined);
+    }, []),
+  );
 
   return !latLon ? null : (
     <Circle
