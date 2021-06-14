@@ -62,7 +62,7 @@ export function Copyright(): ReactElement {
         onHide={handleHide}
         target={buttonRef.current}
       >
-        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+        <Popover id="popover-copyright" className="fm-menu">
           <Popover.Content>
             {showLegendButton && (
               <Dropdown.Item

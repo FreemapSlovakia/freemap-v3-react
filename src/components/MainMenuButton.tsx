@@ -277,7 +277,7 @@ export function MainMenuButton(): ReactElement {
         onHide={close}
         target={button.current}
       >
-        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+        <Popover id="popover-main" className="fm-menu">
           <Popover.Content className="fm-menu-scroller" ref={sc}>
             <div />
 

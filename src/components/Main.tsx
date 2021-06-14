@@ -1,3 +1,8 @@
+import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
+import {
+  drawingMeasure,
+  drawingPointAdd,
+} from 'fm3/actions/drawingPointActions';
 import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import {
   galleryAddItem,
@@ -7,7 +12,12 @@ import {
 } from 'fm3/actions/galleryActions';
 import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
-import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
+import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
+import {
+  routePlannerSetFinish,
+  routePlannerSetStart,
+  routePlannerToggleElevationChart,
+} from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetData,
@@ -69,19 +79,23 @@ import {
   trackGeojsonIsSuitableForElevationChart,
 } from 'fm3/selectors/mainSelectors';
 import { toolDefinitions } from 'fm3/toolDefinitions';
-import Leaflet from 'leaflet';
+import Leaflet, { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   MouseEvent,
   ReactElement,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import CloseButton from 'react-bootstrap/CloseButton';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea, FaTimes } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
@@ -176,6 +190,14 @@ export function Main(): ReactElement {
     }
   }, [map, mouseCursor]);
 
+  const [contextMenu, setContextMenu] = useState({
+    shown: false,
+    x: 0,
+    y: 0,
+    lat: 0,
+    lon: 0,
+  });
+
   useEffect(() => {
     if (!map) {
       return;
@@ -209,10 +231,26 @@ export function Main(): ReactElement {
       }, 250);
     }
 
+    function handleMapContextMenu(e: LeafletMouseEvent) {
+      e.originalEvent.preventDefault();
+
+      setContextMenu({
+        shown: true,
+        x: e.containerPoint.x,
+        y: e.containerPoint.y,
+        lat: e.latlng.lat,
+        lon: e.latlng.lng,
+      });
+    }
+
     m.on('moveend', handleMapMoveEnd);
+
+    m.on('contextmenu', handleMapContextMenu);
 
     return () => {
       m.off('moveend', handleMapMoveEnd);
+
+      m.off('contextmenu', handleMapContextMenu);
 
       if (t) {
         window.clearTimeout(t);
@@ -375,6 +413,12 @@ export function Main(): ReactElement {
     (state) => state.maps.id !== undefined && state.maps.name !== undefined,
   );
 
+  const ctxMenuAnchor = useRef<HTMLDivElement | null>(null);
+
+  const ctxMenuClose = () => {
+    setContextMenu((m) => ({ ...m, shown: false }));
+  };
+
   return (
     <>
       <style>
@@ -532,6 +576,7 @@ export function Main(): ReactElement {
       >
         {isDragActive && (
           <div
+            // TODO as class
             style={{
               backgroundColor: 'rgba(217,237,247,50%)',
               position: 'absolute',
@@ -554,6 +599,134 @@ export function Main(): ReactElement {
           center={{ lat, lng: lon }}
           zoom={zoom}
         >
+          <div
+            style={{
+              position: 'absolute',
+              left: contextMenu.x,
+              top: contextMenu.y,
+              pointerEvents: 'none',
+            }}
+            ref={ctxMenuAnchor}
+          />
+
+          <Overlay
+            rootClose
+            placement="bottom"
+            target={ctxMenuAnchor.current}
+            onHide={ctxMenuClose}
+            show={contextMenu.shown}
+            flip
+          >
+            <Popover id="ctx" content>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(
+                    drawingPointAdd({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
+
+                  dispatch(drawingMeasure(true));
+                }}
+              >
+                Place a point
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(
+                    mapRefocus({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
+                }}
+              >
+                Center map
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(
+                    mapDetailsSetUserSelectedPosition({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
+                }}
+              >
+                Query features
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(setTool('route-planner'));
+
+                  dispatch(
+                    routePlannerSetStart({
+                      start: {
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                Start route
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(setTool('route-planner'));
+
+                  dispatch(
+                    routePlannerSetFinish({
+                      finish: {
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                Finish route
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(setTool('draw-lines'));
+
+                  dispatch(
+                    drawingLineAddPoint({
+                      type: 'line',
+                      point: {
+                        id: 0,
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                Draw a line
+              </Dropdown.Item>
+            </Popover>
+          </Overlay>
+
           <ScaleControl imperial={false} position="bottomleft" />
 
           <Layers />

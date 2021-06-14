@@ -239,7 +239,7 @@ export function MapSwitchButton(): ReactElement {
         onHide={handleHide}
         target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
-        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+        <Popover id="popover-map-switch" className="fm-menu">
           <Popover.Content className="fm-menu-scroller" ref={sc}>
             <div />
 
