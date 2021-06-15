@@ -467,6 +467,7 @@ const en: Messages = {
       rating: 'Rating',
       noTags: 'no tags',
     },
+    noPicturesFound: 'There were no photos found on this place.',
   },
 
   measurement: {
@@ -1435,6 +1436,17 @@ const en: Messages = {
       </>
     ),
     unauthenticatedError: 'Please log-in to access My maps functionality.',
+  },
+
+  mapCtxMenu: {
+    centerMap: 'Center map',
+    measurePosition: 'Measure position',
+    addPoint: 'Add point',
+    startLine: 'Start line',
+    queryFeatures: 'Query features',
+    startRoute: 'Start route',
+    finishRoute: 'Finish route',
+    showPhotos: 'Show photos',
   },
 
   legend: {

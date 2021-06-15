@@ -387,6 +387,7 @@ export type Messages = {
       rating: string;
       noTags: string;
     };
+    noPicturesFound: string;
   };
   measurement: {
     distance: string;
@@ -787,5 +788,15 @@ export type Messages = {
     president: string;
     vicepresident: string;
     secretary: string;
+  };
+  mapCtxMenu: {
+    centerMap: string;
+    measurePosition: string;
+    addPoint: string;
+    startLine: string;
+    queryFeatures: string;
+    startRoute: string;
+    finishRoute: string;
+    showPhotos: string;
   };
 };

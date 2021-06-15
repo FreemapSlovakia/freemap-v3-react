@@ -73,7 +73,7 @@ export function OpenInExternalAppMenuButton({
         onHide={handleHide}
         target={getTarget}
       >
-        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+        <Popover id="popover-open-ext" className="fm-menu">
           <Popover.Content>
             <OpenInExternalAppDropdownItems
               lat={lat}

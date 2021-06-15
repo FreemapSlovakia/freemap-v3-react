@@ -11,6 +11,7 @@ import {
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
@@ -28,6 +29,50 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
     const { selection } = getState().main;
 
     let id;
+
+    async function measurePoint(point: LatLon) {
+      let elevation;
+
+      if (action.payload.elevation !== false) {
+        dispatch(
+          toastsAdd({
+            messageKey: 'measurement.elevationInfo',
+            messageParams: { point, elevation: null },
+            timeout: 500000,
+            id: 'measurementInfo',
+            cancelType,
+          }),
+        );
+
+        const { data } = await httpRequest({
+          getState,
+          method: 'GET',
+          url: '/geotools/elevation',
+          params: {
+            coordinates: `${point.lat},${point.lon}`,
+          },
+          cancelActions: [drawingMeasure, clearMap],
+        });
+
+        elevation = assertType<[number]>(data)[0];
+      }
+
+      dispatch(
+        toastsAdd({
+          id: 'measurementInfo',
+          messageKey: 'measurement.elevationInfo',
+          messageParams: { point, elevation },
+          timeout: 500000,
+          cancelType,
+        }),
+      );
+    }
+
+    if (action.payload.position) {
+      await measurePoint(action.payload.position);
+
+      return;
+    }
 
     if (
       selection?.type === 'draw-line-poly' ||
@@ -87,44 +132,8 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           }),
         );
       }
-    } else if (selection?.type === 'draw-points') {
-      const point = getState().drawingPoints.points[selection.id];
-
-      let elevation;
-
-      if (action.payload) {
-        dispatch(
-          toastsAdd({
-            messageKey: 'measurement.elevationInfo',
-            messageParams: { point, elevation: null },
-            timeout: 500000,
-            id: 'measurementInfo',
-            cancelType,
-          }),
-        );
-
-        const { data } = await httpRequest({
-          getState,
-          method: 'GET',
-          url: '/geotools/elevation',
-          params: {
-            coordinates: `${point.lat},${point.lon}`,
-          },
-          cancelActions: [drawingMeasure, clearMap],
-        });
-
-        elevation = assertType<[number]>(data)[0];
-      }
-
-      dispatch(
-        toastsAdd({
-          id: 'measurementInfo',
-          messageKey: 'measurement.elevationInfo',
-          messageParams: { point, elevation },
-          timeout: 500000,
-          cancelType,
-        }),
-      );
+    } else if (selection?.type === 'draw-points' || action.payload.position) {
+      await measurePoint(getState().drawingPoints.points[selection.id]);
     }
   },
 };

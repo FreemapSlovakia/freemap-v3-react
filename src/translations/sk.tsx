@@ -492,6 +492,7 @@ const sk: Messages = {
       rating: 'Hodnotenie',
       noTags: 'bez tagov',
     },
+    noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
   },
 
   measurement: {
@@ -1466,6 +1467,17 @@ const sk: Messages = {
       </>
     ),
     unauthenticatedError: 'Pre funkciu Moje mapy musíte byť prihlásený.',
+  },
+
+  mapCtxMenu: {
+    centerMap: 'Vycentrovať mapu',
+    measurePosition: 'Odmerať pozíciu',
+    addPoint: 'Pridať bod',
+    startLine: 'Začať čiaru',
+    queryFeatures: 'Zistiť detaily',
+    startRoute: 'Začať trasu',
+    finishRoute: 'Ukončiť trasu',
+    showPhotos: 'Ukázať fotky',
   },
 
   legend: {

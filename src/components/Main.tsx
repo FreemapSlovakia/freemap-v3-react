@@ -93,6 +93,7 @@ import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
 import { MainMenuButton } from './MainMenuButton';
+import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
 import { MapsModal } from './MapsModal';
@@ -532,6 +533,7 @@ export function Main(): ReactElement {
       >
         {isDragActive && (
           <div
+            // TODO as class
             style={{
               backgroundColor: 'rgba(217,237,247,50%)',
               position: 'absolute',
@@ -554,6 +556,8 @@ export function Main(): ReactElement {
           center={{ lat, lng: lon }}
           zoom={zoom}
         >
+          <MapContextMenu />
+
           <ScaleControl imperial={false} position="bottomleft" />
 
           <Layers />

@@ -147,7 +147,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
     );
 
-    dispatch(drawingMeasure(true));
+    dispatch(drawingMeasure({}));
   }
 
   let prev: Point | null = null;
@@ -171,7 +171,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       }),
     );
 
-    dispatch(drawingMeasure(true));
+    dispatch(drawingMeasure({}));
   }
 
   const ps = useMemo(() => {
@@ -335,7 +335,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                     }),
                   );
 
-                  dispatch(drawingMeasure(true));
+                  dispatch(drawingMeasure({}));
                 },
                 click() {
                   if (joinWith !== undefined) {
@@ -346,7 +346,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                       }),
                     );
 
-                    dispatch(drawingMeasure(true));
+                    dispatch(drawingMeasure({}));
                   } else {
                     dispatch(
                       selectFeature({

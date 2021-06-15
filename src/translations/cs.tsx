@@ -475,6 +475,7 @@ const cs: Messages = {
       rating: 'Hodnocení',
       noTags: 'bez tagů',
     },
+    noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
   },
 
   measurement: {
@@ -1445,6 +1446,17 @@ const cs: Messages = {
       </>
     ),
     unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
+  },
+
+  mapCtxMenu: {
+    centerMap: 'Vycentrovat mapu',
+    measurePosition: 'Měřit pozici',
+    addPoint: 'Přidat bod',
+    startLine: 'Začít čáru',
+    queryFeatures: 'Zjistit detaily',
+    startRoute: 'Začít trasu',
+    finishRoute: 'Ukončit trasu',
+    showPhotos: 'Ukázat fotky',
   },
 
   legend: {

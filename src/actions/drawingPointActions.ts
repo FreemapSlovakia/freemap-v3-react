@@ -23,4 +23,7 @@ export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<
 
 // NOTE used also for lines and polygons
 
-export const drawingMeasure = createAction('DRAWING_MEASURE')<boolean>();
+export const drawingMeasure = createAction('DRAWING_MEASURE')<{
+  elevation?: boolean;
+  position?: { lat: number; lon: number };
+}>();
