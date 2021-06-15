@@ -13,7 +13,6 @@ import {
 } from 'fm3/actions/routePlannerActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { LeafletMouseEvent } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
