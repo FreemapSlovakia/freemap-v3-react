@@ -53,7 +53,7 @@ export function DrawingLinesTool(): null {
         }),
       );
 
-      dispatch(drawingMeasure(true));
+      dispatch(drawingMeasure({}));
     },
     [linePoints, dispatch, selection, tool],
   );
