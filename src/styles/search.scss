@@ -5,18 +5,21 @@
 }
 
 .fm-search-dropdown .dropdown-long {
-  height: 300px;
-  max-height: calc(100vh - 130px);
+  max-height: calc(100vh - 80px);
+
+  @media (min-height: 400px) {
+    max-height: calc(100vh - 130px);
+  }
 }
 
 .fm-search-dropdown {
-  opacity: 0.8;
-
   @media (min-width: 768px) {
     max-width: calc(100vw - 160px);
   }
 
   @media (max-width: 767px) {
-    max-width: calc(100vw - 80px);
+    max-width: calc(100vw - 16px);
+
+    transform: translate3d(8px, 47px, 0px) !important;
   }
 }

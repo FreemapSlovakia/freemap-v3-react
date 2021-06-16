@@ -16,14 +16,12 @@ import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
-  Children,
   forwardRef,
   MouseEvent,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -33,7 +31,6 @@ import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SafeAnchor from 'react-bootstrap/SafeAnchor';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -71,8 +68,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const searchSeq = useSelector((state) => state.search.searchSeq);
 
   // const inProgress = useSelector((state) => state.search.inProgress);
-
-  const tRef = useRef<number>();
 
   const [value, setValue] = useState('');
 
@@ -113,36 +108,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   );
 
   const handleSelect = useCallback(
-    (eventKey: string | null, _: unknown, preserve?: boolean) => {
-      if (tRef.current) {
-        window.clearTimeout(tRef.current);
+    (eventKey: string | null) => {
+      const found = results.find((item) => item.id === Number(eventKey));
+
+      if (found) {
+        dispatch(searchSelectResult(found));
       }
 
-      tRef.current = window.setTimeout(
-        () => {
-          const found = results.find((item) => item.id === Number(eventKey));
-
-          if (found) {
-            dispatch(searchSelectResult(found));
-          }
-
-          if (!preserve) {
-            setOpen(false);
-          }
-        },
-        preserve ? 500 : 0,
-      );
+      setOpen(false);
     },
     [results, dispatch],
   );
-
-  useEffect(() => {
-    if (tRef.current) {
-      window.clearTimeout(tRef.current);
-
-      tRef.current = undefined;
-    }
-  }, [open]);
 
   useEffect(() => {
     if (results.length) {
@@ -195,42 +171,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       setValue('');
     },
     [dispatch],
-  );
-
-  const HoverableMenuItem = useMemo(
-    () =>
-      forwardRef<HTMLAnchorElement, { children: ReactNode }>(function HiddenInt(
-        { children, ...props },
-        ref,
-      ) {
-        function handleFocus() {
-          const ch = Children.only(children);
-
-          handleSelect((ch as any).props.value.id, undefined, true);
-        }
-
-        function handleBlur() {
-          if (tRef.current) {
-            window.clearTimeout(tRef.current);
-
-            tRef.current = undefined;
-          }
-        }
-
-        return (
-          <SafeAnchor
-            ref={ref}
-            {...props}
-            onFocus={handleFocus}
-            onMouseOverCapture={handleFocus}
-            onMouseOut={handleBlur}
-            onBlur={handleBlur}
-          >
-            <div className="pe-none">{children}</div>
-          </SafeAnchor>
-        );
-      }),
-    [handleSelect],
   );
 
   const handleInputFocus = useCallback(() => {
@@ -309,7 +249,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   key={result.id}
                   eventKey={String(result.id)}
                   active={!!selectedResult && result.id === selectedResult.id}
-                  as={HoverableMenuItem}
                 >
                   <Result value={result} />
                 </Dropdown.Item>
