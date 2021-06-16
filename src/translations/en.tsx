@@ -644,6 +644,7 @@ const en: Messages = {
         {...props}
         openText="Open at OpenStreetMap.org"
         historyText="history"
+        editInJosmText="Edit in JOSM"
       />
     ),
   },

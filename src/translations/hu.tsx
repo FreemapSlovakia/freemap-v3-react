@@ -656,6 +656,7 @@ const hu: Messages = {
         {...props}
         openText="Open at OpenStreetMap.org" // TODO translate
         historyText="history" // TODO translate
+        editInJosmText="Edit in JOSM" // TODO translate
       />
     ),
   },

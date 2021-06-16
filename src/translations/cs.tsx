@@ -656,6 +656,7 @@ const cs: Messages = {
         {...props}
         openText="Otevřít na OpenStreetMap.org"
         historyText="historie"
+        editInJosmText="Editovat v JOSM"
       />
     ),
   },

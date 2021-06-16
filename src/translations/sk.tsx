@@ -673,6 +673,7 @@ const sk: Messages = {
         {...props}
         openText="Otvoriť na OpenStreetMap.org"
         historyText="história"
+        editInJosmText="Editovať v JOSM"
       />
     ),
   },
