@@ -60,7 +60,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       }
     }
 
-    if (action.payload.zoomTo && geojson) {
+    if (action.payload.zoomTo !== false && geojson) {
       const { mapType } = getState().map;
 
       le.fitBounds(geoJSON(geojson).getBounds(), {
