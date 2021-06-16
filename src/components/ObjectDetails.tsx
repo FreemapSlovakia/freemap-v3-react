@@ -73,7 +73,13 @@ export function ObjectDetails({
     fetch(
       'http://localhost:8111/load_object?new_layer=true&relation_members=true&objects=' +
         { node: 'n', way: 'w', relation: 'r' }[type] +
-        id,
+        id +
+        '&layer_name=' +
+        encodeURIComponent(
+          `${subjectAndName?.[0]} "${
+            subjectAndName?.[1] || m?.general.unnamed
+          }"`.trim(),
+        ),
     )
       .then((res) => {
         if (!res.ok) {
