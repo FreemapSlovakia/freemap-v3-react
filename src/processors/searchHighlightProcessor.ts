@@ -18,11 +18,11 @@ import { getType } from 'typesafe-actions';
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
-    if (!action.payload || action.payload.detailed) {
+    if (!action.payload || action.payload.result.detailed) {
       return action;
     }
 
-    const { id, osmType } = action.payload;
+    const { id, osmType } = action.payload.result;
 
     const sr = getState().search.selectedResult;
 
@@ -44,7 +44,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       return;
     }
 
-    const { id, osmType, detailed, geojson, tags } = action.payload;
+    const { id, osmType, detailed, geojson, tags } = action.payload.result;
 
     if (!detailed) {
       switch (osmType) {
@@ -60,9 +60,9 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       }
     }
 
-    const { mapType } = getState().map;
+    if (action.payload.zoomTo && geojson) {
+      const { mapType } = getState().map;
 
-    if (geojson) {
       le.fitBounds(geoJSON(geojson).getBounds(), {
         maxZoom: Math.min(
           18,
@@ -72,7 +72,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       });
     }
 
-    if (detailed && id !== -1) {
+    if (detailed && id !== -1 && action.payload.showToast) {
       dispatch(
         toastsAdd({
           id: 'mapDetails.tags',

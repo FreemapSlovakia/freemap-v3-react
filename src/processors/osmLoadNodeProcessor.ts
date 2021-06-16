@@ -31,11 +31,13 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
 
     dispatch(
       searchSelectResult({
-        osmType: 'node',
-        id,
-        geojson: point(nodes[0], tags),
-        tags,
-        detailed: true,
+        result: {
+          osmType: 'node',
+          id,
+          geojson: point(nodes[0], tags),
+          tags,
+          detailed: true,
+        },
       }),
     );
   },

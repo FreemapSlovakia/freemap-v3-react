@@ -110,7 +110,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     dispatch(searchSetResults(results));
 
     if (action.payload.fromUrl && results[0]) {
-      dispatch(searchSelectResult(results[0]));
+      dispatch(searchSelectResult({ result: results[0] }));
     }
   },
 };

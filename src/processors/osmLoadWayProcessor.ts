@@ -36,17 +36,19 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
         dispatch(
           searchSelectResult({
-            osmType: 'way',
-            id,
-            geojson:
-              positionsEqual(
-                coordinates[0],
-                coordinates[coordinates.length - 1],
-              ) && shouldBeArea(tags)
-                ? polygon([coordinates], item.tags)
-                : lineString(coordinates, item.tags),
-            tags,
-            detailed: true,
+            result: {
+              osmType: 'way',
+              id,
+              geojson:
+                positionsEqual(
+                  coordinates[0],
+                  coordinates[coordinates.length - 1],
+                ) && shouldBeArea(tags)
+                  ? polygon([coordinates], item.tags)
+                  : lineString(coordinates, item.tags),
+              tags,
+              detailed: true,
+            },
           }),
         );
       }

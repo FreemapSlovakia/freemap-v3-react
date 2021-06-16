@@ -70,20 +70,26 @@ export const searchReducer = createReducer<SearchState, RootAction>(
       draft.osmWayId = null;
       draft.osmRelationId = null;
 
-      draft.selectedResult = action.payload;
+      const { payload } = action;
+
+      const result = payload?.result;
+
+      draft.selectedResult = result ?? null;
 
       draft.searchResultSeq = draft.searchResultSeq + 1;
 
-      switch (action.payload?.osmType) {
-        case 'node':
-          draft.osmNodeId = action.payload.id;
-          break;
-        case 'way':
-          draft.osmWayId = action.payload.id;
-          break;
-        case 'relation':
-          draft.osmRelationId = action.payload.id;
-          break;
+      if (result) {
+        switch (result.osmType) {
+          case 'node':
+            draft.osmNodeId = result.id;
+            break;
+          case 'way':
+            draft.osmWayId = result.id;
+            break;
+          case 'relation':
+            draft.osmRelationId = result.id;
+            break;
+        }
       }
     }),
   );

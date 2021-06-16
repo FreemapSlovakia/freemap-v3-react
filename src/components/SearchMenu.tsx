@@ -109,10 +109,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const handleSelect = useCallback(
     (eventKey: string | null) => {
-      const found = results.find((item) => item.id === Number(eventKey));
+      const result = results.find((item) => item.id === Number(eventKey));
 
-      if (found) {
-        dispatch(searchSelectResult(found));
+      if (result) {
+        dispatch(searchSelectResult({ result }));
       }
 
       setOpen(false);

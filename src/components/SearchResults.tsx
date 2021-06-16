@@ -90,7 +90,13 @@ export function SearchResults(): ReactElement | null {
         filter={(feature) => feature.geometry.type === 'LineString'}
         eventHandlers={{
           click() {
-            dispatch(searchSelectResult(selectedResult));
+            dispatch(
+              searchSelectResult({
+                result: selectedResult,
+                showToast: true,
+                zoomTo: false,
+              }),
+            );
           },
         }}
       />
@@ -103,7 +109,13 @@ export function SearchResults(): ReactElement | null {
         filter={(feature) => feature.geometry.type !== 'LineString'}
         eventHandlers={{
           click() {
-            dispatch(searchSelectResult(selectedResult));
+            dispatch(
+              searchSelectResult({
+                result: selectedResult,
+                showToast: true,
+                zoomTo: false,
+              }),
+            );
           },
         }}
       />
