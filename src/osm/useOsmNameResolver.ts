@@ -12,14 +12,12 @@ export function useOsmNameResolver(
     [string, string] | undefined
   >();
 
-  const suppLang = useSelector((state) =>
-    ['sk', 'cs'].includes(state.l10n.language) ? 'sk' : 'en',
-  );
+  const language = useSelector((state) => state.l10n.language);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getNameFromOsmElement(tags, osmType, suppLang).then(
+    getNameFromOsmElement(tags, osmType, language).then(
       setSubjectAndName,
       (err) => {
         dispatch(
@@ -31,7 +29,7 @@ export function useOsmNameResolver(
         );
       },
     );
-  }, [suppLang, tags, osmType, dispatch]);
+  }, [language, tags, osmType, dispatch]);
 
   return subjectAndName;
 }
