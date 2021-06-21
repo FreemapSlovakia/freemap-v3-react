@@ -377,7 +377,7 @@ const cs: Messages = {
         přejděte na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
-    copyright: 'Licence',
+    copyright: 'Licence mapy',
     cookieConsent: () => (
       <CookieConsent
         prompt="Některé funkce mohou vyžadovat cookies. Přijmout:"
