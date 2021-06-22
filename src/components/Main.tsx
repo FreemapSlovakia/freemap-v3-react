@@ -57,13 +57,13 @@ import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useMouseCursor } from 'fm3/hooks/mouseCursorHook';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
   drawingLinePolys,
-  mouseCursorSelector,
   selectingModeSelector,
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
@@ -130,8 +130,6 @@ export function Main(): ReactElement {
 
   const progress = useSelector((state) => !!state.main.progress.length);
 
-  const mouseCursor = useSelector(mouseCursorSelector);
-
   const authenticated = useSelector((state) => !!state.auth.user);
 
   const showElevationChart = useSelector(
@@ -169,13 +167,7 @@ export function Main(): ReactElement {
     dispatch(mapSetLeafletReady(map !== null));
   }, [dispatch, map]);
 
-  useEffect(() => {
-    const style = map?.getContainer().style;
-
-    if (style) {
-      style.cursor = mouseCursor;
-    }
-  }, [map, mouseCursor]);
+  useMouseCursor(map?.getContainer());
 
   useEffect(() => {
     if (!map) {
@@ -314,33 +306,10 @@ export function Main(): ReactElement {
 
   useShareFile(onDrop);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  const handleDropzoneClick = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-  }, []);
-
-  // this is workaround to prevent map click events if popper is active (Overlay is shown)
-  useEffect(() => {
-    const mo = new MutationObserver(() => {
-      document.body.classList.toggle(
-        'fm-overlay-backdrop-enable',
-        document.querySelector('*[data-popper-reference-hidden=false]') !==
-          null,
-      );
-    });
-
-    mo.observe(document.body, {
-      subtree: true,
-      childList: true,
-      attributes: true,
-      attributeFilter: ['data-popper-reference-hidden'],
-    });
-
-    return () => {
-      mo.disconnect();
-    };
-  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+  });
 
   const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
 
@@ -375,6 +344,17 @@ export function Main(): ReactElement {
   const showMapsMenu = useSelector(
     (state) => state.maps.id !== undefined && state.maps.name !== undefined,
   );
+
+  // prevents map click action if popper is open
+  const handleMapWrapperClick = (e: MouseEvent) => {
+    if (
+      document.querySelector('*[data-popper-reference-hidden=false]') !== null
+    ) {
+      e.stopPropagation();
+
+      document.body.click();
+    }
+  };
 
   return (
     <>
@@ -526,11 +506,7 @@ export function Main(): ReactElement {
         <Copyright />
       </div>
 
-      <div
-        {...getRootProps({
-          onClick: handleDropzoneClick,
-        })}
-      >
+      <div {...getRootProps()}>
         {isDragActive && (
           <div
             // TODO as class
@@ -548,79 +524,81 @@ export function Main(): ReactElement {
 
         <input {...getInputProps()} />
 
-        <MapContainer
-          zoomControl={false}
-          attributionControl={false}
-          maxZoom={20}
-          whenCreated={setMap}
-          center={{ lat, lng: lon }}
-          zoom={zoom}
-        >
-          {!window.fmEmbedded && <MapContextMenu />}
+        <div onClickCapture={handleMapWrapperClick}>
+          <MapContainer
+            zoomControl={false}
+            attributionControl={false}
+            maxZoom={20}
+            whenCreated={setMap}
+            center={{ lat, lng: lon }}
+            zoom={zoom}
+          >
+            {!window.fmEmbedded && <MapContextMenu />}
 
-          <ScaleControl imperial={false} position="bottomleft" />
+            <ScaleControl imperial={false} position="bottomleft" />
 
-          <Layers />
+            <Layers />
 
-          {showMenu && (
-            <>
-              {tool === 'map-details' && <MapDetailsTool />}
-              {tool === 'draw-points' && <DrawingPointsTool />}
-              {drawingLines && <DrawingLinesTool />}
-              {isSelecting && <SelectionTool />}
+            {showMenu && (
+              <>
+                {tool === 'map-details' && <MapDetailsTool />}
+                {tool === 'draw-points' && <DrawingPointsTool />}
+                {drawingLines && <DrawingLinesTool />}
+                {isSelecting && <SelectionTool />}
 
-              {showInteractiveLayer && (
-                <>
-                  <SearchResults />
-                  <ObjectsResult />
-                  <RoutePlannerResult />
-                  <DrawingLinesResult />
-                  <DrawingPointsResult />
-                  <LocationResult />
-                  <TrackViewerResult />
-                  <ChangesetsResult />
-                  <TrackingResult />
-                </>
-              )}
+                {showInteractiveLayer && (
+                  <>
+                    <SearchResults />
+                    <ObjectsResult />
+                    <RoutePlannerResult />
+                    <DrawingLinesResult />
+                    <DrawingPointsResult />
+                    <LocationResult />
+                    <TrackViewerResult />
+                    <ChangesetsResult />
+                    <TrackingResult />
+                  </>
+                )}
 
-              {showGalleryPicker && <GalleryPicker />}
-              <WikiLayer />
-            </>
-          )}
+                {showGalleryPicker && <GalleryPicker />}
+                <WikiLayer />
+              </>
+            )}
 
-          {/* TODO should not be extra just because for position picking */}
+            {/* TODO should not be extra just because for position picking */}
 
-          <GalleryResult />
+            <GalleryResult />
+          </MapContainer>
+        </div>
 
-          <AsyncSettingsModal show={activeModal === 'settings'} />
-          <AsyncTrackingModal
-            show={
-              !!activeModal &&
-              [
-                ...(isUserValidated ? ['tracking-my'] : []),
-                'tracking-watched',
-              ].includes(activeModal)
-            }
-          />
-          <AsyncEmbedMapModal show={activeModal === 'embed'} />
-          <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
-          <AsyncExportPdfModal show={activeModal === 'export-pdf'} />
-          <AsyncTipsModal show={activeModal === 'tips'} />
-          <AsyncAboutModal show={activeModal === 'about'} />
-          <AsyncSupportUsModal show={activeModal === 'supportUs'} />
-          {mapType === 'X' ? (
-            <AsyncLegendOutdoorModal show={activeModal === 'legend'} />
-          ) : (
-            <AsyncLegendModal show={activeModal === 'legend'} />
-          )}
-          <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
-          <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
-          <AsyncLoginModal show={showLoginModal} />
-          <MapsModal show={activeModal === 'maps'} />
-          <GalleryModals />
-        </MapContainer>
+        <AsyncTrackingModal
+          show={
+            !!activeModal &&
+            [
+              ...(isUserValidated ? ['tracking-my'] : []),
+              'tracking-watched',
+            ].includes(activeModal)
+          }
+        />
+
+        <AsyncSettingsModal show={activeModal === 'settings'} />
+        <AsyncEmbedMapModal show={activeModal === 'embed'} />
+        <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
+        <AsyncExportPdfModal show={activeModal === 'export-pdf'} />
+        <AsyncTipsModal show={activeModal === 'tips'} />
+        <AsyncAboutModal show={activeModal === 'about'} />
+        <AsyncSupportUsModal show={activeModal === 'supportUs'} />
+        {mapType === 'X' ? (
+          <AsyncLegendOutdoorModal show={activeModal === 'legend'} />
+        ) : (
+          <AsyncLegendModal show={activeModal === 'legend'} />
+        )}
+        <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
+        <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
+        <AsyncLoginModal show={showLoginModal} />
+        <MapsModal show={activeModal === 'maps'} />
+        <GalleryModals />
       </div>
-      <div className="fm-overlay-backdrop" />
     </>
   );
 }

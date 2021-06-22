@@ -1,7 +1,14 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { forwardRef, ReactElement, useEffect, useRef, useState } from 'react';
+import {
+  forwardRef,
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -87,7 +94,7 @@ export function Copyright(): ReactElement {
     };
   }, [mapType, overlays]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (show !== 'licence') {
       clearTimeout(toRef.current);
 
