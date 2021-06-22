@@ -347,6 +347,17 @@ export function Main(): ReactElement {
 
   // prevents map click action if popper is open
   const handleMapWrapperClick = (e: MouseEvent) => {
+    let el: EventTarget | null = e.target;
+
+    while (el instanceof Element) {
+      if (el.id === 'ctx') {
+        // clicked inside context menu
+        return;
+      }
+
+      el = el.parentElement;
+    }
+
     if (
       document.querySelector('*[data-popper-reference-hidden=false]') !== null
     ) {
