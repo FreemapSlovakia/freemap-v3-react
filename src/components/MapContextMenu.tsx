@@ -36,6 +36,7 @@ export function MapContextMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const [contextMenu, setContextMenu] = useState({
+    i: 0,
     shown: false,
     x: 0,
     y: 0,
@@ -48,13 +49,14 @@ export function MapContextMenu(): ReactElement {
     useCallback((e: LeafletMouseEvent) => {
       e.originalEvent.preventDefault();
 
-      setContextMenu({
+      setContextMenu((state) => ({
+        i: state.i + 1,
         shown: true,
         x: e.containerPoint.x,
         y: e.containerPoint.y,
         lat: e.latlng.lat,
         lon: e.latlng.lng,
-      });
+      }));
     }, []),
   );
 
@@ -77,6 +79,7 @@ export function MapContextMenu(): ReactElement {
       />
 
       <Overlay
+        key={contextMenu.i}
         rootClose
         placement="bottom"
         target={ctxMenuAnchor.current}
