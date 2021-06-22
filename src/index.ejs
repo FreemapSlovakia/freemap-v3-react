@@ -129,6 +129,7 @@
           onError: function (payload) {
             // prettier-ignore
             return (
+              !navigator.userAgent.match(/UCBrowser|PetalBot|YaBrowser|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver/) &&
               !fmEmbedded &&
               !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker/.test(
                 payload.message
