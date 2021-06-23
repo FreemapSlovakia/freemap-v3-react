@@ -145,8 +145,6 @@ setVh();
 
 const cookieConsentResult = store.getState().main.cookieConsentResult;
 
-console.log({ cookieConsentResult });
-
 if (window.fmEmbedded) {
   // nothing for ebed
 } else if (cookieConsentResult !== null) {
