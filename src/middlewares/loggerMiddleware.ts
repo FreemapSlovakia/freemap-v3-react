@@ -10,11 +10,15 @@ export const loggerMiddleware: Middleware<
   ({ getState }) =>
   (next: Dispatch) =>
   (action: RootAction): RootAction => {
-    console.debug('Action', action); // TODO make switchable
+    if (process.env['NODE_ENV'] !== 'production') {
+      console.debug('Action', action);
+    }
 
     const result = next(action);
 
-    console.debug('State', getState()); // TODO make switchable
+    if (process.env['NODE_ENV'] !== 'production') {
+      console.debug('State', getState());
+    }
 
     return result;
   };
