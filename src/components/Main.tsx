@@ -92,7 +92,7 @@ import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
-import { MainMenuButton } from './MainMenuButton';
+import { MainMenuButton } from './mainMenu/MainMenuButton';
 import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
