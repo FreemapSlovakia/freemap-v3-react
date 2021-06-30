@@ -18,15 +18,12 @@ import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';
 import { render } from 'react-dom';
 import { IconContext } from 'react-icons/lib';
-import { DefaultRootState, Provider } from 'react-redux';
-import { is, setDefaultGetErrorObject } from 'typescript-is';
+import { Provider } from 'react-redux';
+import { setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
-import { MainState } from './reducers/mainReducer';
-import { MapState } from './reducers/mapReducer';
-import { User } from './types/common';
 
 if (process.env['GA_MEASUREMENT_ID']) {
   window.gtag('config', process.env['GA_MEASUREMENT_ID']);
@@ -42,77 +39,6 @@ if (window.location.search === '?reset-local-storage') {
 }
 
 document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
-
-// TODO compatibility code, delete in the future
-try {
-  if (
-    !window.fmEmbedded &&
-    !storage.getItem('store') &&
-    (storage.getItem('cookieConsentResult') ||
-      storage.getItem('tip') ||
-      storage.getItem('routePlannerPreventHint') ||
-      storage.getItem('appState') ||
-      storage.getItem('user'))
-  ) {
-    let appState: Partial<DefaultRootState> = {};
-
-    try {
-      const value = storage.getItem('appState');
-
-      appState = value ? JSON.parse(value) : {};
-    } catch {
-      // ignore
-    }
-
-    let user: User | undefined;
-
-    try {
-      const value = storage.getItem('user');
-
-      user = value ? JSON.parse(value) : undefined;
-    } catch {
-      // ignore
-    }
-
-    storage.setItem(
-      'store',
-      JSON.stringify({
-        main: {
-          ...(is<Partial<MainState>>(appState.main) ? appState.main : {}),
-          cookieConsentResult: storage.getItem('cookieConsentResult')
-            ? storage.getItem('cookieConsentResult') !== '[]'
-            : null,
-        },
-        tips: {
-          preventTips: !!storage.getItem('preventTips'),
-          lastTip: storage.getItem('tip') ?? null,
-        },
-        routePlanner: {
-          ...(is<MainState>(appState.routePlanner)
-            ? appState.routePlanner
-            : {}),
-          preventHint: storage.getItem('routePlannerPreventHint') === '1',
-        },
-        auth: user && {
-          user,
-        },
-        l10n: {
-          chosenLanguage: (appState as any)['language'],
-        },
-        map: is<Partial<MapState>>(appState.map) ? appState.map : undefined,
-      } as DefaultRootState),
-    );
-  }
-} catch {
-  // ignore
-} finally {
-  storage.removeItem('preventTips');
-  storage.removeItem('cookieConsentResult');
-  storage.removeItem('tip');
-  storage.removeItem('user');
-  storage.removeItem('routePlannerPreventHint');
-  storage.removeItem('appState');
-}
 
 const store = createReduxStore();
 
