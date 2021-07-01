@@ -96,7 +96,11 @@ import { changesetReducer } from './reducers/changesetsReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
-import { galleryReducer } from './reducers/galleryReducer';
+import {
+  galleryInitialState,
+  galleryReducer,
+  GalleryState,
+} from './reducers/galleryReducer';
 import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
 import {
   l10nInitialState,
@@ -294,6 +298,13 @@ export function createReduxStore(): MyStore {
     initial.trackViewer = {
       ...trackViewerInitialState,
       ...persisted.trackViewer,
+    };
+  }
+
+  if (is<Partial<GalleryState>>(persisted.gallery)) {
+    initial.gallery = {
+      ...galleryInitialState,
+      ...persisted.gallery,
     };
   }
 

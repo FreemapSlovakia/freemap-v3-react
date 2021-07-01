@@ -1,6 +1,7 @@
 import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
 import axios from 'axios';
-import { GalleryFilter } from 'fm3/actions/galleryActions';
+import color from 'color';
+import { GalleryColorizeBy, GalleryFilter } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
 import { LatLon } from 'fm3/types/common';
 import {
@@ -10,9 +11,17 @@ import {
   GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
+import qs from 'query-string';
+
+type Sortable<T = unknown> = {
+  sort: number;
+  value: T;
+};
 
 type GalleryLayerOptions = GridLayerOptions & {
   filter: GalleryFilter;
+  colorizeBy: GalleryColorizeBy | null;
+  myUserId?: number;
 };
 
 class LGalleryLayer extends LGridLayer {
@@ -47,6 +56,8 @@ class LGalleryLayer extends LGridLayer {
       coords.z,
     );
 
+    // TODO use offscreen canvas if available
+
     const tile = DomUtil.create('canvas', 'leaflet-tile') as HTMLCanvasElement;
 
     const dpr = window.devicePixelRatio || 1;
@@ -63,24 +74,51 @@ class LGalleryLayer extends LGridLayer {
     ctx.scale(dpr, dpr);
     ctx.strokeStyle = '#000';
     ctx.fillStyle = '#ff0';
-    ctx.lineWidth = 1.5 * zk; // coords.z > 9 ? 1.5 : 1;
+    ctx.lineWidth = 1 * zk; // coords.z > 9 ? 1.5 : 1;
 
     const k = 2 ** coords.z;
 
+    const colorizeBy = this._options?.colorizeBy ?? null;
+    const myUserId = this._options?.myUserId ?? null;
+
     axios
-      .get(`${process.env['API_URL']}/gallery/pictures`, {
+      // .get(`${process.env['API_URL']}/gallery/pictures`, {
+      .get(`https://backend.freemap.sk/gallery/pictures`, {
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
+          fields: colorizeBy === 'mine' ? 'userId' : colorizeBy,
         },
+        paramsSerializer: (params) => qs.stringify(params),
         validateStatus: (status) => status === 200,
       })
       .then(({ data }) => {
         const s = new Set();
-        const mangled = data
-          .map(({ lat, lon }: LatLon) => {
-            return { lat: Math.round(lat * k), lon: Math.round(lon * k) };
+
+        if (colorizeBy === 'userId') {
+          data = data
+            .map((a: unknown) => ({ sort: Math.random(), value: a }))
+            .sort((a: Sortable, b: Sortable) => a.sort - b.sort)
+            .map((a: Sortable) => a.value);
+        } else if (
+          colorizeBy === 'takenAt' ||
+          colorizeBy === 'createdAt' ||
+          colorizeBy === 'rating'
+        ) {
+          data = data
+            .map((a: any) => ({ sort: a[colorizeBy], value: a }))
+            .sort((a: Sortable, b: Sortable) => b.sort - a.sort)
+            .map((a: Sortable) => a.value);
+        }
+
+        data
+          .map(({ lat, lon, ...rest }: LatLon) => {
+            return {
+              lat: Math.round(lat * k),
+              lon: Math.round(lon * k),
+              ...rest,
+            };
           })
           .filter(({ lat, lon }: LatLon) => {
             const key = `${lat},${lon}`;
@@ -90,18 +128,91 @@ class LGalleryLayer extends LGridLayer {
             }
             return !has;
           })
-          .map(({ lat, lon }: LatLon) => ({ lat: lat / k, lon: lon / k }));
+          .map(({ lat, lon, ...rest }: LatLon) => ({
+            lat: lat / k,
+            lon: lon / k,
+            ...rest,
+          }));
 
-        mangled.forEach(({ lat, lon }: LatLon) => {
+        data.forEach(({ lat, lon }: LatLon) => {
           const y =
             size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
           const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
           ctx.beginPath();
           ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
-          ctx.fill();
+
           ctx.stroke();
         });
+
+        ctx.lineWidth = 0.25 * zk; // coords.z > 9 ? 1.5 : 1;
+
+        const now = Date.now();
+
+        data.forEach(
+          ({
+            lat,
+            lon,
+            rating,
+            createdAt,
+            takenAt,
+            userId,
+          }: LatLon & {
+            rating: number;
+            userId: number;
+            createdAt: string;
+            takenAt?: string | null;
+          }) => {
+            const y =
+              size.y -
+              ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
+            const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
+
+            ctx.beginPath();
+            ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
+
+            switch (colorizeBy) {
+              case 'userId':
+                ctx.fillStyle = color
+                  .lch(85, 60, (userId * 167265) % 360)
+                  .hex();
+                break;
+              case 'rating':
+                ctx.fillStyle = color
+                  .hsv(60, 100, (Math.tanh(rating - 2.5) + 1) * 50)
+                  .hex();
+                break;
+              case 'takenAt':
+                ctx.fillStyle = !takenAt
+                  ? '#a22'
+                  : color
+                      .hsl(
+                        60,
+                        100,
+                        // 100 - ((now - new Date(takenAt).getTime()) / 100) ** 0.2,
+                        100 -
+                          ((now - new Date(takenAt).getTime()) / 10) ** 0.185,
+                      )
+                      .hex();
+              case 'createdAt':
+                ctx.fillStyle = color
+                  .hsl(
+                    60,
+                    100,
+                    // 100 - ((now - new Date(createdAt).getTime()) / 100) ** 0.2,
+                    100 - ((now - new Date(createdAt).getTime()) / 10) ** 0.185,
+                  )
+                  .hex();
+                break;
+              case 'mine':
+                ctx.fillStyle = userId === myUserId ? '#ff0' : '#aa0';
+                break;
+            }
+
+            ctx.fill();
+            ctx.stroke();
+          },
+        );
 
         done(undefined, tile);
       })
@@ -115,6 +226,8 @@ class LGalleryLayer extends LGridLayer {
 
 interface Props extends LayerProps {
   filter: GalleryFilter;
+  colorizeBy: GalleryColorizeBy | null;
+  myUserId?: number;
   opacity?: number;
   zIndex?: number;
 }

@@ -19,9 +19,13 @@ export function Layers(): ReactElement {
 
   const galleryFilter = useSelector((state) => state.gallery.filter);
 
+  const galleryColorizeBy = useSelector((state) => state.gallery.colorizeBy);
+
   const galleryDirtySeq = useSelector((state) => state.gallery.dirtySeq);
 
   const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
+
+  const userId = useSelector((state) => state.auth.user?.id);
 
   const getTileLayer = ({
     type,
@@ -51,10 +55,15 @@ export function Layers(): ReactElement {
     if (type === 'I') {
       return (
         <GalleryLayer
-          key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
+          key={`I-${galleryDirtySeq}-${JSON.stringify({
+            galleryFilter,
+            galleryColorizeBy,
+          })}`}
           filter={galleryFilter}
+          colorizeBy={galleryColorizeBy}
           opacity={overlayOpacity[type] || 1}
           zIndex={zIndex}
+          myUserId={userId}
         />
       );
     }

@@ -21,7 +21,15 @@ export type GalleryListOrder =
   | '+takenAt'
   | '-takenAt'
   | '+rating'
-  | '-rating';
+  | '-rating'
+  | '-lastCommentedAt';
+
+export type GalleryColorizeBy =
+  | 'userId'
+  | 'takenAt'
+  | 'createdAt'
+  | 'rating'
+  | 'mine';
 
 export interface GalleryTag {
   name: string;
@@ -155,6 +163,10 @@ export const gallerySetFilter =
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE')();
 
 export const galleryList = createAction('GALLERY_LIST')<GalleryListOrder>();
+
+export const galleryColorizeBy = createAction(
+  'GALLERY_COLORIZE_BY',
+)<GalleryColorizeBy | null>();
 
 export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',

@@ -1,4 +1,5 @@
 import {
+  galleryColorizeBy,
   galleryList,
   galleryShowFilter,
   galleryShowUploadModal,
@@ -10,10 +11,13 @@ import {
   FaBook,
   FaCamera,
   FaFilter,
+  FaRegCheckCircle,
   FaRegCheckSquare,
+  FaRegCircle,
   FaRegSquare,
   FaUpload,
 } from 'react-icons/fa';
+import { IoIosColorPalette } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
@@ -29,6 +33,8 @@ export function GallerySubmenu(): JSX.Element {
   );
 
   const overlays = useSelector((state) => state.map.overlays);
+
+  const colorizeBy = useSelector((state) => state.gallery.colorizeBy);
 
   const closeMenu = useMenuClose();
 
@@ -110,6 +116,87 @@ export function GallerySubmenu(): JSX.Element {
         }}
       >
         {m?.gallery.f.mostRated}
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryList('-lastCommentedAt'));
+          closeMenu();
+        }}
+      >
+        Last comment
+      </Dropdown.Item>
+
+      <Dropdown.Divider />
+
+      <Dropdown.Header>
+        <IoIosColorPalette /> Colorize by
+      </Dropdown.Header>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy(null));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />} Disable
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy('mine'));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />} Mine vs
+        others
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy('userId'));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        Author
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy('rating'));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === 'rating' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        Rating
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy('takenAt'));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === 'takenAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        Taken date
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy('createdAt'));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        Upload date
       </Dropdown.Item>
     </>
   );
