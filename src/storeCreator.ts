@@ -6,6 +6,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { StateType } from 'typesafe-actions';
 import { is } from 'typescript-is';
 import { RootAction } from './actions';
+import { GalleryColorizeBy } from './actions/galleryActions';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { createProcessorMiddleware } from './middlewares/processorMiddleware';
@@ -96,11 +97,7 @@ import { changesetReducer } from './reducers/changesetsReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
-import {
-  galleryInitialState,
-  galleryReducer,
-  GalleryState,
-} from './reducers/galleryReducer';
+import { galleryInitialState, galleryReducer } from './reducers/galleryReducer';
 import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
 import {
   l10nInitialState,
@@ -301,7 +298,7 @@ export function createReduxStore(): MyStore {
     };
   }
 
-  if (is<Partial<GalleryState>>(persisted.gallery)) {
+  if (is<{ colorizeBy: GalleryColorizeBy | null }>(persisted.gallery)) {
     initial.gallery = {
       ...galleryInitialState,
       ...persisted.gallery,
