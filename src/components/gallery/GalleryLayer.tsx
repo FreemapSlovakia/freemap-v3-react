@@ -79,7 +79,7 @@ class LGalleryLayer extends LGridLayer {
     const k = 2 ** coords.z;
 
     const colorizeBy = this._options?.colorizeBy ?? null;
-    const myUserId = this._options?.myUserId ?? null;
+    const myUserId = 2; //this._options?.myUserId ?? null;
 
     axios
       // .get(`${process.env['API_URL']}/gallery/pictures`, {
@@ -108,11 +108,21 @@ class LGalleryLayer extends LGridLayer {
         ) {
           data = data
             .map((a: any) => ({ sort: a[colorizeBy], value: a }))
-            .sort((a: Sortable, b: Sortable) => b.sort - a.sort)
+            .sort((a: Sortable, b: Sortable) => a.sort - b.sort)
+            .map((a: Sortable) => a.value);
+        } else if (colorizeBy === 'mine') {
+          data = data
+            .map((a: any) => ({
+              sort: a.userId === myUserId ? 1 : 0,
+              value: a,
+            }))
+            .sort((a: Sortable, b: Sortable) => a.sort - b.sort)
             .map((a: Sortable) => a.value);
         }
 
-        data
+        // remove "dense" pictures
+        data = data
+          .reverse()
           .map(({ lat, lon, ...rest }: LatLon) => {
             return {
               lat: Math.round(lat * k),
@@ -132,7 +142,8 @@ class LGalleryLayer extends LGridLayer {
             lat: lat / k,
             lon: lon / k,
             ...rest,
-          }));
+          }))
+          .reverse();
 
         data.forEach(({ lat, lon }: LatLon) => {
           const y =
@@ -147,7 +158,7 @@ class LGalleryLayer extends LGridLayer {
 
         ctx.lineWidth = 0.25 * zk; // coords.z > 9 ? 1.5 : 1;
 
-        const now = Date.now();
+        const now = Date.now() / 1000;
 
         data.forEach(
           ({
@@ -160,8 +171,8 @@ class LGalleryLayer extends LGridLayer {
           }: LatLon & {
             rating: number;
             userId: number;
-            createdAt: string;
-            takenAt?: string | null;
+            createdAt: number;
+            takenAt?: number | null;
           }) => {
             const y =
               size.y -
@@ -173,9 +184,7 @@ class LGalleryLayer extends LGridLayer {
 
             switch (colorizeBy) {
               case 'userId':
-                ctx.fillStyle = color
-                  .lch(85, 60, (userId * 167265) % 360)
-                  .hex();
+                ctx.fillStyle = color.lch(90, 70, -userId * 11313).hex();
                 break;
               case 'rating':
                 ctx.fillStyle = color
@@ -189,9 +198,8 @@ class LGalleryLayer extends LGridLayer {
                       .hsl(
                         60,
                         100,
-                        // 100 - ((now - new Date(takenAt).getTime()) / 100) ** 0.2,
-                        100 -
-                          ((now - new Date(takenAt).getTime()) / 10) ** 0.185,
+                        // 100 - ((now - takenAt) * 10) ** 0.2,
+                        100 - ((now - takenAt) * 100) ** 0.185,
                       )
                       .hex();
               case 'createdAt':
@@ -199,13 +207,13 @@ class LGalleryLayer extends LGridLayer {
                   .hsl(
                     60,
                     100,
-                    // 100 - ((now - new Date(createdAt).getTime()) / 100) ** 0.2,
-                    100 - ((now - new Date(createdAt).getTime()) / 10) ** 0.185,
+                    // 100 - ((now - createdAt) * 10) ** 0.2,
+                    100 - ((now - createdAt) * 100) ** 0.185,
                   )
                   .hex();
                 break;
               case 'mine':
-                ctx.fillStyle = userId === myUserId ? '#ff0' : '#aa0';
+                ctx.fillStyle = userId === myUserId ? '#ff0' : '#fa4';
                 break;
             }
 

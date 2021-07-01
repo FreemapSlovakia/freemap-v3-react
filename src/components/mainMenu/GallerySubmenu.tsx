@@ -125,13 +125,13 @@ export function GallerySubmenu(): JSX.Element {
           closeMenu();
         }}
       >
-        Last comment
+        {m?.gallery.f.lastComment}
       </Dropdown.Item>
 
       <Dropdown.Divider />
 
       <Dropdown.Header>
-        <IoIosColorPalette /> Colorize by
+        <IoIosColorPalette /> {m?.gallery.colorizeBy}
       </Dropdown.Header>
 
       <Dropdown.Item
@@ -141,7 +141,8 @@ export function GallerySubmenu(): JSX.Element {
           closeMenu();
         }}
       >
-        {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />} Disable
+        {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        {m?.gallery.c.disable}
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -151,8 +152,8 @@ export function GallerySubmenu(): JSX.Element {
           closeMenu();
         }}
       >
-        {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />} Mine vs
-        others
+        {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        {m?.gallery.c.mine}
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -163,7 +164,7 @@ export function GallerySubmenu(): JSX.Element {
         }}
       >
         {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        Author
+        {m?.gallery.c.author}
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -174,7 +175,7 @@ export function GallerySubmenu(): JSX.Element {
         }}
       >
         {colorizeBy === 'rating' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        Rating
+        {m?.gallery.c.rating}
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -185,7 +186,7 @@ export function GallerySubmenu(): JSX.Element {
         }}
       >
         {colorizeBy === 'takenAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        Taken date
+        {m?.gallery.c.takenAt}
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -196,7 +197,7 @@ export function GallerySubmenu(): JSX.Element {
         }}
       >
         {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        Upload date
+        {m?.gallery.c.createdAt}
       </Dropdown.Item>
     </>
   );

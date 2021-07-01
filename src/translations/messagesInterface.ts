@@ -324,6 +324,16 @@ export type Messages = {
       lastCaptured: string;
       leastRated: string;
       mostRated: string;
+      lastComment: string;
+    };
+    colorizeBy: string;
+    c: {
+      disable: string;
+      mine: string;
+      author: string;
+      rating: string;
+      takenAt: string;
+      createdAt: string;
     };
     viewer: {
       title: string;

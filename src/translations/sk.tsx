@@ -415,6 +415,16 @@ const sk: Messages = {
       lastCaptured: 'od najnovšie odfotenej',
       leastRated: 'od najnižšieho hodnotenia',
       mostRated: 'od najvyššieho hodnotenia',
+      lastComment: 'od posledného komentára',
+    },
+    colorizeBy: 'Vyfarbiť podľa',
+    c: {
+      disable: 'nevyfarbiť',
+      mine: 'odlíšiť moje',
+      author: 'autora',
+      rating: 'hodnotenia',
+      takenAt: 'dátumu odfotenia',
+      createdAt: 'dátumu nahrania',
     },
     viewer: {
       title: 'Fotografia',

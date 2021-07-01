@@ -399,6 +399,16 @@ const cs: Messages = {
       lastCaptured: 'od nejnovější vyfocené',
       leastRated: 'od nejmenšího hodnocení',
       mostRated: 'od největšího hodnocení',
+      lastComment: 'od posledného komentára', // TODO translate
+    },
+    colorizeBy: 'Vyfarbiť podľa', // TODO translate
+    c: {
+      disable: 'nevyfarbiť', // TODO translate
+      mine: 'odlíšiť moje', // TODO translate
+      author: 'autora', // TODO translate
+      rating: 'hodnotenia', // TODO translate
+      takenAt: 'dátumu odfotenia', // TODO translate
+      createdAt: 'dátumu nahrania', // TODO translate
     },
     viewer: {
       title: 'Fotografie',

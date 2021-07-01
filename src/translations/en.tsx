@@ -395,6 +395,16 @@ const en: Messages = {
       lastCaptured: 'from newest',
       leastRated: 'from least rated',
       mostRated: 'from most rated',
+      lastComment: 'from last comment',
+    },
+    colorizeBy: 'Colorize by',
+    c: {
+      disable: "don't colorize",
+      mine: 'differ mine',
+      author: 'author',
+      rating: 'rating',
+      takenAt: 'taken date',
+      createdAt: 'upload date',
     },
     viewer: {
       title: 'Photo',

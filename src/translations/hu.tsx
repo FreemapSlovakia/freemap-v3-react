@@ -397,6 +397,16 @@ const hu: Messages = {
       lastCaptured: 'a legutóbb készülttől',
       leastRated: 'a leggyöngébbre értékelttől',
       mostRated: 'a legjobbra értékelttől',
+      lastComment: 'from last comment',
+    },
+    colorizeBy: 'Colorize by', // TODO translate
+    c: {
+      disable: "don't colorize", // TODO translate
+      mine: 'differ mine', // TODO translate
+      author: 'author', // TODO translate
+      rating: 'rating', // TODO translate
+      takenAt: 'taken date', // TODO translate
+      createdAt: 'upload date', // TODO translate
     },
     viewer: {
       title: 'Fénykép',
