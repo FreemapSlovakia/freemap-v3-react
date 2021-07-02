@@ -9,7 +9,6 @@ const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const cssnano = require('cssnano');
 
 const skMessages = require('./src/translations/sk-shared.json');
@@ -264,12 +263,6 @@ module.exports = {
           'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
         loadingMessage: 'Loading…', // TODO translate
       },
-    }),
-    // TODO we use InjectManifest only to generate sw.js. Find a simpler way to do it.
-    new WorkboxPlugin.InjectManifest({
-      swSrc: '../sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 1,
-      exclude: [/.*/],
     }),
     new WebpackPwaManifest({
       inject: true,

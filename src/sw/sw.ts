@@ -1,11 +1,11 @@
-declare var self: ServiceWorkerGlobalScope & { __WB_MANIFEST: unknown };
+const sw = self as any as ServiceWorkerGlobalScope & typeof globalThis;
 
 const CACHE_NAME = 'offline-html';
 
 const FALLBACK_HTML_URL = '/offline.html';
 const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
 
-self.addEventListener('install', (event) => {
+sw.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
@@ -13,7 +13,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-self.addEventListener('fetch', (event) => {
+sw.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
       const url = new URL(event.request.url);
@@ -21,7 +21,7 @@ self.addEventListener('fetch', (event) => {
       if (event.request.method === 'POST' && url.pathname === '/') {
         const data = await event.request.formData();
 
-        const client = await self.clients.get(
+        const client = await sw.clients.get(
           event.resultingClientId || event.clientId,
         );
 
@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
 
 // remove old caches
 
-self.addEventListener('activate', (event) => {
+sw.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) =>
       Promise.all(
@@ -65,4 +65,4 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-export default self.__WB_MANIFEST; // 2 in 1 - makes it a module and use __WB_MANIFEST required by WorkboxPlugin.InjectManifest
+export default null;

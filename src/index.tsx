@@ -109,7 +109,7 @@ render(
 );
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
+  navigator.serviceWorker.register(new URL('./sw/sw', import.meta.url));
 }
 
 window.addEventListener('message', (e: MessageEvent) => {
