@@ -109,7 +109,9 @@ render(
 );
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register(new URL('./sw/sw', import.meta.url));
+  navigator.serviceWorker.register(
+    new URL(/* webpackChunkName: "sw" */ './sw/sw', import.meta.url),
+  );
 }
 
 window.addEventListener('message', (e: MessageEvent) => {
