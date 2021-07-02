@@ -79,7 +79,7 @@ class LGalleryLayer extends LGridLayer {
     const k = 2 ** coords.z;
 
     const colorizeBy = this._options?.colorizeBy ?? null;
-    const myUserId = 2; //this._options?.myUserId ?? null;
+    const myUserId = this._options?.myUserId ?? null;
 
     axios
       // .get(`${process.env['API_URL']}/gallery/pictures`, {
