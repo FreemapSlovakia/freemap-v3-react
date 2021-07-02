@@ -15,7 +15,7 @@ export function getOsmUrl(
 }
 
 export function getZbgisUrl(lat: number, lon: number, zoom: number): string {
-  return `https://zbgis.skgeodesy.sk/mkzbgis?bm=zbgis&z=${zoom}&c=${lon},${lat}`;
+  return `https://zbgis.skgeodesy.sk/mkzbgis?pos=${lat},${lon},${zoom}`;
 }
 
 // TODO to separate file
