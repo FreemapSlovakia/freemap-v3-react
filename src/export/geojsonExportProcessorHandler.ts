@@ -35,9 +35,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   action,
   dispatch,
 }) => {
-  const gj = featureCollection<Geometry | GeometryCollection>([]);
+  const fc = featureCollection<Geometry | GeometryCollection>([]);
 
-  (gj as any).metadata = {
+  (fc as any).metadata = {
     description: 'Exported from https://www.freemap.sk/',
     licenseNotice,
     time: new Date().toISOString(),
@@ -81,14 +81,14 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       expectedStatus: 200,
     });
 
-    addPictures(gj, assertType<Picture[]>(data));
+    addPictures(fc, assertType<Picture[]>(data));
   }
 
   if (set.has('drawingLines')) {
     for (const line of drawingLines.lines.filter(
       (line) => line.type === 'line',
     )) {
-      gj.features.push(
+      fc.features.push(
         lineString(
           line.points.map((p) => [p.lon, p.lat]),
           { name: line.label },
@@ -101,7 +101,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     for (const line of drawingLines.lines.filter(
       (line) => line.type === 'polygon',
     )) {
-      gj.features.push(
+      fc.features.push(
         polygon([line.points.map((p) => [p.lon, p.lat])], { name: line.label }),
       );
     }
@@ -109,27 +109,27 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   if (set.has('drawingPoints')) {
     for (const p of drawingPoints.points) {
-      gj.features.push(point([p.lon, p.lat], { name: p.label }));
+      fc.features.push(point([p.lon, p.lat], { name: p.label }));
     }
   }
 
   if (set.has('objects')) {
     objects.objects.forEach(({ lat, lon, tags }) => {
-      gj.features.push(point([lon, lat], tags));
+      fc.features.push(point([lon, lat], tags));
     });
   }
 
   if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
-    addPlannedRoute(gj, routePlanner, set.has('plannedRouteWithStops'));
+    addPlannedRoute(fc, routePlanner, set.has('plannedRouteWithStops'));
   }
 
   if (set.has('tracking')) {
-    addTracking(gj, tracking);
+    addTracking(fc, tracking);
   }
 
   if (set.has('gpx')) {
     if (trackViewer.trackGeojson) {
-      gj.features.push(...trackViewer.trackGeojson.features);
+      fc.features.push(...trackViewer.trackGeojson.features);
     }
   }
 
@@ -137,7 +137,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   await upload(
     'geojson',
-    new Blob([JSON.stringify(gj)], {
+    new Blob([JSON.stringify(fc)], {
       type:
         destination === 'dropbox'
           ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
@@ -153,10 +153,10 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
 export default handle;
 
-function addPictures(doc: FeatureCollection, pictures: Picture[]) {
+function addPictures(fc: FeatureCollection, pictures: Picture[]) {
   pictures.forEach(
     ({ lat, lon, id, takenAt, title, description, createdAt }) => {
-      doc.features.push(
+      fc.features.push(
         point([lon, lat], {
           takenAt: takenAt,
           publishedAt: createdAt,
@@ -172,7 +172,7 @@ function addPictures(doc: FeatureCollection, pictures: Picture[]) {
 }
 
 function addPlannedRoute(
-  doc: FeatureCollection,
+  fc: FeatureCollection,
   { alternatives, start, finish, midpoints }: RoutePlannerState,
   withStops: boolean,
 ) {
@@ -181,22 +181,22 @@ function addPlannedRoute(
 
   if (withStops) {
     if (start) {
-      doc.features.push(point([start.lon, start.lat], { name: 'Štart' })); // TODO translate
+      fc.features.push(point([start.lon, start.lat], { name: 'Štart' })); // TODO translate
     }
 
     if (finish) {
-      doc.features.push(point([finish.lon, finish.lat], { name: 'Cieľ' })); // TODO translate
+      fc.features.push(point([finish.lon, finish.lat], { name: 'Cieľ' })); // TODO translate
     }
 
     midpoints.forEach((midpoint, i: number) => {
-      doc.features.push(
+      fc.features.push(
         point([midpoint.lon, midpoint.lat], { name: `Zastávka ${i + 1}` }), // TODO translate
       );
     });
   }
 
   alternatives.forEach(({ legs }, i: number) => {
-    doc.features.push(
+    fc.features.push(
       multiLineString(
         legs.flatMap((leg) =>
           leg.steps.map((step) => step.geometry.coordinates),
@@ -208,7 +208,7 @@ function addPlannedRoute(
 }
 
 function addTracking(
-  doc: FeatureCollection,
+  fc: FeatureCollection,
   { tracks, trackedDevices }: TrackingState,
 ) {
   const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
@@ -219,7 +219,7 @@ function addTracking(
   }));
 
   for (const track of tracks1) {
-    doc.features.push(
+    fc.features.push(
       lineString(
         track.trackPoints.map((tp) => [tp.lon, tp.lat]),
         {
@@ -247,7 +247,7 @@ function addTracking(
       gsmSignal,
       message,
     } of track.trackPoints) {
-      doc.features.push(
+      fc.features.push(
         point([lon, lat], {
           time: ts,
           lat,
