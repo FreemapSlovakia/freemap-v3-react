@@ -338,7 +338,7 @@ const en: Messages = {
     logOut: (name) => `Log out ${name}`,
     logIn: 'Log in',
     settings: 'Settings',
-    gpxExport: 'Export to GPX',
+    gpxExport: 'Export to GPX / GeoJSON',
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
@@ -1011,25 +1011,28 @@ const en: Messages = {
 
   gpxExport: {
     export: 'Download',
+    format: 'Format',
     exportToDrive: 'Save to Google Drive',
     exportToDropbox: 'Save to Dropbox',
-    exportError: ({ err }) => `Error exporting GPX: ${err}`,
+    exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'found route including stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
       drawingLines: 'drawing - lines',
-      areaMeasurement: 'drawing - polygons',
+      drawingAreas: 'drawing - polygons',
       drawingPoints: 'drawing - points',
       tracking: 'live tracking',
       gpx: 'GPX track',
     },
     disabledAlert:
       'Only checkboxes having anything in the map to export are enabled.',
+    licenseAlert:
+      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
     blockedPopup: 'Browser blocked pop-up window.',
-    exportedToDropbox: 'GPX file has been saved to Dropboxu.',
-    exportedToGdrive: 'GPX file has been saved to Google Drive.',
+    exportedToDropbox: 'File has been saved to Dropboxu.',
+    exportedToGdrive: 'File has been saved to Google Drive.',
   },
 
   logIn: {

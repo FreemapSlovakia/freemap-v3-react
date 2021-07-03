@@ -341,7 +341,7 @@ const sk: Messages = {
     logOut: (name) => `Odhlásiť ${name}`,
     logIn: 'Prihlásenie',
     settings: 'Nastavenia',
-    gpxExport: 'Exportovať do GPX',
+    gpxExport: 'Exportovať do GPX / GeoJSON',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
@@ -1040,25 +1040,28 @@ const sk: Messages = {
 
   gpxExport: {
     export: 'Stiahnuť',
+    format: 'Formát',
     exportToDrive: 'Uložiť do Google Drive',
     exportToDropbox: 'Uložiť do Dropboxu',
-    exportError: ({ err }) => `Chyba exportovania GPX: ${err}`,
+    exportError: ({ err }) => `Chyba exportovania: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
       plannedRouteWithStops: 'vyhľadanú trasu so zastávkami',
       objects: 'objekty (POI)',
       pictures: 'fotografie (vo viditeľnej časti mapy)',
       drawingLines: 'kreslenie - čiary',
-      areaMeasurement: 'kreslenie - polygóny',
+      drawingAreas: 'kreslenie - polygóny',
       drawingPoints: 'kreslenie - body',
       tracking: 'sledovanie',
       gpx: 'GPX trasu',
     },
     disabledAlert:
       'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',
+    licenseAlert:
+      'Exportovaný súbor môže podliehať rôznym licenciám, ako napríklad licencii OpenStreetMap. Prosím dodržte podmienky týchto licencií pri zdieľaní vyexportovaného súboru.',
     blockedPopup: 'Prehliadač zablokoval otvorenie okna.',
-    exportedToDropbox: 'GPX súbor bol uložený do Dropboxu.',
-    exportedToGdrive: 'GPX súbor bol uložený do Google Drive.',
+    exportedToDropbox: 'Súbor bol uložený do Dropboxu.',
+    exportedToGdrive: 'Súbor bol uložený do Google Drive.',
   },
 
   logIn: {

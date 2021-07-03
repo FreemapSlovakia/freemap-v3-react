@@ -339,7 +339,7 @@ const hu: Messages = {
     logOut: (name) => `Kijelentkezés: ${name}`,
     logIn: 'Bejelentkezés',
     settings: 'Beállítások',
-    gpxExport: 'Exportálás GPX-be',
+    gpxExport: 'Exportálás GPX / GeoJSON-be',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
@@ -1024,25 +1024,28 @@ const hu: Messages = {
 
   gpxExport: {
     export: 'Letöltés',
+    format: 'Type', // TODO translate
     exportToDrive: 'Mentés Google Drive-ra',
     exportToDropbox: 'Mentés Dropbox-ba',
-    exportError: ({ err }) => `Hiba a GPX exportálásakor: ${err}`,
+    exportError: ({ err }) => `Hiba a exportálásakor: ${err}`,
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'útvonal (megállásokkal)',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
       drawingLines: 'rajzolás – vonalak',
-      areaMeasurement: 'rajzolás – sokszögek',
+      drawingAreas: 'rajzolás – sokszögek',
       drawingPoints: 'rajzolás – pontok',
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
+    licenseAlert:
+      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.', // TODO translate
     blockedPopup: 'A böngésző blokkolta az előugró ablakot.',
-    exportedToDropbox: 'GPX-fájl elmentve a Dropboxba.',
-    exportedToGdrive: 'GPX-fájl elmentve a Google Drive-ra.',
+    exportedToDropbox: 'Fájl elmentve a Dropboxba.',
+    exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
   },
 
   logIn: {

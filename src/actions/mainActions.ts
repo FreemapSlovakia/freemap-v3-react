@@ -45,12 +45,24 @@ export interface PdfExportOptions {
   style: string;
 }
 
+export type Exportable =
+  | 'plannedRoute'
+  | 'plannedRouteWithStops'
+  | 'objects'
+  | 'pictures'
+  | 'drawingLines'
+  | 'drawingAreas'
+  | 'drawingPoints'
+  | 'tracking'
+  | 'gpx';
+
 export type Destination = 'download' | 'gdrive' | 'dropbox';
 
 export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
 
 export const exportGpx = createAction('EXPORT_GPX')<{
-  exportables: string[];
+  exportables: Exportable[];
+  type: 'gpx' | 'geojson';
   destination: Destination;
 }>();
 

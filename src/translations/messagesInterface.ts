@@ -593,6 +593,7 @@ export type Messages = {
   };
   gpxExport: {
     export: string;
+    format: string;
     exportToDrive: string;
     exportToDropbox: string;
     exportError: ({ err }: Err) => string;
@@ -602,12 +603,13 @@ export type Messages = {
       objects: string;
       pictures: string;
       drawingLines: string;
-      areaMeasurement: string;
+      drawingAreas: string;
       drawingPoints: string;
       tracking: string;
       gpx: string;
     };
     disabledAlert: string;
+    licenseAlert: string;
     blockedPopup: string;
     exportedToDropbox: string;
     exportedToGdrive: string;
