@@ -26,11 +26,15 @@ export const mapRefocusProcessor: Processor = {
         map.getCenter().lat !== lat ||
         map.getCenter().lng !== fixedLon)
     ) {
+      const fixing = map.getCenter().lng !== fixedLon;
+
       map.setView([lat, fixedLon], zoom, {
-        animate: false,
+        animate: !fixing,
       });
 
-      dispatch(mapRefocus({ lon: fixedLon }));
+      if (fixing) {
+        dispatch(mapRefocus({ lon: fixedLon }));
+      }
     }
   },
 };
