@@ -51,14 +51,6 @@ export function WikiLayer(): ReactElement {
 
   const dispatch = useDispatch();
 
-  // const onSelects = useMemo(() => {
-  //   return new Array(points.length).fill(0).map((_, i) => () => {
-  //     if (i !== activeIndex) {
-  //       onSelect(i);
-  //     }
-  //   });
-  // }, [points.length, onSelect, activeIndex]);
-
   return (
     <>
       {points.map(({ id, lat, lon, name, wikipedia }) => (
@@ -81,11 +73,7 @@ export function WikiLayer(): ReactElement {
               </div>
             </Tooltip>
           )}
-          <Popup
-            onOpen={() => {
-              dispatch(wikiLoadPreview(wikipedia));
-            }}
-          >
+          <Popup onOpen={() => dispatch(wikiLoadPreview(wikipedia))}>
             <h4>
               <a
                 href={
