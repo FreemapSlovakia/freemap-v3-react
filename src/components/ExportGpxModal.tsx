@@ -5,7 +5,13 @@ import {
   setActiveModal,
 } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -27,7 +33,10 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
-const exportableDefinitions = [
+const exportableDefinitions: readonly {
+  type: Exportable;
+  icon: ReactNode;
+}[] = [
   { type: 'plannedRoute', icon: <FaMapSigns /> },
   { type: 'plannedRouteWithStops', icon: <FaMapSigns /> },
   { type: 'objects', icon: <FaMapMarkerAlt /> },
@@ -37,7 +46,7 @@ const exportableDefinitions = [
   { type: 'drawingPoints', icon: <FaMapMarkerAlt /> },
   { type: 'tracking', icon: <FaBullseye /> },
   { type: 'gpx', icon: <FaRoad /> },
-] as const;
+];
 
 type Props = { show: boolean };
 
