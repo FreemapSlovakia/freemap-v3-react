@@ -22,6 +22,8 @@ export const authStartLogout = createAction('AUTH_START_LOGOUT')();
 
 export const authSetUser = createAction('AUTH_SET_USER')<User | null>();
 
-export const authChooseLoginMethod = createAction('AUTH_CHOOSE_LOGIN_METHOD')();
+export const authChooseLoginMethod = createAction('AUTH_CHOOSE_LOGIN_METHOD')<
+  true | 'rm-ad'
+>();
 
 export const authInit = createAction('AUTH_INIT')();

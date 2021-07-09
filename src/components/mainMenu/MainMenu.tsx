@@ -133,7 +133,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         <Dropdown.Item
           onSelect={() => {
             closeMenu();
-            dispatch(authChooseLoginMethod());
+            dispatch(authChooseLoginMethod(true));
           }}
         >
           <FaSignInAlt /> {m?.mainMenu.logIn}

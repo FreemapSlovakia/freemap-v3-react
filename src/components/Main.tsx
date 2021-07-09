@@ -88,6 +88,7 @@ import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
+import { Ad } from './Ad';
 import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
@@ -131,6 +132,8 @@ export function Main(): ReactElement {
   const progress = useSelector((state) => !!state.main.progress.length);
 
   const authenticated = useSelector((state) => !!state.auth.user);
+
+  const hideAd = useSelector((state) => state.main.hideAd);
 
   const showElevationChart = useSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
@@ -392,6 +395,7 @@ export function Main(): ReactElement {
             <YellowBar />
           </div>
         )}
+
         <div className="menus">
           <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc2}>
             <div />
@@ -503,6 +507,8 @@ export function Main(): ReactElement {
           <GalleryPositionPickingMenu />
           <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
+
+          {!window.fmEmbedded && !authenticated && !hideAd && <Ad />}
         </div>
         {showElevationChart && <AsyncElevationChart />}
       </div>

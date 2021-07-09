@@ -381,7 +381,7 @@ export const handleLocationChange = (
 
   if (query['show'] === 'login') {
     if (!getState().auth.chooseLoginMethod) {
-      dispatch(authChooseLoginMethod());
+      dispatch(authChooseLoginMethod(true));
     }
   } else if (getState().auth.chooseLoginMethod) {
     dispatch(authLoginClose());

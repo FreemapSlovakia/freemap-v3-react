@@ -1077,6 +1077,7 @@ const sk: Messages = {
     logInError2: 'Nepodarilo sa prihlásiť.',
     logOutError: ({ err }) => `Nepodarilo sa odhlásiť: ${err}`,
     verifyError: ({ err }) => `Nepodarilo sa overiť prihlásenie: ${err}`,
+    rmAd: 'Na odstránenie reklám sa zatiaľ stačí len prihlásiť.',
   },
 
   logOut: {

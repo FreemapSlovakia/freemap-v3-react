@@ -31,7 +31,11 @@ const LoginModal = lazy(() =>
   ),
 );
 
-export const AsyncLoginModal = ({ show }: ShowProps): ReactElement => (
+export const AsyncLoginModal = ({
+  show,
+}: {
+  show: boolean | 'rm-ad';
+}): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <LoginModal show={show} />
   </Suspense>

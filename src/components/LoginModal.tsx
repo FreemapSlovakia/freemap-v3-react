@@ -19,7 +19,7 @@ import {
 import { SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch, useSelector } from 'react-redux';
 
-type Props = { show: boolean };
+type Props = { show: boolean | 'rm-ad' };
 
 export function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -60,6 +60,10 @@ export function LoginModal({ show }: Props): ReactElement {
             <FaExclamationTriangle /> {m?.general.noCookies}
           </Alert>
         )}
+
+        {show === 'rm-ad' ? (
+          <Alert variant="primary">{m?.logIn.rmAd}</Alert>
+        ) : null}
 
         <Button
           onClick={loginWithFacebook}

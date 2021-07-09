@@ -2,6 +2,7 @@
 import {
   applyCookieConsent,
   enableUpdatingUrl,
+  hideAd,
   setEmbedFeatures,
 } from 'fm3/actions/mainActions';
 import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
@@ -120,6 +121,24 @@ window.addEventListener('message', (e: MessageEvent) => {
   if (data && typeof data === 'object' && typeof data.freemap === 'object') {
     if (data.freemap.action === 'setEmbedFeatures') {
       store.dispatch(setEmbedFeatures(data.freemap.payload));
+    }
+  } else if (typeof data === 'string') {
+    try {
+      const o = JSON.parse(data);
+
+      if (o['msg_type'] === 'resize-me') {
+        console.log('AD DEBUG', o);
+
+        store.dispatch(
+          hideAd(
+            o['key_value'].some(
+              (item: any) => item['key'] === 'r_nh' && item['value'] === '0',
+            ),
+          ),
+        );
+      }
+    } catch (err) {
+      // ignore
     }
   }
 });

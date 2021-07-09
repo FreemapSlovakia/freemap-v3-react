@@ -1059,6 +1059,7 @@ const cs: Messages = {
     logInError2: 'Nepodařilo se přihlásit.',
     logOutError: ({ err }) => `Nepodařilo se odhlásit: ${err}`,
     verifyError: ({ err }) => `Nepodařilo se ověřit přihlášení: ${err}`,
+    rmAd: 'K odstranění reklam se zatím stačí jen přihlásit.',
   },
 
   logOut: {
