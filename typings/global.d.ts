@@ -8,6 +8,9 @@ declare module '*.gif' {
   export default value;
 }
 
-declare module 'react-leaflet-bing';
+declare module '*.overpass' {
+  const value: any;
+  export default value;
+}
 
 declare module '@mapbox/togeojson';

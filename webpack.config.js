@@ -138,6 +138,10 @@ module.exports = {
         ],
       },
       {
+        test: /\.overpass$/,
+        loader: '../overpass-loader',
+      },
+      {
         test: /\.css$/,
         use: [
           prod

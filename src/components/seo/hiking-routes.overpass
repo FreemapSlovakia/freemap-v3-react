@@ -1,0 +1,8 @@
+[out:json][timeout:60];
+// gather results
+(
+  relation["type"="route"]["route"="hiking"](area:3600014296);
+  relation["type"="route"]["route"="foot"](area:3600014296);
+);
+// print results
+out tags;

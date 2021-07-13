@@ -23,6 +23,7 @@ import { setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
+import { Seo } from './components/seo/Seo';
 import { MessagesProvider } from './components/TranslationProvider';
 
 if (process.env['GA_MEASUREMENT_ID']) {
@@ -91,6 +92,8 @@ if (window.fmEmbedded) {
   );
 }
 
+const isRobot = true;
+
 render(
   <Provider store={store}>
     <IconContext.Provider
@@ -99,9 +102,7 @@ render(
       }}
     >
       <MessagesProvider>
-        <ErrorCatcher>
-          <Main />
-        </ErrorCatcher>
+        <ErrorCatcher>{isRobot ? <Seo /> : <Main />}</ErrorCatcher>
       </MessagesProvider>
     </IconContext.Provider>
   </Provider>,
