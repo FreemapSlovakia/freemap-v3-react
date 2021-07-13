@@ -38,6 +38,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
           tags,
           detailed: true,
         },
+        showToast: window.isRobot,
       }),
     );
   },

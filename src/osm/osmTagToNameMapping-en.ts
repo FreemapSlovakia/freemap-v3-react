@@ -62,6 +62,7 @@ export const osmTagToNameMapping: Node = {
         '2': 'Country',
       },
     },
+    protected_area: 'Protected area',
   },
   type: {
     route: {

@@ -61,6 +61,7 @@ export const osmTagToNameMapping: Node = {
         '2': 'Stát',
       },
     },
+    protected_area: 'Chráněná oblast',
   },
   type: {
     route: {

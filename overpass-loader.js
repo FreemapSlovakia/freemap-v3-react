@@ -11,7 +11,6 @@ module.exports = function (source, map, meta) {
       url: 'https://overpass.freemap.sk/api/interpreter',
       headers: { 'Content-Type': 'text/plain' },
       data: source,
-      expectedStatus: 200,
     })
     .then(
       (res) => {

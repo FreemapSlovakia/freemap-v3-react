@@ -2,17 +2,28 @@ import { useEffect } from 'react';
 
 export function useNoindex(): void {
   useEffect(() => {
-    const meta = document.createElement('meta');
+    const orig = document.querySelector('meta[name="robots"]');
 
-    meta.setAttribute('name', 'robots');
+    const meta = orig || document.createElement('meta');
+
+    if (!orig) {
+      meta.setAttribute('name', 'robots');
+    }
+
     meta.setAttribute('content', 'noindex');
 
-    const head = document.getElementsByTagName('head')[0];
+    let head: HTMLHeadElement | undefined;
 
-    head.appendChild(meta);
+    if (!orig) {
+      head = document.getElementsByTagName('head')[0];
+
+      head.appendChild(meta);
+    }
 
     return () => {
-      head.removeChild(meta);
+      if (!orig && head) {
+        head.removeChild(meta);
+      }
     };
   }, []);
 }

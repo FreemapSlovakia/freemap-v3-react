@@ -1,0 +1,5 @@
+[out:json][timeout:60];
+(
+  way["natural"="valley"]["name"](area:3600014296);
+);
+out tags;

@@ -1,22 +1,22 @@
-import { lazy, ReactElement, Suspense } from 'react';
+import qs from 'query-string';
+import { ReactElement, Suspense } from 'react';
 import { AsyncLoadingIndicator } from '../AsyncLoadingIndicator';
-
-const HikingIndex = lazy(() =>
-  import(/* webpackChunkName: "HikingIndex" */ './HikingIndex').then(
-    ({ HikingIndex }) => ({ default: HikingIndex }),
-  ),
-);
-
-const BicycleIndex = lazy(() =>
-  import(/* webpackChunkName: "BicycleIndex" */ './BicycleIndex').then(
-    ({ BicycleIndex }) => ({ default: BicycleIndex }),
-  ),
-);
+import { CategoryIndex } from './CategoryIndex';
+import { MainIndex } from './MainIndex';
+import { OsmElementDetails } from './OsmElementDetails';
 
 export function Seo(): ReactElement {
-  return (
+  const q = qs.parse(window.location.search);
+
+  return Object.keys(q).length === 0 ? (
+    <MainIndex />
+  ) : (
     <Suspense fallback={<AsyncLoadingIndicator />}>
-      {1 === 1 + 1 ? <BicycleIndex /> : <HikingIndex />}
+      {q['bot-category'] ? (
+        <CategoryIndex category={q['bot-category'] as string} />
+      ) : (
+        <OsmElementDetails />
+      )}
     </Suspense>
   );
 }

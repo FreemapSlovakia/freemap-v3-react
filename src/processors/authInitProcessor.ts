@@ -28,25 +28,26 @@ export const authInitProcessor: Processor = {
       );
     }
 
-    // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
+    // show tips only if not robot, not embedded and there are no other query parameters except 'map' or 'layers'
     if (
+      !window.isRobot &&
       !window.fmEmbedded &&
+      !getState().tips.preventTips &&
       history.location.search
         .substring(1)
         .split('&')
-        .every((x: string) => /^(map|layers)=|^$/.test(x))
+        .every((x: string) => /^(map|layers)=|^$/.test(x)) &&
+      ['sk', 'cs'].includes(
+        getEffectiveChosenLanguage(getState().l10n.chosenLanguage),
+      )
     ) {
-      const lang = getEffectiveChosenLanguage(getState().l10n.chosenLanguage);
+      const tip = getState().tips.lastTip;
 
-      if (!getState().tips.preventTips && ['sk', 'cs'].includes(lang)) {
-        const tip = getState().tips.lastTip;
-
-        setTimeout(() => {
-          dispatch(
-            tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
-          );
-        });
-      }
+      setTimeout(() => {
+        dispatch(
+          tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
+        );
+      });
     }
   },
 };
