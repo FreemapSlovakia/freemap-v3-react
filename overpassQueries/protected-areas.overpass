@@ -1,0 +1,5 @@
+[out:json][timeout:120];
+(
+  nwr["boundary"="protected_area"]["name"](area:3600014296);
+);
+out tags;

@@ -95,16 +95,18 @@ export function Layers(): ReactElement {
 
   return (
     <>
-      {[
-        ...baseLayers
-          .filter(({ type }) => type === mapType)
-          .filter(({ adminOnly }) => isAdmin || !adminOnly)
-          .map((item) => getTileLayer(item)),
-        ...overlayLayers
-          .filter(({ type }) => overlays.includes(type))
-          .filter(({ adminOnly }) => isAdmin || !adminOnly)
-          .map((item) => getTileLayer(item)),
-      ]}
+      {window.isRobot
+        ? []
+        : [
+            ...baseLayers
+              .filter(({ type }) => type === mapType)
+              .filter(({ adminOnly }) => isAdmin || !adminOnly)
+              .map((item) => getTileLayer(item)),
+            ...overlayLayers
+              .filter(({ type }) => overlays.includes(type))
+              .filter(({ adminOnly }) => isAdmin || !adminOnly)
+              .map((item) => getTileLayer(item)),
+          ]}
     </>
   );
 }

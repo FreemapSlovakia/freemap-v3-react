@@ -1,10 +1,11 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
-import { ReactElement } from 'react';
+import { useOsmNameResolverRaw } from 'fm3/osm/useOsmNameResolver';
+import { ReactElement, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
 export type ObjectDetailBasicProps = {
   id: number;
@@ -13,9 +14,9 @@ export type ObjectDetailBasicProps = {
 };
 
 type Props = ObjectDetailBasicProps & {
-  openText: string;
-  historyText: string;
-  editInJosmText: string;
+  openText?: string;
+  historyText?: string;
+  editInJosmText?: string;
 };
 
 // TODO add others
@@ -53,21 +54,34 @@ const categoryKeys = new Set([
   'waterway',
 ]);
 
-export function ObjectDetails({
+type PropsRaw = Props & {
+  language: string;
+  unnamedText?: string;
+  expertMode?: boolean;
+  dispatch?: Dispatch;
+  modifyPageTitlePrefix?: string;
+};
+
+export function ObjectDetailsRaw({
   id,
   tags,
   type,
   openText,
   historyText,
   editInJosmText,
-}: Props): ReactElement {
-  const m = useMessages();
+  unnamedText,
+  expertMode,
+  dispatch,
+  language,
+  modifyPageTitlePrefix,
+}: PropsRaw): ReactElement {
+  const subjectAndName = useOsmNameResolverRaw(type, tags, language, dispatch);
 
-  const subjectAndName = useOsmNameResolver(type, tags);
-
-  const expertMode = useSelector((state) => state.main.expertMode);
-
-  const dispatch = useDispatch();
+  useEffect(() => {
+    if (modifyPageTitlePrefix !== undefined && subjectAndName) {
+      document.title = modifyPageTitlePrefix + subjectAndName.join(' - ');
+    }
+  }, [modifyPageTitlePrefix, subjectAndName]);
 
   const handleEditInJosm = () => {
     fetch(
@@ -77,7 +91,7 @@ export function ObjectDetails({
         '&layer_name=' +
         encodeURIComponent(
           `${subjectAndName?.[0]} "${
-            subjectAndName?.[1] || m?.general.unnamed
+            subjectAndName?.[1] || unnamedText
           }"`.trim(),
         ),
     )
@@ -87,7 +101,7 @@ export function ObjectDetails({
         }
       })
       .catch((err) => {
-        dispatch(
+        dispatch?.(
           toastsAdd({
             messageKey: 'general.operationError',
             messageParams: { err },
@@ -99,16 +113,27 @@ export function ObjectDetails({
 
   return (
     <>
-      <p className="lead">
-        {subjectAndName?.[0]} <i>{subjectAndName?.[1] || m?.general.unnamed}</i>
-      </p>
-      <p>
-        <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a> (
-        <a href={`https://www.openstreetmap.org/${type}/${id}/history`}>
-          {historyText}
-        </a>
-        )
-      </p>
+      {modifyPageTitlePrefix === undefined ? (
+        <p className="lead">
+          {subjectAndName?.[0]} <i>{subjectAndName?.[1] || unnamedText}</i>
+        </p>
+      ) : (
+        <h1>
+          {subjectAndName?.[0]} <i>{subjectAndName?.[1] || unnamedText}</i>
+        </h1>
+      )}
+
+      {(openText || historyText) && (
+        <p>
+          <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a>{' '}
+          (
+          <a href={`https://www.openstreetmap.org/${type}/${id}/history`}>
+            {historyText}
+          </a>
+          )
+        </p>
+      )}
+
       {expertMode && (
         <Button type="button" onClick={handleEditInJosm} className="mb-4">
           {editInJosmText}
@@ -162,5 +187,25 @@ export function ObjectDetails({
         </tbody>
       </Table>
     </>
+  );
+}
+
+export function ObjectDetails({ ...rest }: Props): ReactElement {
+  const m = useMessages();
+
+  const expertMode = useSelector((state) => state.main.expertMode);
+
+  const dispatch = useDispatch();
+
+  const language = useSelector((state) => state.l10n.language);
+
+  return (
+    <ObjectDetailsRaw
+      {...rest}
+      unnamedText={m?.general.unnamed}
+      expertMode={expertMode}
+      dispatch={dispatch}
+      language={language}
+    />
   );
 }

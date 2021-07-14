@@ -1,0 +1,5 @@
+[out:json][timeout:120];
+(
+  relation["boundary"="administrative"](area:3600014296);
+);
+out tags;

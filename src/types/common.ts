@@ -30,6 +30,7 @@ declare global {
     preventMapClick?: boolean;
     translations?: Messages;
     fmEmbedded: boolean;
+    isRobot: boolean;
   }
 }
 

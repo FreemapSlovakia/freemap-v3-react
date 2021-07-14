@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8" />
 
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, noarchive, noimageindex, nofollow" />
 
     <meta
       name="copyright"
@@ -123,13 +123,13 @@
     <script>
       fmEmbedded = window.self !== window.top;
 
-      if (
-        window.TrackJS &&
-        !fmEmbedded &&
-        !navigator.userAgent.match(
-          /UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver/,
-        )
-      ) {
+      isRobot =
+        // 2 === 1 + 1 ||
+        navigator.userAgent.match(
+          /UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners/,
+        );
+
+      if (window.TrackJS && !fmEmbedded && !isRobot) {
         TrackJS.install({
           token: '47a813b67baf4f97bace2d8359f76833',
           onError: function (payload) {
