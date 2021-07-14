@@ -3,7 +3,10 @@ const { opendir, readFile } = require('fs/promises');
 
 module.exports = class SitemapWebpackPlugin {
   apply(compiler) {
-    if (process.env.NO_SITEMAP) {
+    if (
+      process.env.NO_SITEMAP ||
+      (process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev')
+    ) {
       return;
     }
 
@@ -21,8 +24,6 @@ module.exports = class SitemapWebpackPlugin {
           },
           async () => {
             // compilation.options.output.path
-
-            const dir = await opendir('./src/components/seo/overpassQueries');
 
             const out = [];
 
@@ -70,12 +71,10 @@ module.exports = class SitemapWebpackPlugin {
               );
             }
 
-            for await (const dirent of dir) {
+            for await (const dirent of await opendir('./overpassQueries')) {
               console.log(dirent.name);
 
-              const source = await readFile(
-                './src/components/seo/overpassQueries/' + dirent.name,
-              );
+              const source = await readFile('./overpassQueries/' + dirent.name);
 
               const res = await axios.request({
                 method: 'POST',

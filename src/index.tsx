@@ -2,21 +2,16 @@ import { lazy, Suspense } from 'react';
 import { render } from 'react-dom';
 import { AsyncLoadingIndicator } from './components/AsyncLoadingIndicator';
 
-if (
-  window.isRobot &&
-  (location.search === '' ||
-    location.search.startsWith('?bot-category=') ||
-    location.search.includes('&osm-'))
-) {
-  const Seo = lazy(() =>
-    import(/* webpackChunkName: "Seo" */ './components/seo/Seo').then(
-      ({ Seo }) => ({ default: Seo }),
-    ),
+if (window.isRobot && location.search.includes('&osm-')) {
+  const OsmElementDetails = lazy(() =>
+    import(
+      /* webpackChunkName: "OsmElementDetails" */ './components/seo/OsmElementDetails'
+    ).then(({ OsmElementDetails }) => ({ default: OsmElementDetails })),
   );
 
   render(
     <Suspense fallback={<AsyncLoadingIndicator />}>
-      <Seo />
+      <OsmElementDetails />
     </Suspense>,
 
     document.getElementById('app'),
