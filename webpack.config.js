@@ -9,6 +9,7 @@ const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const SitemapPlugin = require('./sitemap-plugin');
 const cssnano = require('cssnano');
 
 const skMessages = require('./src/translations/sk-shared.json');
@@ -181,6 +182,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new SitemapPlugin(),
     new ForkTsCheckerWebpackPlugin({
       eslint: {
         enabled: !fastDev,

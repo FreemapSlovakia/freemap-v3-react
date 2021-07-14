@@ -1,4 +1,4 @@
-[out:json][timeout:60];
+[out:json][timeout:120];
 (
   relation["boundary"="geomorphological-unit"](area:3600014296);
 );

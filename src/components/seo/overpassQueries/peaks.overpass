@@ -1,4 +1,4 @@
-[out:json][timeout:60];
+[out:json][timeout:120];
 (
   node["natural"="peak"]["name"](area:3600014296);
 );

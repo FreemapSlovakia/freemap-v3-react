@@ -1,4 +1,4 @@
-[out:json][timeout:60];
+[out:json][timeout:120];
 (
   relation["type"="route"]["route"="hiking"](area:3600014296);
   relation["type"="route"]["route"="foot"](area:3600014296);

@@ -10,7 +10,7 @@ export function useNoindex(): void {
       meta.setAttribute('name', 'robots');
     }
 
-    meta.setAttribute('content', 'noindex');
+    meta.setAttribute('content', 'noindex, noarchive, nosnippet');
 
     let head: HTMLHeadElement | undefined;
 

@@ -1,9 +1,13 @@
-const { getOptions } = require('loader-utils');
-const { validate } = require('schema-utils');
 const axios = require('axios');
 
 module.exports = function (source, map, meta) {
   const callback = this.async();
+
+  if (process.env.SKIP_OVERPASS) {
+    callback(null, 'module.exports = unfedined;', map, meta);
+
+    return;
+  }
 
   axios
     .request({
