@@ -43,8 +43,8 @@ module.exports = class SitemapWebpackPlugin {
                   'embed',
                   'supportUs',
                   'tracking-watched',
-                  'tracking-my',
-                  'maps',
+                  // 'tracking-my', // not logged in
+                  // 'maps', // not logged in
                 ].map(
                   (modal) =>
                     `https://www.freemap.sk/?layers=X&show=${modal}&lang=${lang}`,
