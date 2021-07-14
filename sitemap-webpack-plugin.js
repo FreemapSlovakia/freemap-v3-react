@@ -5,7 +5,8 @@ module.exports = class SitemapWebpackPlugin {
   apply(compiler) {
     if (
       process.env.NO_SITEMAP ||
-      (process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev')
+      !process.env.DEPLOYMENT ||
+      process.env.DEPLOYMENT === 'dev'
     ) {
       return;
     }
