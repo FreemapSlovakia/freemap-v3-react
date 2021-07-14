@@ -44,20 +44,18 @@ module.exports = class SitemapWebpackPlugin {
             // tips
             out.push(
               ...[
-                | 'freemap'
-                | 'osm'
-                | 'attribution'
-                | 'shortcuts'
-                | 'exports'
-                | 'sharing'
-                | 'galleryUpload'
-                | 'gpxViewer'
-                | 'planner'
-                | 'dvePercenta'
-                | 'privacyPolicy'
-              ].map(
-                (modal) => `https://www.freemap.sk/?layers=X&tip=${modal}`,
-              ),
+                'freemap',
+                'osm',
+                'attribution',
+                'shortcuts',
+                'exports',
+                'sharing',
+                'galleryUpload',
+                'gpxViewer',
+                'planner',
+                'dvePercenta',
+                'privacyPolicy',
+              ].map((modal) => `https://www.freemap.sk/?layers=X&tip=${modal}`),
             );
 
             let i = 0;
