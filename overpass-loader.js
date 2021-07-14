@@ -11,7 +11,7 @@ module.exports = function (source, map, meta) {
     return;
   }
 
-  const promise = await Promise.all(promises)
+  const promise = Promise.all(promises)
     .then(() =>
       axios.request({
         method: 'POST',
