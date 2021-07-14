@@ -3,6 +3,10 @@ const { opendir, readFile } = require('fs/promises');
 
 module.exports = class SitemapWebpackPlugin {
   apply(compiler) {
+    if (process.env.NO_SITEMAP) {
+      return;
+    }
+
     const { webpack } = compiler;
 
     const { RawSource } = webpack.sources;
@@ -20,45 +24,51 @@ module.exports = class SitemapWebpackPlugin {
 
             const dir = await opendir('./src/components/seo/overpassQueries');
 
-            const out = ['https://www.freemap.sk/?layers=X'];
+            const out = [];
 
-            // basic modals
-            out.push(
-              ...[
-                'legend',
-                'upload-track',
-                'about',
-                'export-gpx',
-                'export-pdf',
-                'settings',
-                'embed',
-                'supportUs',
-                'tracking-watched',
-                'tracking-my',
-                'maps',
-              ].map(
-                (modal) => `https://www.freemap.sk/?layers=X&show=${modal}`,
-              ),
-            );
+            for (const lang of ['sk', 'cs', 'en', 'hu']) {
+              out.push(`https://www.freemap.sk/?layers=X&lang=${lang}`);
 
-            // tips
-            out.push(
-              ...[
-                'freemap',
-                'osm',
-                'attribution',
-                'shortcuts',
-                'exports',
-                'sharing',
-                'galleryUpload',
-                'gpxViewer',
-                'planner',
-                'dvePercenta',
-                'privacyPolicy',
-              ].map((modal) => `https://www.freemap.sk/?layers=X&tip=${modal}`),
-            );
+              // basic modals
+              out.push(
+                ...[
+                  'legend',
+                  'upload-track',
+                  'about',
+                  'export-gpx',
+                  'export-pdf',
+                  'settings',
+                  'embed',
+                  'supportUs',
+                  'tracking-watched',
+                  'tracking-my',
+                  'maps',
+                ].map(
+                  (modal) =>
+                    `https://www.freemap.sk/?layers=X&show=${modal}&lang=${lang}`,
+                ),
+              );
 
-            let i = 0;
+              // tips
+              out.push(
+                ...[
+                  'freemap',
+                  'osm',
+                  'attribution',
+                  'shortcuts',
+                  'exports',
+                  'sharing',
+                  'galleryUpload',
+                  'gpxViewer',
+                  'planner',
+                  'dvePercenta',
+                  'privacyPolicy',
+                ].map(
+                  (modal) =>
+                    `https://www.freemap.sk/?layers=X&tip=${modal}&lang=${lang}`,
+                ),
+              );
+            }
 
             for await (const dirent of dir) {
               console.log(dirent.name);
@@ -77,7 +87,7 @@ module.exports = class SitemapWebpackPlugin {
               out.push(
                 ...res.data.elements.map(
                   (el) =>
-                    `https://www.freemap.sk/?layers=X&osm-${el.type}=${el.id}`,
+                    `https://www.freemap.sk/?layers=X&osm-${el.type}=${el.id}&lang=sk`,
                 ),
               );
             }
