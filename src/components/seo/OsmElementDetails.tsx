@@ -28,26 +28,28 @@ export function OsmElementDetails(): ReactElement {
           data: `[out:json];${type}(${id});out tags center;`,
         })
         .then(({ data }) => {
+          console.log('DDDDD', data);
+
           const [element] = data.elements;
+
+          const center = element.center ?? element;
 
           const head = document.getElementsByTagName('head')[0];
 
           const m1 = document.createElement('meta');
           m1.setAttribute('name', 'geo.position');
-          m1.setAttribute('content', element.lat + ';' + element.lon);
+          m1.setAttribute('content', center.lat + ';' + center.lon);
           head.appendChild(m1);
 
           const m2 = document.createElement('meta');
           m2.setAttribute('name', 'ICBM');
-          m2.setAttribute('content', element.lat + ', ' + element.lon);
+          m2.setAttribute('content', center.lat + ', ' + center.lon);
           head.appendChild(m2);
 
           setResult(element);
         });
     }
   }, [nodeId, wayId, relationId]);
-
-  console.log(result);
 
   return result ? (
     <ObjectDetailsRaw
@@ -59,7 +61,7 @@ export function OsmElementDetails(): ReactElement {
       editInJosmText="Editovať v JOSM"
       language="sk"
       modifyPageTitleSuffix=" | Freemap Slovakia"
-      position={result}
+      position={result.center ?? result}
     />
   ) : (
     <div />
