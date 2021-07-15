@@ -25,19 +25,41 @@ export function OsmElementDetails(): ReactElement {
           method: 'POST',
           url: 'https://overpass.freemap.sk/api/interpreter',
           headers: { 'Content-Type': 'text/plain' },
-          data: `[out:json];${type}(${id});out tags;`,
+          data: `[out:json];${type}(${id});out tags center;`,
         })
-        .then(({ data }) => setResult(data.elements[0]));
+        .then(({ data }) => {
+          const [element] = data.elements;
+
+          const head = document.getElementsByTagName('head')[0];
+
+          const m1 = document.createElement('meta');
+          m1.setAttribute('name', 'geo.position');
+          m1.setAttribute('content', element.lat + ';' + element.lon);
+          head.appendChild(m1);
+
+          const m2 = document.createElement('meta');
+          m2.setAttribute('name', 'ICBM');
+          m2.setAttribute('content', element.lat + ', ' + element.lon);
+          head.appendChild(m2);
+
+          setResult(element);
+        });
     }
   }, [nodeId, wayId, relationId]);
+
+  console.log(result);
 
   return result ? (
     <ObjectDetailsRaw
       id={result.id}
       type={result.type}
       tags={result.tags}
+      openText="Otvoriť na OpenStreetMap.org"
+      historyText="história"
+      editInJosmText="Editovať v JOSM"
       language="sk"
-      modifyPageTitlePrefix="Freemap Slovakia - "
+      modifyPageTitleSuffix=" | Freemap Slovakia"
+      position={result}
     />
   ) : (
     <div />
