@@ -4,6 +4,34 @@ export const osmTagToNameMapping: Node = {
   highway: {
     '*': 'Cesta {}',
     bus_stop: 'Autobusová zastávka',
+    construction: 'Cesta vo výstavbe',
+    crossing: 'Priechod',
+    cycleway: 'Cyklochodník',
+    footway: 'Chodník',
+    living_street: 'Obytná zóna',
+    motorway_link: 'Napojenie na ďiaľnicu',
+    motorway: 'Diaľnica',
+    path: 'Cestička',
+    primary_link: 'Napojenie na cestu prvej triedy',
+    primary: 'Cesta prvej triedy',
+    residential: 'Ulica',
+    secondary: 'Cesta druhej triedy',
+    secondaty_link: 'Napojenie na cestu druhej triedy',
+    service: {
+      '*': 'Servisná, príjazdová cesta',
+      service: {
+        '*': 'Servisná cesta {}',
+        alley: 'Prejazdová cesta',
+        bus: 'Cesta vyhradená pre autobus',
+        driveway: 'Príjazdová cesta',
+        'drive-through': 'Cesta pre nákup z auta',
+        emergency_access: 'Požiarna cesta',
+        parking_aisle: 'Cesta parkoviska',
+      },
+    },
+    steps: 'Schody',
+    tertiary_link: 'Napojenie na cestu tretej triedy',
+    tertiary: 'Cesta tretej triedy',
     track: {
       '*': 'Lesná / poľná cesta',
       tracktype: {
@@ -14,37 +42,9 @@ export const osmTagToNameMapping: Node = {
         grade5: 'Mäkká lesná / poľná cesta',
       },
     },
-    residential: 'Ulica',
-    living_street: 'Obytná zóna',
-    path: 'Cestička',
-    primary: 'Cesta prvej triedy',
-    secondary: 'Cesta druhej triedy',
-    tertiary: 'Cesta tretej triedy',
-    service: {
-      '*': 'Servisná, príjazdová cesta',
-      service: {
-        '*': 'Servisná cesta {}',
-        driveway: 'Príjazdová cesta',
-        parking_aisle: 'Cesta parkoviska',
-        alley: 'Prejazdová cesta',
-        emergency_access: 'Požiarna cesta',
-        'drive-through': 'Cesta pre nákup z auta',
-        bus: 'Cesta vyhradená pre autobus',
-      },
-    },
-    footway: 'Chodník',
-    steps: 'Schody',
-    trunk: 'Cesta pre motorové vozidlá',
-    motorway: 'Diaľnica',
-    unclassified: 'Neklasifikovaná cesta',
-    primary_link: 'Napojenie na cestu prvej triedy',
-    secondaty_link: 'Napojenie na cestu druhej triedy',
-    tertiary_link: 'Napojenie na cestu tretej triedy',
-    motorway_link: 'Napojenie na ďiaľnicu',
     trunk_link: 'Napojenie na cestu pre motorové vozidlá',
-    construction: 'Cesta vo výstavbe',
-    crossing: 'Priechod',
-    cycleway: 'Cyklochodník',
+    trunk: 'Cesta pre motorové vozidlá',
+    unclassified: 'Neklasifikovaná cesta',
   },
   boundary: {
     '*': 'Oblasť',
@@ -63,58 +63,101 @@ export const osmTagToNameMapping: Node = {
       },
     },
     protected_area: 'Chránená oblasť',
+    national_park: 'Národný park', // *
   },
   type: {
     route: {
       '*': 'Trasa',
       route: {
         '*': 'Trasa {}',
-        hiking: 'Turistická trasa',
-        foot: 'Pešia trasa',
         bicycle: 'Cyklotrasa',
-        ski: 'Lyžiarska trasa',
-        piste: 'Bežkárska trasa',
-        horse: 'Jazdecká trasa',
-        railway: 'Železničná trasa',
-        tram: 'Električková trasa',
         bus: 'Trasa autobusu',
+        foot: 'Pešia trasa',
+        hiking: 'Turistická trasa',
+        horse: 'Jazdecká trasa',
         mtb: 'Trasa pre horské bicykle',
+        piste: 'Bežkárska trasa',
+        railway: 'Železničná trasa',
+        ski: 'Lyžiarska trasa',
+        tram: 'Električková trasa',
       },
     },
   },
   building: {
     '*': 'Budova {}',
-    yes: 'Budova',
     apartments: 'Apartmány',
     bungalow: 'Bungalov',
     cabin: 'Búda, chatka',
+    cathedral: 'Katedrála',
+    chapel: 'Kaplnka',
+    church: 'Kostol',
+    commercial: 'Budova určená na komerčné účely',
     detached: 'Samostatne stojaci rodinný dom',
     dormitory: 'Internát',
     farm: 'Statok',
+    garage: 'Garáž',
     hotel: 'Budova hotela',
     house: 'Rodinný dom',
     houseboat: 'Hausbót',
-    residential: 'Obytný dom',
-    static_caravan: 'Obytný príves, karavan',
-    terrace: 'Radový dom',
-    semidetached_house: 'Dvojdom',
-    commercial: 'Budova určená na komerčné účely',
     industrial: 'Budova určená na priemyselné účely',
-    office: 'Budova s kanceláriami',
-    church: 'Kostol',
-    cathedral: 'Katedrála',
-    chapel: 'Kaplnka',
     mosque: 'Mešita',
+    office: 'Budova s kanceláriami',
+    residential: 'Obytný dom',
+    semidetached_house: 'Dvojdom',
+    shrine: 'Svätyňa',
+    static_caravan: 'Obytný príves, karavan',
     synagogue: 'Synagóga',
     temple: 'Chrám',
-    shrine: 'Svätyňa',
-    garage: 'Garáž',
+    terrace: 'Radový dom',
     train_station: 'Vlaková stanica',
+    yes: 'Budova',
   },
   amenity: {
     '*': '{}',
+    atm: 'Bankomat',
+    bank: 'Banka',
+    bar: 'Bar',
+    bbq: 'Gril', // *
+    bench: 'Lavička',
+    bicycle_parking: 'Parkovanie pre bicykle',
+    brothel: 'Bordel', // *
+    bureau_de_change: 'Zmenáreň', // *
+    bus_station: 'Autobusová stanica',
+    cafe: 'Kaviareň',
+    casino: 'Kasíno', // *
+    charging_station: 'Nabíjacia stanica',
+    clinic: 'Poliklinika',
+    community_centre: 'Kominutné centrum', // *
+    courthouse: 'Súd', // *
+    dentist: 'Zubná ordinácia',
+    doctors: 'Lekárska ordinácia',
+    drinking_water: 'Pitná voda',
+    embassy: 'Ambasáda', // *
+    fast_food: 'Rýchle občerstvenie',
+    fire_station: 'Hasičská stanica',
+    fountain: 'Fontána',
+    fuel: 'Čerpacia stanica',
+    gambling: 'Herňa', // *
+    grave_yard: 'Pohrebisko', // *
+    hospital: 'Nemocnica',
     hunting_stand: 'Poľovnícky posed',
-    toilets: 'WC',
+    kindergarten: 'Škôlka',
+    library: 'Knižnica',
+    monastery: 'Kláštor', // *
+    nightclub: 'Nočný klub', // *
+    parking: 'Parkovanie',
+    pharmacy: 'Lekáreň',
+    place_of_mourning: 'Dom smútku', // *
+    place_of_worship: 'Chrám/kostol',
+    planetarium: 'Planetárium', // *
+    police: 'Polícia',
+    post_box: 'Poštová schránka',
+    post_office: 'Pošta',
+    prison: 'Väznica', // *
+    pub: 'Krčma',
+    recycling: 'Recyklovanie',
+    restaurant: 'Reštaurácia',
+    school: 'Škola',
     shelter: {
       '*': 'Prístrešok',
       shelter_type: {
@@ -130,40 +173,18 @@ export const osmTagToNameMapping: Node = {
         weather_shelter: 'Prístrešok proti nepriaznivému počasiu',
       },
     },
-    bench: 'Lavička',
-    atm: 'Bankomat',
-    bank: 'Banka',
-    fuel: 'Čerpacia stanica',
-    charging_station: 'Nabíjacia stanica',
-    hospital: 'Nemocnica',
-    clinic: 'Poliklinika',
-    doctors: 'Lekárska ordinácia',
-    dentist: 'Zubná ordinácia',
-    place_of_worship: 'Chrám/kostol',
-    restaurant: 'Reštaurácia',
-    pub: 'Krčma',
-    fast_food: 'Rýchle občerstvenie',
-    cafe: 'Kaviareň',
-    bar: 'Bar',
-    school: 'Škola',
-    kindergarten: 'Škôlka',
-    waste_basket: 'Odpadkový kôš',
-    bicycle_parking: 'Parkovanie pre bicykle',
-    pharmacy: 'Lekáreň',
-    post_box: 'Poštová schránka',
-    recycling: 'Recyklovanie',
-    drinking_water: 'Pitná voda',
-    post_office: 'Pošta',
-    townhall: 'Mestská radnica, obecný úrad',
-    fountain: 'Fontána',
-    police: 'Polícia',
-    fire_station: 'Hasičská stanica',
-    waste_disposal: 'Odpadkový kôš',
-    library: 'Knižnica',
-    bus_station: 'Autobusová stanica',
-    vending_machine: 'Automat',
-    parking: 'Parkovanie',
+    social_centre: 'Sociálne centrum', // *
+    social_facility: 'Sociálne zariadenie', // *
+    taxi: 'Taxi', // *
     telephone: 'Telefón',
+    toilets: 'WC',
+    townhall: 'Mestská radnica, obecný úrad',
+    university: 'Univerzita', // *
+    vending_machine: 'Automat',
+    veterinary: 'Veterinár', // *
+    watering_place: 'Napájadlo', // *
+    waste_basket: 'Odpadkový kôš',
+    waste_disposal: 'Odpadkový kôš',
   },
   waterway: {
     '*': 'Vodný tok {}',
@@ -178,215 +199,300 @@ export const osmTagToNameMapping: Node = {
   },
   landuse: {
     '*': '{}',
-    forest: 'Les',
-    residential: 'Rezidenčná zóna',
-    commercial: 'Komerčná zóna',
-    industrial: 'Industriálna zóna',
     allotments: 'Zahradkárska oblasť',
+    brownfield: 'Miesto na novú výstavbu', // *
+    cemetery: 'Cintorín',
+    commercial: 'Komerčná zóna',
+    construction: 'Stavenisko', // *
     farmland: 'Pole',
     farmyard: 'Družstvo',
+    forest: 'Les',
+    garages: 'Garáže', // *
     grass: 'Tráva',
+    greenfield: 'Nové miesto na výstavbu',
+    industrial: 'Industriálna zóna',
+    landfill: 'Skládka', // *
     meadow: 'Lúka',
+    military: 'Vojenská oblasť',
     orchard: 'Sad',
-    vineyard: 'Vinica',
-    cemetery: 'Cintorín',
-    reservoir: 'Priehrada / nádrž',
+    plant_nursery: 'Lesná škôlka', // *
     quarry: 'Lom',
-    millitary: 'Vojenská oblasť',
+    recreation_ground: 'Oddychová zóna', // *
     religions: 'Cirkevný pozemok',
+    reservoir: 'Priehrada / nádrž',
+    residential: 'Rezidenčná zóna',
+    retail: 'Nákupná zóna', // *
+    vineyard: 'Vinica',
+    winter_sports: 'Miesto zimných športov', // *
   },
   leisure: {
     '*': '{}',
+    dog_park: 'Park pre psy', // *
     firepit: 'Ohnisko',
-    pitch: 'Ihrisko',
-    swimming_pool: 'Bazén',
-    park: 'Park',
+    fishing: 'Miesto na rybárčenie', // *
+    fitness_centre: 'Fitness centrum', // *
+    fitness_station: 'Fitness stanica', // *
     garden: 'Záhrada',
-    playground: 'Ihrisko',
-    track: 'Dráha',
+    golf_course: 'Golfové ihrisko', // *
+    horse_riding: 'Jazdenie na koni', // *
+    nature_reserve: 'Prírodná rezervácia', // *
+    park: 'Park',
     picnic_table: 'Piknikový stôl',
+    pitch: 'Ihrisko',
+    playground: 'Detské ihrisko',
+    sports_centre: 'Športové centrum', // *
+    sports_hall: 'Športová hala', // *
     stadium: 'Štadión',
+    swimming_pool: 'Bazén',
+    track: 'Dráha',
+    water_park: 'Vodný park', // *
   },
   natural: {
     '*': '{}',
-    wood: 'Les',
-    water: 'Vodná plocha',
-    spring: 'Prameň',
-    cave_entrance: 'Jaskyňa',
-    basin: 'Kotlina',
-    mountain_range: 'Pohorie',
-    scrub: 'Kríky',
-    heath: 'Step',
-    valley: 'Dolina',
-    ridge: 'Hrebeň',
-    saddle: 'Sedlo',
-    peak: 'Vrchol',
-    tree: 'Strom',
-    plateau: 'Planina',
     arch: 'Skalné okno',
+    bare_rock: 'Holá skala', // *
+    basin: 'Kotlina',
+    cave_entrance: 'Jaskyňa',
+    cliff: 'Bralo',
+    geyser: 'Gejzír', // *
+    grassland: 'Trávnatá vegetácia', // *
+    heath: 'Step',
+    hot_spring: 'Termálny prameň',
+    mountain_range: 'Pohorie',
+    mud: 'Blato', // *
+    peak: 'Vrchol',
+    plateau: 'Planina',
+    ridge: 'Hrebeň',
+    rock: 'Skala', // *
+    saddle: 'Sedlo',
+    sand: 'Piesok', // *
     scree: 'Suťovisko',
+    scrub: 'Kríky',
+    sinkhole: 'Závrt', // *
+    spring: 'Prameň',
+    stone: 'Balvan', // *
     tree_row: 'Stromoradie / vetrolam',
+    tree: 'Strom',
+    valley: 'Dolina',
+    water: 'Vodná plocha',
+    wetland: 'Mokraď', // *
+    wood: 'Les',
   },
   man_made: {
     '*': '{}',
-    pipeline: 'Potrubie',
-    beehive: 'Úľ',
-    chimney: 'Komín',
-    clearcut: 'Rúbanisko',
-    mineshaft: 'Banská šachta',
     adit: 'Banská štôlňa',
+    beehive: 'Úľ',
+    bridge: 'Most', // *
+    bunker_silo: 'Silo', // *
+    chimney: 'Komín',
+    clearcut: 'Rúbanisko', // *
+    communications_tower: 'Komunikačná veža', // *
+    crane: 'Žeriav', // *
+    cross: 'Kríž', // *
+    cutline: 'Prierez', // *
+    dyke: 'Hrádza', // *
     embankment: 'Násyp',
+    lighthouse: 'Maják', // *
+    mast: 'Stožiar', // *
+    mineshaft: 'Banská šachta',
     observatory: 'Observatórium',
+    pier: 'Mólo', // *
+    pipeline: 'Potrubie',
+    reservoir_covered: 'Krytý rezervoár', // *
     silo: 'Silo',
-    wastewater_plant: 'Čistička odpadových vôd',
-    water_tower: 'Vodárenská veža',
+    survey_point: 'Geodetický bod', // *
+    telescope: 'Teleskop', // *
     tower: {
       '*': 'Veža',
       'tower:type': {
-        observation: 'Vyhliadková veža',
-        communication: 'Telekomunikačná veža',
         bell_tower: 'Zvonica',
+        communication: 'Telekomunikačná veža',
         cooling: 'Chladiarenska veža',
+        observation: 'Vyhliadková veža',
       },
     },
+    wastewater_plant: 'Čistička odpadových vôd',
+    water_tower: 'Vodárenská veža',
+    water_well: 'Studňa', // *
+    water_works: 'Hodohospodárský objekt', // *
+    watermill: 'Vodný mlyn', // *
+    windmill: 'Veterný mlyn', // *
+    works: 'Fabrika', // *
   },
   power: {
     '*': '{}',
-    pole: 'Elektrický stĺp',
-    tower: 'Veža vysokého napätia',
+    generator: 'Generátor', // *
     line: 'Elektrické vedenie',
     minor_line: 'Malé elektrické vedenie',
+    plant: 'Elektráreň', // *
+    pole: 'Elektrický stĺp',
+    substation: 'Elektrická distribučná stanica', // *
+    tower: 'Veža vysokého napätia',
+    transformer: 'Transformátor', // *
   },
   railway: 'Železnica',
   aerialway: 'Lanovka, vlek',
   shop: {
     '*': 'Obchod {}',
-    convenience: 'Potraviny',
-    supermarket: 'Supermarket',
-    mall: 'Nákupné stredisko',
-    department_store: 'Obchodný dom',
-    bakery: 'Pekáreň',
-    butcher: 'Mäsiareň',
-    ice_cream: 'Zmrzlina',
-    kiosk: 'Stánok',
-    greengrocer: 'Ovocie a zelenina',
-    clothes: 'Obchod s oblečením',
-    shoes: 'Obuv',
-    fabric: 'Metrový textil',
-    chemist: 'Drogéria',
-    optician: 'Optika',
-    jewerly: 'Klenotníctvo',
-    florist: 'Kvetinárstvo',
-    garden_center: 'Záhradné centrum',
-    hardware: 'Železiarstvo',
-    paint: 'Farby, laky',
-    trade: 'Stavebniny',
-    second_hand: 'Second hand',
-    hairdresser: 'Kaderníctvo, holičstvo',
-    tattoo: 'Tetovacie štúdio',
     antiques: 'Starožitnosti',
-    carpet: 'Predaj kobercov',
-    furniture: 'Predaj nábytku',
-    computer: 'Počítačový obchod',
-    electronics: 'Obchod s elektronikou',
-    mobile_phone: 'Predaj mobilných telefónov',
-    radiotechnics: 'Predaj elektronických súčiastok',
+    bakery: 'Pekáreň',
     bicycle: 'Predaj bicyklov',
-    car: 'Predaj áut',
-    car_repair: 'Autoservis',
-    car_parts: 'Predaj autosúčiastok',
-    outdoor: 'Predaj outdoor vybavenia',
-    sports: 'Športové potreby',
     books: 'Kníhkupectvo',
-    stationery: 'Papiernictvo',
+    butcher: 'Mäsiareň',
+    car_parts: 'Predaj autosúčiastok',
+    car_repair: 'Autoservis',
+    car: 'Predaj áut',
+    carpet: 'Predaj kobercov',
+    chemist: 'Drogéria',
+    clothes: 'Obchod s oblečením',
+    computer: 'Počítačový obchod',
+    convenience: 'Potraviny',
     copyshop: 'Copy centrum',
+    department_store: 'Obchodný dom',
+    electronics: 'Obchod s elektronikou',
+    fabric: 'Metrový textil',
+    florist: 'Kvetinárstvo',
     funeral_directors: 'Pohrebná služba',
+    furniture: 'Predaj nábytku',
+    garden_center: 'Záhradné centrum',
+    greengrocer: 'Ovocie a zelenina',
+    hairdresser: 'Kaderníctvo, holičstvo',
+    hardware: 'Železiarstvo',
+    ice_cream: 'Zmrzlina',
+    jewerly: 'Klenotníctvo',
+    kiosk: 'Stánok',
+    mall: 'Nákupné stredisko',
+    mobile_phone: 'Predaj mobilných telefónov',
+    optician: 'Optika',
+    outdoor: 'Predaj outdoor vybavenia',
+    paint: 'Farby, laky',
     pet: 'Potreby pre zvieratá',
+    radiotechnics: 'Predaj elektronických súčiastok',
+    second_hand: 'Second hand',
+    shoes: 'Obuv',
+    sports: 'Športové potreby',
+    stationery: 'Papiernictvo',
+    supermarket: 'Supermarket',
+    tattoo: 'Tetovacie štúdio',
     toys: 'Hračkárstvo',
+    trade: 'Stavebniny',
   },
   historic: {
     '*': 'Historický objekt',
-    wayside_cross: 'Prícestný kríž',
-    wayside_shrine: 'Božia muka',
     archaeological_site: 'Archeologické nálezisko',
-    monument: 'Pomník, monument',
+    castle: 'Hrad', // *
+    church: 'Historický kostol', // *
+    city_gate: 'Mestsná brána', // *
+    manor: 'Panstvo', // *
+    memorial: 'Pmätník', // *
     monastery: 'Kláštor',
-    tomb: 'Hrobka',
+    monument: 'Pomník, monument',
     ruins: {
       '*': 'Ruiny',
       ruins: {
         castle: 'Zrúcanina hradu',
       },
     },
+    tomb: 'Hrobka',
+    wayside_cross: 'Prícestný kríž',
+    wayside_shrine: 'Božia muka',
   },
   barrier: {
     '*': 'Bariéra {}',
-    fence: 'Plot',
-    wall: 'Múr',
-    hedge: 'Živý plot',
     block: 'Blok',
-    entrance: 'Vstup',
-    gate: 'Brána',
-    lift_gate: 'Závora',
-    swing_gate: 'Otočná závora',
-    bollard: 'Stĺpiky',
+    bollard: 'Stĺpik',
+    border_control: 'Hraničná kontrola', // *
     chain: 'Reťaz',
+    ditch: 'Priekopa', // *
+    entrance: 'Vstup',
+    fence: 'Plot',
+    gate: 'Brána',
+    hedge: 'Živý plot',
+    kerb: 'Obrubník', // *
+    lift_gate: 'Závora',
+    rope: 'Lano', // *
+    sliding_gate: 'Posuvná brána', // *
+    swing_gate: 'Otočná závora',
+    turnstile: 'Turniket', // *
+    wall: 'Múr',
   },
   sport: {
     '*': 'Šport {}',
+    basketball: 'Basketbal', // *
+    beachvolleyball: 'Plážový volejbal', // *
+    chess: 'Šach', // *
+    climbing: 'Lezenie', // *
+    fitness: 'Posilňovňa', // *
+    golf: 'Golf', // *
+    multi: 'Rôzne športy', // *
+    running: 'Beh', // *
+    shooting: 'Streľba', // *
+    skiing: 'Lyžovanie', // *
     soccer: 'Futbal',
+    swimming: 'Plávanie', // *
     tennis: 'Tenis',
+    volleyball: 'Volejbal', // *
   },
   tourism: {
     '*': '{}',
-    viewpoint: 'Výhľad',
+    alpine_hut: 'Horská chata', // *
+    apartment: 'Apartmán',
+    artwork: {
+      '*': 'Umenie',
+      artwork_type: {
+        architecture: 'Významná budova, stavba',
+        bust: 'Busta',
+        mural: 'Nástenná maľba',
+        painting: 'Maľba',
+        sculpture: 'Plastika',
+        statue: 'Socha',
+      },
+    },
+    attraction: 'Atrakcia',
+    camp_site: 'Kemp',
+    caravan_site: 'Autokemp pre obytné prívesy',
+    chalet: 'Chata',
+    guest_house: 'Penzión',
+    hostel: 'Hostel',
+    hotel: 'Hotel',
     information: {
       '*': 'Informácie',
       information: {
         '*': 'Informácie {}',
-        office: 'Informačná kancelária',
         board: 'Informačná tabuľa',
         guidepost: 'Rázcestník, smerovník',
         map: 'Mapa',
+        office: 'Informačná kancelária',
       },
     },
-    hotel: 'Hotel',
-    guest_house: 'Penzión',
-    apartment: 'Apartmán',
-    hostel: 'Hostel',
     motel: 'Motel',
-    chalet: 'Chata',
-    camp_site: 'Kemp',
-    caravan_site: 'Autokemp pre obytné prívesy',
-    attraction: 'Atrakcia',
-    artwork: {
-      '*': 'Umenie',
-      artwork_type: {
-        bust: 'Busta',
-        sculpture: 'Plastika',
-        statue: 'Socha',
-        mural: 'Nástenná maľba',
-        painting: 'Maľba',
-        architecture: 'Významná budova, stavba',
-      },
-    },
-    picnic_site: 'Miesto na piknik',
     museum: 'Múzeum',
+    picnic_site: 'Miesto na piknik',
+    viewpoint: 'Výhľad',
+    wilderness_hut: 'Chata v divočine', // *
     zoo: 'ZOO',
   },
   place: {
     '*': 'Miesto {}',
-    locality: 'Lokalita',
-    village: 'Dedina',
     city: 'Veľkomesto',
-    town: 'Mesto',
     country: 'Krajina',
-    state: 'Štát',
-    suburb: 'Predmestie',
+    farm: 'Farma', // *
     hamlet: 'Osada',
+    island: 'Ostrov', // *
+    islwt: 'Ostrovček', // *
     isolated_dwelling: 'Samota',
+    locality: 'Lokalita',
+    ocean: 'Oceán', // *
+    sea: 'More', // *
+    state: 'Štát',
+    square: 'Námestie', // *
+    suburb: 'Predmestie',
+    town: 'Mesto',
+    village: 'Dedina',
   },
   public_transport: {
+    platform: 'Nástupište', // *
+    station: 'Stanica', // *
     stop_position: 'Zastávka',
   },
 };
