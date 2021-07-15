@@ -34,17 +34,19 @@ export function OsmElementDetails(): ReactElement {
 
           const center = element.center ?? element;
 
-          const head = document.getElementsByTagName('head')[0];
+          if ('lat' in center) {
+            const head = document.getElementsByTagName('head')[0];
 
-          const m1 = document.createElement('meta');
-          m1.setAttribute('name', 'geo.position');
-          m1.setAttribute('content', center.lat + ';' + center.lon);
-          head.appendChild(m1);
+            const m1 = document.createElement('meta');
+            m1.setAttribute('name', 'geo.position');
+            m1.setAttribute('content', center.lat + ';' + center.lon);
+            head.appendChild(m1);
 
-          const m2 = document.createElement('meta');
-          m2.setAttribute('name', 'ICBM');
-          m2.setAttribute('content', center.lat + ', ' + center.lon);
-          head.appendChild(m2);
+            const m2 = document.createElement('meta');
+            m2.setAttribute('name', 'ICBM');
+            m2.setAttribute('content', center.lat + ', ' + center.lon);
+            head.appendChild(m2);
+          }
 
           setResult(element);
         });
@@ -61,7 +63,7 @@ export function OsmElementDetails(): ReactElement {
       editInJosmText="Editovať v JOSM"
       language="sk"
       modifyPageTitleSuffix=" | Freemap Slovakia"
-      position={result.center ?? result}
+      position={result.center ?? ('lat' in result ? result : undefined)}
     />
   ) : (
     <div />
