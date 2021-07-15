@@ -1,6 +1,8 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { latLonToString } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';
 import { useOsmNameResolverRaw } from 'fm3/osm/useOsmNameResolver';
+import { LatLon } from 'fm3/types/common';
 import { ReactElement, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
@@ -14,9 +16,9 @@ export type ObjectDetailBasicProps = {
 };
 
 type Props = ObjectDetailBasicProps & {
-  openText?: string;
-  historyText?: string;
-  editInJosmText?: string;
+  openText: string;
+  historyText: string;
+  editInJosmText: string;
 };
 
 // TODO add others
@@ -59,7 +61,8 @@ type PropsRaw = Props & {
   unnamedText?: string;
   expertMode?: boolean;
   dispatch?: Dispatch;
-  modifyPageTitlePrefix?: string;
+  modifyPageTitleSuffix?: string;
+  position?: LatLon;
 };
 
 export function ObjectDetailsRaw({
@@ -73,15 +76,16 @@ export function ObjectDetailsRaw({
   expertMode,
   dispatch,
   language,
-  modifyPageTitlePrefix,
+  modifyPageTitleSuffix,
+  position,
 }: PropsRaw): ReactElement {
   const subjectAndName = useOsmNameResolverRaw(type, tags, language, dispatch);
 
   useEffect(() => {
-    if (modifyPageTitlePrefix !== undefined && subjectAndName) {
-      document.title = modifyPageTitlePrefix + subjectAndName.join(' - ');
+    if (modifyPageTitleSuffix !== undefined && subjectAndName) {
+      document.title = subjectAndName.join(' - ') + modifyPageTitleSuffix;
     }
-  }, [modifyPageTitlePrefix, subjectAndName]);
+  }, [modifyPageTitleSuffix, subjectAndName]);
 
   const handleEditInJosm = () => {
     fetch(
@@ -113,7 +117,7 @@ export function ObjectDetailsRaw({
 
   return (
     <>
-      {modifyPageTitlePrefix === undefined ? (
+      {modifyPageTitleSuffix === undefined ? (
         <p className="lead">
           {subjectAndName?.[0]} <i>{subjectAndName?.[1] || unnamedText}</i>
         </p>
@@ -123,16 +127,22 @@ export function ObjectDetailsRaw({
         </h1>
       )}
 
-      {(openText || historyText) && (
+      {position && (
         <p>
-          <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a>{' '}
-          (
-          <a href={`https://www.openstreetmap.org/${type}/${id}/history`}>
-            {historyText}
+          GPS Súradnice: {/* TODO translate */}{' '}
+          <a href={`geo:${position.lat},${position.lon}`}>
+            {latLonToString(position, language)}
           </a>
-          )
         </p>
       )}
+
+      <p>
+        <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a> (
+        <a href={`https://www.openstreetmap.org/${type}/${id}/history`}>
+          {historyText}
+        </a>
+        )
+      </p>
 
       {expertMode && (
         <Button type="button" onClick={handleEditInJosm} className="mb-4">
