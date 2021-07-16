@@ -144,6 +144,8 @@ export function ObjectDetailsRaw({
         )
       </p>
 
+      {tags['description'] && <p>{tags['description']}</p>}
+
       {expertMode && (
         <Button type="button" onClick={handleEditInJosm} className="mb-4">
           {editInJosmText}

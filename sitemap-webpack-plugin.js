@@ -26,53 +26,68 @@ module.exports = class SitemapWebpackPlugin {
           async () => {
             // compilation.options.output.path
 
-            const out = [];
+            const sitemapNames = [];
 
-            for (const lang of ['sk', 'cs', 'en', 'hu']) {
-              out.push(`https://www.freemap.sk/?layers=X&lang=${lang}`);
+            {
+              const out = [];
 
-              // basic modals
-              out.push(
-                ...[
-                  'legend',
-                  'upload-track',
-                  'about',
-                  'export-gpx',
-                  'export-pdf',
-                  'settings',
-                  'embed',
-                  'supportUs',
-                  'tracking-watched',
-                  // 'tracking-my', // not logged in
-                  // 'maps', // not logged in
-                ].map(
-                  (modal) =>
-                    `https://www.freemap.sk/?layers=X&show=${modal}&lang=${lang}`,
-                ),
-              );
+              for (const lang of ['sk', 'cs', 'en', 'hu']) {
+                out.push(`https://www.freemap.sk/?layers=X&lang=${lang}`);
 
-              // tips
-              out.push(
-                ...[
-                  'freemap',
-                  'osm',
-                  'attribution',
-                  'shortcuts',
-                  'exports',
-                  'sharing',
-                  'galleryUpload',
-                  'gpxViewer',
-                  'planner',
-                  'dvePercenta',
-                  'privacyPolicy',
-                ].map(
-                  (modal) =>
-                    `https://www.freemap.sk/?layers=X&tip=${modal}&lang=${lang}`,
-                ),
-              );
+                // basic modals
+                out.push(
+                  ...[
+                    'legend',
+                    'upload-track',
+                    'about',
+                    'export-gpx',
+                    'export-pdf',
+                    'settings',
+                    'embed',
+                    'supportUs',
+                    'tracking-watched',
+                    // 'tracking-my', // not logged in
+                    // 'maps', // not logged in
+                  ].map(
+                    (modal) =>
+                      `https://www.freemap.sk/?layers=X&show=${modal}&lang=${lang}`,
+                  ),
+                );
+
+                // tips
+                out.push(
+                  ...[
+                    'freemap',
+                    'osm',
+                    'attribution',
+                    'shortcuts',
+                    'exports',
+                    'sharing',
+                    'galleryUpload',
+                    'gpxViewer',
+                    'planner',
+                    'dvePercenta',
+                    'privacyPolicy',
+                  ].map(
+                    (modal) =>
+                      `https://www.freemap.sk/?layers=X&tip=${modal}&lang=${lang}`,
+                  ),
+                );
+              }
+
+              const name = 'sitemap-core.txt';
+
+              sitemapNames.push(name);
+
+              compilation.emitAsset(name, new RawSource(out.join('\n')));
             }
 
+            // TODO add some parallelism
             for await (const dirent of await opendir('./overpassQueries')) {
+              if (!dirent.name.endsWith('.overpass')) {
+                continue;
+              }
+
               console.log(dirent.name);
 
               const source = await readFile('./overpassQueries/' + dirent.name);
@@ -84,17 +99,40 @@ module.exports = class SitemapWebpackPlugin {
                 data: source,
               });
 
-              out.push(
-                ...res.data.elements.map(
-                  (el) =>
-                    `https://www.freemap.sk/?layers=X&osm-${el.type}=${el.id}&lang=sk`,
+              const name = `sitemap-feat-${dirent.name.replace(
+                '.overpass',
+                '',
+              )}.txt`;
+
+              sitemapNames.push(name);
+
+              compilation.emitAsset(
+                name,
+                new RawSource(
+                  res.data.elements
+                    .map(
+                      (el) =>
+                        `https://www.freemap.sk/?layers=X&osm-${el.type}=${el.id}&lang=sk`,
+                    )
+                    .join('\n'),
                 ),
               );
             }
 
             compilation.emitAsset(
-              './sitemap.txt',
-              new RawSource(out.join('\n')),
+              './sitemap-index.xml',
+              new RawSource(`<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapNames
+  .map(
+    (name) => `  <sitemap>
+    <loc>https://www.freemap.sk/${name}</loc>
+  </sitemap>
+`,
+  )
+  .join('')}
+</sitemapindex>
+`),
             );
           },
         );

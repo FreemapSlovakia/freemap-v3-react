@@ -53,7 +53,14 @@ export async function getNameFromOsmElement(
   type: 'relation' | 'way' | 'node',
   lang: string,
 ): Promise<[subject: string, name: string]> {
+  const langName = tags['name:' + lang];
+
   const name = tags['name'];
+
+  const effName =
+    name && langName && langName !== name ? langName + ` (${name})` : name;
+
+  // TODO alt_name, loc_name, ...
 
   const ref = tags['ref'];
 
@@ -78,6 +85,6 @@ export async function getNameFromOsmElement(
   return [
     subj ??
       (process.env['NODE_ENV'] === 'production' ? '' : JSON.stringify(tags)),
-    name ?? ref ?? operator,
+    effName ?? ref ?? operator,
   ];
 }
