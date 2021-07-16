@@ -57,6 +57,7 @@ import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { is } from 'typescript-is';
 import { RootAction } from './actions';
+import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
@@ -186,6 +187,15 @@ export const handleLocationChange = (
         }),
       );
     }
+  }
+
+  const lang = query['lang'];
+
+  if (
+    typeof lang === 'string' &&
+    ['en', 'sk', 'cs', 'hu'].includes(lang as string)
+  ) {
+    dispatch(l10nSetChosenLanguage(lang));
   }
 
   const tool =

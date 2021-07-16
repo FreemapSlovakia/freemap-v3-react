@@ -1,0 +1,5 @@
+[out:json][timeout:120];
+(
+  relation["type"="route"]["route"="bicycle"](area:3600014296);
+);
+out tags;

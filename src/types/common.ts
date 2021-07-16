@@ -31,6 +31,7 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     adsbygoogle: Record<string, unknown>[];
+    isRobot: boolean;
   }
 }
 

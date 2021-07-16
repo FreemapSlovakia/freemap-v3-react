@@ -1,0 +1,6 @@
+[out:json][timeout:120];
+(
+  relation["type"="route"]["route"="ski"](area:3600014296);
+  relation["type"="route"]["route"="piste"](area:3600014296);
+);
+out tags;

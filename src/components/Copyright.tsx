@@ -65,6 +65,10 @@ export function Copyright(): ReactElement {
   ] as const);
 
   useEffect(() => {
+    if (window.isRobot) {
+      return;
+    }
+
     const [mapTypes, mapOverlays] = licenceShownForRef.current;
 
     if (mapTypes.has(mapType) && overlays.every((o) => mapOverlays.has(o))) {

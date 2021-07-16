@@ -22,6 +22,8 @@ export const l10nSetLanguageProcessor: Processor = {
 
     dispatch(l10nSetLanguage(language));
 
+    document.documentElement.lang = language;
+
     if (!isActionOf(authSetUser, action) && getState().auth.user) {
       await httpRequest({
         getState,
