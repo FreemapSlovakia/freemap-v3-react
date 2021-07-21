@@ -1,6 +1,6 @@
 import { Node } from './types';
 
-function resolveGenericName(
+export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
 ): string | undefined {
@@ -53,6 +53,27 @@ export async function getNameFromOsmElement(
   type: 'relation' | 'way' | 'node',
   lang: string,
 ): Promise<[subject: string, name: string]> {
+  const { osmTagToNameMapping, colorNames } = (await import(
+    /* webpackChunkName: "osmTagToNameMapping-[request]" */
+    `./osmTagToNameMapping-${['sk', 'cs'].includes(lang) ? lang : 'en'}.ts`
+  )) as { osmTagToNameMapping: Node; colorNames: Record<string, string> };
+
+  return getNameFromOsmElementSync(
+    tags,
+    type,
+    lang,
+    osmTagToNameMapping,
+    colorNames,
+  );
+}
+
+export function getNameFromOsmElementSync(
+  tags: Record<string, string>,
+  type: 'relation' | 'way' | 'node',
+  lang: string,
+  osmTagToNameMapping: Node,
+  colorNames: Record<string, string>,
+): [subject: string, name: string] {
   const langName = tags['name:' + lang];
 
   const name = tags['name'];
@@ -65,11 +86,6 @@ export async function getNameFromOsmElement(
   const ref = tags['ref'];
 
   const operator = tags['operator'];
-
-  const { osmTagToNameMapping, colorNames } = (await import(
-    /* webpackChunkName: "osmTagToNameMapping-[request]" */
-    `./osmTagToNameMapping-${['sk', 'cs'].includes(lang) ? lang : 'en'}.ts`
-  )) as { osmTagToNameMapping: Node; colorNames: Record<string, string> };
 
   let subj: string | undefined = resolveGenericName(osmTagToNameMapping, tags);
 
@@ -88,3 +104,38 @@ export async function getNameFromOsmElement(
     effName ?? ref ?? operator,
   ];
 }
+
+// TODO add others
+export const categoryKeys = new Set([
+  'admin_level',
+  'amenity',
+  'barrier',
+  'boundary',
+  'building',
+  'bus',
+  'cusine',
+  'highway',
+  'historic',
+  'information',
+  'landuse',
+  'leaf_type',
+  'leisure',
+  'man_made',
+  'natural',
+  'network',
+  'office',
+  'public_transport',
+  'railway',
+  'route',
+  'service',
+  'shelter',
+  'shop',
+  'sport',
+  'tactile_paving',
+  'tourism',
+  'type',
+  'vending',
+  'wall',
+  'water',
+  'waterway',
+]);

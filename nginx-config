@@ -1,0 +1,67 @@
+server {
+    server_name www.freemap.sk;
+
+    root /home/freemap/www;
+
+    location ~ ^/~(.+?)(/.*)?$ {
+      charset UTF-8;
+      alias /home/$1/www$2;
+      autoindex on;
+    }
+
+    location /sitemap {
+      add_header Content-Type 'text/html';
+    }
+
+    location = / {
+      set $cond "";
+
+      if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners)\b") {
+        set $cond a;
+      }
+
+      if ($args ~ "layers=X&osm-(node|way|relation)=\d+&lang=sk") {
+        set $cond "${cond}a";
+      }
+
+      if ($cond = aa) {
+        rewrite ^ /sitemap/$args;
+      }
+
+      set $lang_sup "en,sk,cs,hu";
+      set_by_lua_file $lang_accept /etc/nginx/lang.lua $lang_sup;
+      try_files $uri /index-$lang_accept.html;
+    }
+
+    location ~ /index-\w\w\.html {
+        add_header Cache-Control 'no-store, max-age=0';
+    }
+
+    location ~ ".+\.[a-z0-9]{20}\..+$|\.png$|\.jpg$" {
+        add_header Cache-Control 'max-age=31536000';
+    }
+
+    location /pgbadger {
+        alias /var/www/pgbadger;
+    }
+
+    listen [::]:443 ssl http2; # managed by Certbot
+    listen 443 ssl http2; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/www.freemap.sk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/www.freemap.sk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = www.freemap.sk) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    listen [::]:80;
+
+    server_name www.freemap.sk;
+
+    return 404; # managed by Certbot
+}
