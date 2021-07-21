@@ -22,8 +22,10 @@ export function Ad(): ReactElement | null {
   const m = useMessages();
 
   return !storage.getItem('dbg-enable-ads') ? null : (
-    <div className="bg-light p-1 mt-2 mx-2 rounded d-flex f-gap-1 etarget-hb-wrap">
-      <div className="ad etarget-id-59243" ref={adContainer} />
+    <div className="bg-light p-1 mt-2 mx-2 rounded d-flex f-gap-1">
+      <div className="etarget-hb-wrap">
+        <div className="etarget-id-59243" ref={adContainer} />
+      </div>
 
       <Button
         variant="warning"
