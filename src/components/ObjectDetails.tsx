@@ -1,6 +1,7 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { latLonToString } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';
+import { categoryKeys } from 'fm3/osm/osmNameResolver';
 import { useOsmNameResolverRaw } from 'fm3/osm/useOsmNameResolver';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement, useEffect } from 'react';
@@ -20,41 +21,6 @@ type Props = ObjectDetailBasicProps & {
   historyText: string;
   editInJosmText: string;
 };
-
-// TODO add others
-const categoryKeys = new Set([
-  'admin_level',
-  'amenity',
-  'barrier',
-  'boundary',
-  'building',
-  'bus',
-  'cusine',
-  'highway',
-  'historic',
-  'information',
-  'landuse',
-  'leaf_type',
-  'leisure',
-  'man_made',
-  'natural',
-  'network',
-  'office',
-  'public_transport',
-  'railway',
-  'route',
-  'service',
-  'shelter',
-  'shop',
-  'sport',
-  'tactile_paving',
-  'tourism',
-  'type',
-  'vending',
-  'wall',
-  'water',
-  'waterway',
-]);
 
 type PropsRaw = Props & {
   language: string;

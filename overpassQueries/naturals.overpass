@@ -1,5 +1,0 @@
-[out:json][timeout:120];
-(
-  nwr["natural"]["name"](area:3600014296);
-);
-out tags;
