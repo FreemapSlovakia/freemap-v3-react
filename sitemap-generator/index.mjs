@@ -1,5 +1,3 @@
-// NOTE run first: npx tsc ../src/osm/osmNameResolver.ts ../src/osm/osmTagToNameMapping-sk.ts --outDir .
-
 import axios from 'axios';
 import { opendir, readFile, writeFile } from 'fs/promises';
 import { getNameFromOsmElementSync, categoryKeys } from './osmNameResolver.js';
