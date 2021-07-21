@@ -113,11 +113,7 @@ module.exports = {
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          esModule: false,
-        },
+        type: 'asset/resource',
       },
       {
         test: /\.scss$/,
