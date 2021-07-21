@@ -1,34 +1,34 @@
 import { authChooseLoginMethod } from 'fm3/actions/authActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useDispatch } from 'react-redux';
 
 export function Ad(): ReactElement {
+  const adContainer = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    const script = document.createElement('script');
+
+    script.src =
+      'https://sk.search.etargetnet.com/generic/header_bidding.php?ref=59243';
+
+    adContainer.current?.appendChild(script);
   }, []);
 
   const dispatch = useDispatch();
 
-  function hideAd() {
-    dispatch(authChooseLoginMethod('rm-ad'));
-  }
-
   const m = useMessages();
 
   return (
-    <div className="bg-light p-1 mt-2 mx-2 rounded d-flex f-gap-1">
-      <ins
-        className="adsbygoogle ad"
-        style={{ display: 'block' }}
-        data-ad-client="ca-pub-2465248996193624"
-        data-ad-slot="3122534669"
-        data-ad-format="horizontal"
-        data-full-width-responsive="false"
-      />
+    <div className="bg-light p-1 mt-2 mx-2 rounded d-flex f-gap-1 etarget-hb-wrap">
+      <div className="ad etarget-id-59243" ref={adContainer} />
 
-      <Button variant="warning" size="sm" onClick={hideAd}>
+      <Button
+        variant="warning"
+        size="sm"
+        onClick={() => dispatch(authChooseLoginMethod('rm-ad'))}
+      >
         <div
           style={{
             writingMode: 'vertical-lr',
