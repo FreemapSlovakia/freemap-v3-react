@@ -1,10 +1,11 @@
 import { authChooseLoginMethod } from 'fm3/actions/authActions';
 import { useMessages } from 'fm3/l10nInjector';
+import storage from 'local-storage-fallback';
 import { ReactElement, useEffect, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useDispatch } from 'react-redux';
 
-export function Ad(): ReactElement {
+export function Ad(): ReactElement | null {
   const adContainer = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export function Ad(): ReactElement {
 
   const m = useMessages();
 
-  return (
+  return !storage.getItem('dbg-enable-ads') ? null : (
     <div className="bg-light p-1 mt-2 mx-2 rounded d-flex f-gap-1 etarget-hb-wrap">
       <div className="ad etarget-id-59243" ref={adContainer} />
 
