@@ -13,6 +13,7 @@ export type SliceMode =
   | 'cycling'
   | 'driving'
   | 'ferry'
+  | 'train'
   | 'pushing bike';
 
 export type ManeuerModifier =

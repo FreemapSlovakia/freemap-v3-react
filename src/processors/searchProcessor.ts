@@ -14,9 +14,9 @@ import { LatLon } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
 interface NominatimResult {
-  osm_id: number;
-  geojson: Geometries | GeometryCollection;
-  osm_type: 'node' | 'way' | 'relation';
+  osm_id?: number;
+  osm_type?: 'node' | 'way' | 'relation';
+  geojson?: Geometries | GeometryCollection;
   lat: string;
   lon: string;
   display_name: string;
@@ -100,9 +100,12 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         };
 
         return {
-          id: item.osm_id,
-          geojson: feature(item.geojson, tags),
-          osmType: item.osm_type,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: item.osm_id!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          geojson: feature(item.geojson!, tags),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          osmType: item.osm_type!,
           tags,
         };
       });
