@@ -98,6 +98,8 @@ export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
+export const hideAd = createAction('HIDE_AD')<boolean>();
+
 export const deleteFeature = createAction('DELETE_FEATURE')();
 
 export interface DrawPointSelection {

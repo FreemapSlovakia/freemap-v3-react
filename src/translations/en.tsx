@@ -1047,6 +1047,7 @@ const en: Messages = {
     logInError2: 'Error logging in.',
     logOutError: ({ err }) => `Error logging out: ${err}`,
     verifyError: ({ err }) => `Error verifying authentication: ${err}`,
+    rmAd: 'To remove ads it is now sufficient just to log in.',
   },
 
   logOut: {

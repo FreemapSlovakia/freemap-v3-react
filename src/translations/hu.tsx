@@ -1062,6 +1062,7 @@ const hu: Messages = {
     logOutError: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
     verifyError: ({ err }) =>
       `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
+    rmAd: 'To remove ads it is now sufficient just to log in.', // TODO translate
   },
 
   logOut: {

@@ -626,6 +626,7 @@ export type Messages = {
     logInError2: string;
     logOutError: ({ err }: Err) => string;
     verifyError: ({ err }: Err) => string;
+    rmAd: string;
   };
   logOut: {
     success: string;

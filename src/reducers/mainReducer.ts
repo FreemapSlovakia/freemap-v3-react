@@ -11,6 +11,7 @@ import {
   convertToDrawing,
   deleteFeature,
   enableUpdatingUrl,
+  hideAd,
   Modal,
   selectFeature,
   Selection,
@@ -53,6 +54,7 @@ export interface MainState {
   selection: Selection | null;
   cookieConsentResult: boolean | null;
   analyticCookiesAllowed: boolean;
+  hideAd: boolean;
 }
 
 export const mainInitialState: MainState = {
@@ -71,6 +73,7 @@ export const mainInitialState: MainState = {
   selection: null,
   cookieConsentResult: null,
   analyticCookiesAllowed: true,
+  hideAd: false,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -207,6 +210,10 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(setAnalyticCookiesAllowed, (state, action) => ({
     ...state,
     analyticCookiesAllowed: action.payload,
+  }))
+  .handleAction(hideAd, (state, action) => ({
+    ...state,
+    hideAd: action.payload,
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,

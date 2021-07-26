@@ -12,7 +12,7 @@ import { User } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
 export interface AuthState {
-  chooseLoginMethod: boolean;
+  chooseLoginMethod: boolean | 'rm-ad';
   validated: boolean;
   user: User | null;
 }
@@ -39,9 +39,9 @@ export const authReducer = createReducer<AuthState, RootAction>(
     validated: true,
   }))
   .handleAction(authLogout, () => authInitialState)
-  .handleAction(authChooseLoginMethod, (state) => ({
+  .handleAction(authChooseLoginMethod, (state, action) => ({
     ...state,
-    chooseLoginMethod: true,
+    chooseLoginMethod: action.payload,
   }))
   .handleAction(authLoginClose, (state) => ({
     ...state,
