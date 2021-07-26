@@ -29,7 +29,7 @@ export function AboutModal({ show }: Props): ReactElement {
         <address>
           Freemap Slovakia
           <br />
-          Chrenove-Brusno 351
+          Chrenovec-Brusno 351
           <br />
           972 32 Chrenovec-Brusno
           <br />
