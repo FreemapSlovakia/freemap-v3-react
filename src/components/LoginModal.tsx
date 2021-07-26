@@ -47,7 +47,7 @@ export function LoginModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={!!show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaSignInAlt /> {m?.mainMenu.logIn}
