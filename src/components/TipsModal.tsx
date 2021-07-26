@@ -38,7 +38,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
   useEffect(() => {
     setLoading(true);
 
-    import(/* webpackChunkName: "tip-[request]" */ `fm3/tips/${tipKey}.md`)
+    import(`fm3/tips/${tipKey}.md`)
       .then(({ default: tipText }) => {
         setTipText(tipText);
       })

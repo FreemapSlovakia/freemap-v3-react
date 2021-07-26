@@ -7,12 +7,8 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
   id: 'gpxExport',
   handle: async (...params) => {
     (params[0].action.payload.type === 'gpx'
-      ? await import(
-          /* webpackChunkName: "gpxExportProcessorHandler" */ '../export/gpxExportProcessorHandler'
-        )
-      : await import(
-          /* webpackChunkName: "geojsonExportProcessorHandler" */ '../export/geojsonExportProcessorHandler'
-        )
+      ? await import('../export/gpxExportProcessorHandler')
+      : await import('../export/geojsonExportProcessorHandler')
     ).default(...params);
   },
 };

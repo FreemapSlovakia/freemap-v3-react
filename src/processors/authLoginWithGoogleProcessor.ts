@@ -5,10 +5,6 @@ export const authLoginWithGoogleProcessor: Processor = {
   actionCreator: authLoginWithGoogle,
   errorKey: 'logIn.logInError',
   async handle(...params) {
-    (
-      await import(
-        /* webpackChunkName: "authLoginWithGoogleProcessorHandler" */ './authLoginWithGoogleProcessorHandler'
-      )
-    ).default(...params);
+    (await import('./authLoginWithGoogleProcessorHandler')).default(...params);
   },
 };

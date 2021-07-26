@@ -28,12 +28,7 @@ const jobMap = new Map<
 >();
 
 function createWorker() {
-  const w = new Worker(
-    new URL(
-      /* webpackChunkName: "galleryLayerWorker" */ './galleryLayerWorker',
-      import.meta.url,
-    ),
-  );
+  const w = new Worker(new URL('./galleryLayerWorker', import.meta.url));
 
   w.onmessage = (evt) => {
     // console.log('OK', evt.data.id, resMap.has(evt.data.id));

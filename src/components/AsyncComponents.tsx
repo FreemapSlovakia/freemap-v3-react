@@ -26,9 +26,9 @@ function useShow(show: boolean) {
 }
 
 const LoginModal = lazy(() =>
-  import(/* webpackChunkName: "loginModal" */ 'fm3/components/LoginModal').then(
-    ({ LoginModal }) => ({ default: LoginModal }),
-  ),
+  import('fm3/components/LoginModal').then(({ LoginModal }) => ({
+    default: LoginModal,
+  })),
 );
 
 export const AsyncLoginModal = ({ show }: ShowProps): ReactElement => (
@@ -38,9 +38,9 @@ export const AsyncLoginModal = ({ show }: ShowProps): ReactElement => (
 );
 
 const ElevationChart = lazy(() =>
-  import(
-    /* webpackChunkName: "elevationChart" */ 'fm3/components/ElevationChart'
-  ).then(({ ElevationChart }) => ({ default: ElevationChart })),
+  import('fm3/components/ElevationChart').then(({ ElevationChart }) => ({
+    default: ElevationChart,
+  })),
 );
 
 export const AsyncElevationChart = (): ReactElement => (
@@ -50,9 +50,9 @@ export const AsyncElevationChart = (): ReactElement => (
 );
 
 const ExportGpxModal = lazy(() =>
-  import(
-    /* webpackChunkName: "exportGpxModal" */ 'fm3/components/ExportGpxModal'
-  ).then(({ ExportGpxModal }) => ({ default: ExportGpxModal })),
+  import('fm3/components/ExportGpxModal').then(({ ExportGpxModal }) => ({
+    default: ExportGpxModal,
+  })),
 );
 
 export const AsyncExportGpxModal = ({ show }: ShowProps): ReactElement => (
@@ -62,9 +62,9 @@ export const AsyncExportGpxModal = ({ show }: ShowProps): ReactElement => (
 );
 
 const ExportPdfModal = lazy(() =>
-  import(
-    /* webpackChunkName: "exportPdfModal" */ 'fm3/components/ExportPdfModal'
-  ).then(({ ExportPdfModal }) => ({ default: ExportPdfModal })),
+  import('fm3/components/ExportPdfModal').then(({ ExportPdfModal }) => ({
+    default: ExportPdfModal,
+  })),
 );
 
 export const AsyncExportPdfModal = ({ show }: ShowProps): ReactElement => (
@@ -74,9 +74,9 @@ export const AsyncExportPdfModal = ({ show }: ShowProps): ReactElement => (
 );
 
 const LegendModal = lazy(() =>
-  import(
-    /* webpackChunkName: "legendModal" */ 'fm3/components/LegendModal'
-  ).then(({ LegendModal }) => ({ default: LegendModal })),
+  import('fm3/components/LegendModal').then(({ LegendModal }) => ({
+    default: LegendModal,
+  })),
 );
 
 export function AsyncLegendModal({ show }: ShowProps): ReactElement | null {
@@ -90,9 +90,9 @@ export function AsyncLegendModal({ show }: ShowProps): ReactElement | null {
 }
 
 const LegendOutdoorModal = lazy(() =>
-  import(
-    /* webpackChunkName: "legendOutdoorModal" */ 'fm3/components/LegendOutdoorModal'
-  ).then(({ LegendOutdoorModal }) => ({ default: LegendOutdoorModal })),
+  import('fm3/components/LegendOutdoorModal').then(
+    ({ LegendOutdoorModal }) => ({ default: LegendOutdoorModal }),
+  ),
 );
 
 export const AsyncLegendOutdoorModal = ({
@@ -105,9 +105,9 @@ export const AsyncLegendOutdoorModal = ({
   );
 
 const EmbedMapModal = lazy(() =>
-  import(
-    /* webpackChunkName: "embedMapModal" */ 'fm3/components/EmbedMapModal'
-  ).then(({ EmbedMapModal }) => ({ default: EmbedMapModal })),
+  import('fm3/components/EmbedMapModal').then(({ EmbedMapModal }) => ({
+    default: EmbedMapModal,
+  })),
 );
 
 export const AsyncEmbedMapModal = ({ show }: ShowProps): ReactElement | null =>
@@ -118,9 +118,9 @@ export const AsyncEmbedMapModal = ({ show }: ShowProps): ReactElement | null =>
   );
 
 const TipsModal = lazy(() =>
-  import(/* webpackChunkName: "tipsModal" */ 'fm3/components/TipsModal').then(
-    ({ TipsModal }) => ({ default: TipsModal }),
-  ),
+  import('fm3/components/TipsModal').then(({ TipsModal }) => ({
+    default: TipsModal,
+  })),
 );
 
 export const AsyncTipsModal = ({ show }: ShowProps): ReactElement | null =>
@@ -131,9 +131,9 @@ export const AsyncTipsModal = ({ show }: ShowProps): ReactElement | null =>
   );
 
 const AboutModal = lazy(() =>
-  import(/* webpackChunkName: "aboutModal" */ 'fm3/components/AboutModal').then(
-    ({ AboutModal }) => ({ default: AboutModal }),
-  ),
+  import('fm3/components/AboutModal').then(({ AboutModal }) => ({
+    default: AboutModal,
+  })),
 );
 
 export const AsyncAboutModal = ({ show }: ShowProps): ReactElement | null =>
@@ -144,9 +144,9 @@ export const AsyncAboutModal = ({ show }: ShowProps): ReactElement | null =>
   );
 
 const SupportUsModal = lazy(() =>
-  import(
-    /* webpackChunkName: "supportUsModal" */ 'fm3/components/SupportUsModal'
-  ).then(({ SupportUsModal }) => ({ default: SupportUsModal })),
+  import('fm3/components/SupportUsModal').then(({ SupportUsModal }) => ({
+    default: SupportUsModal,
+  })),
 );
 
 export function AsyncSupportUsModal({ show }: ShowProps): ReactElement | null {
@@ -160,9 +160,9 @@ export function AsyncSupportUsModal({ show }: ShowProps): ReactElement | null {
 }
 
 const GalleryUploadModal = lazy(() =>
-  import(
-    /* webpackChunkName: "galleryUploadModal" */ 'fm3/components/gallery/GalleryUploadModal'
-  ).then(({ GalleryUploadModal }) => ({ default: GalleryUploadModal })),
+  import('fm3/components/gallery/GalleryUploadModal').then(
+    ({ GalleryUploadModal }) => ({ default: GalleryUploadModal }),
+  ),
 );
 
 export const AsyncGalleryUploadModal = ({
@@ -175,9 +175,9 @@ export const AsyncGalleryUploadModal = ({
   );
 
 const GalleryViewerModal = lazy(() =>
-  import(
-    /* webpackChunkName: "galleryViewerModal" */ 'fm3/components/gallery/GalleryViewerModal'
-  ).then(({ GalleryViewerModal }) => ({ default: GalleryViewerModal })),
+  import('fm3/components/gallery/GalleryViewerModal').then(
+    ({ GalleryViewerModal }) => ({ default: GalleryViewerModal }),
+  ),
 );
 
 export const AsyncGalleryViewerModal = ({
@@ -190,9 +190,9 @@ export const AsyncGalleryViewerModal = ({
   );
 
 const GalleryFilterModal = lazy(() =>
-  import(
-    /* webpackChunkName: "galleryFilterModal" */ 'fm3/components/gallery/GalleryFilterModal'
-  ).then(({ GalleryFilterModal }) => ({ default: GalleryFilterModal })),
+  import('fm3/components/gallery/GalleryFilterModal').then(
+    ({ GalleryFilterModal }) => ({ default: GalleryFilterModal }),
+  ),
 );
 
 export const AsyncGalleryFilterModal = ({
@@ -205,9 +205,9 @@ export const AsyncGalleryFilterModal = ({
   );
 
 const TrackingModal = lazy(() =>
-  import(
-    /* webpackChunkName: "trackingModal" */ 'fm3/components/tracking/TrackingModal'
-  ).then(({ TrackingModal }) => ({ default: TrackingModal })),
+  import('fm3/components/tracking/TrackingModal').then(({ TrackingModal }) => ({
+    default: TrackingModal,
+  })),
 );
 
 export const AsyncTrackingModal = ({ show }: ShowProps): ReactElement | null =>
@@ -218,9 +218,9 @@ export const AsyncTrackingModal = ({ show }: ShowProps): ReactElement | null =>
   );
 
 const DrawingEditLabelModal = lazy(() =>
-  import(
-    /* webpackChunkName: "drawingEditLabelModal" */ 'fm3/components/DrawingEditLabelModal'
-  ).then(({ DrawingEditLabelModal }) => ({ default: DrawingEditLabelModal })),
+  import('fm3/components/DrawingEditLabelModal').then(
+    ({ DrawingEditLabelModal }) => ({ default: DrawingEditLabelModal }),
+  ),
 );
 
 export const AsyncDrawingEditLabelModal = ({
@@ -233,9 +233,9 @@ export const AsyncDrawingEditLabelModal = ({
   );
 
 const TrackViewerUploadModal = lazy(() =>
-  import(
-    /* webpackChunkName: "trackViewerUploadModal" */ 'fm3/components/TrackViewerUploadModal'
-  ).then(({ TrackViewerUploadModal }) => ({ default: TrackViewerUploadModal })),
+  import('fm3/components/TrackViewerUploadModal').then(
+    ({ TrackViewerUploadModal }) => ({ default: TrackViewerUploadModal }),
+  ),
 );
 
 export const AsyncTrackViewerUploadModal = ({
@@ -248,9 +248,9 @@ export const AsyncTrackViewerUploadModal = ({
   );
 
 const SettingsModal = lazy(() =>
-  import(
-    /* webpackChunkName: "settingsModal" */ 'fm3/components/SettingsModal'
-  ).then(({ SettingsModal }) => ({ default: SettingsModal })),
+  import('fm3/components/SettingsModal').then(({ SettingsModal }) => ({
+    default: SettingsModal,
+  })),
 );
 
 export const AsyncSettingsModal = ({ show }: ShowProps): ReactElement | null =>

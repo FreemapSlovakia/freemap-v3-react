@@ -6,10 +6,6 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
   errorKey: 'pdfExport.exportError',
   id: 'pdfExport.export',
   handle: async (...params) => {
-    (
-      await import(
-        /* webpackChunkName: "pdfExportProcessorHandler" */ './pdfExportProcessorHandler'
-      )
-    ).default(...params);
+    (await import('./pdfExportProcessorHandler')).default(...params);
   },
 };
