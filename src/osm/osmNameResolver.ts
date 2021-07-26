@@ -54,7 +54,6 @@ export async function getNameFromOsmElement(
   lang: string,
 ): Promise<[subject: string, name: string]> {
   const { osmTagToNameMapping, colorNames } = (await import(
-    /* webpackChunkName: "osmTagToNameMapping-[request]" */
     `./osmTagToNameMapping-${['sk', 'cs'].includes(lang) ? lang : 'en'}.ts`
   )) as { osmTagToNameMapping: Node; colorNames: Record<string, string> };
 
