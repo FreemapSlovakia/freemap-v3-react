@@ -29,8 +29,7 @@ export const removeAdsProcessor: Processor = {
     const { rovasToken } = assertType<Response>(data);
 
     const w = window.open(
-      // '/rovasCallback.html?foo=bar',
-      'https://dev.merit.world/rewpro?paytype=project&recipient=24130' +
+      process.env['ROVAS_URL_PREFIX'] +
         '&callbackurl=' +
         encodeURIComponent(
           process.env['BASE_URL'] +

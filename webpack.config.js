@@ -212,6 +212,12 @@ module.exports = {
         { www: '681854635902254', next: '681854635902254' }[
           process.env.DEPLOYMENT
         ] || null,
+      ROVAS_URL_PREFIX:
+        {
+          www: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
+          next: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
+        }[process.env.DEPLOYMENT] ||
+        'https://dev.merit.world/rewpro?paytype=project&recipient=24130',
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
