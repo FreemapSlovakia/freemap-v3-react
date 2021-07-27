@@ -314,7 +314,7 @@ export const osmTagToNameMapping: Node = {
     wastewater_plant: 'Čistička odpadových vôd',
     water_tower: 'Vodárenská veža',
     water_well: 'Studňa', // *
-    water_works: 'Vodohospodárský objekt', // *
+    water_works: 'Vodohospodársky objekt', // *
     watermill: 'Vodný mlyn', // *
     windmill: 'Veterný mlyn', // *
     works: 'Fabrika', // *
