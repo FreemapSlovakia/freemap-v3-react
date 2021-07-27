@@ -1525,10 +1525,11 @@ const sk: Messages = {
           rok <b>odstránime reklamy</b>.
         </p>
         <p>
-          Svoju prácu na dobrovoľníckom projekte dokážete vyplnením pracovného
-          výkazu v aplikácii <a href="https://rovas.app/">Rovas</a>. Po jeho
-          overení dvoma používateľmi dostanete <i>chrony</i>, za ktoré si môžete
-          kúpiť napríklad prístup bez reklám na www.freemap.sk.
+          Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v aplikácii <a href="https://rovas.app/">Rovas</a>. 
+          Ak ste dobrovoľníkom v projekte OSM a používate aplikáciu JOSM, odporúčame zapnúť 
+          <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">doplnok Rovas Connector</a>, 
+          ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi získate odmenu v 
+          komunitnej mene chron a tú môžte použiť na odstránenie reklám na www.freemap.sk.
         </p>
       </>
     ),
