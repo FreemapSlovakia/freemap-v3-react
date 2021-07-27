@@ -1500,14 +1500,20 @@ const cs: Messages = {
           <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
         <p>
-          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> vám na rok <b>odstraníme reklamy</b>.
+          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> vám na rok{' '}
+          <b>odstraníme reklamy</b>.
         </p>
         <p>
-          Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů v aplikaci Rovas. 
-          Pokud jste dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme zapnout 
-          <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">doplněk Rovas Connector</a>, 
-          který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli získáte odměnu v 
-          komunitní měňe chron a tu můžete použít k odstranění reklam na www.freemap.sk.
+          Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
+          v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
+          dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
+          zapnout
+          <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
+            doplněk Rovas Connector
+          </a>
+          , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli
+          získáte odměnu v komunitní měňe <i>chron</i> a tu můžete použít k
+          odstranění reklam na www.freemap.sk.
         </p>
       </>
     ),
