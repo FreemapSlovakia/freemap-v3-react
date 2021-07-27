@@ -1,4 +1,5 @@
 import { removeAdsOnLogin, setActiveModal } from 'fm3/actions/mainActions';
+import fallback from 'fm3/images/rovas_reklama.svg';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -46,6 +47,19 @@ export function Ad(): ReactElement | null {
 
     script.src = `https://sk.search.etargetnet.com/generic/uni.php?g=ref:59266,area:${dim[0]}x${dim[1]}`;
 
+    script.onerror = () => {
+      const a = document.createElement('a');
+      a.href = 'https://rovas.app/node/35384';
+
+      const img = document.createElement('img');
+
+      img.src = fallback;
+
+      a.appendChild(img);
+
+      el.parentElement?.parentElement?.appendChild(a);
+    };
+
     el.appendChild(script);
 
     if (window.ResizeObserver) {
@@ -73,7 +87,7 @@ export function Ad(): ReactElement | null {
         visible ? 'visible' : 'invisible'
       }`}
     >
-      <div className="bg-light p-1 rounded-top rounded-left">
+      <div className="fm-bg p-1 rounded-top rounded-left">
         <div className="etarget-hb-wrap">
           <div className="etarget-id-59266" ref={adContainer} />
         </div>
