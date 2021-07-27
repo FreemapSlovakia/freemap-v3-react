@@ -46,7 +46,7 @@ export function LoginModal({ show }: Props): ReactElement {
     (state) => state.main.cookieConsentResult,
   );
 
-  const removeAds = useSelector((state) => state.main.removingAds);
+  const removeAds = useSelector((state) => state.main.removeAdsOnLogin);
 
   return (
     <Modal show={show} onHide={close}>
@@ -63,7 +63,9 @@ export function LoginModal({ show }: Props): ReactElement {
           </Alert>
         )}
 
-        {removeAds ? <Alert variant="primary">{m?.logIn.rmAd}</Alert> : null}
+        {removeAds ? (
+          <Alert variant="primary">{m?.removeAds.info}</Alert>
+        ) : null}
 
         <Button
           onClick={loginWithFacebook}

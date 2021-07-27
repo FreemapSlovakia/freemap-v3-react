@@ -59,6 +59,7 @@ import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
 import { exportPdfProcessor } from './processors/pdfExportProcessor';
+import { removeAdsProcessor } from './processors/removeAdsProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
@@ -248,6 +249,7 @@ processorMiddleware.processors.push(
   authLoginWithGoogleProcessor,
   authLoginWithOsmProcessor,
   authLoginWithOsm2Processor,
+  removeAdsProcessor,
   urlProcessor,
 );
 

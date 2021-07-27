@@ -32,8 +32,8 @@ export async function upload(
       if (!w) {
         dispatch(
           toastsAdd({
-            id: 'gpxExport',
-            messageKey: 'gpxExport.blockedPopup',
+            id: 'enablePopup',
+            messageKey: 'general.enablePopup',
             style: 'danger',
             timeout: 5000,
           }),

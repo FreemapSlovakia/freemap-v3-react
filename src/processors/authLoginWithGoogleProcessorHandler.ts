@@ -1,4 +1,5 @@
 import { authSetUser } from 'fm3/actions/authActions';
+import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getAuth2 } from 'fm3/gapiLoader';
@@ -42,6 +43,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     );
 
     dispatch(authSetUser(user));
+
+    if (!user.isPremium && getState().main.removeAdsOnLogin) {
+      dispatch(removeAds());
+    }
   } catch (err) {
     if (!['popup_closed_by_user', 'access_denied'].includes(err.error)) {
       throw err;

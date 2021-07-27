@@ -93,6 +93,8 @@ const sk: Messages = {
     name: 'Názov',
     load: 'Načítať',
     unnamed: 'Bez názvu',
+    enablePopup:
+      'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
   },
 
   selections: {
@@ -1059,7 +1061,6 @@ const sk: Messages = {
       'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',
     licenseAlert:
       'Exportovaný súbor môže podliehať rôznym licenciám, ako napríklad licencii OpenStreetMap. Prosím dodržte podmienky týchto licencií pri zdieľaní vyexportovaného súboru.',
-    blockedPopup: 'Prehliadač zablokoval otvorenie okna.',
     exportedToDropbox: 'Súbor bol uložený do Dropboxu.',
     exportedToGdrive: 'Súbor bol uložený do Google Drive.',
   },
@@ -1070,14 +1071,11 @@ const sk: Messages = {
       google: 'Prihlásiť sa pomocou Googlu',
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
-    enablePopup:
-      'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     success: 'Boli ste úspešne prihlásený.',
     logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
     logInError2: 'Nepodarilo sa prihlásiť.',
     logOutError: ({ err }) => `Nepodarilo sa odhlásiť: ${err}`,
     verifyError: ({ err }) => `Nepodarilo sa overiť prihlásenie: ${err}`,
-    rmAd: 'Na odstránenie reklám sa zatiaľ stačí len prihlásiť.',
   },
 
   logOut: {
@@ -1513,6 +1511,29 @@ const sk: Messages = {
     president: 'Predseda',
     vicepresident: 'Podpredseda',
     secretary: 'Tajomník',
+  },
+
+  removeAds: {
+    title: 'Odstrániť reklamy',
+    info: (
+      <>
+        <p>
+          <strong>Podporte dobrovoľníkov tvoriacich túto mapu!</strong>
+        </p>
+        <p>
+          Za <b>5 hodín</b> vašej dobrovoľníckej práce alebo <b>5 €</b> vám na
+          rok <b>odstránime reklamy</b>.
+        </p>
+        <p>
+          Svoju prácu na dobrovoľníckom projekte dokážete vyplnením pracovného
+          výkazu v aplikácii <a href="https://rovas.app/">Rovas</a>. Po jeho
+          overení dvoma používateľmi dostanete <i>chrony</i>, za ktoré si môžete
+          kúpiť napríklad prístup bez reklám na www.freemap.sk.
+        </p>
+      </>
+    ),
+    continue: 'Pokračovať',
+    success: 'Gratulujeme, stali ste sa ste prémiovým členom!',
   },
 };
 

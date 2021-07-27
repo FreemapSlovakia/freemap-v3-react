@@ -19,6 +19,7 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   tips: 'mainMenu.tips',
   'edit-label': 'drawing.edit.title',
   login: 'mainMenu.logIn',
+  'remove-ads': 'removeAds.title',
 };
 
 export function useHtmlMeta(): void {

@@ -16,6 +16,7 @@ export const basicModals = [
   'tracking-my',
   'maps',
   'login',
+  'remove-ads',
 ] as const;
 
 export const tools = [

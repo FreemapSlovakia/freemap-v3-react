@@ -19,7 +19,7 @@ import { render } from 'react-dom';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { setDefaultGetErrorObject } from 'typescript-is';
-import { authCheckLogin, authInit } from './actions/authActions';
+import { authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
@@ -121,7 +121,5 @@ window.addEventListener('message', (e: MessageEvent) => {
     }
   }
 });
-
-store.dispatch(authCheckLogin());
 
 attachKeyboardHandler(store);

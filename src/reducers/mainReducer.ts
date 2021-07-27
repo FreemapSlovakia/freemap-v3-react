@@ -18,7 +18,7 @@ import {
   deleteFeature,
   enableUpdatingUrl,
   Modal,
-  removeAds,
+  removeAdsOnLogin,
   selectFeature,
   Selection,
   setActiveModal,
@@ -60,7 +60,7 @@ export interface MainState {
   selection: Selection | null;
   cookieConsentResult: boolean | null;
   analyticCookiesAllowed: boolean;
-  removingAds: boolean;
+  removeAdsOnLogin: boolean;
 }
 
 export const mainInitialState: MainState = {
@@ -79,7 +79,7 @@ export const mainInitialState: MainState = {
   selection: null,
   cookieConsentResult: null,
   analyticCookiesAllowed: true,
-  removingAds: false,
+  removeAdsOnLogin: false,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -133,7 +133,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(setActiveModal, (state, action) => ({
     ...state,
     activeModal: action.payload,
-    removingAds: action.payload ? state.removingAds : false,
+    removeAdsOnLogin: action.payload ? state.removeAdsOnLogin : false,
   }))
   .handleAction(setHomeLocation, (state, action) => ({
     ...state,
@@ -218,9 +218,9 @@ export const mainReducer = createReducer<MainState, RootAction>(
     ...state,
     analyticCookiesAllowed: action.payload,
   }))
-  .handleAction(removeAds, (state) => ({
+  .handleAction(removeAdsOnLogin, (state) => ({
     ...state,
-    removingAds: true,
+    removeAdsOnLogin: true,
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
@@ -234,6 +234,5 @@ export const mainReducer = createReducer<MainState, RootAction>(
     (state) => ({
       ...state,
       activeModal: null,
-      removingAds: false,
     }),
   );

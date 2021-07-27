@@ -52,6 +52,7 @@ export type Messages = {
     name: string;
     load: string;
     unnamed: string;
+    enablePopup: string;
   };
   selections: {
     objects: string;
@@ -610,7 +611,6 @@ export type Messages = {
     };
     disabledAlert: string;
     licenseAlert: string;
-    blockedPopup: string;
     exportedToDropbox: string;
     exportedToGdrive: string;
   };
@@ -620,13 +620,11 @@ export type Messages = {
       google: string;
       osm: string;
     };
-    enablePopup: string;
     success: string;
     logInError: ({ err }: Err) => string;
     logInError2: string;
     logOutError: ({ err }: Err) => string;
     verifyError: ({ err }: Err) => string;
-    rmAd: string;
   };
   logOut: {
     success: string;
@@ -811,5 +809,11 @@ export type Messages = {
     startRoute: string;
     finishRoute: string;
     showPhotos: string;
+  };
+  removeAds: {
+    title: string;
+    info: ReactNode;
+    continue: string;
+    success: string;
   };
 };

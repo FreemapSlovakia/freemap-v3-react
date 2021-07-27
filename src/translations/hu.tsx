@@ -93,6 +93,8 @@ const hu: Messages = {
     name: 'Name', // TODO translate
     load: 'Load', // TODO translate
     unnamed: 'No name', // TODO translate
+    enablePopup:
+      'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
   },
 
   selections: {
@@ -1043,7 +1045,6 @@ const hu: Messages = {
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
     licenseAlert:
       'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.', // TODO translate
-    blockedPopup: 'A böngésző blokkolta az előugró ablakot.',
     exportedToDropbox: 'Fájl elmentve a Dropboxba.',
     exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
   },
@@ -1054,15 +1055,12 @@ const hu: Messages = {
       google: 'Belépés Google-fiókkal',
       osm: 'Belépés OpenStreetMap-fiókkal',
     },
-    enablePopup:
-      'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
     success: 'Sikeresen bejelentkezett.',
     logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
     logInError2: 'Hiba történt a bejelentkezésnél.',
     logOutError: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
     verifyError: ({ err }) =>
       `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
-    rmAd: 'To remove ads it is now sufficient just to log in.', // TODO translate
   },
 
   logOut: {
@@ -1504,6 +1502,13 @@ const hu: Messages = {
     president: 'Elnök',
     vicepresident: 'Alelnök',
     secretary: 'Titkár',
+  },
+
+  removeAds: {
+    title: 'Remove ads', // TODO translate
+    info: 'To remove ads it is now sufficient just to log in.', // TODO translate
+    continue: 'Continue', // TODO translate
+    success: 'Congratulations, you have become a premium member!', // TODO translate
   },
 };
 

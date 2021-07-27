@@ -20,9 +20,9 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   if (!w) {
     dispatch(
       toastsAdd({
-        id: 'logIn.enablePopup',
+        id: 'enablePopup',
         style: 'warning',
-        messageKey: 'logIn.enablePopup',
+        messageKey: 'general.enablePopup',
         timeout: 5000,
       }),
     );

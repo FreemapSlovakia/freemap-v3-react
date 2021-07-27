@@ -94,6 +94,7 @@ const cs: Messages = {
     name: 'Název',
     load: 'Načíst',
     unnamed: 'Bez názvu',
+    enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
   },
 
   selections: {
@@ -1042,7 +1043,6 @@ const cs: Messages = {
       'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
     licenseAlert:
       'Exportovaný soubor může podléhat různým licencím, například licenci OpenStreetMap. Prosím dodržte podmínky těchto licencí při sdílení vyexportovaného souboru.',
-    blockedPopup: 'Prohlížeč zablokoval otevření okna.',
     exportedToDropbox: 'Soubor byl uložen do Dropboxu.',
     exportedToGdrive: 'Soubor byl uložen do Google Drive.',
   },
@@ -1053,13 +1053,11 @@ const cs: Messages = {
       google: 'Přihlásit se pomocí Googlu',
       osm: 'Přihlásit se pomocí OpenStreetMap',
     },
-    enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
     success: 'Byli jste úspěšně přihlášen.',
     logInError: ({ err }) => `Nepodařilo se přihlásit: ${err}`,
     logInError2: 'Nepodařilo se přihlásit.',
     logOutError: ({ err }) => `Nepodařilo se odhlásit: ${err}`,
     verifyError: ({ err }) => `Nepodařilo se ověřit přihlášení: ${err}`,
-    rmAd: 'K odstranění reklam se zatím stačí jen přihlásit.',
   },
 
   logOut: {
@@ -1492,6 +1490,13 @@ const cs: Messages = {
     president: 'Předseda',
     vicepresident: 'Místopředseda',
     secretary: 'Tajemník',
+  },
+
+  removeAds: {
+    title: 'Odstránit reklamy',
+    info: 'K odstranění reklam se zatím stačí jen přihlásit.',
+    continue: 'Pokračovat',
+    success: 'Gratulujeme, stali jste se jste prémiovým členem!',
   },
 };
 

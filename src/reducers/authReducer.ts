@@ -1,5 +1,9 @@
 import { RootAction } from 'fm3/actions';
-import { authLogout, authSetUser } from 'fm3/actions/authActions';
+import {
+  authLogout,
+  authSetPremium,
+  authSetUser,
+} from 'fm3/actions/authActions';
 import { User } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
@@ -25,7 +29,12 @@ export const authReducer = createReducer<AuthState, RootAction>(
       id: action.payload.id,
       authToken: action.payload.authToken,
       isAdmin: action.payload.isAdmin,
+      isPremium: action.payload.isPremium,
     },
     validated: true,
+  }))
+  .handleAction(authSetPremium, (state) => ({
+    ...state,
+    user: state.user && { ...state.user, isPremium: true },
   }))
   .handleAction(authLogout, () => authInitialState);

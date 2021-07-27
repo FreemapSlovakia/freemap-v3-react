@@ -99,6 +99,7 @@ import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
 import { MapsModal } from './MapsModal';
 import { ObjectSelection } from './ObjectSelection';
+import { RemoveAdsModal } from './RemoveAdsModal';
 import { SelectionTool } from './SelectionTool';
 import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
@@ -132,6 +133,10 @@ export function Main(): ReactElement {
   const progress = useSelector((state) => !!state.main.progress.length);
 
   const authenticated = useSelector((state) => !!state.auth.user);
+
+  const showAds = useSelector(
+    (state) => !window.fmEmbedded && !state.auth.user?.isPremium,
+  );
 
   const showElevationChart = useSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
@@ -504,7 +509,7 @@ export function Main(): ReactElement {
           <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
 
-          {!window.fmEmbedded && !authenticated && <Ad />}
+          {showAds && <Ad />}
         </div>
         {showElevationChart && <AsyncElevationChart />}
       </div>
@@ -610,6 +615,7 @@ export function Main(): ReactElement {
         <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
         <AsyncLoginModal show={activeModal === 'login'} />
         <MapsModal show={activeModal === 'maps'} />
+        <RemoveAdsModal show={activeModal === 'remove-ads'} />
         <GalleryModals />
       </div>
     </>

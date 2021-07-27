@@ -98,6 +98,8 @@ export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
+export const removeAdsOnLogin = createAction('REMOVE_ADS_ON_LOGIN')();
+
 export const removeAds = createAction('REMOVE_ADS')();
 
 export const deleteFeature = createAction('DELETE_FEATURE')();

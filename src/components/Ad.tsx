@@ -1,8 +1,8 @@
-import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
+import { removeAdsOnLogin, setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const dims: [number, number][] = [
   // [1024, 768],
@@ -65,6 +65,8 @@ export function Ad(): ReactElement | null {
 
   const m = useMessages();
 
+  const isLoggedIn = useSelector((state) => !!state.auth.user);
+
   return (
     <div
       className={`mt-2 mx-2 d-flex flex-column ${
@@ -83,8 +85,12 @@ export function Ad(): ReactElement | null {
         variant="warning"
         size="sm"
         onClick={() => {
-          dispatch(setActiveModal('login'));
-          dispatch(removeAds());
+          if (isLoggedIn) {
+            dispatch(setActiveModal('remove-ads'));
+          } else {
+            dispatch(setActiveModal('login'));
+            dispatch(removeAdsOnLogin());
+          }
         }}
       >
         {m?.general.remove}

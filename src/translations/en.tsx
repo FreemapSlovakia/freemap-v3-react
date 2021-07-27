@@ -92,6 +92,7 @@ const en: Messages = {
     name: 'Name',
     load: 'Load',
     unnamed: 'No name',
+    enablePopup: 'Please enable pop-up windows for this site in you browser.',
   },
 
   selections: {
@@ -1030,7 +1031,6 @@ const en: Messages = {
       'Only checkboxes having anything in the map to export are enabled.',
     licenseAlert:
       'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
-    blockedPopup: 'Browser blocked pop-up window.',
     exportedToDropbox: 'File has been saved to Dropboxu.',
     exportedToGdrive: 'File has been saved to Google Drive.',
   },
@@ -1041,13 +1041,11 @@ const en: Messages = {
       google: 'Log in with Google',
       osm: 'Log in with OpenStreetMap',
     },
-    enablePopup: 'Please enable pop-up windows for this site in you browser.',
     success: 'You have been successfully logged in.',
     logInError: ({ err }) => `Error logging in: ${err}`,
     logInError2: 'Error logging in.',
     logOutError: ({ err }) => `Error logging out: ${err}`,
     verifyError: ({ err }) => `Error verifying authentication: ${err}`,
-    rmAd: 'To remove ads it is now sufficient just to log in.',
   },
 
   logOut: {
@@ -1482,6 +1480,13 @@ const en: Messages = {
     president: 'President',
     vicepresident: 'Vice-President',
     secretary: 'Secretary',
+  },
+
+  removeAds: {
+    title: 'Remove ads',
+    info: 'To remove ads it is now sufficient just to log in.',
+    continue: 'Continue',
+    success: 'Congratulations, you have become a premium member!',
   },
 };
 
