@@ -1,7 +1,4 @@
-import {
-  authChooseLoginMethod,
-  authStartLogout,
-} from 'fm3/actions/authActions';
+import { authStartLogout } from 'fm3/actions/authActions';
 import {
   clearMap,
   Modal,
@@ -133,7 +130,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         <Dropdown.Item
           onSelect={() => {
             closeMenu();
-            dispatch(authChooseLoginMethod(true));
+            dispatch(setActiveModal('login'));
           }}
         >
           <FaSignInAlt /> {m?.mainMenu.logIn}

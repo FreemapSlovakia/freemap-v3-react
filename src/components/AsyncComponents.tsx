@@ -31,15 +31,19 @@ const LoginModal = lazy(() =>
   })),
 );
 
-export const AsyncLoginModal = ({
+export function AsyncLoginModal({
   show,
 }: {
-  show: boolean | 'rm-ad';
-}): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <LoginModal show={show} />
-  </Suspense>
-);
+  show: boolean;
+}): ReactElement | null {
+  return (
+    useShow(show) && (
+      <Suspense fallback={<AsyncLoadingIndicator />}>
+        <LoginModal show={show} />
+      </Suspense>
+    )
+  );
+}
 
 const ElevationChart = lazy(() =>
   import('fm3/components/ElevationChart').then(({ ElevationChart }) => ({
@@ -59,11 +63,15 @@ const ExportGpxModal = lazy(() =>
   })),
 );
 
-export const AsyncExportGpxModal = ({ show }: ShowProps): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <ExportGpxModal show={show} />
-  </Suspense>
-);
+export function AsyncExportGpxModal({ show }: ShowProps): ReactElement | null {
+  return (
+    useShow(show) && (
+      <Suspense fallback={<AsyncLoadingIndicator />}>
+        <ExportGpxModal show={show} />
+      </Suspense>
+    )
+  );
+}
 
 const ExportPdfModal = lazy(() =>
   import('fm3/components/ExportPdfModal').then(({ ExportPdfModal }) => ({
@@ -71,11 +79,15 @@ const ExportPdfModal = lazy(() =>
   })),
 );
 
-export const AsyncExportPdfModal = ({ show }: ShowProps): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <ExportPdfModal show={show} />
-  </Suspense>
-);
+export function AsyncExportPdfModal({ show }: ShowProps): ReactElement | null {
+  return (
+    useShow(show) && (
+      <Suspense fallback={<AsyncLoadingIndicator />}>
+        <ExportPdfModal show={show} />
+      </Suspense>
+    )
+  );
+}
 
 const LegendModal = lazy(() =>
   import('fm3/components/LegendModal').then(({ LegendModal }) => ({

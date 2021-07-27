@@ -15,6 +15,7 @@ export const basicModals = [
   'tracking-watched',
   'tracking-my',
   'maps',
+  'login',
 ] as const;
 
 export const tools = [

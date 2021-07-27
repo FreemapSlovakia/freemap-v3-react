@@ -1,4 +1,4 @@
-import { authChooseLoginMethod } from 'fm3/actions/authActions';
+import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -82,7 +82,10 @@ export function Ad(): ReactElement | null {
         style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
         variant="warning"
         size="sm"
-        onClick={() => dispatch(authChooseLoginMethod('rm-ad'))}
+        onClick={() => {
+          dispatch(setActiveModal('login'));
+          dispatch(removeAds());
+        }}
       >
         {m?.general.remove}
       </Button>

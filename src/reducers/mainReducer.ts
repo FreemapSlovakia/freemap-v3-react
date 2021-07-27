@@ -1,5 +1,11 @@
 import { RootAction } from 'fm3/actions';
-import { authLogout, authSetUser } from 'fm3/actions/authActions';
+import {
+  authLoginWithFacebook,
+  authLoginWithGoogle,
+  authLoginWithOsm,
+  authLogout,
+  authSetUser,
+} from 'fm3/actions/authActions';
 import {
   drawingLineContinue,
   drawingLineSetLines,
@@ -11,8 +17,8 @@ import {
   convertToDrawing,
   deleteFeature,
   enableUpdatingUrl,
-  hideAd,
   Modal,
+  removeAds,
   selectFeature,
   Selection,
   setActiveModal,
@@ -54,7 +60,7 @@ export interface MainState {
   selection: Selection | null;
   cookieConsentResult: boolean | null;
   analyticCookiesAllowed: boolean;
-  hideAd: boolean;
+  removingAds: boolean;
 }
 
 export const mainInitialState: MainState = {
@@ -73,7 +79,7 @@ export const mainInitialState: MainState = {
   selection: null,
   cookieConsentResult: null,
   analyticCookiesAllowed: true,
-  hideAd: false,
+  removingAds: false,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -127,6 +133,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(setActiveModal, (state, action) => ({
     ...state,
     activeModal: action.payload,
+    removingAds: action.payload ? state.removingAds : false,
   }))
   .handleAction(setHomeLocation, (state, action) => ({
     ...state,
@@ -211,9 +218,9 @@ export const mainReducer = createReducer<MainState, RootAction>(
     ...state,
     analyticCookiesAllowed: action.payload,
   }))
-  .handleAction(hideAd, (state, action) => ({
+  .handleAction(removeAds, (state) => ({
     ...state,
-    hideAd: action.payload,
+    removingAds: true,
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
@@ -221,4 +228,12 @@ export const mainReducer = createReducer<MainState, RootAction>(
       state.selection?.type === 'line-point'
         ? { type: 'draw-line-poly', id: state.selection.lineIndex }
         : null,
-  }));
+  }))
+  .handleAction(
+    [authLoginWithFacebook, authLoginWithGoogle, authLoginWithOsm],
+    (state) => ({
+      ...state,
+      activeModal: null,
+      removingAds: false,
+    }),
+  );

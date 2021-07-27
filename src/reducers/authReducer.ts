@@ -1,24 +1,14 @@
 import { RootAction } from 'fm3/actions';
-import {
-  authChooseLoginMethod,
-  authLoginClose,
-  authLoginWithFacebook,
-  authLoginWithGoogle,
-  authLoginWithOsm,
-  authLogout,
-  authSetUser,
-} from 'fm3/actions/authActions';
+import { authLogout, authSetUser } from 'fm3/actions/authActions';
 import { User } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
 export interface AuthState {
-  chooseLoginMethod: boolean | 'rm-ad';
   validated: boolean;
   user: User | null;
 }
 
 export const authInitialState: AuthState = {
-  chooseLoginMethod: false,
   validated: false,
   user: null,
 };
@@ -38,24 +28,4 @@ export const authReducer = createReducer<AuthState, RootAction>(
     },
     validated: true,
   }))
-  .handleAction(authLogout, () => authInitialState)
-  .handleAction(authChooseLoginMethod, (state, action) => ({
-    ...state,
-    chooseLoginMethod: action.payload,
-  }))
-  .handleAction(authLoginClose, (state) => ({
-    ...state,
-    chooseLoginMethod: false,
-  }))
-  .handleAction(authLoginWithFacebook, (state) => ({
-    ...state,
-    chooseLoginMethod: false,
-  }))
-  .handleAction(authLoginWithGoogle, (state) => ({
-    ...state,
-    chooseLoginMethod: false,
-  }))
-  .handleAction(authLoginWithOsm, (state) => ({
-    ...state,
-    chooseLoginMethod: false,
-  }));
+  .handleAction(authLogout, () => authInitialState);

@@ -18,6 +18,7 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   maps: 'tools.maps',
   tips: 'mainMenu.tips',
   'edit-label': 'drawing.edit.title',
+  login: 'mainMenu.logIn',
 };
 
 export function useHtmlMeta(): void {

@@ -133,8 +133,6 @@ export function Main(): ReactElement {
 
   const authenticated = useSelector((state) => !!state.auth.user);
 
-  const hideAd = useSelector((state) => state.main.hideAd);
-
   const showElevationChart = useSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
@@ -142,8 +140,6 @@ export function Main(): ReactElement {
   const showGalleryPicker = useSelector((state) =>
     showGalleryPickerSelector(state),
   );
-
-  const showLoginModal = useSelector((state) => state.auth.chooseLoginMethod);
 
   const showMenu = useSelector(
     (state) =>
@@ -508,7 +504,7 @@ export function Main(): ReactElement {
           <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
 
-          {!window.fmEmbedded && !authenticated && !hideAd && <Ad />}
+          {!window.fmEmbedded && !authenticated && <Ad />}
         </div>
         {showElevationChart && <AsyncElevationChart />}
       </div>
@@ -612,7 +608,7 @@ export function Main(): ReactElement {
         )}
         <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
         <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
-        <AsyncLoginModal show={showLoginModal} />
+        <AsyncLoginModal show={activeModal === 'login'} />
         <MapsModal show={activeModal === 'maps'} />
         <GalleryModals />
       </div>

@@ -1,4 +1,3 @@
-import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import {
   changesetsSet,
   changesetsSetAuthorName,
@@ -387,14 +386,6 @@ export const handleLocationChange = (
     }
   } else if (getState().main.activeModal === 'tips') {
     dispatch(setActiveModal(null));
-  }
-
-  if (query['show'] === 'login') {
-    if (!getState().auth.chooseLoginMethod) {
-      dispatch(authChooseLoginMethod(true));
-    }
-  } else if (getState().auth.chooseLoginMethod) {
-    dispatch(authLoginClose());
   }
 
   if ((query['embed'] ?? '') !== getState().main.embedFeatures.join(',')) {
