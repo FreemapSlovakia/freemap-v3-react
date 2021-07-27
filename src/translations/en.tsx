@@ -1484,7 +1484,23 @@ const en: Messages = {
 
   removeAds: {
     title: 'Remove ads',
-    info: 'To remove ads it is now sufficient just to log in.',
+    info: (
+      <>
+        <p>
+          <strong>Support the volunteers who create this map!</strong>
+        </p>
+        <p>
+          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will <b>remove ads</b> from freemap for a year.
+        </p>
+        <p>
+          You can prove your volunteer work by creating work reports in the <a href="https://rovas.app/">Rovas</a> application. 
+          If you are a volunteer in the OSM project and are using the JOSM application, we recommend enabling the 
+          <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">Rovas Connector plugin</a>, 
+          which can create reports for you. After a report is verified by two users, you will receive 
+          community currency Chron, which you can use to remove ads from www.freemap.sk.
+        </p>
+      </>
+    ),
     continue: 'Continue',
     success: 'Congratulations, you have become a premium member!',
   },
