@@ -1520,7 +1520,7 @@ const hu: Messages = {
           You can prove your volunteer work by creating work reports in the{' '}
           <a href="https://rovas.app/">Rovas</a> application. If you are a
           volunteer in the OSM project and are using the JOSM application, we
-          recommend enabling the
+          recommend enabling the 
           <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
             Rovas Connector plugin
           </a>
