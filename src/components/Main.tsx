@@ -135,7 +135,8 @@ export function Main(): ReactElement {
   const authenticated = useSelector((state) => !!state.auth.user);
 
   const showAds = useSelector(
-    (state) => !window.fmEmbedded && !state.auth.user?.isPremium,
+    (state) =>
+      !window.isRobot && !window.fmEmbedded && !state.auth.user?.isPremium,
   );
 
   const showElevationChart = useSelector(

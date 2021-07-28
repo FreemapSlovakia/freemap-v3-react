@@ -28,7 +28,13 @@ export function Ad(): ReactElement | null {
 
   const [visible, setVisible] = useState(!window.ResizeObserver);
 
+  const [closed, setClosed] = useState(false);
+
+  const [key, setKey] = useState(0);
+
   useEffect(() => {
+    setClosed(false);
+
     const el = adContainer.current;
 
     if (!el) {
@@ -73,7 +79,19 @@ export function Ad(): ReactElement | null {
         ro.disconnect();
       };
     }
-  }, []);
+  }, [key]);
+
+  useEffect(() => {
+    const i = window.setInterval(() => {
+      setVisible(!window.ResizeObserver);
+
+      setKey((k) => k + 1);
+    }, 90000);
+
+    return () => {
+      window.clearInterval(i);
+    };
+  }, [visible, closed]);
 
   const dispatch = useDispatch();
 
@@ -81,10 +99,25 @@ export function Ad(): ReactElement | null {
 
   const isLoggedIn = useSelector((state) => !!state.auth.user);
 
+  const [closeTime, setCloseTime] = useState(0);
+
+  useEffect(() => {
+    setCloseTime(10);
+
+    const i = window.setInterval(() => {
+      setCloseTime((t) => t - 1);
+    }, 1000);
+
+    return () => {
+      window.clearInterval(i);
+    };
+  }, [visible]);
+
   return (
     <div
+      key={key}
       className={`mt-2 mx-2 d-flex flex-column ${
-        visible ? 'visible' : 'invisible'
+        !closed && visible ? 'visible' : 'invisible'
       }`}
     >
       <div className="fm-bg p-1 rounded-top rounded-left">
@@ -93,22 +126,35 @@ export function Ad(): ReactElement | null {
         </div>
       </div>
 
-      <Button
-        className="align-self-end py-0 rounded-bottom"
-        style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-        variant="warning"
-        size="sm"
-        onClick={() => {
-          if (isLoggedIn) {
-            dispatch(setActiveModal('remove-ads'));
-          } else {
-            dispatch(setActiveModal('login'));
-            dispatch(removeAdsOnLogin());
-          }
-        }}
-      >
-        {m?.general.remove}
-      </Button>
+      <div className="align-self-end d-flex">
+        <Button
+          className="py-0 rounded-bottom mr-1"
+          style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+          variant="warning"
+          size="sm"
+          onClick={() => setClosed(true)}
+          disabled={closeTime > 0}
+        >
+          {m?.general.close} {closeTime > 0 ? ` (${closeTime})` : null}
+        </Button>
+
+        <Button
+          className="py-0 rounded-bottom"
+          style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+          variant="warning"
+          size="sm"
+          onClick={() => {
+            if (isLoggedIn) {
+              dispatch(setActiveModal('remove-ads'));
+            } else {
+              dispatch(setActiveModal('login'));
+              dispatch(removeAdsOnLogin());
+            }
+          }}
+        >
+          {m?.general.remove}
+        </Button>
+      </div>
     </div>
   );
 }

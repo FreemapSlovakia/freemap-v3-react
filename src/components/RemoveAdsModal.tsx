@@ -14,6 +14,10 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
+  function close() {
+    dispatch(setActiveModal(null));
+  }
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -35,7 +39,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
           <SiAdblock /> {m?.removeAds.continue}
         </Button>
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
+        <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.cancel}
         </Button>
       </Modal.Footer>
