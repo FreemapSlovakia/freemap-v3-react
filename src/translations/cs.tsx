@@ -1507,11 +1507,10 @@ const cs: Messages = {
           Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
           v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
           dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
-          zapnout
+          zapnout 
           <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
             doplněk Rovas Connector
-          </a>
-          , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli
+          </a>, který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli
           získáte odměnu v komunitní měňe <i>chron</i> a tu můžete použít k
           odstranění reklam na www.freemap.sk.
         </p>
