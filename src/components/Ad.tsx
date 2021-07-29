@@ -127,16 +127,18 @@ export function Ad(): ReactElement | null {
       </div>
 
       <div className="align-self-end d-flex">
-        <Button
-          className="py-0 rounded-bottom mr-1"
-          style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-          variant="warning"
-          size="sm"
-          onClick={() => setClosed(true)}
-          disabled={closeTime > 0}
-        >
-          {m?.general.close} {closeTime > 0 ? ` (${closeTime})` : null}
-        </Button>
+        {window.innerHeight < 600 && (
+          <Button
+            className="py-0 rounded-bottom mr-1"
+            style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+            variant="warning"
+            size="sm"
+            onClick={() => setClosed(true)}
+            disabled={closeTime > 0}
+          >
+            {m?.general.close} {closeTime > 0 ? ` (${closeTime})` : null}
+          </Button>
+        )}
 
         <Button
           className="py-0 rounded-bottom"
