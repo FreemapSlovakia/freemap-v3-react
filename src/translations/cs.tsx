@@ -118,7 +118,7 @@ const cs: Messages = {
     drawLines: 'Kreslení čar',
     drawPolygons: 'Kreslení polygonů',
     trackViewer: 'Prohlížeč tras (GPX)',
-    changesets: 'Změny mapě',
+    changesets: 'Změny v mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
     maps: 'Moje mapy',
@@ -1440,7 +1440,7 @@ const cs: Messages = {
     noMapFound: 'Žádná mapa nenalezena',
     save: 'Uložit',
     delete: 'Smazat',
-    disconnect: 'Odpojiť',
+    disconnect: 'Odpojit',
     deleteConfirm: (name) => `Opravdu si přejete smazat mapu ${name}?`,
     fetchError: ({ err }) => `Nastala chyba při nahrávání mapy: ${err}`,
     fetchListError: ({ err }) => `Nastala chyba při nahrávání map: ${err}`,
@@ -1507,7 +1507,7 @@ const cs: Messages = {
           Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
           v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
           dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
-          zapnout
+          zapnout{' '}
           <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
             doplněk Rovas Connector
           </a>
