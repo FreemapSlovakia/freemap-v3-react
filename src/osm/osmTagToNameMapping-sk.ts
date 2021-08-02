@@ -422,7 +422,7 @@ export const osmTagToNameMapping: Node = {
     beachvolleyball: 'Plážový volejbal', // *
     chess: 'Šach', // *
     climbing: 'Lezenie', // *
-    fitness: 'Posilovňa', // *
+    fitness: 'Posilňovňa', // *
     golf: 'Golf', // *
     multi: 'Rôzne športy', // *
     running: 'Beh', // *
