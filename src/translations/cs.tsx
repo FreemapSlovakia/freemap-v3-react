@@ -118,7 +118,7 @@ const cs: Messages = {
     drawLines: 'Kreslení čar',
     drawPolygons: 'Kreslení polygonů',
     trackViewer: 'Prohlížeč tras (GPX)',
-    changesets: 'Změny mapě',
+    changesets: 'Změny v mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
     maps: 'Moje mapy',
