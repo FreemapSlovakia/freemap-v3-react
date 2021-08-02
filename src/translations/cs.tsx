@@ -1507,7 +1507,7 @@ const cs: Messages = {
           Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
           v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
           dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
-          zapnout
+          zapnout{' '}
           <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
             doplněk Rovas Connector
           </a>
