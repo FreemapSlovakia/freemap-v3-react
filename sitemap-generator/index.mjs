@@ -60,23 +60,23 @@ const sitemapNames = [];
 }
 
 const queries = {
-  'admin-boundaies': 'relation["boundary"="administrative"](area:3600014296);',
-  amenities: 'nwr["amenity"]["name"](area:3600014296);',
   'bicycle-routes':
     'relation["type"="route"]["route"="bicycle"](area:3600014296);',
+  'ski-routes':
+    'relation["type"="route"]["route"="ski"](area:3600014296); relation["type"="route"]["route"="piste"](area:3600014296);',
+  'hiking-routes':
+    'relation["type"="route"]["route"="hiking"](area:3600014296); relation["type"="route"]["route"="foot"](area:3600014296);',
+  'admin-boundaies': 'relation["boundary"="administrative"](area:3600014296);',
+  amenities: 'nwr["amenity"]["name"](area:3600014296);',
   buildings: 'nwr["building"]["name"](area:3600014296);',
   'geomorfological-units':
     'relation["boundary"="geomorphological-unit"](area:3600014296);',
-  'hiking-routes':
-    'relation["type"="route"]["route"="hiking"](area:3600014296); relation["type"="route"]["route"="foot"](area:3600014296);',
   landuses: 'nwr["landuse"]["name"](area:3600014296);',
   leisures: 'nwr["leisure"]["name"](area:3600014296);',
   man_made: 'nwr["man_made"]["name"](area:3600014296);',
   'protected-areas':
     'nwr["boundary"="protected_area"]["name"](area:3600014296);',
   shops: 'nwr["shop"]["name"](area:3600014296);',
-  'ski-routes':
-    'relation["type"="route"]["route"="ski"](area:3600014296); relation["type"="route"]["route"="piste"](area:3600014296);',
 };
 
 for (const [category, query] of Object.entries(queries)) {
@@ -133,7 +133,7 @@ for (const [category, query] of Object.entries(queries)) {
             attributes: {
               href: `https://www.openstreetmap.org/${element.type}/${element.id}`,
             },
-            content: [{ content: 'Otvoriť na OpenStreetMap.org' }],
+            content: 'Otvoriť na OpenStreetMap.org',
           },
           { content: ' (' },
           {
@@ -141,9 +141,18 @@ for (const [category, query] of Object.entries(queries)) {
             attributes: {
               href: `https://www.openstreetmap.org/${element.type}/${element.id}/history`,
             },
-            content: [{ content: 'história' }],
+            content: 'história',
           },
           { content: ')' },
+        ],
+      },
+      {
+        type: 'p',
+        content: [
+          {
+            content:
+              'Turistika, cyklistika, bežky. Online detailná turistická mapa, cyklistická mapa, cyklomapa, jazdecká mapa, bežkárska/lyžiarska mapa, letecká mapa.',
+          },
         ],
       },
       element.tags['description']
@@ -183,6 +192,43 @@ for (const [category, query] of Object.entries(queries)) {
                         content: value,
                       },
                     ]
+                  : key === 'contact:website' ||
+                    key === 'website' ||
+                    key === 'url' ||
+                    key === 'image'
+                  ? [
+                      {
+                        type: 'a',
+                        attributes: {
+                          href: /^https?:\/\//.test(value)
+                            ? value
+                            : `http://${value}`,
+                        },
+                        content: value,
+                      },
+                    ]
+                  : key === 'contact:email' || key === 'email'
+                  ? [
+                      {
+                        type: 'a',
+                        attributes: {
+                          href: 'mailto:' + value,
+                        },
+                        content: value,
+                      },
+                    ]
+                  : key === 'phone' ||
+                    key === 'contact:phone' ||
+                    key === 'contact:mobile'
+                  ? [
+                      {
+                        type: 'a',
+                        attributes: {
+                          href: 'tel:' + value.replace(/ /g, ''),
+                        },
+                        content: value,
+                      },
+                    ]
                   : key === 'wikipedia'
                   ? [
                       {
@@ -214,7 +260,9 @@ for (const [category, query] of Object.entries(queries)) {
       },
     ]);
 
-    html.document.setTitle('Freemap Slovakia: Detail objektu');
+    html.document.setTitle(
+      (genName + ' ' + (name ?? '')).trim() + ' - freemap.sk',
+    );
 
     html.document.attributes = { lang: 'sk' };
 
@@ -228,13 +276,33 @@ for (const [category, query] of Object.entries(queries)) {
       },
     });
 
-    html.document.addElementToType('head', {
-      type: 'meta',
-      attributes: {
-        name: 'description',
-        content: (genName + ' ' + (name ?? '')).trim(),
-      },
-    });
+    const description = [
+      genName,
+      name,
+      'na detailnej outdoorovej mape.',
+      element.tags['description'],
+    ];
+
+    if (
+      Object.keys(element.tags).some((key) =>
+        /^contact:|^addr:|^email$|^phone$|^web$|^url$/.test(key),
+      )
+    ) {
+      description.push('Kontakt.');
+    }
+
+    if (element.tags['opening_hours']) {
+      description.push('Otváracie hodiny.');
+    }
+
+    if (element.tags)
+      html.document.addElementToType('head', {
+        type: 'meta',
+        attributes: {
+          name: 'description',
+          content: description.filter(Boolean).join(' '),
+        },
+      });
 
     html.document.addElementToType('head', {
       type: 'meta',
