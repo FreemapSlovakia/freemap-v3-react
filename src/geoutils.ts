@@ -1,4 +1,5 @@
-import { Feature } from '@turf/helpers';
+import booleanContains from '@turf/boolean-contains';
+import { Feature, Geometries, Position, Properties } from '@turf/helpers';
 import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common';
 
@@ -164,4 +165,131 @@ export function latLonToString(
     style,
     language,
   )}, ${formatGpsCoord(latLon.lon, 'WE', style, language)}`;
+}
+
+export function positionsEqual(pt1: Position, pt2: Position): boolean {
+  return pt1[0] === pt2[0] && pt1[1] === pt2[1];
+}
+
+// TODO so far unused
+export function mergeLines<T extends Geometries>(
+  features: Feature<T>[],
+  properties: Properties = {},
+): void {
+  restart: for (;;) {
+    for (let i = 0; i < features.length - 1; i++) {
+      const f1 = features[i];
+      const g1 = f1.geometry;
+
+      if (g1.type !== 'LineString') {
+        continue;
+      }
+
+      for (let j = i + 1; j < features.length; j++) {
+        const f2 = features[j];
+        const g2 = f2.geometry;
+
+        if (g2.type !== 'LineString') {
+          continue;
+        }
+
+        if (positionsEqual(g1.coordinates[0], g2.coordinates[0])) {
+          g1.coordinates.unshift(...g2.coordinates.slice(1).reverse());
+          features.splice(j, 1);
+          f1.properties = properties;
+          // f1.properties = Object.assign({}, f1.properties, f2.properties);
+          continue restart;
+        }
+
+        if (
+          positionsEqual(
+            g1.coordinates[0],
+            g2.coordinates[g2.coordinates.length - 1],
+          )
+        ) {
+          g1.coordinates.splice(0, 1, ...g2.coordinates);
+          features.splice(j, 1);
+          f1.properties = properties;
+          // f1.properties = Object.assign({}, f1.properties, f2.properties);
+          continue restart;
+        }
+
+        if (
+          positionsEqual(
+            g1.coordinates[g1.coordinates.length - 1],
+            g2.coordinates[0],
+          )
+        ) {
+          g1.coordinates.push(...g2.coordinates.slice(1));
+          features.splice(j, 1);
+          f1.properties = properties;
+          // f1.properties = Object.assign({}, f1.properties, f2.properties);
+          continue restart;
+        }
+
+        if (
+          positionsEqual(
+            g1.coordinates[g1.coordinates.length - 1],
+            g2.coordinates[g2.coordinates.length - 1],
+          )
+        ) {
+          g1.coordinates.push(...g2.coordinates.reverse().slice(1));
+          features.splice(j, 1);
+          f1.properties = properties;
+          // f1.properties = Object.assign({}, f1.properties, f2.properties);
+          continue restart;
+        }
+      }
+    }
+
+    break;
+  }
+
+  for (const f of features) {
+    const g = f.geometry;
+
+    if (
+      g.type === 'LineString' &&
+      positionsEqual(g.coordinates[0], g.coordinates[g.coordinates.length - 1])
+    ) {
+      Object.assign(g, { type: 'Polygon', coordinates: [g.coordinates] });
+    }
+  }
+
+  restart: for (;;) {
+    for (let i = 0; i < features.length; i++) {
+      const f1 = features[i];
+      const g1 = f1.geometry;
+
+      if (g1.type !== 'Polygon') {
+        continue;
+      }
+
+      for (let j = 0; j < features.length; j++) {
+        if (i === j) {
+          continue;
+        }
+
+        const f2 = features[j];
+        const g2 = f2.geometry;
+
+        if (g2.type === 'Polygon' && booleanContains(g1, g2)) {
+          g1.coordinates.push(...g2.coordinates);
+          f1.properties = properties;
+          features.splice(j, 1);
+
+          continue restart;
+        }
+      }
+    }
+
+    break;
+  }
+}
+
+export function shouldBeArea(tags?: Properties): boolean {
+  return (
+    // taken from https://wiki.openstreetmap.org/wiki/Key:area
+    !!tags && tags['area'] !== 'no' && !tags['barrier'] && !tags['highway']
+  );
 }

@@ -17,7 +17,7 @@
   pointer-events: none;
 
   & > * {
-    pointer-events: all;
+    pointer-events: auto;
   }
 }
 
@@ -40,7 +40,7 @@
   pointer-events: none;
   // margin: 0.25rem;
   & > * {
-    pointer-events: all;
+    pointer-events: auto;
   }
   display: flex;
   flex-wrap: wrap;
@@ -166,6 +166,10 @@ button#freemap-logo {
 //   }
 // }
 
+.fm-bg {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
 .fm-toolbar {
   @media screen {
     min-height: 3rem;
@@ -220,19 +224,20 @@ button#freemap-logo {
   left: 0;
   right: 0;
 
-  & > div {
-    pointer-events: all;
-  }
-
   & > div:first-child {
     flex-grow: 1;
     display: flex;
     justify-content: center;
     max-width: 100vw;
+
+    & > div {
+      pointer-events: auto;
+    }
   }
 
   & > div:last-child {
     align-self: flex-end;
+    pointer-events: auto;
   }
 }
 
@@ -257,18 +262,6 @@ button#freemap-logo {
 
 .fm-no-after::after {
   display: none !important;
-}
-
-body.fm-overlay-backdrop-enable {
-  div.fm-overlay-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    opacity: 0;
-    z-index: 1000;
-  }
 }
 
 .input-group > input.form-control {
@@ -391,4 +384,8 @@ body.fm-overlay-backdrop-enable {
     border: 1px solid black;
     padding: 0 0.5em;
   }
+}
+
+.pe-none {
+  pointer-events: none;
 }

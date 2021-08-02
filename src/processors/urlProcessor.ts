@@ -26,7 +26,6 @@ export const urlProcessor: Processor = {
       gallery: { filter: galleryFilter },
       main,
       tips,
-      auth,
       tracking,
       maps,
       search,
@@ -37,7 +36,6 @@ export const urlProcessor: Processor = {
     }
 
     const next = [
-      auth.chooseLoginMethod,
       changesets.authorName,
       changesets.days,
       drawingLines.lines,
@@ -135,7 +133,7 @@ export const urlProcessor: Processor = {
       historyParts.push(['gpx-url', trackViewer.gpxUrl]);
     }
 
-    if (search.osmNodeId) {
+    if (search.osmNodeId && search.osmNodeId > 0) {
       historyParts.push(['osm-node', search.osmNodeId]);
     }
 
@@ -229,8 +227,6 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', 'gallery-filter']);
     } else if (gallery.showUploadModal) {
       queryParts.push(['show', 'gallery-upload']);
-    } else if (auth.chooseLoginMethod) {
-      queryParts.push(['show', 'login']);
     } else if (
       is<ShowModal>(main.activeModal) &&
       basicModals.includes(main.activeModal)

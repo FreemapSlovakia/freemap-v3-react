@@ -1,4 +1,3 @@
-import center from '@turf/center';
 import {
   Feature,
   featureCollection,
@@ -6,10 +5,13 @@ import {
   LineString,
   point,
   Point,
+  Polygon,
 } from '@turf/helpers';
+import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
+import { mergeLines } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmNode, OsmRelation, OsmResult, OsmWay } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -25,6 +27,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/relation/${id}/full`,
       expectedStatus: 200,
+      cancelActions: [clearMap, searchSelectResult],
     });
 
     const nodes: Record<number, OsmNode> = {};
@@ -43,69 +46,65 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       (el) => el.type === 'relation',
     ) as OsmRelation[];
 
-    const features: Feature<Point | LineString>[] = [];
+    const features: Feature<Point | LineString | Polygon>[] = [];
 
-    let tags: Record<string, string> | undefined = undefined;
+    const polyFeatures: Feature<Point | LineString | Polygon>[] = [];
 
-    for (const relation of relations) {
-      tags = relation.tags;
+    const relation = relations.find((relation) => relation.id === id);
 
-      for (const member of relation.members) {
-        const { ref, type } = member;
+    if (!relation) {
+      return;
+    }
 
-        switch (type) {
-          case 'node':
-            const n = nodes[ref];
+    const tags: Record<string, string> = relation.tags ?? {};
 
-            if (n) {
-              const props: Record<string, string> = {};
+    for (const member of relation.members) {
+      const { ref, type } = member;
 
-              if (n.tags?.['name']) {
-                props['name'] = n.tags['name'];
-              }
+      switch (type) {
+        case 'node':
+          const n = nodes[ref];
 
-              if (n.tags?.['ele']) {
-                props['ele'] = n.tags['ele'];
-              }
+          if (n) {
+            features.push(point([n.lon, n.lat], n.tags));
+          }
 
-              features.push(point([n.lon, n.lat], props));
-            }
-            break;
-          case 'way':
-            const w = ways[ref];
+          break;
+        case 'way':
+          const w = ways[ref];
 
-            if (w) {
-              features.push(
-                lineString(
-                  w.nodes.map((ref) => [nodes[ref].lon, nodes[ref].lat]),
-                  // no street names pls // w.tags?.name ? { name: w.tags.name } : {},
-                ),
-              );
-            }
-            break;
-          case 'relation':
-          // TODO add support for relations in relation
-          default:
-            break;
-        }
+          if (w) {
+            (member.role === 'inner' || member.role === 'outer'
+              ? polyFeatures
+              : features
+            ).push(
+              lineString(
+                w.nodes.map((ref) => [nodes[ref].lon, nodes[ref].lat]),
+                member.role === 'outer' ? tags : w.tags,
+              ),
+            );
+          }
+
+          break;
+        case 'relation':
+        // TODO add support for relations in relation
+        default:
+          break;
       }
     }
 
-    // TODO add support for areas
-
-    const trackGeojson = featureCollection(features);
-
-    const c = center(trackGeojson);
+    mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
 
     dispatch(
       searchSelectResult({
-        osmType: 'relation',
-        id,
-        tags,
-        label: 'TODO',
-        geojson: trackGeojson,
-        lon: c.geometry.coordinates[0],
-        lat: c.geometry.coordinates[1],
+        result: {
+          osmType: 'relation',
+          id,
+          geojson: featureCollection([...polyFeatures, ...features]),
+          tags,
+          detailed: true,
+        },
+        showToast: window.isRobot,
       }),
     );
   },

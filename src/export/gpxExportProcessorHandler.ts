@@ -1,10 +1,6 @@
-import FileSaver from 'file-saver';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
-import { getAuth2, loadGapi } from 'fm3/gapiLoader';
-import { addAttribute, createElement, GPX_NS } from 'fm3/gpxExporter';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
@@ -16,6 +12,8 @@ import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
 import { LatLon } from 'fm3/types/common';
 import qs from 'query-string';
 import { assertType } from 'typescript-is';
+import { addAttribute, createElement, GPX_NS } from './gpxExporter';
+import { licenseNotice, upload } from './upload';
 
 type Picture = {
   lat: number;
@@ -25,6 +23,8 @@ type Picture = {
   title: string | null;
   description: string | null;
 };
+
+// TODO instead of creating XML directly, create JSON and serialize it to XML
 
 const handle: ProcessorHandler<typeof exportGpx> = async ({
   getState,
@@ -58,11 +58,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   createElement(link, 'type', 'text/html');
 
-  const copyright = createElement(meta, 'copyright', undefined, {
-    author: 'OpenStreetMap contributors',
-  });
+  const copyright = createElement(meta, 'copyright');
 
-  createElement(copyright, 'license', 'http://www.openstreetmap.org/copyright');
+  createElement(copyright, 'license', licenseNotice);
 
   createElement(meta, 'time', new Date().toISOString());
 
@@ -105,7 +103,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     addADMeasurement(doc, drawingLines, 'line');
   }
 
-  if (set.has('areaMeasurement')) {
+  if (set.has('drawingAreas')) {
     addADMeasurement(doc, drawingLines, 'polygon');
   }
 
@@ -151,213 +149,20 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     }
   }
 
-  const serializer = new XMLSerializer();
+  const { destination } = action.payload;
 
-  switch (action.payload.destination) {
-    case 'dropbox': {
-      const redirUri = encodeURIComponent(
-        `${location.protocol}//${location.host}/dropboxAuthCallback.html`,
-      );
-
-      const w = window.open(
-        `https://www.dropbox.com/oauth2/authorize?client_id=vnycfeumo6jzg5p&response_type=token&redirect_uri=${redirUri}`,
-        'freemap-dropbox',
-        'height=400,width=600',
-      );
-
-      if (!w) {
-        dispatch(
-          toastsAdd({
-            id: 'gpxExport',
-            messageKey: 'gpxExport.blockedPopup',
-            style: 'danger',
-            timeout: 5000,
-          }),
-        );
-
-        return;
-      }
-
-      const p = new Promise<string | void>((resolve, reject) => {
-        const msgListener = (e: MessageEvent) => {
-          if (
-            e.origin === window.location.origin &&
-            typeof e.data === 'object' &&
-            typeof e.data.freemap === 'object' &&
-            e.data.freemap.action === 'dropboxAuth'
-          ) {
-            const { access_token: accessToken, error } = qs.parse(
-              e.data.freemap.payload.slice(1),
-            );
-
-            if (accessToken) {
-              resolve(
-                Array.isArray(accessToken) ? accessToken[0] : accessToken,
-              );
-            } else {
-              reject(new Error(`OAuth: ${error}`));
-            }
-
-            w.close();
-          }
-        };
-
-        const timer = window.setInterval(() => {
-          if (w.closed) {
-            window.clearInterval(timer);
-
-            window.removeEventListener('message', msgListener);
-
-            resolve();
-          }
-        }, 500);
-
-        window.addEventListener('message', msgListener);
-      });
-
-      const authToken = await p; // TODO handle error (https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/)
-
-      if (authToken === undefined) {
-        return;
-      }
-
-      await httpRequest({
-        getState,
-        method: 'POST',
-        url: 'https://content.dropboxapi.com/2/files/upload',
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/octet-stream',
-          'Dropbox-API-Arg': JSON.stringify({
-            path: `/freemap-export-${new Date().toISOString()}.gpx`,
-          }),
-        },
-        data: new Blob([serializer.serializeToString(doc)], {
-          type: 'application/octet-stream', // NOTE 'application/gpx+xml' is denied
-        }),
-        expectedStatus: 200,
-      });
-
-      dispatch(
-        toastsAdd({
-          id: 'gpxExport',
-          style: 'info',
-          timeout: 5000,
-          messageKey: 'gpxExport.exportedToDropbox',
-        }),
-      );
-
-      break;
-    }
-    case 'gdrive':
-      {
-        await loadGapi();
-
-        await new Promise<void>((resolve) => {
-          gapi.load('picker', () => {
-            resolve();
-          });
-        });
-
-        // await new Promise(resolve => {
-        //   gapi.client.load('drive', 'v3', resolve);
-        // });
-
-        await getAuth2({
-          scope: 'https://www.googleapis.com/auth/drive.file',
-        });
-
-        const auth2 = gapi.auth2.getAuthInstance();
-
-        const result = await auth2.signIn({
-          scope: 'https://www.googleapis.com/auth/drive.file',
-        });
-
-        const ar = result.getAuthResponse();
-
-        const folder = await new Promise<any>((resolve) => {
-          const pkr = google.picker;
-
-          new pkr.PickerBuilder()
-            .addView(
-              new pkr.DocsView(pkr.ViewId.FOLDERS).setSelectFolderEnabled(true),
-            )
-            .setOAuthToken(ar.access_token)
-            .setDeveloperKey('AIzaSyC90lMoeLp_Rbfpv-eEOoNVpOe25CNXhFc')
-            .setCallback(pickerCallback)
-            .setTitle('Select a folder')
-            .build()
-            .setVisible(true);
-
-          function pickerCallback(data: any) {
-            switch (data[pkr.Response.ACTION]) {
-              case pkr.Action.PICKED:
-                resolve(data[pkr.Response.DOCUMENTS][0]);
-                break;
-              case pkr.Action.CANCEL:
-                resolve(undefined);
-                break;
-            }
-          }
-        });
-
-        if (!folder) {
-          return; // don't close export dialog
-        }
-
-        const formData = new FormData();
-
-        formData.append(
-          'metadata',
-          new Blob(
-            [
-              JSON.stringify({
-                name: `freemap-export-${new Date().toISOString()}.gpx`,
-                mimeType: 'application/gpx+xml',
-                parents: [folder.id],
-              }),
-            ],
-            { type: 'application/json' },
-          ),
-        );
-
-        formData.append(
-          'file',
-          new Blob([serializer.serializeToString(doc)], {
-            type: 'application/gpx+xml',
-          }),
-        );
-
-        await httpRequest({
-          getState,
-          method: 'POST',
-          url: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
-          headers: { Authorization: `Bearer ${ar.access_token}` },
-          data: formData,
-          expectedStatus: 200,
-        });
-      }
-
-      dispatch(
-        toastsAdd({
-          id: 'gpxExport',
-          style: 'info',
-          timeout: 5000,
-          messageKey: 'gpxExport.exportedToGdrive',
-        }),
-      );
-
-      break;
-    case 'download':
-      FileSaver.saveAs(
-        new Blob([serializer.serializeToString(doc)], {
-          type: 'application/gpx+xml',
-        }),
-        `freemap-export-${new Date().toISOString()}.gpx`,
-      );
-
-      break;
-  }
+  await upload(
+    'gpx',
+    new Blob([new XMLSerializer().serializeToString(doc)], {
+      type:
+        destination === 'dropbox'
+          ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+          : 'application/gpx+xml',
+    }),
+    destination,
+    getState,
+    dispatch,
+  );
 
   dispatch(setActiveModal(null));
 };
@@ -473,7 +278,7 @@ function addPlannedRoute(
         toLatLon(start),
       );
 
-      createElement(startWptEle, 'name', 'Štart');
+      createElement(startWptEle, 'name', 'Štart'); // TODO translate
     }
 
     if (finish) {
@@ -484,7 +289,7 @@ function addPlannedRoute(
         toLatLon(finish),
       );
 
-      createElement(finishWptEle, 'name', 'Cieľ');
+      createElement(finishWptEle, 'name', 'Cieľ'); // TODO translate
     }
 
     midpoints.forEach((midpoint, i: number) => {
@@ -495,14 +300,14 @@ function addPlannedRoute(
         toLatLon(midpoint),
       );
 
-      createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
+      createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`); // TODO translate
     });
   }
 
   alternatives.forEach(({ legs }, i: number) => {
     const trkEle = createElement(doc.documentElement, 'trk');
 
-    createElement(trkEle, 'name', `Alternatíva ${i + 1}`);
+    createElement(trkEle, 'name', `Alternatíva ${i + 1}`); // TODO translate
 
     const trksegEle = createElement(trkEle, 'trkseg');
 
@@ -560,23 +365,22 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
         undefined,
         toLatLon({ lat, lon }),
       );
+      if (typeof altitude === 'number') {
+        createElement(ptEle, 'ele', altitude.toString());
+      }
 
       createElement(ptEle, 'time', ts.toISOString());
 
-      if (typeof altitude === 'number') {
-        createElement(ptEle, 'ele', altitude.toString());
+      if (typeof bearing === 'number') {
+        createElement(ptEle, 'magvar', bearing.toString()); // maybe not the most suitable tag
       }
 
       if (typeof accuracy === 'number') {
         createElement(ptEle, 'hdop', accuracy.toString());
       }
 
-      if (typeof bearing === 'number') {
-        createElement(ptEle, 'magvar', bearing.toString()); // maybe not the most suitable tag
-      }
-
-      if (message && typeof accuracy === 'number') {
-        createElement(ptEle, 'cmt', accuracy.toString());
+      if (message) {
+        createElement(ptEle, 'desc', message);
       }
 
       if (

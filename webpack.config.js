@@ -9,7 +9,6 @@ const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const cssnano = require('cssnano');
 
 const skMessages = require('./src/translations/sk-shared.json');
@@ -113,11 +112,7 @@ module.exports = {
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          esModule: false,
-        },
+        type: 'asset/resource',
       },
       {
         test: /\.scss$/,
@@ -137,6 +132,10 @@ module.exports = {
           'css-loader',
           'sass-loader',
         ],
+      },
+      {
+        test: /\.overpass$/,
+        loader: '../overpass-loader',
       },
       {
         test: /\.css$/,
@@ -213,6 +212,12 @@ module.exports = {
         { www: '681854635902254', next: '681854635902254' }[
           process.env.DEPLOYMENT
         ] || null,
+      ROVAS_URL_PREFIX:
+        {
+          www: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
+          next: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
+        }[process.env.DEPLOYMENT] ||
+        'https://dev.merit.world/rewpro?paytype=project&recipient=24130',
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
@@ -264,12 +269,6 @@ module.exports = {
           'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
         loadingMessage: 'Loading…', // TODO translate
       },
-    }),
-    // TODO we use InjectManifest only to generate sw.js. Find a simpler way to do it.
-    new WorkboxPlugin.InjectManifest({
-      swSrc: '../sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 1,
-      exclude: [/.*/],
     }),
     new WebpackPwaManifest({
       inject: true,

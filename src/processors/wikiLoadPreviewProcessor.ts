@@ -33,8 +33,11 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   errorKey: 'general.loadError',
   handle: async ({ getState, dispatch, action }) => {
     const p = action.payload.indexOf(':');
+
     let lang = action.payload.slice(0, p);
+
     let title = action.payload.slice(p + 1);
+
     const { language } = getState().l10n;
 
     if (language !== lang) {

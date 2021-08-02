@@ -1,16 +1,37 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import {
+  forwardRef,
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
+import Popover, { PopoverProps } from 'react-bootstrap/Popover';
 import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Attribution } from './Attribution';
+
+// eslint-disable-next-line react/display-name
+const UpdatingPopover = forwardRef<HTMLDivElement, PopoverProps>(
+  ({ popper, children, ...props }, ref) => {
+    useEffect(() => {
+      popper.scheduleUpdate();
+    }, [children, popper]);
+
+    return (
+      <Popover ref={ref} {...props}>
+        {children}
+      </Popover>
+    );
+  },
+);
 
 export function Copyright(): ReactElement {
   const m = useMessages();
@@ -32,45 +53,96 @@ export function Copyright(): ReactElement {
     ).includes(state.map.mapType),
   );
 
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState<undefined | 'menu' | 'licence'>();
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const handleButtonClick = useCallback(() => {
-    setShow(true);
-  }, []);
+  const toRef = useRef<number>();
 
-  const handleHide = useCallback(() => {
-    setShow(false);
-  }, []);
+  const licenceShownForRef = useRef([
+    new Set<string>(),
+    new Set<string>(),
+  ] as const);
+
+  useEffect(() => {
+    if (window.isRobot) {
+      return;
+    }
+
+    const [mapTypes, mapOverlays] = licenceShownForRef.current;
+
+    if (mapTypes.has(mapType) && overlays.every((o) => mapOverlays.has(o))) {
+      return;
+    }
+
+    mapTypes.add(mapType);
+
+    for (const o of overlays) {
+      mapOverlays.add(o);
+    }
+
+    setShow('licence');
+
+    toRef.current = window.setTimeout(() => {
+      setShow(undefined);
+
+      toRef.current = undefined;
+    }, 5000);
+
+    return () => {
+      if (toRef.current) {
+        clearTimeout(toRef.current);
+
+        toRef.current = undefined;
+      }
+    };
+  }, [mapType, overlays]);
+
+  useLayoutEffect(() => {
+    if (show !== 'licence') {
+      clearTimeout(toRef.current);
+
+      toRef.current = undefined;
+    }
+  }, [show]);
 
   return (
     <Card className="fm-toolbar mr-2 mb-2">
       <Button
-        className="mr-1"
         ref={buttonRef}
-        onClick={handleButtonClick}
+        onClick={() => setShow('menu')}
         title={m?.mainMenu.mapLegend + ', Privacy policy'}
         variant="secondary"
       >
         <FaQuestion />
       </Button>
+
       <Overlay
         rootClose
         placement="top"
-        show={show}
-        onHide={handleHide}
+        show={show === 'menu'}
+        onHide={() => setShow(undefined)}
         target={buttonRef.current}
       >
-        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+        <Popover id="popover-copyright" className="fm-menu">
           <Popover.Content>
+            <Dropdown.Item
+              key="attribution"
+              as="button"
+              onSelect={(_, e) => {
+                e.preventDefault();
+                setShow('licence');
+              }}
+            >
+              <FaRegCopyright /> {m?.main.copyright}
+            </Dropdown.Item>
             {showLegendButton && (
               <Dropdown.Item
                 key="legend"
                 href="?show=legend"
                 onSelect={(_, e) => {
                   e.preventDefault();
-                  setShow(false);
+                  setShow(undefined);
                   dispatch(setActiveModal('legend'));
                 }}
               >
@@ -82,7 +154,7 @@ export function Copyright(): ReactElement {
               href="?tip=privacyPolicy"
               onSelect={(_, e) => {
                 e.preventDefault();
-                setShow(false);
+                setShow(undefined);
                 dispatch(tipsShow('privacyPolicy'));
               }}
             >
@@ -91,28 +163,21 @@ export function Copyright(): ReactElement {
           </Popover.Content>
         </Popover>
       </Overlay>
-      <OverlayTrigger
-        trigger="click"
+
+      <Overlay
         rootClose
         placement="top"
-        overlay={
-          <Popover
-            id="popover-positioned-right"
-            className="fm-attr-popover pl-2 pr-3"
-          >
-            <Attribution
-              m={m}
-              mapType={mapType}
-              overlays={overlays}
-              // imhd={imhd}
-            />
-          </Popover>
-        }
+        show={show === 'licence'}
+        onHide={() => setShow(undefined)}
+        target={buttonRef.current}
       >
-        <Button variant="secondary" title={m?.main.copyright}>
-          <FaRegCopyright />
-        </Button>
-      </OverlayTrigger>
+        <UpdatingPopover
+          id="popover-positioned-right"
+          className="fm-attr-popover pl-2 pr-3"
+        >
+          <Attribution />
+        </UpdatingPopover>
+      </Overlay>
     </Card>
   );
 }

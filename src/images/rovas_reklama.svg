@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="415.6" height="60" style="background-color:white">
+  <path d="M29.59 55.72h18.24V40.86a101.62 101.62 0 01-18.24 1.8v13.06zM29.59 31.84v6.8c6.38.06 12.52.69 18.24 1.8v-10.4a101.74 101.74 0 01-18.24 1.8zM27.16 31.84c-6.39-.08-12.52-.73-18.24-1.86V40.5a101.1 101.1 0 0118.24-1.85v-6.8zM8.92 55.72h18.24V42.66c-6.39-.08-12.52-.73-18.24-1.86v14.92zM29.59 21.03v6.8c6.38.05 12.52.68 18.24 1.8v-10.4a101.28 101.28 0 01-18.24 1.8zM27.16 21.03c-6.39-.08-12.52-.73-18.24-1.86v10.51a101.18 101.18 0 0118.24-1.85v-6.8zM27.16 3.95H8.93v14.86a101.43 101.43 0 0118.25-1.8V3.94zM47.83 3.95H29.6v13.06c6.38.08 12.52.73 18.24 1.86V3.95z"/>
+  <path fill="none" d="M124.6 4.56h280V60h-280z"/>
+  <text transform="translate(136.22 17.8)" font-family="'Verdana-Bold'" font-size="17">
+    Freemap tvoria dobrovoľníci
+  </text>
+  <text transform="translate(176.46 37.3)" fill="#ED1E24" font-family="'Verdana-Bold'" font-size="12">
+    Odmeňte ich za ich prácu!
+  </text>
+  <text transform="translate(154.4 52.61)" font-family="'Verdana'" font-size="8">
+    vašou vlastnou dobrovoľníckou prácou alebo peniazmi
+  </text>
+  <text transform="translate(52.1 15.73)" fill="#848383" font-family="'Verdana-Bold'" font-size="18">
+    Rovas
+  </text>
+  <text transform="translate(52.1 28.13)" fill="#848383" font-family="'Verdana'" font-size="10">
+    ekonomický
+  </text>
+  <text transform="translate(52.1 40.53)" fill="#848383" font-family="'Verdana'" font-size="10">
+    program pre
+  </text>
+  <text transform="translate(52.1 52.93)" fill="#848383" font-family="'Verdana'" font-size="10">
+    dobrovoľníkov
+  </text>
+  <a xlink:href="https://rovas.app/freemap">
+    <path opacity=".01" fill="#FFF" d="M170.27 23.56h190v18h-190z"/>
+  </a>
+</svg>

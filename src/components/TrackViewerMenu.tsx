@@ -55,7 +55,12 @@ export function TrackViewerMenu(): ReactElement {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
     if (tolerance !== null) {
-      dispatch(convertToDrawing(Number(tolerance)));
+      dispatch(
+        convertToDrawing({
+          type: 'track',
+          tolerance: Number(tolerance || '0') / 100000,
+        }),
+      );
     }
   }, [dispatch, m]);
 

@@ -1,9 +1,9 @@
 import {
-  authLoginClose,
   authLoginWithFacebook,
   authLoginWithGoogle,
   authLoginWithOsm,
 } from 'fm3/actions/authActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -27,7 +27,7 @@ export function LoginModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
-    dispatch(authLoginClose());
+    dispatch(setActiveModal(null));
   }, [dispatch]);
 
   const loginWithFacebook = useCallback(() => {
@@ -46,6 +46,8 @@ export function LoginModal({ show }: Props): ReactElement {
     (state) => state.main.cookieConsentResult,
   );
 
+  const removeAds = useSelector((state) => state.main.removeAdsOnLogin);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -60,6 +62,10 @@ export function LoginModal({ show }: Props): ReactElement {
             <FaExclamationTriangle /> {m?.general.noCookies}
           </Alert>
         )}
+
+        {removeAds ? (
+          <Alert variant="primary">{m?.removeAds.info}</Alert>
+        ) : null}
 
         <Button
           onClick={loginWithFacebook}

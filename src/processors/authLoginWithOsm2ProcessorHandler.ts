@@ -1,5 +1,5 @@
 import { authLoginWithOsm2, authSetUser } from 'fm3/actions/authActions';
-import { setHomeLocation } from 'fm3/actions/mainActions';
+import { removeAds, setHomeLocation } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
@@ -24,14 +24,10 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
     expectedStatus: 200,
   });
 
-  const okData = assertType<User>(data);
+  const user = assertType<User>(data);
 
-  if (
-    !getState().main.homeLocation &&
-    typeof okData.lat === 'number' &&
-    typeof okData.lon === 'number'
-  ) {
-    dispatch(setHomeLocation({ lat: okData.lat, lon: okData.lon }));
+  if (!getState().main.homeLocation && user.lat != null && user.lon != null) {
+    dispatch(setHomeLocation({ lat: user.lat, lon: user.lon }));
   }
 
   dispatch(
@@ -43,7 +39,11 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
     }),
   );
 
-  dispatch(authSetUser(okData));
+  dispatch(authSetUser(user));
+
+  if (!user.isPremium && getState().main.removeAdsOnLogin) {
+    dispatch(removeAds());
+  }
 };
 
 export default handle;

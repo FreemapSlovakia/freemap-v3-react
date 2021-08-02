@@ -87,7 +87,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
           <br />
           IČO:{' '}
           <a
-            href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796"
+            href="https://ives.minv.sk/rmno/detail?id=pDzzfHOZDzgmL%2fS29uvUP1ezuQxdSW7nM1%2fONrQAN8RscbOVPcaJHq4hvnhwbWpT"
             target="_blank"
             rel="noopener noreferrer"
           >

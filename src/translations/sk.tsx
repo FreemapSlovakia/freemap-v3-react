@@ -2,11 +2,14 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import {
+  ObjectDetailBasicProps,
+  ObjectDetails,
+} from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import Table from 'react-bootstrap/Table';
 import { FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 import shared from './sk-shared.json';
@@ -89,6 +92,9 @@ const sk: Messages = {
     noCookies: 'Táto funkcionalita vyžaduje prijatie súhlasu cookies.',
     name: 'Názov',
     load: 'Načítať',
+    unnamed: 'Bez názvu',
+    enablePopup:
+      'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
   },
 
   selections: {
@@ -337,7 +343,7 @@ const sk: Messages = {
     logOut: (name) => `Odhlásiť ${name}`,
     logIn: 'Prihlásenie',
     settings: 'Nastavenia',
-    gpxExport: 'Exportovať do GPX',
+    gpxExport: 'Exportovať do GPX / GeoJSON',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
@@ -371,7 +377,7 @@ const sk: Messages = {
         prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
-    copyright: 'Licencia',
+    copyright: 'Licencia mapy',
     cookieConsent: () => (
       <CookieConsent
         prompt="Niektoré funkcie môžu vyžadovať cookies. Prijať:"
@@ -411,6 +417,16 @@ const sk: Messages = {
       lastCaptured: 'od najnovšie odfotenej',
       leastRated: 'od najnižšieho hodnotenia',
       mostRated: 'od najvyššieho hodnotenia',
+      lastComment: 'od posledného komentára',
+    },
+    colorizeBy: 'Vyfarbiť podľa',
+    c: {
+      disable: 'nevyfarbiť',
+      mine: 'odlíšiť moje',
+      author: 'autora',
+      rating: 'hodnotenia',
+      takenAt: 'dátumu odfotenia',
+      createdAt: 'dátumu nahrania',
     },
     viewer: {
       title: 'Fotografia',
@@ -488,6 +504,7 @@ const sk: Messages = {
       rating: 'Hodnotenie',
       noTags: 'bez tagov',
     },
+    noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
   },
 
   measurement: {
@@ -663,17 +680,13 @@ const sk: Messages = {
     notFound: 'Nebola nájdená žiadna cesta.',
     fetchingError: ({ err }) =>
       `Nastala chyba pri získavaní detailov o ceste: ${err}`,
-    detail: ({ tags = {} }) => (
-      <Table striped bordered size="sm">
-        <tbody>
-          {Object.entries(tags).map(([k, v]) => (
-            <tr key={k}>
-              <th>{k}</th>
-              <td>{v}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    detail: (props: ObjectDetailBasicProps) => (
+      <ObjectDetails
+        {...props}
+        openText="Otvoriť na OpenStreetMap.org"
+        historyText="história"
+        editInJosmText="Editovať v JOSM"
+      />
     ),
   },
 
@@ -1029,25 +1042,27 @@ const sk: Messages = {
 
   gpxExport: {
     export: 'Stiahnuť',
+    format: 'Formát',
     exportToDrive: 'Uložiť do Google Drive',
     exportToDropbox: 'Uložiť do Dropboxu',
-    exportError: ({ err }) => `Chyba exportovania GPX: ${err}`,
+    exportError: ({ err }) => `Chyba exportovania: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
       plannedRouteWithStops: 'vyhľadanú trasu so zastávkami',
       objects: 'objekty (POI)',
       pictures: 'fotografie (vo viditeľnej časti mapy)',
       drawingLines: 'kreslenie - čiary',
-      areaMeasurement: 'kreslenie - polygóny',
+      drawingAreas: 'kreslenie - polygóny',
       drawingPoints: 'kreslenie - body',
       tracking: 'sledovanie',
       gpx: 'GPX trasu',
     },
     disabledAlert:
       'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',
-    blockedPopup: 'Prehliadač zablokoval otvorenie okna.',
-    exportedToDropbox: 'GPX súbor bol uložený do Dropboxu.',
-    exportedToGdrive: 'GPX súbor bol uložený do Google Drive.',
+    licenseAlert:
+      'Exportovaný súbor môže podliehať rôznym licenciám, ako napríklad licencii OpenStreetMap. Prosím dodržte podmienky týchto licencií pri zdieľaní vyexportovaného súboru.',
+    exportedToDropbox: 'Súbor bol uložený do Dropboxu.',
+    exportedToGdrive: 'Súbor bol uložený do Google Drive.',
   },
 
   logIn: {
@@ -1056,8 +1071,6 @@ const sk: Messages = {
       google: 'Prihlásiť sa pomocou Googlu',
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
-    enablePopup:
-      'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     success: 'Boli ste úspešne prihlásený.',
     logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
     logInError2: 'Nepodarilo sa prihlásiť.',
@@ -1103,6 +1116,8 @@ const sk: Messages = {
       s3: 'Strava (Vodné aktivity)',
       s4: 'Strava (Zimné aktivity)',
       w: 'Wikipedia',
+      '4': 'Svetlé tieňovanie DMR 5.0',
+      '5': 'Sivé tieňovanie DMR 5.0',
     },
     type: {
       map: 'mapa',
@@ -1467,6 +1482,17 @@ const sk: Messages = {
     unauthenticatedError: 'Pre funkciu Moje mapy musíte byť prihlásený.',
   },
 
+  mapCtxMenu: {
+    centerMap: 'Vycentrovať mapu',
+    measurePosition: 'Odmerať pozíciu',
+    addPoint: 'Pridať bod',
+    startLine: 'Začať čiaru',
+    queryFeatures: 'Zistiť detaily',
+    startRoute: 'Začať trasu',
+    finishRoute: 'Ukončiť trasu',
+    showPhotos: 'Ukázať fotky',
+  },
+
   legend: {
     body: () => (
       <>
@@ -1485,6 +1511,34 @@ const sk: Messages = {
     president: 'Predseda',
     vicepresident: 'Podpredseda',
     secretary: 'Tajomník',
+  },
+
+  removeAds: {
+    title: 'Odstrániť reklamy',
+    info: (
+      <>
+        <p>
+          <strong>Podporte dobrovoľníkov tvoriacich túto mapu!</strong>
+        </p>
+        <p>
+          Za <b>5 hodín</b> vašej dobrovoľníckej práce alebo <b>5 €</b> vám na
+          rok <b>odstránime reklamy</b>.
+        </p>
+        <p>
+          Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v
+          aplikácii <a href="https://rovas.app/">Rovas</a>. Ak ste dobrovoľníkom
+          v projekte OSM a používate aplikáciu JOSM, odporúčame zapnúť{' '}
+          <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
+            doplnok Rovas Connector
+          </a>
+          , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
+          získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
+          odstránenie reklám na www.freemap.sk.
+        </p>
+      </>
+    ),
+    continue: 'Pokračovať',
+    success: 'Gratulujeme, stali ste sa ste prémiovým členom!',
   },
 };
 

@@ -17,8 +17,9 @@ import {
   FaTree,
   FaWikipediaW,
 } from 'react-icons/fa';
-import { GiPathDistance } from 'react-icons/gi';
+import { GiHills, GiPathDistance } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
+import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
 
@@ -76,6 +77,8 @@ export const baseLayerLetters = [
   'd',
   'h',
   'X',
+  '4',
+  '5',
 ] as const;
 
 export const overlayLetters = [
@@ -286,6 +289,44 @@ export const baseLayers: BaseLayerDef[] = [
     showOnlyInExpertMode: true,
     attribution: [],
     key: ['Digit9', true],
+  },
+  {
+    type: '4',
+    url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minNativeZoom: 0,
+    maxNativeZoom: isHdpi ? 17 : 18,
+    icon: <GiHills />,
+    attribution: [
+      {
+        type: 'data',
+        name: 'LLS: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    key: ['Digit4', false],
+    errorTileUrl: white1x1,
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
+    showOnlyInExpertMode: true,
+  },
+  {
+    type: '5',
+    url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minNativeZoom: 0,
+    maxNativeZoom: isHdpi ? 16 : 17,
+    icon: <GiHills />,
+    attribution: [
+      {
+        type: 'data',
+        name: 'LLS: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    key: ['Digit5', false],
+    errorTileUrl: black1x1,
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
+    showOnlyInExpertMode: true,
   },
 ];
 

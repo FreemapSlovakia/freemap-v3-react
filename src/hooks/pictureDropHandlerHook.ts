@@ -3,15 +3,11 @@ import { GalleryItem } from 'fm3/actions/galleryActions';
 import { latLonToString } from 'fm3/geoutils';
 import pica from 'pica';
 import { useCallback } from 'react';
-import { is } from 'typescript-is';
 
 let nextId = 1;
 
-type HasOrientation = { Orientation: { value: number } };
-
 function loadPreview(
   file: File,
-  tags: { [key: string]: unknown },
   cb: (err?: unknown, dataUrl?: string) => void,
 ) {
   const img = new Image();
@@ -29,63 +25,19 @@ function loadPreview(
     const ratio = 618 / img.naturalWidth;
     const width = img.naturalWidth * ratio;
     const height = img.naturalHeight * ratio;
-    let o = is<HasOrientation>(tags) ? tags.Orientation.value : 1;
-
-    if (o < 1 || o > 8) {
-      o = 1;
-    }
 
     canvas.width = width;
     canvas.height = height;
 
-    const transformations: [number, number, number, number, number, number][] =
-      [
-        [1, 0, 0, 1, 0, 0],
-        [-1, 0, 0, 1, width, 0],
-        [-1, 0, 0, -1, width, height],
-        [1, 0, 0, -1, 0, height],
-        [0, 1, 1, 0, 0, 0],
-        [0, 1, -1, 0, height, 0],
-        [0, -1, -1, 0, height, width],
-        [0, -1, 1, 0, 0, width],
-      ];
-
     pica()
       .resize(img, canvas)
       .then(() => {
-        let canvas2: HTMLCanvasElement;
-        if (o === 1) {
-          canvas2 = canvas;
-        } else {
-          const transformation = transformations[o - 1];
-
-          if (transformation) {
-            canvas2 = document.createElement('canvas');
-
-            const ctx = canvas2.getContext('2d');
-
-            if (!ctx) {
-              throw new Error('context is null');
-            }
-
-            canvas2.width = o > 4 ? height : width;
-
-            canvas2.height = o > 4 ? width : height;
-
-            ctx.transform(...transformation);
-
-            ctx.drawImage(canvas, 0, 0);
-          } else {
-            canvas2 = canvas;
-          }
-        }
-
         // TODO play with toBlob (not supported in safari)
         // canvas2.toBlob((blob) => {
         //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
         //   cb();
         // });
-        cb(undefined, canvas2.toDataURL());
+        cb(undefined, canvas.toDataURL());
       })
       .catch((err: unknown) => {
         cb(err);
@@ -190,15 +142,13 @@ export function usePictureDropHandler(
         });
 
         if (showPreview) {
-          loadPreview(file, tags, (err, url) => {
+          loadPreview(file, (err, url) => {
             if (err) {
               cb(err);
-              return;
+            } else {
+              onItemChange({ id, url });
+              cb();
             }
-
-            onItemChange({ id, url });
-
-            cb();
           });
         } else {
           cb();

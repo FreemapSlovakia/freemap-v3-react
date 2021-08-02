@@ -1,5 +1,3 @@
-import center from '@turf/center';
-import { geometryCollection, lineString, point } from '@turf/helpers';
 import {
   clearMap,
   deleteFeature,
@@ -12,8 +10,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { colorNames, Node, osmTagToNameMapping } from 'fm3/osmTagToNameMapping';
-import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
@@ -26,47 +22,11 @@ const cancelType = [
   getType(mapDetailsSetUserSelectedPosition),
 ];
 
-interface OverpassBaseElement {
+interface OverpassElement {
   id: number;
+  type: 'node' | 'way' | 'relation';
   tags?: Record<string, string>;
 }
-
-interface NodeGeom extends LatLon {
-  type: 'node';
-}
-
-interface WayGeom {
-  type: 'way';
-  geometry: LatLon[];
-}
-
-interface OverpassNode extends OverpassBaseElement, NodeGeom {}
-
-interface OverpassWay extends OverpassBaseElement, WayGeom {
-  nodes: number[];
-}
-
-interface MemeberBase {
-  ref: number;
-  role: string;
-}
-
-interface WayMemeber extends MemeberBase, WayGeom {}
-
-interface NodeMemeber extends MemeberBase, NodeGeom {}
-
-interface RelationMemeber extends MemeberBase {
-  type: 'relation';
-}
-
-type Member = RelationMemeber | WayMemeber | NodeMemeber;
-
-interface OverpassRelation extends OverpassBaseElement {
-  type: 'relation';
-  members: Member[];
-}
-
-type OverpassElement = OverpassNode | OverpassWay | OverpassRelation;
 
 interface OverpassResult {
   elements: OverpassElement[];
@@ -96,7 +56,7 @@ export const mapDetailsProcessor: Processor = {
         data:
           '[out:json];(' +
           `nwr(around:33,${userSelectedLat},${userSelectedLon})${kvFilter};` +
-          ');out geom body;',
+          ');out tags;',
         expectedStatus: 200,
       }),
       httpRequest({
@@ -107,8 +67,7 @@ export const mapDetailsProcessor: Processor = {
         data: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;
           nwr(pivot.a)${kvFilter};
-          out geom body;
-          `,
+          out tags;`,
         expectedStatus: 200,
       }),
     ]);
@@ -117,62 +76,41 @@ export const mapDetailsProcessor: Processor = {
 
     const oRes1 = assertType<OverpassResult>(data1);
 
-    const elements = [...oRes1.elements, ...oRes.elements].reverse();
+    const res1Set = new Set(oRes1.elements.map((item) => item.id));
+
+    const elements = [
+      ...oRes1.elements,
+      ...oRes.elements.filter((item) => !res1Set.has(item.id)), // remove dupes
+    ].reverse();
 
     const sr: SearchResult[] = [];
 
     for (const element of elements) {
+      const tags = element.tags ?? {};
+
       switch (element.type) {
         case 'node':
           sr.push({
-            lat: element.lat,
-            lon: element.lon,
-            geojson: toGeometry(element).geometry,
             id: element.id,
-            label: getName(element),
             osmType: 'node',
-            tags: element.tags,
+            tags,
           });
 
           break;
         case 'way':
-          {
-            const geojson = toGeometry(element);
-
-            const [lon, lat] = center(geojson).geometry.coordinates;
-
-            sr.push({
-              lat,
-              lon,
-              geojson: geojson.geometry,
-              id: element.id,
-              label: getName(element),
-              osmType: 'way',
-              tags: element.tags,
-            });
-          }
+          sr.push({
+            id: element.id,
+            osmType: 'way',
+            tags,
+          });
 
           break;
         case 'relation':
           {
-            const geojson = geometryCollection(
-              element.members
-                .filter((member) => member.type !== 'relation')
-                .map(
-                  (member) => toGeometry(member as WayGeom | NodeGeom).geometry,
-                ),
-            );
-
-            const [lon, lat] = center(geojson).geometry.coordinates;
-
             sr.push({
-              lat,
-              lon,
-              geojson: geojson.geometry,
               id: element.id,
-              label: getName(element),
               osmType: 'relation',
-              tags: element.tags,
+              tags,
             });
           }
 
@@ -181,7 +119,7 @@ export const mapDetailsProcessor: Processor = {
     }
 
     if (elements.length > 0) {
-      dispatch(setTool(null));
+      // dispatch(setTool(null));
 
       dispatch(searchSetResults(sr));
     } else {
@@ -197,100 +135,3 @@ export const mapDetailsProcessor: Processor = {
     }
   },
 };
-
-function toGeometry(geom: NodeGeom | WayGeom) {
-  if (geom.type === 'node') {
-    return point([geom.lon, geom.lat]);
-  } else {
-    return lineString(geom.geometry.map((coord) => [coord.lon, coord.lat]));
-  }
-}
-
-const typeSymbol = {
-  way: '─',
-  node: '•',
-  relation: '▦',
-};
-
-function resolveGenericName(
-  m: Node,
-  tags: Record<string, string>,
-): string | undefined {
-  const parts = [];
-
-  for (const [k, v] of Object.entries(tags)) {
-    const valMapping = m[k];
-
-    if (!valMapping) {
-      continue;
-    }
-
-    if (typeof valMapping === 'string') {
-      parts.push(valMapping.replace('{}', v));
-      continue;
-    }
-
-    if (valMapping[v]) {
-      const subkeyMapping = valMapping[v];
-
-      if (typeof subkeyMapping === 'string') {
-        parts.push(subkeyMapping.replace('{}', v));
-        continue;
-      }
-
-      const res = resolveGenericName(subkeyMapping, tags);
-
-      if (res) {
-        parts.push(res.replace('{}', v));
-        continue;
-      }
-
-      if (typeof subkeyMapping['*'] === 'string') {
-        parts.push(subkeyMapping['*'].replace('{}', v));
-        continue;
-      }
-    }
-
-    if (typeof valMapping['*'] === 'string') {
-      parts.push(valMapping['*'].replace('{}', v));
-      continue;
-    }
-  }
-
-  return parts.length === 0 ? undefined : parts.join('; ');
-}
-
-function getName(element: OverpassElement) {
-  if (!element.tags) {
-    return '???';
-  }
-
-  const name = element.tags['name'];
-
-  const ref = element.tags['ref'];
-
-  const operator = element.tags['operator'];
-
-  let subj: string | undefined = resolveGenericName(
-    osmTagToNameMapping,
-    element.tags,
-  );
-
-  if (element.type === 'relation' && element.tags['type'] === 'route') {
-    const color =
-      colorNames[
-        (element.tags['osmc:symbol'] ?? '').replace(/:.*/, '') ||
-          (element.tags['color'] ?? '')
-      ] ?? '';
-
-    subj = color + ' ' + subj;
-  }
-
-  return (
-    typeSymbol[element.type] +
-    ' ' +
-    ((subj ?? '???') + ' "' + (name ?? ref ?? operator ?? '') + '"')
-  )
-    .replace(/""/g, '')
-    .trim();
-}

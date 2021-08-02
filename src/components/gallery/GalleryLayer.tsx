@@ -1,19 +1,94 @@
 import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
 import axios from 'axios';
-import { GalleryFilter } from 'fm3/actions/galleryActions';
+import { GalleryColorizeBy, GalleryFilter } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
-import { LatLon } from 'fm3/types/common';
 import {
   Coords,
-  DomUtil,
   DoneCallback,
   GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
+import qs from 'query-string';
+import { renderGalleryTile } from './galleryTileRenderrer';
 
 type GalleryLayerOptions = GridLayerOptions & {
   filter: GalleryFilter;
+  colorizeBy: GalleryColorizeBy | null;
+  myUserId?: number;
 };
+
+const jobMap = new Map<
+  number,
+  {
+    reject(e: any): void;
+    resolve(): void;
+    run(w: Worker): void;
+    started?: true;
+  }
+>();
+
+function createWorker() {
+  const w = new Worker(new URL('./galleryLayerWorker', import.meta.url));
+
+  w.onmessage = (evt) => {
+    // console.log('OK', evt.data.id, resMap.has(evt.data.id));
+    const job = jobMap.get(evt.data.id);
+
+    if (!job) {
+      console.error('no such job', evt.data.id);
+    } else {
+      if (evt.data.error) {
+        job.reject(evt.data.error);
+      } else {
+        job.resolve();
+      }
+
+      jobMap.delete(evt.data.id);
+    }
+
+    workerPool.push(w);
+
+    runNextJob();
+  };
+
+  w.onerror = (err) => {
+    console.error('worker error');
+    console.error(err);
+  };
+
+  w.onmessageerror = (err) => {
+    console.error('worker message error');
+    console.error(err);
+  };
+
+  return w;
+}
+
+const workerPool: Worker[] = [];
+
+let id = 0;
+
+function runNextJob() {
+  const job = [...jobMap.values()].find((v) => !v.started);
+
+  if (job) {
+    const w = workerPool.pop();
+
+    if (w) {
+      job.started = true;
+
+      job.run(w);
+    } else if (workerPool.length < Math.min(navigator.hardwareConcurrency, 8)) {
+      const w1 = createWorker();
+
+      job.started = true;
+
+      job.run(w1);
+    }
+  }
+}
+
+let supportsOffscreen: boolean | undefined = undefined;
 
 class LGalleryLayer extends LGridLayer {
   private _options?: GalleryLayerOptions;
@@ -47,65 +122,78 @@ class LGalleryLayer extends LGridLayer {
       coords.z,
     );
 
-    const tile = DomUtil.create('canvas', 'leaflet-tile') as HTMLCanvasElement;
+    const tile = document.createElement('canvas');
 
     const dpr = window.devicePixelRatio || 1;
     tile.width = size.x * dpr;
     tile.height = size.y * dpr;
 
-    const ctx = tile.getContext('2d');
-    if (!ctx) {
-      throw Error('no context');
+    const colorizeBy = this._options?.colorizeBy ?? null;
+
+    const myUserId = this._options?.myUserId ?? null;
+
+    if (supportsOffscreen === undefined) {
+      try {
+        document.createElement('canvas').transferControlToOffscreen();
+
+        supportsOffscreen = true;
+      } catch {
+        supportsOffscreen = false;
+      }
     }
 
-    const zk = Math.min(1, 1.1 ** coords.z / 3);
-
-    ctx.scale(dpr, dpr);
-    ctx.strokeStyle = '#000';
-    ctx.fillStyle = '#ff0';
-    ctx.lineWidth = 1.5 * zk; // coords.z > 9 ? 1.5 : 1;
-
-    const k = 2 ** coords.z;
-
     axios
-      .get(`${process.env['API_URL']}/gallery/pictures`, {
+      // .get(`${process.env['API_URL']}/gallery/pictures`, {
+      .get(`https://backend.freemap.sk/gallery/pictures`, {
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
+          fields: colorizeBy === 'mine' ? 'userId' : colorizeBy,
         },
+        paramsSerializer: (params) => qs.stringify(params),
         validateStatus: (status) => status === 200,
       })
       .then(({ data }) => {
-        const s = new Set();
-        const mangled = data
-          .map(({ lat, lon }: LatLon) => {
-            return { lat: Math.round(lat * k), lon: Math.round(lon * k) };
-          })
-          .filter(({ lat, lon }: LatLon) => {
-            const key = `${lat},${lon}`;
-            const has = s.has(key);
-            if (!has) {
-              s.add(key);
-            }
-            return !has;
-          })
-          .map(({ lat, lon }: LatLon) => ({ lat: lat / k, lon: lon / k }));
+        const ctx = {
+          data,
+          dpr,
+          zoom: coords.z,
+          colorizeBy,
+          pointA,
+          pointB,
+          myUserId,
+          size,
+          tile,
+        };
 
-        mangled.forEach(({ lat, lon }: LatLon) => {
-          const y =
-            size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
-          const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
+        if (supportsOffscreen) {
+          return new Promise<void>((resolve, reject) => {
+            const myId = id++;
 
-          ctx.beginPath();
-          ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
-          ctx.fill();
-          ctx.stroke();
-        });
+            jobMap.set(myId, {
+              resolve,
+              reject,
+              run(w) {
+                const offscreen = tile.transferControlToOffscreen();
 
+                w.postMessage({ ...ctx, id: myId, tile: offscreen }, [
+                  offscreen,
+                ]);
+              },
+            });
+
+            runNextJob();
+          });
+        } else {
+          renderGalleryTile(ctx);
+        }
+      })
+      .then(() => {
         done(undefined, tile);
       })
       .catch((err) => {
+        console.error(err);
         done(err);
       });
 
@@ -115,6 +203,8 @@ class LGalleryLayer extends LGridLayer {
 
 interface Props extends LayerProps {
   filter: GalleryFilter;
+  colorizeBy: GalleryColorizeBy | null;
+  myUserId?: number;
   opacity?: number;
   zIndex?: number;
 }
@@ -129,7 +219,7 @@ export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
 
   (instance, props, prevProps) => {
     if (
-      ['dirtySeq', 'filter'].some(
+      ['dirtySeq', 'filter', 'colorizeBy', 'myUserId'].some(
         (p) =>
           JSON.stringify((props as any)[p]) !==
           JSON.stringify((prevProps as any)[p]),

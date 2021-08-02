@@ -18,7 +18,7 @@ export function DrawingPointsTool(): null {
           drawingPointAdd({ lat: latlng.lat, lon: latlng.lng, label: '' }),
         );
 
-        dispatch(drawingMeasure(true));
+        dispatch(drawingMeasure({}));
         return;
       },
       [dispatch],

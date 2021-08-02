@@ -1,26 +1,15 @@
-import {
-  AttributionDef,
-  BaseLayerLetters,
-  baseLayers,
-  overlayLayers,
-  OverlayLetters,
-} from 'fm3/mapDefinitions';
-import { Messages } from 'fm3/translations/messagesInterface';
+import { useMessages } from 'fm3/l10nInjector';
+import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 
-interface Props {
-  m?: Messages;
-  // imhd: boolean;
-  mapType: BaseLayerLetters;
-  overlays: OverlayLetters[];
-}
+export function Attribution(): ReactElement {
+  const mapType = useSelector((state) => state.map.mapType);
 
-export function Attribution({
-  m,
-  mapType,
-  overlays,
-}: // imhd,
-Props): ReactElement {
+  const overlays = useSelector((state) => state.map.overlays);
+
+  const m = useMessages();
+
   return (
     <ul className="pl-4 pt-3">
       {categorize(

@@ -7,7 +7,7 @@
     "jsx": "react-jsx", // use typescript to transpile jsx to js
     "target": "es2017", // specify ECMAScript target version
     "moduleResolution": "node",
-    "lib": ["es2019", "dom"],
+    "lib": ["es2019", "dom", "WebWorker"],
     "allowSyntheticDefaultImports": true,
     // "noUncheckedIndexedAccess": true, // TODO one day
     "noPropertyAccessFromIndexSignature": true,

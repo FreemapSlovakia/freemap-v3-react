@@ -5,10 +5,6 @@ export const authLoginWithOsmProcessor: Processor = {
   actionCreator: authLoginWithOsm,
   errorKey: 'logIn.logInError',
   async handle(...params) {
-    (
-      await import(
-        /* webpackChunkName: "authLoginWithOsmProcessorHandler" */ './authLoginWithOsmProcessorHandler'
-      )
-    ).default(...params);
+    (await import('./authLoginWithOsmProcessorHandler')).default(...params);
   },
 };

@@ -22,6 +22,7 @@ export interface User {
   lat?: number | null;
   lon?: number | null;
   language?: string | null;
+  isPremium: boolean;
 }
 
 declare global {
@@ -30,6 +31,7 @@ declare global {
     preventMapClick?: boolean;
     translations?: Messages;
     fmEmbedded: boolean;
+    isRobot: boolean;
   }
 }
 
@@ -61,7 +63,7 @@ export interface OsmWay extends OsmElement {
 
 export interface OsmRelation extends OsmElement {
   type: 'relation';
-  members: { type: 'node' | 'way' | 'relation'; ref: number }[];
+  members: { type: 'node' | 'way' | 'relation'; ref: number; role?: string }[];
 }
 
 export interface OsmResult {

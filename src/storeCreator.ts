@@ -6,6 +6,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { StateType } from 'typesafe-actions';
 import { is } from 'typescript-is';
 import { RootAction } from './actions';
+import { GalleryColorizeBy } from './actions/galleryActions';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { createProcessorMiddleware } from './middlewares/processorMiddleware';
@@ -58,13 +59,17 @@ import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
 import { exportPdfProcessor } from './processors/pdfExportProcessor';
+import { removeAdsProcessor } from './processors/removeAdsProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
 import * as rpcProcessors from './processors/rpcProcessors';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
-import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
+import {
+  searchHighlightProcessor,
+  searchHighlightTrafo,
+} from './processors/searchHighlightProcessor';
 import { searchProcessor } from './processors/searchProcessor';
 import { setToolProcessor } from './processors/setToolProcessor';
 import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
@@ -93,7 +98,7 @@ import { changesetReducer } from './reducers/changesetsReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
-import { galleryReducer } from './reducers/galleryReducer';
+import { galleryInitialState, galleryReducer } from './reducers/galleryReducer';
 import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
 import {
   l10nInitialState,
@@ -181,6 +186,7 @@ processorMiddleware.processors.push(
   authLogoutProcessor,
   mapRefocusProcessor,
   searchProcessor,
+  searchHighlightTrafo,
   searchHighlightProcessor,
   tipsPreventProcessor,
   locateProcessor,
@@ -243,6 +249,7 @@ processorMiddleware.processors.push(
   authLoginWithGoogleProcessor,
   authLoginWithOsmProcessor,
   authLoginWithOsm2Processor,
+  removeAdsProcessor,
   urlProcessor,
 );
 
@@ -290,6 +297,13 @@ export function createReduxStore(): MyStore {
     initial.trackViewer = {
       ...trackViewerInitialState,
       ...persisted.trackViewer,
+    };
+  }
+
+  if (is<{ colorizeBy: GalleryColorizeBy | null }>(persisted.gallery)) {
+    initial.gallery = {
+      ...galleryInitialState,
+      ...persisted.gallery,
     };
   }
 

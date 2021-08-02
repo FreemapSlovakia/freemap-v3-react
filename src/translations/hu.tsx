@@ -2,11 +2,14 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import {
+  ObjectDetailBasicProps,
+  ObjectDetails,
+} from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import Table from 'react-bootstrap/Table';
 import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
@@ -89,6 +92,9 @@ const hu: Messages = {
     noCookies: 'This functionality requires accepting the cookies consent.', // TODO translate
     name: 'Name', // TODO translate
     load: 'Load', // TODO translate
+    unnamed: 'No name', // TODO translate
+    enablePopup:
+      'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
   },
 
   selections: {
@@ -335,7 +341,7 @@ const hu: Messages = {
     logOut: (name) => `Kijelentkezés: ${name}`,
     logIn: 'Bejelentkezés',
     settings: 'Beállítások',
-    gpxExport: 'Exportálás GPX-be',
+    gpxExport: 'Exportálás GPX / GeoJSON-be',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
@@ -393,6 +399,16 @@ const hu: Messages = {
       lastCaptured: 'a legutóbb készülttől',
       leastRated: 'a leggyöngébbre értékelttől',
       mostRated: 'a legjobbra értékelttől',
+      lastComment: 'from last comment',
+    },
+    colorizeBy: 'Colorize by', // TODO translate
+    c: {
+      disable: "don't colorize", // TODO translate
+      mine: 'differ mine', // TODO translate
+      author: 'author', // TODO translate
+      rating: 'rating', // TODO translate
+      takenAt: 'taken date', // TODO translate
+      createdAt: 'upload date', // TODO translate
     },
     viewer: {
       title: 'Fénykép',
@@ -471,6 +487,7 @@ const hu: Messages = {
       rating: 'Értékelés',
       noTags: 'nincs címke',
     },
+    noPicturesFound: 'There were no photos found on this place.', // TODO translate
   },
 
   measurement: {
@@ -646,17 +663,13 @@ const hu: Messages = {
     notFound: 'Itt nincs út.',
     fetchingError: ({ err }) =>
       `Hiba történt az út adatainak beolvasásakor: ${err}`,
-    detail: ({ tags = {} }) => (
-      <Table striped bordered size="sm">
-        <tbody>
-          {Object.entries(tags).map(([k, v]) => (
-            <tr key={k}>
-              <th>{k}</th>
-              <td>{v}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    detail: (props: ObjectDetailBasicProps) => (
+      <ObjectDetails
+        {...props}
+        openText="Open at OpenStreetMap.org" // TODO translate
+        historyText="history" // TODO translate
+        editInJosmText="Edit in JOSM" // TODO translate
+      />
     ),
   },
 
@@ -1013,25 +1026,27 @@ const hu: Messages = {
 
   gpxExport: {
     export: 'Letöltés',
+    format: 'Type', // TODO translate
     exportToDrive: 'Mentés Google Drive-ra',
     exportToDropbox: 'Mentés Dropbox-ba',
-    exportError: ({ err }) => `Hiba a GPX exportálásakor: ${err}`,
+    exportError: ({ err }) => `Hiba a exportálásakor: ${err}`,
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'útvonal (megállásokkal)',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
       drawingLines: 'rajzolás – vonalak',
-      areaMeasurement: 'rajzolás – sokszögek',
+      drawingAreas: 'rajzolás – sokszögek',
       drawingPoints: 'rajzolás – pontok',
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
-    blockedPopup: 'A böngésző blokkolta az előugró ablakot.',
-    exportedToDropbox: 'GPX-fájl elmentve a Dropboxba.',
-    exportedToGdrive: 'GPX-fájl elmentve a Google Drive-ra.',
+    licenseAlert:
+      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.', // TODO translate
+    exportedToDropbox: 'Fájl elmentve a Dropboxba.',
+    exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
   },
 
   logIn: {
@@ -1040,8 +1055,6 @@ const hu: Messages = {
       google: 'Belépés Google-fiókkal',
       osm: 'Belépés OpenStreetMap-fiókkal',
     },
-    enablePopup:
-      'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
     success: 'Sikeresen bejelentkezett.',
     logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
     logInError2: 'Hiba történt a bejelentkezésnél.',
@@ -1088,6 +1101,8 @@ const hu: Messages = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
+      '4': 'Light Hillshading DMR 5.0', // TODO translate
+      '5': 'Gray Hillshading DMR 5.0', // TODO translate
     },
     type: {
       map: 'térkép',
@@ -1456,6 +1471,18 @@ const hu: Messages = {
     unauthenticatedError: 'Please log-in to access My maps functionality.', // TODO translate
   },
 
+  // TODO translate
+  mapCtxMenu: {
+    centerMap: 'Center map',
+    measurePosition: 'Measure position',
+    addPoint: 'Add point',
+    startLine: 'Start line',
+    queryFeatures: 'Query features',
+    startRoute: 'Start route',
+    finishRoute: 'Finish route',
+    showPhotos: 'Show photos',
+  },
+
   legend: {
     body: () => (
       <>
@@ -1475,6 +1502,36 @@ const hu: Messages = {
     president: 'Elnök',
     vicepresident: 'Alelnök',
     secretary: 'Titkár',
+  },
+
+  removeAds: {
+    title: 'Remove ads', // TODO translate
+    // TODO translate
+    info: (
+      <>
+        <p>
+          <strong>Support the volunteers who create this map!</strong>
+        </p>
+        <p>
+          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
+          <b>remove ads</b> from freemap for a year.
+        </p>
+        <p>
+          You can prove your volunteer work by creating work reports in the{' '}
+          <a href="https://rovas.app/">Rovas</a> application. If you are a
+          volunteer in the OSM project and are using the JOSM application, we
+          recommend enabling the
+          <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
+            Rovas Connector plugin
+          </a>
+          , which can create reports for you. After a report is verified by two
+          users, you will receive community currency <i>Chron</i>, which you can
+          use to remove ads from www.freemap.sk.
+        </p>
+      </>
+    ), // TODO translate
+    continue: 'Continue', // TODO translate
+    success: 'Congratulations, you have become a premium member!', // TODO translate
   },
 };
 

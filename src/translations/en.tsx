@@ -2,11 +2,14 @@
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import {
+  ObjectDetailBasicProps,
+  ObjectDetails,
+} from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import Table from 'react-bootstrap/Table';
 import { FaKey } from 'react-icons/fa';
 import shared from './en-shared.json';
 import { Messages } from './messagesInterface';
@@ -88,6 +91,8 @@ const en: Messages = {
     noCookies: 'This functionality requires accepting the cookies consent.',
     name: 'Name',
     load: 'Load',
+    unnamed: 'No name',
+    enablePopup: 'Please enable pop-up windows for this site in you browser.',
   },
 
   selections: {
@@ -334,7 +339,7 @@ const en: Messages = {
     logOut: (name) => `Log out ${name}`,
     logIn: 'Log in',
     settings: 'Settings',
-    gpxExport: 'Export to GPX',
+    gpxExport: 'Export to GPX / GeoJSON',
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
@@ -391,6 +396,16 @@ const en: Messages = {
       lastCaptured: 'from newest',
       leastRated: 'from least rated',
       mostRated: 'from most rated',
+      lastComment: 'from last comment',
+    },
+    colorizeBy: 'Colorize by',
+    c: {
+      disable: "don't colorize",
+      mine: 'differ mine',
+      author: 'author',
+      rating: 'rating',
+      takenAt: 'taken date',
+      createdAt: 'upload date',
     },
     viewer: {
       title: 'Photo',
@@ -463,6 +478,7 @@ const en: Messages = {
       rating: 'Rating',
       noTags: 'no tags',
     },
+    noPicturesFound: 'There were no photos found on this place.',
   },
 
   measurement: {
@@ -634,17 +650,13 @@ const en: Messages = {
   mapDetails: {
     notFound: 'No road found.',
     fetchingError: ({ err }) => `Error fetching road details: ${err}`,
-    detail: ({ tags = {} }) => (
-      <Table striped bordered size="sm">
-        <tbody>
-          {Object.entries(tags).map(([k, v]) => (
-            <tr key={k}>
-              <th>{k}</th>
-              <td>{v}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    detail: (props: ObjectDetailBasicProps) => (
+      <ObjectDetails
+        {...props}
+        openText="Open at OpenStreetMap.org"
+        historyText="history"
+        editInJosmText="Edit in JOSM"
+      />
     ),
   },
 
@@ -1000,25 +1012,27 @@ const en: Messages = {
 
   gpxExport: {
     export: 'Download',
+    format: 'Format',
     exportToDrive: 'Save to Google Drive',
     exportToDropbox: 'Save to Dropbox',
-    exportError: ({ err }) => `Error exporting GPX: ${err}`,
+    exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'found route including stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
       drawingLines: 'drawing - lines',
-      areaMeasurement: 'drawing - polygons',
+      drawingAreas: 'drawing - polygons',
       drawingPoints: 'drawing - points',
       tracking: 'live tracking',
       gpx: 'GPX track',
     },
     disabledAlert:
       'Only checkboxes having anything in the map to export are enabled.',
-    blockedPopup: 'Browser blocked pop-up window.',
-    exportedToDropbox: 'GPX file has been saved to Dropboxu.',
-    exportedToGdrive: 'GPX file has been saved to Google Drive.',
+    licenseAlert:
+      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
+    exportedToDropbox: 'File has been saved to Dropboxu.',
+    exportedToGdrive: 'File has been saved to Google Drive.',
   },
 
   logIn: {
@@ -1027,7 +1041,6 @@ const en: Messages = {
       google: 'Log in with Google',
       osm: 'Log in with OpenStreetMap',
     },
-    enablePopup: 'Please enable pop-up windows for this site in you browser.',
     success: 'You have been successfully logged in.',
     logInError: ({ err }) => `Error logging in: ${err}`,
     logInError2: 'Error logging in.',
@@ -1073,6 +1086,8 @@ const en: Messages = {
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
+      '4': 'Light Hillshading DMR 5.0',
+      '5': 'Gray Hillshading DMR 5.0',
     },
     type: {
       map: 'map',
@@ -1436,6 +1451,17 @@ const en: Messages = {
     unauthenticatedError: 'Please log-in to access My maps functionality.',
   },
 
+  mapCtxMenu: {
+    centerMap: 'Center map',
+    measurePosition: 'Measure position',
+    addPoint: 'Add point',
+    startLine: 'Start line',
+    queryFeatures: 'Query features',
+    startRoute: 'Start route',
+    finishRoute: 'Finish route',
+    showPhotos: 'Show photos',
+  },
+
   legend: {
     body: () => (
       <>
@@ -1454,6 +1480,35 @@ const en: Messages = {
     president: 'President',
     vicepresident: 'Vice-President',
     secretary: 'Secretary',
+  },
+
+  removeAds: {
+    title: 'Remove ads',
+    info: (
+      <>
+        <p>
+          <strong>Support the volunteers who create this map!</strong>
+        </p>
+        <p>
+          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
+          <b>remove ads</b> from freemap for a year.
+        </p>
+        <p>
+          You can prove your volunteer work by creating work reports in the{' '}
+          <a href="https://rovas.app/">Rovas</a> application. If you are a
+          volunteer in the OSM project and are using the JOSM application, we
+          recommend enabling the
+          <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
+            Rovas Connector plugin
+          </a>
+          , which can create reports for you. After a report is verified by two
+          users, you will receive community currency <i>Chron</i>, which you can
+          use to remove ads from www.freemap.sk.
+        </p>
+      </>
+    ),
+    continue: 'Continue',
+    success: 'Congratulations, you have become a premium member!',
   },
 };
 

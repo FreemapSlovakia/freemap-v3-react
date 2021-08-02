@@ -1,26 +1,27 @@
-import { setTool } from 'fm3/actions/mainActions';
+import center from '@turf/center';
+import { convertToDrawing, setTool } from 'fm3/actions/mainActions';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
 import {
+  SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
+import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
-  Children,
   forwardRef,
   MouseEvent,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -30,14 +31,19 @@ import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SafeAnchor from 'react-bootstrap/SafeAnchor';
-import { FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
+import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
 type Props = {
   hidden?: boolean;
   preventShortcut?: boolean;
+};
+
+const typeSymbol = {
+  way: '─',
+  node: '•',
+  relation: '▦',
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
@@ -62,8 +68,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const searchSeq = useSelector((state) => state.search.searchSeq);
 
   // const inProgress = useSelector((state) => state.search.inProgress);
-
-  const tRef = useRef<number>();
 
   const [value, setValue] = useState('');
 
@@ -104,42 +108,24 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   );
 
   const handleSelect = useCallback(
-    (eventKey: string | null, _: unknown, preserve?: boolean) => {
-      if (tRef.current) {
-        window.clearTimeout(tRef.current);
+    (eventKey: string | null) => {
+      const result = results.find((item) => item.id === Number(eventKey));
+
+      if (result) {
+        dispatch(searchSelectResult({ result }));
       }
 
-      tRef.current = window.setTimeout(
-        () => {
-          const found = results.find((item) => item.id === Number(eventKey));
-
-          if (found) {
-            dispatch(searchSelectResult(found));
-          }
-
-          if (!preserve) {
-            setOpen(false);
-          }
-        },
-        preserve ? 300 : 0,
-      );
+      setOpen(false);
     },
     [results, dispatch],
   );
 
   useEffect(() => {
-    if (tRef.current) {
-      window.clearTimeout(tRef.current);
-
-      tRef.current = undefined;
-    }
-  }, [open]);
-
-  useEffect(() => {
     if (results.length) {
-      setOpen(true);
-      if (inputRef.current) {
-        inputRef.current.focus();
+      if (!inputRef.current || document.activeElement === inputRef.current) {
+        setOpen(true);
+      } else {
+        inputRef.current?.focus();
       }
     } else {
       setOpen(false);
@@ -187,54 +173,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [dispatch],
   );
 
-  const HoverableMenuItem = useMemo(
-    () =>
-      forwardRef<HTMLAnchorElement, { children: ReactNode }>(function HiddenInt(
-        { children, ...props },
-        ref,
-      ) {
-        function handleFocus() {
-          const ch = Children.only(children);
-
-          handleSelect((ch as any).props['data-id'], undefined, true);
-        }
-
-        function handleBlur() {
-          if (tRef.current) {
-            window.clearTimeout(tRef.current);
-
-            tRef.current = undefined;
-          }
-        }
-
-        return (
-          <SafeAnchor
-            ref={ref}
-            {...props}
-            onFocus={handleFocus}
-            onMouseMove={handleFocus}
-            onMouseOut={handleBlur}
-            onBlur={handleBlur}
-          >
-            {children}
-          </SafeAnchor>
-        );
-      }),
-    [handleSelect],
-  );
-
-  // ugly hack not to close dropdown on open
-  const justOpenedRef = useRef(false);
-
   const handleInputFocus = useCallback(() => {
     setOpen(results.length > 0);
-    justOpenedRef.current = true;
   }, [results]);
 
   const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
-    if (justOpenedRef.current) {
-      justOpenedRef.current = false;
-    } else if (!isOpen) {
+    if (document.activeElement !== inputRef.current && !isOpen) {
       setOpen(false);
 
       if (e) {
@@ -305,17 +249,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   key={result.id}
                   eventKey={String(result.id)}
                   active={!!selectedResult && result.id === selectedResult.id}
-                  as={HoverableMenuItem}
                 >
-                  <span data-id={result.id}>
-                    {result.label}
-                    <br />
-                    {!!(result.class && result.type) && (
-                      <small>
-                        {result.class}={result.type}
-                      </small>
-                    )}
-                  </span>
+                  <Result value={result} />
                 </Dropdown.Item>
               ))}
             </div>
@@ -323,45 +258,80 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </Dropdown>
       </Form>
       {selectedResult && !window.fmEmbedded && !hidden && (
-        <ButtonGroup className="ml-1">
-          <Button
-            variant="secondary"
-            title={m?.search.routeFrom}
-            onClick={() => {
-              dispatch(setTool('route-planner'));
+        <>
+          <ButtonGroup className="ml-1">
+            <Button
+              variant="secondary"
+              title={m?.search.routeFrom}
+              onClick={() => {
+                dispatch(setTool('route-planner'));
 
-              dispatch(
-                routePlannerSetStart({
-                  start: {
-                    lat: selectedResult.lat,
-                    lon: selectedResult.lon,
-                  },
-                }),
-              );
-            }}
-          >
-            <FaPlay color="#32CD32" />
-          </Button>
-          <Button
-            variant="secondary"
-            title={m?.search.routeTo}
-            onClick={() => {
-              dispatch(setTool('route-planner'));
+                if (selectedResult.geojson) {
+                  const c = center(selectedResult.geojson).geometry.coordinates;
 
-              dispatch(
-                routePlannerSetFinish({
-                  finish: {
-                    lat: selectedResult.lat,
-                    lon: selectedResult.lon,
-                  },
-                }),
-              );
-            }}
+                  dispatch(
+                    routePlannerSetStart({
+                      start: {
+                        lat: c[1],
+                        lon: c[0],
+                      },
+                    }),
+                  );
+                }
+              }}
+            >
+              <FaPlay color="#32CD32" />
+            </Button>
+            <Button
+              variant="secondary"
+              title={m?.search.routeTo}
+              onClick={() => {
+                dispatch(setTool('route-planner'));
+
+                if (selectedResult.geojson) {
+                  const c = center(selectedResult.geojson).geometry.coordinates;
+
+                  dispatch(
+                    routePlannerSetFinish({
+                      finish: {
+                        lat: c[1],
+                        lon: c[0],
+                      },
+                    }),
+                  );
+                }
+              }}
+            >
+              <FaStop color="#FF6347" />
+            </Button>
+          </ButtonGroup>
+
+          <Button
+            className="ml-1"
+            title={m?.general.convertToDrawing}
+            variant="secondary"
+            onClick={() =>
+              dispatch(convertToDrawing({ type: 'search-result' }))
+            }
           >
-            <FaStop color="#FF6347" />
+            <FaPencilAlt />
           </Button>
-        </ButtonGroup>
+        </>
       )}
     </>
+  );
+}
+
+function Result({ value }: { value: SearchResult }) {
+  const m = useMessages();
+
+  const subjectAndName = useOsmNameResolver(value.osmType, value.tags ?? {});
+
+  return (
+    <span>
+      {typeSymbol[value.osmType]} {subjectAndName?.[1] || m?.general.unnamed}
+      <br />
+      <small>{subjectAndName?.[0]}</small>
+    </span>
   );
 }

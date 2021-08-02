@@ -15,7 +15,7 @@ import {
   Step,
   Waypoint,
 } from 'fm3/actions/routePlannerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { ToastAction, toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
@@ -115,18 +115,21 @@ export const routePlannerFindRouteProcessor: Processor = {
         isActionOf([routePlannerSetStart, routePlannerSetFinish], action);
 
       if (showHint) {
+        const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
+
+        if (getState().main.cookieConsentResult) {
+          actions.push({
+            nameKey: 'general.preventShowingAgain',
+            action: routePlannerPreventHint(),
+          });
+        }
+
         dispatch(
           toastsAdd({
             id: 'routePlanner.showMidpointHint',
             messageKey: 'routePlanner.showMidpointHint',
             style: 'info',
-            actions: [
-              { nameKey: 'general.ok' },
-              {
-                nameKey: 'general.preventShowingAgain',
-                action: routePlannerPreventHint(),
-              },
-            ],
+            actions,
           }),
         );
       }

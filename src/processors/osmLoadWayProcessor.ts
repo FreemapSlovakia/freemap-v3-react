@@ -1,8 +1,9 @@
-import center from '@turf/center';
-import { featureCollection, lineString } from '@turf/helpers';
+import { lineString, polygon } from '@turf/helpers';
+import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
+import { positionsEqual, shouldBeArea } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -18,41 +19,40 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/way/${id}/full`,
       expectedStatus: 200,
+      cancelActions: [clearMap, searchSelectResult],
     });
 
     const nodes: Record<string, [number, number]> = {};
 
-    const ways: Record<string, [number, number][]> = {};
-
     const { elements } = assertType<OsmResult>(data);
-
-    let tags: Record<string, string> | undefined = undefined;
 
     for (const item of elements) {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
-        ways[item.id] = item.nodes.map((ref) => nodes[ref]);
-        tags = item.tags;
+        const coordinates = item.nodes.map((ref) => nodes[ref]);
+
+        const tags = item.tags ?? {};
+
+        dispatch(
+          searchSelectResult({
+            result: {
+              osmType: 'way',
+              id,
+              geojson:
+                positionsEqual(
+                  coordinates[0],
+                  coordinates[coordinates.length - 1],
+                ) && shouldBeArea(tags)
+                  ? polygon([coordinates], item.tags)
+                  : lineString(coordinates, item.tags),
+              tags,
+              detailed: true,
+            },
+            showToast: window.isRobot,
+          }),
+        );
       }
     }
-
-    const f = featureCollection(
-      Object.keys(ways).map((id) => lineString(ways[id])),
-    );
-
-    const c = center(f);
-
-    dispatch(
-      searchSelectResult({
-        osmType: 'way',
-        id,
-        tags,
-        label: 'TODO',
-        geojson: f,
-        lon: c.geometry.coordinates[0],
-        lat: c.geometry.coordinates[1],
-      }),
-    );
   },
 };

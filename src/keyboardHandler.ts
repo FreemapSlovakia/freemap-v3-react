@@ -60,7 +60,9 @@ export function attachKeyboardHandler(store: MyStore): void {
     // state.gallery.showPosition;
 
     if (event.code === 'Escape') {
-      if (document.body.classList.contains('fm-overlay-backdrop-enable')) {
+      if (
+        document.querySelector('*[data-popper-reference-hidden=false]') !== null
+      ) {
         // nothing
       } else if (state.gallery.showFilter) {
         store.dispatch(galleryHideFilter());

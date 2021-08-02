@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8" />
 
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, noarchive, noimageindex, nofollow" />
 
     <meta
       name="copyright"
@@ -17,10 +17,6 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-    />
-    <meta
-      name="google-site-verification"
-      content="sbT_FygRVxqv1MyTmcynJH3dSq2sVlUBNqaxCvlECU4"
     />
     <meta property="fb:pages" content="2532592376985525" />
     <meta
@@ -45,6 +41,13 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="application-name" content="Freemap Slovakia" />
+
+    <link
+      rel="sitemap"
+      type="application/xml"
+      title="Sitemap"
+      href="/sitemap-index.xml"
+    />
 
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -123,19 +126,20 @@
     <script>
       fmEmbedded = window.self !== window.top;
 
-      window.TrackJS &&
+      isRobot = navigator.userAgent.match(
+        /\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b/,
+      );
+
+      if (window.TrackJS && !fmEmbedded && !isRobot) {
         TrackJS.install({
           token: '47a813b67baf4f97bace2d8359f76833',
           onError: function (payload) {
-            // prettier-ignore
-            return (
-              !fmEmbedded &&
-              !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker/.test(
-                payload.message
-              )
+            return !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker|flatMap is not a function/.test(
+              payload.message,
             );
           },
         });
+      }
     </script>
 
     <% if (process.env['GA_MEASUREMENT_ID']) { %>
@@ -170,11 +174,7 @@
 
     <% } %>
 
-    <!-- <script
-      data-ad-client="ca-pub-2465248996193624"
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-    ></script> -->
+    <!-- -->
 
     <% if (process.env['FB_APP_ID']) { %>
 

@@ -1,4 +1,3 @@
-import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import {
   changesetsSet,
   changesetsSetAuthorName,
@@ -11,6 +10,8 @@ import {
 } from 'fm3/actions/drawingPointActions';
 import {
   galleryClear,
+  galleryColorizeBy,
+  GalleryColorizeBy,
   GalleryFilter,
   galleryHideFilter,
   galleryHideUploadModal,
@@ -55,6 +56,7 @@ import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { is } from 'typescript-is';
 import { RootAction } from './actions';
+import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
@@ -184,6 +186,15 @@ export const handleLocationChange = (
         }),
       );
     }
+  }
+
+  const lang = query['lang'];
+
+  if (
+    typeof lang === 'string' &&
+    ['en', 'sk', 'cs', 'hu'].includes(lang as string)
+  ) {
+    dispatch(l10nSetChosenLanguage(lang));
   }
 
   const tool =
@@ -377,14 +388,6 @@ export const handleLocationChange = (
     dispatch(setActiveModal(null));
   }
 
-  if (query['show'] === 'login') {
-    if (!getState().auth.chooseLoginMethod) {
-      dispatch(authChooseLoginMethod());
-    }
-  } else if (getState().auth.chooseLoginMethod) {
-    dispatch(authLoginClose());
-  }
-
   if ((query['embed'] ?? '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
@@ -509,18 +512,25 @@ function handleGallery(
 ) {
   let a = query['gallery-user-id'];
   const qUserId = typeof a === 'string' ? parseInt(a, 10) : undefined;
+
   a = query['gallery-tag'];
   const qGalleryTag = typeof a === 'string' ? a : undefined;
+
   a = query['gallery-rating-from'];
   const qRatingFrom = typeof a === 'string' ? parseFloat(a) : undefined;
+
   a = query['gallery-rating-to'];
   const qRatingTo = typeof a === 'string' ? parseFloat(a) : undefined;
+
   a = query['gallery-taken-at-from'];
   const qTakenAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+
   a = query['gallery-taken-at-to'];
   const qTakenAtTo = typeof a === 'string' ? new Date(a) : undefined;
+
   a = query['gallery-created-at-from'];
   const qCreatedAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+
   a = query['gallery-created-at-to'];
   const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
 
@@ -539,15 +549,19 @@ function handleGallery(
     if (qUserId && filter.userId !== qUserId) {
       newFilter.userId = qUserId;
     }
+
     if (typeof qGalleryTag === 'string' && filter.tag !== qGalleryTag) {
       newFilter.tag = qGalleryTag;
     }
+
     if (qRatingFrom && filter.ratingFrom !== qRatingFrom) {
       newFilter.ratingFrom = qRatingFrom;
     }
+
     if (qRatingTo && filter.ratingTo !== qRatingTo) {
       newFilter.ratingTo = qRatingTo;
     }
+
     if (
       qTakenAtFrom &&
       (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !==
@@ -555,6 +569,7 @@ function handleGallery(
     ) {
       newFilter.takenAtFrom = qTakenAtFrom;
     }
+
     if (
       qTakenAtTo &&
       (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !==
@@ -562,6 +577,7 @@ function handleGallery(
     ) {
       newFilter.takenAtTo = qTakenAtTo;
     }
+
     if (
       qCreatedAtFrom &&
       (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !==
@@ -569,6 +585,7 @@ function handleGallery(
     ) {
       newFilter.createdAtFrom = qCreatedAtFrom;
     }
+
     if (
       qCreatedAtTo &&
       (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !==
@@ -582,7 +599,8 @@ function handleGallery(
   }
 
   if (typeof query['image'] === 'string') {
-    const imageId = parseInt(query['image'], 10);
+    const imageId = Number(query['image']);
+
     if (getState().gallery.activeImageId !== imageId) {
       dispatch(galleryRequestImage(imageId));
     }
@@ -604,6 +622,12 @@ function handleGallery(
     }
   } else if (getState().gallery.showUploadModal) {
     dispatch(galleryHideUploadModal());
+  }
+
+  const cb = query['gallery-cb'];
+
+  if (cb && is<GalleryColorizeBy>(cb)) {
+    dispatch(galleryColorizeBy(cb));
   }
 }
 

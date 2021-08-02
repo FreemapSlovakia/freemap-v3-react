@@ -1,4 +1,4 @@
-import { Geometries, GeometryCollection, point } from '@turf/helpers';
+import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
 import { clearMap } from 'fm3/actions/mainActions';
 import {
   SearchResult,
@@ -14,9 +14,9 @@ import { LatLon } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
 interface NominatimResult {
-  osm_id: number;
-  geojson: Geometries | GeometryCollection;
-  osm_type: 'node' | 'way' | 'relation';
+  osm_id?: number;
+  osm_type?: 'node' | 'way' | 'relation';
+  geojson?: Geometries | GeometryCollection;
   lat: string;
   lon: string;
   display_name: string;
@@ -47,14 +47,18 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     }
 
     if (coords) {
+      const tags = {
+        name: query.toUpperCase(),
+      };
+
       dispatch(
         searchSetResults([
           {
             id: -1,
-            label: query.toUpperCase(),
-            geojson: point([coords.lon, coords.lat]).geometry,
-            lat: coords.lat,
-            lon: coords.lon,
+            geojson: point([coords.lon, coords.lat], tags),
+            osmType: 'node',
+            tags,
+            detailed: true,
           },
         ]),
       );
@@ -89,23 +93,27 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,
       )
       .map((item): SearchResult => {
+        const tags = {
+          name: item.display_name,
+          [item.class]: item.type,
+          ...item.extratags,
+        };
+
         return {
-          id: item.osm_id,
-          label: item.display_name,
-          geojson: item.geojson,
-          lat: Number.parseFloat(item.lat),
-          lon: Number.parseFloat(item.lon),
-          class: item.class,
-          type: item.type,
-          osmType: item.osm_type,
-          tags: item.extratags,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: item.osm_id!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          geojson: feature(item.geojson!, tags),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          osmType: item.osm_type!,
+          tags,
         };
       });
 
     dispatch(searchSetResults(results));
 
     if (action.payload.fromUrl && results[0]) {
-      dispatch(searchSelectResult(results[0]));
+      dispatch(searchSelectResult({ result: results[0] }));
     }
   },
 };

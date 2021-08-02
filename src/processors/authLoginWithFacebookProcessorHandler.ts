@@ -1,4 +1,5 @@
 import { authSetUser } from 'fm3/actions/authActions';
+import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { loadFb } from 'fm3/fbLoader';
@@ -55,6 +56,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   );
 
   dispatch(authSetUser(user));
+
+  if (!user.isPremium && getState().main.removeAdsOnLogin) {
+    dispatch(removeAds());
+  }
 };
 
 export default handle;

@@ -51,6 +51,8 @@ export type Messages = {
     noCookies: string;
     name: string;
     load: string;
+    unnamed: string;
+    enablePopup: string;
   };
   selections: {
     objects: string;
@@ -323,6 +325,16 @@ export type Messages = {
       lastCaptured: string;
       leastRated: string;
       mostRated: string;
+      lastComment: string;
+    };
+    colorizeBy: string;
+    c: {
+      disable: string;
+      mine: string;
+      author: string;
+      rating: string;
+      takenAt: string;
+      createdAt: string;
     };
     viewer: {
       title: string;
@@ -386,6 +398,7 @@ export type Messages = {
       rating: string;
       noTags: string;
     };
+    noPicturesFound: string;
   };
   measurement: {
     distance: string;
@@ -511,7 +524,15 @@ export type Messages = {
   mapDetails: {
     notFound: string;
     fetchingError: ({ err }: Err) => string;
-    detail: ({ tags }: { tags?: Record<string, string> }) => JSX.Element;
+    detail: ({
+      id,
+      type,
+      tags,
+    }: {
+      id: number;
+      type: 'node' | 'way' | 'relation';
+      tags: Record<string, string>;
+    }) => JSX.Element;
   };
   objects: {
     type: string;
@@ -573,6 +594,7 @@ export type Messages = {
   };
   gpxExport: {
     export: string;
+    format: string;
     exportToDrive: string;
     exportToDropbox: string;
     exportError: ({ err }: Err) => string;
@@ -582,13 +604,13 @@ export type Messages = {
       objects: string;
       pictures: string;
       drawingLines: string;
-      areaMeasurement: string;
+      drawingAreas: string;
       drawingPoints: string;
       tracking: string;
       gpx: string;
     };
     disabledAlert: string;
-    blockedPopup: string;
+    licenseAlert: string;
     exportedToDropbox: string;
     exportedToGdrive: string;
   };
@@ -598,7 +620,6 @@ export type Messages = {
       google: string;
       osm: string;
     };
-    enablePopup: string;
     success: string;
     logInError: ({ err }: Err) => string;
     logInError2: string;
@@ -778,5 +799,21 @@ export type Messages = {
     president: string;
     vicepresident: string;
     secretary: string;
+  };
+  mapCtxMenu: {
+    centerMap: string;
+    measurePosition: string;
+    addPoint: string;
+    startLine: string;
+    queryFeatures: string;
+    startRoute: string;
+    finishRoute: string;
+    showPhotos: string;
+  };
+  removeAds: {
+    title: string;
+    info: ReactNode;
+    continue: string;
+    success: string;
   };
 };

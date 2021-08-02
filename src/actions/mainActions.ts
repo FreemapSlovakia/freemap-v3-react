@@ -14,22 +14,20 @@ export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();
 
-export const setHomeLocation =
-  createAction('SET_HOME_LOCATION')<{
-    lat: number;
-    lon: number;
-  } | null>();
+export const setHomeLocation = createAction('SET_HOME_LOCATION')<{
+  lat: number;
+  lon: number;
+} | null>();
 
 export const startProgress = createAction('START_PROGRESS')<string | number>();
 
 export const stopProgress = createAction('STOP_PROGRESS')<string | number>();
 
-export const setLocation =
-  createAction('SET_LOCATION')<{
-    lat: number;
-    lon: number;
-    accuracy: number;
-  }>();
+export const setLocation = createAction('SET_LOCATION')<{
+  lat: number;
+  lon: number;
+  accuracy: number;
+}>();
 
 export interface PdfExportOptions {
   contours: boolean;
@@ -47,15 +45,26 @@ export interface PdfExportOptions {
   style: string;
 }
 
+export type Exportable =
+  | 'plannedRoute'
+  | 'plannedRouteWithStops'
+  | 'objects'
+  | 'pictures'
+  | 'drawingLines'
+  | 'drawingAreas'
+  | 'drawingPoints'
+  | 'tracking'
+  | 'gpx';
+
 export type Destination = 'download' | 'gdrive' | 'dropbox';
 
 export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
 
-export const exportGpx =
-  createAction('EXPORT_GPX')<{
-    exportables: string[];
-    destination: Destination;
-  }>();
+export const exportGpx = createAction('EXPORT_GPX')<{
+  exportables: Exportable[];
+  type: 'gpx' | 'geojson';
+  destination: Destination;
+}>();
 
 export const exportPdf = createAction('EXPORT_PDF')<PdfExportOptions>();
 
@@ -69,26 +78,29 @@ export const setSelectingHomeLocation = createAction(
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
-export const saveSettings =
-  createAction('SAVE_SETTINGS')<{
-    homeLocation: LatLon | null;
-    overlayOpacity: { [type: string]: number };
-    overlayPaneOpacity: number;
-    expertMode: boolean;
-    trackViewerEleSmoothingFactor: number;
-    user: {
-      name: string | null;
-      email: string | null;
-      sendGalleryEmails: boolean;
-    } | null;
-    preventTips: boolean;
-  }>();
+export const saveSettings = createAction('SAVE_SETTINGS')<{
+  homeLocation: LatLon | null;
+  overlayOpacity: { [type: string]: number };
+  overlayPaneOpacity: number;
+  expertMode: boolean;
+  trackViewerEleSmoothingFactor: number;
+  user: {
+    name: string | null;
+    email: string | null;
+    sendGalleryEmails: boolean;
+  } | null;
+  preventTips: boolean;
+}>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
   string | undefined
 >();
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
+
+export const removeAdsOnLogin = createAction('REMOVE_ADS_ON_LOGIN')();
+
+export const removeAds = createAction('REMOVE_ADS')();
 
 export const deleteFeature = createAction('DELETE_FEATURE')();
 
@@ -127,8 +139,12 @@ export type Selection =
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
 
-export const convertToDrawing =
-  createAction('CONVERT_TO_DRAWING')<number | undefined>();
+export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
+  | ObjectsSelection
+  | { type: 'planned-route'; tolerance: number }
+  | { type: 'track'; tolerance: number }
+  | { type: 'search-result' }
+>();
 
 export type ExternalTargets =
   | 'window'
@@ -149,18 +165,17 @@ export type ExternalTargets =
   | 'image'
   | 'peakfinder';
 
-export const openInExternalApp =
-  createAction('OPEN_IN_EXTERNAL')<{
-    where: ExternalTargets;
-    lat?: number;
-    lon?: number;
-    zoom?: number;
-    mapType?: string;
-    includePoint?: boolean;
-    pointTitle?: string;
-    pointDescription?: string;
-    url?: string;
-  }>();
+export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
+  where: ExternalTargets;
+  lat?: number;
+  lon?: number;
+  zoom?: number;
+  mapType?: string;
+  includePoint?: boolean;
+  pointTitle?: string;
+  pointDescription?: string;
+  url?: string;
+}>();
 
 export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT')();
 

@@ -1,5 +1,11 @@
 import { RootAction } from 'fm3/actions';
-import { authLogout, authSetUser } from 'fm3/actions/authActions';
+import {
+  authLoginWithFacebook,
+  authLoginWithGoogle,
+  authLoginWithOsm,
+  authLogout,
+  authSetUser,
+} from 'fm3/actions/authActions';
 import {
   drawingLineContinue,
   drawingLineSetLines,
@@ -12,6 +18,7 @@ import {
   deleteFeature,
   enableUpdatingUrl,
   Modal,
+  removeAdsOnLogin,
   selectFeature,
   Selection,
   setActiveModal,
@@ -53,6 +60,7 @@ export interface MainState {
   selection: Selection | null;
   cookieConsentResult: boolean | null;
   analyticCookiesAllowed: boolean;
+  removeAdsOnLogin: boolean;
 }
 
 export const mainInitialState: MainState = {
@@ -71,6 +79,7 @@ export const mainInitialState: MainState = {
   selection: null,
   cookieConsentResult: null,
   analyticCookiesAllowed: true,
+  removeAdsOnLogin: false,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -124,6 +133,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(setActiveModal, (state, action) => ({
     ...state,
     activeModal: action.payload,
+    removeAdsOnLogin: action.payload ? state.removeAdsOnLogin : false,
   }))
   .handleAction(setHomeLocation, (state, action) => ({
     ...state,
@@ -208,10 +218,21 @@ export const mainReducer = createReducer<MainState, RootAction>(
     ...state,
     analyticCookiesAllowed: action.payload,
   }))
+  .handleAction(removeAdsOnLogin, (state) => ({
+    ...state,
+    removeAdsOnLogin: true,
+  }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
     selection:
       state.selection?.type === 'line-point'
         ? { type: 'draw-line-poly', id: state.selection.lineIndex }
         : null,
-  }));
+  }))
+  .handleAction(
+    [authLoginWithFacebook, authLoginWithGoogle, authLoginWithOsm],
+    (state) => ({
+      ...state,
+      activeModal: null,
+    }),
+  );

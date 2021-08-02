@@ -61,6 +61,9 @@ function persistSelectedState(state: DefaultRootState) {
         zoom: state.map.zoom,
         overlays: state.map.overlays,
       },
+      gallery: {
+        colorizeBy: state.gallery.colorizeBy,
+      },
     } as Partial<DefaultRootState>),
   );
 }

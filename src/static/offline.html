@@ -52,7 +52,9 @@
 
       try {
         language = navigator.language.replace(/-.*/, '');
-        language = JSON.parse(localStorage.getItem('appState')).language;
+
+        language = JSON.parse(localStorage.getItem('store')).l10n
+          .chosenLanguage;
       } catch (err) {
         // nothing
       }

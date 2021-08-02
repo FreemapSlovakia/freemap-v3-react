@@ -12,15 +12,19 @@ export function GalleryPicker(): ReactElement | null {
 
   const [latLon, setLatLon] = useState<LatLon>();
 
-  const handleMapClick = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      dispatch(galleryRequestImages({ lat: latlng.lat, lon: latlng.lng }));
-    },
-    [dispatch],
+  useMapEvent(
+    'click',
+    useCallback(
+      ({ latlng }: LeafletMouseEvent) => {
+        dispatch(galleryRequestImages({ lat: latlng.lat, lon: latlng.lng }));
+      },
+      [dispatch],
+    ),
   );
 
-  const handleMouseMove = useCallback(
-    ({ latlng, originalEvent }: LeafletMouseEvent) => {
+  useMapEvent(
+    'mousemove',
+    useCallback(({ latlng, originalEvent }: LeafletMouseEvent) => {
       if (
         originalEvent.target &&
         (originalEvent.target as HTMLElement).classList.contains(
@@ -31,19 +35,15 @@ export function GalleryPicker(): ReactElement | null {
       } else {
         setLatLon(undefined);
       }
-    },
-    [],
+    }, []),
   );
 
-  const handleMouseOut = useCallback(() => {
-    setLatLon(undefined);
-  }, []);
-
-  useMapEvent('click', handleMapClick);
-
-  useMapEvent('mousemove', handleMouseMove);
-
-  useMapEvent('mouseout', handleMouseOut);
+  useMapEvent(
+    'mouseout',
+    useCallback(() => {
+      setLatLon(undefined);
+    }, []),
+  );
 
   return !latLon ? null : (
     <Circle

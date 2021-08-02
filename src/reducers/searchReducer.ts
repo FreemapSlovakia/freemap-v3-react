@@ -17,6 +17,7 @@ export interface SearchState {
   results: SearchResult[];
   selectedResult: SearchResult | null;
   searchSeq: number;
+  searchResultSeq: number;
 
   // TODO these data are derived - remove
   osmNodeId: number | null;
@@ -24,35 +25,43 @@ export interface SearchState {
   osmRelationId: number | null;
 }
 
-const initialState: SearchState = {
-  results: [],
+export const searchInitialState0 = {
   searchSeq: 0,
-  selectedResult: null,
+  searchResultSeq: 0,
 
   osmNodeId: null,
   osmWayId: null,
   osmRelationId: null,
 };
 
+export const searchInitialState: SearchState = {
+  ...searchInitialState0,
+  results: [],
+  selectedResult: null,
+};
+
 export const searchReducer = createReducer<SearchState, RootAction>(
-  initialState,
+  searchInitialState,
 )
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMap, () => searchInitialState)
   .handleAction(searchSetResults, (state, action) => ({
     ...state,
     results: action.payload,
     searchSeq: state.searchSeq + 1,
   }))
-  .handleAction(osmLoadNode, (_state, action) => ({
-    ...initialState,
+  .handleAction(osmLoadNode, (state, action) => ({
+    ...state,
+    ...searchInitialState0,
     osmNodeId: action.payload,
   }))
-  .handleAction(osmLoadWay, (_state, action) => ({
-    ...initialState,
+  .handleAction(osmLoadWay, (state, action) => ({
+    ...state,
+    ...searchInitialState0,
     osmWayId: action.payload,
   }))
-  .handleAction(osmLoadRelation, (_state, action) => ({
-    ...initialState,
+  .handleAction(osmLoadRelation, (state, action) => ({
+    ...state,
+    ...searchInitialState0,
     osmRelationId: action.payload,
   }))
   .handleAction(searchSelectResult, (state, action) =>
@@ -61,18 +70,26 @@ export const searchReducer = createReducer<SearchState, RootAction>(
       draft.osmWayId = null;
       draft.osmRelationId = null;
 
-      draft.selectedResult = action.payload;
+      const { payload } = action;
 
-      switch (action.payload?.osmType) {
-        case 'node':
-          draft.osmNodeId = action.payload.id;
-          break;
-        case 'way':
-          draft.osmWayId = action.payload.id;
-          break;
-        case 'relation':
-          draft.osmRelationId = action.payload.id;
-          break;
+      const result = payload?.result;
+
+      draft.selectedResult = result ?? null;
+
+      draft.searchResultSeq = draft.searchResultSeq + 1;
+
+      if (result) {
+        switch (result.osmType) {
+          case 'node':
+            draft.osmNodeId = result.id;
+            break;
+          case 'way':
+            draft.osmWayId = result.id;
+            break;
+          case 'relation':
+            draft.osmRelationId = result.id;
+            break;
+        }
       }
     }),
   );

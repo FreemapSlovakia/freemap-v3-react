@@ -3,6 +3,8 @@ import {
   galleryAddItem,
   galleryCancelShowOnTheMap,
   galleryClear,
+  galleryColorizeBy,
+  GalleryColorizeBy,
   galleryConfirmPickedPosition,
   galleryEditPicture,
   GalleryFilter,
@@ -65,9 +67,10 @@ export interface GalleryState {
   showPosition: boolean;
   language: string;
   saveErrors: string[];
+  colorizeBy: GalleryColorizeBy | null;
 }
 
-const initialState: GalleryState = {
+export const galleryInitialState: GalleryState = {
   imageIds: null,
   activeImageId: null,
   image: null,
@@ -101,20 +104,21 @@ const initialState: GalleryState = {
   saveErrors: [],
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
+  colorizeBy: null,
 };
 
 export const galleryReducer = createReducer<GalleryState, RootAction>(
-  initialState,
+  galleryInitialState,
 )
   .handleAction(mapRefocus, (state, action) => ({
     ...state,
     filter:
       action.payload.overlays && !action.payload.overlays.includes('I')
-        ? initialState.filter
+        ? galleryInitialState.filter
         : state.filter,
   }))
   .handleAction(clearMap, (state) => ({
-    ...initialState,
+    ...galleryInitialState,
     dirtySeq: state.dirtySeq,
   }))
   .handleAction(gallerySetImageIds, (state, action) => ({
@@ -341,10 +345,14 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     saveErrors: state.editModel ? getErrors(state.editModel) : [],
   }))
+  .handleAction(galleryColorizeBy, (state, action) => ({
+    ...state,
+    colorizeBy: action.payload,
+  }))
   .handleAction(mapsDataLoaded, (state, action) => {
     return {
       ...state,
-      filter: action.payload.galleryFilter ?? initialState.filter,
+      filter: action.payload.galleryFilter ?? galleryInitialState.filter,
     };
   });
 

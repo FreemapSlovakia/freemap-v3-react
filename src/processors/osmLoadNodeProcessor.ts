@@ -1,3 +1,5 @@
+import { point } from '@turf/helpers';
+import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadNode } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -16,11 +18,12 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/node/${id}`,
       expectedStatus: 200,
+      cancelActions: [clearMap, searchSelectResult],
     });
 
     const { elements } = assertType<OsmResult>(data);
 
-    const tags: Record<string, string> | undefined = elements[0].tags;
+    const tags: Record<string, string> = elements[0].tags ?? {};
 
     const nodes = (
       elements.filter((el) => el.type === 'node') as OsmNode[]
@@ -28,13 +31,14 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
 
     dispatch(
       searchSelectResult({
-        osmType: 'way',
-        id,
-        tags,
-        label: 'TODO',
-        geojson: { type: 'Point', coordinates: nodes[0] },
-        lon: nodes[0][0],
-        lat: nodes[0][1],
+        result: {
+          osmType: 'node',
+          id,
+          geojson: point(nodes[0], tags),
+          tags,
+          detailed: true,
+        },
+        showToast: window.isRobot,
       }),
     );
   },

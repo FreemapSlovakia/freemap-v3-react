@@ -1,14 +1,23 @@
 import {
   Destination,
+  Exportable,
   exportGpx,
   setActiveModal,
 } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
-import FormCheck from 'react-bootstrap/FormCheck';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import ToggleButton from 'react-bootstrap/ToggleButton';
 import {
   FaBullseye,
   FaCamera,
@@ -24,20 +33,20 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
-const exportableDefinitions = [
-  // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
+const exportableDefinitions: readonly {
+  type: Exportable;
+  icon: ReactNode;
+}[] = [
   { type: 'plannedRoute', icon: <FaMapSigns /> },
   { type: 'plannedRouteWithStops', icon: <FaMapSigns /> },
   { type: 'objects', icon: <FaMapMarkerAlt /> },
   { type: 'pictures', icon: <FaCamera /> },
   { type: 'drawingLines', icon: <MdTimeline /> },
-  { type: 'areaMeasurement', icon: <FaDrawPolygon /> },
+  { type: 'drawingAreas', icon: <FaDrawPolygon /> },
   { type: 'drawingPoints', icon: <FaMapMarkerAlt /> },
   { type: 'tracking', icon: <FaBullseye /> },
   { type: 'gpx', icon: <FaRoad /> },
-  // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
-  // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
-] as const;
+];
 
 type Props = { show: boolean };
 
@@ -47,7 +56,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const initExportables = useSelector((state) => {
-    const exportables: string[] = [];
+    const exportables: Exportable[] = [];
 
     // if (state.search.selectedResult) {
     //   exportables.push('search');
@@ -71,7 +80,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     }
 
     if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
-      exportables.push('areaMeasurement');
+      exportables.push('drawingAreas');
     }
 
     if (state.drawingPoints.points.length) {
@@ -97,20 +106,27 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     return exportables;
   });
 
-  const [exportables, setExportables] = useState<string[] | undefined>();
+  const [exportables, setExportables] = useState<Exportable[] | undefined>();
+
+  const [type, setType] = useState<'gpx' | 'geojson'>('gpx');
 
   const initJoined = initExportables.join(',');
 
   useEffect(() => {
     if (show) {
-      setExportables(initJoined.split(','));
+      setExportables(initExportables);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, initJoined]);
 
   const onExport = useCallback(
-    (exportables: string[] | null, destination: Destination) => {
+    (
+      type: 'gpx' | 'geojson',
+      exportables: Exportable[] | null,
+      destination: Destination,
+    ) => {
       if (exportables) {
-        dispatch(exportGpx({ exportables, destination }));
+        dispatch(exportGpx({ type, exportables, destination }));
       }
     },
     [dispatch],
@@ -120,40 +136,39 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
-  const handleExportClick = useCallback(() => {
+  const handleExportClick = () => {
     if (exportables) {
-      onExport(exportables, 'download');
+      onExport(type, exportables, 'download');
     }
-  }, [onExport, exportables]);
+  };
 
-  const handleExportToDriveClick = useCallback(() => {
+  const handleExportToDriveClick = () => {
     if (exportables) {
-      onExport(exportables, 'gdrive');
+      onExport(type, exportables, 'gdrive');
     }
-  }, [onExport, exportables]);
+  };
 
-  const handleExportToDropbox = useCallback(() => {
+  const handleExportToDropbox = () => {
     if (exportables) {
-      onExport(exportables, 'dropbox');
+      onExport(type, exportables, 'dropbox');
     }
-  }, [onExport, exportables]);
+  };
 
-  const handleCheckboxChange = useCallback(
-    (type: string) => {
-      if (!exportables) {
-        return;
-      }
+  const handleCheckboxChange = (type: Exportable) => {
+    if (!exportables) {
+      return;
+    }
 
-      const set = new Set(exportables);
-      if (exportables.includes(type)) {
-        set.delete(type);
-      } else {
-        set.add(type);
-      }
-      setExportables([...set]);
-    },
-    [exportables],
-  );
+    const set = new Set(exportables);
+    if (exportables.includes(type)) {
+      set.delete(type);
+    } else {
+      set.add(type);
+    }
+    setExportables([...set]);
+  };
+
+  console.log('AAAAAAAAAA');
 
   return (
     <Modal show={show && !!exportables} onHide={close} size="lg">
@@ -165,22 +180,56 @@ export function ExportGpxModal({ show }: Props): ReactElement {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <Alert variant="warning">{m?.gpxExport.licenseAlert}</Alert>
+
             <Alert variant="warning">{m?.gpxExport.disabledAlert}</Alert>
-            {exportableDefinitions.map(({ type, icon }) => (
-              <FormCheck
-                id={'chk-' + type}
-                type="checkbox"
-                key={type}
-                checked={exportables.includes(type)}
-                disabled={!initExportables.includes(type)}
-                onChange={() => handleCheckboxChange(type)}
-                label={
-                  <>
-                    {m?.gpxExport.export} {icon} {m?.gpxExport.what[type]}
-                  </>
-                }
-              />
-            ))}
+
+            <Form.Group>
+              <Form.Label>{m?.gpxExport.export}:</Form.Label>
+
+              <Form.Switch>
+                {exportableDefinitions.map(({ type, icon }) => (
+                  <Form.Check
+                    id={'chk-' + type}
+                    type="checkbox"
+                    key={type}
+                    checked={exportables.includes(type)}
+                    disabled={!initExportables.includes(type)}
+                    onChange={() => handleCheckboxChange(type)}
+                    label={
+                      <>
+                        {icon} {m?.gpxExport.what[type]}
+                      </>
+                    }
+                  />
+                ))}
+              </Form.Switch>
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>{m?.gpxExport.format}:</Form.Label>
+
+              <Form.Row>
+                <ButtonGroup toggle>
+                  <ToggleButton
+                    type="radio"
+                    value="gpx"
+                    checked={type === 'gpx'}
+                    onChange={() => setType('gpx')}
+                  >
+                    GPX
+                  </ToggleButton>
+                  <ToggleButton
+                    type="radio"
+                    value="geojson"
+                    checked={type === 'geojson'}
+                    onChange={() => setType('geojson')}
+                  >
+                    GeoJSON
+                  </ToggleButton>
+                </ButtonGroup>
+              </Form.Row>
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={handleExportClick} disabled={!exportables.length}>
