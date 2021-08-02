@@ -289,7 +289,7 @@ export const osmTagToNameMapping: Node = {
     communications_tower: 'Komunikačná veža', // *
     crane: 'Žeriav', // *
     cross: 'Kríž', // *
-    cutline: 'Prierez', // *
+    cutline: 'Priesek', // *
     dyke: 'Hrádza', // *
     embankment: 'Násyp',
     lighthouse: 'Maják', // *
@@ -382,7 +382,7 @@ export const osmTagToNameMapping: Node = {
     archaeological_site: 'Archeologické nálezisko',
     castle: 'Hrad', // *
     church: 'Historický kostol', // *
-    city_gate: 'Mestsná brána', // *
+    city_gate: 'Mestská brána', // *
     manor: 'Panstvo', // *
     memorial: 'Pmätník', // *
     monastery: 'Kláštor',
@@ -422,7 +422,7 @@ export const osmTagToNameMapping: Node = {
     beachvolleyball: 'Plážový volejbal', // *
     chess: 'Šach', // *
     climbing: 'Lezenie', // *
-    fitness: 'Posilňovňa', // *
+    fitness: 'Posilovňa', // *
     golf: 'Golf', // *
     multi: 'Rôzne športy', // *
     running: 'Beh', // *
