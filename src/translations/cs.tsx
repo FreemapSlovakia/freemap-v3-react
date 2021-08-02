@@ -1440,7 +1440,7 @@ const cs: Messages = {
     noMapFound: 'Žádná mapa nenalezena',
     save: 'Uložit',
     delete: 'Smazat',
-    disconnect: 'Odpojiť',
+    disconnect: 'Odpojit',
     deleteConfirm: (name) => `Opravdu si přejete smazat mapu ${name}?`,
     fetchError: ({ err }) => `Nastala chyba při nahrávání mapy: ${err}`,
     fetchListError: ({ err }) => `Nastala chyba při nahrávání map: ${err}`,
