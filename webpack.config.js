@@ -281,8 +281,7 @@ module.exports = {
       background_color: '#ffffff',
       theme_color: '#ffffff',
       'theme-color': '#ffffff',
-      display: 'fullscreen',
-      lang: 'en-US',
+      display: 'standalone',
       dir: 'auto',
       icons: [
         {
