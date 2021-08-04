@@ -73,6 +73,7 @@ const queries = {
     'relation["boundary"="geomorphological-unit"](area:3600014296);',
   landuses: 'nwr["landuse"]["name"](area:3600014296);',
   leisures: 'nwr["leisure"]["name"](area:3600014296);',
+  naturals: 'nwr["natural"]["name"](area:3600014296);',
   man_made: 'nwr["man_made"]["name"](area:3600014296);',
   'protected-areas':
     'nwr["boundary"="protected_area"]["name"](area:3600014296);',
