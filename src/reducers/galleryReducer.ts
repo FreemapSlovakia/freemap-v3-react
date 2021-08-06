@@ -120,6 +120,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
   .handleAction(clearMap, (state) => ({
     ...galleryInitialState,
     dirtySeq: state.dirtySeq,
+    colorizeBy: state.colorizeBy,
   }))
   .handleAction(gallerySetImageIds, (state, action) => ({
     ...state,
