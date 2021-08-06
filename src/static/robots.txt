@@ -1,1 +1,12 @@
+User-agent: *
+Allow: /*?*osm-node=
+Allow: /*?*osm-way=
+Allow: /*?*osm-relation=
+Allow: /*?*show=
+Allow: /*?*tip=
+Disallow: /*?*image=
+Disallow: /*?*map=
+Disallow: /*?*embed=
+Disallow: /*?*tool=
+
 Sitemap: https://www.freemap.sk/sitemap.txt
