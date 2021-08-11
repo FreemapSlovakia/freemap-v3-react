@@ -148,6 +148,14 @@ export function ObjectDetailsRaw({
                   >
                     {v}
                   </a>
+                ) : ['contact:website', 'website', 'url', 'image'].includes(
+                    k,
+                  ) ? (
+                  <a href={v}>{v}</a>
+                ) : ['contact:email', 'email'].includes(k) ? (
+                  <a href={'mailto:' + v}>{v}</a>
+                ) : ['phone', 'contact:phone', 'contact:mobile'].includes(k) ? (
+                  <a href={'tel:' + v.replace(/ /g, '')}>{v}</a>
                 ) : categoryKeys.has(k) ? (
                   <a
                     href={`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
