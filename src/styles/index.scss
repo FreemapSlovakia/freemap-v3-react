@@ -4,6 +4,10 @@
 
 @import './leaflet.scss';
 
+body {
+  overflow: hidden;
+}
+
 .hidden {
   display: none !important;
 }

@@ -7,10 +7,11 @@ import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/elevationChart.scss';
 import {
   Fragment,
-  MouseEvent,
+  MouseEvent as ReactMouseEvent,
   ReactElement,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -97,7 +98,7 @@ export function ElevationChart(): ReactElement | null {
 
   const [mouseX, setMouseX] = useState<number | undefined>();
 
-  const handleMouseMove = (e: MouseEvent<SVGRectElement>) => {
+  const handleMouseMove = (e: ReactMouseEvent<SVGRectElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
@@ -140,8 +141,59 @@ export function ElevationChart(): ReactElement | null {
     };
   }, [ref, ref2]);
 
+  const startPosRef = useRef<[number, number]>();
+
+  const posRef = useRef([0, 0]);
+
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    const handleMouseDown = (e: MouseEvent) => {
+      if (
+        e.target instanceof Element &&
+        e.target.matches('.elevationChart svg, .elevationChart svg *')
+      ) {
+        startPosRef.current = [e.clientX, e.clientY];
+      }
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (startPosRef.current) {
+        const pos = [
+          e.clientX - startPosRef.current[0] + posRef.current[0],
+          e.clientY - startPosRef.current[1] + posRef.current[1],
+        ];
+
+        setPos({ left: pos[0], top: pos[1] });
+
+        posRef.current = pos;
+
+        startPosRef.current = undefined;
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (startPosRef.current) {
+        setPos({
+          left: posRef.current[0] + e.clientX - startPosRef.current[0],
+          top: posRef.current[1] + e.clientY - startPosRef.current[1],
+        });
+      }
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
   return (
-    <div className="elevationChart m-2 p-2 rounded" ref={setRef}>
+    <div className="elevationChart m-2 p-2 rounded" ref={setRef} style={pos}>
       <Button
         variant="dark"
         size="sm"
