@@ -410,6 +410,7 @@ const cs: Messages = {
       rating: 'hodnotenia', // TODO translate
       takenAt: 'dátumu odfotenia', // TODO translate
       createdAt: 'dátumu nahrania', // TODO translate
+      season: 'ročního období',
     },
     viewer: {
       title: 'Fotografie',

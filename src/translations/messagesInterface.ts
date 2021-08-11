@@ -335,6 +335,7 @@ export type Messages = {
       rating: string;
       takenAt: string;
       createdAt: string;
+      season: string;
     };
     viewer: {
       title: string;

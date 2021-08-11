@@ -427,6 +427,7 @@ const sk: Messages = {
       rating: 'hodnotenia',
       takenAt: 'dátumu odfotenia',
       createdAt: 'dátumu nahrania',
+      season: 'ročného obdobia',
     },
     viewer: {
       title: 'Fotografia',

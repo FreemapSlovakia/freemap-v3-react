@@ -149,7 +149,12 @@ class LGalleryLayer extends LGridLayer {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
-          fields: colorizeBy === 'mine' ? 'userId' : colorizeBy,
+          fields:
+            colorizeBy === 'mine'
+              ? 'userId'
+              : colorizeBy === 'season'
+              ? 'takenAt'
+              : colorizeBy,
         },
         paramsSerializer: (params) => qs.stringify(params),
         validateStatus: (status) => status === 200,

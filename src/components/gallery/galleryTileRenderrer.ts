@@ -153,6 +153,41 @@ export function renderGalleryTile({
                   100 - ((now - takenAt) * 100) ** 0.185,
                 )
                 .hex();
+          break;
+        case 'season':
+          {
+            if (!takenAt) {
+              ctx.fillStyle = '#800';
+
+              break;
+            }
+
+            const hs = 366 / 4;
+
+            const winter = [70, -5, -52];
+            const spring = [70, -62, 42];
+            const summer = [90, -4, 74];
+            const fall = [70, 48, 43];
+
+            const x = ((takenAt - 2847600) % 31557600) / 60 / 60 / 24;
+
+            const fill = (from: number[], to: number[], n: number) => {
+              ctx.fillStyle = color
+                .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
+                .hex();
+            };
+
+            if (x < hs) {
+              fill(winter, spring, x / hs);
+            } else if (x < 2 * hs) {
+              fill(spring, summer, (x - hs) / hs);
+            } else if (x < 3 * hs) {
+              fill(summer, fall, (x - 2 * hs) / hs);
+            } else {
+              fill(fall, winter, (x - 3 * hs) / hs);
+            }
+          }
+          break;
         case 'createdAt':
           ctx.fillStyle = color
             .hsl(

@@ -409,6 +409,7 @@ const hu: Messages = {
       rating: 'rating', // TODO translate
       takenAt: 'taken date', // TODO translate
       createdAt: 'upload date', // TODO translate
+      season: 'season', // TODO translate
     },
     viewer: {
       title: 'Fénykép',

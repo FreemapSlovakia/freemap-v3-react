@@ -406,6 +406,7 @@ const en: Messages = {
       rating: 'rating',
       takenAt: 'taken date',
       createdAt: 'upload date',
+      season: 'season',
     },
     viewer: {
       title: 'Photo',

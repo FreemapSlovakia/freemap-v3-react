@@ -199,6 +199,17 @@ export function GallerySubmenu(): JSX.Element {
         {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.createdAt}
       </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={() => {
+          dispatch(galleryColorizeBy('season'));
+          closeMenu();
+        }}
+      >
+        {colorizeBy === 'season' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        {m?.gallery.c.season}
+      </Dropdown.Item>
     </>
   );
 }

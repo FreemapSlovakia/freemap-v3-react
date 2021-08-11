@@ -29,7 +29,8 @@ export type GalleryColorizeBy =
   | 'takenAt'
   | 'createdAt'
   | 'rating'
-  | 'mine';
+  | 'mine'
+  | 'season';
 
 export interface GalleryTag {
   name: string;
