@@ -374,7 +374,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   ...(
     [
-      ['s0', 'both'],
+      ['s0', 'all'],
       ['s1', 'ride'],
       ['s2', 'run'],
       ['s3', 'water'],
@@ -383,16 +383,16 @@ export const overlayLayers: OverlayLayerDef[] = [
   ).map(([type, stravaType]) => ({
     type,
     icon: <FaStrava />,
-    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/bluered/{z}/{x}/{y}.png?px=${
-      isHdpi ? 512 : 256
+    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png${
+      isHdpi ? '@2x' : ''
     }`,
     attribution: [STRAVA_ATTR],
     minZoom: 0,
     maxNativeZoom: isHdpi ? 15 : 16,
-    key: (stravaType === 'both' ? ['KeyH', true] : undefined) as
+    key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
       | [string, boolean]
       | undefined,
-    showOnlyInExpertMode: stravaType !== 'both',
+    showOnlyInExpertMode: stravaType !== 'all',
     zIndex: 3,
     strava: true,
     errorTileUrl: transparent1x1,
