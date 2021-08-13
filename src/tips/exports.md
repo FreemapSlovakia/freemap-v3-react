@@ -6,27 +6,48 @@ Mapové dáta © OpenStreetMap prispievatelia. Licencované pod ODbL 1.0.
 
 [Freemap plugin](https://play.google.com/store/apps/details?id=sk.freemap.locus.addon.routePlanner) pre aplikáciu [Locus Map](https://www.locusmap.eu/) slúži na spravovanie offline vektorových máp a štýlov Freemap. Ostatné funkcie pluginu už nie sú udržiavané. Starší návod na inštaláciu a použitie nájdete na [Geoblogu](http://geoblog.freemap.sk/2013/04/02/freemap-vektorove-topograficke-mapy/).
 
-Priame stiahnutie mapy Slovenska a Freemap štýlu pre program Locus Map a OruxMaps:
-
+Priame stiahnutie mapy Slovenska a Freemap štýlu pre program niektoré programy:
 (Upozornenie: odkazy sú funkčné len cez prehliadač v mobilnom telefóne s nainštalovanou aplikáciou)
 
-Locus Map:
+#### Locus Map:
 
-- [mapa Slovenska V5](locus-actions://https/proxy.freemap.sk/locus/locus-map-sk-v5.xml)
-- [mapa Českej republiky V5](locus-actions://https/proxy.freemap.sk/locus/locus-map-cz-v5.xml)
-- [štýl pre mapu V5](locus-actions://https/proxy.freemap.sk/locus/locus-theme-v5.xml)
-- [mapa Slovenska V3](locus-actions://https/download.freemap.sk/LocusMap/map_freemap_slovakia.xml) (staršia verzia)
-- [štýl pre mapu V3](locus-actions://https/download.freemap.sk/LocusMap/theme_freemap_slovakia.xml) (staršia verzia)
+- [mapa Slovenska V5](locus-actions://http/proxy.freemap.sk/locus/locus-map-sk-v5.xml)
+- [mapa Českej republiky V5](locus-actions://http/proxy.freemap.sk/locus/locus-map-cz-v5.xml)
+- [štýl pre mapu V5](locus-actions://http/proxy.freemap.sk/locus/locus-theme-v5.xml)
 
-OruxMaps:
+Staršia verzia (mapa aktualizovaná, štýl už nie)
+- [mapa Slovenska V3](locus-actions://http/download.freemap.sk/LocusMap/map_freemap_slovakia.xml)
+- [štýl pre mapu V3](locus-actions://http/download.freemap.sk/LocusMap/theme_freemap_slovakia.xml)
+
+#### OruxMaps:
 
 - [mapa Slovenska V5](orux-map://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
 - [mapa Českej republiky V5](orux-map://proxy.freemap.sk/locus/freemapV5-czech.zip)
 - [štýl pre mapu V5](orux-mf-theme://proxy.freemap.sk/locus/freemapV5.zip)
-- [mapa Slovenska V3](orux-map://proxy.freemap.sk/locus/slovakia-topo-osm-srtm.zip) (staršia verzia)
-- [štýl pre mapu V3](orux-mf-theme://proxy.freemap.sk/locus/orux_theme.zip) (staršia verzia)
 
-Pokiaľ používate inú aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge, môžete si ručne stiahnuť nasledovné súbory. Tie potom musíte uložiť do priečinka, kde si to aplikácia vyžaduje. Kde konkrétne to je, zistíte buď priamo v aplikácií, alebo na web stránke aplikácie.
+Staršia verzia (mapa aktualizovaná, štýl už nie)
+- [mapa Slovenska V3](orux-map://proxy.freemap.sk/locus/slovakia-topo-osm-srtm.zip)
+- [štýl pre mapu V3](orux-mf-theme://proxy.freemap.sk/locus/orux_theme.zip)
+
+#### BackCountry Navigator
+
+- [mapa Slovenska V5](backcountrynav-action-map://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
+- [mapa Českej republiky V5](backcountrynav-action-map://proxy.freemap.sk/locus/freemapV5-czech.zip)
+- [štýl pre mapu V5](backcountrynav-action://proxy.freemap.sk/locus/freemapV5.zip)
+
+#### BikeComputer
+
+- [mapa Slovenska V5](bikecomputer-map://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
+- [mapa Českej republiky V5](bikecomputer-map://proxy.freemap.sk/locus/freemapV5-czech.zip)
+- [štýl pre mapu V5](bikecomputer-mf-theme://proxy.freemap.sk/locus/freemapV5.zip)
+
+#### Iné aplikácie (napr. XCTrack, ...)
+
+- [mapa Slovenska V5](mf-v4-map://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
+- [mapa Českej republiky V5](mf-v4-map://proxy.freemap.sk/locus/freemapV5-czech.zip)
+- [štýl pre mapu V5](mf-theme://proxy.freemap.sk/locus/freemapV5.zip)
+
+Pokiaľ používate aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge, ale nie je možné mapu stiahnuť cez vyššie uvedené odkazy, môžete si stiahnuť nasledovné súbory ručne a tie potom musíte uložiť do priečinka, kde si to aplikácia vyžaduje. Kde konkrétne to je, zistíte buď priamo v aplikácií, alebo na web stránke aplikácie.
 
 - [mapa Slovenska V5](https://proxy.freemap.sk/locus/freemapV5-slovakia.zip)
 - [mapa Českej republiky V5](https://proxy.freemap.sk/locus/freemapV5-czech.zip)
