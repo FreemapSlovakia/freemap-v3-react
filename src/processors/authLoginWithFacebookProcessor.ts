@@ -4,9 +4,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const authLoginWithFacebookProcessor: Processor = {
   actionCreator: authLoginWithFacebook,
   errorKey: 'logIn.logInError',
-  async handle(...params) {
+  handle: async (...params) =>
     (await import('./authLoginWithFacebookProcessorHandler')).default(
       ...params,
-    );
-  },
+    ),
 };

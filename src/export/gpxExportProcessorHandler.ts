@@ -19,7 +19,7 @@ type Picture = {
   lat: number;
   lon: number;
   id: number;
-  takenAt: string | null;
+  takenAt: number | null;
   title: string | null;
   description: string | null;
 };
@@ -177,7 +177,7 @@ function addPictures(doc: Document, pictures: Picture[]) {
     });
 
     if (takenAt) {
-      createElement(wptEle, 'time', takenAt);
+      createElement(wptEle, 'time', new Date(takenAt).toISOString());
     }
 
     if (title) {

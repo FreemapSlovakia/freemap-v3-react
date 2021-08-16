@@ -169,7 +169,8 @@ export function renderGalleryTile({
             const summer = [90, -4, 74];
             const fall = [70, 48, 43];
 
-            const x = ((takenAt - 2847600) % 31557600) / 60 / 60 / 24;
+            // 2847600
+            const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
 
             const fill = (from: number[], to: number[], n: number) => {
               ctx.fillStyle = color

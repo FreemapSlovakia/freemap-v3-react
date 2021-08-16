@@ -4,7 +4,6 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const elevationChartProcessor: Processor = {
   actionCreator: elevationChartSetTrackGeojson,
   errorKey: 'elevationChart.fetchError',
-  async handle(...params) {
-    (await import('./elevationChartProcessorHandler')).default(...params);
-  },
+  handle: async (...params) =>
+    (await import('./elevationChartProcessorHandler')).default(...params),
 };

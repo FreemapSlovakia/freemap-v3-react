@@ -168,8 +168,6 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     setExportables([...set]);
   };
 
-  console.log('AAAAAAAAAA');
-
   return (
     <Modal show={show && !!exportables} onHide={close} size="lg">
       {exportables && (
