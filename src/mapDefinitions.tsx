@@ -383,12 +383,10 @@ export const overlayLayers: OverlayLayerDef[] = [
   ).map(([type, stravaType]) => ({
     type,
     icon: <FaStrava />,
-    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png${
-      isHdpi ? '@2x' : ''
-    }`,
+    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
     attribution: [STRAVA_ATTR],
     minZoom: 0,
-    maxNativeZoom: isHdpi ? 15 : 16,
+    maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
     key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
       | [string, boolean]
       | undefined,
