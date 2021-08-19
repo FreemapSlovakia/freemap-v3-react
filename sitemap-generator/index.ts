@@ -24,9 +24,29 @@ async function gen() {
     `../sitemap/layers=X&lang=sk`,
     '<!doctype html>\n' +
       html`<html lang="sk">
-        <title>Freemap Slovakia, digitálne mapy</title>
-        <description
-          >Detailná turistická mapa, cyklistická mapa, bežkárska mapa a jazdecká
+        <head>
+          <title>Freemap Slovakia, digitálne mapy</title>
+
+          <description
+            >Detailná turistická mapa, cyklistická mapa, bežkárska mapa a
+            jazdecká mapa strednej Európy, založená na databáze OpenStreetMap.
+          </description>
+
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+
+          <style>
+            a {
+              display: inline-block;
+              margin: 0.33rem;
+            }
+          </style>
+        </head>
+
+        <body>
+          Detailná turistická mapa, cyklistická mapa, bežkárska mapa a jazdecká
           mapa strednej Európy (Slovenska, Česka, Maďarska, Chorvátska,
           Slovinska, Rumunska, Bulharska, Bosny a Hercegoviny, Rakúska,
           Švajčiarska severného Talianska a Zakarpatskej Rusi). Mapa obsahuje
@@ -40,11 +60,38 @@ async function gen() {
           zobrazenie vlastných GPX záznamov, vlastné mapy, živé sledovanie
           (tracking), export do GPX a GeoJSON, tlač máp, exportovanie mapy do
           PDF. Vloženie mapy do vlastnej stránky. Alternatíva k mapám ako
-          hiking.sk, mapy.cz alebo maps.google.com.</description
-        >
-        <body>
-          Mapa.
-          <!-- TODO put here words from freemap website (from sk.tsx) -->
+          ${' '}<a href="https://mapy.dennikn.sk">hiking.sk</a>,${' '}<a
+            href="https://mapy.cz"
+            >mapy.cz</a
+          >${' '}alebo${' '}<a href="https://maps.google.com">maps.google.com</a
+          >.
+
+          <ul>
+            <li><a href="/?layers=X&show=legend&lang=sk">legenda mapy</a></li>
+            <li>
+              <a href="/?layers=X&show=upload-track&lang=sk"
+                >nahrať GPX súbor</a
+              >
+            </li>
+            <li>
+              <a href="/?layers=X&show=export-gpx&lang=sk">export do GPX</a>
+            </li>
+            <li>
+              <a href="/?layers=X&show=export-pdf&lang=sk"
+                >export mapy do PDF, SVG, PNG a JPEG</a
+              >
+            </li>
+            <li><a href="/?layers=X&show=settings&lang=sk">nastavenia</a></li>
+            <li>
+              <a href="/?layers=X&show=supportUs&lang=sk">podporte Freemap</a>
+            </li>
+            <li>
+              <a href="/?layers=X&show=tracking-watched&lang=sk"
+                >sledované zariadenia</a
+              >
+            </li>
+          </ul>
+          <!-- TODO maybe put here words from freemap website (from sk.tsx) -->
         </body>
       </html>`,
   );
@@ -76,12 +123,30 @@ async function gen() {
         `../sitemap/layers=X&tip=${tip.slice(0, -3)}&lang=sk`,
         '<!doctype html>\n' +
           html`<html lang="sk">
-            <title>Tip - freemap.sk</title>
+            <head>
+              <title>Tip - freemap.sk</title>
+
+              <description
+                >Detailná turistická mapa, cyklistická mapa, bežkárska mapa a
+                jazdecká mapa strednej Európy, založená na databáze
+                OpenStreetMap.
+              </description>
+
+              <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+              />
+
+              <style>
+                a {
+                  display: inline-block;
+                  margin: 0.33rem;
+                }
+              </style>
+            </head>
 
             <body>
-              <div>
-                ${raw(marked(await readFile(tipsDir + '/' + tip, 'utf-8')))}
-              </div>
+              ${raw(marked(await readFile(tipsDir + '/' + tip, 'utf-8')))}
             </body>
           </html>`,
       );

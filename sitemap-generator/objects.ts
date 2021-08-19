@@ -97,24 +97,41 @@ export async function objects(sitemapNames: string[]) {
             <title>
               ${(genName + ' ' + (name ?? '')).trim() + ' - freemap.sk'}
             </title>
+
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+
             <meta
               name="description"
               content=${description.filter(Boolean).join(' ')}
             />
+
             <meta
               name="geo.position"
               content=${center.lat + ';' + center.lon}
             />
+
             <meta name="ICBM" content=${center.lat + ', ' + center.lon} />
+
+            <style>
+              a {
+                display: inline-block;
+                margin: 0.33rem;
+              }
+            </style>
           </head>
+
           <body>
             <h1>${genName.trim()} <i>${name}</i></h1>
+
             <p>
               <a
                 href=${`https://www.openstreetmap.org/${element.type}/${element.id}`}
                 >Otvoriť na OpenStreetMap.org</a
               >
-              (<a
+              ${' '}(<a
                 href=${`https://www.openstreetmap.org/${element.type}/${element.id}/history`}
                 >história</a
               >)
@@ -124,20 +141,23 @@ export async function objects(sitemapNames: string[]) {
               cyklistická mapa, cyklomapa, jazdecká mapa, bežkárska/lyžiarska
               mapa, letecká mapa.
             </p>
+
             ${element.tags['description'] &&
             html`<p>${element.tags['description']}</p>`}
-            <table>
+
+            <dl>
               ${Object.entries(element.tags as Record<string, string>).map(
-                ([key, value]) => html`<tr>
-                  <th>
+                ([key, value]) => html`
+                  <dt>
                     <a
                       href=${`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(
                         key,
                       )}`}
                       >${key}</a
                     >
-                  </th>
-                  <td>
+                  </dt>
+
+                  <dd>
                     ${key === 'wikidata'
                       ? html`<a
                           href=${`https://www.wikidata.org/entity/${encodeURIComponent(
@@ -177,10 +197,10 @@ export async function objects(sitemapNames: string[]) {
                           >${value}</a
                         >`
                       : value}
-                  </td>
-                </tr>`,
+                  </dd>
+                `,
               )}
-            </table>
+            </dl>
           </body>
         </html>`;
 
