@@ -336,6 +336,6 @@ module.exports = {
     ),
   ].filter((x) => x),
   devServer: {
-    disableHostCheck: true,
+    allowedHosts: 'all',
   },
 };
