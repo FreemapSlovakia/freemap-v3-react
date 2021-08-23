@@ -94,7 +94,7 @@
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-loader": "4.0.2",
-    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-prettier": "3.4.1",
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
     "fork-ts-checker-webpack-plugin": "6.3.2",
@@ -117,7 +117,7 @@
     "uglifyjs-webpack-plugin": "2.2.0",
     "util": "0.12.4",
     "utility-types": "3.10.0",
-    "webpack": "5.50.0",
+    "webpack": "5.51.1",
     "webpack-cli": "4.8.0",
     "webpack-dev-server": "4.0.0",
     "webpack-pwa-manifest": "4.3.0"
@@ -136,6 +136,6 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "start": "webpack serve --https --key ssl/freemap.sk.key --cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --content-base=src --inline"
+    "start": "webpack serve --https-key ssl/freemap.sk.key --https-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --static-directory=src"
   }
 }

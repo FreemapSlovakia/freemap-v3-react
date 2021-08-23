@@ -188,7 +188,7 @@ module.exports = {
       async: fastDev,
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: prod ? 'production' : null, // for react
+      ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: true,
       DEPLOYMENT: process.env.DEPLOYMENT ?? null,
       FM_MAPSERVER_URL:
