@@ -2,7 +2,6 @@ import { authSetUser } from 'fm3/actions/authActions';
 import {
   saveSettings,
   setActiveModal,
-  setExpertMode,
   setHomeLocation,
 } from 'fm3/actions/mainActions';
 import {
@@ -23,7 +22,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       homeLocation,
       overlayOpacity,
       overlayPaneOpacity,
-      expertMode,
       trackViewerEleSmoothingFactor,
       preventTips,
       user,
@@ -38,37 +36,42 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
         url: '/auth/settings',
         expectedStatus: 204,
         cancelActions: [setActiveModal, saveSettings],
-        data: Object.assign(
-          {
-            name: user.name,
-            email: user.email,
-            sendGalleryEmails: user.sendGalleryEmails,
-            preventTips,
-            settings: {
-              overlayOpacity,
-              overlayPaneOpacity,
-              expertMode,
-              trackViewerEleSmoothingFactor,
-            },
+        data: {
+          name: user.name,
+          email: user.email,
+          sendGalleryEmails: user.sendGalleryEmails,
+          preventTips,
+          settings: {
+            overlayOpacity,
+            overlayPaneOpacity,
+            trackViewerEleSmoothingFactor,
           },
-          homeLocation ? { lat: homeLocation.lat, lon: homeLocation.lon } : {},
-        ),
+          ...homeLocation,
+        },
       });
 
       dispatch(authSetUser(Object.assign({}, getState().auth.user, user)));
     }
 
-    dispatch(setHomeLocation(homeLocation));
+    if (homeLocation) {
+      dispatch(setHomeLocation(homeLocation));
+    }
 
-    dispatch(mapSetOverlayOpacity(overlayOpacity));
+    if (overlayOpacity !== undefined) {
+      dispatch(mapSetOverlayOpacity(overlayOpacity));
+    }
 
-    dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));
+    if (overlayPaneOpacity !== undefined) {
+      dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));
+    }
 
-    dispatch(setExpertMode(expertMode));
+    if (trackViewerEleSmoothingFactor !== undefined) {
+      dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
+    }
 
-    dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
-
-    dispatch(tipsPreventNextTime({ value: preventTips, save: false }));
+    if (preventTips !== undefined) {
+      dispatch(tipsPreventNextTime({ value: preventTips, save: false }));
+    }
 
     dispatch(
       toastsAdd({

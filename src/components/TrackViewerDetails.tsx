@@ -96,7 +96,7 @@ export function TrackViewerDetails(): ReactElement | null {
   const smoothed = smoothElevations(geometry.coordinates, eleSmoothingFactor);
   let [prevCoord] = smoothed;
 
-  smoothed.forEach((coord) => {
+  for (const coord of smoothed) {
     const distanceFromPrevPointInMeters = distance(
       coord[1],
       coord[0],
@@ -122,7 +122,7 @@ export function TrackViewerDetails(): ReactElement | null {
       }
       prevCoord = coord;
     }
-  });
+  }
 
   if (minEle !== Infinity) {
     tableData.push([

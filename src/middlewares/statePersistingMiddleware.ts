@@ -36,7 +36,6 @@ function persistSelectedState(state: DefaultRootState) {
       main: {
         cookieConsentResult: state.main.cookieConsentResult,
         homeLocation: state.main.homeLocation,
-        expertMode: state.main.expertMode,
       },
       tips: {
         lastTip: state.tips.lastTip,

@@ -14,7 +14,10 @@ interface PoiFilter {
 }
 
 const poiTypeGroupsMap = new Map<number, { id: number; icon: string }>();
-poiTypeGroups.forEach((group) => poiTypeGroupsMap.set(group.id, group));
+
+for (const group of poiTypeGroups) {
+  poiTypeGroupsMap.set(group.id, group);
+}
 
 export const poiTypes = subcategories.map(
   ({ id, filename, categoryId, filter, union }) => {
@@ -30,7 +33,10 @@ export const poiTypes = subcategories.map(
 );
 
 const poiTypesMap = new Map<number, typeof poiTypes[0]>();
-poiTypes.forEach((pt) => poiTypesMap.set(pt.id, pt));
+
+for (const pt of poiTypes) {
+  poiTypesMap.set(pt.id, pt);
+}
 
 export function getPoiType(id: number): typeof poiTypes[0] | undefined {
   return poiTypesMap.get(id);

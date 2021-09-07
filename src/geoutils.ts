@@ -118,12 +118,14 @@ export function smoothElevations(
   eleSmoothingFactor: number,
 ): number[][] {
   let prevFloatingWindowEle = 0;
+
   return coords.map((lonLatEle, i) => {
     const floatingWindow = coords
       .slice(i, i + eleSmoothingFactor)
       .filter((e) => e)
       .sort();
     let floatingWindowWithoutExtremes = floatingWindow;
+
     if (eleSmoothingFactor >= 5) {
       // ignore highest and smallest value
       floatingWindowWithoutExtremes = floatingWindow.splice(
@@ -132,16 +134,16 @@ export function smoothElevations(
       );
     }
 
-    let eleSum = 0;
-    floatingWindowWithoutExtremes.forEach((lle) => {
-      eleSum += lle[2];
-    });
+    const eleSum = floatingWindowWithoutExtremes.reduce((a, b) => a + b[2], 0);
 
     let flotingWindowEle = eleSum / floatingWindowWithoutExtremes.length;
+
     if (Number.isNaN(flotingWindowEle)) {
       flotingWindowEle = prevFloatingWindowEle;
     }
+
     prevFloatingWindowEle = flotingWindowEle;
+
     return [lonLatEle[0], lonLatEle[1], flotingWindowEle];
   });
 }

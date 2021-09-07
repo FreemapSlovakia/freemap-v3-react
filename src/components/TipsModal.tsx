@@ -53,7 +53,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
   const handleNextTimePrevent = useCallback(
     (e: FormEvent<HTMLInputElement>) => {
       dispatch(
-        tipsPreventNextTime({ value: e.currentTarget.checked, save: true }),
+        tipsPreventNextTime({ value: !e.currentTarget.checked, save: true }),
       );
     },
     [dispatch],
@@ -129,6 +129,8 @@ export function TipsModal({ show }: Props): ReactElement | null {
     (state) => state.main.cookieConsentResult,
   );
 
+  const preventTips = useSelector((state) => state.tips.preventTips);
+
   if (!tip) {
     return null;
   }
@@ -177,9 +179,10 @@ export function TipsModal({ show }: Props): ReactElement | null {
               id="chk-prevent"
               onChange={handleNextTimePrevent}
               type="checkbox"
+              checked={!preventTips}
               label={
                 <>
-                  {m?.tips.prevent}{' '}
+                  {m?.tips.showOnStartup}{' '}
                   {cookieConsentResult === null ? (
                     <FaExclamationTriangle
                       className="text-warning"
@@ -201,6 +204,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
             >
               <FaChevronLeft /> {m?.tips.previous}
             </Button>
+
             <Button
               variant="secondary"
               onClick={() => {
@@ -211,6 +215,7 @@ export function TipsModal({ show }: Props): ReactElement | null {
             </Button>
           </>
         )}
+
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>

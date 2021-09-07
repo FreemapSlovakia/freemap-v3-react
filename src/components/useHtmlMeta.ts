@@ -11,6 +11,7 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   'export-gpx': 'mainMenu.gpxExport',
   'export-pdf': 'mainMenu.pdfExport',
   settings: 'mainMenu.settings',
+  mapSettings: 'mapLayers.layers',
   embed: 'mainMenu.embedMap',
   supportUs: 'mainMenu.supportUs',
   'tracking-watched': 'tracking.trackedDevices.modalTitle',

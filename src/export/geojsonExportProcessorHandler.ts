@@ -114,9 +114,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   }
 
   if (set.has('objects')) {
-    objects.objects.forEach(({ lat, lon, tags }) => {
+    for (const { lat, lon, tags } of objects.objects) {
       fc.features.push(point([lon, lat], tags));
-    });
+    }
   }
 
   if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
@@ -154,21 +154,27 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 export default handle;
 
 function addPictures(fc: FeatureCollection, pictures: Picture[]) {
-  pictures.forEach(
-    ({ lat, lon, id, takenAt, title, description, createdAt }) => {
-      fc.features.push(
-        point([lon, lat], {
-          takenAt: takenAt,
-          publishedAt: createdAt,
-          name: title,
-          description,
-          link: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
-          // TODO author
-          // TODO tags
-        }),
-      );
-    },
-  );
+  for (const {
+    lat,
+    lon,
+    id,
+    takenAt,
+    title,
+    description,
+    createdAt,
+  } of pictures) {
+    fc.features.push(
+      point([lon, lat], {
+        takenAt,
+        publishedAt: createdAt,
+        name: title,
+        description,
+        link: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+        // TODO author
+        // TODO tags
+      }),
+    );
+  }
 }
 
 function addPlannedRoute(

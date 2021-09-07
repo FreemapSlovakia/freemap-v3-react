@@ -42,7 +42,7 @@ sw.addEventListener('fetch', (event) => {
               : url?.pathname === FALLBACK_LOGO_URL
               ? FALLBACK_LOGO_URL
               : '_',
-          )) || err
+          )) || Response.error()
         );
       }
     }),

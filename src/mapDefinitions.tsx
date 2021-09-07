@@ -112,7 +112,6 @@ export interface LayerDef {
   minZoom?: number;
   minNativeZoom?: number;
   maxNativeZoom?: number;
-  showOnlyInExpertMode?: boolean;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
   subdomains?: string | string[];
@@ -140,7 +139,6 @@ const isHdpi = (window.devicePixelRatio || 1) > 1.4;
 function legacyFreemap(
   type: BaseLayerLetters,
   icon: ReactElement,
-  showOnlyInExpertMode: boolean,
 ): BaseLayerDef {
   return {
     type,
@@ -150,7 +148,6 @@ function legacyFreemap(
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['Key' + type, false],
-    showOnlyInExpertMode,
   };
 }
 
@@ -175,10 +172,10 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyX', false],
     primary: true,
   },
-  legacyFreemap('A', <FaCar />, true),
-  legacyFreemap('T', <FaHiking />, false),
-  legacyFreemap('C', <FaBicycle />, false),
-  legacyFreemap('K', <FaSkiingNordic />, true),
+  legacyFreemap('A', <FaCar /> /* showOnlyInExpertMode: true */),
+  legacyFreemap('T', <FaHiking /> /* showOnlyInExpertMode: false */),
+  legacyFreemap('C', <FaBicycle /> /* showOnlyInExpertMode: false */),
+  legacyFreemap('K', <FaSkiingNordic /> /* showOnlyInExpertMode: true */),
   {
     type: 'O',
     icon: <SiOpenstreetmap />,
@@ -229,11 +226,11 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'M',
-    url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+    url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
     minZoom: 3,
     maxNativeZoom: 18,
     icon: <FaBicycle />,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     attribution: [
       {
         type: 'map',
@@ -251,7 +248,7 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 3,
     maxNativeZoom: 17,
     icon: <FaTree />,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     attribution: [
       {
         type: 'map',
@@ -269,7 +266,7 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <FaBus />,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     attribution: [
       {
         type: 'map',
@@ -286,7 +283,7 @@ export const baseLayers: BaseLayerDef[] = [
     minNativeZoom: 8,
     maxNativeZoom: 12,
     icon: <AiFillBank />,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     attribution: [],
     key: ['Digit9', true],
   },
@@ -307,7 +304,7 @@ export const baseLayers: BaseLayerDef[] = [
     errorTileUrl: white1x1,
     tileSize: isHdpi ? 128 : 256,
     zoomOffset: isHdpi ? 1 : 0,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
   },
   {
     type: '5',
@@ -326,7 +323,7 @@ export const baseLayers: BaseLayerDef[] = [
     errorTileUrl: black1x1,
     tileSize: isHdpi ? 128 : 256,
     zoomOffset: isHdpi ? 1 : 0,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
   },
 ];
 
@@ -336,7 +333,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     icon: <FaPencilAlt />,
     key: ['KeyI', true],
     attribution: [],
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
   },
   {
     type: 'I',
@@ -390,7 +387,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
       | [string, boolean]
       | undefined,
-    showOnlyInExpertMode: stravaType !== 'all',
+    // showOnlyInExpertMode: stravaType !== 'all',
     zIndex: 3,
     strava: true,
     errorTileUrl: transparent1x1,
@@ -403,7 +400,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 20,
     key: ['KeyG', true],
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     zIndex: 3,
   },
   {
@@ -414,7 +411,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['KeyT', true],
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     zIndex: 3,
   },
   {
@@ -425,7 +422,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['KeyC', true],
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     zIndex: 3,
   },
   {
@@ -442,7 +439,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 18,
     key: ['KeyS', true],
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     zIndex: 3,
   },
   ...(
@@ -459,7 +456,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: key as [string, boolean] | undefined,
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     zIndex: 3,
   })),
   {
@@ -469,7 +466,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 12,
     key: ['KeyR', true],
-    showOnlyInExpertMode: true,
+    // showOnlyInExpertMode: true,
     zIndex: 5,
     attribution: [FM_ATTR],
   },

@@ -585,8 +585,6 @@ const hu: Messages = {
     tab: {
       map: 'Térkép',
       account: 'Fiók',
-      general: 'Általános',
-      expert: 'Szakértő',
     },
     map: {
       overlayPaneOpacity: 'Saját vonalak átlátszatlansága:',
@@ -599,7 +597,6 @@ const hu: Messages = {
     account: {
       name: 'Név',
       email: 'E-mail',
-      noAuthInfo: 'Csak bejelentkezett felhasználóknak.',
       sendGalleryEmails: 'Notify photo comments via email', // TODO translate
       DeleteInfo: () => (
         // TODO translate
@@ -1012,7 +1009,7 @@ const hu: Messages = {
   tips: {
     previous: 'Előző tipp',
     next: 'Következő tipp',
-    prevent: 'Következő alkalommal ne jelenjék meg',
+    showOnStartup: 'Show tips on startup', // TODO translate
     errorLoading: 'Hiba történt a tipp betöltésekor.',
   },
 
@@ -1373,6 +1370,8 @@ const hu: Messages = {
     ),
   },
   pdfExport: {
+    advancedSettings: 'Advanced options', // TODO translate
+    styles: 'Interactive layer styles', // TODO translate
     export: 'Exportálás',
     exportError: ({ err }) => `Hiba történt a térkép exportálásakor: ${err}`,
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',

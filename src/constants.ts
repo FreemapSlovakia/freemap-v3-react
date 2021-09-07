@@ -10,6 +10,7 @@ export const basicModals = [
   'export-gpx',
   'export-pdf',
   'settings',
+  'mapSettings',
   'embed',
   'supportUs',
   'tracking-watched',

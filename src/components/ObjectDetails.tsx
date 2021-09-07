@@ -25,7 +25,6 @@ type Props = ObjectDetailBasicProps & {
 type PropsRaw = Props & {
   language: string;
   unnamedText?: string;
-  expertMode?: boolean;
   dispatch?: Dispatch;
   modifyPageTitleSuffix?: string;
   position?: LatLon;
@@ -39,7 +38,6 @@ export function ObjectDetailsRaw({
   historyText,
   editInJosmText,
   unnamedText,
-  expertMode,
   dispatch,
   language,
   modifyPageTitleSuffix,
@@ -112,11 +110,9 @@ export function ObjectDetailsRaw({
 
       {tags['description'] && <p>{tags['description']}</p>}
 
-      {expertMode && (
-        <Button type="button" onClick={handleEditInJosm} className="mb-4">
-          {editInJosmText}
-        </Button>
-      )}
+      <Button type="button" onClick={handleEditInJosm} className="mb-4">
+        {editInJosmText}
+      </Button>
 
       <Table striped bordered size="sm">
         <tbody>
@@ -179,8 +175,6 @@ export function ObjectDetailsRaw({
 export function ObjectDetails({ ...rest }: Props): ReactElement {
   const m = useMessages();
 
-  const expertMode = useSelector((state) => state.main.expertMode);
-
   const dispatch = useDispatch();
 
   const language = useSelector((state) => state.l10n.language);
@@ -189,7 +183,6 @@ export function ObjectDetails({ ...rest }: Props): ReactElement {
     <ObjectDetailsRaw
       {...rest}
       unnamedText={m?.general.unnamed}
-      expertMode={expertMode}
       dispatch={dispatch}
       language={language}
     />

@@ -43,8 +43,6 @@ type Props = {
 export function MainMenu({ onSubmenu }: Props): ReactElement {
   const user = useSelector((state) => state.auth.user);
 
-  const expertMode = useSelector((state) => state.main.expertMode);
-
   const closeMenu = useMenuClose();
 
   const dispatch = useDispatch();
@@ -186,7 +184,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       </Dropdown.Item>
 
       {toolDefinitions
-        .filter(({ expertOnly, draw }) => !draw && (expertMode || !expertOnly))
+        .filter(({ draw }) => !draw)
         .map(
           ({ tool: newTool, icon, msgKey, kbd }) =>
             newTool && (

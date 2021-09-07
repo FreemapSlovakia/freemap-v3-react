@@ -71,9 +71,16 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     });
 
     dispatch(galleryRemoveItem(item.id));
+
     dispatch(galleryUpload());
   } catch (err) {
-    dispatch(gallerySetItemError({ id: item.id, error: `~${err.message}` }));
+    dispatch(
+      gallerySetItemError({
+        id: item.id,
+        error: `~${err instanceof Error ? err.message : String(err)}`,
+      }),
+    );
+
     dispatch(galleryUpload());
   }
 };

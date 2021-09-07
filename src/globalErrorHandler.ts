@@ -9,7 +9,6 @@ export function setStore(s: MyStore): void {
   store = s;
 }
 
-// eslint-disable-next-line
 (Error.prototype as any).toJSON = function toJSON() {
   return {
     name: this.name,

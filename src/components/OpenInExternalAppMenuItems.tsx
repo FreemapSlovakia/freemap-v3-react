@@ -24,7 +24,7 @@ import {
   FaTwitter,
   FaWindowMaximize,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typescript-is';
 
 interface Props extends LatLon {
@@ -55,8 +55,6 @@ export function OpenInExternalAppDropdownItems({
   const m = useMessages();
 
   const dispatch = useDispatch();
-
-  const expertMode = useSelector((state) => state.main.expertMode);
 
   const handleSelect = useCallback(
     (where: string | null) => {
@@ -103,19 +101,23 @@ export function OpenInExternalAppDropdownItems({
           <Dropdown.Item href={url} target="_blank" onSelect={handleSelect}>
             <FaWindowMaximize /> {m?.external.window}
           </Dropdown.Item>
+
           {hasShare && (
             <Dropdown.Item as="button" eventKey="url" onSelect={handleSelect}>
               <FaLink /> {m?.external.url}
             </Dropdown.Item>
           )}
+
           {(navigator as any).canShare && (
             <Dropdown.Item as="button" eventKey="image" onSelect={handleSelect}>
               <FaShareAlt /> {m?.external.image}
             </Dropdown.Item>
           )}
+
           <Dropdown.Divider />
         </>
       )}
+
       {!url && hasClipboard && (
         <Dropdown.Item as="button" eventKey="copy" onSelect={handleSelect}>
           <FaClipboard /> {m?.general.copyPageUrl}
@@ -127,12 +129,15 @@ export function OpenInExternalAppDropdownItems({
           )}
         </Dropdown.Item>
       )}
+
       {!url && hasShare && (
         <Dropdown.Item as="button" eventKey="url" onSelect={handleSelect}>
           <FaLink /> {m?.external.url}
         </Dropdown.Item>
       )}
+
       {!url && (hasClipboard || hasShare) && <Dropdown.Divider />}
+
       <Dropdown.Item as="button" eventKey="facebook" onSelect={handleSelect}>
         <FaFacebook /> Facebook
         {showKbdShortcut && (
@@ -142,6 +147,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getTwitterUrl()}
         target="_blank"
@@ -156,7 +162,9 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Divider />
+
       <Dropdown.Item
         href={getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
@@ -170,6 +178,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
@@ -183,6 +192,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getGoogleUrl(lat, lon, zoom, includePoint)}
         target="_blank"
@@ -196,6 +206,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getPeakfinderUrl(lat, lon)}
         target="_blank"
@@ -209,6 +220,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getMapillaryUrl(lat, lon, zoom)}
         target="_blank"
@@ -222,6 +234,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getOpenStreetCamUrl(lat, lon, zoom)}
         target="_blank"
@@ -229,6 +242,7 @@ export function OpenInExternalAppDropdownItems({
       >
         OpenStreetCam
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getOmaUrl(lat, lon, zoom, mapType)}
         targer="_blank"
@@ -236,6 +250,7 @@ export function OpenInExternalAppDropdownItems({
       >
         {m?.external.oma} (SK)
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getHikingSkUrl(lat, lon, zoom, includePoint)}
         target="_blank"
@@ -249,6 +264,7 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Item
         href={getZbgisUrl(lat, lon, zoom)}
         target="_blank"
@@ -262,18 +278,19 @@ export function OpenInExternalAppDropdownItems({
           </>
         )}
       </Dropdown.Item>
+
       <Dropdown.Divider />
-      {expertMode && (
-        <Dropdown.Item as="button" eventKey="josm" onSelect={handleSelect}>
-          {m?.external.josm}
-          {showKbdShortcut && (
-            <>
-              {' '}
-              <kbd>j</kbd> <kbd>j</kbd>
-            </>
-          )}
-        </Dropdown.Item>
-      )}
+
+      <Dropdown.Item as="button" eventKey="josm" onSelect={handleSelect}>
+        {m?.external.josm}
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <kbd>j</kbd> <kbd>j</kbd>
+          </>
+        )}
+      </Dropdown.Item>
+
       <Dropdown.Item
         href={getIdUrl(lat, lon, zoom)}
         target="_blank"

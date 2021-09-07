@@ -92,8 +92,6 @@ export function GalleryEditForm({
     [changeModel, model.tags],
   );
 
-  const RT = ReactTags as any; // TODO temporary until ts definitions are updated
-
   return (
     <div>
       {errors?.map((error) => (
@@ -106,6 +104,7 @@ export function GalleryEditForm({
               })()}
         </Alert>
       ))}
+
       <FormGroup>
         <FormControl
           placeholder={m?.gallery.editForm.name}
@@ -115,6 +114,7 @@ export function GalleryEditForm({
           maxLength={255}
         />
       </FormGroup>
+
       <FormGroup>
         <FormControl
           placeholder={m?.gallery.editForm.description}
@@ -124,6 +124,7 @@ export function GalleryEditForm({
           maxLength={4096}
         />
       </FormGroup>
+
       {m && (
         <FormGroup>
           <DateTime
@@ -137,6 +138,7 @@ export function GalleryEditForm({
           />
         </FormGroup>
       )}
+
       <FormGroup>
         <InputGroup>
           <FormControl
@@ -145,6 +147,7 @@ export function GalleryEditForm({
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
+
           <InputGroup.Append>
             <Button onClick={onPositionPick}>
               <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
@@ -152,8 +155,9 @@ export function GalleryEditForm({
           </InputGroup.Append>
         </InputGroup>
       </FormGroup>
+
       <FormGroup>
-        <RT
+        <ReactTags
           placeholderText={m?.gallery.editForm.tags}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}

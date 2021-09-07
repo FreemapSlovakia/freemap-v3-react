@@ -92,7 +92,8 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     if (!touching && (selected || joinWith?.lineIndex === index)) {
       setCoords(
         joinWith ||
-          (originalEvent.target as any)?.classList.contains('leaflet-container')
+          (originalEvent.target instanceof HTMLElement &&
+            originalEvent.target.classList.contains('leaflet-container'))
           ? { lat: latlng.lat, lon: latlng.lng }
           : undefined,
       );

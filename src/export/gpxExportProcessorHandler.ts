@@ -170,7 +170,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 export default handle;
 
 function addPictures(doc: Document, pictures: Picture[]) {
-  pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
+  for (const { lat, lon, id, takenAt, title, description } of pictures) {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
       lon: String(lon),
@@ -195,7 +195,7 @@ function addPictures(doc: Document, pictures: Picture[]) {
     createElement(link, 'type', 'image/jpeg');
 
     // TODO add tags and author to cmt
-  });
+  }
 }
 
 function addADMeasurement(
@@ -222,7 +222,7 @@ function addADMeasurement(
 }
 
 function addInfoPoint(doc: Document, { points }: DrawingPointsState) {
-  points.forEach(({ lat, lon, label }) => {
+  for (const { lat, lon, label } of points) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -236,11 +236,11 @@ function addInfoPoint(doc: Document, { points }: DrawingPointsState) {
     if (label) {
       createElement(wptEle, 'name', label);
     }
-  });
+  }
 }
 
 function addObjects(doc: Document, { objects }: ObjectsState) {
-  objects.forEach(({ lat, lon, tags }) => {
+  for (const { lat, lon, tags } of objects) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -258,7 +258,7 @@ function addObjects(doc: Document, { objects }: ObjectsState) {
     if (tags['name']) {
       createElement(wptEle, 'name', tags['name']);
     }
-  });
+  }
 }
 
 function addPlannedRoute(

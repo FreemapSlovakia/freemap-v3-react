@@ -1,4 +1,5 @@
 import { galleryShowFilter } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
@@ -32,8 +33,8 @@ import {
   FaRegSquare,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 import { is } from 'typescript-is';
-import useMedia from 'use-media';
 
 function getKbdShortcut(key?: [string, boolean]) {
   return (
@@ -54,8 +55,6 @@ export function MapSwitchButton(): ReactElement {
   const mapType = useSelector((state) => state.map.mapType);
 
   const overlays = useSelector((state) => state.map.overlays);
-
-  const expertMode = useSelector((state) => state.main.expertMode);
 
   const pictureFilterIsActive = useSelector(
     (state) => Object.values(state.gallery.filter).filter((x) => x).length > 0,
@@ -170,7 +169,7 @@ export function MapSwitchButton(): ReactElement {
     dispatch(mapRefocus({ overlays: [...s] }));
   };
 
-  const isWide = useMedia({ minWidth: '576px' });
+  const isWide = useMediaQuery({ query: '(min-width: 576px)' });
 
   const isPrimary = (layer: LayerDef) =>
     layer.primary === true ||
@@ -243,13 +242,23 @@ export function MapSwitchButton(): ReactElement {
           <Popover.Content className="fm-menu-scroller" ref={sc}>
             <div />
 
+            <Dropdown.Item
+              key="settings"
+              as="button"
+              onSelect={() => {
+                setShow(false);
+
+                dispatch(setActiveModal('mapSettings'));
+              }}
+            >
+              Settings
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
+
             {
               // TODO base and overlay layers have too much duplicate code
               baseLayers
-                .filter(
-                  ({ showOnlyInExpertMode }) =>
-                    !showOnlyInExpertMode || expertMode,
-                )
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key }) => (
                   <Dropdown.Item
@@ -280,12 +289,10 @@ export function MapSwitchButton(): ReactElement {
                   </Dropdown.Item>
                 ))
             }
+
             <Dropdown.Divider />
+
             {overlayLayers
-              .filter(
-                ({ showOnlyInExpertMode }) =>
-                  !showOnlyInExpertMode || expertMode,
-              )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .map(({ type, icon, minZoom, key }) => (
                 <Dropdown.Item

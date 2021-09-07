@@ -7,7 +7,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const cssnano = require('cssnano');
 
@@ -63,6 +64,7 @@ module.exports = {
   },
   optimization: {
     // moduleIds: 'deterministic',
+    minimizer: ['...', new CssMinimizerPlugin()],
   },
   // more info: https://webpack.js.org/configuration/devtool/
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
@@ -322,13 +324,6 @@ module.exports = {
         // both options are optional
         filename: '[name].[chunkhash].css',
         chunkFilename: '[name].[chunkhash].css',
-      }),
-    prod &&
-      new OptimizeCssAssetsPlugin({
-        cssProcessor: cssnano(),
-        cssProcessorPluginOptions: {
-          preset: ['default', { discardComments: { removeAll: true } }],
-        },
       }),
     new webpack.ContextReplacementPlugin(
       /intl\/locale-data\/jsonp$/,

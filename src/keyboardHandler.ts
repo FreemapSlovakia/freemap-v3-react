@@ -111,9 +111,9 @@ export function attachKeyboardHandler(store: MyStore): void {
     }
 
     if (
-      event.target &&
+      event.target instanceof HTMLElement &&
       ['input', 'select', 'textarea'].includes(
-        (event.target as any).tagName.toLowerCase(),
+        event.target.tagName.toLowerCase(),
       )
     ) {
       return;
@@ -171,11 +171,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
       );
 
-      if (
-        baseLayer &&
-        (!baseLayer.adminOnly || state.auth.user?.isAdmin) &&
-        (!baseLayer.showOnlyInExpertMode || store.getState().main.expertMode)
-      ) {
+      if (baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)) {
         store.dispatch(mapRefocus({ mapType: baseLayer.type }));
 
         event.preventDefault();
@@ -189,8 +185,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
       if (
         overlayLayer &&
-        (!overlayLayer.adminOnly || state.auth.user?.isAdmin) &&
-        (!overlayLayer.showOnlyInExpertMode || store.getState().main.expertMode)
+        (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
       ) {
         const { type } = overlayLayer;
 

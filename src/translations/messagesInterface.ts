@@ -467,8 +467,6 @@ export type Messages = {
     tab: {
       map: string;
       account: string;
-      general: string;
-      expert: string;
     };
     map: {
       overlayPaneOpacity: string;
@@ -481,7 +479,6 @@ export type Messages = {
     account: {
       name: string;
       email: string;
-      noAuthInfo: string;
       sendGalleryEmails: string;
       DeleteInfo: () => JSX.Element;
     };
@@ -583,7 +580,7 @@ export type Messages = {
   tips: {
     previous: string;
     next: string;
-    prevent: string;
+    showOnStartup: string;
     errorLoading: string;
   };
   supportUs: {
@@ -767,6 +764,8 @@ export type Messages = {
     };
     mapScale: string;
     alert: () => JSX.Element;
+    advancedSettings: string;
+    styles: string;
   };
   maps: {
     noMapFound: string;

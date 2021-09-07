@@ -13,7 +13,6 @@ export interface User {
   authToken: string;
   isAdmin: boolean;
   settings?: {
-    expertMode?: boolean;
     trackViewerEleSmoothingFactor?: number;
     overlayOpacity?: { [type: string]: number };
     overlayPaneOpacity?: number;
@@ -133,3 +132,7 @@ type Leaves<T, D extends number = 10> = [D] extends [never]
   : '';
 
 export type MessagePaths = Leaves<Messages>;
+
+export interface OffscreenCanvas extends EventTarget {
+  getContext(contextId: '2d'): CanvasRenderingContext2D;
+}

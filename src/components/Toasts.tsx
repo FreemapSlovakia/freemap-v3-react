@@ -88,7 +88,9 @@ export function Toasts(): ReactElement {
 
       if (action) {
         if (Array.isArray(action)) {
-          action.forEach((a) => dispatch(a));
+          for (const a of action) {
+            dispatch(a);
+          }
         } else {
           dispatch(action);
         }

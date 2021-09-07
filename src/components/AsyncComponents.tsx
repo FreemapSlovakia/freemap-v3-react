@@ -1,5 +1,6 @@
 import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 import { lazy, ReactElement, Suspense, useEffect, useState } from 'react';
+import { MapSettingsModal } from './MapSettingsModal';
 
 type ShowProps = { show: boolean };
 
@@ -273,5 +274,14 @@ export const AsyncSettingsModal = ({ show }: ShowProps): ReactElement | null =>
   useShow(show) && (
     <Suspense fallback={<AsyncLoadingIndicator />}>
       <SettingsModal show={show} />
+    </Suspense>
+  );
+
+export const AsyncMapSettingsModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <MapSettingsModal show={show} />
     </Suspense>
   );

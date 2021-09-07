@@ -31,7 +31,7 @@ export function renderGalleryTile({
   pointB,
   pointA,
 }: Props): void {
-  const ctx = tile.getContext('2d');
+  const ctx = (tile as any).getContext('2d');
 
   if (!ctx) {
     throw Error('no context');
@@ -84,10 +84,13 @@ export function renderGalleryTile({
     })
     .filter(({ lat, lon }: LatLon) => {
       const key = `${lat},${lon}`;
+
       const has = s.has(key);
+
       if (!has) {
         s.add(key);
       }
+
       return !has;
     })
     .map(({ lat, lon, ...rest }: LatLon) => ({
@@ -97,115 +100,110 @@ export function renderGalleryTile({
     }))
     .reverse();
 
-  data.forEach(({ lat, lon }: LatLon) => {
+  for (const { lat, lon } of data as LatLon[]) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
+
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
     ctx.beginPath();
+
     ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
 
     ctx.stroke();
-  });
+  }
 
   ctx.lineWidth = 0.25 * zk; // zoom > 9 ? 1.5 : 1;
 
   const now = Date.now() / 1000;
 
-  data.forEach(
-    ({
-      lat,
-      lon,
-      rating,
-      createdAt,
-      takenAt,
-      userId,
-    }: LatLon & {
+  for (const { lat, lon, rating, createdAt, takenAt, userId } of data as Array<
+    LatLon & {
       rating: number;
       userId: number;
       createdAt: number;
       takenAt?: number | null;
-    }) => {
-      const y =
-        size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
-      const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
+    }
+  >) {
+    const y =
+      size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
+    const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
-      ctx.beginPath();
-      ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
 
-      switch (colorizeBy) {
-        case 'userId':
-          ctx.fillStyle = color.lch(90, 70, -userId * 11313).hex();
-          break;
-        case 'rating':
-          ctx.fillStyle = color
-            .hsv(60, 100, (Math.tanh(rating - 2.5) + 1) * 50)
-            .hex();
-          break;
-        case 'takenAt':
-          ctx.fillStyle = !takenAt
-            ? '#a22'
-            : color
-                .hsl(
-                  60,
-                  100,
-                  // 100 - ((now - takenAt) * 10) ** 0.2,
-                  100 - ((now - takenAt) * 100) ** 0.185,
-                )
-                .hex();
-          break;
-        case 'season':
-          {
-            if (!takenAt) {
-              ctx.fillStyle = '#800';
+    switch (colorizeBy) {
+      case 'userId':
+        ctx.fillStyle = color.lch(90, 70, -userId * 11313).hex();
+        break;
+      case 'rating':
+        ctx.fillStyle = color
+          .hsv(60, 100, (Math.tanh(rating - 2.5) + 1) * 50)
+          .hex();
+        break;
+      case 'takenAt':
+        ctx.fillStyle = !takenAt
+          ? '#a22'
+          : color
+              .hsl(
+                60,
+                100,
+                // 100 - ((now - takenAt) * 10) ** 0.2,
+                100 - ((now - takenAt) * 100) ** 0.185,
+              )
+              .hex();
+        break;
+      case 'season':
+        {
+          if (!takenAt) {
+            ctx.fillStyle = '#800';
 
-              break;
-            }
-
-            const hs = 366 / 4;
-
-            const winter = [70, -5, -52];
-            const spring = [70, -62, 42];
-            const summer = [90, -4, 74];
-            const fall = [70, 48, 43];
-
-            // 2847600
-            const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
-
-            const fill = (from: number[], to: number[], n: number) => {
-              ctx.fillStyle = color
-                .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
-                .hex();
-            };
-
-            if (x < hs) {
-              fill(winter, spring, x / hs);
-            } else if (x < 2 * hs) {
-              fill(spring, summer, (x - hs) / hs);
-            } else if (x < 3 * hs) {
-              fill(summer, fall, (x - 2 * hs) / hs);
-            } else {
-              fill(fall, winter, (x - 3 * hs) / hs);
-            }
+            break;
           }
-          break;
-        case 'createdAt':
-          ctx.fillStyle = color
-            .hsl(
-              60,
-              100,
-              // 100 - ((now - createdAt) * 10) ** 0.2,
-              100 - ((now - createdAt) * 100) ** 0.185,
-            )
-            .hex();
-          break;
-        case 'mine':
-          ctx.fillStyle = userId === myUserId ? '#ff0' : '#fa4';
-          break;
-      }
 
-      ctx.fill();
-      ctx.stroke();
-    },
-  );
+          const hs = 366 / 4;
+
+          const winter = [70, -5, -52];
+          const spring = [70, -62, 42];
+          const summer = [90, -4, 74];
+          const fall = [70, 48, 43];
+
+          // 2847600
+          const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
+
+          const fill = (from: number[], to: number[], n: number) => {
+            ctx.fillStyle = color
+              .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
+              .hex();
+          };
+
+          if (x < hs) {
+            fill(winter, spring, x / hs);
+          } else if (x < 2 * hs) {
+            fill(spring, summer, (x - hs) / hs);
+          } else if (x < 3 * hs) {
+            fill(summer, fall, (x - 2 * hs) / hs);
+          } else {
+            fill(fall, winter, (x - 3 * hs) / hs);
+          }
+        }
+        break;
+      case 'createdAt':
+        ctx.fillStyle = color
+          .hsl(
+            60,
+            100,
+            // 100 - ((now - createdAt) * 10) ** 0.2,
+            100 - ((now - createdAt) * 100) ** 0.185,
+          )
+          .hex();
+        break;
+      case 'mine':
+        ctx.fillStyle = userId === myUserId ? '#ff0' : '#fa4';
+        break;
+    }
+
+    ctx.fill();
+    ctx.stroke();
+  }
 }

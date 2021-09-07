@@ -24,6 +24,7 @@ import {
   AsyncLegendModal,
   AsyncLegendOutdoorModal,
   AsyncLoginModal,
+  AsyncMapSettingsModal,
   AsyncSettingsModal,
   AsyncSupportUsModal,
   AsyncTipsModal,
@@ -601,6 +602,7 @@ export function Main(): ReactElement {
         />
 
         <AsyncSettingsModal show={activeModal === 'settings'} />
+        <AsyncMapSettingsModal show={activeModal === 'mapSettings'} />
         <AsyncEmbedMapModal show={activeModal === 'embed'} />
         <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
         <AsyncExportPdfModal show={activeModal === 'export-pdf'} />

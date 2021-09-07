@@ -134,7 +134,7 @@ class LGalleryLayer extends LGridLayer {
 
     if (supportsOffscreen === undefined) {
       try {
-        document.createElement('canvas').transferControlToOffscreen();
+        (document.createElement('canvas') as any).transferControlToOffscreen();
 
         supportsOffscreen = true;
       } catch {
@@ -180,7 +180,7 @@ class LGalleryLayer extends LGridLayer {
               resolve,
               reject,
               run(w) {
-                const offscreen = tile.transferControlToOffscreen();
+                const offscreen = (tile as any).transferControlToOffscreen();
 
                 w.postMessage({ ...ctx, id: myId, tile: offscreen }, [
                   offscreen,
@@ -212,6 +212,7 @@ interface Props extends LayerProps {
   myUserId?: number;
   opacity?: number;
   zIndex?: number;
+  dirtySeq?: number; // probably unused
 }
 
 export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
@@ -224,10 +225,8 @@ export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
 
   (instance, props, prevProps) => {
     if (
-      ['dirtySeq', 'filter', 'colorizeBy', 'myUserId'].some(
-        (p) =>
-          JSON.stringify((props as any)[p]) !==
-          JSON.stringify((prevProps as any)[p]),
+      (['dirtySeq', 'filter', 'colorizeBy', 'myUserId'] as const).some(
+        (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
       )
     ) {
       instance.redraw();

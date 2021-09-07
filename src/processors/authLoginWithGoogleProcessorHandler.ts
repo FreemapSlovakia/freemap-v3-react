@@ -48,7 +48,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       dispatch(removeAds());
     }
   } catch (err) {
-    if (!['popup_closed_by_user', 'access_denied'].includes(err.error)) {
+    if (
+      typeof err !== 'object' ||
+      !err ||
+      !['popup_closed_by_user', 'access_denied'].includes((err as any)['error'])
+    ) {
       throw err;
     }
   }

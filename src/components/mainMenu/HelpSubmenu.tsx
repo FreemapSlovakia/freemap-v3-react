@@ -1,5 +1,5 @@
 import { Modal, setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
+import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { TipKey, tips } from 'fm3/tips';
 import { SyntheticEvent, useCallback } from 'react';
@@ -7,8 +7,10 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import {
   FaBook,
   FaRegAddressCard,
+  FaRegCheckSquare,
   FaRegLightbulb,
   FaRegMap,
+  FaRegSquare,
   FaUsers,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,6 +56,8 @@ export function HelpSubmenu(): JSX.Element {
     [closeMenu, dispatch],
   );
 
+  const preventTips = useSelector((state) => state.tips.preventTips);
+
   return (
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
@@ -83,21 +87,21 @@ export function HelpSubmenu(): JSX.Element {
       </Dropdown.Item>
 
       {skCz && (
-        <Dropdown.Item
-          href="https://groups.google.com/forum/#!forum/osm_sk"
-          onSelect={closeMenu}
-          target="_blank"
-        >
-          <FaUsers /> Fórum slovenskej OSM komunity
-        </Dropdown.Item>
-      )}
-
-      {skCz && (
         <>
+          <Dropdown.Item
+            href="https://groups.google.com/forum/#!forum/osm_sk"
+            onSelect={closeMenu}
+            target="_blank"
+          >
+            <FaUsers /> Fórum slovenskej OSM komunity
+          </Dropdown.Item>
+
           <Dropdown.Divider />
+
           <Dropdown.Header>
             <FaRegLightbulb /> {m?.mainMenu.tips}
           </Dropdown.Header>
+
           {tips.map(([key, name, icon, hidden]) =>
             hidden ? null : (
               <Dropdown.Item
@@ -110,6 +114,21 @@ export function HelpSubmenu(): JSX.Element {
               </Dropdown.Item>
             ),
           )}
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item
+            as="button"
+            onSelect={() => {
+              dispatch(
+                tipsPreventNextTime({ value: !preventTips, save: true }),
+              );
+            }}
+            active={!preventTips}
+          >
+            {preventTips ? <FaRegSquare /> : <FaRegCheckSquare />}{' '}
+            {m?.tips.showOnStartup}
+          </Dropdown.Item>
         </>
       )}
     </>

@@ -87,3 +87,9 @@ kbd {
 .f-gap-1 {
   gap: 0.25rem;
 }
+
+.dropdown-item {
+  @media (pointer: coarse) {
+    padding: 0.5rem 1.5rem;
+  }
+}

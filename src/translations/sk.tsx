@@ -603,8 +603,6 @@ const sk: Messages = {
     tab: {
       map: 'Mapa',
       account: 'Účet',
-      general: 'Všeobecné',
-      expert: 'Expert',
     },
     map: {
       overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
@@ -617,7 +615,6 @@ const sk: Messages = {
     account: {
       name: 'Meno',
       email: 'E-Mail',
-      noAuthInfo: 'Dostupné iba pre prihlásených používateľov.',
       sendGalleryEmails: 'Upozorni emailom na komentáre k fotke',
       DeleteInfo: () => (
         <>
@@ -1028,7 +1025,7 @@ const sk: Messages = {
   tips: {
     previous: 'Predošlý tip',
     next: 'Ďalší tip',
-    prevent: 'Nabudúce nezobrazovať',
+    showOnStartup: 'Zobraziť tipy po spustení',
     errorLoading: 'Tip sa nepodarilo načítať.',
   },
 
@@ -1385,6 +1382,8 @@ const sk: Messages = {
     ),
   },
   pdfExport: {
+    advancedSettings: 'Rozšírené nastavenia',
+    styles: 'Štýly interaktívnej vrstvy',
     export: 'Exportovať',
     exportError: ({ err }) => `Chyba exportovania mapy: ${err}`,
     exporting: 'Prosím počkajte, mapa sa exportuje…',

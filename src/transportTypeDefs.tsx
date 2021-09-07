@@ -28,7 +28,6 @@ const EPS_URL = 'https://routing.epsilon.sk/';
 export const transportTypeDefs: {
   type: TransportType;
   icon: ReactElement;
-  expert?: boolean;
   special?: boolean;
   url: string;
   exclude?: string;
@@ -77,7 +76,6 @@ export const transportTypeDefs: {
     icon: <FaWheelchair />,
     url: `${FM_URL}$MODE/v1/foot`,
     exclude: 'stroller',
-    expert: true,
   },
   {
     type: 'nordic',
@@ -88,7 +86,6 @@ export const transportTypeDefs: {
     type: 'ski',
     icon: <FaSkiing />,
     url: `${FM_URL}$MODE/v1/ski`,
-    expert: true,
   },
 ];
 

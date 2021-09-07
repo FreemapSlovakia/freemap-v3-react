@@ -575,8 +575,6 @@ const en: Messages = {
     tab: {
       map: 'Map',
       account: 'Account',
-      general: 'General',
-      expert: 'Expert',
     },
     map: {
       overlayPaneOpacity: 'Map line features opacity:',
@@ -589,7 +587,6 @@ const en: Messages = {
     account: {
       name: 'Name',
       email: 'Email',
-      noAuthInfo: 'Only for logged-in users.',
       sendGalleryEmails: 'Notify photo comments via email',
       DeleteInfo: () => (
         <>
@@ -998,7 +995,7 @@ const en: Messages = {
   tips: {
     previous: 'Previous tip',
     next: 'Next tip',
-    prevent: "Don't show next time",
+    showOnStartup: 'Show tips on startup',
     errorLoading: 'Error loading tip.',
   },
 
@@ -1353,6 +1350,8 @@ const en: Messages = {
     ),
   },
   pdfExport: {
+    advancedSettings: 'Advanced options',
+    styles: 'Interactive layer styles',
     export: 'Export',
     exportError: ({ err }) => `Error exporting map: ${err}`,
     exporting: 'Please wait, exporting map…',

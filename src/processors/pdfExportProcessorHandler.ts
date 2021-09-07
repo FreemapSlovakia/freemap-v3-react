@@ -7,6 +7,7 @@ import {
   point,
   polygon,
 } from '@turf/helpers';
+import axios from 'axios';
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -230,7 +231,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
 
       break;
     } catch (err) {
-      if (err.response || i > 10) {
+      if ((axios.isAxiosError(err) && err.response) || i > 10) {
         throw err;
       }
     }

@@ -105,12 +105,12 @@ export const changesetsProcessor: Processor = {
 
       const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
 
-      changesetsFromThisRequest.forEach((ch) => {
+      for (const ch of changesetsFromThisRequest) {
         if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
           // occasionally the changeset may already be here from previous ajax request
           allChangesetsSoFar.push(ch);
         }
-      });
+      }
 
       dispatch(changesetsSet(allChangesetsSoFar));
 

@@ -25,7 +25,6 @@ import {
   setAnalyticCookiesAllowed,
   setEmbedFeatures,
   setErrorTicketId,
-  setExpertMode,
   setHomeLocation,
   setLocation,
   setSelectingHomeLocation,
@@ -50,7 +49,6 @@ export interface MainState {
   homeLocation: LatLon | null;
   progress: Array<string | number>;
   location: Location | null;
-  expertMode: boolean;
   locate: boolean;
   selectingHomeLocation: boolean;
   urlUpdatingEnabled: boolean;
@@ -69,7 +67,6 @@ export const mainInitialState: MainState = {
   homeLocation: null,
   progress: [],
   location: null,
-  expertMode: false,
   locate: false,
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
@@ -119,10 +116,6 @@ export const mainReducer = createReducer<MainState, RootAction>(
         : p.lat && p.lon
         ? { lat: p.lat, lon: p.lon }
         : null,
-      expertMode:
-        p?.settings?.expertMode !== undefined
-          ? p.settings.expertMode
-          : state.expertMode,
       eleSmoothingFactor:
         p?.settings?.trackViewerEleSmoothingFactor !== undefined
           ? p.settings.trackViewerEleSmoothingFactor
@@ -159,10 +152,6 @@ export const mainReducer = createReducer<MainState, RootAction>(
     ...state,
     locate: !state.locate,
     location: null,
-  }))
-  .handleAction(setExpertMode, (state, action) => ({
-    ...state,
-    expertMode: action.payload,
   }))
   .handleAction(setSelectingHomeLocation, (state, action) => ({
     ...state,

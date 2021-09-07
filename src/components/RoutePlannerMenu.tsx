@@ -63,8 +63,6 @@ export function RoutePlannerMenu(): ReactElement {
     (state) => !!state.elevationChart.trackGeojson,
   );
 
-  const expertMode = useSelector((state) => state.main.expertMode);
-
   const canSwap = useSelector(
     (state) => !!(state.routePlanner.start && state.routePlanner.finish),
   );
@@ -162,9 +160,7 @@ export function RoutePlannerMenu(): ReactElement {
           <div className="dropdown-long" ref={sc}>
             <div />
             {transportTypeDefs
-              .filter(
-                ({ expert, hidden }) => !hidden && (expertMode || !expert),
-              )
+              .filter(({ hidden }) => !hidden)
               .map(({ type, icon, development }) => (
                 <Dropdown.Item
                   as="button"

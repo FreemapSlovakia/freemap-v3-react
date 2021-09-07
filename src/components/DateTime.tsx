@@ -74,6 +74,7 @@ export function DateTime({
           <FaCalendar />
         </InputGroup.Text>
       </InputGroup.Append>
+
       <FormControl
         type="date"
         placeholder={placeholders?.date ?? 'YYY-MM-DD'}
@@ -82,11 +83,13 @@ export function DateTime({
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
         required={!!timePart}
       />
+
       <InputGroup.Append>
         <InputGroup.Text>
           <FaClock />
         </InputGroup.Text>
       </InputGroup.Append>
+
       <FormControl
         type="time"
         placeholder={placeholders?.time ?? 'HH:MM[:SS]'}

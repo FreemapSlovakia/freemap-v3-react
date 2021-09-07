@@ -1,13 +1,8 @@
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
-import {
-  ChangeEvent,
-  ReactElement,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -15,6 +10,7 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import {
   FaDownload,
@@ -28,10 +24,6 @@ import { useDispatch, useSelector } from 'react-redux';
 type Props = { show: boolean };
 
 export function ExportPdfModal({ show }: Props): ReactElement {
-  const language = useSelector((state) => state.l10n.language);
-
-  const expertMode = useSelector((state) => state.main.expertMode);
-
   const canExportByPolygon = useSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
@@ -40,11 +32,11 @@ export function ExportPdfModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
-  const [area, setArea] = useState('visible');
+  const [area, setArea] = useState<'visible' | 'selected'>('visible');
 
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(100);
 
-  const [format, setFormat] = useState('jpeg');
+  const [format, setFormat] = useState<'jpeg' | 'png' | 'pdf' | 'svg'>('jpeg');
 
   const [contours, setContours] = useState(true);
 
@@ -179,15 +171,6 @@ export function ExportPdfModal({ show }: Props): ReactElement {
     [],
   );
 
-  const nf = useMemo(
-    () =>
-      Intl.NumberFormat(language, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }),
-    [language],
-  );
-
   const dispatch = useDispatch();
 
   function close() {
@@ -201,9 +184,12 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           <FaRegFilePdf /> {m?.mainMenu.pdfExport}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <Alert variant="warning">{m?.pdfExport.alert()}</Alert>
+
         <p>{m?.pdfExport.area}</p>
+
         <ButtonGroup>
           <Button
             variant="secondary"
@@ -212,6 +198,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           >
             {m?.pdfExport.areas.visible}
           </Button>
+
           <Button
             variant="secondary"
             active={area === 'selected'}
@@ -221,8 +208,11 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             {m?.pdfExport.areas.pinned} <FaDrawPolygon />
           </Button>
         </ButtonGroup>
+
         <hr />
+
         <p>{m?.pdfExport.format}</p>
+
         <ButtonGroup>
           <Button
             variant="secondary"
@@ -231,6 +221,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           >
             JPEG
           </Button>
+
           <Button
             variant="secondary"
             onClick={() => setFormat('png')}
@@ -238,6 +229,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           >
             PNG
           </Button>
+
           <Button
             variant="secondary"
             onClick={() => setFormat('pdf')}
@@ -245,6 +237,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           >
             PDF
           </Button>
+
           <Button
             variant="secondary"
             onClick={() => setFormat('svg')}
@@ -253,8 +246,11 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             SVG
           </Button>
         </ButtonGroup>
+
         <hr />
+
         <p>{m?.pdfExport.layersTitle}</p>
+
         <FormCheck
           id="contours"
           type="checkbox"
@@ -264,6 +260,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.contours}
         />
+
         <FormCheck
           id="shading"
           type="checkbox"
@@ -271,6 +268,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           onChange={() => setShadedRelief((b) => !b)}
           label={m?.pdfExport.layers.shading}
         />
+
         <FormCheck
           id="hikingTrails"
           type="checkbox"
@@ -280,6 +278,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.hikingTrails}
         />
+
         <FormCheck
           id="bicycleTrails"
           checked={bicycleTrails}
@@ -288,6 +287,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.bicycleTrails}
         />
+
         <FormCheck
           id="skiTrails"
           type="checkbox"
@@ -297,6 +297,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.skiTrails}
         />
+
         <FormCheck
           id="horseTrails"
           type="checkbox"
@@ -306,6 +307,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.horseTrails}
         />
+
         <FormCheck
           id="drawing"
           type="checkbox"
@@ -315,6 +317,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.drawing}
         />
+
         <FormCheck
           id="plannedRoute"
           type="checkbox"
@@ -324,6 +327,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.plannedRoute}
         />
+
         <FormCheck
           id="track"
           type="checkbox"
@@ -333,27 +337,40 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
           label={m?.pdfExport.layers.track}
         />
+
         <hr />
-        <p>
-          {m?.pdfExport.mapScale} {nf.format(scale * 96)} DPI
-        </p>
-        <FormControl
-          type="range"
-          custom
-          value={scale}
-          min={0.5}
-          max={8}
-          step={0.05}
-          onChange={(e) => {
-            setScale(Number(e.currentTarget.value));
-          }}
-        />
-        {expertMode && (
-          <>
-            <hr />
-            <FormGroup>
+
+        <p>{m?.pdfExport.mapScale}</p>
+
+        <InputGroup>
+          <FormControl
+            type="number"
+            custom
+            value={scale}
+            min={60}
+            max={1200}
+            step={10}
+            onChange={(e) => {
+              setScale(Number(e.currentTarget.value));
+            }}
+          />
+
+          <InputGroup.Append>
+            <InputGroup.Text>DPI</InputGroup.Text>
+          </InputGroup.Append>
+        </InputGroup>
+
+        <hr />
+
+        <Accordion>
+          <Accordion.Toggle as={Button} eventKey="0">
+            {m?.pdfExport.advancedSettings}
+          </Accordion.Toggle>
+
+          <Accordion.Collapse eventKey="0">
+            <FormGroup className="mt-2">
               <FormLabel>
-                Interactive layer styles{' '}
+                {m?.pdfExport.styles}{' '}
                 <a
                   href="http://mapnik.org/mapnik-reference/"
                   target="mapnik_reference"
@@ -361,25 +378,28 @@ export function ExportPdfModal({ show }: Props): ReactElement {
                   <FaRegQuestionCircle />
                 </a>
               </FormLabel>
+
               <FormControl
                 as="textarea"
                 value={style}
                 onChange={handleStyleChange}
                 rows={6}
                 disabled={!(drawing || plannedRoute || track)}
+                className="text-monospace"
               />
             </FormGroup>
-          </>
-        )}
+          </Accordion.Collapse>
+        </Accordion>
       </Modal.Body>
+
       <Modal.Footer>
         <Button
-          onClick={() => {
+          onClick={() =>
             dispatch(
               exportPdf({
-                area: area as any,
-                scale,
-                format: format as any,
+                area,
+                scale: scale / 96,
+                format,
                 contours,
                 shadedRelief,
                 hikingTrails,
@@ -391,11 +411,12 @@ export function ExportPdfModal({ show }: Props): ReactElement {
                 track,
                 style,
               }),
-            );
-          }}
+            )
+          }
         >
           <FaDownload /> {m?.pdfExport.export}
         </Button>
+
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>

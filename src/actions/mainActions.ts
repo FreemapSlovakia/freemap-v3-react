@@ -79,17 +79,16 @@ export const setSelectingHomeLocation = createAction(
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
-  homeLocation: LatLon | null;
-  overlayOpacity: { [type: string]: number };
-  overlayPaneOpacity: number;
-  expertMode: boolean;
-  trackViewerEleSmoothingFactor: number;
-  user: {
-    name: string | null;
+  homeLocation?: LatLon | null;
+  overlayOpacity?: { [type: string]: number };
+  overlayPaneOpacity?: number;
+  trackViewerEleSmoothingFactor?: number;
+  user?: {
+    name: string;
     email: string | null;
     sendGalleryEmails: boolean;
   } | null;
-  preventTips: boolean;
+  preventTips?: boolean;
 }>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<

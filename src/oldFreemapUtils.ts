@@ -97,10 +97,11 @@ function rawUrlParamsToHash(
 
   const oldFreemapUrlParams: { [key: string]: string } = {};
 
-  oldFreemapRawUrlParams.forEach((s) => {
+  for (const s of oldFreemapRawUrlParams) {
     const [key, value] = s.split('=');
+
     oldFreemapUrlParams[key] = value;
-  });
+  }
 
   return oldFreemapUrlParams;
 }
