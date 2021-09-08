@@ -26,7 +26,7 @@ export const mapRefocusProcessor: Processor = {
         map.getCenter().lat !== lat ||
         map.getCenter().lng !== fixedLon)
     ) {
-      const fixing = map.getCenter().lng !== fixedLon;
+      const fixing = lon !== fixedLon;
 
       map.setView([lat, fixedLon], zoom, {
         animate: !fixing,
