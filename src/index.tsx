@@ -43,7 +43,12 @@ const store = createReduxStore();
 
 setErrorHandlerStore(store);
 
-store.dispatch(l10nSetChosenLanguage(store.getState().l10n.chosenLanguage));
+store.dispatch(
+  l10nSetChosenLanguage({
+    language: store.getState().l10n.chosenLanguage,
+    noSave: true,
+  }),
+);
 
 store.dispatch(authInit());
 

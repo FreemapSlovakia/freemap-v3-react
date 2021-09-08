@@ -9,6 +9,7 @@ import { isActionOf } from 'typesafe-actions';
 
 export const l10nSetLanguageProcessor: Processor = {
   actionCreator: [l10nSetChosenLanguage, authSetUser],
+  errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const { chosenLanguage } = getState().l10n;
 
@@ -22,7 +23,11 @@ export const l10nSetLanguageProcessor: Processor = {
 
     document.documentElement.lang = language;
 
-    if (!isActionOf(authSetUser, action) && getState().auth.user) {
+    if (
+      isActionOf(l10nSetChosenLanguage, action) &&
+      getState().auth.user &&
+      !action.payload.noSave
+    ) {
       await httpRequest({
         getState,
         method: 'PATCH',

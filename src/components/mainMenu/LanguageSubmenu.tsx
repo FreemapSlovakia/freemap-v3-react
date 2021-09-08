@@ -19,7 +19,7 @@ export function LanguageSubmenu(): JSX.Element {
     (language: string | null) => {
       closeMenu();
 
-      dispatch(l10nSetChosenLanguage(language));
+      dispatch(l10nSetChosenLanguage({ language }));
     },
     [closeMenu, dispatch],
   );

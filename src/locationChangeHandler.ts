@@ -194,7 +194,7 @@ export const handleLocationChange = (
     typeof lang === 'string' &&
     ['en', 'sk', 'cs', 'hu'].includes(lang as string)
   ) {
-    dispatch(l10nSetChosenLanguage(lang));
+    dispatch(l10nSetChosenLanguage({ language: lang }));
   }
 
   const tool =
