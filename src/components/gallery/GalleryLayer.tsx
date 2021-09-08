@@ -143,8 +143,8 @@ class LGalleryLayer extends LGridLayer {
     }
 
     axios
-      // .get(`${process.env['API_URL']}/gallery/pictures`, {
-      .get(`https://backend.freemap.sk/gallery/pictures`, {
+      .get(`${process.env['API_URL']}/gallery/pictures`, {
+        // .get(`https://backend.freemap.sk/gallery/pictures`, {
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
