@@ -1,6 +1,9 @@
-import { convertToDrawing, setActiveModal } from 'fm3/actions/mainActions';
 import {
-  PickMode,
+  convertToDrawing,
+  setActiveModal,
+  setSelectingHomeLocation,
+} from 'fm3/actions/mainActions';
+import {
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetMode,
@@ -17,7 +20,13 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
-import { MouseEvent, ReactElement, useCallback, useMemo } from 'react';
+import {
+  MouseEvent,
+  ReactElement,
+  SyntheticEvent,
+  useCallback,
+  useMemo,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -25,6 +34,7 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import {
   FaBullseye,
   FaChartArea,
+  FaCrosshairs,
   FaFlask,
   FaHome,
   FaInfoCircle,
@@ -76,7 +86,16 @@ export function RoutePlannerMenu(): ReactElement {
       ),
   );
 
-  function setFromHomeLocation(pointType: PickMode) {
+  function setFromHomeLocation(
+    pointType: string | null,
+    e: SyntheticEvent<unknown>,
+  ) {
+    if (e.target instanceof HTMLButtonElement) {
+      dispatch(setSelectingHomeLocation(true));
+
+      return;
+    }
+
     if (!homeLocation) {
       dispatch(
         toastsAdd({
@@ -152,6 +171,7 @@ export function RoutePlannerMenu(): ReactElement {
             ''
           )}{' '}
         </Dropdown.Toggle>
+
         <Dropdown.Menu
           popperConfig={{
             strategy: 'fixed',
@@ -159,6 +179,7 @@ export function RoutePlannerMenu(): ReactElement {
         >
           <div className="dropdown-long" ref={sc}>
             <div />
+
             {transportTypeDefs
               .filter(({ hidden }) => !hidden)
               .map(({ type, icon, development }) => (
@@ -199,6 +220,7 @@ export function RoutePlannerMenu(): ReactElement {
           </div>
         </Dropdown.Menu>
       </Dropdown>
+
       <Dropdown
         className="ml-1"
         onSelect={(mode) => {
@@ -212,6 +234,7 @@ export function RoutePlannerMenu(): ReactElement {
         >
           {m?.routePlanner.mode[mode] ?? '…'}
         </Dropdown.Toggle>
+
         <Dropdown.Menu
           popperConfig={{
             strategy: 'fixed',
@@ -229,24 +252,25 @@ export function RoutePlannerMenu(): ReactElement {
           ))}
         </Dropdown.Menu>
       </Dropdown>
+
       <ButtonGroup className="ml-1">
         <Dropdown
           as={ButtonGroup}
           id="set-start-dropdown"
-          onSelect={() => {
-            dispatch(routePlannerSetPickMode('start'));
-          }}
+          onSelect={() => dispatch(routePlannerSetPickMode('start'))}
         >
           <Dropdown.Toggle
             variant="secondary"
             className={pickPointMode === 'start' ? 'active' : ''}
           >
             <FaPlay color="#409a40" />
+
             <span className="d-none d-md-inline">
               {' '}
               {m?.routePlanner.start ?? '…'}
             </span>
           </Dropdown.Toggle>
+
           <Dropdown.Menu
             popperConfig={{
               strategy: 'fixed',
@@ -255,6 +279,7 @@ export function RoutePlannerMenu(): ReactElement {
             <Dropdown.Item>
               <FaMapMarkerAlt /> {m?.routePlanner.point.pick ?? '…'}
             </Dropdown.Item>
+
             <Dropdown.Item
               onSelect={() => {
                 dispatch(routePlannerSetFromCurrentPosition('start'));
@@ -262,12 +287,19 @@ export function RoutePlannerMenu(): ReactElement {
             >
               <FaBullseye /> {m?.routePlanner.point.current ?? '…'}
             </Dropdown.Item>
+
             <Dropdown.Item
-              onSelect={() => {
-                setFromHomeLocation('start');
-              }}
+              className="d-flex align-items-center justify-content-between"
+              eventKey="start"
+              onSelect={setFromHomeLocation}
             >
-              <FaHome /> {m?.routePlanner.point.home ?? '…'}
+              <div>
+                <FaHome /> {m?.routePlanner.point.home ?? '…'}
+              </div>
+
+              <Button size="sm" variant="outline-secondary" className="m-n1">
+                <FaCrosshairs className="pe-none" />
+              </Button>
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
@@ -277,33 +309,32 @@ export function RoutePlannerMenu(): ReactElement {
             <Button
               as={ButtonGroup}
               variant="secondary"
-              onClick={() => {
-                dispatch(routePlannerSwapEnds());
-              }}
+              onClick={() => dispatch(routePlannerSwapEnds())}
               disabled={!canSwap}
               title={m?.routePlanner.swap ?? '…'}
             >
               ⇆
             </Button>
+
             <Dropdown
               as={ButtonGroup}
               variant="secondary"
               className={pickPointMode === 'finish' ? 'active' : ''}
               id="set-finish-dropdown"
-              onSelect={() => {
-                dispatch(routePlannerSetPickMode('finish'));
-              }}
+              onSelect={() => dispatch(routePlannerSetPickMode('finish'))}
             >
               <Dropdown.Toggle
                 variant="secondary"
                 className={pickPointMode === 'finish' ? 'active' : ''}
               >
                 <FaStop color="#d9534f" />
+
                 <span className="d-none d-md-inline">
                   {' '}
                   {m?.routePlanner.finish ?? '…'}
                 </span>
               </Dropdown.Toggle>
+
               <Dropdown.Menu
                 popperConfig={{
                   strategy: 'fixed',
@@ -313,20 +344,32 @@ export function RoutePlannerMenu(): ReactElement {
                   <FaMapMarkerAlt />
                   {m?.routePlanner.point.pick ?? '…'}
                 </Dropdown.Item>
+
                 <Dropdown.Item
-                  onSelect={() => {
-                    dispatch(routePlannerSetFromCurrentPosition('finish'));
-                  }}
+                  onSelect={() =>
+                    dispatch(routePlannerSetFromCurrentPosition('finish'))
+                  }
                 >
                   <FaBullseye />
                   {m?.routePlanner.point.current ?? '…'}
                 </Dropdown.Item>
+
                 <Dropdown.Item
-                  onSelect={() => {
-                    setFromHomeLocation('finish');
-                  }}
+                  className="d-flex align-items-center justify-content-between"
+                  eventKey="finish"
+                  onSelect={setFromHomeLocation}
                 >
-                  <FaHome /> {m?.routePlanner.point.home ?? '…'}
+                  <div>
+                    <FaHome /> {m?.routePlanner.point.home ?? '…'}
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="outline-secondary"
+                    className="m-n1"
+                  >
+                    <FaCrosshairs className="pe-none" />
+                  </Button>
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
@@ -339,18 +382,18 @@ export function RoutePlannerMenu(): ReactElement {
           <Button
             className="ml-1"
             variant="secondary"
-            onClick={() => {
-              dispatch(routePlannerToggleElevationChart());
-            }}
+            onClick={() => dispatch(routePlannerToggleElevationChart())}
             active={elevationProfileIsVisible}
             title={m?.general.elevationProfile ?? '…'}
           >
             <FaChartArea />
+
             <span className="d-none d-md-inline">
               {' '}
               {m?.general.elevationProfile ?? '…'}
             </span>
           </Button>
+
           <Button
             className="ml-1"
             variant="secondary"
@@ -358,22 +401,23 @@ export function RoutePlannerMenu(): ReactElement {
             title={m?.general.convertToDrawing ?? '…'}
           >
             <FaPencilAlt />
+
             <span className="d-none d-md-inline">
               {' '}
               {m?.general.convertToDrawing ?? '…'}
             </span>
           </Button>
+
           <FormCheck
             id="chk-milestones"
             className="ml-1"
             type="checkbox"
             inline
-            onChange={() => {
-              dispatch(routePlannerToggleMilestones(undefined));
-            }}
+            onChange={() => dispatch(routePlannerToggleMilestones(undefined))}
             checked={milestones}
             label={m?.routePlanner.milestones ?? '…'}
           />
+
           {canDelete && <DeleteButton />}
         </>
       )}

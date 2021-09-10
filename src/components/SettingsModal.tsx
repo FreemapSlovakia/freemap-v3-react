@@ -87,7 +87,7 @@ export function SettingsModal({ show }: Props): ReactElement {
 
   const DeleteInfo = m?.settings.account.DeleteInfo;
 
-  function MapSettings() {
+  function getMapSettings() {
     return (
       <>
         <FormGroup>
@@ -125,11 +125,10 @@ export function SettingsModal({ show }: Props): ReactElement {
           </FormLabel>
 
           <Button
+            type="button"
             className="d-block"
             variant="secondary"
-            onClick={() => {
-              dispatch(setSelectingHomeLocation(true));
-            }}
+            onClick={() => dispatch(setSelectingHomeLocation(true))}
           >
             <FaCrosshairs /> {m?.settings.map.homeLocation.select}
           </Button>
@@ -171,11 +170,11 @@ export function SettingsModal({ show }: Props): ReactElement {
               <Card.Body>
                 <Card.Title>{m?.settings.tab.map}</Card.Title>
 
-                <MapSettings />
+                {getMapSettings()}
               </Card.Body>
             </Card>
           ) : (
-            <MapSettings />
+            getMapSettings()
           )}
 
           {user && (
