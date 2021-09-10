@@ -34,7 +34,7 @@ export function Selection({
             <span className="d-none d-sm-inline"> {title}</span> {children}
             {deletable && <DeleteButton />}{' '}
             <Button
-              variant="outline-secondary"
+              variant="secondary"
               // size="sm"
               onClick={() => dispatch(selectFeature(null))}
               title={

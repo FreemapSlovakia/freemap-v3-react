@@ -297,7 +297,7 @@ export function RoutePlannerMenu(): ReactElement {
                 <FaHome /> {m?.routePlanner.point.home ?? '…'}
               </div>
 
-              <Button size="sm" variant="outline-secondary" className="m-n1">
+              <Button size="sm" variant="secondary" className="m-n1">
                 <FaCrosshairs className="pe-none" />
               </Button>
             </Dropdown.Item>
@@ -363,11 +363,7 @@ export function RoutePlannerMenu(): ReactElement {
                     <FaHome /> {m?.routePlanner.point.home ?? '…'}
                   </div>
 
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    className="m-n1"
-                  >
+                  <Button size="sm" variant="secondary" className="m-n1">
                     <FaCrosshairs className="pe-none" />
                   </Button>
                 </Dropdown.Item>

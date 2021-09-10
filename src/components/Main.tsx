@@ -472,7 +472,7 @@ export function Main(): ReactElement {
                   )}
                   <Button
                     className="ml-1"
-                    variant="outline-secondary"
+                    variant="secondary"
                     // size="sm"
                     onClick={() => dispatch(setTool(null))}
                     title={m?.general.close + ' [Esc]'}
