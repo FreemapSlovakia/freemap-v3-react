@@ -1,7 +1,7 @@
 import { wikiLoadPreview } from 'fm3/actions/wikiActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { Icon } from 'leaflet';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import { render } from 'react-dom';
 import { FaExternalLinkAlt, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Popup, Tooltip } from 'react-leaflet';
@@ -51,6 +51,27 @@ export function WikiLayer(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const cbMapRef = useRef(new Map<string, () => void>());
+
+  // workaround for https://github.com/PaulLeCam/react-leaflet/issues/895
+  useEffect(() => {
+    const cbMap = cbMapRef.current;
+
+    const oldKeys = new Set(cbMap.keys());
+
+    for (const { wikipedia } of points) {
+      oldKeys.delete(wikipedia);
+
+      if (!cbMap.has(wikipedia)) {
+        cbMap.set(wikipedia, () => dispatch(wikiLoadPreview(wikipedia)));
+      }
+    }
+
+    for (const key of oldKeys) {
+      cbMap.delete(key);
+    }
+  }, [dispatch, points]);
+
   return (
     <>
       {points.map(({ id, lat, lon, name, wikipedia }) => (
@@ -73,7 +94,7 @@ export function WikiLayer(): ReactElement {
               </div>
             </Tooltip>
           )}
-          <Popup onOpen={() => dispatch(wikiLoadPreview(wikipedia))}>
+          <Popup onOpen={cbMapRef.current.get(wikipedia)}>
             <h4>
               <a
                 href={
