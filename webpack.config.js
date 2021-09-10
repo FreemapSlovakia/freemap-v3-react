@@ -109,8 +109,6 @@ module.exports = {
           },
         },
       },
-      // addition - add source-map support
-      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         type: 'asset/resource',
