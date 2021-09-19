@@ -173,6 +173,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
               <Form.Check
                 type="checkbox"
+                id="chk-showInToolbar"
                 label={
                   <>
                     <FaEllipsisH /> {m?.settings.showInToolbar}
@@ -198,6 +199,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
               <Form.Check
                 type="checkbox"
+                id="chk-showInMenu"
                 label={
                   <>
                     <FaRegListAlt /> {m?.settings.showInMenu}
