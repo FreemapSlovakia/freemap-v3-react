@@ -34,7 +34,6 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import {
   FaBullseye,
   FaChartArea,
-  FaCrosshairs,
   FaFlask,
   FaHome,
   FaInfoCircle,
@@ -297,9 +296,9 @@ export function RoutePlannerMenu(): ReactElement {
                 <FaHome /> {m?.routePlanner.point.home ?? '…'}
               </div>
 
-              <Button size="sm" variant="secondary" className="m-n1">
+              {/* <Button size="sm" variant="secondary" className="m-n1">
                 <FaCrosshairs className="pe-none" />
-              </Button>
+              </Button> */}
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
@@ -363,9 +362,9 @@ export function RoutePlannerMenu(): ReactElement {
                     <FaHome /> {m?.routePlanner.point.home ?? '…'}
                   </div>
 
-                  <Button size="sm" variant="secondary" className="m-n1">
+                  {/* <Button size="sm" variant="secondary" className="m-n1">
                     <FaCrosshairs className="pe-none" />
-                  </Button>
+                  </Button> */}
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

@@ -24,6 +24,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 import {
+  FaCog,
   FaExclamationTriangle,
   FaFilter,
   FaRegCheckCircle,
@@ -251,7 +252,7 @@ export function MapSwitchButton(): ReactElement {
                 dispatch(setActiveModal('mapSettings'));
               }}
             >
-              Settings
+              <FaCog /> {m?.mapLayers.settings}
             </Dropdown.Item>
 
             <Dropdown.Divider />

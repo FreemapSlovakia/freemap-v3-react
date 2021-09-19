@@ -1063,6 +1063,7 @@ const cs: Messages = {
   },
 
   mapLayers: {
+    settings: 'Nastavenie mapových vrstiev', // TODO
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,

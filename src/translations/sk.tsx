@@ -1081,6 +1081,7 @@ const sk: Messages = {
   },
 
   mapLayers: {
+    settings: 'Nastavenie mapových vrstiev',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
     minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,

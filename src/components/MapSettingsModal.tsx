@@ -71,7 +71,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.mapLayers.layers}
+            <FaCog /> {m?.mapLayers.settings}
           </Modal.Title>
         </Modal.Header>
 

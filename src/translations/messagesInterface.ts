@@ -628,6 +628,7 @@ export type Messages = {
     success: string;
   };
   mapLayers: {
+    settings: string;
     layers: string;
     photoFilterWarning: string;
     minZoomWarning: (minZoom: number) => string;

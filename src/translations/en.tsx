@@ -1051,6 +1051,7 @@ const en: Messages = {
   },
 
   mapLayers: {
+    settings: 'Map layers settings',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,

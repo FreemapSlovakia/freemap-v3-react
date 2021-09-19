@@ -1066,6 +1066,7 @@ const hu: Messages = {
   },
 
   mapLayers: {
+    settings: 'Map layers settings',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
