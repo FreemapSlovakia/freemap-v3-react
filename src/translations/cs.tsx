@@ -1053,7 +1053,7 @@ const cs: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Ukáž všetky vrstvy', // TODO translate
+    showAll: 'Ukázať všetky vrstvy', // TODO translate
     settings: 'Nastavenie mapových vrstiev', // TODO translate
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',

@@ -1071,7 +1071,7 @@ const sk: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Ukáž všetky vrstvy',
+    showAll: 'Ukázať všetky vrstvy',
     settings: 'Nastavenie mapových vrstiev',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
