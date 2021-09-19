@@ -1054,7 +1054,7 @@ const cs: Messages = {
 
   mapLayers: {
     showAll: 'Ukázať všetky vrstvy', // TODO translate
-    settings: 'Nastavenie mapových vrstiev', // TODO translate
+    settings: 'Nastavenia mapových vrstiev', // TODO translate
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
