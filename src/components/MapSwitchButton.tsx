@@ -57,13 +57,11 @@ export function MapSwitchButton(): ReactElement {
 
   const overlays = useSelector((state) => state.map.overlays);
 
-  const pictureFilterIsActive = useSelector(
-    (state) => Object.values(state.gallery.filter).filter((x) => x).length > 0,
+  const pictureFilterIsActive = useSelector((state) =>
+    Object.values(state.gallery.filter).every((x) => x),
   );
 
-  const isAdmin = useSelector(
-    (state) => !!(state.auth.user && state.auth.user.isAdmin),
-  );
+  const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
 
   const language = useSelector((state) => state.l10n.language);
 
@@ -119,9 +117,10 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay, e: SyntheticEvent<unknown>) => {
+    (overlay: string | null, e: SyntheticEvent<unknown>) => {
       if (handlePossibleFilterClick(e)) {
         setShow(false);
+
         return;
       }
 
@@ -196,6 +195,7 @@ export function MapSwitchButton(): ReactElement {
             {icon}
           </Button>
         ))}
+
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
             variant="secondary"
@@ -206,6 +206,7 @@ export function MapSwitchButton(): ReactElement {
             onClick={handleOverlayClick}
           >
             {icon}
+
             {pictureFilterIsActive && type === 'I' && (
               <FaFilter
                 data-filter="1"
@@ -215,6 +216,7 @@ export function MapSwitchButton(): ReactElement {
             )}
           </Button>
         ))}
+
         <Button
           variant="secondary"
           className="dropdown-toggle"
@@ -223,6 +225,7 @@ export function MapSwitchButton(): ReactElement {
           title={m?.mapLayers.layers}
         />
       </ButtonGroup>
+
       <Button
         className="d-sm-none"
         ref={button2Ref}
@@ -232,6 +235,7 @@ export function MapSwitchButton(): ReactElement {
       >
         <FaRegMap />
       </Button>
+
       <Overlay
         rootClose
         placement="top"
