@@ -6,7 +6,8 @@ import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
   baseLayers,
-  LayerDef,
+  defaultMenuLayerLetters,
+  defaultToolbarLayerLetters,
   overlayLayers,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
@@ -63,11 +64,9 @@ export function MapSwitchButton(): ReactElement {
 
   const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
 
-  const language = useSelector((state) => state.l10n.language);
-
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState<boolean | 'all'>(false);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -171,51 +170,58 @@ export function MapSwitchButton(): ReactElement {
 
   const isWide = useMediaQuery({ query: '(min-width: 576px)' });
 
-  const isPrimary = (layer: LayerDef) =>
-    layer.primary === true ||
-    layer.primary === language ||
-    (typeof layer.primary === 'string' &&
-      layer.primary.startsWith('!') &&
-      layer.primary !== `!${language}`);
-
   const sc = useScrollClasses('vertical');
+
+  const layersSettings = useSelector((state) => state.map.layersSettings);
 
   return (
     <>
       <ButtonGroup className="dropup d-none d-sm-inline-flex">
-        {baseLayers.filter(isPrimary).map(({ type, icon }) => (
-          <Button
-            variant="secondary"
-            title={m?.mapLayers.letters[type]}
-            key={type}
-            data-type={type}
-            active={mapType === type}
-            onClick={handleBaseClick}
-          >
-            {icon}
-          </Button>
-        ))}
+        {baseLayers
+          .filter(
+            (l) =>
+              layersSettings[l.type]?.showInToolbar ??
+              defaultToolbarLayerLetters.includes(l.type),
+          )
+          .map(({ type, icon }) => (
+            <Button
+              variant="secondary"
+              title={m?.mapLayers.letters[type]}
+              key={type}
+              data-type={type}
+              active={mapType === type}
+              onClick={handleBaseClick}
+            >
+              {icon}
+            </Button>
+          ))}
 
-        {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
-          <Button
-            variant="secondary"
-            title={m?.mapLayers.letters[type]}
-            key={type}
-            data-type={type}
-            active={overlays.includes(type)}
-            onClick={handleOverlayClick}
-          >
-            {icon}
+        {overlayLayers
+          .filter(
+            (l) =>
+              layersSettings[l.type]?.showInToolbar ??
+              defaultToolbarLayerLetters.includes(l.type),
+          )
+          .map(({ type, icon }) => (
+            <Button
+              variant="secondary"
+              title={m?.mapLayers.letters[type]}
+              key={type}
+              data-type={type}
+              active={overlays.includes(type)}
+              onClick={handleOverlayClick}
+            >
+              {icon}
 
-            {pictureFilterIsActive && type === 'I' && (
-              <FaFilter
-                data-filter="1"
-                title={m?.mapLayers.photoFilterWarning}
-                className="text-warning ml-2"
-              />
-            )}
-          </Button>
-        ))}
+              {pictureFilterIsActive && type === 'I' && (
+                <FaFilter
+                  data-filter="1"
+                  title={m?.mapLayers.photoFilterWarning}
+                  className="text-warning ml-2"
+                />
+              )}
+            </Button>
+          ))}
 
         <Button
           variant="secondary"
@@ -239,7 +245,7 @@ export function MapSwitchButton(): ReactElement {
       <Overlay
         rootClose
         placement="top"
-        show={show}
+        show={!!show}
         onHide={handleHide}
         target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
@@ -265,6 +271,12 @@ export function MapSwitchButton(): ReactElement {
               // TODO base and overlay layers have too much duplicate code
               baseLayers
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
+                .filter(
+                  (l) =>
+                    show === 'all' ||
+                    (layersSettings[l.type]?.showInMenu ??
+                      defaultMenuLayerLetters.includes(l.type)),
+                )
                 .map(({ type, icon, minZoom, key }) => (
                   <Dropdown.Item
                     href={`?layers=${type}`}
@@ -299,6 +311,12 @@ export function MapSwitchButton(): ReactElement {
 
             {overlayLayers
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
+              .filter(
+                (l) =>
+                  show === 'all' ||
+                  (layersSettings[l.type]?.showInMenu ??
+                    defaultMenuLayerLetters.includes(l.type)),
+              )
               .map(({ type, icon, minZoom, key }) => (
                 <Dropdown.Item
                   key={type}
@@ -340,6 +358,19 @@ export function MapSwitchButton(): ReactElement {
                   )}
                 </Dropdown.Item>
               ))}
+
+            {show !== 'all' && (
+              <>
+                <Dropdown.Divider />
+                <Dropdown.Item
+                  onSelect={() => {
+                    setShow('all');
+                  }}
+                >
+                  {m?.mapLayers.showAll}
+                </Dropdown.Item>
+              </>
+            )}
           </Popover.Content>
         </Popover>
       </Overlay>

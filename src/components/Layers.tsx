@@ -15,7 +15,7 @@ export function Layers(): ReactElement {
 
   const mapType = useSelector((state) => state.map.mapType);
 
-  const overlayOpacity = useSelector((state) => state.map.overlayOpacity);
+  const layersSettings = useSelector((state) => state.map.layersSettings);
 
   const galleryFilter = useSelector((state) => state.gallery.filter);
 
@@ -61,7 +61,7 @@ export function Layers(): ReactElement {
           })}`}
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
-          opacity={overlayOpacity[type] || 1}
+          opacity={layersSettings[type]?.opacity ?? 1}
           zIndex={zIndex}
           myUserId={userId}
         />
@@ -80,7 +80,7 @@ export function Layers(): ReactElement {
           minZoom={minZoom}
           maxZoom={20}
           maxNativeZoom={maxNativeZoom}
-          opacity={overlayOpacity[type] || 1}
+          opacity={layersSettings[type]?.opacity ?? 1}
           zIndex={zIndex}
           subdomains={subdomains}
           errorTileUrl={errorTileUrl}

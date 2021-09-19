@@ -1,21 +1,31 @@
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { overlayLayers } from 'fm3/mapDefinitions';
-import { ReactElement, useCallback, useState } from 'react';
+import {
+  baseLayers,
+  defaultMenuLayerLetters,
+  defaultToolbarLayerLetters,
+  overlayLayers,
+  overlayLetters,
+} from 'fm3/mapDefinitions';
+import { Fragment, ReactElement, useCallback, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
+import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import {
+  FaCheck,
+  FaCog,
+  FaEllipsisH,
+  FaRegListAlt,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
 export function MapSettingsModal({ show }: Props): ReactElement {
-  const initOverlayOpacity = useSelector((state) => state.map.overlayOpacity);
+  const initLayersSettings = useSelector((state) => state.map.layersSettings);
 
   const initOverlayPaneOpacity = useSelector(
     (state) => state.map.overlayPaneOpacity,
@@ -25,25 +35,22 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
-  const [overlayOpacity, setOverlayOpacity] = useState(initOverlayOpacity);
+  const [layersSettings, setLayersSettings] = useState(initLayersSettings);
 
   const [overlayPaneOpacity, setOverlayPaneOpacity] = useState(
     initOverlayPaneOpacity,
   );
 
-  const [selectedOverlay, setSelectedOverlay] = useState('t');
+  const [selectedLayer, setSelectedLeyer] = useState('X');
 
   const dispatch = useDispatch();
 
   const userMadeChanges =
     overlayPaneOpacity !== initOverlayPaneOpacity ||
-    overlayLayers.some(
-      ({ type }) =>
-        (overlayOpacity[type] || 1) !== (initOverlayOpacity[type] || 1),
-    );
+    layersSettings !== initLayersSettings;
 
-  const selectedOverlayDetails = overlayLayers.find(
-    ({ type }) => type === selectedOverlay,
+  const selectedLayerDetails = [...baseLayers, ...overlayLayers].find(
+    ({ type }) => type === selectedLayer,
   );
 
   const nf = Intl.NumberFormat(language, {
@@ -57,13 +64,13 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
   return (
     <Modal show={show} onHide={close}>
-      <form
+      <Form
         onSubmit={(e) => {
           e.preventDefault();
 
           dispatch(
             saveSettings({
-              overlayOpacity,
+              layersSettings,
               overlayPaneOpacity,
             }),
           );
@@ -76,14 +83,14 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <FormGroup>
-            <FormLabel>
+          <Form.Group>
+            <Form.Label>
               {m?.settings.map.overlayPaneOpacity}{' '}
               {nf.format(overlayPaneOpacity * 100)}
               {' %'}
-            </FormLabel>
+            </Form.Label>
 
-            <FormControl
+            <Form.Control
               type="range"
               custom
               value={overlayPaneOpacity}
@@ -94,58 +101,149 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 setOverlayPaneOpacity(Number(e.currentTarget.value))
               }
             />
-          </FormGroup>
+          </Form.Group>
 
-          {selectedOverlayDetails && (
+          {selectedLayerDetails && (
             <>
               <hr />
-              <FormGroup>
-                <FormLabel>
-                  <p>{m?.settings.expert.overlayOpacity}</p>
 
-                  <DropdownButton
-                    variant="secondary"
-                    id="overlayOpacity"
-                    onSelect={(o) => {
-                      if (o !== null) {
-                        setSelectedOverlay(o);
-                      }
-                    }}
-                    title={
-                      <>
-                        {selectedOverlayDetails.icon}{' '}
-                        {m?.mapLayers.letters[selectedOverlayDetails.type]}{' '}
-                        {nf.format(
-                          (overlayOpacity[selectedOverlay] || 1) * 100,
-                        )}{' '}
-                        %
-                      </>
+              <Form.Group>
+                <Form.Label>{m?.settings.layer}</Form.Label>
+
+                <DropdownButton
+                  className="fm-map-layers-dropdown"
+                  variant="secondary"
+                  id="overlayOpacity"
+                  onSelect={(o) => {
+                    if (o !== null) {
+                      setSelectedLeyer(o);
                     }
-                  >
-                    {overlayLayers.map(({ type, icon }) => (
-                      <Dropdown.Item key={type} eventKey={type}>
-                        {icon} {m?.mapLayers.letters[type]}{' '}
-                        {nf.format((overlayOpacity[type] || 1) * 100)} %
-                      </Dropdown.Item>
-                    ))}
-                  </DropdownButton>
-                </FormLabel>
-
-                <FormControl
-                  type="range"
-                  custom
-                  value={overlayOpacity[selectedOverlay] || 1}
-                  min={0.1}
-                  max={1.0}
-                  step={0.1}
-                  onChange={(e) => {
-                    setOverlayOpacity({
-                      ...overlayOpacity,
-                      [selectedOverlay]: Number(e.currentTarget.value),
-                    });
                   }}
-                />
-              </FormGroup>
+                  title={
+                    <>
+                      {selectedLayerDetails.icon}{' '}
+                      {m?.mapLayers.letters[selectedLayerDetails.type]}{' '}
+                      {nf.format(
+                        (layersSettings[selectedLayer]?.opacity ?? 1) * 100,
+                      )}{' '}
+                      %
+                    </>
+                  }
+                >
+                  {[...baseLayers, ...overlayLayers].map(
+                    ({ type, icon }, i) => (
+                      <Fragment key={type}>
+                        {i === baseLayers.length && <Dropdown.Divider />}
+                        <Dropdown.Item
+                          eventKey={type}
+                          active={type === selectedLayer}
+                        >
+                          {icon} {m?.mapLayers.letters[type]}
+                          {overlayLetters.includes(type as any) && (
+                            <>
+                              {' ('}
+                              {nf.format(
+                                (layersSettings[type]?.opacity ?? 1) * 100,
+                              )}{' '}
+                              %)
+                            </>
+                          )}{' '}
+                          <FaEllipsisH
+                            color={
+                              layersSettings[type]?.showInToolbar ??
+                              defaultToolbarLayerLetters.includes(type)
+                                ? ''
+                                : '#ddd'
+                            }
+                          />{' '}
+                          <FaRegListAlt
+                            color={
+                              layersSettings[type]?.showInMenu ??
+                              defaultMenuLayerLetters.includes(type)
+                                ? ''
+                                : '#ddd'
+                            }
+                          />
+                        </Dropdown.Item>
+                      </Fragment>
+                    ),
+                  )}
+                </DropdownButton>
+              </Form.Group>
+
+              <Form.Check
+                type="checkbox"
+                label={
+                  <>
+                    <FaEllipsisH /> {m?.settings.showInToolbar}
+                  </>
+                }
+                checked={
+                  layersSettings[selectedLayer]?.showInToolbar ??
+                  defaultToolbarLayerLetters.includes(selectedLayer)
+                }
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                onChange={(e) => {
+                  setLayersSettings({
+                    ...layersSettings,
+                    [selectedLayer]: {
+                      ...(layersSettings[selectedLayer] ?? {}),
+                      showInToolbar: e.currentTarget.checked,
+                    },
+                  });
+                }}
+              />
+
+              <Form.Check
+                type="checkbox"
+                label={
+                  <>
+                    <FaRegListAlt /> {m?.settings.showInMenu}
+                  </>
+                }
+                checked={
+                  layersSettings[selectedLayer]?.showInMenu ??
+                  defaultMenuLayerLetters.includes(selectedLayer)
+                }
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                onChange={(e) => {
+                  setLayersSettings({
+                    ...layersSettings,
+                    [selectedLayer]: {
+                      ...(layersSettings[selectedLayer] ?? {}),
+                      showInMenu: e.currentTarget.checked,
+                    },
+                  });
+                }}
+              />
+
+              {overlayLetters.includes(selectedLayer as any) && (
+                <Form.Group className="mt-2">
+                  <Form.Label>{m?.settings.overlayOpacity}</Form.Label>
+
+                  <Form.Control
+                    type="range"
+                    custom
+                    value={layersSettings[selectedLayer]?.opacity ?? 1}
+                    min={0.1}
+                    max={1.0}
+                    step={0.1}
+                    onChange={(e) => {
+                      setLayersSettings({
+                        ...layersSettings,
+                        [selectedLayer]: {
+                          ...(layersSettings[selectedLayer] ?? {}),
+                          opacity: Number(e.currentTarget.value),
+                        },
+                      });
+                    }}
+                  />
+                </Form.Group>
+              )}
             </>
           )}
         </Modal.Body>
@@ -159,7 +257,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
-      </form>
+      </Form>
     </Modal>
   );
 }

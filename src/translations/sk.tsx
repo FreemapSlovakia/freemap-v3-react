@@ -629,24 +629,14 @@ const sk: Messages = {
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',
     },
-    expertInfo: `
-      <div style="text-align: left">
-        V expertnom móde sú dostupné nástroje pre pokročilých používateľov, napríklad:
-        <ul>
-          <li>rozšírené nastavenia</li>
-          <li>extra mapové vrstvy</li>
-          <li>extra profily vyhľadávača trás</li>
-        </ul>
-      </div>
-    `,
-    expert: {
-      switch: 'Expertný mód',
-      overlayOpacity: 'Viditeľnosť vrstvy:',
-      trackViewerEleSmoothing: {
-        label: (value) =>
-          `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
-        info: 'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
-      },
+    layer: 'Vrstva:',
+    overlayOpacity: 'Viditeľnosť:',
+    showInMenu: 'Zobraziť v menu',
+    showInToolbar: 'Zobraziť v lište',
+    trackViewerEleSmoothing: {
+      label: (value) =>
+        `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
+      info: 'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
     },
     saveSuccess: 'Zmeny boli uložené.',
     savingError: ({ err }) => `Nastala chyba pri ukladaní nastavení: ${err}`,
@@ -1081,6 +1071,7 @@ const sk: Messages = {
   },
 
   mapLayers: {
+    showAll: 'Ukáž všetky vrstvy',
     settings: 'Nastavenie mapových vrstiev',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',

@@ -611,24 +611,14 @@ const cs: Messages = {
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
     },
-    expertInfo: `
-      <div style="text-align: left">
-        V expertním módu jsou dostupné nástroje pro pokročilé uživatele, kupříkladu:
-        <ul>
-          <li>pokročilá nastavení</li>
-          <li>extra mapové vrstvy</li>
-          <li>extra profily vyhledávače tras</li>
-        </ul>
-      </div>
-    `,
-    expert: {
-      switch: 'Expertní mód',
-      overlayOpacity: 'Viditelnost vrstvy:',
-      trackViewerEleSmoothing: {
-        label: (value) =>
-          `Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných metrů v prohlížeči tras: ${value}`,
-        info: 'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
-      },
+    layer: 'Vrstva:',
+    overlayOpacity: 'Viditelnost:',
+    showInMenu: 'Zobraziť v menu', // TODO translate
+    showInToolbar: 'Zobraziť v lište', // TODO translate
+    trackViewerEleSmoothing: {
+      label: (value) =>
+        `Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných metrů v prohlížeči tras: ${value}`,
+      info: 'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
     },
     saveSuccess: 'Změny byly uloženy.',
     savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
@@ -1063,7 +1053,8 @@ const cs: Messages = {
   },
 
   mapLayers: {
-    settings: 'Nastavenie mapových vrstiev', // TODO
+    showAll: 'Ukáž všetky vrstvy', // TODO translate
+    settings: 'Nastavenie mapových vrstiev', // TODO translate
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,

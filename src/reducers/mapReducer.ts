@@ -4,8 +4,8 @@ import { gallerySetFilter } from 'fm3/actions/galleryActions';
 import { Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
+  mapSetLayersSettings,
   mapSetLeafletReady,
-  mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
   MapStateBase,
 } from 'fm3/actions/mapActions';
@@ -25,7 +25,7 @@ export const mapInitialState: MapState = {
   lon: 19.4995,
   zoom: 8,
   overlays: [],
-  overlayOpacity: {},
+  layersSettings: {},
   overlayPaneOpacity: 0.75,
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
@@ -34,9 +34,9 @@ export const mapInitialState: MapState = {
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
-  .handleAction(mapSetOverlayOpacity, (state, action) => ({
+  .handleAction(mapSetLayersSettings, (state, action) => ({
     ...state,
-    overlayOpacity: action.payload,
+    layersSettings: action.payload,
   }))
   .handleAction(mapSetOverlayPaneOpacity, (state, action) => ({
     ...state,
@@ -85,15 +85,15 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
     return newState;
   })
   .handleAction(authSetUser, (state, action) => {
-    const settings = action.payload && action.payload.settings;
+    const settings = action.payload?.settings;
 
     return settings
       ? {
           ...state,
-          overlayOpacity:
-            settings.overlayOpacity === undefined
-              ? state.overlayOpacity
-              : settings.overlayOpacity,
+          layersSettings:
+            settings.layersSettings === undefined
+              ? state.layersSettings
+              : settings.layersSettings,
           overlayPaneOpacity:
             typeof settings.overlayPaneOpacity === 'number'
               ? settings.overlayPaneOpacity

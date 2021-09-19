@@ -11,10 +11,7 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import FormCheck from 'react-bootstrap/FormCheck';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
+import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaCog, FaCrosshairs, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -90,14 +87,12 @@ export function SettingsModal({ show }: Props): ReactElement {
   function getMapSettings() {
     return (
       <>
-        <FormGroup>
-          <FormLabel>
-            {m?.settings.expert.trackViewerEleSmoothing.label(
-              eleSmoothingFactor,
-            )}
-          </FormLabel>
+        <Form.Group>
+          <Form.Label>
+            {m?.settings.trackViewerEleSmoothing.label(eleSmoothingFactor)}
+          </Form.Label>
 
-          <FormControl
+          <Form.Control
             type="range"
             custom
             value={eleSmoothingFactor}
@@ -108,21 +103,21 @@ export function SettingsModal({ show }: Props): ReactElement {
               setEleSmoothingFactor(Number(e.currentTarget.value))
             }
           />
-        </FormGroup>
+        </Form.Group>
 
         <Alert variant="secondary">
-          {m?.settings.expert.trackViewerEleSmoothing.info}
+          {m?.settings.trackViewerEleSmoothing.info}
         </Alert>
 
         <hr />
 
-        <FormGroup>
-          <FormLabel>
+        <Form.Group>
+          <Form.Label>
             {m?.settings.map.homeLocation.label}{' '}
             {homeLocation
               ? latLonToString(homeLocation, language)
               : m?.settings.map.homeLocation.undefined}
-          </FormLabel>
+          </Form.Label>
 
           <Button
             type="button"
@@ -132,14 +127,14 @@ export function SettingsModal({ show }: Props): ReactElement {
           >
             <FaCrosshairs /> {m?.settings.map.homeLocation.select}
           </Button>
-        </FormGroup>
+        </Form.Group>
       </>
     );
   }
 
   return (
     <Modal show={show && !selectingHomeLocation} onHide={close}>
-      <form
+      <Form
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -184,10 +179,10 @@ export function SettingsModal({ show }: Props): ReactElement {
 
                 <Alert variant="warning">{DeleteInfo && <DeleteInfo />}</Alert>
 
-                <FormGroup>
-                  <FormLabel>{m?.settings.account.name}</FormLabel>
+                <Form.Group>
+                  <Form.Label>{m?.settings.account.name}</Form.Label>
 
-                  <FormControl
+                  <Form.Control
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
@@ -195,12 +190,12 @@ export function SettingsModal({ show }: Props): ReactElement {
                     required
                     maxLength={255}
                   />
-                </FormGroup>
+                </Form.Group>
 
-                <FormGroup>
-                  <FormLabel>{m?.settings.account.email}</FormLabel>
+                <Form.Group>
+                  <Form.Label>{m?.settings.account.email}</Form.Label>
 
-                  <FormControl
+                  <Form.Control
                     type="email"
                     value={email}
                     onChange={(e) => {
@@ -208,9 +203,9 @@ export function SettingsModal({ show }: Props): ReactElement {
                     }}
                     maxLength={255}
                   />
-                </FormGroup>
+                </Form.Group>
 
-                <FormCheck
+                <Form.Check
                   id="chk-galEmails"
                   type="checkbox"
                   onChange={(e) => {
@@ -233,7 +228,7 @@ export function SettingsModal({ show }: Props): ReactElement {
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
-      </form>
+      </Form>
     </Modal>
   );
 }

@@ -485,14 +485,13 @@ export type Messages = {
     general: {
       tips: string;
     };
-    expertInfo: string;
-    expert: {
-      switch: string;
-      overlayOpacity: string;
-      trackViewerEleSmoothing: {
-        label: (value: number) => string;
-        info: string;
-      };
+    layer: string;
+    overlayOpacity: string;
+    showInMenu: string;
+    showInToolbar: string;
+    trackViewerEleSmoothing: {
+      label: (value: number) => string;
+      info: string;
     };
     saveSuccess: string;
     savingError: ({ err }: Err) => string;
@@ -628,6 +627,7 @@ export type Messages = {
     success: string;
   };
   mapLayers: {
+    showAll: string;
     settings: string;
     layers: string;
     photoFilterWarning: string;

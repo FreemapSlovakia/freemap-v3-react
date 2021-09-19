@@ -52,7 +52,7 @@ function persistSelectedState(state: DefaultRootState) {
         eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
       },
       map: {
-        overlayOpacity: state.map.overlayOpacity,
+        layersSettings: state.map.layersSettings,
         overlayPaneOpacity: state.map.overlayPaneOpacity,
         mapType: state.map.mapType,
         lat: state.map.lat,

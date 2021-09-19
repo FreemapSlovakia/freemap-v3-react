@@ -93,3 +93,8 @@ kbd {
     padding: 0.5rem 1.5rem;
   }
 }
+
+.fm-map-layers-dropdown .dropdown-menu {
+  max-height: 50vh;
+  overflow-y: auto;
+}

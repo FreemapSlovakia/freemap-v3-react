@@ -1,6 +1,7 @@
 import { basicModals, tools } from 'fm3/constants';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
+import { LayerSettings } from './mapActions';
 
 export type Tool = typeof tools[number];
 
@@ -80,7 +81,7 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
   homeLocation?: LatLon | null;
-  overlayOpacity?: { [type: string]: number };
+  layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
   trackViewerEleSmoothingFactor?: number;
   user?: {

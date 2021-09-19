@@ -9,8 +9,14 @@ export interface MapViewState {
   overlays: OverlayLetters[];
 }
 
+export type LayerSettings = {
+  opacity?: number;
+  showInMenu?: boolean;
+  showInToolbar?: boolean;
+};
+
 export interface MapStateBase extends MapViewState {
-  overlayOpacity: { [type: string]: number };
+  layersSettings: Record<string, LayerSettings>;
   overlayPaneOpacity: number;
 }
 
@@ -18,9 +24,9 @@ export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >();
 
-export const mapSetOverlayOpacity = createAction('MAP_SET_OVERLAY_OPACITY')<{
-  [key: string]: number;
-}>();
+export const mapSetLayersSettings = createAction('MAP_SET_LAYERS_SETTINGS')<
+  Record<string, LayerSettings>
+>();
 
 export const mapSetOverlayPaneOpacity = createAction(
   'MAP_SET_OVERLAY_PANE_OPACITY',

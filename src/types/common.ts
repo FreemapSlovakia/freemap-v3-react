@@ -1,3 +1,4 @@
+import { LayerSettings } from 'fm3/actions/mapActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 
 export interface LatLon {
@@ -14,7 +15,7 @@ export interface User {
   isAdmin: boolean;
   settings?: {
     trackViewerEleSmoothingFactor?: number;
-    overlayOpacity?: { [type: string]: number };
+    layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
   };
   preventTips?: boolean;

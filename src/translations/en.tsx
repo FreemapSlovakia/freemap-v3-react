@@ -601,24 +601,14 @@ const en: Messages = {
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
     },
-    expertInfo: `
-      <div style="text-align: left">
-        Expert mode offers features for advanced users, for example:
-        <ul>
-          <li>extended settings</li>
-          <li>extra map layers</li>
-          <li>extra route finder profiles</li>
-        </ul>
-      </div>
-    `,
-    expert: {
-      switch: 'Expert mode',
-      overlayOpacity: 'Layer opacity:',
-      trackViewerEleSmoothing: {
-        label: (value) =>
-          `Smoothing level for computing total climb/descend in Track viewer: ${value}`,
-        info: 'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
-      },
+    layer: 'Layer:',
+    overlayOpacity: 'Opacity:',
+    showInMenu: 'Show in menu', // TODO translate
+    showInToolbar: 'Show in toolbar', // TODO translate
+    trackViewerEleSmoothing: {
+      label: (value) =>
+        `Smoothing level for computing total climb/descend in Track viewer: ${value}`,
+      info: 'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
     },
     saveSuccess: 'Settings have been saved.',
     savingError: ({ err }) => `Error saving settings: ${err}`,
@@ -1051,6 +1041,7 @@ const en: Messages = {
   },
 
   mapLayers: {
+    showAll: 'Show all layers',
     settings: 'Map layers settings',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',

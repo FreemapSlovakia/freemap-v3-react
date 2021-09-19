@@ -612,24 +612,14 @@ const hu: Messages = {
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
     },
-    expertInfo: `
-      <div style="text-align: left">
-        A szakértői mód haladó felhasználóknak kínál funkciókat, például:
-        <ul>
-          <li>kibővített beállítások</li>
-          <li>további térképrétegek</li>
-          <li>további útvonaltervezési profilok</li>
-        </ul>
-      </div>
-    `,
-    expert: {
-      switch: 'Szakértői mód',
-      overlayOpacity: 'Réteg átlátszatlansága:',
-      trackViewerEleSmoothing: {
-        label: (value) =>
-          `A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: ${value}`,
-        info: '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
-      },
+    layer: 'Layer:', // TODO translate
+    overlayOpacity: 'Opacity:', // TODO translate
+    showInMenu: 'Show in menu', // TODO translate
+    showInToolbar: 'Show in toolbar', // TODO translate
+    trackViewerEleSmoothing: {
+      label: (value) =>
+        `A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: ${value}`,
+      info: '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
     },
     saveSuccess: 'A beállítások el lettek mentve.',
     savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
@@ -1066,6 +1056,7 @@ const hu: Messages = {
   },
 
   mapLayers: {
+    showAll: 'Show all layers', // TODO translate
     settings: 'Map layers settings',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',

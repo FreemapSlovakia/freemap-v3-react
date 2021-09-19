@@ -5,7 +5,7 @@ import {
   setHomeLocation,
 } from 'fm3/actions/mainActions';
 import {
-  mapSetOverlayOpacity,
+  mapSetLayersSettings,
   mapSetOverlayPaneOpacity,
 } from 'fm3/actions/mapActions';
 import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
@@ -20,7 +20,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   handle: async ({ dispatch, getState, action }) => {
     const {
       homeLocation,
-      overlayOpacity,
+      layersSettings,
       overlayPaneOpacity,
       trackViewerEleSmoothingFactor,
       preventTips,
@@ -42,7 +42,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
           sendGalleryEmails: user.sendGalleryEmails,
           preventTips,
           settings: {
-            overlayOpacity,
+            layersSettings,
             overlayPaneOpacity,
             trackViewerEleSmoothingFactor,
           },
@@ -57,8 +57,8 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       dispatch(setHomeLocation(homeLocation));
     }
 
-    if (overlayOpacity !== undefined) {
-      dispatch(mapSetOverlayOpacity(overlayOpacity));
+    if (layersSettings !== undefined) {
+      dispatch(mapSetLayersSettings(layersSettings));
     }
 
     if (overlayPaneOpacity !== undefined) {
