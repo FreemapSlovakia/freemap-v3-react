@@ -1,6 +1,5 @@
 import {
   convertToDrawing,
-  setActiveModal,
   setSelectingHomeLocation,
 } from 'fm3/actions/mainActions';
 import {
@@ -105,9 +104,9 @@ export function RoutePlannerMenu(): ReactElement {
           actions: [
             {
               nameKey: 'routePlanner.noHomeAlert.setHome',
-              action: setActiveModal('settings'),
+              action: setSelectingHomeLocation(true),
             },
-            { nameKey: 'general.close' },
+            { nameKey: 'general.close', style: 'dark' },
           ],
         }),
       );

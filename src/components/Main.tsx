@@ -151,7 +151,7 @@ export function Main(): ReactElement {
 
   const showMenu = useSelector(
     (state) =>
-      !state.main.selectingHomeLocation &&
+      state.main.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition,
   );
@@ -590,7 +590,7 @@ export function Main(): ReactElement {
               </>
             )}
 
-            {selectingHomeLocation && <HomeLocationPickingResult />}
+            {selectingHomeLocation !== false && <HomeLocationPickingResult />}
 
             {/* TODO should not be extra just because for position picking */}
 

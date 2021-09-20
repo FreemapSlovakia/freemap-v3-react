@@ -131,9 +131,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(authSetUser, (state, action) => ({
     ...state,
     homeLocation:
-      !state.homeLocation &&
-      action.payload?.lat != null &&
-      action.payload?.lon != null
+      action.payload?.lat != null && action.payload?.lon != null
         ? { lat: action.payload?.lat, lon: action.payload?.lon }
         : state.homeLocation,
   }))
