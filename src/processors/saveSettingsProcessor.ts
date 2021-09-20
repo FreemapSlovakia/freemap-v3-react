@@ -1,9 +1,5 @@
 import { authSetUser } from 'fm3/actions/authActions';
-import {
-  saveSettings,
-  setActiveModal,
-  setHomeLocation,
-} from 'fm3/actions/mainActions';
+import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
 import {
   mapSetLayersSettings,
   mapSetOverlayPaneOpacity,
@@ -19,7 +15,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const {
-      homeLocation,
       layersSettings,
       overlayPaneOpacity,
       trackViewerEleSmoothingFactor,
@@ -46,15 +41,10 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
             overlayPaneOpacity,
             trackViewerEleSmoothingFactor,
           },
-          ...homeLocation,
         },
       });
 
       dispatch(authSetUser(Object.assign({}, getState().auth.user, user)));
-    }
-
-    if (homeLocation) {
-      dispatch(setHomeLocation(homeLocation));
     }
 
     if (layersSettings !== undefined) {

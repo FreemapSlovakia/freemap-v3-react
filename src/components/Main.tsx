@@ -94,6 +94,7 @@ import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
+import { HomeLocationPickingResult } from './HomeLocationPickingResult';
 import { MainMenuButton } from './mainMenu/MainMenuButton';
 import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
@@ -373,6 +374,10 @@ export function Main(): ReactElement {
     }
   };
 
+  const selectingHomeLocation = useSelector(
+    (state) => state.main.selectingHomeLocation,
+  );
+
   return (
     <>
       <style>
@@ -584,6 +589,8 @@ export function Main(): ReactElement {
                 <WikiLayer />
               </>
             )}
+
+            {selectingHomeLocation && <HomeLocationPickingResult />}
 
             {/* TODO should not be extra just because for position picking */}
 

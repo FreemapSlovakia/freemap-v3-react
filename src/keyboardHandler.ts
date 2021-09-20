@@ -45,7 +45,7 @@ export function attachKeyboardHandler(store: MyStore): void {
     const state = store.getState();
 
     const suspendedModal =
-      state.main.selectingHomeLocation ||
+      state.main.selectingHomeLocation !== false ||
       state.gallery.pickingPositionForId ||
       state.gallery.showPosition;
 
@@ -84,7 +84,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         store.dispatch(drawingLineJoinStart(undefined));
       } else if (state.drawingLines.drawing) {
         store.dispatch(drawingLineStopDrawing());
-      } else if (state.main.selectingHomeLocation) {
+      } else if (state.main.selectingHomeLocation !== false) {
         store.dispatch(setSelectingHomeLocation(false));
       } else if (state.gallery.showPosition) {
         store.dispatch(galleryCancelShowOnTheMap());

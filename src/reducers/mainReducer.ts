@@ -19,13 +19,13 @@ import {
   enableUpdatingUrl,
   Modal,
   removeAdsOnLogin,
+  saveHomeLocation,
   selectFeature,
   Selection,
   setActiveModal,
   setAnalyticCookiesAllowed,
   setEmbedFeatures,
   setErrorTicketId,
-  setHomeLocation,
   setLocation,
   setSelectingHomeLocation,
   setTool,
@@ -50,7 +50,7 @@ export interface MainState {
   progress: Array<string | number>;
   location: Location | null;
   locate: boolean;
-  selectingHomeLocation: boolean;
+  selectingHomeLocation: LatLon | null | false;
   urlUpdatingEnabled: boolean;
   errorTicketId: string | undefined;
   eleSmoothingFactor: number;
@@ -128,9 +128,14 @@ export const mainReducer = createReducer<MainState, RootAction>(
     activeModal: action.payload,
     removeAdsOnLogin: action.payload ? state.removeAdsOnLogin : false,
   }))
-  .handleAction(setHomeLocation, (state, action) => ({
+  .handleAction(authSetUser, (state, action) => ({
     ...state,
-    homeLocation: action.payload ? { ...action.payload } : null,
+    homeLocation:
+      !state.homeLocation &&
+      action.payload?.lat != null &&
+      action.payload?.lon != null
+        ? { lat: action.payload?.lat, lon: action.payload?.lon }
+        : state.homeLocation,
   }))
   .handleAction(startProgress, (state, action) => ({
     ...state,
@@ -155,7 +160,13 @@ export const mainReducer = createReducer<MainState, RootAction>(
   }))
   .handleAction(setSelectingHomeLocation, (state, action) => ({
     ...state,
-    selectingHomeLocation: action.payload,
+    selectingHomeLocation:
+      action.payload === true ? state.homeLocation : action.payload,
+  }))
+  .handleAction(saveHomeLocation, (state) => ({
+    ...state,
+    selectingHomeLocation: false,
+    homeLocation: state.selectingHomeLocation || null,
   }))
   .handleAction(tipsShow, (state) => ({
     ...state,

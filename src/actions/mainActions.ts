@@ -15,11 +15,6 @@ export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();
 
-export const setHomeLocation = createAction('SET_HOME_LOCATION')<{
-  lat: number;
-  lon: number;
-} | null>();
-
 export const startProgress = createAction('START_PROGRESS')<string | number>();
 
 export const stopProgress = createAction('STOP_PROGRESS')<string | number>();
@@ -75,12 +70,13 @@ export const toggleLocate = createAction('LOCATE')();
 
 export const setSelectingHomeLocation = createAction(
   'SET_SELECTING_HOME_LOCATION',
-)<boolean>();
+)<LatLon | boolean>();
+
+export const saveHomeLocation = createAction('SAVE_HOME_LOCATION')();
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
-  homeLocation?: LatLon | null;
   layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
   trackViewerEleSmoothingFactor?: number;

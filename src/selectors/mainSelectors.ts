@@ -12,7 +12,7 @@ export const mapOverlaysSelector = (state: DefaultRootState): string[] =>
 
 export const selectingHomeLocationSelector = (
   state: DefaultRootState,
-): boolean => state.main.selectingHomeLocation;
+): boolean => state.main.selectingHomeLocation !== false;
 
 export const routePlannerPickModeSelector = (
   state: DefaultRootState,

@@ -65,6 +65,7 @@ import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocu
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
 import * as rpcProcessors from './processors/rpcProcessors';
+import { saveHomeLocationProcessor } from './processors/saveHomeLocationProcessor';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
 import {
   searchHighlightProcessor,
@@ -189,6 +190,7 @@ processorMiddleware.processors.push(
   searchHighlightTrafo,
   searchHighlightProcessor,
   tipsPreventProcessor,
+  saveHomeLocationProcessor,
   locateProcessor,
   saveSettingsProcessor,
   measurementProcessor,

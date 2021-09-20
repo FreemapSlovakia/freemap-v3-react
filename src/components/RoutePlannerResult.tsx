@@ -109,28 +109,31 @@ export function RoutePlannerResult(): ReactElement {
 
   const [dragging, setDragging] = useState(false);
 
-  const handlePoiAdd = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      if (window.fmEmbedded || dragging) {
-        // nothing
-      } else if (tool !== 'route-planner') {
-        // nothing
-      } else if (pickMode === 'start') {
-        dispatch(
-          routePlannerSetStart({ start: { lat: latlng.lat, lon: latlng.lng } }),
-        );
-      } else if (pickMode === 'finish') {
-        dispatch(
-          routePlannerSetFinish({
-            finish: { lat: latlng.lat, lon: latlng.lng },
-          }),
-        );
-      }
-    },
-    [pickMode, dispatch, tool, dragging],
+  useMapEvent(
+    'click',
+    useCallback(
+      ({ latlng }: LeafletMouseEvent) => {
+        if (window.fmEmbedded || dragging) {
+          // nothing
+        } else if (tool !== 'route-planner') {
+          // nothing
+        } else if (pickMode === 'start') {
+          dispatch(
+            routePlannerSetStart({
+              start: { lat: latlng.lat, lon: latlng.lng },
+            }),
+          );
+        } else if (pickMode === 'finish') {
+          dispatch(
+            routePlannerSetFinish({
+              finish: { lat: latlng.lat, lon: latlng.lng },
+            }),
+          );
+        }
+      },
+      [pickMode, dispatch, tool, dragging],
+    ),
   );
-
-  useMapEvent('click', handlePoiAdd);
 
   useEffect(
     () => () => {

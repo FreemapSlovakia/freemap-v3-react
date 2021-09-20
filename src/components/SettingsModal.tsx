@@ -1,41 +1,24 @@
-import {
-  saveSettings,
-  setActiveModal,
-  setSelectingHomeLocation,
-} from 'fm3/actions/mainActions';
-import { latLonToString } from 'fm3/geoutils';
+import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { FaCheck, FaCog, FaCrosshairs, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
 export function SettingsModal({ show }: Props): ReactElement {
-  const initHomeLocation = useSelector((state) => state.main.homeLocation);
-
   const initEleSmoothingFactor = useSelector(
     (state) => state.main.eleSmoothingFactor,
   );
 
-  const selectingHomeLocation = useSelector(
-    (state) => state.main.selectingHomeLocation,
-  );
-
   const user = useSelector((state) => state.auth.user);
 
-  const language = useSelector((state) => state.l10n.language);
-
   const m = useMessages();
-
-  const [homeLocation, setHomeLocation] = useState(initHomeLocation);
 
   const [eleSmoothingFactor, setEleSmoothingFactor] = useState(
     initEleSmoothingFactor,
@@ -51,27 +34,7 @@ export function SettingsModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const map = getMapLeafletElement();
-
-    if (!map) {
-      return;
-    }
-
-    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
-      setHomeLocation({ lat: latlng.lat, lon: latlng.lng });
-      dispatch(setSelectingHomeLocation(false));
-    };
-
-    map.on('click', handleMapClick);
-
-    return () => {
-      map.off('click', handleMapClick);
-    };
-  }, [dispatch]);
-
   const userMadeChanges =
-    homeLocation !== initHomeLocation ||
     eleSmoothingFactor !== initEleSmoothingFactor ||
     (user &&
       (name !== (user.name ?? '') ||
@@ -108,39 +71,18 @@ export function SettingsModal({ show }: Props): ReactElement {
         <Alert variant="secondary">
           {m?.settings.trackViewerEleSmoothing.info}
         </Alert>
-
-        <hr />
-
-        <Form.Group>
-          <Form.Label>
-            {m?.settings.map.homeLocation.label}{' '}
-            {homeLocation
-              ? latLonToString(homeLocation, language)
-              : m?.settings.map.homeLocation.undefined}
-          </Form.Label>
-
-          <Button
-            type="button"
-            className="d-block"
-            variant="secondary"
-            onClick={() => dispatch(setSelectingHomeLocation(true))}
-          >
-            <FaCrosshairs /> {m?.settings.map.homeLocation.select}
-          </Button>
-        </Form.Group>
       </>
     );
   }
 
   return (
-    <Modal show={show && !selectingHomeLocation} onHide={close}>
+    <Modal show={show} onHide={close}>
       <Form
         onSubmit={(e) => {
           e.preventDefault();
 
           dispatch(
             saveSettings({
-              homeLocation,
               trackViewerEleSmoothingFactor: eleSmoothingFactor,
               user: user
                 ? {
