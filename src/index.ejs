@@ -119,7 +119,10 @@
     <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
+    <!-- prettier-ignore -->
+    <% if (process.env['NODE_ENV'] === 'production') { %>
     <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+    <% } %>
 
     <script>
       fmEmbedded = window.self !== window.top;
