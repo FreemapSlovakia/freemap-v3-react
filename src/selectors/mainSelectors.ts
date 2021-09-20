@@ -56,8 +56,17 @@ export const mouseCursorSelector = createSelector(
   toolSelector,
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
-  (selectingHomeLocation, tool, routePlannerPickMode, showGalleryPicker) => {
-    if (selectingHomeLocation || showGalleryPicker) {
+  galleryShowPositionSelector,
+  (
+    selectingHomeLocation,
+    tool,
+    routePlannerPickMode,
+    showGalleryPicker,
+    galleryShowPosition,
+  ) => {
+    if (galleryShowPosition) {
+      return 'auto';
+    } else if (selectingHomeLocation || showGalleryPicker) {
       return 'crosshair';
     }
 

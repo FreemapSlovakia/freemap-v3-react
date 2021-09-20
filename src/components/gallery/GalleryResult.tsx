@@ -58,7 +58,10 @@ export function GalleryResult(): ReactElement {
         />
       )}
       {showPosition && image && (
-        <RichMarker position={{ lat: image.lat, lng: image.lon }} />
+        <RichMarker
+          position={{ lat: image.lat, lng: image.lon }}
+          interactive={false}
+        />
       )}
     </>
   );
