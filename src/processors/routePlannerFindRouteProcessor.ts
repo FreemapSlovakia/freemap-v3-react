@@ -1,3 +1,4 @@
+import { LineString } from '@turf/helpers';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -35,6 +36,60 @@ const updateRouteTypes = [
   mapsDataLoaded,
 ];
 
+enum GraphhopperSign {
+  TURN_SHARP_LEFT = -3,
+  TURN_LEFT = -2,
+  TURN_SLIGHT_LEFT = -1,
+  CONTINUE_ON_STREET = 0,
+  TURN_SLIGHT_RIGHT = 1,
+  TURN_RIGHT = 2,
+  TURN_SHARP_RIGHT = 3,
+  FINISH = 4,
+  VIA_REACHED = 5,
+  USE_ROUNDABOUT = 6,
+  KEEP_RIGHT = 7,
+}
+
+type GraphhopperInstruction = {
+  distance: number;
+  heading: number;
+  sign: GraphhopperSign;
+  interval: [number, number];
+  text: string;
+  time: number;
+  street_name: string;
+  exit_number?: number; // only for USE_ROUNDABOUT instructions
+  turn_angle?: number; // only for USE_ROUNDABOUT instructions
+};
+
+type GraphhopperPath = {
+  distance: number;
+  weight: number;
+  time: number;
+  transfers: number;
+  points_encoded: boolean;
+  bbox: [number, number, number, number];
+  points: LineString;
+  instructions: GraphhopperInstruction[];
+  legs?: unknown[]; // missing in doc
+  details: Record<string, unknown>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
+  ascend: number;
+  descend: number;
+  snapped_waypoints: unknown; // LineString;
+  points_order?: number[]; // Only present if the optimize parameter was used.
+};
+
+type GraphhopperResult = {
+  paths: GraphhopperPath[];
+};
+
+type OsrmResult = {
+  code: string;
+  trips?: Alternative[];
+  routes?: Alternative[];
+  waypoints?: Waypoint[];
+};
+
 export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
   errorKey: 'routePlanner.fetchingError',
@@ -45,12 +100,6 @@ export const routePlannerFindRouteProcessor: Processor = {
     if (!start || !finish || !transportType) {
       return;
     }
-
-    const allPoints = [
-      [start.lon, start.lat].join(','),
-      ...midpoints.map((mp) => [mp.lon, mp.lat].join(',')),
-      [finish.lon, finish.lat].join(','),
-    ].join(';');
 
     const ttDef = transportTypeDefs.find(({ type }) => type === transportType);
 
@@ -73,19 +122,69 @@ export const routePlannerFindRouteProcessor: Processor = {
     let data: unknown;
 
     try {
-      data = (
-        await httpRequest({
-          getState,
-          method: 'GET',
-          url: `${ttDef.url.replace(
-            '$MODE',
-            mode === 'route' ? 'route' : 'trip',
-          )}/${allPoints}`,
-          params,
-          expectedStatus: [200, 400],
-          cancelActions: updateRouteTypes,
-        })
-      ).data;
+      if (ttDef.api === 'gh') {
+        data = (
+          await httpRequest({
+            getState,
+            method: 'POST',
+            url: 'https://local.gruveo.com/gh/route',
+            data: {
+              // avoid: 'toll',
+              // algorithm: 'round_trip',
+              algorithm: midpoints.length > 0 ? 'alternative_route' : undefined,
+              round_trip: {
+                distance: 10000,
+                seed: 546,
+                max_paths: 2,
+              },
+              profile:
+                (transportType === 'bike'
+                  ? 'mtb'
+                  : transportType === 'bike-osm'
+                  ? 'bike2'
+                  : transportType === 'car'
+                  ? 'car'
+                  : transportType === 'car-free'
+                  ? 'car'
+                  : transportType === 'nordic'
+                  ? 'hike'
+                  : transportType === 'foot-osm'
+                  ? 'foot'
+                  : 'car') + '_fastest',
+              // weighting: 'fastest', // vs short_fastest
+              optimize: String(mode === 'trip'),
+              points_encoded: false,
+              locale: getState().l10n.language,
+              points: [
+                [start.lon, start.lat],
+                ...midpoints.map((mp) => [mp.lon, mp.lat]),
+                [finish.lon, finish.lat],
+              ],
+            },
+            cancelActions: updateRouteTypes,
+          })
+        ).data;
+      } else {
+        const allPoints = [
+          [start.lon, start.lat].join(','),
+          ...midpoints.map((mp) => [mp.lon, mp.lat].join(',')),
+          [finish.lon, finish.lat].join(','),
+        ].join(';');
+
+        data = (
+          await httpRequest({
+            getState,
+            method: 'GET',
+            url: `${ttDef.url.replace(
+              '$MODE',
+              mode === 'route' ? 'route' : 'trip',
+            )}/${allPoints}`,
+            params,
+            expectedStatus: [200, 400],
+            cancelActions: updateRouteTypes,
+          })
+        ).data;
+      }
     } catch (err) {
       dispatch(
         routePlannerSetResult({
@@ -99,39 +198,64 @@ export const routePlannerFindRouteProcessor: Processor = {
       throw err;
     }
 
-    type OsrmResult = {
-      code: string;
-      trips?: Alternative[];
-      routes?: Alternative[];
-      waypoints?: Waypoint[];
-    };
+    if (ttDef.api === 'gh') {
+      const g = assertType<GraphhopperResult>(data);
 
-    const { code, trips, routes, waypoints } = assertType<OsrmResult>(data);
+      dispatch(
+        routePlannerSetResult({
+          timestamp: Date.now(),
+          transportType,
+          alternatives: g.paths.map((p) => ({
+            duration: p.time,
+            distance: p.distance,
+            legs: [
+              {
+                duration: p.time,
+                distance: p.distance,
+                steps: [
+                  {
+                    maneuver: {
+                      location: [0, 0],
+                      type: 'continue',
+                    },
+                    distance: 0,
+                    duration: 0,
+                    name: '',
+                    mode: 'cycling',
+                    geometry: {
+                      coordinates: p.points.coordinates as [number, number][],
+                    },
+                  },
+                ],
+              },
+            ],
+          })),
+          waypoints: [],
+        }),
+      );
+    } else {
+      const { code, trips, routes, waypoints } = assertType<OsrmResult>(data);
 
-    if (code === 'Ok') {
-      const showHint =
-        !getState().routePlanner.preventHint &&
-        !midpoints.length &&
-        isActionOf([routePlannerSetStart, routePlannerSetFinish], action);
-
-      if (showHint) {
-        const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
-
-        if (getState().main.cookieConsentResult) {
-          actions.push({
-            nameKey: 'general.preventShowingAgain',
-            action: routePlannerPreventHint(),
-          });
-        }
+      if (code !== 'Ok') {
+        dispatch(
+          routePlannerSetResult({
+            timestamp: Date.now(),
+            transportType,
+            alternatives: [],
+            waypoints: [],
+          }),
+        );
 
         dispatch(
           toastsAdd({
-            id: 'routePlanner.showMidpointHint',
-            messageKey: 'routePlanner.showMidpointHint',
-            style: 'info',
-            actions,
+            id: 'routePlanner.routeNotFound',
+            messageKey: 'routePlanner.routeNotFound',
+            style: 'warning',
+            timeout: 5000,
           }),
         );
+
+        return;
       }
 
       const alts = routes || trips || [];
@@ -149,21 +273,30 @@ export const routePlannerFindRouteProcessor: Processor = {
           waypoints: waypoints || [],
         }),
       );
-    } else {
-      dispatch(
-        routePlannerSetResult({
-          timestamp: Date.now(),
-          transportType,
-          alternatives: [],
-          waypoints: [],
-        }),
-      );
+    }
+
+    const showHint =
+      // TODO ??? !getState().routePlanner.shapePoints &&
+      !getState().routePlanner.preventHint &&
+      !midpoints.length &&
+      isActionOf([routePlannerSetStart, routePlannerSetFinish], action);
+
+    if (showHint) {
+      const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
+
+      if (getState().main.cookieConsentResult) {
+        actions.push({
+          nameKey: 'general.preventShowingAgain',
+          action: routePlannerPreventHint(),
+        });
+      }
+
       dispatch(
         toastsAdd({
-          id: 'routePlanner.routeNotFound',
-          messageKey: 'routePlanner.routeNotFound',
-          style: 'warning',
-          timeout: 5000,
+          id: 'routePlanner.showMidpointHint',
+          messageKey: 'routePlanner.showMidpointHint',
+          style: 'info',
+          actions,
         }),
       );
     }
