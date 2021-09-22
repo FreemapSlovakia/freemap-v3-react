@@ -1045,6 +1045,7 @@ const en: Messages = {
     settings: 'Map layers settings',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
+    interactiveLayerWarning: 'Interactive layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
       A: 'Car',

@@ -1,16 +1,21 @@
-import {
-  gallerySetUsers,
-  galleryShowFilter,
-  GalleryUser,
-} from 'fm3/actions/galleryActions';
+import { gallerySetUsers, GalleryUser } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
 export const galleryFetchUsersProcessor: Processor = {
-  actionCreator: galleryShowFilter,
+  actionCreator: setActiveModal,
   errorKey: 'gallery.tagsFetchingError',
-  async handle({ getState, dispatch }) {
+  async handle({ getState, dispatch, action }) {
+    if (
+      isActionOf(setActiveModal, action) &&
+      action.payload !== 'gallery-filter'
+    ) {
+      return;
+    }
+
     const { data } = await httpRequest({
       getState,
       method: 'GET',

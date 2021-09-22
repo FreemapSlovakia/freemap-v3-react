@@ -21,6 +21,8 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   'edit-label': 'drawing.edit.title',
   login: 'mainMenu.logIn',
   'remove-ads': 'removeAds.title',
+  'gallery-filter': 'gallery.filterModal.title',
+  'gallery-upload': 'gallery.uploadModal.title',
 };
 
 export function useHtmlMeta(): void {

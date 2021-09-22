@@ -41,8 +41,6 @@ export const urlProcessor: Processor = {
       drawingLines.lines,
       gallery.activeImageId,
       gallery.filter,
-      gallery.showFilter,
-      gallery.showUploadModal,
       drawingPoints.points,
       main.activeModal,
       main.embedFeatures,
@@ -223,11 +221,7 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (gallery.showFilter) {
-      queryParts.push(['show', 'gallery-filter']);
-    } else if (gallery.showUploadModal) {
-      queryParts.push(['show', 'gallery-upload']);
-    } else if (
+    if (
       is<ShowModal>(main.activeModal) &&
       basicModals.includes(main.activeModal)
     ) {

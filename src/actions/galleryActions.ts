@@ -146,18 +146,6 @@ export const gallerySetEditModel = createAction(
 
 export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE')();
 
-export const galleryShowFilter = createAction('GALLERY_SHOW_FILTER')();
-
-export const galleryHideFilter = createAction('GALLERY_HIDE_FILTER')();
-
-export const galleryShowUploadModal = createAction(
-  'GALLERY_SHOW_UPLOAD_MODAL',
-)();
-
-export const galleryHideUploadModal = createAction(
-  'GALLERY_HIDE_UPLOAD_MODAL',
-)();
-
 export const gallerySetFilter =
   createAction('GALLERY_SET_FILTER')<GalleryFilter>();
 

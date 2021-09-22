@@ -8,14 +8,10 @@ import {
   galleryCancelShowOnTheMap,
   galleryClear,
   galleryEditPicture,
-  galleryHideFilter,
-  galleryHideUploadModal,
   galleryList,
   galleryRequestImage,
   gallerySetItemForPositionPicking,
-  galleryShowFilter,
   galleryShowOnTheMap,
-  galleryShowUploadModal,
 } from './actions/galleryActions';
 import {
   clearMap,
@@ -50,10 +46,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       state.gallery.showPosition;
 
     const showingModal =
-      state.gallery.showFilter ||
-      !!state.main.activeModal ||
-      state.gallery.showUploadModal ||
-      state.gallery.activeImageId;
+      !!state.main.activeModal || state.gallery.activeImageId;
     //  ||
     // state.main.selectingHomeLocation ||
     // state.gallery.pickingPositionForId ||
@@ -64,12 +57,8 @@ export function attachKeyboardHandler(store: MyStore): void {
         document.querySelector('*[data-popper-reference-hidden=false]') !== null
       ) {
         // nothing
-      } else if (state.gallery.showFilter) {
-        store.dispatch(galleryHideFilter());
       } else if (state.gallery.pickingPositionForId) {
         store.dispatch(gallerySetItemForPositionPicking(null));
-      } else if (state.gallery.showUploadModal) {
-        store.dispatch(galleryHideUploadModal());
       } else if (showGalleryViewerSelector(state)) {
         if (state.gallery.editModel) {
           store.dispatch(galleryEditPicture());
@@ -308,10 +297,10 @@ export function attachKeyboardHandler(store: MyStore): void {
           store.dispatch(galleryList('-createdAt'));
           return;
         } else if (event.code === 'KeyU') {
-          store.dispatch(galleryShowUploadModal());
+          store.dispatch(setActiveModal('gallery-upload'));
           return;
         } else if (event.code === 'KeyF') {
-          store.dispatch(galleryShowFilter());
+          store.dispatch(setActiveModal('gallery-filter'));
           return;
         }
       } else if (initCode === 'KeyE') {

@@ -18,6 +18,8 @@ export const basicModals = [
   'maps',
   'login',
   'remove-ads',
+  'gallery-filter',
+  'gallery-upload',
 ] as const;
 
 export const tools = [

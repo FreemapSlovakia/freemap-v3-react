@@ -1,6 +1,5 @@
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 import {
-  AsyncGalleryFilterModal,
   AsyncGalleryUploadModal,
   AsyncGalleryViewerModal,
 } from 'fm3/components/AsyncComponents';
@@ -18,15 +17,11 @@ export function GalleryModals(): ReactElement {
     (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const showFilter = useSelector((state) => state.gallery.showFilter);
-
   const showGalleryViewer = useSelector(showGalleryViewerSelector);
 
   const showUploadModal = useSelector(
     (state) =>
-      state.gallery.showUploadModal &&
-      !!state.auth.user &&
-      state.auth.validated &&
+      state.main.activeModal === 'gallery-upload' &&
       state.gallery.pickingPositionForId === null,
   );
 
@@ -55,7 +50,6 @@ export function GalleryModals(): ReactElement {
   return (
     <>
       {<AsyncGalleryViewerModal show={showGalleryViewer} />}
-      {<AsyncGalleryFilterModal show={showFilter} />}
       {<AsyncGalleryUploadModal show={showUploadModal} />}
     </>
   );

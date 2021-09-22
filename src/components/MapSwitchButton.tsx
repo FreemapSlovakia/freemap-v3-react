@@ -1,4 +1,3 @@
-import { galleryShowFilter } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
@@ -26,6 +25,7 @@ import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 import {
   FaCog,
+  FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
   FaRegCheckCircle,
@@ -59,7 +59,7 @@ export function MapSwitchButton(): ReactElement {
   const overlays = useSelector((state) => state.map.overlays);
 
   const pictureFilterIsActive = useSelector((state) =>
-    Object.values(state.gallery.filter).every((x) => x),
+    Object.values(state.gallery.filter).some((x) => x),
   );
 
   const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
@@ -103,7 +103,7 @@ export function MapSwitchButton(): ReactElement {
         }
 
         if (x instanceof SVGElement && x.dataset['filter']) {
-          dispatch(galleryShowFilter());
+          dispatch(setActiveModal('gallery-filter'));
           return true;
         }
 
@@ -199,8 +199,10 @@ export function MapSwitchButton(): ReactElement {
         {overlayLayers
           .filter(
             (l) =>
-              layersSettings[l.type]?.showInToolbar ??
-              defaultToolbarLayerLetters.includes(l.type),
+              (l.type === 'i' && overlays.includes('i')) ||
+              (l.type === 'I' && pictureFilterIsActive) ||
+              (layersSettings[l.type]?.showInToolbar ??
+                defaultToolbarLayerLetters.includes(l.type)),
           )
           .map(({ type, icon }) => (
             <Button
@@ -220,16 +222,32 @@ export function MapSwitchButton(): ReactElement {
                   className="text-warning ml-2"
                 />
               )}
+
+              {overlays.includes('i') && type === 'i' && (
+                <FaExclamationTriangle
+                  data-interactive="1"
+                  title={m?.mapLayers.interactiveLayerWarning}
+                  className="text-warning ml-2"
+                />
+              )}
             </Button>
           ))}
 
         <Button
           variant="secondary"
-          className="dropdown-toggle"
           ref={buttonRef}
           onClick={handleButtonClick}
           title={m?.mapLayers.layers}
-        />
+          active={[mapType, ...overlays.filter((o) => o !== 'i')].some(
+            (type) =>
+              !(
+                layersSettings[type]?.showInToolbar ??
+                defaultToolbarLayerLetters.includes(type)
+              ),
+          )}
+        >
+          <FaEllipsisV />
+        </Button>
       </ButtonGroup>
 
       <Button
@@ -273,6 +291,7 @@ export function MapSwitchButton(): ReactElement {
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .filter(
                   (l) =>
+                    mapType === l.type ||
                     show === 'all' ||
                     (layersSettings[l.type]?.showInMenu ??
                       defaultMenuLayerLetters.includes(l.type)),
@@ -283,6 +302,15 @@ export function MapSwitchButton(): ReactElement {
                     key={type}
                     eventKey={type}
                     onSelect={handleMapSelect}
+                    active={mapType === type}
+                    style={{
+                      opacity:
+                        show === 'all' ||
+                        (layersSettings[type]?.showInMenu ??
+                          defaultMenuLayerLetters.includes(type))
+                          ? 1
+                          : 0.5,
+                    }}
                   >
                     {mapType === type ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
                     {icon}{' '}
@@ -313,51 +341,62 @@ export function MapSwitchButton(): ReactElement {
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .filter(
                 (l) =>
+                  overlays.includes(l.type) ||
                   show === 'all' ||
                   (layersSettings[l.type]?.showInMenu ??
                     defaultMenuLayerLetters.includes(l.type)),
               )
-              .map(({ type, icon, minZoom, key }) => (
-                <Dropdown.Item
-                  key={type}
-                  as="button"
-                  eventKey={type}
-                  onSelect={handleOverlaySelect}
-                >
-                  {type === 'i' ? (
-                    !overlays.includes(type)
-                  ) : overlays.includes(type) ? (
-                    <FaRegCheckSquare />
-                  ) : (
-                    <FaRegSquare />
-                  )}{' '}
-                  {icon}{' '}
-                  <span
+              .map(({ type, icon, minZoom, key }) => {
+                const active =
+                  type === 'i'
+                    ? !overlays.includes(type)
+                    : overlays.includes(type);
+
+                return (
+                  <Dropdown.Item
+                    key={type}
+                    as="button"
+                    eventKey={type}
+                    onSelect={handleOverlaySelect}
+                    active={active}
                     style={{
-                      textDecoration:
-                        minZoom !== undefined && zoom < minZoom
-                          ? 'line-through'
-                          : 'none',
+                      opacity:
+                        type === 'i' ||
+                        show === 'all' ||
+                        (layersSettings[type]?.showInMenu ??
+                          defaultMenuLayerLetters.includes(type))
+                          ? 1
+                          : 0.5,
                     }}
                   >
-                    {m?.mapLayers.letters[type]}
-                  </span>
-                  {getKbdShortcut(key)}
-                  {minZoom !== undefined && zoom < minZoom && (
-                    <FaExclamationTriangle
-                      title={m?.mapLayers.minZoomWarning(minZoom)}
-                      className="text-warning ml-1"
-                    />
-                  )}
-                  {type === 'I' && pictureFilterIsActive && (
-                    <FaFilter
-                      data-filter="1"
-                      title={m?.mapLayers.photoFilterWarning}
-                      className="text-warning ml-1"
-                    />
-                  )}
-                </Dropdown.Item>
-              ))}
+                    {active ? <FaRegCheckSquare /> : <FaRegSquare />} {icon}{' '}
+                    <span
+                      style={{
+                        textDecoration:
+                          minZoom !== undefined && zoom < minZoom
+                            ? 'line-through'
+                            : 'none',
+                      }}
+                    >
+                      {m?.mapLayers.letters[type]}
+                    </span>
+                    {getKbdShortcut(key)}
+                    {minZoom !== undefined && zoom < minZoom && (
+                      <FaExclamationTriangle
+                        title={m?.mapLayers.minZoomWarning(minZoom)}
+                        className="text-warning ml-1"
+                      />
+                    )}
+                    {type === 'I' && pictureFilterIsActive && (
+                      <FaFilter
+                        data-filter="1"
+                        title={m?.mapLayers.photoFilterWarning}
+                        className="text-warning ml-1"
+                      />
+                    )}
+                  </Dropdown.Item>
+                );
+              })}
 
             {show !== 'all' && (
               <>

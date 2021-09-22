@@ -8,8 +8,6 @@ import {
   galleryConfirmPickedPosition,
   galleryEditPicture,
   GalleryFilter,
-  galleryHideFilter,
-  galleryHideUploadModal,
   GalleryItem,
   galleryMergeItem,
   galleryRemoveItem,
@@ -26,9 +24,7 @@ import {
   gallerySetPickingPosition,
   gallerySetTags,
   gallerySetUsers,
-  galleryShowFilter,
   galleryShowOnTheMap,
-  galleryShowUploadModal,
   GalleryTag,
   galleryToggleShowPreview,
   galleryUpload,
@@ -36,7 +32,7 @@ import {
   Picture,
 } from 'fm3/actions/galleryActions';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
@@ -51,7 +47,6 @@ export interface GalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
   image: Picture | null;
-  showUploadModal: boolean;
   items: GalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
@@ -61,7 +56,6 @@ export interface GalleryState {
   users: GalleryUser[];
   dirtySeq: number;
   comment: string;
-  showFilter: boolean;
   filter: GalleryFilter;
   editModel: PictureModel | null;
   showPosition: boolean;
@@ -75,7 +69,6 @@ export const galleryInitialState: GalleryState = {
   activeImageId: null,
   image: null,
 
-  showUploadModal: false,
   items: [],
   pickingPositionForId: null,
   pickingPosition: null,
@@ -88,7 +81,6 @@ export const galleryInitialState: GalleryState = {
 
   dirtySeq: 0,
   comment: '',
-  showFilter: false,
   filter: {
     tag: undefined,
     userId: undefined,
@@ -274,28 +266,18 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     comment: action.payload,
   }))
-  .handleAction(galleryShowFilter, (state) => ({
-    ...state,
-    showFilter: true,
-  }))
-  .handleAction(galleryHideFilter, (state) => ({
-    ...state,
-    showFilter: false,
-  }))
   .handleAction(gallerySetFilter, (state, action) => ({
     ...state,
     filter: action.payload,
-    showFilter: false,
   }))
-  .handleAction(galleryShowUploadModal, (state) => ({
+  .handleAction(setActiveModal, (state, action) => ({
     ...state,
-    showUploadModal: true,
-  }))
-  .handleAction(galleryHideUploadModal, (state) => ({
-    ...state,
-    showUploadModal: false,
-    items: [],
-    pickingPositionForId: null,
+    ...(action.payload === null
+      ? {
+          items: [],
+          pickingPositionForId: null,
+        }
+      : {}),
   }))
   .handleAction(galleryEditPicture, (state) => {
     const position = state.image

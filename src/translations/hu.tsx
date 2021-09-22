@@ -1060,6 +1060,7 @@ const hu: Messages = {
     settings: 'Map layers settings',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
+    interactiveLayerWarning: 'Interactive layer is hidden', // TODO translate
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     letters: {
       A: 'Autó',

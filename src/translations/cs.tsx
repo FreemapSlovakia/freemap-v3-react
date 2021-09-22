@@ -1057,6 +1057,7 @@ const cs: Messages = {
     settings: 'Nastavenia mapových vrstiev', // TODO translate
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
+    interactiveLayerWarning: 'Interaktívna vrstva je skrytá', // TODO translate
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
       A: 'Automapa',
