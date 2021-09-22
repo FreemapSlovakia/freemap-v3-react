@@ -36,10 +36,7 @@ import { galleryShowImageGaProcessor } from './processors/galleryShowImageGaProc
 import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapProcessor';
 import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor';
 import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
-import {
-  galleryUploadModalProcessor,
-  galleryUploadModalTransformer,
-} from './processors/galleryUploadModalProcessor';
+import { galleryUploadModalProcessor } from './processors/galleryUploadModalProcessor';
 import { gpxExportProcessor } from './processors/gpxExportProcessor';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
 import { legendProcessor } from './processors/legendProcessor';
@@ -49,7 +46,6 @@ import { mapRefocusProcessor } from './processors/mapRefocusProcessor';
 import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
 import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
 import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
-import { mapdModalTransformer } from './processors/mapsModalProcessor';
 import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
@@ -72,6 +68,7 @@ import {
   searchHighlightTrafo,
 } from './processors/searchHighlightProcessor';
 import { searchProcessor } from './processors/searchProcessor';
+import { setActiveModalTransformer } from './processors/setActiveModalProcessor';
 import { setToolProcessor } from './processors/setToolProcessor';
 import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
 import { toastsAddProcessor } from './processors/toastsAddProcessor';
@@ -227,7 +224,6 @@ processorMiddleware.processors.push(
   gallerySubmitCommentProcessor,
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
-  galleryUploadModalTransformer,
   galleryItemUploadProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
@@ -235,7 +231,7 @@ processorMiddleware.processors.push(
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
-  mapdModalTransformer,
+  setActiveModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,
   mapsDeleteProcessor,

@@ -1,9 +1,5 @@
-import {
-  galleryColorizeBy,
-  galleryList,
-  galleryShowFilter,
-  galleryShowUploadModal,
-} from 'fm3/actions/galleryActions';
+import { galleryColorizeBy, galleryList } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { useMessages } from 'fm3/l10nInjector';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -46,7 +42,7 @@ export function GallerySubmenu(): JSX.Element {
         href="?show=gallery-filter"
         onSelect={(_, e) => {
           e.preventDefault();
-          dispatch(galleryShowFilter());
+          dispatch(setActiveModal('gallery-filter'));
           closeMenu();
         }}
         active={filterIsActive}
@@ -58,7 +54,7 @@ export function GallerySubmenu(): JSX.Element {
         href="?show=gallery-upload"
         onSelect={(_, e) => {
           e.preventDefault();
-          dispatch(galleryShowUploadModal());
+          dispatch(setActiveModal('gallery-upload'));
           closeMenu();
         }}
       >

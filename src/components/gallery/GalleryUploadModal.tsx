@@ -1,6 +1,5 @@
 import {
   galleryAddItem,
-  galleryHideUploadModal,
   GalleryItem,
   galleryMergeItem,
   galleryRemoveItem,
@@ -8,6 +7,7 @@ import {
   galleryToggleShowPreview,
   galleryUpload,
 } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
@@ -67,7 +67,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
           actions: [
             {
               nameKey: 'general.yes',
-              action: galleryHideUploadModal(),
+              action: setActiveModal(null),
               style: 'danger',
             },
             { nameKey: 'general.no' },
@@ -75,7 +75,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
         }),
       );
     } else {
-      dispatch(galleryHideUploadModal());
+      dispatch(setActiveModal(null));
     }
   }, [dispatch, items]);
 

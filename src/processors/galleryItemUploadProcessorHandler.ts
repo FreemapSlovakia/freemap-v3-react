@@ -1,10 +1,10 @@
 import {
-  galleryHideUploadModal,
   galleryRemoveItem,
   gallerySetItemError,
   gallerySetLayerDirty,
   galleryUpload,
 } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
@@ -26,7 +26,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         }),
       );
 
-      dispatch(galleryHideUploadModal());
+      dispatch(setActiveModal(null));
     }
 
     return;
@@ -67,7 +67,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       url: '/gallery/pictures',
       data: formData,
       expectedStatus: 200,
-      cancelActions: [galleryHideUploadModal],
+      cancelActions: [setActiveModal], // if upload modal is closed
     });
 
     dispatch(galleryRemoveItem(item.id));

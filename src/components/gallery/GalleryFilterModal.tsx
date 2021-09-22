@@ -1,7 +1,5 @@
-import {
-  galleryHideFilter,
-  gallerySetFilter,
-} from 'fm3/actions/galleryActions';
+import { gallerySetFilter } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
@@ -160,6 +158,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
         }),
       );
+
+      dispatch(setActiveModal(null));
     },
     [
       dispatch,
@@ -186,7 +186,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   };
 
   const close = useCallback(() => {
-    dispatch(galleryHideFilter());
+    dispatch(setActiveModal(null));
   }, [dispatch]);
 
   return (

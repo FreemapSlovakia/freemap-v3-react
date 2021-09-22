@@ -13,12 +13,8 @@ import {
   galleryColorizeBy,
   GalleryColorizeBy,
   GalleryFilter,
-  galleryHideFilter,
-  galleryHideUploadModal,
   galleryRequestImage,
   gallerySetFilter,
-  galleryShowFilter,
-  galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import {
   selectFeature,
@@ -606,22 +602,6 @@ function handleGallery(
     }
   } else if (getState().gallery.activeImageId) {
     dispatch(galleryClear());
-  }
-
-  if (query['show'] === 'gallery-filter') {
-    if (!getState().gallery.showFilter) {
-      dispatch(galleryShowFilter());
-    }
-  } else if (getState().gallery.showFilter) {
-    dispatch(galleryHideFilter());
-  }
-
-  if (query['show'] === 'gallery-upload') {
-    if (!getState().gallery.showUploadModal) {
-      dispatch(galleryShowUploadModal());
-    }
-  } else if (getState().gallery.showUploadModal) {
-    dispatch(galleryHideUploadModal());
   }
 
   const cb = query['gallery-cb'];

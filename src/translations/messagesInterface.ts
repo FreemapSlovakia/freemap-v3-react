@@ -631,6 +631,7 @@ export type Messages = {
     settings: string;
     layers: string;
     photoFilterWarning: string;
+    interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
     letters: Record<BaseLayerLetters | OverlayLetters, string>;
     type: {

@@ -1075,6 +1075,7 @@ const sk: Messages = {
     settings: 'Nastavenia mapových vrstiev',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
+    interactiveLayerWarning: 'Interaktívna vrstva je skrytá',
     minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,
     letters: {
       A: 'Automapa',

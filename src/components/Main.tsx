@@ -3,7 +3,6 @@ import {
   galleryAddItem,
   GalleryItem,
   galleryMergeItem,
-  galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
@@ -21,6 +20,7 @@ import {
   AsyncEmbedMapModal,
   AsyncExportGpxModal,
   AsyncExportPdfModal,
+  AsyncGalleryFilterModal,
   AsyncLegendModal,
   AsyncLegendOutdoorModal,
   AsyncLoginModal,
@@ -293,7 +293,7 @@ export function Main(): ReactElement {
       );
 
       if (pictureFiles.length) {
-        dispatch(galleryShowUploadModal()); // if no user then it displays valuable error
+        dispatch(setActiveModal('gallery-upload')); // if no user then it displays valuable error
 
         if (authenticated) {
           handlePicturesDrop(pictureFiles);
@@ -546,9 +546,7 @@ export function Main(): ReactElement {
             }}
           />
         )}
-
         <input {...getInputProps()} />
-
         <div onClickCapture={handleMapWrapperClick}>
           <MapContainer
             zoomControl={false}
@@ -597,7 +595,6 @@ export function Main(): ReactElement {
             <GalleryResult />
           </MapContainer>
         </div>
-
         <AsyncTrackingModal
           show={
             !!activeModal &&
@@ -607,7 +604,6 @@ export function Main(): ReactElement {
             ].includes(activeModal)
           }
         />
-
         <AsyncSettingsModal show={activeModal === 'settings'} />
         <AsyncMapSettingsModal show={activeModal === 'mapSettings'} />
         <AsyncEmbedMapModal show={activeModal === 'embed'} />
@@ -626,6 +622,7 @@ export function Main(): ReactElement {
         <AsyncLoginModal show={activeModal === 'login'} />
         <MapsModal show={activeModal === 'maps'} />
         <RemoveAdsModal show={activeModal === 'remove-ads'} />
+        <AsyncGalleryFilterModal show={activeModal === 'gallery-filter'} />
         <GalleryModals />
       </div>
     </>
