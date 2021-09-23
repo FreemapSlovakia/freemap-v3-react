@@ -260,7 +260,7 @@ export function RoutePlannerMenu(): ReactElement {
         >
           <Dropdown.Toggle
             variant="secondary"
-            className={pickPointMode === 'start' ? 'active' : ''}
+            active={pickPointMode === 'start'}
           >
             <FaPlay color="#409a40" />
 
@@ -323,13 +323,12 @@ export function RoutePlannerMenu(): ReactElement {
             <Dropdown
               as={ButtonGroup}
               variant="secondary"
-              className={pickPointMode === 'finish' ? 'active' : ''}
               id="set-finish-dropdown"
               onSelect={() => dispatch(routePlannerSetPickMode('finish'))}
             >
               <Dropdown.Toggle
                 variant="secondary"
-                className={pickPointMode === 'finish' ? 'active' : ''}
+                active={pickPointMode === 'finish'}
               >
                 <FaStop color="#d9534f" />
 
