@@ -129,16 +129,17 @@ export const handleLocationChange = (
       const { start, finish, midpoints, transportType, mode, milestones } =
         getState().routePlanner;
 
-      const latLons = points
-        .map((point) => (point ? { lat: point[0], lon: point[1] } : null))
-        .filter((x): x is LatLon => !!x);
+      const latLons = points.map((point) =>
+        point ? { lat: point[0], lon: point[1] } : null,
+      );
 
       const nextStart = latLons[0];
 
-      const nextMidpoints = latLons.slice(1, latLons.length - 1);
+      const nextMidpoints = latLons
+        .slice(1, latLons.length - 1)
+        .filter((x): x is LatLon => !!x);
 
-      const nextFinish =
-        latLons.length > 1 ? latLons[latLons.length - 1] : null;
+      const nextFinish = latLons[latLons.length - 1];
 
       if (
         query['transport'] !== transportType ||
@@ -672,7 +673,7 @@ function serializePoints(line: Line): string {
     .join(',')}`;
 }
 
-function serializePoint(point: LatLon | null): string {
+function serializePoint(point: LatLon | null | undefined): string {
   return point && typeof point.lat === 'number' && typeof point.lon === 'number'
     ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}`
     : '';
