@@ -2,11 +2,9 @@ import { ReactElement } from 'react';
 import {
   FaBicycle,
   FaCar,
-  FaHiking,
   FaSkiing,
   FaSkiingNordic,
   FaWalking,
-  FaWheelchair,
 } from 'react-icons/fa';
 
 export type TransportType =
@@ -60,23 +58,24 @@ export const transportTypeDefs: {
     url: `${EPS_URL}$MODE/v1/bikesharing`,
     development: true,
   },
-  {
-    type: 'foot',
-    icon: <FaHiking />,
-    url: `${FM_URL}$MODE/v1/foot`,
-    hidden: true,
-  },
+  // {
+  //   type: 'foot',
+  //   icon: <FaHiking />,
+  //   url: `${FM_URL}$MODE/v1/foot`,
+  //   hidden: true,
+  // },
   {
     type: 'foot-osm',
     icon: <FaWalking />,
     url: 'https://routing.openstreetmap.de/routed-foot/$MODE/v1/driving',
   },
-  {
-    type: 'foot-stroller',
-    icon: <FaWheelchair />,
-    url: `${FM_URL}$MODE/v1/foot`,
-    exclude: 'stroller',
-  },
+  // {
+  //   type: 'foot-stroller',
+  //   icon: <FaWheelchair />,
+  //   url: `${FM_URL}$MODE/v1/foot`,
+  //   exclude: 'stroller',
+  //   hidden: true,
+  // },
   {
     type: 'nordic',
     icon: <FaSkiingNordic />,
