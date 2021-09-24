@@ -145,9 +145,7 @@ export function Main(): ReactElement {
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const showGalleryPicker = useSelector((state) =>
-    showGalleryPickerSelector(state),
-  );
+  const showGalleryPicker = useSelector(showGalleryPickerSelector);
 
   const showMenu = useSelector(
     (state) =>

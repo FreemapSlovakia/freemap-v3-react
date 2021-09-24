@@ -25,25 +25,31 @@ export const galleryPickingPositionForIdSelector = (
 export const galleryShowPositionSelector = (state: DefaultRootState): boolean =>
   state.gallery.showPosition;
 
+export const drawingLineSelector = (state: DefaultRootState): boolean =>
+  state.drawingLines.drawing;
+
 export const showGalleryPickerSelector = createSelector(
   toolSelector,
   mapOverlaysSelector,
   galleryPickingPositionForIdSelector,
   galleryShowPositionSelector,
   selectingHomeLocationSelector,
+  drawingLineSelector,
   (
     tool,
     mapOverlays,
     galleryPickingPositionForId,
     galleryShowPosition,
     selectingHomeLocation,
+    drawingLine,
   ) =>
     (!tool ||
       ['photos', 'track-viewer', 'objects', 'changesets'].includes(tool)) &&
     mapOverlays.includes('I') &&
     galleryPickingPositionForId === null &&
     !galleryShowPosition &&
-    !selectingHomeLocation,
+    !selectingHomeLocation &&
+    !drawingLine,
 );
 
 export const showGalleryViewerSelector = (state: DefaultRootState): boolean =>
