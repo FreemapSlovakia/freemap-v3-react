@@ -102,7 +102,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       (line) => line.type === 'polygon',
     )) {
       fc.features.push(
-        polygon([line.points.map((p) => [p.lon, p.lat])], { name: line.label }),
+        polygon([[...line.points, line.points[0]].map((p) => [p.lon, p.lat])], {
+          name: line.label,
+        }),
       );
     }
   }
