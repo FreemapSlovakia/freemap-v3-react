@@ -24,6 +24,7 @@ export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
   .handleAction(mapsSetList, (state, { payload }) => ({
     ...state,
     maps: payload,
+    name: state.id && payload.find((m) => m.id === state.id)?.name,
   }))
   .handleAction(mapsLoad, (state, { payload }) => ({
     ...state,
