@@ -82,6 +82,7 @@ export const handleLocationChange = (
     dispatch(
       mapsLoad({
         id,
+        skipLoading: !!sq,
         ignoreMap: 'map' in parsedQuery,
         ignoreLayers: 'layers' in parsedQuery,
       }),

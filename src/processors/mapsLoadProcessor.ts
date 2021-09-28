@@ -15,7 +15,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
   actionCreator: mapsLoad,
   errorKey: 'maps.fetchError',
   handle: async ({ getState, dispatch, action: { payload } }) => {
-    if (payload.id === undefined) {
+    if (payload.id === undefined || payload.skipLoading) {
       return;
     }
 
