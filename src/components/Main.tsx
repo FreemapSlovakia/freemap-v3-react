@@ -13,24 +13,6 @@ import {
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
 } from 'fm3/actions/trackViewerActions';
-import {
-  AsyncAboutModal,
-  AsyncDrawingEditLabelModal,
-  AsyncElevationChart,
-  AsyncEmbedMapModal,
-  AsyncExportGpxModal,
-  AsyncExportPdfModal,
-  AsyncGalleryFilterModal,
-  AsyncLegendModal,
-  AsyncLegendOutdoorModal,
-  AsyncLoginModal,
-  AsyncMapSettingsModal,
-  AsyncSettingsModal,
-  AsyncSupportUsModal,
-  AsyncTipsModal,
-  AsyncTrackingModal,
-  AsyncTrackViewerUploadModal,
-} from 'fm3/components/AsyncComponents';
 import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
@@ -73,8 +55,10 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
+  lazy,
   MouseEvent,
   ReactElement,
+  Suspense,
   useCallback,
   useEffect,
   useState,
@@ -90,6 +74,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
 import { Ad } from './Ad';
+import { AsyncLoadingIndicator } from './AsyncLoadingIndicator';
+import { AsyncModal } from './AsyncModal';
 import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
@@ -99,13 +85,17 @@ import { MainMenuButton } from './mainMenu/MainMenuButton';
 import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
-import { MapsModal } from './MapsModal';
 import { ObjectSelection } from './ObjectSelection';
-import { RemoveAdsModal } from './RemoveAdsModal';
 import { SelectionTool } from './SelectionTool';
 import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
+
+const ElevationChart = lazy(() =>
+  import('fm3/components/ElevationChart').then(({ ElevationChart }) => ({
+    default: ElevationChart,
+  })),
+);
 
 export function Main(): ReactElement {
   const m = useMessages();
@@ -376,6 +366,8 @@ export function Main(): ReactElement {
     (state) => state.main.selectingHomeLocation,
   );
 
+  const documentKey = useSelector((state) => state.main.documentKey);
+
   return (
     <>
       <style>
@@ -416,7 +408,7 @@ export function Main(): ReactElement {
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                 <SearchMenu
                   hidden={!showMenu}
-                  preventShortcut={!!activeModal}
+                  preventShortcut={!!activeModal || !!documentKey}
                 />
               )}
             </Card>
@@ -516,7 +508,12 @@ export function Main(): ReactElement {
 
           {showAds && <Ad />}
         </div>
-        {showElevationChart && <AsyncElevationChart />}
+
+        {showElevationChart && (
+          <Suspense fallback={<AsyncLoadingIndicator />}>
+            <ElevationChart />
+          </Suspense>
+        )}
       </div>
 
       <div className="fm-type-zoom-control">
@@ -593,7 +590,8 @@ export function Main(): ReactElement {
             <GalleryResult />
           </MapContainer>
         </div>
-        <AsyncTrackingModal
+
+        <AsyncModal
           show={
             !!activeModal &&
             [
@@ -601,26 +599,91 @@ export function Main(): ReactElement {
               'tracking-watched',
             ].includes(activeModal)
           }
+          factory={() => import('fm3/components/tracking/TrackingModal')}
         />
-        <AsyncSettingsModal show={activeModal === 'settings'} />
-        <AsyncMapSettingsModal show={activeModal === 'mapSettings'} />
-        <AsyncEmbedMapModal show={activeModal === 'embed'} />
-        <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
-        <AsyncExportPdfModal show={activeModal === 'export-pdf'} />
-        <AsyncTipsModal show={activeModal === 'tips'} />
-        <AsyncAboutModal show={activeModal === 'about'} />
-        <AsyncSupportUsModal show={activeModal === 'supportUs'} />
+
+        <AsyncModal
+          show={activeModal === 'settings'}
+          factory={() => import('fm3/components/SettingsModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'mapSettings'}
+          factory={() => import('./MapSettingsModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'embed'}
+          factory={() => import('fm3/components/EmbedMapModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'export-gpx'}
+          factory={() => import('fm3/components/ExportGpxModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'export-pdf'}
+          factory={() => import('fm3/components/ExportPdfModal')}
+        />
+
+        <AsyncModal
+          show={!activeModal && documentKey !== null}
+          factory={() => import('fm3/components/DocumentModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'about'}
+          factory={() => import('fm3/components/AboutModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'supportUs'}
+          factory={() => import('fm3/components/supportUsModal/SupportUsModal')}
+        />
+
         {mapType === 'X' ? (
-          <AsyncLegendOutdoorModal show={activeModal === 'legend'} />
+          <AsyncModal
+            show={activeModal === 'legend'}
+            factory={() => import('fm3/components/LegendOutdoorModal')}
+          />
         ) : (
-          <AsyncLegendModal show={activeModal === 'legend'} />
+          <AsyncModal
+            show={activeModal === 'legend'}
+            factory={() => import('fm3/components/LegendModal')}
+          />
         )}
-        <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
-        <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
-        <AsyncLoginModal show={activeModal === 'login'} />
-        <MapsModal show={activeModal === 'maps'} />
-        <RemoveAdsModal show={activeModal === 'remove-ads'} />
-        <AsyncGalleryFilterModal show={activeModal === 'gallery-filter'} />
+
+        <AsyncModal
+          show={activeModal === 'edit-label'}
+          factory={() => import('fm3/components/DrawingEditLabelModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'upload-track'}
+          factory={() => import('fm3/components/TrackViewerUploadModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'login'}
+          factory={() => import('fm3/components/LoginModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'maps'}
+          factory={() => import('./MapsModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'remove-ads'}
+          factory={() => import('./RemoveAdsModal')}
+        />
+
+        <AsyncModal
+          show={activeModal === 'gallery-filter'}
+          factory={() => import('fm3/components/gallery/GalleryFilterModal')}
+        />
+
         <GalleryModals />
       </div>
     </>

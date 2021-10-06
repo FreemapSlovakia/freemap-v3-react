@@ -26,7 +26,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       data: {
         idToken,
         language: getState().l10n.chosenLanguage,
-        preventTips: getState().tips.preventTips,
         // homeLocation: getState().main.homeLocation,
       },
     });

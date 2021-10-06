@@ -17,6 +17,7 @@ import {
   gallerySetFilter,
 } from 'fm3/actions/galleryActions';
 import {
+  documentShow,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -32,19 +33,18 @@ import {
   osmLoadWay,
 } from 'fm3/actions/osmActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
 } from 'fm3/actions/trackViewerActions';
+import { DocumentKey } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
-import { TipKey } from 'fm3/tips';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
@@ -375,23 +375,22 @@ export const handleLocationChange = (
     dispatch(setActiveModal(null));
   }
 
-  if (typeof query['tip'] === 'string' && is<TipKey>(query['tip'])) {
-    if (
-      getState().main.activeModal !== 'tips' ||
-      getState().tips.tip !== query['tip']
-    ) {
-      dispatch(tipsShow(query['tip']));
+  const tip = query['tip'];
+
+  if (typeof tip === 'string' && is<DocumentKey>(tip)) {
+    if (getState().main.documentKey !== tip) {
+      dispatch(documentShow(tip));
     }
-  } else if (getState().main.activeModal === 'tips') {
-    dispatch(setActiveModal(null));
+  } else if (getState().main.documentKey) {
+    dispatch(documentShow(null));
   }
 
   if ((query['embed'] ?? '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
-        !query['embed'] || typeof query['embed'] !== 'string'
-          ? []
-          : query['embed'].split(','),
+        query['embed'] && typeof query['embed'] === 'string'
+          ? query['embed'].split(',')
+          : [],
       ),
     );
   }

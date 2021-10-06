@@ -1,5 +1,4 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
+import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   forwardRef,
@@ -155,7 +154,7 @@ export function Copyright(): ReactElement {
               onSelect={(_, e) => {
                 e.preventDefault();
                 setShow(undefined);
-                dispatch(tipsShow('privacyPolicy'));
+                dispatch(documentShow('privacyPolicy'));
               }}
             >
               <FaLock /> Privacy policy

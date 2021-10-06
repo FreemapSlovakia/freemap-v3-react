@@ -24,7 +24,6 @@ import {
   setTool,
 } from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
-import { tipsShow } from './actions/tipsActions';
 import { showGalleryViewerSelector } from './selectors/mainSelectors';
 import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
@@ -43,7 +42,10 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition;
 
-  const showingModal = !!state.main.activeModal || state.gallery.activeImageId;
+  const showingModal =
+    !!state.main.activeModal ||
+    !!state.gallery.activeImageId ||
+    !!state.main.documentKey;
   //  ||
   // state.main.selectingHomeLocation ||
   // state.gallery.pickingPositionForId ||
@@ -135,16 +137,6 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
     }
     if (event.code === 'ArrowRight') {
       return galleryRequestImage('next');
-    }
-  }
-
-  if (state.main.activeModal === 'tips' && state.tips.tip !== 'privacyPolicy') {
-    if (event.code === 'ArrowLeft') {
-      return tipsShow('prev');
-    }
-
-    if (event.code === 'ArrowRight') {
-      return tipsShow('next');
     }
   }
 

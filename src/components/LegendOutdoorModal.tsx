@@ -16,6 +16,8 @@ const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
 type Props = { show: boolean };
 
+export default LegendOutdoorModal;
+
 export function LegendOutdoorModal({ show }: Props): ReactElement {
   const m = useMessages();
 

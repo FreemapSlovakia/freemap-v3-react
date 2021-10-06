@@ -17,6 +17,8 @@ import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default TrackViewerUploadModal;
+
 export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 

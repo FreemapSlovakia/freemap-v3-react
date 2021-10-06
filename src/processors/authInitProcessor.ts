@@ -1,12 +1,8 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { getTip, tipsShow } from 'fm3/actions/tipsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { TipKey } from 'fm3/tips';
 import { User } from 'fm3/types/common';
-import { assertType, is } from 'typescript-is';
-import { getEffectiveChosenLanguage } from './l10nSetLanguageProcessor';
+import { assertType } from 'typescript-is';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
@@ -26,28 +22,6 @@ export const authInitProcessor: Processor = {
       dispatch(
         authSetUser(res.status === 200 ? assertType<User>(res.data) : null),
       );
-    }
-
-    // show tips only if not robot, not embedded and there are no other query parameters except 'map' or 'layers'
-    if (
-      !window.isRobot &&
-      !window.fmEmbedded &&
-      !getState().tips.preventTips &&
-      history.location.search
-        .substring(1)
-        .split('&')
-        .every((x: string) => /^(map|layers)=|^$/.test(x)) &&
-      ['sk', 'cs'].includes(
-        getEffectiveChosenLanguage(getState().l10n.chosenLanguage),
-      )
-    ) {
-      const tip = getState().tips.lastTip;
-
-      setTimeout(() => {
-        dispatch(
-          tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
-        );
-      });
     }
   },
 };

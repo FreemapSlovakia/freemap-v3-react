@@ -88,3 +88,5 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default DrawingEditLabelModal;

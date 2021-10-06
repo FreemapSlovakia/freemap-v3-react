@@ -24,6 +24,8 @@ import { PictureModel } from './GalleryEditForm';
 
 type Props = { show: boolean };
 
+export default GalleryUploadModal;
+
 export function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 

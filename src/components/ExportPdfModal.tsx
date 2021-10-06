@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default ExportPdfModal;
+
 export function ExportPdfModal({ show }: Props): ReactElement {
   const canExportByPolygon = useSelector(
     (state) =>

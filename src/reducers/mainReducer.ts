@@ -16,6 +16,7 @@ import {
   clearMap,
   convertToDrawing,
   deleteFeature,
+  documentShow,
   enableUpdatingUrl,
   Modal,
   removeAdsOnLogin,
@@ -34,8 +35,8 @@ import {
   toggleLocate,
   Tool,
 } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
+import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
@@ -59,6 +60,7 @@ export interface MainState {
   cookieConsentResult: boolean | null;
   analyticCookiesAllowed: boolean;
   removeAdsOnLogin: boolean;
+  documentKey: DocumentKey | null;
 }
 
 export const mainInitialState: MainState = {
@@ -77,6 +79,7 @@ export const mainInitialState: MainState = {
   cookieConsentResult: null,
   analyticCookiesAllowed: true,
   removeAdsOnLogin: false,
+  documentKey: null,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -166,7 +169,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
     selectingHomeLocation: false,
     homeLocation: state.selectingHomeLocation || null,
   }))
-  .handleAction(tipsShow, (state) => ({
+  .handleAction(documentShow, (state) => ({
     ...state,
     activeModal: 'tips',
   }))
@@ -233,4 +236,11 @@ export const mainReducer = createReducer<MainState, RootAction>(
       ...state,
       activeModal: null,
     }),
-  );
+  )
+  .handleAction(documentShow, (state, action) => {
+    return {
+      ...state,
+      documentKey: action.payload === null ? null : action.payload,
+      activeModal: action.payload === null ? state.activeModal : null,
+    };
+  });

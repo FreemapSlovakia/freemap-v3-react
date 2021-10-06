@@ -258,3 +258,5 @@ export function MapsModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default MapsModal;

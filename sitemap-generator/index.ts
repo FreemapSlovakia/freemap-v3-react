@@ -115,9 +115,9 @@ async function gen() {
   //   ].map((modal) => `https://www.freemap.sk/?layers=X&show=${modal}&lang=sk`),
   // );
 
-  const tipsDir = '../src/tips';
+  const documentsDir = '../src/documents';
 
-  for (const tip of await readdir(tipsDir)) {
+  for (const tip of await readdir(documentsDir)) {
     if (tip.endsWith('.md')) {
       await writeFile(
         `../sitemap/layers=X&tip=${tip.slice(0, -3)}&lang=sk`,
@@ -146,7 +146,7 @@ async function gen() {
             </head>
 
             <body>
-              ${raw(marked(await readFile(tipsDir + '/' + tip, 'utf-8')))}
+              ${raw(marked(await readFile(documentsDir + '/' + tip, 'utf-8')))}
             </body>
           </html>`,
       );

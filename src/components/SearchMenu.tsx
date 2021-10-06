@@ -146,7 +146,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         ) {
           inputRef.current.focus();
           e.preventDefault();
-        } else if (e.code === 'Escape') {
+        } else if (
+          inputRef.current === document.activeElement &&
+          e.code === 'Escape'
+        ) {
           inputRef.current.blur();
           e.preventDefault();
         }

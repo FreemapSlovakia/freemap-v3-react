@@ -1,14 +1,14 @@
 import { authStartLogout } from 'fm3/actions/authActions';
 import {
   clearMap,
+  documentShow,
   Modal,
   setActiveModal,
   setTool,
   Tool,
 } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
+import { DocumentKey } from 'fm3/documents';
 import { useMessages } from 'fm3/l10nInjector';
-import { TipKey } from 'fm3/tips';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -48,13 +48,13 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const handleTipSelect = useCallback(
-    (tip: string | null, e: SyntheticEvent<unknown>) => {
+    (key: string | null, e: SyntheticEvent<unknown>) => {
       e.preventDefault();
 
       closeMenu();
 
-      if (is<TipKey>(tip)) {
-        dispatch(tipsShow(tip));
+      if (is<DocumentKey>(key)) {
+        dispatch(documentShow(key));
       }
     },
     [closeMenu, dispatch],

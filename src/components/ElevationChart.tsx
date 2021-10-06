@@ -27,6 +27,8 @@ const ticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((k) =>
   [1, 2.5, 2, 5].map((x) => x * 10 ** k),
 );
 
+export default ElevationChart;
+
 export function ElevationChart(): ReactElement | null {
   const m = useMessages();
 

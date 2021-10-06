@@ -1,15 +1,21 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
-import { useMessages } from 'fm3/l10nInjector';
+import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
+import { useLocalMessages, useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { SupportUsMessages } from './translations/SupportUsMessages';
 
 type Props = { show: boolean };
 
 export function SupportUsModal({ show }: Props): ReactElement {
+  const language = useSelector((state) => state.l10n.language);
+
+  const lm = useLocalMessages<SupportUsMessages>(
+    () => import(`./translations/${language}.tsx`),
+  );
+
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -26,11 +32,12 @@ export function SupportUsModal({ show }: Props): ReactElement {
           <FaHeart color="red" />
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
-        <p>{m?.supportUs.explanation}</p>
+        <p>{lm?.explanation}</p>
         <hr />
         <p>
-          {m?.supportUs.account} VÚB 2746389453/0200
+          {lm?.account} VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -50,7 +57,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
           <input name="cmd" value="_s-xclick" type="hidden" />
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
           <Button className="d-block mx-auto" type="submit">
-            <FaPaypal /> {m?.supportUs.paypal}
+            <FaPaypal /> {lm?.paypal}
           </Button>
         </form>
         <hr />
@@ -61,7 +68,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
             onClick={(e) => {
               e.preventDefault();
 
-              dispatch(tipsShow('dvePercenta'));
+              dispatch(documentShow('dvePercenta'));
             }}
           >
             2% z dane
@@ -69,7 +76,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
           .
         </p>
         <hr />
-        <p>{m?.supportUs.thanks}</p>
+        <p>{lm?.thanks}</p>
         <hr />
         <address>
           Občianske združenie
@@ -82,17 +89,10 @@ export function SupportUsModal({ show }: Props): ReactElement {
           972 32 Chrenovec-Brusno
           <br />
           <br />
-          {m?.supportUs.registration}
+          {lm?.registration}
           <br />
           <br />
-          IČO:{' '}
-          <a
-            href="https://ives.minv.sk/rmno/detail?id=pDzzfHOZDzgmL%2fS29uvUP1ezuQxdSW7nM1%2fONrQAN8RscbOVPcaJHq4hvnhwbWpT"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            42173639
-          </a>
+          IČO: 42173639
           <br />
           DIČ: 2022912870
           <br />
@@ -100,6 +100,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
           E-mail: <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </address>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
@@ -108,3 +109,5 @@ export function SupportUsModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default SupportUsModal;

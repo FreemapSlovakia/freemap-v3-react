@@ -96,3 +96,5 @@ export function AboutModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default AboutModal;

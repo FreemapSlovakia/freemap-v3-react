@@ -70,7 +70,6 @@ import {
 import { searchProcessor } from './processors/searchProcessor';
 import { setActiveModalTransformer } from './processors/setActiveModalProcessor';
 import { setToolProcessor } from './processors/setToolProcessor';
-import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
 import { toastsAddProcessor } from './processors/toastsAddProcessor';
 import { toastsCancelTypeProcessor } from './processors/toastsCancelTypeProcessor';
 import { toastsRemoveProcessor } from './processors/toastsRemoveProcessor';
@@ -118,11 +117,6 @@ import {
   RoutePlannerState,
 } from './reducers/routePlannerReducer';
 import { searchReducer } from './reducers/searchReducer';
-import {
-  tipsInitialState,
-  tipsReducer,
-  TipsState,
-} from './reducers/tipsReducer';
 import { toastsReducer } from './reducers/toastsReducer';
 import { trackingReducer } from './reducers/trackingReducer';
 import {
@@ -147,7 +141,6 @@ const reducers = {
   objects: objectsReducer,
   routePlanner: routePlannerReducer,
   search: searchReducer,
-  tips: tipsReducer,
   toasts: toastsReducer,
   tracking: trackingReducer,
   trackViewer: trackViewerReducer,
@@ -186,7 +179,6 @@ processorMiddleware.processors.push(
   searchProcessor,
   searchHighlightTrafo,
   searchHighlightProcessor,
-  tipsPreventProcessor,
   saveHomeLocationProcessor,
   locateProcessor,
   saveSettingsProcessor,
@@ -270,10 +262,6 @@ export function createReduxStore(): MyStore {
 
   if (is<Partial<L10nState>>(persisted.l10n)) {
     initial.l10n = { ...l10nInitialState, ...persisted.l10n };
-  }
-
-  if (is<Partial<TipsState>>(persisted.tips)) {
-    initial.tips = { ...tipsInitialState, ...persisted.tips };
   }
 
   if (is<Partial<AuthState>>(persisted.auth)) {

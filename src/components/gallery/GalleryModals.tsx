@@ -1,14 +1,11 @@
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-import {
-  AsyncGalleryUploadModal,
-  AsyncGalleryViewerModal,
-} from 'fm3/components/AsyncComponents';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
 import 'fm3/styles/gallery.scss';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AsyncModal } from '../AsyncModal';
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
@@ -49,8 +46,15 @@ export function GalleryModals(): ReactElement {
 
   return (
     <>
-      {<AsyncGalleryViewerModal show={showGalleryViewer} />}
-      {<AsyncGalleryUploadModal show={showUploadModal} />}
+      <AsyncModal
+        show={showGalleryViewer}
+        factory={() => import('fm3/components/gallery/GalleryViewerModal')}
+      />
+
+      <AsyncModal
+        show={showUploadModal}
+        factory={() => import('fm3/components/gallery/GalleryUploadModal')}
+      />
     </>
   );
 }

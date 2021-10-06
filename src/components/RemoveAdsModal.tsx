@@ -46,3 +46,5 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default RemoveAdsModal;

@@ -50,6 +50,8 @@ const exportableDefinitions: readonly {
 
 type Props = { show: boolean };
 
+export default ExportGpxModal;
+
 export function ExportGpxModal({ show }: Props): ReactElement {
   const m = useMessages();
 

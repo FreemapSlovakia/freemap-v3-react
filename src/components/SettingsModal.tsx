@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default SettingsModal;
+
 export function SettingsModal({ show }: Props): ReactElement {
   const initEleSmoothingFactor = useSelector(
     (state) => state.main.eleSmoothingFactor,

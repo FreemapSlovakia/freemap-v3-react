@@ -18,7 +18,6 @@ export interface User {
     layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
   };
-  preventTips?: boolean;
   lat?: number | null;
   lon?: number | null;
   language?: string | null;

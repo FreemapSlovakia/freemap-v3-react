@@ -24,6 +24,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default MapSettingsModal;
+
 export function MapSettingsModal({ show }: Props): ReactElement {
   const initLayersSettings = useSelector((state) => state.map.layersSettings);
 

@@ -577,17 +577,7 @@ export type Messages = {
     enableLocateMe: string;
   };
   tips: {
-    previous: string;
-    next: string;
-    showOnStartup: string;
     errorLoading: string;
-  };
-  supportUs: {
-    explanation: string;
-    account: string;
-    paypal: string;
-    thanks: string;
-    registration: string;
   };
   gpxExport: {
     export: string;

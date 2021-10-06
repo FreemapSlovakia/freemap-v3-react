@@ -1,4 +1,5 @@
 import { basicModals, tools } from 'fm3/constants';
+import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 import { LayerSettings } from './mapActions';
@@ -14,6 +15,8 @@ export type ShowModal = typeof basicModals[number];
 export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();
+
+export const documentShow = createAction('DOCUMENT_SHOW')<DocumentKey | null>();
 
 export const startProgress = createAction('START_PROGRESS')<string | number>();
 
@@ -85,7 +88,6 @@ export const saveSettings = createAction('SAVE_SETTINGS')<{
     email: string | null;
     sendGalleryEmails: boolean;
   } | null;
-  preventTips?: boolean;
 }>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<

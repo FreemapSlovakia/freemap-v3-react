@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fa';
 import { SiOpenstreetmap } from 'react-icons/si';
 
-export type TipKey =
+export type DocumentKey =
   | 'freemap'
   | 'osm'
   | 'attribution'
@@ -27,14 +27,14 @@ export type TipKey =
   | 'dvePercenta'
   | 'privacyPolicy';
 
-export type Tip = [
-  key: TipKey,
+export type Document = [
+  key: DocumentKey,
   title: string,
   icon: React.ReactElement,
   hide?: boolean,
 ];
 
-export const tips: Tip[] = [
+export const documents: Document[] = [
   ['freemap', 'O združení Freemap', <FaUsers />],
   ['osm', 'O OpenStreetMap', <SiOpenstreetmap />],
   ['attribution', 'Licencia máp', <FaCertificate />],
