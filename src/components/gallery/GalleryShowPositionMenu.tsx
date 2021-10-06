@@ -4,20 +4,18 @@ import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { FaChevronLeft } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function GalleryShowPositionMenu(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const showPosition = useSelector((state) => state.gallery.showPosition);
-
   const close = useCallback(() => {
     dispatch(galleryCancelShowOnTheMap());
   }, [dispatch]);
 
-  return !showPosition ? null : (
+  return (
     <Card className="fm-toolbar mx-2 mt-2">
       <Button onClick={close}>
         <FaChevronLeft />

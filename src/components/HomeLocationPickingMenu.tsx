@@ -13,33 +13,35 @@ export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
   const selectingHomeLocation = useSelector(
-    (state) => state.main.selectingHomeLocation !== false,
+    (state) => state.main.selectingHomeLocation,
   );
 
   const m = useMessages();
 
-  return !selectingHomeLocation ? null : (
-    <Card className="fm-toolbar mx-2 mt-2">
-      <div className="m-1">Zvoľte domovskú pozíciu</div>
+  return selectingHomeLocation === false ? null : (
+    <div>
+      <Card className="fm-toolbar mx-2 mt-2">
+        <div className="m-1">Zvoľte domovskú pozíciu</div>
 
-      <Button
-        className="ml-1"
-        variant="primary"
-        onClick={() => dispatch(saveHomeLocation())}
-        disabled={!selectingHomeLocation}
-      >
-        <FaCheck />
-        <span className="d-none d-sm-inline"> {m?.general.save}</span>
-      </Button>
+        <Button
+          className="ml-1"
+          variant="primary"
+          onClick={() => dispatch(saveHomeLocation())}
+          disabled={!selectingHomeLocation}
+        >
+          <FaCheck />
+          <span className="d-none d-sm-inline"> {m?.general.save}</span>
+        </Button>
 
-      <Button
-        className="ml-1"
-        variant="dark"
-        onClick={() => dispatch(setSelectingHomeLocation(false))}
-      >
-        <FaTimes />
-        <span className="d-none d-sm-inline"> {m?.general.cancel}</span>
-      </Button>
-    </Card>
+        <Button
+          className="ml-1"
+          variant="dark"
+          onClick={() => dispatch(setSelectingHomeLocation(false))}
+        >
+          <FaTimes />
+          <span className="d-none d-sm-inline"> {m?.general.cancel}</span>
+        </Button>
+      </Card>
+    </div>
   );
 }

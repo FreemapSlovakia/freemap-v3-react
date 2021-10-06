@@ -7,18 +7,14 @@ import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { FaCheck, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function GalleryPositionPickingMenu(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const pickingPosition = useSelector(
-    (state) => state.gallery.pickingPositionForId !== null,
-  );
-
-  return !pickingPosition ? null : (
+  return (
     <Card className="fm-toolbar mx-2 mt-2">
       <div className="m-2">{m?.gallery.locationPicking.title}</div>
       <Button

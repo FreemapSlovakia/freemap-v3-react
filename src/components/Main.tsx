@@ -55,10 +55,8 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
-  lazy,
   MouseEvent,
   ReactElement,
-  Suspense,
   useCallback,
   useEffect,
   useState,
@@ -74,7 +72,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
 import { Ad } from './Ad';
-import { AsyncLoadingIndicator } from './AsyncLoadingIndicator';
+import { AsyncComponent } from './AsyncComponent';
 import { AsyncModal } from './AsyncModal';
 import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
@@ -90,12 +88,6 @@ import { SelectionTool } from './SelectionTool';
 import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
-
-const ElevationChart = lazy(() =>
-  import('fm3/components/ElevationChart').then(({ ElevationChart }) => ({
-    default: ElevationChart,
-  })),
-);
 
 export function Main(): ReactElement {
   const m = useMessages();
@@ -368,6 +360,12 @@ export function Main(): ReactElement {
 
   const documentKey = useSelector((state) => state.main.documentKey);
 
+  const showPosition = useSelector((state) => state.gallery.showPosition);
+
+  const pickingPosition = useSelector(
+    (state) => state.gallery.pickingPositionForId !== null,
+  );
+
   return (
     <>
       <style>
@@ -502,17 +500,17 @@ export function Main(): ReactElement {
           {selectionMenu === 'objects' && <ObjectSelection />}
           {selectionMenu === 'tracking' && <TrackingSelection />}
 
-          <GalleryPositionPickingMenu />
-          <GalleryShowPositionMenu />
+          {pickingPosition && <GalleryPositionPickingMenu />}
+          {showPosition && <GalleryShowPositionMenu />}
           <HomeLocationPickingMenu />
 
           {showAds && <Ad />}
         </div>
 
         {showElevationChart && (
-          <Suspense fallback={<AsyncLoadingIndicator />}>
-            <ElevationChart />
-          </Suspense>
+          <AsyncComponent
+            factory={() => import('fm3/components/ElevationChart')}
+          />
         )}
       </div>
 
