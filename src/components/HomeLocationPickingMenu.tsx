@@ -18,7 +18,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
 
   const m = useMessages();
 
-  return selectingHomeLocation === false ? null : (
+  return (
     <div>
       <Card className="fm-toolbar mx-2 mt-2">
         <div className="m-1">Zvoľte domovskú pozíciu</div>

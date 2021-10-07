@@ -305,8 +305,6 @@ export function Main(): ReactElement {
 
   const sc3 = useScrollClasses('horizontal');
 
-  const sc4 = useScrollClasses('horizontal');
-
   const drawingLines = useSelector(drawingLinePolys);
 
   const YellowBar = m?.main.YellowBar;
@@ -383,6 +381,7 @@ export function Main(): ReactElement {
         {YellowBar && showInfoBar && language === 'sk' && !window.fmEmbedded && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
+
             <YellowBar />
           </div>
         )}
@@ -397,7 +396,9 @@ export function Main(): ReactElement {
                 className={progress ? 'in-progress' : 'idle'}
                 onClick={handleLogoClick}
               />
+
               {!window.fmEmbedded && showMenu && <MainMenuButton />}
+
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                 <SearchMenu
                   hidden={!showMenu}
@@ -417,12 +418,14 @@ export function Main(): ReactElement {
                     onClick={() => dispatch(trackViewerToggleElevationChart())}
                   >
                     <FaChartArea />
+
                     <span className="d-none d-sm-inline">
                       {' '}
                       {m?.general.elevationProfile}
                     </span>
                   </Button>
                 )}
+
                 {routeFound && (
                   <Button
                     className={trackFound ? 'ml-1' : ''}
@@ -432,6 +435,7 @@ export function Main(): ReactElement {
                     title={m?.general.elevationProfile ?? '…'}
                   >
                     <FaChartArea />
+
                     <span className="d-none d-sm-inline">
                       {' '}
                       {m?.general.elevationProfile ?? '…'}
@@ -442,7 +446,8 @@ export function Main(): ReactElement {
             </Card>
           )}
 
-          {/* tool menus */}
+          {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
+
           {showMenu && tool && (
             <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc1}>
               <div />
@@ -452,12 +457,14 @@ export function Main(): ReactElement {
                   {toolDef && (
                     <span className="align-self-center ml-1 mr-2">
                       {toolDef.icon}
+
                       <span className="d-none d-sm-inline">
                         {' '}
                         {m?.tools[toolDef.msgKey]}
                       </span>
                     </span>
                   )}
+
                   <Button
                     className="ml-1"
                     variant="secondary"
@@ -498,27 +505,25 @@ export function Main(): ReactElement {
             </div>
           )}
 
-          {showMenu && showMapsMenu && (
-            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc4}>
-              <div />
-              <Card className="fm-toolbar mx-2 mt-2">
-                <ButtonToolbar>
-                  <MapsMenu />
-                </ButtonToolbar>
-              </Card>
-            </div>
-          )}
+          {showMenu && showMapsMenu && <MapsMenu />}
 
-          {/* selections */}
+          {/* selections; TODO make all async */}
+
           {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
+
           {selectionMenu === 'line-point' && <DrawingLinePointSelection />}
+
           {selectionMenu === 'draw-points' && <DrawingPointSelection />}
+
           {selectionMenu === 'objects' && <ObjectSelection />}
+
           {selectionMenu === 'tracking' && <TrackingSelection />}
 
           {pickingPosition && <GalleryPositionPickingMenu />}
+
           {showPosition && <GalleryShowPositionMenu />}
-          <HomeLocationPickingMenu />
+
+          {selectingHomeLocation !== false && <HomeLocationPickingMenu />}
 
           {showAds && <Ad />}
         </div>
@@ -534,9 +539,11 @@ export function Main(): ReactElement {
         <div>
           <div className="fm-ib-scroller fm-ib-scroller-bottom" ref={sc3}>
             <div />
+
             <MapControls />
           </div>
         </div>
+
         <Copyright />
       </div>
 
@@ -555,7 +562,9 @@ export function Main(): ReactElement {
             }}
           />
         )}
+
         <input {...getInputProps()} />
+
         <div onClickCapture={handleMapWrapperClick}>
           <MapContainer
             zoomControl={false}
