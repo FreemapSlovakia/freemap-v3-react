@@ -19,7 +19,7 @@ import Modal from 'react-bootstrap/Modal';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { usePictureDropHandler } from '../../hooks/usePictureDropHandler';
 import { PictureModel } from './GalleryEditForm';
 
 type Props = { show: boolean };

@@ -9,7 +9,7 @@ import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
-import { useStartFinishPoints } from 'fm3/hooks/startFinishPointsHook';
+import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useLazy } from './hooks/useLazy';
 import { Messages } from './translations/messagesInterface';
 
 export function useLocalMessages<T>(
@@ -7,17 +8,11 @@ export function useLocalMessages<T>(
 ): T | undefined {
   const language = useSelector((state) => state.l10n.language);
 
-  const [messages, setMessages] = useState<T>();
+  // NOTE factory dependenct is disabled for simpler parent code
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const f = useMemo(() => factory.bind(undefined, language), [language]);
 
-  useEffect(() => {
-    factory(language).then((m) => {
-      setMessages(m.default);
-    });
-    // NOTE factory is missing in the dependencies for simpler parent code
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language]);
-
-  return messages;
+  return useLazy(f);
 }
 
 export function useMessages(): Messages | undefined {

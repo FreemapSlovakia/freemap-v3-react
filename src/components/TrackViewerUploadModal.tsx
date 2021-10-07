@@ -5,7 +5,7 @@ import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from 'fm3/actions/trackViewerActions';
-import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useGpxDropHandler } from 'fm3/hooks/useGpxDropHandler';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/trackViewer.scss';
 import { ReactElement, useCallback } from 'react';

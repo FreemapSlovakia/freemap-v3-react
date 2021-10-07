@@ -1,5 +1,5 @@
 import { distance, smoothElevations } from 'fm3/geoutils';
-import { useStartFinishPoints } from 'fm3/hooks/startFinishPointsHook';
+import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { useMessages } from 'fm3/l10nInjector';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { ReactElement } from 'react';

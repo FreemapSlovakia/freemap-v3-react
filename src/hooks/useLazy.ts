@@ -3,9 +3,9 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-export function useLazyComponent<T>(
+export function useLazy<T>(
   factory: () => Promise<{ default: T }>,
-  load: boolean,
+  load = true,
 ): T | undefined {
   const [modal, setModal] = useState<T>();
 
@@ -51,10 +51,7 @@ export function useLazyComponent<T>(
           dispatch(stopProgress(pid));
         }
       });
-
-    // NOTE factory dependenct is disabled for simpler parent code
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [load, dispatch]);
+  }, [load, dispatch, factory]);
 
   return modal;
 }
