@@ -13,7 +13,6 @@ import {
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
 } from 'fm3/actions/trackViewerActions';
-import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
 import { DrawingLineSelection } from 'fm3/components/DrawingLineSelection';
@@ -29,15 +28,12 @@ import { Layers } from 'fm3/components/Layers';
 import { LocationResult } from 'fm3/components/LocationResult';
 import { MapControls } from 'fm3/components/MapControls';
 import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
-import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
 import { ObjectsResult } from 'fm3/components/ObjectsResult';
-import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
 import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
-import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
 import { useMouseCursor } from 'fm3/hooks/mouseCursorHook';
@@ -75,7 +71,6 @@ import { Ad } from './Ad';
 import { AsyncComponent } from './AsyncComponent';
 import { AsyncModal } from './AsyncModal';
 import { DrawingLinePointSelection } from './DrawingLinePointSelection';
-import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult';
@@ -472,10 +467,31 @@ export function Main(): ReactElement {
                   >
                     <FaTimes />
                   </Button>
-                  {tool === 'objects' && <ObjectsMenu />}
-                  {tool === 'route-planner' && <RoutePlannerMenu />}
-                  {tool === 'track-viewer' && <TrackViewerMenu />}
-                  {tool === 'changesets' && <ChangesetsMenu />}
+
+                  {tool === 'objects' && (
+                    <AsyncComponent
+                      factory={() => import('fm3/components/ObjectsMenu')}
+                    />
+                  )}
+
+                  {tool === 'route-planner' && (
+                    <AsyncComponent
+                      factory={() => import('fm3/components/RoutePlannerMenu')}
+                    />
+                  )}
+
+                  {tool === 'track-viewer' && (
+                    <AsyncComponent
+                      factory={() => import('fm3/components/TrackViewerMenu')}
+                    />
+                  )}
+
+                  {tool === 'changesets' && (
+                    <AsyncComponent
+                      factory={() => import('fm3/components/ChangesetsMenu')}
+                    />
+                  )}
+
                   {tool === 'map-details' && <MapDetailsMenu />}
                 </ButtonToolbar>
               </Card>
@@ -559,7 +575,11 @@ export function Main(): ReactElement {
               <>
                 {tool === 'map-details' && <MapDetailsTool />}
                 {tool === 'draw-points' && <DrawingPointsTool />}
-                {drawingLines && <DrawingLinesTool />}
+                {drawingLines && (
+                  <AsyncComponent
+                    factory={() => import('./DrawingLinesTool')}
+                  />
+                )}
                 {isSelecting && <SelectionTool />}
 
                 {showInteractiveLayer && (

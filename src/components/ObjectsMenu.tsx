@@ -17,6 +17,8 @@ import FormControl from 'react-bootstrap/FormControl';
 import { useDispatch, useSelector } from 'react-redux';
 import { HideArrow } from './SearchMenu';
 
+export default ObjectsMenu;
+
 export function ObjectsMenu(): ReactElement {
   const m = useMessages();
 

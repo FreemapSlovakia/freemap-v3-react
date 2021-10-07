@@ -53,6 +53,7 @@ export type Messages = {
     load: string;
     unnamed: string;
     enablePopup: string;
+    componentLoadingError: string;
   };
   selections: {
     objects: string;

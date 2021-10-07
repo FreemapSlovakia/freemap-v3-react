@@ -19,7 +19,6 @@ export function DrawingPointsTool(): null {
         );
 
         dispatch(drawingMeasure({}));
-        return;
       },
       [dispatch],
     ),

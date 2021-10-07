@@ -95,6 +95,8 @@ const sk: Messages = {
     unnamed: 'Bez názvu',
     enablePopup:
       'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
+    componentLoadingError:
+      'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.',
   },
 
   selections: {

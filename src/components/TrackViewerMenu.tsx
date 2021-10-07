@@ -30,6 +30,8 @@ import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
 
+export default TrackViewerMenu;
+
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
 

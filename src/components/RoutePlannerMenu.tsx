@@ -47,6 +47,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
 
+export default RoutePlannerMenu;
+
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
 

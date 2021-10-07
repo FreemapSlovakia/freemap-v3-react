@@ -93,6 +93,8 @@ const en: Messages = {
     load: 'Load',
     unnamed: 'No name',
     enablePopup: 'Please enable pop-up windows for this site in you browser.',
+    componentLoadingError:
+      'Component loading error. Please check your internet connection.',
   },
 
   selections: {

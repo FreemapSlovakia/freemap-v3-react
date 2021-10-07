@@ -95,6 +95,8 @@ const cs: Messages = {
     load: 'Načíst',
     unnamed: 'Bez názvu',
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
+    componentLoadingError:
+      'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.', // TODO translate
   },
 
   selections: {

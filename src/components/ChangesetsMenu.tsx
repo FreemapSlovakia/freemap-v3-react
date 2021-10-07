@@ -11,6 +11,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import { FaEraser, FaSync } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
+export default ChangesetsMenu;
+
 export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
 

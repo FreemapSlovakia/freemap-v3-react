@@ -95,6 +95,8 @@ const hu: Messages = {
     unnamed: 'No name', // TODO translate
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
+    componentLoadingError:
+      'Component loading error. Please check your internet connection.', // TODO translate
   },
 
   selections: {
