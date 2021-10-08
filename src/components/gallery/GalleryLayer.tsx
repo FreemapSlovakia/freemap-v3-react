@@ -92,9 +92,23 @@ let supportsOffscreen: boolean | undefined = undefined;
 class LGalleryLayer extends LGridLayer {
   private _options?: GalleryLayerOptions;
 
+  private _acm = new Map<string, AbortController>();
+
   constructor(options?: GalleryLayerOptions) {
     super(options);
     this._options = options;
+
+    this.on('tileunload', ({ coords }: { coords: Coords }) => {
+      const key = `${coords.x}/${coords.y}/${coords.z}`;
+
+      const ac = this._acm.get(key);
+
+      if (ac) {
+        ac.abort();
+
+        this._acm.delete(key);
+      }
+    });
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -141,7 +155,15 @@ class LGalleryLayer extends LGridLayer {
       }
     }
 
-    // .get(`https://backend.freemap.sk/gallery/pictures`, {
+    const controller = new AbortController();
+
+    const key = `${coords.x}/${coords.y}/${coords.z}`;
+
+    this._acm.set(key, controller);
+
+    const { signal } = controller;
+
+    // https://backend.freemap.sk/gallery/pictures
     fetch(
       `${process.env['API_URL']}/gallery/pictures?` +
         stringify({
@@ -155,7 +177,9 @@ class LGalleryLayer extends LGridLayer {
               ? 'takenAt'
               : colorizeBy,
         }).toString(),
-      {},
+      {
+        signal,
+      },
     )
       .then((response) => {
         if (response.status !== 200) {
@@ -165,6 +189,8 @@ class LGalleryLayer extends LGridLayer {
         return response.json();
       })
       .then((data) => {
+        this._acm.delete(key);
+
         const ctx = {
           data,
           dpr,
@@ -203,8 +229,13 @@ class LGalleryLayer extends LGridLayer {
         done(undefined, tile);
       })
       .catch((err) => {
-        console.error(err);
+        if (!String(err).includes('abort')) {
+          console.error(err);
+        }
+
         done(err);
+
+        this._acm.delete(key);
       });
 
     return tile;
