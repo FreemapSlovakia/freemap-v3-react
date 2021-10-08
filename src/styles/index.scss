@@ -393,3 +393,13 @@ button#freemap-logo {
 .pe-none {
   pointer-events: none;
 }
+
+.fm-drag-to-map {
+  background-color: rgba(217, 237, 247, 50%);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20000;
+}

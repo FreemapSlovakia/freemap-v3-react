@@ -548,20 +548,7 @@ export function Main(): ReactElement {
       </div>
 
       <div {...getRootProps()}>
-        {isDragActive && (
-          <div
-            // TODO as class
-            style={{
-              backgroundColor: 'rgba(217,237,247,50%)',
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              zIndex: 20000,
-            }}
-          />
-        )}
+        {isDragActive && <div className="fm-drag-to-map" />}
 
         <input {...getInputProps()} />
 
