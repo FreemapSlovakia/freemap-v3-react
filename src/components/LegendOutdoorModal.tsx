@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
@@ -31,10 +31,14 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
 
   const language = useSelector((state) => state.l10n.language);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    axios
-      .get<unknown>(`${fmMapserverUrl}/legend?language=${language}`)
-      .then(({ data }) => {
+    fetch(`${fmMapserverUrl}/legend?language=${language}`)
+      .then((response) =>
+        response.status === 200 ? response.json() : undefined,
+      )
+      .then((data) => {
         const { categories, items } = assertType<Res>(data);
 
         const catMap = new Map<string, Item>();
@@ -50,10 +54,17 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
         }
 
         setLegend([...catMap.values()]);
+      })
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.loadError',
+            messageParams: { err },
+          }),
+        );
       });
-  }, [language]);
-
-  const dispatch = useDispatch();
+  }, [dispatch, language]);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));

@@ -1,5 +1,4 @@
 import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
-import axios from 'axios';
 import { GalleryColorizeBy, GalleryFilter } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
 import {
@@ -8,7 +7,7 @@ import {
   GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
-import qs from 'query-string';
+import { stringify } from 'query-string';
 import { renderGalleryTile } from './galleryTileRenderrer';
 
 type GalleryLayerOptions = GridLayerOptions & {
@@ -142,10 +141,10 @@ class LGalleryLayer extends LGridLayer {
       }
     }
 
-    axios
-      .get(`${process.env['API_URL']}/gallery/pictures`, {
-        // .get(`https://backend.freemap.sk/gallery/pictures`, {
-        params: {
+    // .get(`https://backend.freemap.sk/gallery/pictures`, {
+    fetch(
+      `${process.env['API_URL']}/gallery/pictures?` +
+        stringify({
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
@@ -155,11 +154,17 @@ class LGalleryLayer extends LGridLayer {
               : colorizeBy === 'season'
               ? 'takenAt'
               : colorizeBy,
-        },
-        paramsSerializer: (params) => qs.stringify(params),
-        validateStatus: (status) => status === 200,
+        }).toString(),
+      {},
+    )
+      .then((response) => {
+        if (response.status !== 200) {
+          throw new Error('unexpected status ' + response.status);
+        }
+
+        return response.json();
       })
-      .then(({ data }) => {
+      .then((data) => {
         const ctx = {
           data,
           dpr,
