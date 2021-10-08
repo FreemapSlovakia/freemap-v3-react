@@ -4,7 +4,7 @@ import {
   GalleryItem,
   galleryMergeItem,
 } from 'fm3/actions/galleryActions';
-import { setActiveModal, setTool } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -15,15 +15,10 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
-import { DrawingLineSelection } from 'fm3/components/DrawingLineSelection';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { DrawingPointSelection } from 'fm3/components/DrawingPointSelection';
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
 import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
-import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
-import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
-import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
 import { Layers } from 'fm3/components/Layers';
 import { LocationResult } from 'fm3/components/LocationResult';
 import { MapControls } from 'fm3/components/MapControls';
@@ -47,7 +42,6 @@ import {
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from 'fm3/selectors/mainSelectors';
-import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -62,15 +56,13 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import CloseButton from 'react-bootstrap/CloseButton';
 import { useDropzone } from 'react-dropzone';
-import { FaChartArea, FaTimes } from 'react-icons/fa';
+import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler';
 import fmLogo from '../images/freemap-logo-print.png';
-import { Ad } from './Ad';
 import { AsyncComponent } from './AsyncComponent';
 import { AsyncModal } from './AsyncModal';
-import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult';
@@ -78,8 +70,8 @@ import { MainMenuButton } from './mainMenu/MainMenuButton';
 import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
-import { ObjectSelection } from './ObjectSelection';
 import { SelectionTool } from './SelectionTool';
+import { ToolMenu } from './ToolMenu';
 import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
@@ -293,17 +285,13 @@ export function Main(): ReactElement {
     noClick: true,
   });
 
-  const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
-
   const isSelecting = useSelector(selectingModeSelector);
 
   const selectionMenu = showMenu ? selectionType : null;
 
-  const sc1 = useScrollClasses('horizontal');
+  const scLogo = useScrollClasses('horizontal');
 
-  const sc2 = useScrollClasses('horizontal');
-
-  const sc3 = useScrollClasses('horizontal');
+  const scMapControls = useScrollClasses('horizontal');
 
   const drawingLines = useSelector(drawingLinePolys);
 
@@ -387,7 +375,7 @@ export function Main(): ReactElement {
         )}
 
         <div className="menus">
-          <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc2}>
+          <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
             <div />
 
             <Card className="fm-toolbar mx-2 mt-2">
@@ -448,84 +436,64 @@ export function Main(): ReactElement {
 
           {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
 
-          {showMenu && tool && (
-            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc1}>
-              <div />
-
-              <Card className="fm-toolbar mx-2 mt-2">
-                <ButtonToolbar>
-                  {toolDef && (
-                    <span className="align-self-center ml-1 mr-2">
-                      {toolDef.icon}
-
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.tools[toolDef.msgKey]}
-                      </span>
-                    </span>
-                  )}
-
-                  <Button
-                    className="ml-1"
-                    variant="secondary"
-                    // size="sm"
-                    onClick={() => dispatch(setTool(null))}
-                    title={m?.general.close + ' [Esc]'}
-                  >
-                    <FaTimes />
-                  </Button>
-
-                  {tool === 'objects' && (
-                    <AsyncComponent
-                      factory={() => import('fm3/components/ObjectsMenu')}
-                    />
-                  )}
-
-                  {tool === 'route-planner' && (
-                    <AsyncComponent
-                      factory={() => import('fm3/components/RoutePlannerMenu')}
-                    />
-                  )}
-
-                  {tool === 'track-viewer' && (
-                    <AsyncComponent
-                      factory={() => import('fm3/components/TrackViewerMenu')}
-                    />
-                  )}
-
-                  {tool === 'changesets' && (
-                    <AsyncComponent
-                      factory={() => import('fm3/components/ChangesetsMenu')}
-                    />
-                  )}
-
-                  {tool === 'map-details' && <MapDetailsMenu />}
-                </ButtonToolbar>
-              </Card>
-            </div>
-          )}
+          {showMenu &&
+            (!tool ? null : tool === 'objects' ? (
+              <AsyncComponent
+                factory={() => import('fm3/components/ObjectsMenu')}
+              />
+            ) : tool === 'route-planner' ? (
+              <AsyncComponent
+                factory={() => import('fm3/components/RoutePlannerMenu')}
+              />
+            ) : tool === 'track-viewer' ? (
+              <AsyncComponent
+                factory={() => import('fm3/components/TrackViewerMenu')}
+              />
+            ) : tool === 'changesets' ? (
+              <AsyncComponent
+                factory={() => import('fm3/components/ChangesetsMenu')}
+              />
+            ) : tool === 'map-details' ? (
+              <MapDetailsMenu />
+            ) : (
+              <ToolMenu />
+            ))}
 
           {showMenu && showMapsMenu && <MapsMenu />}
 
-          {/* selections; TODO make all async */}
+          {selectionMenu === 'draw-line-poly' ? (
+            <AsyncComponent factory={() => import('./DrawingLineSelection')} />
+          ) : selectionMenu === 'line-point' ? (
+            <AsyncComponent
+              factory={() => import('./DrawingLinePointSelection')}
+            />
+          ) : selectionMenu === 'draw-points' ? (
+            <AsyncComponent factory={() => import('./DrawingPointSelection')} />
+          ) : selectionMenu === 'objects' ? (
+            <AsyncComponent factory={() => import('./ObjectSelection')} />
+          ) : selectionMenu === 'tracking' ? (
+            <TrackingSelection />
+          ) : null}
 
-          {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
+          {pickingPosition && (
+            <AsyncComponent
+              factory={() => import('./gallery/GalleryPositionPickingMenu')}
+            />
+          )}
 
-          {selectionMenu === 'line-point' && <DrawingLinePointSelection />}
+          {showPosition && (
+            <AsyncComponent
+              factory={() => import('./gallery/GalleryShowPositionMenu')}
+            />
+          )}
 
-          {selectionMenu === 'draw-points' && <DrawingPointSelection />}
+          {selectingHomeLocation !== false && (
+            <AsyncComponent
+              factory={() => import('./HomeLocationPickingMenu')}
+            />
+          )}
 
-          {selectionMenu === 'objects' && <ObjectSelection />}
-
-          {selectionMenu === 'tracking' && <TrackingSelection />}
-
-          {pickingPosition && <GalleryPositionPickingMenu />}
-
-          {showPosition && <GalleryShowPositionMenu />}
-
-          {selectingHomeLocation !== false && <HomeLocationPickingMenu />}
-
-          {showAds && <Ad />}
+          {showAds && <AsyncComponent factory={() => import('./Ad')} />}
         </div>
 
         {showElevationChart && (
@@ -537,7 +505,10 @@ export function Main(): ReactElement {
 
       <div className="fm-type-zoom-control">
         <div>
-          <div className="fm-ib-scroller fm-ib-scroller-bottom" ref={sc3}>
+          <div
+            className="fm-ib-scroller fm-ib-scroller-bottom"
+            ref={scMapControls}
+          >
             <div />
 
             <MapControls />

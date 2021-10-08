@@ -16,6 +16,7 @@ import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import FormControl from 'react-bootstrap/FormControl';
 import { useDispatch, useSelector } from 'react-redux';
 import { HideArrow } from './SearchMenu';
+import { ToolMenu } from './ToolMenu';
 
 export default ObjectsMenu;
 
@@ -84,7 +85,7 @@ export function ObjectsMenu(): ReactElement {
   const sc = useScrollClasses('vertical');
 
   return (
-    <>
+    <ToolMenu>
       <Dropdown
         className="ml-1"
         id="objectsMenuDropdown"
@@ -146,6 +147,6 @@ export function ObjectsMenu(): ReactElement {
           </div>
         </Dropdown.Menu>
       </Dropdown>
-    </>
+    </ToolMenu>
   );
 }

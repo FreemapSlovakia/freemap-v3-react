@@ -18,6 +18,8 @@ import { MdTimeline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
+export default DrawingLineSelection;
+
 export function DrawingLineSelection(): ReactElement | null {
   const dispatch = useDispatch();
 

@@ -6,6 +6,8 @@ import { FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
+export default ObjectSelection;
+
 export function ObjectSelection(): ReactElement {
   const dispatch = useDispatch();
 

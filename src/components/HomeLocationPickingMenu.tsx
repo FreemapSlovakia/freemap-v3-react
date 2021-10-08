@@ -9,6 +9,8 @@ import Card from 'react-bootstrap/Card';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
+export default HomeLocationPickingMenu;
+
 export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 

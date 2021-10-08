@@ -46,6 +46,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
+import { ToolMenu } from './ToolMenu';
 
 export default RoutePlannerMenu;
 
@@ -144,7 +145,7 @@ export function RoutePlannerMenu(): ReactElement {
   const sc = useScrollClasses('vertical');
 
   return (
-    <>
+    <ToolMenu>
       <Dropdown
         className="ml-1"
         id="transport-type"
@@ -427,6 +428,6 @@ export function RoutePlannerMenu(): ReactElement {
           {canDelete && <DeleteButton />}
         </>
       )}
-    </>
+    </ToolMenu>
   );
 }

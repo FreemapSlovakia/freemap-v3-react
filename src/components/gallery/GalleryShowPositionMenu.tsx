@@ -6,6 +6,8 @@ import Card from 'react-bootstrap/Card';
 import { FaChevronLeft } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
+export default GalleryShowPositionMenu;
+
 export function GalleryShowPositionMenu(): ReactElement | null {
   const m = useMessages();
 

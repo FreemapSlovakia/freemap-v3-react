@@ -23,6 +23,8 @@ const dims: [number, number][] = [
   // [120, 600],
 ];
 
+export default Ad;
+
 export function Ad(): ReactElement | null {
   const adContainer = useRef<HTMLDivElement | null>(null);
 
