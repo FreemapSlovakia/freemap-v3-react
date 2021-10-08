@@ -89,7 +89,7 @@ export function sendError(errDetails: ErrorDetails): void {
         ) {
           // don't show to user
         } else {
-          handle(data.id);
+          handle((data as any).id); // TODO weird axios typing - body type = response type
         }
       },
       () => {

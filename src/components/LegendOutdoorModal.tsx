@@ -9,12 +9,18 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { assertType } from 'typescript-is';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
 type Props = { show: boolean };
+
+type Res = {
+  categories: { id: string; name: string }[];
+  items: { categoryId: string; name: string }[];
+};
 
 export default LegendOutdoorModal;
 
@@ -27,9 +33,9 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
 
   useEffect(() => {
     axios
-      .get(`${fmMapserverUrl}/legend?language=${language}`)
-      .then((response) => {
-        const { categories, items } = response.data;
+      .get<unknown>(`${fmMapserverUrl}/legend?language=${language}`)
+      .then(({ data }) => {
+        const { categories, items } = assertType<Res>(data);
 
         const catMap = new Map<string, Item>();
 
