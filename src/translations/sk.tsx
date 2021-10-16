@@ -1466,14 +1466,14 @@ const sk: Messages = {
   },
 
   mapCtxMenu: {
-    centerMap: 'Vycentrovať mapu',
-    measurePosition: 'Odmerať pozíciu',
-    addPoint: 'Pridať bod',
-    startLine: 'Začať čiaru',
-    queryFeatures: 'Zistiť detaily',
-    startRoute: 'Začať trasu',
-    finishRoute: 'Ukončiť trasu',
-    showPhotos: 'Ukázať fotky',
+    centerMap: 'Vycentrovať sem mapu',
+    measurePosition: 'Zistiť súradnice a výšku bodu',
+    addPoint: 'Pridať sem bod',
+    startLine: 'Začať tu kresliť čiaru, merať dĺžku',
+    queryFeatures: 'Zistiť detaily v okolí',
+    startRoute: 'Plánovanť odtiaľ trasu',
+    finishRoute: 'Plánovanť sem trasu',
+    showPhotos: 'Ukázať fotky v okolí',
   },
 
   legend: {

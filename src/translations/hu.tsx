@@ -1456,14 +1456,14 @@ const hu: Messages = {
 
   // TODO translate
   mapCtxMenu: {
-    centerMap: 'Center map',
-    measurePosition: 'Measure position',
-    addPoint: 'Add point',
-    startLine: 'Start line',
-    queryFeatures: 'Query features',
-    startRoute: 'Start route',
-    finishRoute: 'Finish route',
-    showPhotos: 'Show photos',
+    centerMap: 'Center a map here',
+    measurePosition: 'Find coordinates and elevation',
+    addPoint: 'Add here a point',
+    startLine: 'Start here drawing a line or measurement',
+    queryFeatures: 'Query nearby features',
+    startRoute: 'Plan a route from here',
+    finishRoute: 'Plan a route to here',
+    showPhotos: 'Show nearby photos',
   },
 
   legend: {

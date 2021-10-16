@@ -161,7 +161,8 @@ export type ExternalTargets =
   | 'mapillary'
   | 'url'
   | 'image'
-  | 'peakfinder';
+  | 'peakfinder'
+  | 'waze';
 
 export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   where: ExternalTargets;

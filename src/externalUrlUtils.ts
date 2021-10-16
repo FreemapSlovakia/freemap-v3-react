@@ -68,6 +68,10 @@ export function getMapyCzUrl(
   }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`;
 }
 
+export function getWazeUrl(lat: number, lon: number, zoom: number): string {
+  return `https://www.waze.com/ul?ll=${lat},${lon}&zoom=${zoom}&navigate=yes`;
+}
+
 export function getOpenStreetCamUrl(
   lat: number,
   lon: number,

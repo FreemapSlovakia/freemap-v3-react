@@ -214,7 +214,9 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         <FaBullseye /> {m?.tools.tracking}
         <FaChevronRight />
       </Dropdown.Item>
+
       <Dropdown.Divider />
+
       <Dropdown.Item
         as="button"
         onSelect={handleSubmenuSelect}
@@ -222,6 +224,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
       </Dropdown.Item>
+
       <Dropdown.Item
         href="?show=export-pdf"
         eventKey="export-pdf"
@@ -229,6 +232,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaRegFilePdf /> {m?.mainMenu.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
+
       <Dropdown.Item
         eventKey="export-gpx"
         href="?show=export-gpx"
@@ -236,6 +240,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaDownload /> {m?.mainMenu.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
       </Dropdown.Item>
+
       <Dropdown.Item
         eventKey="exports"
         href="?tip=exports"
@@ -243,13 +248,17 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
+
       <Dropdown.Item eventKey="embed" href="?show=embed" onSelect={showModal}>
         <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
       </Dropdown.Item>
+
       <Dropdown.Divider />
+
       <Dropdown.Item as="button" onSelect={handleSubmenuSelect} eventKey="help">
         <FaBook /> {m?.mainMenu.help} <FaChevronRight />
       </Dropdown.Item>
+
       <Dropdown.Item
         href="?show=supportUs"
         eventKey="supportUs"

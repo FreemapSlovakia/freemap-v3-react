@@ -15,6 +15,7 @@ import {
   getOsmUrl,
   getPeakfinderUrl,
   getTwitterUrl,
+  getWazeUrl,
   getZbgisUrl,
 } from 'fm3/externalUrlUtils';
 import { loadFb } from 'fm3/fbLoader';
@@ -126,11 +127,16 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               if (includePoint) {
                 const url = new URL('http://localhost:8111/add_node');
 
-                url.search = new URLSearchParams({
+                const usp = new URLSearchParams({
                   lat: String(lat),
                   lon: String(lon),
-                  addtags: `name=${pointTitle}`,
-                }).toString();
+                });
+
+                if (pointTitle) {
+                  usp.set('addtags', `name=${pointTitle}`);
+                }
+
+                url.search = usp.toString();
 
                 return fetch(url.toString()).then((res) => {
                   assertOk(res);
@@ -187,6 +193,11 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'mapillary':
         window.open(getMapillaryUrl(lat, lon, zoom));
+
+        break;
+
+      case 'waze':
+        window.open(getWazeUrl(lat, lon, zoom));
 
         break;
 

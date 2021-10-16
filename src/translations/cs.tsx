@@ -1444,15 +1444,16 @@ const cs: Messages = {
     unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
   },
 
+  // TODO translate
   mapCtxMenu: {
-    centerMap: 'Vycentrovat mapu',
-    measurePosition: 'Měřit pozici',
-    addPoint: 'Přidat bod',
-    startLine: 'Začít čáru',
-    queryFeatures: 'Zjistit detaily',
-    startRoute: 'Začít trasu',
-    finishRoute: 'Ukončit trasu',
-    showPhotos: 'Ukázat fotky',
+    centerMap: 'Vycentrovať sem mapu',
+    measurePosition: 'Zistiť súradnice a výšku bodu',
+    addPoint: 'Pridať sem bod',
+    startLine: 'Začať tu kresliť čiaru, merať dĺžku',
+    queryFeatures: 'Zistiť detaily v okolí',
+    startRoute: 'Plánovanť odtiaľ trasu',
+    finishRoute: 'Plánovanť sem trasu',
+    showPhotos: 'Ukázať fotky v okolí',
   },
 
   legend: {

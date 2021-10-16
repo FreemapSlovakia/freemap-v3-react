@@ -13,12 +13,23 @@ import {
 } from 'fm3/actions/routePlannerActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import {
+  forwardRef,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
-import Popover from 'react-bootstrap/Popover';
+import Popover, { PopoverProps } from 'react-bootstrap/Popover';
 import {
   FaCamera,
+  FaChevronLeft,
+  FaChevronRight,
+  FaExternalLinkAlt,
   FaInfo,
   FaMapMarkerAlt,
   FaPlay,
@@ -28,7 +39,8 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useMapEvent } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
 export function MapContextMenu(): ReactElement {
   const m = useMessages();
@@ -44,10 +56,14 @@ export function MapContextMenu(): ReactElement {
     lon: 0,
   });
 
+  const [openInExternal, setOpenInExternal] = useState(false);
+
   useMapEvent(
     'contextmenu',
     useCallback((e: LeafletMouseEvent) => {
       e.originalEvent.preventDefault();
+
+      setOpenInExternal(false);
 
       setContextMenu((state) => ({
         i: state.i + 1,
@@ -65,6 +81,29 @@ export function MapContextMenu(): ReactElement {
   const ctxMenuClose = () => {
     setContextMenu((m) => ({ ...m, shown: false }));
   };
+
+  const zoom = useSelector((state) => state.map.zoom);
+
+  const mapType = useSelector((state) => state.map.mapType);
+
+  const UpdatingPopover = useMemo(
+    () =>
+      // eslint-disable-next-line react/display-name
+      forwardRef<HTMLDivElement, PopoverProps>(
+        ({ popper, children, ...props }, ref) => {
+          useEffect(() => {
+            popper.scheduleUpdate();
+          }, [children, popper]);
+
+          return (
+            <Popover ref={ref} {...props}>
+              {children}
+            </Popover>
+          );
+        },
+      ),
+    [],
+  );
 
   return (
     <>
@@ -87,146 +126,183 @@ export function MapContextMenu(): ReactElement {
         show={contextMenu.shown}
         flip
       >
-        <Popover id="ctx" content>
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+        <UpdatingPopover id="ctx" content>
+          {openInExternal ? (
+            <>
+              <Dropdown.Header>
+                <FaExternalLinkAlt /> {m?.external.openInExternal}
+              </Dropdown.Header>
 
-              dispatch(
-                mapRefocus({
-                  lat: contextMenu.lat,
-                  lon: contextMenu.lon,
-                }),
-              );
-            }}
-          >
-            <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
-          </Dropdown.Item>
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
-              dispatch(
-                drawingMeasure({
-                  position: {
-                    lat: contextMenu.lat,
-                    lon: contextMenu.lon,
-                  },
-                }),
-              );
-            }}
-          >
-            <FaRuler /> {m?.mapCtxMenu.measurePosition}
-          </Dropdown.Item>
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+              <Dropdown.Item
+                as="button"
+                onSelect={() => setOpenInExternal(false)}
+              >
+                <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
+              </Dropdown.Item>
 
-              dispatch(
-                mapDetailsSetUserSelectedPosition({
-                  lat: contextMenu.lat,
-                  lon: contextMenu.lon,
-                }),
-              );
-            }}
-          >
-            <FaInfo /> {m?.mapCtxMenu.queryFeatures}
-          </Dropdown.Item>
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+              <Dropdown.Divider />
 
-              dispatch(
-                drawingPointAdd({
-                  lat: contextMenu.lat,
-                  lon: contextMenu.lon,
-                }),
-              );
+              <OpenInExternalAppDropdownItems
+                lat={contextMenu.lat}
+                lon={contextMenu.lon}
+                zoom={zoom}
+                mapType={mapType}
+                includePoint
+                copy={false}
+              />
+            </>
+          ) : (
+            <>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
 
-              dispatch(drawingMeasure({}));
-            }}
-          >
-            <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
-          </Dropdown.Item>
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+                  dispatch(
+                    mapRefocus({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
+                }}
+              >
+                <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+                  dispatch(
+                    drawingMeasure({
+                      position: {
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                <FaRuler /> {m?.mapCtxMenu.measurePosition}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
 
-              dispatch(setTool('draw-lines'));
+                  dispatch(
+                    mapDetailsSetUserSelectedPosition({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
+                }}
+              >
+                <FaInfo /> {m?.mapCtxMenu.queryFeatures}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
 
-              dispatch(
-                drawingLineAddPoint({
-                  type: 'line',
-                  point: {
-                    id: 0,
-                    lat: contextMenu.lat,
-                    lon: contextMenu.lon,
-                  },
-                }),
-              );
-            }}
-          >
-            <MdTimeline /> {m?.mapCtxMenu.startLine}
-          </Dropdown.Item>{' '}
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+                  dispatch(
+                    drawingPointAdd({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
 
-              dispatch(setTool('route-planner'));
+                  dispatch(drawingMeasure({}));
+                }}
+              >
+                <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
 
-              dispatch(
-                routePlannerSetStart({
-                  start: {
-                    lat: contextMenu.lat,
-                    lon: contextMenu.lon,
-                  },
-                }),
-              );
-            }}
-          >
-            <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
-          </Dropdown.Item>
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+                  dispatch(setTool('draw-lines'));
 
-              dispatch(setTool('route-planner'));
+                  dispatch(
+                    drawingLineAddPoint({
+                      type: 'line',
+                      point: {
+                        id: 0,
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                <MdTimeline /> {m?.mapCtxMenu.startLine}
+              </Dropdown.Item>{' '}
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
 
-              dispatch(
-                routePlannerSetFinish({
-                  finish: {
-                    lat: contextMenu.lat,
-                    lon: contextMenu.lon,
-                  },
-                }),
-              );
-            }}
-          >
-            <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
-          </Dropdown.Item>
-          {/* TODO only if photo layer is not active */}
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              ctxMenuClose();
+                  dispatch(setTool('route-planner'));
 
-              dispatch(
-                galleryRequestImages({
-                  lat: contextMenu.lat,
-                  lon: contextMenu.lon,
-                }),
-              );
-            }}
-          >
-            <FaCamera /> {m?.mapCtxMenu.showPhotos}
-          </Dropdown.Item>
-        </Popover>
+                  dispatch(
+                    routePlannerSetStart({
+                      start: {
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(setTool('route-planner'));
+
+                  dispatch(
+                    routePlannerSetFinish({
+                      finish: {
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      },
+                    }),
+                  );
+                }}
+              >
+                <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
+              </Dropdown.Item>
+              {/* TODO only if photo layer is not active */}
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  ctxMenuClose();
+
+                  dispatch(
+                    galleryRequestImages({
+                      lat: contextMenu.lat,
+                      lon: contextMenu.lon,
+                    }),
+                  );
+                }}
+              >
+                <FaCamera /> {m?.mapCtxMenu.showPhotos}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="button"
+                onSelect={() => {
+                  setOpenInExternal(true);
+                }}
+              >
+                <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
+                <FaChevronRight />
+              </Dropdown.Item>
+            </>
+          )}
+        </UpdatingPopover>
       </Overlay>
     </>
   );
