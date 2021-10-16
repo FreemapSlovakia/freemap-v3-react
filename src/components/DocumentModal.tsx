@@ -1,6 +1,7 @@
 import { documentShow } from 'fm3/actions/mainActions';
 import { documents } from 'fm3/documents';
 import { useMessages } from 'fm3/l10nInjector';
+import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -70,29 +71,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
           e.preventDefault();
 
-          const url = new URL(document.location.href);
-
-          const sp = url.searchParams;
-
-          new URL(href).searchParams.forEach((value, key) => {
-            if (value) {
-              sp.set(key, value);
-            } else {
-              sp.delete(key);
-            }
-          });
-
-          url.search = sp.toString();
-
-          const stringUrl = url.toString();
-
-          // replacing is because of serializeQuery in urlProcessor.ts
-          history.pushState(undefined, '', stringUrl.replace(/%2F/gi, '/'));
-
-          // notify location change handler
-          window.dispatchEvent(
-            new PopStateEvent('popstate', { state: { sq: stringUrl } }),
-          );
+          navigate(new URL(href).searchParams);
         };
       }
     }

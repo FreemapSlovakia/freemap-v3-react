@@ -1,5 +1,6 @@
 import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
 import { useLocalMessages, useMessages } from 'fm3/l10nInjector';
+import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -61,47 +62,48 @@ export function SupportUsModal({ show }: Props): ReactElement {
           </Button>
         </form>
         <hr />
+        {(language === 'sk' || language === 'cs') && (
+          <>
+            <p>
+              Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
+              <a
+                href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  dispatch(documentShow('dvePercenta'));
+                }}
+              >
+                2% z dane
+              </a>
+              .
+            </p>
+
+            <hr />
+          </>
+        )}
+        <p>{lm?.thanks}</p>
         <p>
-          Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
           <a
-            href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia"
+            href="?show=about"
             onClick={(e) => {
               e.preventDefault();
 
-              dispatch(documentShow('dvePercenta'));
+              navigate(new URLSearchParams('show=about'));
             }}
           >
-            2% z dane
+            OZ Freemap Slovakia
           </a>
-          .
         </p>
-        <hr />
-        <p>{lm?.thanks}</p>
-        <hr />
-        <address>
-          Občianske združenie
-          <br />
-          <br />
-          Freemap Slovakia
-          <br />
-          Chrenovec-Brusno 351
-          <br />
-          972 32 Chrenovec-Brusno
-          <br />
-          <br />
-          {lm?.registration}
-          <br />
-          <br />
-          IČO: 42173639
-          <br />
-          DIČ: 2022912870
-          <br />
-          <br />
-          E-mail: <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
-        </address>
       </Modal.Body>
 
       <Modal.Footer>
+        {(language === 'sk' || language === 'cs') && (
+          <Button variant="link" href="https://oz.freemap.sk/">
+            Ako sa stať členom?
+          </Button>
+        )}
+
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
