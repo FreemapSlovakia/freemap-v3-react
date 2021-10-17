@@ -7,6 +7,12 @@ import { ReactElement, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AsyncModal } from '../AsyncModal';
 
+const galleryViewerModalFactory = () =>
+  import('fm3/components/gallery/GalleryViewerModal');
+
+const galleryUploadModalFactory = () =>
+  import('fm3/components/gallery/GalleryUploadModal');
+
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
 
@@ -48,13 +54,10 @@ export function GalleryModals(): ReactElement {
     <>
       <AsyncModal
         show={showGalleryViewer}
-        factory={() => import('fm3/components/gallery/GalleryViewerModal')}
+        factory={galleryViewerModalFactory}
       />
 
-      <AsyncModal
-        show={showUploadModal}
-        factory={() => import('fm3/components/gallery/GalleryUploadModal')}
-      />
+      <AsyncModal show={showUploadModal} factory={galleryUploadModalFactory} />
     </>
   );
 }

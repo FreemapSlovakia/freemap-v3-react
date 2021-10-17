@@ -12,9 +12,7 @@ export function AsyncModal({
   factory,
 }: Props<ComponentType<ShowProps>>): ReactElement | null {
   const Modal = useLazy(
-    // NOTE factory dependenct is disabled for simpler parent code
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(() => factory, []),
+    useMemo(() => factory, [factory]),
     show,
   );
 

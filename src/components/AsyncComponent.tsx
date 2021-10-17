@@ -6,9 +6,7 @@ type Props<T extends ComponentType<any> = ComponentType<any>> = {
 };
 
 export function AsyncComponent({ factory }: Props): ReactElement | null {
-  // NOTE factory dependenct is disabled for simpler parent code
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const Component = useLazy(useMemo(() => factory, []));
+  const Component = useLazy(useMemo(() => factory, [factory]));
 
   return Component ? <Component /> : null;
 }
