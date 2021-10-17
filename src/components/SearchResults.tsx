@@ -1,6 +1,9 @@
 import { Feature, GeometryObject } from '@turf/helpers';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
+import {
+  getGenericNameFromOsmElement,
+  getNameFromOsmElement,
+} from 'fm3/osm/osmNameResolver';
 import { escapeHtml } from 'fm3/stringUtils';
 import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
@@ -23,13 +26,15 @@ function annotateFeature(
   language: string,
   isBg: boolean,
 ) {
-  getNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
-    (text) => {
+  getGenericNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
+    (genericName) => {
+      const name = getNameFromOsmElement(feature.properties ?? {}, language);
+
       const isPoi = !(layer instanceof Path || layer instanceof Polygon);
 
       layer.bindTooltip(
-        escapeHtml(text[0]) +
-          (text[1] ? ' <i>' + escapeHtml(text[1]) + '</i>' : ''),
+        escapeHtml(genericName) +
+          (name ? ' <i>' + escapeHtml(name) + '</i>' : ''),
         {
           direction: layer instanceof Polygon ? 'center' : 'top',
           offset: isPoi ? [0, -36] : [0, 0],

@@ -153,7 +153,7 @@ export function RoutePlannerResult(): ReactElement {
       distanceDiff?: number,
       durationDiff?: number,
     ) => {
-      const nf = Intl.NumberFormat(language, {
+      const nf = new Intl.NumberFormat(language, {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1,
       });

@@ -14,12 +14,12 @@ import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
 
-const nf01 = Intl.NumberFormat('hu', {
+const nf01 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
   maximumFractionDigits: 1,
 });
 
-const nf33 = Intl.NumberFormat('hu', {
+const nf33 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
 });

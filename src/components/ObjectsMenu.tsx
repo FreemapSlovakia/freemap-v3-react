@@ -1,14 +1,17 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { getOsmMapping } from 'fm3/osm/osmNameResolver';
+import { Node, OsmMapping } from 'fm3/osm/types';
 import {
   ChangeEvent,
-  Fragment,
   ReactElement,
   useCallback,
+  useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -35,8 +38,58 @@ export function ObjectsMenu(): ReactElement {
     setFilter(e.currentTarget.value);
   }, []);
 
+  const lang = useEffectiveChosenLanguage();
+
+  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
+
+  const items = useMemo(() => {
+    if (!osmMapping) {
+      return;
+    }
+
+    const res: { name: string; tags: { key: string; value?: string }[] }[] = [];
+
+    function rec(
+      n: Node,
+      tags: { key: string; value: string }[],
+      key?: string,
+    ) {
+      for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
+        if (tagKeyOrValue === '*') {
+          continue;
+        }
+
+        if (typeof nodeOrName === 'string') {
+          res.push({
+            name: nodeOrName,
+            tags: [
+              ...tags,
+              key ? { key, value: tagKeyOrValue } : { key: tagKeyOrValue },
+            ],
+          });
+        } else if (key) {
+          rec(nodeOrName, [...tags, { key, value: tagKeyOrValue }]);
+        } else {
+          rec(nodeOrName, tags, tagKeyOrValue);
+        }
+      }
+    }
+
+    rec(osmMapping.osmTagToNameMapping, []);
+
+    console.log('RRRRR', res);
+
+    return res;
+  }, [osmMapping]);
+
+  const active = useSelector((state) => state.objects.active);
+
+  useEffect(() => {
+    getOsmMapping(lang).then(setOsmMapping);
+  }, [lang]);
+
   const handleSelect = useCallback(
-    (id: string | null) => {
+    (tags: string | null) => {
       if (zoom < 12) {
         dispatch(
           toastsAdd({
@@ -45,21 +98,23 @@ export function ObjectsMenu(): ReactElement {
             style: 'warning',
             actions: [
               {
-                // name: 'Priblíž a hľadaj', TODO
                 nameKey: 'objects.lowZoomAlert.zoom',
                 action: [mapRefocus({ zoom: 12 })],
               },
             ],
           }),
         );
-      } else if (id !== null) {
-        dispatch(objectsSetFilter(Number(id)));
-
-        setDropdownOpened(false);
-        setFilter('');
+      } else if (tags) {
+        dispatch(
+          objectsSetFilter(
+            active.includes(tags)
+              ? active.filter((item) => item !== tags)
+              : [...active, tags],
+          ),
+        );
       }
     },
-    [zoom, dispatch],
+    [zoom, dispatch, active],
   );
 
   // ugly hack not to close dropdown on open
@@ -67,10 +122,10 @@ export function ObjectsMenu(): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e, metadata) => {
     if (justOpenedRef.current) {
       justOpenedRef.current = false;
-    } else if (!isOpen) {
+    } else if (!isOpen && metadata.source !== 'select') {
       setDropdownOpened(false);
 
       if (e) {
@@ -114,7 +169,7 @@ export function ObjectsMenu(): ReactElement {
           <div className="dropdown-long" ref={sc}>
             <div />
 
-            {poiTypeGroups.map((pointTypeGroup, i) => {
+            {/* {poiTypeGroups.map((pointTypeGroup, i) => {
               const gid = pointTypeGroup.id;
 
               const items = poiTypes
@@ -143,7 +198,29 @@ export function ObjectsMenu(): ReactElement {
                   {items}
                 </Fragment>
               );
-            })}
+            })} */}
+            {!items
+              ? null
+              : items
+                  .map((item) => ({
+                    ...item,
+                    key: item.tags
+                      .map((tag) => `${tag.key}=${tag.value}`)
+                      .join(','),
+                  }))
+                  .filter((item) =>
+                    item.name.toLowerCase().includes(filter.toLowerCase()),
+                  )
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map(({ key, name }) => (
+                    <Dropdown.Item
+                      key={key}
+                      eventKey={key}
+                      active={active.includes(key)}
+                    >
+                      {name}
+                    </Dropdown.Item>
+                  ))}
           </div>
         </Dropdown.Menu>
       </Dropdown>

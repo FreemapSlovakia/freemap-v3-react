@@ -2,6 +2,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { copyToClipboard } from 'fm3/clipboardUtils';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
 import { ReactElement, useCallback } from 'react';
@@ -9,7 +10,7 @@ import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getType } from 'typesafe-actions';
 
 type Props = {
@@ -21,9 +22,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const dateFormat = new Intl.DateTimeFormat(language, {
+  const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
     day: 'numeric',

@@ -4,6 +4,7 @@ import {
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
 import { httpRequest } from 'fm3/authAxios';
+import { getEffectiveChosenLanguage } from 'fm3/langUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 
@@ -40,20 +41,3 @@ export const l10nSetLanguageProcessor: Processor = {
     }
   },
 };
-
-// TOD move to some util
-export function getEffectiveChosenLanguage(
-  chosenLanguage: string | null,
-): string {
-  return (
-    chosenLanguage ||
-    [...(navigator.languages || []), navigator.language]
-      .map((lang) => simplify(lang))
-      .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
-    'en'
-  );
-}
-
-function simplify(lang: string | null | undefined) {
-  return lang?.replace(/-.*/, '');
-}

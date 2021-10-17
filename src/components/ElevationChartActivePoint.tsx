@@ -1,4 +1,5 @@
 import { RichMarker } from 'fm3/components/RichMarker';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import { Point } from 'leaflet';
 import { ReactElement } from 'react';
@@ -13,14 +14,12 @@ export function ElevationChartActivePoint(): ReactElement | null {
     (state) => state.elevationChart.activePoint,
   );
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const nf0 = Intl.NumberFormat(language, {
+  const nf0 = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
 
-  const nf1 = Intl.NumberFormat(language, {
+  const nf1 = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });

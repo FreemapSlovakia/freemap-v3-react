@@ -36,7 +36,7 @@ export const TrackingPoint = memo<TrackingPointProps>(
       second: '2-digit',
     });
 
-    const nf = Intl.NumberFormat(language, {
+    const nf = new Intl.NumberFormat(language, {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     });

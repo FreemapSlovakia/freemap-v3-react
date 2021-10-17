@@ -1,7 +1,15 @@
 // import turfLineSlice from '@turf/line-slice';
 // import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
-import { Feature, LineString, Point, Properties } from '@turf/helpers';
+import {
+  Feature,
+  FeatureCollection,
+  Geometries,
+  GeometryCollection,
+  LineString,
+  Point,
+  Properties,
+} from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 import { setTool } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
@@ -9,6 +17,8 @@ import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Point as LPoint } from 'leaflet';
@@ -22,9 +32,13 @@ interface GetFeatures {
   (type: 'Point'): Feature<Point, Properties>[];
 }
 
-export function TrackViewerResult(): ReactElement | null {
-  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+export default TrackViewerResult;
 
+export function TrackViewerResult({
+  trackGeojson,
+}: {
+  trackGeojson: FeatureCollection<Geometries | GeometryCollection, Properties>;
+}): ReactElement | null {
   const [startPoints, finishPoints] = useStartFinishPoints();
 
   const displayingElevationChart = useSelector(
@@ -38,8 +52,6 @@ export function TrackViewerResult(): ReactElement | null {
   const eleSmoothingFactor = useSelector(
     (state) => state.main.eleSmoothingFactor,
   );
-
-  const language = useSelector((state) => state.l10n.language);
 
   const [infoLat] = useState<number>();
 
@@ -147,10 +159,6 @@ export function TrackViewerResult(): ReactElement | null {
     dispatch(setTool('track-viewer'));
   };
 
-  if (!trackGeojson) {
-    return null;
-  }
-
   // TODO rather compute some hash or better - detect real change
   const keyToAssureProperRefresh = `OOXlDWrtVn-${
     (JSON.stringify(trackGeojson) + displayingElevationChart).length
@@ -164,12 +172,12 @@ export function TrackViewerResult(): ReactElement | null {
     })),
   }));
 
-  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, {
+  const oneDecimalDigitNumberFormat = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
-  const timeFormat = new Intl.DateTimeFormat(language, {
+  const timeFormat = useDateTimeFormat({
     hour: 'numeric',
     minute: '2-digit',
   });

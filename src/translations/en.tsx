@@ -14,12 +14,12 @@ import { FaKey } from 'react-icons/fa';
 import shared from './en-shared.json';
 import { Messages } from './messagesInterface';
 
-const nf01 = Intl.NumberFormat('en', {
+const nf01 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 0,
   maximumFractionDigits: 1,
 });
 
-const nf33 = Intl.NumberFormat('en', {
+const nf33 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
 });

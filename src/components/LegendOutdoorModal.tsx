@@ -1,5 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
@@ -8,7 +9,7 @@ import Card from 'react-bootstrap/Card';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { assertType } from 'typescript-is';
 
 type Item = { name: string; items: { name: string; id: number }[] };
@@ -29,7 +30,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
 
   const [legend, setLegend] = useState<Item[]>([]);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useEffectiveChosenLanguage();
 
   const dispatch = useDispatch();
 

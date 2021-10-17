@@ -14,12 +14,12 @@ import { FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 import shared from './sk-shared.json';
 
-const nf01 = Intl.NumberFormat('sk', {
+const nf01 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
   maximumFractionDigits: 1,
 });
 
-const nf33 = Intl.NumberFormat('sk', {
+const nf33 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
 });

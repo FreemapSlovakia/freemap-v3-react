@@ -5,6 +5,8 @@ import {
   TrackingPoint,
 } from 'fm3/components/tracking/TrackingPoint';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
@@ -45,19 +47,15 @@ export function TrackingResult(): ReactElement {
 
   const [activePoint, setActivePoint] = useState<TrackPoint | null>(null);
 
-  const df = useMemo(
-    () =>
-      new Intl.DateTimeFormat(language, {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      }),
-    [language],
-  );
+  const df = useDateTimeFormat({
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
-  const nf = Intl.NumberFormat(language, {
+  const nf = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });

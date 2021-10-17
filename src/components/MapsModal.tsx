@@ -1,5 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapsDelete, mapsLoad, mapsSave } from 'fm3/actions/mapsActions';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -51,9 +52,7 @@ export function MapsModal({ show }: Props): ReactElement {
     setName(mapName ?? '');
   }, [mapName]);
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const dateFormat = new Intl.DateTimeFormat(language, {
+  const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
     day: 'numeric',
