@@ -403,3 +403,16 @@ button#freemap-logo {
   left: 0;
   z-index: 20000;
 }
+
+.dropzone {
+  margin: 10px;
+  border: 2px dashed grey;
+  padding: 30px;
+  border-radius: 5px;
+  cursor: default;
+
+  &:hover,
+  &-dropping {
+    background-color: #d9edf7;
+  }
+}
