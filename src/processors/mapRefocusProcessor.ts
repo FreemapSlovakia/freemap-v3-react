@@ -14,10 +14,14 @@ export const mapRefocusProcessor: Processor = {
 
     const map = getMapLeafletElement();
 
-    let fixedLon = lon % 360;
+    let fixedLon = lon;
 
-    if (fixedLon < 0) {
+    while (fixedLon < -180) {
       fixedLon += 360;
+    }
+
+    while (fixedLon > 180) {
+      fixedLon -= 360;
     }
 
     if (
