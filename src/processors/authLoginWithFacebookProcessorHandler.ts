@@ -11,7 +11,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   await loadFb();
 
   let response = await new Promise<fb.StatusResponse>((resolve) =>
-    FB.getLoginStatus(resolve),
+    FB.getLoginStatus(resolve, true),
   );
 
   if (response.status !== 'connected') {

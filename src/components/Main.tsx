@@ -75,6 +75,48 @@ import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
 
+const objectsMenuFactory = () => import('fm3/components/ObjectsMenu');
+const routePlannerMenuFactory = () => import('fm3/components/RoutePlannerMenu');
+const trackViewerMenuFactory = () => import('fm3/components/TrackViewerMenu');
+const changesetsMenuFactory = () => import('fm3/components/ChangesetsMenu');
+const drawingLineSelectionFactory = () => import('./DrawingLineSelection');
+const drawingLinePointSelectionFactory = () =>
+  import('./DrawingLinePointSelection');
+const drawingPointSelectionFactory = () => import('./DrawingPointSelection');
+const objectSelectionFactory = () => import('./ObjectSelection');
+const galleryPositionPickingMenuFactory = () =>
+  import('./gallery/GalleryPositionPickingMenu');
+const galleryShowPositionMenuFactory = () =>
+  import('./gallery/GalleryShowPositionMenu');
+const homeLocationPickingMenuFactory = () =>
+  import('./HomeLocationPickingMenu');
+const adFactory = () => import('./Ad');
+const elevationChartFactory = () => import('fm3/components/ElevationChart');
+const drawingLinesToolFactory = () => import('./DrawingLinesTool');
+const trackingModalFactory = () =>
+  import('fm3/components/tracking/TrackingModal');
+const settingsModalFactory = () => import('fm3/components/SettingsModal');
+const mapSettingsModalFactory = () => import('./MapSettingsModal');
+const embedMapModalFactory = () => import('fm3/components/EmbedMapModal');
+const exportGpxModalFactory = () => import('fm3/components/ExportGpxModal');
+const exportPdfModalFactory = () => import('fm3/components/ExportPdfModal');
+const documentModalFactory = () => import('fm3/components/DocumentModal');
+const aboutModalFactory = () => import('fm3/components/AboutModal');
+const supportUsModalFactory = () =>
+  import('fm3/components/supportUsModal/SupportUsModal');
+const legendOutdoorModalFactory = () =>
+  import('fm3/components/LegendOutdoorModal');
+const legendModalFactory = () => import('fm3/components/LegendModal');
+const drawingEditLabelModalFactory = () =>
+  import('fm3/components/DrawingEditLabelModal');
+const trackViewerUploadModalFactory = () =>
+  import('fm3/components/TrackViewerUploadModal');
+const loginModalFactory = () => import('fm3/components/LoginModal');
+const mapsModalFactory = () => import('./MapsModal');
+const removeAdsModalFactory = () => import('./RemoveAdsModal');
+const galleryFilterModalFactory = () =>
+  import('fm3/components/gallery/GalleryFilterModal');
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -441,21 +483,13 @@ export function Main(): ReactElement {
 
           {showMenu &&
             (!tool ? null : tool === 'objects' ? (
-              <AsyncComponent
-                factory={() => import('fm3/components/ObjectsMenu')}
-              />
+              <AsyncComponent factory={objectsMenuFactory} />
             ) : tool === 'route-planner' ? (
-              <AsyncComponent
-                factory={() => import('fm3/components/RoutePlannerMenu')}
-              />
+              <AsyncComponent factory={routePlannerMenuFactory} />
             ) : tool === 'track-viewer' ? (
-              <AsyncComponent
-                factory={() => import('fm3/components/TrackViewerMenu')}
-              />
+              <AsyncComponent factory={trackViewerMenuFactory} />
             ) : tool === 'changesets' ? (
-              <AsyncComponent
-                factory={() => import('fm3/components/ChangesetsMenu')}
-              />
+              <AsyncComponent factory={changesetsMenuFactory} />
             ) : tool === 'map-details' ? (
               <MapDetailsMenu />
             ) : (
@@ -465,44 +499,34 @@ export function Main(): ReactElement {
           {showMenu && showMapsMenu && <MapsMenu />}
 
           {selectionMenu === 'draw-line-poly' ? (
-            <AsyncComponent factory={() => import('./DrawingLineSelection')} />
+            <AsyncComponent factory={drawingLineSelectionFactory} />
           ) : selectionMenu === 'line-point' ? (
-            <AsyncComponent
-              factory={() => import('./DrawingLinePointSelection')}
-            />
+            <AsyncComponent factory={drawingLinePointSelectionFactory} />
           ) : selectionMenu === 'draw-points' ? (
-            <AsyncComponent factory={() => import('./DrawingPointSelection')} />
+            <AsyncComponent factory={drawingPointSelectionFactory} />
           ) : selectionMenu === 'objects' ? (
-            <AsyncComponent factory={() => import('./ObjectSelection')} />
+            <AsyncComponent factory={objectSelectionFactory} />
           ) : selectionMenu === 'tracking' ? (
             <TrackingSelection />
           ) : null}
 
           {pickingPosition && (
-            <AsyncComponent
-              factory={() => import('./gallery/GalleryPositionPickingMenu')}
-            />
+            <AsyncComponent factory={galleryPositionPickingMenuFactory} />
           )}
 
           {showPosition && (
-            <AsyncComponent
-              factory={() => import('./gallery/GalleryShowPositionMenu')}
-            />
+            <AsyncComponent factory={galleryShowPositionMenuFactory} />
           )}
 
           {selectingHomeLocation !== false && (
-            <AsyncComponent
-              factory={() => import('./HomeLocationPickingMenu')}
-            />
+            <AsyncComponent factory={homeLocationPickingMenuFactory} />
           )}
 
-          {showAds && <AsyncComponent factory={() => import('./Ad')} />}
+          {showAds && <AsyncComponent factory={adFactory} />}
         </div>
 
         {showElevationChart && (
-          <AsyncComponent
-            factory={() => import('fm3/components/ElevationChart')}
-          />
+          <AsyncComponent factory={elevationChartFactory} />
         )}
       </div>
 
@@ -546,9 +570,7 @@ export function Main(): ReactElement {
                 {tool === 'map-details' && <MapDetailsTool />}
                 {tool === 'draw-points' && <DrawingPointsTool />}
                 {drawingLines && (
-                  <AsyncComponent
-                    factory={() => import('./DrawingLinesTool')}
-                  />
+                  <AsyncComponent factory={drawingLinesToolFactory} />
                 )}
                 {isSelecting && <SelectionTool />}
 
@@ -594,89 +616,86 @@ export function Main(): ReactElement {
               'tracking-watched',
             ].includes(activeModal)
           }
-          factory={() => import('fm3/components/tracking/TrackingModal')}
+          factory={trackingModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'settings'}
-          factory={() => import('fm3/components/SettingsModal')}
+          factory={settingsModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'mapSettings'}
-          factory={() => import('./MapSettingsModal')}
+          factory={mapSettingsModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'embed'}
-          factory={() => import('fm3/components/EmbedMapModal')}
+          factory={embedMapModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'export-gpx'}
-          factory={() => import('fm3/components/ExportGpxModal')}
+          factory={exportGpxModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'export-pdf'}
-          factory={() => import('fm3/components/ExportPdfModal')}
+          factory={exportPdfModalFactory}
         />
 
         <AsyncModal
           show={!activeModal && documentKey !== null}
-          factory={() => import('fm3/components/DocumentModal')}
+          factory={documentModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'about'}
-          factory={() => import('fm3/components/AboutModal')}
+          factory={aboutModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'supportUs'}
-          factory={() => import('fm3/components/supportUsModal/SupportUsModal')}
+          factory={supportUsModalFactory}
         />
 
         {mapType === 'X' ? (
           <AsyncModal
             show={activeModal === 'legend'}
-            factory={() => import('fm3/components/LegendOutdoorModal')}
+            factory={legendOutdoorModalFactory}
           />
         ) : (
           <AsyncModal
             show={activeModal === 'legend'}
-            factory={() => import('fm3/components/LegendModal')}
+            factory={legendModalFactory}
           />
         )}
 
         <AsyncModal
           show={activeModal === 'edit-label'}
-          factory={() => import('fm3/components/DrawingEditLabelModal')}
+          factory={drawingEditLabelModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'upload-track'}
-          factory={() => import('fm3/components/TrackViewerUploadModal')}
+          factory={trackViewerUploadModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'login'}
-          factory={() => import('fm3/components/LoginModal')}
+          factory={loginModalFactory}
         />
 
-        <AsyncModal
-          show={activeModal === 'maps'}
-          factory={() => import('./MapsModal')}
-        />
+        <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
 
         <AsyncModal
           show={activeModal === 'remove-ads'}
-          factory={() => import('./RemoveAdsModal')}
+          factory={removeAdsModalFactory}
         />
 
         <AsyncModal
           show={activeModal === 'gallery-filter'}
-          factory={() => import('fm3/components/gallery/GalleryFilterModal')}
+          factory={galleryFilterModalFactory}
         />
 
         <GalleryModals />
