@@ -683,7 +683,7 @@ const sk: Messages = {
   objects: {
     type: 'Typ',
     lowZoomAlert: {
-      message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+      message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 10.',
       zoom: 'Priblíž',
     },
     fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,

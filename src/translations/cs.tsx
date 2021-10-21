@@ -665,7 +665,7 @@ const cs: Messages = {
   objects: {
     type: 'Typ',
     lowZoomAlert: {
-      message: 'Vyhledávání míst je možné až od přiblížení úrovně 12.',
+      message: 'Vyhledávání míst je možné až od přiblížení úrovně 10.',
       zoom: 'Přiblíž',
     },
     fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,

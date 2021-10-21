@@ -667,7 +667,7 @@ const hu: Messages = {
     type: 'Típus',
     lowZoomAlert: {
       message:
-        'Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a 12. szintre kell nagyítani.',
+        'Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a 10. szintre kell nagyítani.',
       zoom: 'Nagyítás',
     },
     fetchingError: ({ err }) =>

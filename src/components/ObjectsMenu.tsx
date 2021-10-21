@@ -1,6 +1,4 @@
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
@@ -29,8 +27,6 @@ export function ObjectsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const zoom = useSelector((state) => state.map.zoom);
-
   const [filter, setFilter] = useState('');
 
   const [dropdownOpened, setDropdownOpened] = useState(false);
@@ -57,7 +53,7 @@ export function ObjectsMenu(): ReactElement {
     ) {
       for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
         if (tagKeyOrValue === '*') {
-          continue;
+          continue; // include for level > 1
         }
 
         if (typeof nodeOrName === 'string') {
@@ -89,21 +85,7 @@ export function ObjectsMenu(): ReactElement {
 
   const handleSelect = useCallback(
     (tags: string | null) => {
-      if (zoom < 12) {
-        dispatch(
-          toastsAdd({
-            id: 'objects.lowZoomAlert',
-            messageKey: 'objects.lowZoomAlert.message',
-            style: 'warning',
-            actions: [
-              {
-                nameKey: 'objects.lowZoomAlert.zoom',
-                action: [mapRefocus({ zoom: 12 })],
-              },
-            ],
-          }),
-        );
-      } else if (tags) {
+      if (tags) {
         dispatch(
           objectsSetFilter(
             active.includes(tags)
@@ -113,7 +95,7 @@ export function ObjectsMenu(): ReactElement {
         );
       }
     },
-    [zoom, dispatch, active],
+    [dispatch, active],
   );
 
   // ugly hack not to close dropdown on open

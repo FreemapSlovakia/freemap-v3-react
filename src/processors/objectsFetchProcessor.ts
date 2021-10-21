@@ -1,9 +1,12 @@
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassResult } from 'fm3/types/common';
+import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
 export const objectsFetchProcessor: Processor = {
@@ -19,6 +22,37 @@ export const objectsFetchProcessor: Processor = {
     const ents = getState().objects.active.map((tags) =>
       tags.split(',').map((item) => item.split('=')),
     );
+
+    if (ents.length === 0) {
+      return;
+    }
+
+    if (getState().map.zoom < 10) {
+      setTimeout(() => {
+        dispatch(
+          toastsAdd({
+            id: 'objects.lowZoomAlert',
+            messageKey: 'objects.lowZoomAlert.message',
+            style: 'warning',
+            actions: [
+              {
+                nameKey: 'objects.lowZoomAlert.zoom',
+                action: [mapRefocus({ zoom: 10 })],
+              },
+            ],
+            cancelType: [
+              getType(clearMap),
+              getType(mapRefocus),
+              getType(objectsSetFilter),
+            ],
+          }),
+        );
+      });
+
+      dispatch(objectsSetResult([]));
+
+      return;
+    }
 
     const b = (await mapPromise).getBounds();
     const bb = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;

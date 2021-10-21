@@ -654,7 +654,7 @@ const en: Messages = {
     type: 'Type',
     lowZoomAlert: {
       message:
-        'To see objects by their type, you need to zoom in to at least level 12.',
+        'To see objects by their type, you need to zoom in to at least level 10.',
       zoom: 'Zoom-in',
     },
     fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
