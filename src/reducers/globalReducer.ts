@@ -252,21 +252,6 @@ export function preGlobalReducer(
           eleSmoothingFactor: trackViewer.eleSmoothingFactor,
         },
       };
-    } else if (state.main.selection?.type === 'objects') {
-      const {
-        objects,
-        main: { selection },
-      } = state;
-
-      return {
-        ...state,
-        objects: {
-          ...objects,
-          objects: objects.objects.filter(
-            (object) => object.id !== selection.id,
-          ),
-        },
-      };
     } else if (state.main.tool === 'route-planner') {
       const { routePlanner } = state;
 
