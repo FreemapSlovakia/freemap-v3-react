@@ -398,10 +398,10 @@ export const handleLocationChange = (
 
   const objects = query['objects'];
 
-  if ((objects ?? '') !== getState().objects.active.join(',')) {
+  if ((objects ?? '') !== getState().objects.active.join(';')) {
     dispatch(
       objectsSetFilter(
-        objects && typeof objects === 'string' ? objects.split(',') : [],
+        objects && typeof objects === 'string' ? objects.split(';') : [],
       ),
     );
   }

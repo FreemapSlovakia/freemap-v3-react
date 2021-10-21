@@ -223,7 +223,7 @@ export const urlProcessor: Processor = {
     }
 
     if (objects.active.length) {
-      historyParts.push(['objects', objects.active.join(',')]);
+      historyParts.push(['objects', objects.active.join(';')]);
     }
 
     if (
