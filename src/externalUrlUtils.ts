@@ -8,10 +8,10 @@ export function getOsmUrl(
   includePoint?: boolean,
 ): string {
   return includePoint
-    ? `https://www.openstreetmap.org/#map=${Math.min(zoom, 19)}/${lat.toFixed(
+    ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=${zoom}`
+    : `https://www.openstreetmap.org/#map=${Math.min(zoom, 19)}/${lat.toFixed(
         5,
-      )}/${lon.toFixed(5)}`
-    : `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=${zoom}`;
+      )}/${lon.toFixed(5)}`;
 }
 
 export function getZbgisUrl(lat: number, lon: number, zoom: number): string {
