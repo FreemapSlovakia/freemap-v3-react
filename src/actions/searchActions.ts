@@ -29,4 +29,6 @@ export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<{
   result: SearchResult;
   showToast?: boolean;
   zoomTo?: boolean;
+  storeResult?: boolean;
+  // TODO refactor to: actions?: ('showToast' | 'zoomTo' | 'storeResult')[];
 } | null>();

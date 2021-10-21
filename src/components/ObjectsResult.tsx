@@ -74,6 +74,7 @@ export function ObjectsResult(): ReactElement | null {
                     result: { id, tags, osmType: type, detailed: true },
                     showToast: true,
                     zoomTo: false,
+                    storeResult: false,
                   }),
                 );
               },

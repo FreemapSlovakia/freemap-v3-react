@@ -66,6 +66,10 @@ export const searchReducer = createReducer<SearchState, RootAction>(
   }))
   .handleAction(searchSelectResult, (state, action) =>
     produce(state, (draft) => {
+      if (action.payload?.storeResult === false) {
+        return;
+      }
+
       draft.osmNodeId = null;
       draft.osmWayId = null;
       draft.osmRelationId = null;
