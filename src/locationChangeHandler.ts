@@ -54,6 +54,7 @@ import { is } from 'typescript-is';
 import { RootAction } from './actions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { mapsLoad } from './actions/mapsActions';
+import { objectsSetFilter } from './actions/objectsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
 import { basicModals, tools } from './constants';
@@ -385,12 +386,23 @@ export const handleLocationChange = (
     dispatch(documentShow(null));
   }
 
-  if ((query['embed'] ?? '') !== getState().main.embedFeatures.join(',')) {
+  const embed = query['embed'];
+
+  if ((embed ?? '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
-        query['embed'] && typeof query['embed'] === 'string'
-          ? query['embed'].split(',')
-          : [],
+        embed && typeof embed === 'string' ? embed.split(',') : [],
+      ),
+    );
+  }
+
+  const objects = query['objects'];
+
+  if ((objects ?? '') !== getState().objects.active.join(',')) {
+    console.log('AAAAAAAAAAAAAAAAAAAAA');
+    dispatch(
+      objectsSetFilter(
+        objects && typeof objects === 'string' ? objects.split(',') : [],
       ),
     );
   }

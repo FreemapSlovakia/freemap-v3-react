@@ -5,7 +5,7 @@ import {
   galleryMergeItem,
 } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
@@ -178,8 +178,6 @@ export function Main(): ReactElement {
 
   useEffect(() => {
     setMapLeafletElement(map);
-
-    dispatch(mapSetLeafletReady(map !== null));
   }, [dispatch, map]);
 
   useMouseCursor(map?.getContainer());

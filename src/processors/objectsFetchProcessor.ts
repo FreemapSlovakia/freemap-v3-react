@@ -1,7 +1,7 @@
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -16,18 +16,11 @@ export const objectsFetchProcessor: Processor = {
     ].join('\n'),
   errorKey: 'objects.fetchingError',
   handle: async ({ dispatch, getState }) => {
-    const le = getMapLeafletElement();
-
-    if (!le) {
-      return;
-    }
-
-    const b = le.getBounds();
-
     const ents = getState().objects.active.map((tags) =>
       tags.split(',').map((item) => item.split('=')),
     );
 
+    const b = (await mapPromise).getBounds();
     const bb = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
 
     const query =

@@ -11,7 +11,7 @@ import {
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
@@ -55,10 +55,8 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const set = new Set(action.payload.exportables);
 
-  const le = getMapLeafletElement();
-
-  if (le && set.has('pictures')) {
-    const b = le.getBounds();
+  if (set.has('pictures')) {
+    const b = (await mapPromise).getBounds();
 
     const { data } = await httpRequest({
       getState,

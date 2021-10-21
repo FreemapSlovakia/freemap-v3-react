@@ -8,7 +8,6 @@ import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions
 import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -37,12 +36,6 @@ export const mapDetailsProcessor: Processor = {
   errorKey: 'mapDetails.fetchingError',
   handle: async ({ dispatch, getState }) => {
     const { userSelectedLat, userSelectedLon } = getState().mapDetails;
-
-    const le = getMapLeafletElement();
-
-    if (!le) {
-      return;
-    }
 
     const kvFilter =
       '[~"^(amenity|highway|waterway|border|landuse|route|building|man_made|natural|leisure|information|shop|tourism|barrier|sport|place|power|boundary|railway|aerialway|historic)$"~"."]';

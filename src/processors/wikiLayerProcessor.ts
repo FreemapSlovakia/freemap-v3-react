@@ -2,7 +2,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { httpRequest } from 'fm3/authAxios';
 import { cancelRegister } from 'fm3/cancelRegister';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement, OverpassResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -20,24 +20,18 @@ interface WikiResponse {
 export const wikiLayerProcessor: Processor = {
   errorKey: 'general.loadError',
   async handle({ getState, dispatch, prevState }) {
-    const le = getMapLeafletElement();
-
-    if (!le) {
-      return;
-    }
-
     const {
-      map: { overlays, lat, lon, zoom, mapLeafletReady },
+      map: { overlays, lat, lon, zoom },
       wiki: { points },
     } = getState();
 
     const prevMap = prevState.map;
 
-    const ok0 = mapLeafletReady && overlays.includes('w');
+    const ok0 = overlays.includes('w');
 
     const ok = ok0 && zoom >= 12;
 
-    const prevOk0 = prevMap.mapLeafletReady && prevMap.overlays.includes('w');
+    const prevOk0 = prevMap.overlays.includes('w');
 
     const prevOk = prevOk0 && prevMap.zoom >= 12;
 
@@ -54,8 +48,6 @@ export const wikiLayerProcessor: Processor = {
 
       return;
     }
-
-    const bounds = le.getBounds();
 
     // debouncing
     try {
@@ -84,12 +76,14 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
+    const bb = (await mapPromise).getBounds();
+
     const { data } = await httpRequest({
       getState,
       method: 'POST',
       url: 'https://overpass.freemap.sk/api/interpreter',
       data:
-        `[out:json][bbox:${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}];(` +
+        `[out:json][bbox:${bb.getSouth()},${bb.getWest()},${bb.getNorth()},${bb.getEast()}];(` +
         `node[~"^wikipedia$|^wikidata$"~"."];` +
         `way[~"^wikipedia$|^wikidata$"~"."];` +
         `relation[~"^wikipedia$|^wikidata$"~"."];` +
