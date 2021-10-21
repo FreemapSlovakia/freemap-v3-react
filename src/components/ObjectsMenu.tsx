@@ -4,7 +4,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
-import { getOsmMapping } from 'fm3/osm/osmNameResolver';
+import { getOsmMapping, resolveGenericName } from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { Node, OsmMapping } from 'fm3/osm/types';
 import {
   ChangeEvent,
@@ -76,8 +77,6 @@ export function ObjectsMenu(): ReactElement {
     }
 
     rec(osmMapping.osmTagToNameMapping, []);
-
-    console.log('RRRRR', res);
 
     return res;
   }, [osmMapping]);
@@ -212,15 +211,39 @@ export function ObjectsMenu(): ReactElement {
                     item.name.toLowerCase().includes(filter.toLowerCase()),
                   )
                   .sort((a, b) => a.name.localeCompare(b.name))
-                  .map(({ key, name }) => (
-                    <Dropdown.Item
-                      key={key}
-                      eventKey={key}
-                      active={active.includes(key)}
-                    >
-                      {name}
-                    </Dropdown.Item>
-                  ))}
+                  .map(({ key, name, tags }) => {
+                    const img = resolveGenericName(
+                      osmTagToIconMapping,
+                      Object.fromEntries(
+                        tags.map(({ key, value }) => [key, value ?? '*']),
+                      ),
+                    );
+
+                    return (
+                      <Dropdown.Item
+                        key={key}
+                        eventKey={key}
+                        active={active.includes(key)}
+                      >
+                        {img.length > 0 ? (
+                          <img
+                            src={img[0]}
+                            style={{ width: '1em', height: '1em' }}
+                          />
+                        ) : (
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              width: '1em',
+                              height: '1em',
+                            }}
+                          />
+                        )}
+                        &emsp;
+                        {name}
+                      </Dropdown.Item>
+                    );
+                  })}
           </div>
         </Dropdown.Menu>
       </Dropdown>
