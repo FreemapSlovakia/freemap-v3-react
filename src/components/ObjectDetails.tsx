@@ -1,8 +1,13 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { categoryKeys, getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
+import {
+  categoryKeys,
+  getNameFromOsmElement,
+  resolveGenericName,
+} from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,6 +37,8 @@ export function ObjectDetails({
   const dispatch = useDispatch();
 
   const gn = useOsmNameResolver(type, tags);
+
+  const imgs = resolveGenericName(osmTagToIconMapping, tags);
 
   const language = useSelector((state) => state.l10n.language);
 
@@ -64,6 +71,12 @@ export function ObjectDetails({
   return (
     <>
       <p className="lead">
+        {imgs.map((img) => (
+          <Fragment key={img}>
+            <img src={img} style={{ width: '1em', height: '1em' }} />
+            &ensp;
+          </Fragment>
+        ))}
         {gn} <i>{name || m?.general.unnamed}</i>
       </p>
 

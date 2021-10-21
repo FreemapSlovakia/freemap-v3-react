@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
+  <path d="M2 12l3-7 2 4 2-7 3 10z" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+  <path d="M2 12l3-7 2 4 2-7 3 10z" fill-rule="evenodd"/>
+</svg>

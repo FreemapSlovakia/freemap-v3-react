@@ -3,7 +3,7 @@ import { Node, OsmMapping } from './types';
 export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
-): string | undefined {
+): string[] {
   const parts = [];
 
   for (const [k, v] of Object.entries(tags)) {
@@ -26,7 +26,7 @@ export function resolveGenericName(
         continue;
       }
 
-      const res = resolveGenericName(subkeyMapping, tags);
+      const res = resolveGenericNameJoined(subkeyMapping, tags);
 
       if (res) {
         parts.push(res.replace('{}', v));
@@ -44,6 +44,12 @@ export function resolveGenericName(
       continue;
     }
   }
+
+  return parts;
+}
+
+function resolveGenericNameJoined(m: Node, tags: Record<string, string>) {
+  const parts = resolveGenericName(m, tags);
 
   return parts.length === 0 ? undefined : parts.join('; ');
 }
@@ -75,7 +81,10 @@ export function getGenericNameFromOsmElementSync(
   osmTagToNameMapping: Node,
   colorNames: Record<string, string>,
 ): string {
-  let gn: string | undefined = resolveGenericName(osmTagToNameMapping, tags);
+  let gn: string | undefined = resolveGenericNameJoined(
+    osmTagToNameMapping,
+    tags,
+  );
 
   if (type === 'relation' && tags['type'] === 'route') {
     const color =

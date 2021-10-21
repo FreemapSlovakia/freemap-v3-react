@@ -496,6 +496,7 @@ export const osmTagToNameMapping: Node = {
     stop_position: 'Zastávka',
   },
 };
+
 export const colorNames: Record<string, string> = {
   red: 'Červená',
   blue: 'Modrá',

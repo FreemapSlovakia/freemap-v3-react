@@ -9,7 +9,9 @@ import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
   getOsmMapping,
+  resolveGenericName,
 } from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { OsmMapping } from 'fm3/osm/types';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { ReactElement, useEffect, useState } from 'react';
@@ -56,7 +58,7 @@ export function ObjectsResult(): ReactElement | null {
           osmMapping.colorNames,
         );
 
-        const img = undefined; // TODO  pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
+        const img = resolveGenericName(osmTagToIconMapping, tags);
 
         const { ele } = tags;
 
@@ -65,7 +67,7 @@ export function ObjectsResult(): ReactElement | null {
             key={`poi-${id}-${interactive ? 'a' : 'b'}`}
             interactive={interactive}
             position={{ lat, lng: lon }}
-            image={img}
+            image={img[0]}
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));

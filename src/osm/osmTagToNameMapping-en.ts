@@ -388,6 +388,7 @@ export const osmTagToNameMapping: Node = {
     village: 'Village',
   },
 };
+
 export const colorNames: Record<string, string> = {
   red: 'Red',
   blue: 'Blue',
