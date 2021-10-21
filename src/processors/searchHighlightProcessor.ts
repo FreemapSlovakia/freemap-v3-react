@@ -1,4 +1,8 @@
-import { clearMap, convertToDrawing } from 'fm3/actions/mainActions';
+import {
+  clearMap,
+  convertToDrawing,
+  selectFeature,
+} from 'fm3/actions/mainActions';
 import {
   osmLoadNode,
   osmLoadRelation,
@@ -87,6 +91,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             getType(osmLoadWay),
             getType(osmLoadRelation),
             getType(convertToDrawing),
+            getType(selectFeature),
           ],
           style: 'info',
         }),
