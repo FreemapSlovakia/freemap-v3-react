@@ -686,6 +686,8 @@ const sk: Messages = {
       message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 10.',
       zoom: 'Priblíž',
     },
+    tooManyPoints: ({ limit }) =>
+      `Výsledok bol obmedzený na ${limit} objektov.`,
     fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,
     categories: {
       1: 'Príroda',

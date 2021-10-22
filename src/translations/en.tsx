@@ -657,6 +657,7 @@ const en: Messages = {
         'To see objects by their type, you need to zoom in to at least level 10.',
       zoom: 'Zoom-in',
     },
+    tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,
     fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
     categories: {
       1: 'Nature',

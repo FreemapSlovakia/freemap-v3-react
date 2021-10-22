@@ -9,6 +9,8 @@ import { OverpassResult } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
+const limit = 1000;
+
 export const objectsFetchProcessor: Processor = {
   stateChangePredicate: (state) =>
     [
@@ -68,9 +70,7 @@ export const objectsFetchProcessor: Processor = {
             ';',
         )
         .join('') +
-      `); out center 500;`;
-
-    // TODO warn if num of results is 500
+      `); out center ${limit};`;
 
     const { data } = await httpRequest({
       getState,
@@ -78,7 +78,7 @@ export const objectsFetchProcessor: Processor = {
       url: 'https://overpass.freemap.sk/api/interpreter',
       data: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
-      cancelActions: [objectsSetFilter, clearMap, selectFeature],
+      cancelActions: [objectsSetFilter, clearMap, selectFeature, mapRefocus],
     });
 
     const result = assertType<OverpassResult>(data).elements.map((e) => ({
@@ -88,6 +88,24 @@ export const objectsFetchProcessor: Processor = {
       tags: e.tags,
       type: e.type,
     }));
+
+    if (result.length >= limit) {
+      dispatch(
+        toastsAdd({
+          id: 'objects.tooManyPoints',
+          messageKey: 'objects.tooManyPoints',
+          messageParams: {
+            limit,
+          },
+          style: 'warning',
+          cancelType: [
+            getType(clearMap),
+            getType(mapRefocus),
+            getType(objectsSetFilter),
+          ],
+        }),
+      );
+    }
 
     dispatch(objectsSetResult(result));
   },

@@ -668,6 +668,8 @@ const cs: Messages = {
       message: 'Vyhledávání míst je možné až od přiblížení úrovně 10.',
       zoom: 'Přiblíž',
     },
+    tooManyPoints: ({ limit }) =>
+      `Výsledok bol obmedzený na ${limit} objektov.`, // TODO translate
     fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
     categories: {
       1: 'Příroda',

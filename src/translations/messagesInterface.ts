@@ -538,7 +538,8 @@ export type Messages = {
       message: string;
       zoom: string;
     };
-    fetchingError: ({ err }: Err) => string;
+    tooManyPoints({ limit }: { limit: number }): string;
+    fetchingError({ err }: Err): string;
     categories: Record<number, string>;
     subcategories: Record<number, string>;
   };
