@@ -683,7 +683,8 @@ const sk: Messages = {
   objects: {
     type: 'Typ',
     lowZoomAlert: {
-      message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 10.',
+      message: ({ minZoom }) =>
+        `Vyhľadávanie miest je možné až od priblíženia úrovne ${minZoom}.`,
       zoom: 'Priblíž',
     },
     tooManyPoints: ({ limit }) =>

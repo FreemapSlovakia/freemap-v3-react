@@ -11,6 +11,8 @@ import { assertType } from 'typescript-is';
 
 const limit = 1000;
 
+const minZoom = 10;
+
 export const objectsFetchProcessor: Processor = {
   stateChangePredicate: (state) =>
     [
@@ -29,17 +31,18 @@ export const objectsFetchProcessor: Processor = {
       return;
     }
 
-    if (getState().map.zoom < 10) {
+    if (getState().map.zoom < minZoom) {
       setTimeout(() => {
         dispatch(
           toastsAdd({
             id: 'objects.lowZoomAlert',
             messageKey: 'objects.lowZoomAlert.message',
+            messageParams: { minZoom },
             style: 'warning',
             actions: [
               {
                 nameKey: 'objects.lowZoomAlert.zoom',
-                action: [mapRefocus({ zoom: 10 })],
+                action: [mapRefocus({ zoom: minZoom })],
               },
             ],
             cancelType: [

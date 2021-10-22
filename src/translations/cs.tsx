@@ -665,7 +665,8 @@ const cs: Messages = {
   objects: {
     type: 'Typ',
     lowZoomAlert: {
-      message: 'Vyhledávání míst je možné až od přiblížení úrovně 10.',
+      message: ({ minZoom }) =>
+        `Vyhledávání míst je možné až od přiblížení úrovně ${minZoom}.`,
       zoom: 'Přiblíž',
     },
     tooManyPoints: ({ limit }) =>

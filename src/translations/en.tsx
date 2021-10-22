@@ -653,8 +653,8 @@ const en: Messages = {
   objects: {
     type: 'Type',
     lowZoomAlert: {
-      message:
-        'To see objects by their type, you need to zoom in to at least level 10.',
+      message: ({ minZoom }) =>
+        `To see objects by their type, you need to zoom in to at least level ${minZoom}.`,
       zoom: 'Zoom-in',
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,

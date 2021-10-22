@@ -666,8 +666,8 @@ const hu: Messages = {
   objects: {
     type: 'Típus',
     lowZoomAlert: {
-      message:
-        'Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a 10. szintre kell nagyítani.',
+      message: ({ minZoom }) =>
+        `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,
       zoom: 'Nagyítás',
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`, // TODO translate

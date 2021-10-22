@@ -535,7 +535,7 @@ export type Messages = {
   objects: {
     type: string;
     lowZoomAlert: {
-      message: string;
+      message({ minZoom }: { minZoom: number }): string;
       zoom: string;
     };
     tooManyPoints({ limit }: { limit: number }): string;
