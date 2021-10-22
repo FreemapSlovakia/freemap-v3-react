@@ -10,8 +10,14 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
+import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
+import {
+  getNameFromOsmElement,
+  resolveGenericName,
+} from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
 import 'fm3/styles/search.scss';
 import {
@@ -43,7 +49,7 @@ type Props = {
 const typeSymbol = {
   way: '─',
   node: '•',
-  relation: '▦',
+  relation: '⎔',
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
@@ -260,6 +266,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       </Form>
+
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
           <ButtonGroup className="ml-1">
@@ -285,6 +292,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             >
               <FaPlay color="#32CD32" />
             </Button>
+
             <Button
               variant="secondary"
               title={m?.search.routeTo}
@@ -328,13 +336,36 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const subjectAndName = useOsmNameResolver(value.osmType, value.tags ?? {});
+  const tags = value.tags ?? {};
+
+  const gn = useOsmNameResolver(value.osmType, tags);
+
+  const language = useEffectiveChosenLanguage();
+
+  const name = getNameFromOsmElement(tags, language);
+
+  const img = resolveGenericName(osmTagToIconMapping, tags);
 
   return (
     <span>
-      {typeSymbol[value.osmType]} {subjectAndName?.[1] || m?.general.unnamed}
+      {img.length > 0 ? (
+        <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+      ) : (
+        <span
+          style={{
+            width: '1em',
+            height: '1em',
+            display: 'inline-block',
+            opacity: 0.25,
+          }}
+        >
+          {typeSymbol[value.osmType]}
+        </span>
+      )}
+      &ensp;
+      {gn || m?.general.unnamed}
       <br />
-      <small>{subjectAndName?.[0]}</small>
+      <small>{name}</small>
     </span>
   );
 }
