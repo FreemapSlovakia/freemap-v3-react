@@ -118,7 +118,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
           href="?show=account"
           onSelect={showModal}
         >
-          <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>s</kbd>
+          <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
         </Dropdown.Item>
       ) : (
         <Dropdown.Item
