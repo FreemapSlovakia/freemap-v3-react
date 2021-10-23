@@ -21,8 +21,6 @@ export interface TrackViewerStateBase {
   trackGpx: string | null;
   trackUID: string | null;
   gpxUrl: string | null;
-
-  eleSmoothingFactor?: number;
 }
 
 export interface TrackViewerState extends TrackViewerStateBase {
@@ -38,8 +36,6 @@ export const cleanState: TrackViewerStateBase = {
 
 export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
-  eleSmoothingFactor: undefined, // TODO to settings reducer
-
   ...cleanState,
 };
 
