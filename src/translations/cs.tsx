@@ -595,7 +595,7 @@ const cs: Messages = {
     account: {
       name: 'Jméno',
       email: 'E-Mail',
-      sendGalleryEmails: 'Upozorni emailem na komentáře k fotce',
+      sendGalleryEmails: 'Upozornit emailem na komentáře k fotce',
       DeleteInfo: () => (
         <>
           Pokud si přejete smazat svůj účet, kontaktujte nás prosím na{' '}

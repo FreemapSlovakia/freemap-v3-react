@@ -613,7 +613,7 @@ const sk: Messages = {
     account: {
       name: 'Meno',
       email: 'E-Mail',
-      sendGalleryEmails: 'Upozorni emailom na komentáre k fotke',
+      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotke',
       DeleteInfo: () => (
         <>
           Ak si prajete zmazať svoj účet, kontaktujte nás prosím na{' '}
