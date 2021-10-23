@@ -278,7 +278,7 @@ export type Messages = {
   };
   mainMenu: {
     title: string;
-    logOut: (name: string) => string;
+    logOut: string;
     logIn: string;
     account: string;
     gpxExport: string;

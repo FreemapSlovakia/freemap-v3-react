@@ -338,7 +338,7 @@ const en: Messages = {
 
   mainMenu: {
     title: 'Main menu',
-    logOut: (name) => `Log out ${name}`,
+    logOut: 'Log out',
     logIn: 'Log in',
     account: 'Account',
     gpxExport: 'Export to GPX / GeoJSON',

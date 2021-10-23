@@ -111,14 +111,14 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
         <Modal.Footer>
           <Button
-            variant="primary"
+            variant="secondary"
             type="button"
             onClick={() => {
               dispatch(authStartLogout());
               close();
             }}
           >
-            <FaSignOutAlt /> {m?.mainMenu.logOut(user.name)}
+            <FaSignOutAlt /> {m?.mainMenu.logOut}
           </Button>
 
           <Button variant="primary" type="submit" disabled={!userMadeChanges}>

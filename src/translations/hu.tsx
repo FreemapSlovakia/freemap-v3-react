@@ -340,7 +340,7 @@ const hu: Messages = {
 
   mainMenu: {
     title: 'Main menu', // TODO translate
-    logOut: (name) => `Kijelentkezés: ${name}`,
+    logOut: 'Kijelentkezés',
     logIn: 'Bejelentkezés',
     account: 'Fiók',
     gpxExport: 'Exportálás GPX / GeoJSON-be',

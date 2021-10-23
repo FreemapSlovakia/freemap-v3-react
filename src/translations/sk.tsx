@@ -342,7 +342,7 @@ const sk: Messages = {
 
   mainMenu: {
     title: 'Hlavné menu',
-    logOut: (name) => `Odhlásiť ${name}`,
+    logOut: 'Odhlásiť',
     logIn: 'Prihlásenie',
     account: 'Účet',
     gpxExport: 'Exportovať do GPX / GeoJSON',
