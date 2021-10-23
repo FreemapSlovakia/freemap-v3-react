@@ -96,7 +96,7 @@ const elevationChartFactory = () => import('fm3/components/ElevationChart');
 const drawingLinesToolFactory = () => import('./DrawingLinesTool');
 const trackingModalFactory = () =>
   import('fm3/components/tracking/TrackingModal');
-const settingsModalFactory = () => import('fm3/components/SettingsModal');
+const accountModalFactory = () => import('fm3/components/AccountModal');
 const mapSettingsModalFactory = () => import('./MapSettingsModal');
 const embedMapModalFactory = () => import('fm3/components/EmbedMapModal');
 const exportGpxModalFactory = () => import('fm3/components/ExportGpxModal');
@@ -610,8 +610,8 @@ export function Main(): ReactElement {
         />
 
         <AsyncModal
-          show={activeModal === 'settings'}
-          factory={settingsModalFactory}
+          show={activeModal === 'account'}
+          factory={accountModalFactory}
         />
 
         <AsyncModal

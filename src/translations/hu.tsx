@@ -342,7 +342,7 @@ const hu: Messages = {
     title: 'Main menu', // TODO translate
     logOut: (name) => `Kijelentkezés: ${name}`,
     logIn: 'Bejelentkezés',
-    settings: 'Beállítások',
+    account: 'Fiók',
     gpxExport: 'Exportálás GPX / GeoJSON-be',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
@@ -584,10 +584,6 @@ const hu: Messages = {
   },
 
   settings: {
-    tab: {
-      map: 'Térkép',
-      account: 'Fiók',
-    },
     map: {
       overlayPaneOpacity: 'Saját vonalak átlátszatlansága:',
       homeLocation: {

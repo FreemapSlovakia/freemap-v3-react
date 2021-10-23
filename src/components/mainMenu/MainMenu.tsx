@@ -1,4 +1,3 @@
-import { authStartLogout } from 'fm3/actions/authActions';
 import {
   clearMap,
   documentShow,
@@ -29,7 +28,6 @@ import {
   FaRegFilePdf,
   FaRegMap,
   FaSignInAlt,
-  FaSignOutAlt,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
@@ -116,13 +114,11 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
 
       {user ? (
         <Dropdown.Item
-          as="button"
-          onSelect={() => {
-            closeMenu();
-            dispatch(authStartLogout());
-          }}
+          eventKey="account"
+          href="?show=account"
+          onSelect={showModal}
         >
-          <FaSignOutAlt /> {m?.mainMenu.logOut(user.name)}
+          <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>s</kbd>
         </Dropdown.Item>
       ) : (
         <Dropdown.Item
@@ -134,14 +130,6 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
           <FaSignInAlt /> {m?.mainMenu.logIn}
         </Dropdown.Item>
       )}
-
-      <Dropdown.Item
-        eventKey="settings"
-        href="?show=settings"
-        onSelect={showModal}
-      >
-        <FaCog /> {m?.mainMenu.settings} <kbd>e</kbd> <kbd>s</kbd>
-      </Dropdown.Item>
 
       <Dropdown.Divider />
 

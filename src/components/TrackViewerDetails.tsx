@@ -12,9 +12,7 @@ export function TrackViewerDetails(): ReactElement | null {
 
   const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
 
-  const eleSmoothingFactor = useSelector(
-    (state) => state.main.eleSmoothingFactor,
-  );
+  const eleSmoothingFactor = 5;
 
   const language = useSelector((state) => state.l10n.language);
 

@@ -344,7 +344,7 @@ const sk: Messages = {
     title: 'Hlavné menu',
     logOut: (name) => `Odhlásiť ${name}`,
     logIn: 'Prihlásenie',
-    settings: 'Nastavenia',
+    account: 'Účet',
     gpxExport: 'Exportovať do GPX / GeoJSON',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
@@ -602,10 +602,6 @@ const sk: Messages = {
   },
 
   settings: {
-    tab: {
-      map: 'Mapa',
-      account: 'Účet',
-    },
     map: {
       overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
       homeLocation: {

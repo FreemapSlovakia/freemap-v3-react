@@ -340,7 +340,7 @@ const en: Messages = {
     title: 'Main menu',
     logOut: (name) => `Log out ${name}`,
     logIn: 'Log in',
-    settings: 'Settings',
+    account: 'Account',
     gpxExport: 'Export to GPX / GeoJSON',
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
@@ -574,10 +574,6 @@ const en: Messages = {
   },
 
   settings: {
-    tab: {
-      map: 'Map',
-      account: 'Account',
-    },
     map: {
       overlayPaneOpacity: 'Map line features opacity:',
       homeLocation: {

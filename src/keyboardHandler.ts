@@ -308,8 +308,8 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
 
     if (initCode === 'KeyE') {
       switch (event.code) {
-        case 'KeyS':
-          return setActiveModal('settings');
+        case 'KeyA':
+          return setActiveModal('account');
         case 'KeyG':
           return setActiveModal('export-gpx');
         case 'KeyP':

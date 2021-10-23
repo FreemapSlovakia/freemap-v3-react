@@ -81,7 +81,6 @@ async function gen() {
                 >export mapy do PDF, SVG, PNG a JPEG</a
               >
             </li>
-            <li><a href="/?layers=X&show=settings&lang=sk">nastavenia</a></li>
             <li>
               <a href="/?layers=X&show=supportUs&lang=sk">podporte Freemap</a>
             </li>
@@ -106,7 +105,7 @@ async function gen() {
   //     'about',
   //     'export-gpx',
   //     'export-pdf',
-  //     'settings',
+  //     'account',
   //     'embed',
   //     'supportUs',
   //     'tracking-watched',
