@@ -69,9 +69,52 @@ import peak from 'fm3/images/poiIcons/peak.svg';
 import pharmacy from 'fm3/images/poiIcons/pharmacy.svg';
 import picnic_shelter from 'fm3/images/poiIcons/picnic_shelter.svg';
 import picnic_table from 'fm3/images/poiIcons/picnic_table.svg';
+import plant_nursery from 'fm3/images/poiIcons/plant_nursery.svg';
+import playground from 'fm3/images/poiIcons/playground.svg';
+import police from 'fm3/images/poiIcons/police.svg';
+import post_box from 'fm3/images/poiIcons/post_box.svg';
+import post_office from 'fm3/images/poiIcons/post_office.svg';
+import power_pole from 'fm3/images/poiIcons/power_pole.svg';
+import power_tower from 'fm3/images/poiIcons/power_tower.svg';
+import pub from 'fm3/images/poiIcons/pub.svg';
+import public_transport from 'fm3/images/poiIcons/public_transport.svg';
+import quarry from 'fm3/images/poiIcons/quarry.svg';
+import refitted_drinking_spring from 'fm3/images/poiIcons/refitted_drinking_spring.svg';
+import refitted_not_drinking_spring from 'fm3/images/poiIcons/refitted_not_drinking_spring.svg';
+import refitted_spring from 'fm3/images/poiIcons/refitted_spring.svg';
+import restaurant from 'fm3/images/poiIcons/restaurant.svg';
+import rock from 'fm3/images/poiIcons/rock.svg';
+import ruins from 'fm3/images/poiIcons/ruins.svg';
+import saddle from 'fm3/images/poiIcons/saddle.svg';
+import sand from 'fm3/images/poiIcons/sand.svg';
+import sauna from 'fm3/images/poiIcons/sauna.svg';
+import scree from 'fm3/images/poiIcons/scree.svg';
+import scrub from 'fm3/images/poiIcons/scrub.svg';
 import shelter from 'fm3/images/poiIcons/shelter.svg';
 import spring from 'fm3/images/poiIcons/spring.svg';
+import stone from 'fm3/images/poiIcons/stone.svg';
+import supermarket from 'fm3/images/poiIcons/supermarket.svg';
+import taxi from 'fm3/images/poiIcons/taxi.svg';
+import telephone from 'fm3/images/poiIcons/telephone.svg';
+import theatre from 'fm3/images/poiIcons/theatre.svg';
+import toilets from 'fm3/images/poiIcons/toilets.svg';
+import tower_communication from 'fm3/images/poiIcons/tower_communication.svg';
+import tower_observation from 'fm3/images/poiIcons/tower_observation.svg';
+import tower_others from 'fm3/images/poiIcons/tower_others.svg';
+import townhall from 'fm3/images/poiIcons/townhall.svg';
+import tree from 'fm3/images/poiIcons/tree.svg';
+import viewpoint from 'fm3/images/poiIcons/viewpoint.svg';
+import waste_basket from 'fm3/images/poiIcons/waste_basket.svg';
+import waste_disposal from 'fm3/images/poiIcons/waste_disposal.svg';
+import waterfall from 'fm3/images/poiIcons/waterfall.svg';
+import watering_place from 'fm3/images/poiIcons/watering_place.svg';
+import water_park from 'fm3/images/poiIcons/water_park.svg';
+import water_tower from 'fm3/images/poiIcons/water_tower.svg';
+import water_well from 'fm3/images/poiIcons/water_well.svg';
+import water_works from 'fm3/images/poiIcons/water_works.svg';
+import wayside_shrine from 'fm3/images/poiIcons/wayside_shrine.svg';
 import weather_shelter from 'fm3/images/poiIcons/weather_shelter.svg';
+import wilderness_hut from 'fm3/images/poiIcons/wilderness_hut.svg';
 import { Node } from './types';
 
 export const osmTagToIconMapping: Node = {
@@ -92,15 +135,29 @@ export const osmTagToIconMapping: Node = {
     hospital,
     hunting_stand,
     pharmacy,
+    police,
+    post_box,
+    post_office,
+    pub,
+    restaurant,
     shelter: {
       '*': shelter,
       shelter_type: {
         basic_hut,
         lean_to,
         picnic_shelter,
+        public_transport,
         weather_shelter,
       },
     },
+    taxi,
+    telephone,
+    theatre,
+    toilets,
+    townhall,
+    waste_basket,
+    waste_disposal,
+    watering_place,
   },
   barrier: { gate, lift_gate },
   building: { hut },
@@ -116,6 +173,7 @@ export const osmTagToIconMapping: Node = {
     mine_shaft: mine,
     monument,
     wayside_cross: cross,
+    wayside_shrine,
   },
   landuse: {
     vineyard,
@@ -123,6 +181,8 @@ export const osmTagToIconMapping: Node = {
     industrial: { industrial: mine },
     military: military_area,
     orchard,
+    plant_nursery,
+    quarry,
   },
   leisure: {
     firepit,
@@ -133,6 +193,9 @@ export const osmTagToIconMapping: Node = {
         yes: 'picnic_shelter',
       },
     },
+    playground,
+    sauna,
+    water_park,
   },
   man_made: {
     adit: mine,
@@ -144,6 +207,17 @@ export const osmTagToIconMapping: Node = {
     foresters_lodge,
     mast,
     mineshaft: mine,
+    reservoir_covered: water_works,
+    tower: {
+      tower_type: {
+        '*': tower_others,
+        communication: tower_communication,
+        observation: tower_observation,
+      },
+    },
+    water_tower,
+    water_well,
+    water_works,
   },
   millitary: {
     bunker,
@@ -158,17 +232,42 @@ export const osmTagToIconMapping: Node = {
     gully,
     hot_spring,
     peak,
+    rock,
+    saddle,
+    sand,
     spring: {
       '*': spring,
       drinking_water: {
         no: not_drinking_spring,
         yes: drinking_spring,
       },
+      refitted: {
+        yes: {
+          '*': refitted_spring,
+          drinking_water: {
+            no: refitted_not_drinking_spring,
+            yes: refitted_drinking_spring,
+          },
+        },
+      },
     },
+    scree,
+    scrub,
+    stone,
+    tree,
+    viewpoint,
+  },
+  power: {
+    pole: power_pole,
+    tower: power_tower,
+  },
+  ruins: {
+    '*': ruins,
   },
   shop: {
     confectionery,
     convenience,
+    supermarket,
   },
   sport: { free_flying },
   tourism: {
@@ -191,10 +290,14 @@ export const osmTagToIconMapping: Node = {
     },
     motel,
     museum,
+    wilderness_hut,
   },
   type: {
     route: {
       route: { horse },
     },
+  },
+  waterway: {
+    waterfall,
   },
 };
