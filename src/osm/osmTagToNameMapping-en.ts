@@ -275,6 +275,7 @@ export const osmTagToNameMapping: Node = {
     clothes: 'Apparel store',
     computer: 'Computer store',
     convenience: 'Convenience store',
+    confectionery: 'Confectionery',
     copyshop: 'Copy shop',
     department_store: 'Department store',
     electronics: 'Electronics',

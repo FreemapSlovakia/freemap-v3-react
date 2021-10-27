@@ -536,8 +536,8 @@ export type Messages = {
     };
     tooManyPoints({ limit }: { limit: number }): string;
     fetchingError({ err }: Err): string;
-    categories: Record<number, string>;
-    subcategories: Record<number, string>;
+    // categories: Record<number, string>;
+    // subcategories: Record<number, string>;
   };
   external: {
     openInExternal: string;

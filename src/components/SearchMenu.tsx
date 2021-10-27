@@ -347,25 +347,37 @@ function Result({ value }: { value: SearchResult }) {
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
   return (
-    <span>
-      {img.length > 0 ? (
-        <img src={img[0]} style={{ width: '1em', height: '1em' }} />
-      ) : (
-        <span
+    <div className="d-flex flex-column mx-n2">
+      <div className="d-flex f-gap-2 align-items-center">
+        {img.length > 0 ? (
+          <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+        ) : (
+          <span
+            style={{
+              width: '1em',
+              height: '1em',
+              display: 'inline-block',
+              opacity: 0.25,
+              backgroundColor: 'gray',
+            }}
+            className="flex-shrink-0"
+          />
+        )}
+
+        <div className="flex-grow-1 text-truncate">
+          {gn || m?.general.unnamed}
+        </div>
+
+        <div
           style={{
-            width: '1em',
-            height: '1em',
-            display: 'inline-block',
             opacity: 0.25,
           }}
         >
           {typeSymbol[value.osmType]}
-        </span>
-      )}
-      &ensp;
-      {gn || m?.general.unnamed}
-      <br />
-      <small>{name}</small>
-    </span>
+        </div>
+      </div>
+
+      {name && <small className="ml-4 text-truncate">{name}</small>}
+    </div>
   );
 }

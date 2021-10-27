@@ -347,6 +347,7 @@ export const osmTagToNameMapping: Node = {
     clothes: 'Obchod s oblečením',
     computer: 'Počítačový obchod',
     convenience: 'Potraviny',
+    confectionery: 'Cukráreň',
     copyshop: 'Copy centrum',
     department_store: 'Obchodný dom',
     electronics: 'Obchod s elektronikou',
