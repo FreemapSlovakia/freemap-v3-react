@@ -24,6 +24,7 @@ import {
   setTool,
 } from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
+import { history } from './historyHolder';
 import { showGalleryViewerSelector } from './selectors/mainSelectors';
 import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
@@ -33,9 +34,8 @@ let keyTimer: number | null = null;
 let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | null = null;
 
 function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
-  if (event.ctrlKey || event.altKey || event.metaKey || event.isComposing) {
-    return 'I';
-  }
+  const withModifiers =
+    event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 
   const suspendedModal =
     state.main.selectingHomeLocation !== false ||
@@ -51,7 +51,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
   // state.gallery.pickingPositionForId ||
   // state.gallery.showPosition;
 
-  if (event.code === 'Escape') {
+  if (!withModifiers && event.code === 'Escape') {
     if (
       document.querySelector('*[data-popper-reference-hidden=false]') !== null
     ) {
@@ -114,6 +114,23 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
     event.target instanceof HTMLElement &&
     ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
   ) {
+    return;
+  }
+
+  if (!showingModal && (event.ctrlKey || event.metaKey)) {
+    if (event.code === 'KeyZ') {
+      history.back();
+
+      return;
+    }
+    if (event.code === 'KeyY') {
+      history.forward();
+
+      return;
+    }
+  }
+
+  if (withModifiers) {
     return;
   }
 
