@@ -100,7 +100,7 @@ import theatre from 'fm3/images/poiIcons/theatre.svg';
 import toilets from 'fm3/images/poiIcons/toilets.svg';
 import tower_communication from 'fm3/images/poiIcons/tower_communication.svg';
 import tower_observation from 'fm3/images/poiIcons/tower_observation.svg';
-import tower_others from 'fm3/images/poiIcons/tower_others.svg';
+import tower_other from 'fm3/images/poiIcons/tower_other.svg';
 import townhall from 'fm3/images/poiIcons/townhall.svg';
 import tree from 'fm3/images/poiIcons/tree.svg';
 import viewpoint from 'fm3/images/poiIcons/viewpoint.svg';
@@ -210,7 +210,7 @@ export const osmTagToIconMapping: Node = {
     reservoir_covered: water_works,
     tower: {
       tower_type: {
-        '*': tower_others,
+        '*': tower_other,
         communication: tower_communication,
         observation: tower_observation,
       },
