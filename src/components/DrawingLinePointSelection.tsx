@@ -14,8 +14,6 @@ import { RiScissorsFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
-console.log('HHHHHHHHHHHHHHHHHHHHHHH');
-
 export default DrawingLinePointSelection;
 
 export function DrawingLinePointSelection(): ReactElement | null {
@@ -35,15 +33,11 @@ export function DrawingLinePointSelection(): ReactElement | null {
     (state) => state.drawingLines.joinWith !== undefined,
   );
 
-  console.log('EEEEEEEEEEEEE');
-
   if (
     !line ||
     selection?.type !== 'line-point' ||
     joining /* TODO show joining toolbar */
   ) {
-    console.log('FFFFFFFFFFFF');
-
     return (
       <Card className="fm-toolbar mx-2 mt-2">
         <span className="mr-2">{m?.drawing.selectPointToJoin}</span>

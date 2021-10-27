@@ -249,7 +249,6 @@ export function preGlobalReducer(
         trackViewer: {
           ...trackViewerInitialState,
           colorizeTrackBy: trackViewer.colorizeTrackBy,
-          eleSmoothingFactor: trackViewer.eleSmoothingFactor,
         },
       };
     } else if (state.main.tool === 'route-planner') {

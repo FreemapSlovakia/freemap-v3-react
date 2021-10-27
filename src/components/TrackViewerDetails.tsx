@@ -25,9 +25,7 @@ export function TrackViewerDetailsInt({
 
   const [startPoints, finishPoints] = useStartFinishPoints();
 
-  const eleSmoothingFactor = useSelector(
-    (state) => state.main.eleSmoothingFactor,
-  );
+  const eleSmoothingFactor = 5;
 
   const oneDecimalDigitNumberFormat = useNumberFormat({
     minimumFractionDigits: 1,

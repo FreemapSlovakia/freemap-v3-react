@@ -272,7 +272,7 @@ export function MapSwitchButton(): ReactElement {
             <div />
 
             <Dropdown.Item
-              key="settings"
+              key="mapSettings"
               as="button"
               onSelect={() => {
                 setShow(false);

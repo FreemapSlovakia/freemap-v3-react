@@ -49,9 +49,7 @@ export function TrackViewerResult({
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const eleSmoothingFactor = useSelector(
-    (state) => state.main.eleSmoothingFactor,
-  );
+  const eleSmoothingFactor = 5;
 
   const [infoLat] = useState<number>();
 

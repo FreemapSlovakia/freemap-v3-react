@@ -35,7 +35,6 @@ import {
   toggleLocate,
   Tool,
 } from 'fm3/actions/mainActions';
-import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
@@ -54,7 +53,6 @@ export interface MainState {
   selectingHomeLocation: LatLon | null | false;
   urlUpdatingEnabled: boolean;
   errorTicketId: string | undefined;
-  eleSmoothingFactor: number;
   embedFeatures: string[];
   selection: Selection | null;
   cookieConsentResult: boolean | null;
@@ -73,7 +71,6 @@ export const mainInitialState: MainState = {
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
   errorTicketId: undefined,
-  eleSmoothingFactor: 5,
   embedFeatures: [],
   selection: null,
   cookieConsentResult: null,
@@ -119,10 +116,6 @@ export const mainReducer = createReducer<MainState, RootAction>(
         : p.lat && p.lon
         ? { lat: p.lat, lon: p.lon }
         : null,
-      eleSmoothingFactor:
-        p?.settings?.trackViewerEleSmoothingFactor !== undefined
-          ? p.settings.trackViewerEleSmoothingFactor
-          : state.eleSmoothingFactor,
     };
   })
   .handleAction(authLogout, (state) => ({ ...state, homeLocation: null }))
@@ -180,10 +173,6 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(setErrorTicketId, (state, action) => ({
     ...state,
     errorTicketId: action.payload,
-  }))
-  .handleAction(trackViewerSetEleSmoothingFactor, (state, action) => ({
-    ...state,
-    eleSmoothingFactor: action.payload,
   }))
   .handleAction(setEmbedFeatures, (state, action) => ({
     ...state,

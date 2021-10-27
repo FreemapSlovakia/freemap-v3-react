@@ -44,9 +44,6 @@ function persistSelectedState(state: DefaultRootState) {
       auth: {
         user: state.auth.user,
       },
-      trackViewer: {
-        eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
-      },
       map: {
         layersSettings: state.map.layersSettings,
         overlayPaneOpacity: state.map.overlayPaneOpacity,

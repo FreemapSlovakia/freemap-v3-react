@@ -276,14 +276,16 @@ export const handleLocationChange = (
 
       const points = line
         .split(',')
-        .map((point) => point.split('/').map((coord) => parseFloat(coord)))
+        .map((point) =>
+          point
+            .split('/')
+            .map((coord) => parseFloat(coord))
+            .filter((x) => !isNaN(x)),
+        )
+        .filter((pair) => pair.length == 2)
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
 
-      if (
-        points.every(
-          (point) => !Number.isNaN(point.lat) && !Number.isNaN(point.lon),
-        )
-      ) {
+      if (points.length > 0) {
         lines.push({
           type:
             key === 'distance-measurement-points' || key === 'line'

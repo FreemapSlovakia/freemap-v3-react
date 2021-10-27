@@ -9,7 +9,7 @@ export const basicModals = [
   'about',
   'export-gpx',
   'export-pdf',
-  'settings',
+  'account',
   'mapSettings',
   'embed',
   'supportUs',

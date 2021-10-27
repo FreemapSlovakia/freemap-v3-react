@@ -112,6 +112,7 @@ export function containsElevations(geojson: Feature): boolean {
   );
 }
 
+// TODO consider distance between points
 // returns array of [lat, lon, smoothedEle] triplets
 export function smoothElevations(
   coords: number[][],

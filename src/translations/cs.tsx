@@ -342,9 +342,9 @@ const cs: Messages = {
 
   mainMenu: {
     title: 'Hlavní menu',
-    logOut: (name) => `Odhlásit ${name}`,
+    logOut: 'Odhlásit',
     logIn: 'Přihlášení',
-    settings: 'Nastavení',
+    account: 'Účet',
     gpxExport: 'Exportovat do GPX / GeoJSON',
     mapExports: 'Mapa pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
@@ -584,10 +584,6 @@ const cs: Messages = {
   },
 
   settings: {
-    tab: {
-      map: 'Mapa',
-      account: 'Účet',
-    },
     map: {
       overlayPaneOpacity: 'Viditelnost čar na mapě:',
       homeLocation: {
@@ -599,7 +595,7 @@ const cs: Messages = {
     account: {
       name: 'Jméno',
       email: 'E-Mail',
-      sendGalleryEmails: 'Upozorni emailem na komentáře k fotce',
+      sendGalleryEmails: 'Upozornit emailem na komentáře k fotce',
       DeleteInfo: () => (
         <>
           Pokud si přejete smazat svůj účet, kontaktujte nás prosím na{' '}

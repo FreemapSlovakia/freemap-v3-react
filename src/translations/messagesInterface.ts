@@ -278,9 +278,9 @@ export type Messages = {
   };
   mainMenu: {
     title: string;
-    logOut: (name: string) => string;
+    logOut: string;
     logIn: string;
-    settings: string;
+    account: string;
     gpxExport: string;
     mapExports: string;
     embedMap: string;
@@ -465,10 +465,6 @@ export type Messages = {
     selectPointToJoin: string;
   };
   settings: {
-    tab: {
-      map: string;
-      account: string;
-    };
     map: {
       overlayPaneOpacity: string;
       homeLocation: {
