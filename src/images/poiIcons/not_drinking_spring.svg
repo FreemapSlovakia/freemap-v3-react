@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <circle cx="11.5" cy="10.5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-opacity=".5" r="2.5"/>
-  <path d="M7 1.65a3.3 3.3 0 00-3.27 3.33 3.36 3.36 0 00.17 1.09c-1.71 1.08-.7 2.92-.31 4.18.39 1.3-1.01 2.06-2.09 3.08 3.23-.58 3.77-2.18 3.68-2.92-.18-.91-.83-1.52.12-2.6.55.19 1.08.5 1.7.5a3.23 3.23 0 001.86-.6 3.33 3.33 0 001.42-2.73A3.3 3.3 0 007 1.65z" opacity=".5" fill="#0064ff" stroke="#fdfdfd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M7 1.65a3.3 3.3 0 00-3.27 3.33 3.36 3.36 0 00.17 1.09c-1.71 1.08-.7 2.92-.31 4.18.39 1.3-1.01 2.06-2.09 3.08 3.23-.58 3.77-2.18 3.68-2.92-.18-.91-.83-1.52.12-2.6.55.19 1.08.5 1.7.5a3.23 3.23 0 001.86-.6 3.33 3.33 0 001.42-2.73A3.3 3.3 0 007 1.65z" fill="#0064ff"/>
-  <circle cx="11.5" cy="10.5" fill="#f00" r="2.5"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="14" height="14" version="1.1" id="svg1402" sodipodi:docname="not_drinking_spring.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs1406" />
+  <sodipodi:namedview id="namedview1404" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" showgrid="false" inkscape:zoom="11.640625" inkscape:cx="-17.35302" inkscape:cy="1.8469799" inkscape:window-width="1883" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg1402" />
+  <path d="M 6.25,1.16 A 3.3,3.3 0 0 0 2.98,4.49 A 3.36,3.36 0 0 0 3.15,5.58 C 1.44,6.66 2.45,8.5 2.84,9.76 C 3.23,11.06 1.83,11.82 0.75,12.84 C 3.98,12.26 4.52,10.66 4.43,9.92 C 4.25,9.01 3.6,8.4 4.55,7.32 C 5.1,7.51 5.63,7.82 6.25,7.82 A 3.23,3.23 0 0 0 8.11,7.22 A 3.33,3.33 0 0 0 9.53,4.49 A 3.3,3.3 0 0 0 6.25,1.16 Z" fill="#0064ff" id="path1398" />
+  <circle cx="10.75" cy="10.01" fill="#ff0000" r="2.5" id="circle1400" />
 </svg>

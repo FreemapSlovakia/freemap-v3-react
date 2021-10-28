@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-  <path d="M3 7l5.5-4.5L14 7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".5"/>
-  <circle cx="12.5" cy="14.5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-opacity=".5" r="2.5"/>
-  <path d="M8.5 5.63a3.3 3.3 0 00-3.28 3.33 3.36 3.36 0 00.18 1.09c-1.72 2.05-.71 2.92-.32 4.19.39 1.28-1.01 2.05-2.1 3.07 3.24-.58 3.78-2.09 3.69-2.91-.1-.92-.83-1.53.12-2.6.55.18 1.08.48 1.7.5a3.24 3.24 0 001.86-.6 3.33 3.33 0 001.42-2.74 3.3 3.3 0 00-3.28-3.33z" opacity=".5" fill="#0064ff" stroke="#fdfdfd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M8.5 5.63a3.3 3.3 0 00-3.28 3.33 3.36 3.36 0 00.18 1.09c-1.72 2.05-.71 2.92-.32 4.19.39 1.28-1.01 2.05-2.1 3.07 3.24-.58 3.78-2.09 3.69-2.91-.1-.92-.83-1.53.12-2.6.55.18 1.08.48 1.7.5a3.24 3.24 0 001.86-.6 3.33 3.33 0 001.42-2.74 3.3 3.3 0 00-3.28-3.33z" fill="#0064ff"/>
-  <path d="M3 7l5.5-4.5L14 7" fill="none" stroke="#000"/>
-  <circle cx="12.5" cy="14.5" fill="#f00" r="2.5"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="14" height="14" version="1.1" id="svg1088" sodipodi:docname="refitted_not_drinking_spring.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs1092" />
+  <sodipodi:namedview id="namedview1090" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" showgrid="false" inkscape:zoom="18.625" inkscape:cx="3.0067114" inkscape:cy="8.9395973" inkscape:window-width="1883" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg1088" />
+  <path d="M 6.7063866,3.4680516 A 2.981453,2.9755638 0 0 0 3.743003,6.470666 A 3.0356613,3.0296649 0 0 0 3.9056277,7.4535037 C 2.3516582,9.3019595 3.2641636,10.086427 3.6165171,11.231569 C 3.9688707,12.385727 2.7040118,13.080025 1.7192288,13.999745 C 4.6464736,13.476767 5.1343478,12.115221 5.0530354,11.375838 C 4.9626883,10.546287 4.3031548,9.9962585 5.1614519,9.0314545 C 5.6583607,9.1937575 6.1372001,9.4642635 6.6973519,9.4822975 A 2.9272448,2.9214626 0 0 0 8.3778073,8.9412855 A 3.0085572,3.0026143 0 0 0 9.6607358,6.470666 A 2.981453,2.9755638 0 0 0 6.6973519,3.4680516 Z" fill="#0064ff" id="path1082" style="stroke-width:1" />
+  <path d="M 1.7372982,4.7033614 L 6.7063866,0.64577453 L 11.675475,4.7033614" fill="none" stroke="#000000" id="path1084" style="stroke-width:1" />
+  <ellipse cx="10.32027" cy="11.466006" fill="#ff0000" id="circle1086" style="stroke-width:1" rx="2.2586765" ry="2.254215" />
 </svg>
