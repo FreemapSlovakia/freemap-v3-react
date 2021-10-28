@@ -9,7 +9,8 @@ import { OverpassResult } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
-const limit = 1000;
+const limit =
+  Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;
 
 const minZoom = 10;
 
