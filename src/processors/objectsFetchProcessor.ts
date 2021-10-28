@@ -28,6 +28,10 @@ export const objectsFetchProcessor: Processor = {
     );
 
     if (ents.length === 0) {
+      if (getState().objects.objects.length > 0) {
+        dispatch(objectsSetResult([]));
+      }
+
       return;
     }
 
