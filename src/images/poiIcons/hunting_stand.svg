@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="580" height="580">
-    <path d="M543 510v1h1v5l-.744 5.906 1.488.188.77-6.094h2.976l.766 6.094 1.488-.188-.744-5.926V511h1v-1h-7zm3 2h2.031l-.031 1h-2z" opacity=".5" fill="none" stroke="#fafafa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M543 510v1h1v5l-.744 5.906 1.488.188.77-6.094h2.976l.766 6.094 1.488-.188-.744-5.926V511h1v-1h-7zm3 2h2.031l-.031 1h-2z"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg version="1.0" width="14" height="14" id="svg66" sodipodi:docname="hunting_stand.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs70" />
+  <sodipodi:namedview id="namedview68" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" showgrid="false" inkscape:zoom="5.137931" inkscape:cx="-9.9261745" inkscape:cy="16.057047" inkscape:window-width="1883" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg66" />
+  <path d="M 2.416445,0 V 1.1575988 H 3.5623339 V 6.9455927 L 2.7097925,13.78237 L 4.4148751,14 L 5.2972095,6.9455927 H 8.7073746 L 9.5851254,14 L 11.290208,13.78237 L 10.437667,6.9224407 V 1.1575988 H 11.583555 V 0 H 3.5623339 Z M 5.8541114,2.3151976 H 8.1814116 L 8.1458891,3.4727963 H 5.8541114 Z" id="path64" style="stroke-width:1" />
 </svg>
