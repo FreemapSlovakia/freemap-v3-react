@@ -123,6 +123,56 @@ export function ObjectsMenu(): ReactElement {
 
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const activeSnapshot = useMemo(() => active, [dropdownOpened]);
+
+  function makeItems(snapshot?: boolean) {
+    return !items
+      ? null
+      : items
+          .map((item) => ({
+            ...item,
+            key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
+          }))
+          .filter((item) => !snapshot || activeSnapshot.includes(item.key))
+          .filter((item) =>
+            removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
+          )
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(({ key, name, tags }) => {
+            const img = resolveGenericName(
+              osmTagToIconMapping,
+              Object.fromEntries(
+                tags.map(({ key, value }) => [key, value ?? '*']),
+              ),
+            );
+
+            return (
+              <Dropdown.Item
+                key={key}
+                eventKey={key}
+                active={active.includes(key)}
+              >
+                {img.length > 0 ? (
+                  <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+                ) : (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: '1em',
+                      height: '1em',
+                    }}
+                  />
+                )}
+                &emsp;
+                {name}
+              </Dropdown.Item>
+            );
+          });
+  }
+
+  const activeItems = makeItems(true);
+
   return (
     <ToolMenu>
       <Dropdown
@@ -145,6 +195,7 @@ export function ObjectsMenu(): ReactElement {
             ref={inputRef}
           />
         </Dropdown.Toggle>
+
         <Dropdown.Menu
           popperConfig={{
             strategy: 'fixed',
@@ -183,54 +234,12 @@ export function ObjectsMenu(): ReactElement {
                 </Fragment>
               );
             })} */}
-            {!items
-              ? null
-              : items
-                  .map((item) => ({
-                    ...item,
-                    key: item.tags
-                      .map((tag) => `${tag.key}=${tag.value}`)
-                      .join(','),
-                  }))
-                  .filter((item) =>
-                    removeAccents(item.name.toLowerCase()).includes(
-                      normalizedFilter,
-                    ),
-                  )
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map(({ key, name, tags }) => {
-                    const img = resolveGenericName(
-                      osmTagToIconMapping,
-                      Object.fromEntries(
-                        tags.map(({ key, value }) => [key, value ?? '*']),
-                      ),
-                    );
 
-                    return (
-                      <Dropdown.Item
-                        key={key}
-                        eventKey={key}
-                        active={active.includes(key)}
-                      >
-                        {img.length > 0 ? (
-                          <img
-                            src={img[0]}
-                            style={{ width: '1em', height: '1em' }}
-                          />
-                        ) : (
-                          <span
-                            style={{
-                              display: 'inline-block',
-                              width: '1em',
-                              height: '1em',
-                            }}
-                          />
-                        )}
-                        &emsp;
-                        {name}
-                      </Dropdown.Item>
-                    );
-                  })}
+            {activeItems}
+
+            {activeItems?.length ? <Dropdown.Divider /> : null}
+
+            {makeItems()}
           </div>
         </Dropdown.Menu>
       </Dropdown>
