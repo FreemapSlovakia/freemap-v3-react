@@ -189,10 +189,12 @@ export const mainReducer = createReducer<MainState, RootAction>(
           ...state,
           selection: action.payload,
           tool:
-            action.payload === null &&
-            state.tool !==
-              'route-planner' /* && state.tool !== 'track-viewer' */
-              ? state.tool
+            state.tool === 'objects' ||
+            state.tool === 'changesets' ||
+            state.tool === 'track-viewer' ||
+            (action.payload === null && state.tool !== 'route-planner')
+              ? /* && state.tool !== 'track-viewer' */
+                state.tool
               : null,
         },
   )
