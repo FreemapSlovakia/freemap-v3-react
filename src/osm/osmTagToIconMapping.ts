@@ -5,7 +5,6 @@ import archaeological_site from 'fm3/images/poiIcons/archaeological_site.svg';
 import artwork from 'fm3/images/poiIcons/artwork.svg';
 import attraction from 'fm3/images/poiIcons/attraction.svg';
 import bar from 'fm3/images/poiIcons/bar.svg';
-import bare_rock from 'fm3/images/poiIcons/bare_rock.svg';
 import basic_hut from 'fm3/images/poiIcons/basic_hut.svg';
 import beehive from 'fm3/images/poiIcons/beehive.svg';
 import bench from 'fm3/images/poiIcons/bench.svg';
@@ -19,7 +18,6 @@ import castle from 'fm3/images/poiIcons/castle.svg';
 import cave_entrance from 'fm3/images/poiIcons/cave_entrance.svg';
 import chalet from 'fm3/images/poiIcons/chalet.svg';
 import chimney from 'fm3/images/poiIcons/chimney.svg';
-import cliff from 'fm3/images/poiIcons/cliff.svg';
 import community_centre from 'fm3/images/poiIcons/community_centre.svg';
 import confectionery from 'fm3/images/poiIcons/confectionery.svg';
 import convenience from 'fm3/images/poiIcons/convenience.svg';
@@ -39,12 +37,10 @@ import fountain from 'fm3/images/poiIcons/fountain.svg';
 import free_flying from 'fm3/images/poiIcons/free_flying.svg';
 import fuel from 'fm3/images/poiIcons/fuel.svg';
 import gate from 'fm3/images/poiIcons/gate.svg';
-import vineyard from 'fm3/images/poiIcons/grapes.svg';
 import cemetery from 'fm3/images/poiIcons/grave.svg';
 import guest_house from 'fm3/images/poiIcons/guest_house.svg';
 import guidepost from 'fm3/images/poiIcons/guidepost.svg';
 import gully from 'fm3/images/poiIcons/gully.svg';
-import horse from 'fm3/images/poiIcons/horse.svg';
 import hospital from 'fm3/images/poiIcons/hospital.svg';
 import hostel from 'fm3/images/poiIcons/hostel.svg';
 import hotel from 'fm3/images/poiIcons/hotel.svg';
@@ -57,28 +53,22 @@ import manger from 'fm3/images/poiIcons/manger.svg';
 import map from 'fm3/images/poiIcons/map.svg';
 import mast from 'fm3/images/poiIcons/mast_other.svg';
 import memorial from 'fm3/images/poiIcons/memorial.svg';
-import military_area from 'fm3/images/poiIcons/military_area.svg';
 import mine from 'fm3/images/poiIcons/mine.svg';
 import monument from 'fm3/images/poiIcons/monument.svg';
 import motel from 'fm3/images/poiIcons/motel.svg';
 import museum from 'fm3/images/poiIcons/museum.svg';
 import not_drinking_spring from 'fm3/images/poiIcons/not_drinking_spring.svg';
 import office from 'fm3/images/poiIcons/office.svg';
-import orchard from 'fm3/images/poiIcons/orchard.svg';
 import peak from 'fm3/images/poiIcons/peak.svg';
 import pharmacy from 'fm3/images/poiIcons/pharmacy.svg';
 import picnic_shelter from 'fm3/images/poiIcons/picnic_shelter.svg';
 import picnic_table from 'fm3/images/poiIcons/picnic_table.svg';
-import plant_nursery from 'fm3/images/poiIcons/plant_nursery.svg';
 import playground from 'fm3/images/poiIcons/playground.svg';
 import police from 'fm3/images/poiIcons/police.svg';
 import post_box from 'fm3/images/poiIcons/post_box.svg';
 import post_office from 'fm3/images/poiIcons/post_office.svg';
-import power_pole from 'fm3/images/poiIcons/power_pole.svg';
-import power_tower from 'fm3/images/poiIcons/power_tower.svg';
 import pub from 'fm3/images/poiIcons/pub.svg';
 import public_transport from 'fm3/images/poiIcons/public_transport.svg';
-import quarry from 'fm3/images/poiIcons/quarry.svg';
 import refitted_drinking_spring from 'fm3/images/poiIcons/refitted_drinking_spring.svg';
 import refitted_not_drinking_spring from 'fm3/images/poiIcons/refitted_not_drinking_spring.svg';
 import refitted_spring from 'fm3/images/poiIcons/refitted_spring.svg';
@@ -86,10 +76,7 @@ import restaurant from 'fm3/images/poiIcons/restaurant.svg';
 import rock from 'fm3/images/poiIcons/rock.svg';
 import ruins from 'fm3/images/poiIcons/ruins.svg';
 import saddle from 'fm3/images/poiIcons/saddle.svg';
-import sand from 'fm3/images/poiIcons/sand.svg';
 import sauna from 'fm3/images/poiIcons/sauna.svg';
-import scree from 'fm3/images/poiIcons/scree.svg';
-import scrub from 'fm3/images/poiIcons/scrub.svg';
 import shelter from 'fm3/images/poiIcons/shelter.svg';
 import spring from 'fm3/images/poiIcons/spring.svg';
 import stone from 'fm3/images/poiIcons/stone.svg';
@@ -176,13 +163,8 @@ export const osmTagToIconMapping: Node = {
     wayside_shrine,
   },
   landuse: {
-    vineyard,
     cemetery,
     industrial: { industrial: mine },
-    military: military_area,
-    orchard,
-    plant_nursery,
-    quarry,
   },
   leisure: {
     firepit,
@@ -224,9 +206,7 @@ export const osmTagToIconMapping: Node = {
   },
   natural: {
     arch,
-    bare_rock,
     cave_entrance,
-    cliff,
     earth_bank,
     fell,
     gully,
@@ -234,7 +214,6 @@ export const osmTagToIconMapping: Node = {
     peak,
     rock,
     saddle,
-    sand,
     spring: {
       '*': spring,
       drinking_water: {
@@ -251,15 +230,9 @@ export const osmTagToIconMapping: Node = {
         },
       },
     },
-    scree,
-    scrub,
     stone,
     tree,
     viewpoint,
-  },
-  power: {
-    pole: power_pole,
-    tower: power_tower,
   },
   ruins: {
     '*': ruins,
@@ -291,11 +264,6 @@ export const osmTagToIconMapping: Node = {
     motel,
     museum,
     wilderness_hut,
-  },
-  type: {
-    route: {
-      route: { horse },
-    },
   },
   waterway: {
     waterfall,

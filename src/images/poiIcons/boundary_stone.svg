@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <path d="M5 2a3 3 0 00-3 2.7V10h6V4.7C8 3.8 7.3 2 5 2z" stroke-linecap="round" stroke-linejoin="round" paint-order="stroke" fill="#fff" stroke-opacity=".5" stroke="#fff" stroke-width="3"/>
-  <path d="M5 2a3 3 0 00-3 2.7V10h6V4.7C8 4 7.3 2 5 2z"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="14" height="14" version="1.1" id="svg3255" sodipodi:docname="boundary_stone.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs3259" />
+  <sodipodi:namedview id="namedview3257" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" showgrid="false" inkscape:zoom="11.640625" inkscape:cx="-6.7006711" inkscape:cy="9.0630872" inkscape:window-width="1883" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg3255" />
+  <path d="M 7,3.0000188 A 3,3 0 0 0 4,5.7000188 V 11.000019 H 10 V 5.7000188 C 10,5.0000188 9.3,3.0000188 7,3.0000188 Z" id="path3253" />
 </svg>

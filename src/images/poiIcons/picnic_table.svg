@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
-  <path d="M4 2v1h2.28L5.15 6H2v1h2.78l-1.25 3.33.93.35 1.38-3.67h4.31l1.38 3.67.97-.35L11.22 7H14V6h-3.15L9.73 3H12V2zm3.35 1h1.3l1.13 3H6.21z" color="#000" opacity=".5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M4 2v1h2.28L5.15 6H2v1h2.78l-1.25 3.33.93.35 1.38-3.67h4.31l1.38 3.67.97-.35L11.22 7H14V6h-3.15L9.73 3H12V2zm3.35 1h1.3l1.13 3H6.21z" color="#000" fill-rule="evenodd"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="14" height="14" version="1.1" id="svg1895" sodipodi:docname="picnic_table.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs1899" />
+  <sodipodi:namedview id="namedview1897" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" showgrid="false" inkscape:zoom="14.9" inkscape:cx="24.966443" inkscape:cy="25" inkscape:window-width="1883" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg1895" />
+  <path d="M 2.3333334,1.9366665 V 3.1033332 H 4.9933335 L 3.6750001,6.6033333 H 0 V 7.77 H 3.2433334 L 1.7850001,11.655 L 2.8700001,12.063333 L 4.4800001,7.7816667 H 9.5083336 L 11.118334,12.063333 L 12.25,11.655 L 10.756667,7.77 H 14 V 6.6033333 H 10.325 L 9.0183336,3.1033332 H 11.666667 V 1.9366665 Z M 6.2416668,3.1033332 H 7.7583336 L 9.0766669,6.6033333 H 4.9116668 Z" color="#000000" fill-rule="evenodd" id="path1893" style="stroke-width:1" />
 </svg>
