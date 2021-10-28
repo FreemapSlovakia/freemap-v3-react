@@ -120,6 +120,12 @@ export function ObjectsMenu(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
+  const normalizedFilter = filter
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
   return (
     <ToolMenu>
       <Dropdown
@@ -190,7 +196,11 @@ export function ObjectsMenu(): ReactElement {
                       .join(','),
                   }))
                   .filter((item) =>
-                    item.name.toLowerCase().includes(filter.toLowerCase()),
+                    item.name
+                      .toLowerCase()
+                      .normalize('NFD')
+                      .replace(/[\u0300-\u036f]/g, '')
+                      .includes(normalizedFilter),
                   )
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map(({ key, name, tags }) => {
