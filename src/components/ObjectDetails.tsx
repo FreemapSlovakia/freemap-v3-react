@@ -1,5 +1,4 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useMessages } from 'fm3/l10nInjector';
 import {
   adjustTagOrder,
   categoryKeys,
@@ -33,8 +32,6 @@ export function ObjectDetails({
   historyText,
   editInJosmText,
 }: Props): ReactElement {
-  const m = useMessages();
-
   const dispatch = useDispatch();
 
   const gn = useOsmNameResolver(type, tags);
@@ -51,7 +48,7 @@ export function ObjectDetails({
         { node: 'n', way: 'w', relation: 'r' }[type] +
         id +
         '&layer_name=' +
-        encodeURIComponent(`${gn} "${name || m?.general.unnamed}"`.trim()),
+        encodeURIComponent(`${gn}${name ? ' "' + name + '"' : ''}`),
     )
       .then((res) => {
         if (!res.ok) {
@@ -78,7 +75,7 @@ export function ObjectDetails({
             &ensp;
           </Fragment>
         ))}
-        {gn} <i>{name || m?.general.unnamed}</i>
+        {gn} {name && <i>{name}</i>}
       </p>
 
       <p>
