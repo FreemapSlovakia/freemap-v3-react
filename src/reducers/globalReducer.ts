@@ -90,10 +90,6 @@ export function preGlobalReducer(
 
           draft.drawingPoints.change++;
 
-          draft.objects.objects = draft.objects.objects.filter(
-            (object) => object.id !== payload.id,
-          );
-
           draft.main.selection = {
             type: 'draw-points',
             id: draft.drawingPoints.points.length - 1,
