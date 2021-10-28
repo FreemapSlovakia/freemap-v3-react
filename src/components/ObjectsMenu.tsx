@@ -5,6 +5,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { getOsmMapping, resolveGenericName } from 'fm3/osm/osmNameResolver';
 import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { Node, OsmMapping } from 'fm3/osm/types';
+import { removeAccents } from 'fm3/stringUtils';
 import {
   ChangeEvent,
   ReactElement,
@@ -120,11 +121,7 @@ export function ObjectsMenu(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  const normalizedFilter = filter
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+  const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
   return (
     <ToolMenu>
@@ -196,11 +193,9 @@ export function ObjectsMenu(): ReactElement {
                       .join(','),
                   }))
                   .filter((item) =>
-                    item.name
-                      .toLowerCase()
-                      .normalize('NFD')
-                      .replace(/[\u0300-\u036f]/g, '')
-                      .includes(normalizedFilter),
+                    removeAccents(item.name.toLowerCase()).includes(
+                      normalizedFilter,
+                    ),
                   )
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map(({ key, name, tags }) => {

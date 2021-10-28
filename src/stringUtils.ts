@@ -6,3 +6,7 @@ export function escapeHtml(unsafe: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+export function removeAccents(value: string) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
