@@ -68,7 +68,7 @@ export const objectsFetchProcessor: Processor = {
     const bb = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
 
     const query =
-      '[out:json][timeout:60]; (' +
+      '[out:json][timeout:15]; (' +
       ents
         .map(
           (ent) =>
