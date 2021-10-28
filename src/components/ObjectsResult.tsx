@@ -6,6 +6,7 @@ import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import {
+  adjustTagOrder,
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
   getOsmMapping,
@@ -58,7 +59,10 @@ export function ObjectsResult(): ReactElement | null {
           osmMapping.colorNames,
         );
 
-        const img = resolveGenericName(osmTagToIconMapping, tags);
+        const img = resolveGenericName(
+          osmTagToIconMapping,
+          adjustTagOrder(tags),
+        );
 
         const { ele } = tags;
 

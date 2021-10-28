@@ -26,10 +26,11 @@ export function resolveGenericName(
         continue;
       }
 
-      const res = resolveGenericNameJoined(subkeyMapping, tags);
+      const res = resolveGenericName(subkeyMapping, tags);
 
-      if (res) {
-        parts.push(res.replace('{}', v));
+      if (res.length) {
+        parts.push(...res.map((item) => item.replace('{}', v)));
+
         continue;
       }
 
@@ -114,6 +115,16 @@ export function getNameFromOsmElement(
   // TODO alt_name, loc_name, ...
 
   return effName ?? tags['ref'] ?? tags['operator'];
+}
+
+export function adjustTagOrder(tags: Record<string, string>) {
+  if ('fixme' in tags) {
+    const { fixme, ...rest } = tags;
+
+    return { ...rest, fixme };
+  }
+
+  return tags;
 }
 
 // TODO add others

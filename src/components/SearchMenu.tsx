@@ -14,6 +14,7 @@ import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import {
+  adjustTagOrder,
   getNameFromOsmElement,
   resolveGenericName,
 } from 'fm3/osm/osmNameResolver';
@@ -344,7 +345,7 @@ function Result({ value }: { value: SearchResult }) {
 
   const name = getNameFromOsmElement(tags, language);
 
-  const img = resolveGenericName(osmTagToIconMapping, tags);
+  const img = resolveGenericName(osmTagToIconMapping, adjustTagOrder(tags));
 
   return (
     <div className="d-flex flex-column mx-n2">

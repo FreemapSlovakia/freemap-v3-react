@@ -1,6 +1,7 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import {
+  adjustTagOrder,
   categoryKeys,
   getNameFromOsmElement,
   resolveGenericName,
@@ -38,7 +39,7 @@ export function ObjectDetails({
 
   const gn = useOsmNameResolver(type, tags);
 
-  const imgs = resolveGenericName(osmTagToIconMapping, tags);
+  const imgs = resolveGenericName(osmTagToIconMapping, adjustTagOrder(tags));
 
   const language = useSelector((state) => state.l10n.language);
 
