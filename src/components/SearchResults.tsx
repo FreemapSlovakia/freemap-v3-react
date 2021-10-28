@@ -3,7 +3,9 @@ import { searchSelectResult } from 'fm3/actions/searchActions';
 import {
   getGenericNameFromOsmElement,
   getNameFromOsmElement,
+  resolveGenericName,
 } from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { escapeHtml } from 'fm3/stringUtils';
 import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
@@ -11,11 +13,13 @@ import { GeoJSON } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
 
-function pointToLayer(_: Feature, latLng: LatLng) {
+function pointToLayer(feature: Feature, latLng: LatLng) {
+  const img = resolveGenericName(osmTagToIconMapping, feature.properties ?? {});
+
   return marker(latLng, {
     icon: new MarkerLeafletIcon({
       ...markerIconOptions,
-      icon: <MarkerIcon color="#3388ff" />,
+      icon: <MarkerIcon color="#3388ff" image={img[0]} />,
     }),
   });
 }
@@ -87,6 +91,7 @@ export function SearchResults(): ReactElement | null {
         style={{ weight: 5 }}
         filter={(feature) => feature.geometry.type === 'LineString'}
       />
+
       <GeoJSON
         interactive
         data={selectedResult.geojson}
@@ -105,6 +110,7 @@ export function SearchResults(): ReactElement | null {
           },
         }}
       />
+
       <GeoJSON
         interactive
         data={selectedResult.geojson}
