@@ -35,9 +35,10 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
   .handleAction(mapsDataLoaded, (state, { payload }) => {
     return {
       ...state,
-      objects: [
-        ...(payload.merge ? state.objects : []),
-        ...(payload.objects ?? initialState.objects),
-      ],
+      active: !payload.merge
+        ? payload.objectsV2?.active ?? []
+        : payload.objectsV2
+        ? [...new Set([...state.active, ...payload.objectsV2?.active])]
+        : state.active,
     };
   });

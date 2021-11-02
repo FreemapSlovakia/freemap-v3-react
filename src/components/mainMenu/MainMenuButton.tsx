@@ -73,6 +73,7 @@ export function MainMenuButton(): ReactElement {
       >
         <FaBars />
       </Button>
+
       <Overlay
         rootClose
         placement="bottom"

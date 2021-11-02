@@ -11,6 +11,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { LeafletMouseEvent } from 'leaflet';
 import {
@@ -54,6 +55,7 @@ export function MapContextMenu(): ReactElement {
     y: 0,
     lat: 0,
     lon: 0,
+    maxHeight: 100000,
   });
 
   const [openInExternal, setOpenInExternal] = useState(false);
@@ -72,6 +74,10 @@ export function MapContextMenu(): ReactElement {
         y: e.containerPoint.y,
         lat: e.latlng.lat,
         lon: e.latlng.lng,
+        maxHeight:
+          window.innerHeight / 2 +
+          Math.abs(e.containerPoint.y - window.innerHeight / 2) -
+          15,
       }));
     }, []),
   );
@@ -105,6 +111,8 @@ export function MapContextMenu(): ReactElement {
     [],
   );
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <>
       <div
@@ -120,188 +128,198 @@ export function MapContextMenu(): ReactElement {
       <Overlay
         key={contextMenu.i}
         rootClose
-        placement="bottom"
+        placement={contextMenu.y < window.innerHeight / 2 ? 'bottom' : 'top'}
         target={ctxMenuAnchor.current}
         onHide={ctxMenuClose}
         show={contextMenu.shown}
         flip
       >
-        <UpdatingPopover id="ctx" content>
-          {openInExternal ? (
-            <>
-              <Dropdown.Header>
-                <FaExternalLinkAlt /> {m?.external.openInExternal}
-              </Dropdown.Header>
+        <UpdatingPopover id="ctx">
+          <Popover.Content
+            className="fm-menu-scroller"
+            ref={sc}
+            style={{
+              maxHeight: contextMenu.maxHeight,
+            }}
+          >
+            <div />
 
-              <Dropdown.Item
-                as="button"
-                onSelect={() => setOpenInExternal(false)}
-              >
-                <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
-              </Dropdown.Item>
+            {openInExternal ? (
+              <>
+                <Dropdown.Header>
+                  <FaExternalLinkAlt /> {m?.external.openInExternal}
+                </Dropdown.Header>
 
-              <Dropdown.Divider />
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => setOpenInExternal(false)}
+                >
+                  <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
+                </Dropdown.Item>
 
-              <OpenInExternalAppDropdownItems
-                lat={contextMenu.lat}
-                lon={contextMenu.lon}
-                zoom={zoom}
-                mapType={mapType}
-                includePoint
-                copy={false}
-              />
-            </>
-          ) : (
-            <>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
+                <Dropdown.Divider />
 
-                  dispatch(
-                    mapRefocus({
-                      lat: contextMenu.lat,
-                      lon: contextMenu.lon,
-                    }),
-                  );
-                }}
-              >
-                <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
-              </Dropdown.Item>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
-                  dispatch(
-                    drawingMeasure({
-                      position: {
+                <OpenInExternalAppDropdownItems
+                  lat={contextMenu.lat}
+                  lon={contextMenu.lon}
+                  zoom={zoom}
+                  mapType={mapType}
+                  includePoint
+                  copy={false}
+                />
+              </>
+            ) : (
+              <>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
+
+                    dispatch(
+                      mapRefocus({
                         lat: contextMenu.lat,
                         lon: contextMenu.lon,
-                      },
-                    }),
-                  );
-                }}
-              >
-                <FaRuler /> {m?.mapCtxMenu.measurePosition}
-              </Dropdown.Item>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
+                      }),
+                    );
+                  }}
+                >
+                  <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
+                    dispatch(
+                      drawingMeasure({
+                        position: {
+                          lat: contextMenu.lat,
+                          lon: contextMenu.lon,
+                        },
+                      }),
+                    );
+                  }}
+                >
+                  <FaRuler /> {m?.mapCtxMenu.measurePosition}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
 
-                  dispatch(
-                    mapDetailsSetUserSelectedPosition({
-                      lat: contextMenu.lat,
-                      lon: contextMenu.lon,
-                    }),
-                  );
-                }}
-              >
-                <FaInfo /> {m?.mapCtxMenu.queryFeatures}
-              </Dropdown.Item>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
-
-                  dispatch(
-                    drawingPointAdd({
-                      lat: contextMenu.lat,
-                      lon: contextMenu.lon,
-                    }),
-                  );
-
-                  dispatch(drawingMeasure({}));
-                }}
-              >
-                <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
-              </Dropdown.Item>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
-
-                  dispatch(setTool('draw-lines'));
-
-                  dispatch(
-                    drawingLineAddPoint({
-                      type: 'line',
-                      point: {
-                        id: 0,
+                    dispatch(
+                      mapDetailsSetUserSelectedPosition({
                         lat: contextMenu.lat,
                         lon: contextMenu.lon,
-                      },
-                    }),
-                  );
-                }}
-              >
-                <MdTimeline /> {m?.mapCtxMenu.startLine}
-              </Dropdown.Item>{' '}
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
+                      }),
+                    );
+                  }}
+                >
+                  <FaInfo /> {m?.mapCtxMenu.queryFeatures}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
 
-                  dispatch(setTool('route-planner'));
-
-                  dispatch(
-                    routePlannerSetStart({
-                      start: {
+                    dispatch(
+                      drawingPointAdd({
                         lat: contextMenu.lat,
                         lon: contextMenu.lon,
-                      },
-                    }),
-                  );
-                }}
-              >
-                <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
-              </Dropdown.Item>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
+                      }),
+                    );
 
-                  dispatch(setTool('route-planner'));
+                    dispatch(drawingMeasure({}));
+                  }}
+                >
+                  <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
 
-                  dispatch(
-                    routePlannerSetFinish({
-                      finish: {
+                    dispatch(setTool('draw-lines'));
+
+                    dispatch(
+                      drawingLineAddPoint({
+                        type: 'line',
+                        point: {
+                          id: 0,
+                          lat: contextMenu.lat,
+                          lon: contextMenu.lon,
+                        },
+                      }),
+                    );
+                  }}
+                >
+                  <MdTimeline /> {m?.mapCtxMenu.startLine}
+                </Dropdown.Item>{' '}
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
+
+                    dispatch(setTool('route-planner'));
+
+                    dispatch(
+                      routePlannerSetStart({
+                        start: {
+                          lat: contextMenu.lat,
+                          lon: contextMenu.lon,
+                        },
+                      }),
+                    );
+                  }}
+                >
+                  <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
+
+                    dispatch(setTool('route-planner'));
+
+                    dispatch(
+                      routePlannerSetFinish({
+                        finish: {
+                          lat: contextMenu.lat,
+                          lon: contextMenu.lon,
+                        },
+                      }),
+                    );
+                  }}
+                >
+                  <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
+                </Dropdown.Item>
+                {/* TODO only if photo layer is not active */}
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
+
+                    dispatch(
+                      galleryRequestImages({
                         lat: contextMenu.lat,
                         lon: contextMenu.lon,
-                      },
-                    }),
-                  );
-                }}
-              >
-                <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
-              </Dropdown.Item>
-              {/* TODO only if photo layer is not active */}
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  ctxMenuClose();
-
-                  dispatch(
-                    galleryRequestImages({
-                      lat: contextMenu.lat,
-                      lon: contextMenu.lon,
-                    }),
-                  );
-                }}
-              >
-                <FaCamera /> {m?.mapCtxMenu.showPhotos}
-              </Dropdown.Item>
-              <Dropdown.Item
-                as="button"
-                onSelect={() => {
-                  setOpenInExternal(true);
-                }}
-              >
-                <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
-                <FaChevronRight />
-              </Dropdown.Item>
-            </>
-          )}
+                      }),
+                    );
+                  }}
+                >
+                  <FaCamera /> {m?.mapCtxMenu.showPhotos}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    setOpenInExternal(true);
+                  }}
+                >
+                  <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
+                  <FaChevronRight />
+                </Dropdown.Item>
+              </>
+            )}
+          </Popover.Content>
         </UpdatingPopover>
       </Overlay>
     </>
