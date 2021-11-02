@@ -1,7 +1,7 @@
 import { setLocation, toggleLocate } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLng } from 'leaflet';
 
@@ -12,6 +12,8 @@ export const locateProcessor: Processor = {
   handle: async ({ getState, dispatch }) => {
     if (getState().main.locate) {
       dispatch(mapRefocus({ gpsTracked: true }));
+
+      const map = await mapPromise;
 
       watch = navigator.geolocation?.watchPosition(
         ({ coords: { latitude, longitude, accuracy } }) => {
@@ -26,12 +28,6 @@ export const locateProcessor: Processor = {
               accuracy,
             }),
           );
-
-          const map = getMapLeafletElement();
-
-          if (!map) {
-            return;
-          }
 
           const { zoom, gpsTracked } = getState().map;
 

@@ -2,9 +2,10 @@ import {
   Changeset,
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import { CSSProperties, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { changeset: Changeset };
 
@@ -15,9 +16,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const timeFormat = new Intl.DateTimeFormat(language, {
+  const timeFormat = useDateTimeFormat({
     day: '2-digit',
     month: '2-digit',
     hour: 'numeric',

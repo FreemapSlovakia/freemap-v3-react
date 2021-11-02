@@ -90,10 +90,6 @@ export function preGlobalReducer(
 
           draft.drawingPoints.change++;
 
-          draft.objects.objects = draft.objects.objects.filter(
-            (object) => object.id !== payload.id,
-          );
-
           draft.main.selection = {
             type: 'draw-points',
             id: draft.drawingPoints.points.length - 1,
@@ -249,21 +245,6 @@ export function preGlobalReducer(
         trackViewer: {
           ...trackViewerInitialState,
           colorizeTrackBy: trackViewer.colorizeTrackBy,
-        },
-      };
-    } else if (state.main.selection?.type === 'objects') {
-      const {
-        objects,
-        main: { selection },
-      } = state;
-
-      return {
-        ...state,
-        objects: {
-          ...objects,
-          objects: objects.objects.filter(
-            (object) => object.id !== selection.id,
-          ),
         },
       };
     } else if (state.main.tool === 'route-planner') {

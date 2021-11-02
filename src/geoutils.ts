@@ -25,7 +25,7 @@ export function formatGpsCoord(
     case 'DMS': {
       const degrees = Math.floor(a);
       const minutes = Math.floor((a - degrees) * 60);
-      const seconds = Intl.NumberFormat(language, {
+      const seconds = new Intl.NumberFormat(language, {
         minimumFractionDigits: 3,
         maximumFractionDigits: 3,
       }).format((a - degrees - minutes / 60) * 3600);
@@ -33,7 +33,7 @@ export function formatGpsCoord(
     }
     case 'DM': {
       const degrees = Math.floor(a);
-      const minutes = Intl.NumberFormat(language, {
+      const minutes = new Intl.NumberFormat(language, {
         minimumFractionDigits: 4,
         maximumFractionDigits: 4,
       }).format((a - degrees) * 60);

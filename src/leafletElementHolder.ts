@@ -1,11 +1,13 @@
 import { Map } from 'leaflet';
 
-let mapLeafletElement: Map | null = null;
+let resolve: (map: Map) => void;
 
-export function setMapLeafletElement(e: Map | null): void {
-  mapLeafletElement = e;
-}
+export const mapPromise = new Promise<Map>((r) => {
+  resolve = r;
+});
 
-export function getMapLeafletElement(): Map | null {
-  return mapLeafletElement;
+export function setMapLeafletElement(map: Map | null): void {
+  if (map) {
+    resolve(map);
+  }
 }

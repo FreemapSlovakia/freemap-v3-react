@@ -7,6 +7,12 @@ export const authLogoutProcessor: Processor = {
   actionCreator: authStartLogout,
   errorKey: 'logIn.logOutError',
   async handle({ dispatch, getState }) {
+    try {
+      FB.logout();
+    } catch {
+      // ignore
+    }
+
     await httpRequest({
       getState,
       method: 'post',

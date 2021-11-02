@@ -1,9 +1,9 @@
-import { Node } from './types';
+import { Node, OsmMapping } from './types';
 
 export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
-): string | undefined {
+): string[] {
   const parts = [];
 
   for (const [k, v] of Object.entries(tags)) {
@@ -28,8 +28,9 @@ export function resolveGenericName(
 
       const res = resolveGenericName(subkeyMapping, tags);
 
-      if (res) {
-        parts.push(res.replace('{}', v));
+      if (res.length) {
+        parts.push(...res.map((item) => item.replace('{}', v)));
+
         continue;
       }
 
@@ -45,34 +46,65 @@ export function resolveGenericName(
     }
   }
 
+  return parts;
+}
+
+function resolveGenericNameJoined(m: Node, tags: Record<string, string>) {
+  const parts = resolveGenericName(m, tags);
+
   return parts.length === 0 ? undefined : parts.join('; ');
 }
 
-export async function getNameFromOsmElement(
+export async function getOsmMapping(lang: string): Promise<OsmMapping> {
+  return import(
+    `./osmTagToNameMapping-${['sk', 'cs'].includes(lang) ? lang : 'en'}.ts`
+  );
+}
+
+export async function getGenericNameFromOsmElement(
   tags: Record<string, string>,
   type: 'relation' | 'way' | 'node',
   lang: string,
-): Promise<[subject: string, name: string]> {
-  const { osmTagToNameMapping, colorNames } = (await import(
-    `./osmTagToNameMapping-${['sk', 'cs'].includes(lang) ? lang : 'en'}.ts`
-  )) as { osmTagToNameMapping: Node; colorNames: Record<string, string> };
+): Promise<string> {
+  const { osmTagToNameMapping, colorNames } = await getOsmMapping(lang);
 
-  return getNameFromOsmElementSync(
+  return getGenericNameFromOsmElementSync(
     tags,
     type,
-    lang,
     osmTagToNameMapping,
     colorNames,
   );
 }
 
-export function getNameFromOsmElementSync(
+export function getGenericNameFromOsmElementSync(
   tags: Record<string, string>,
   type: 'relation' | 'way' | 'node',
-  lang: string,
   osmTagToNameMapping: Node,
   colorNames: Record<string, string>,
-): [subject: string, name: string] {
+): string {
+  let gn: string | undefined = resolveGenericNameJoined(
+    osmTagToNameMapping,
+    tags,
+  );
+
+  if (type === 'relation' && tags['type'] === 'route') {
+    const color =
+      colorNames[
+        (tags['osmc:symbol'] ?? '').replace(/:.*/, '') || (tags['colour'] ?? '')
+      ] ?? '';
+
+    gn = color + ' ' + gn;
+  }
+
+  return (
+    gn ?? (process.env['NODE_ENV'] === 'production' ? '' : JSON.stringify(tags))
+  );
+}
+
+export function getNameFromOsmElement(
+  tags: Record<string, string>,
+  lang: string,
+): string {
   const langName = tags['name:' + lang];
 
   const name = tags['name'];
@@ -82,26 +114,17 @@ export function getNameFromOsmElementSync(
 
   // TODO alt_name, loc_name, ...
 
-  const ref = tags['ref'];
+  return effName ?? tags['ref'] ?? tags['operator'];
+}
 
-  const operator = tags['operator'];
+export function adjustTagOrder(tags: Record<string, string>) {
+  if ('fixme' in tags) {
+    const { fixme, ...rest } = tags;
 
-  let subj: string | undefined = resolveGenericName(osmTagToNameMapping, tags);
-
-  if (type === 'relation' && tags['type'] === 'route') {
-    const color =
-      colorNames[
-        (tags['osmc:symbol'] ?? '').replace(/:.*/, '') || (tags['colour'] ?? '')
-      ] ?? '';
-
-    subj = color + ' ' + subj;
+    return { ...rest, fixme };
   }
 
-  return [
-    subj ??
-      (process.env['NODE_ENV'] === 'production' ? '' : JSON.stringify(tags)),
-    effName ?? ref ?? operator,
-  ];
+  return tags;
 }
 
 // TODO add others

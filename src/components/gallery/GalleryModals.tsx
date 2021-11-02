@@ -1,9 +1,9 @@
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
 import 'fm3/styles/gallery.scss';
-import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useEffect } from 'react';
+import { LeafletMouseEvent, Map } from 'leaflet';
+import { ReactElement, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AsyncModal } from '../AsyncModal';
 
@@ -28,9 +28,13 @@ export function GalleryModals(): ReactElement {
       state.gallery.pickingPositionForId === null,
   );
 
-  useEffect(() => {
-    const map = getMapLeafletElement();
+  const [map, setMap] = useState<Map>();
 
+  useEffect(() => {
+    mapPromise.then(setMap);
+  }, []);
+
+  useEffect(() => {
     if (!map) {
       return;
     }
@@ -48,7 +52,7 @@ export function GalleryModals(): ReactElement {
     return () => {
       map.off('click', handleMapClick);
     };
-  }, [dispatch, isPickingPosition]);
+  }, [dispatch, isPickingPosition, map]);
 
   return (
     <>

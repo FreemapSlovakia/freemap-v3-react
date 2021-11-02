@@ -3,6 +3,7 @@ import {
   elevationChartRemoveActivePoint,
   elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/elevationChart.scss';
 import {
@@ -38,14 +39,12 @@ export function ElevationChart(): ReactElement | null {
     (state) => state.elevationChart.elevationProfilePoints || [],
   );
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const nf0 = Intl.NumberFormat(language, {
+  const nf0 = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
 
-  const nf1 = Intl.NumberFormat(language, {
+  const nf1 = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });

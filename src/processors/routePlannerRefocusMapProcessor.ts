@@ -3,7 +3,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
@@ -25,12 +25,11 @@ export const routePlannerRefocusMapProcessor: Processor<
       focusPoint = finish;
     }
 
-    const le = getMapLeafletElement();
-
     if (
       focusPoint &&
-      le &&
-      !le.getBounds().contains({ lat: focusPoint.lat, lng: focusPoint.lon })
+      !(await mapPromise)
+        .getBounds()
+        .contains({ lat: focusPoint.lat, lng: focusPoint.lon })
     ) {
       dispatch(mapRefocus({ lat: focusPoint.lat, lon: focusPoint.lon }));
     }

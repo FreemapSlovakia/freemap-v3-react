@@ -1,4 +1,7 @@
+import { Geometries, GeometryCollection } from '@turf/helpers';
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { useMessages } from 'fm3/l10nInjector';
 import { Messages } from 'fm3/translations/messagesInterface';
@@ -6,31 +9,35 @@ import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 
 export function TrackViewerDetails(): ReactElement | null {
+  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+
+  return trackGeojson ? (
+    <TrackViewerDetailsInt geometry={trackGeojson.features[0].geometry} />
+  ) : null;
+}
+
+export function TrackViewerDetailsInt({
+  geometry,
+}: {
+  geometry: Geometries | GeometryCollection;
+}): ReactElement | null {
   const m = useMessages();
 
   const [startPoints, finishPoints] = useStartFinishPoints();
 
-  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
-
   const eleSmoothingFactor = 5;
 
-  const language = useSelector((state) => state.l10n.language);
-
-  if (!trackGeojson) {
-    return null;
-  }
-
-  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, {
+  const oneDecimalDigitNumberFormat = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
-  const noDecimalDigitsNumberFormat = Intl.NumberFormat(language, {
+  const noDecimalDigitsNumberFormat = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
 
-  const timeFormat = new Intl.DateTimeFormat(language, {
+  const timeFormat = useDateTimeFormat({
     hour: 'numeric',
     minute: '2-digit',
   });
@@ -38,10 +45,12 @@ export function TrackViewerDetails(): ReactElement | null {
   const tableData: [keyof Messages['trackViewer']['details'], string][] = [];
 
   let startTime: Date | undefined;
+
   let finishTime: Date | undefined;
 
   if (startPoints.length) {
     startTime = startPoints[0].startTime;
+
     if (startTime) {
       tableData.push(['startTime', timeFormat.format(startTime)]);
     }
@@ -49,16 +58,21 @@ export function TrackViewerDetails(): ReactElement | null {
 
   if (finishPoints.length) {
     finishTime = finishPoints[0].finishTime;
+
     if (finishTime) {
       tableData.push(['finishTime', timeFormat.format(finishTime)]);
     }
   }
 
   let duration = 0;
+
   if (startTime && finishTime && m) {
     duration = (finishTime.getTime() - startTime.getTime()) / 1000;
+
     const hours = Math.floor(duration / 3600);
+
     const minutes = Math.floor((duration - hours * 3600) / 60);
+
     tableData.push([
       'duration',
       m.trackViewer.details.durationValue({ h: hours, m: minutes }),
@@ -81,17 +95,20 @@ export function TrackViewerDetails(): ReactElement | null {
     }
   }
 
-  const { geometry } = trackGeojson.features[0];
-
   if (geometry.type !== 'LineString') {
     return null; // TODO log error?
   }
 
   let minEle = Infinity;
+
   let maxEle = -Infinity;
+
   let uphillEleSum = 0;
+
   let downhillEleSum = 0;
+
   const smoothed = smoothElevations(geometry.coordinates, eleSmoothingFactor);
+
   let [prevCoord] = smoothed;
 
   for (const coord of smoothed) {
@@ -105,19 +122,23 @@ export function TrackViewerDetails(): ReactElement | null {
     if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
       // otherwise the ele sums are very high
       const ele = coord[2];
+
       if (ele < minEle) {
         minEle = ele;
       }
+
       if (maxEle < ele) {
         maxEle = ele;
       }
 
       const eleDiff = ele - prevCoord[2];
+
       if (eleDiff < 0) {
         downhillEleSum += eleDiff * -1;
       } else if (eleDiff > 0) {
         uphillEleSum += eleDiff;
       }
+
       prevCoord = coord;
     }
   }

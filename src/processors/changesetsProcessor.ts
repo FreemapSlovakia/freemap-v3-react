@@ -6,7 +6,7 @@ import {
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -24,11 +24,9 @@ export const changesetsProcessor: Processor = {
   actionCreator: changesetsSetAuthorName,
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
-    const le = getMapLeafletElement();
-
     const state = getState();
 
-    if (!le || state.changesets.days === null) {
+    if (state.changesets.days === null) {
       return;
     }
 
@@ -40,7 +38,7 @@ export const changesetsProcessor: Processor = {
       t.getMonth() + 1
     }/${t.getDate()}T00:00:00+00:00`;
 
-    const bbox = le.getBounds().toBBoxString();
+    const bbox = (await mapPromise).getBounds().toBBoxString();
 
     await loadChangesets(null, []);
 

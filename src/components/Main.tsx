@@ -5,7 +5,7 @@ import {
   galleryMergeItem,
 } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
@@ -29,7 +29,6 @@ import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
-import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
 import { useGpxDropHandler } from 'fm3/hooks/useGpxDropHandler';
 import { useMouseCursor } from 'fm3/hooks/useMouseCursor';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
@@ -179,8 +178,6 @@ export function Main(): ReactElement {
 
   useEffect(() => {
     setMapLeafletElement(map);
-
-    dispatch(mapSetLeafletReady(map !== null));
   }, [dispatch, map]);
 
   useMouseCursor(map?.getContainer());
@@ -389,6 +386,10 @@ export function Main(): ReactElement {
     (state) => state.gallery.pickingPositionForId !== null,
   );
 
+  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+
+  const hasObjects = useSelector((state) => state.objects.objects.length > 0);
+
   return (
     <>
       <style>
@@ -574,12 +575,19 @@ export function Main(): ReactElement {
                 {showInteractiveLayer && (
                   <>
                     <SearchResults />
-                    <ObjectsResult />
+                    {hasObjects && <ObjectsResult />}
                     <RoutePlannerResult />
                     <DrawingLinesResult />
                     <DrawingPointsResult />
                     <LocationResult />
-                    <TrackViewerResult />
+                    {trackGeojson && (
+                      <AsyncComponent
+                        factory={() =>
+                          import('fm3/components/TrackViewerResult')
+                        }
+                        trackGeojson={trackGeojson}
+                      />
+                    )}
                     <ChangesetsResult />
                     <TrackingResult />
                   </>

@@ -28,6 +28,7 @@ export const urlProcessor: Processor = {
       tracking,
       maps,
       search,
+      objects,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -66,6 +67,7 @@ export const urlProcessor: Processor = {
       trackViewer.trackUID,
       maps.id,
       main.tool,
+      objects.active,
     ];
 
     if (
@@ -218,6 +220,10 @@ export const urlProcessor: Processor = {
         'gallery-created-at-to',
         dateToString(galleryFilter.createdAtTo),
       ]);
+    }
+
+    if (objects.active.length) {
+      historyParts.push(['objects', objects.active.join(';')]);
     }
 
     if (

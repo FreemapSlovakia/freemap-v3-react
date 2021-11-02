@@ -1,34 +1,84 @@
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { getPoiType } from 'fm3/poiTypes';
 import { OverpassResult } from 'fm3/types/common';
+import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
-export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
-  actionCreator: objectsSetFilter,
-  errorKey: 'objects.fetchingError',
-  handle: async ({ dispatch, getState, action }) => {
-    const le = getMapLeafletElement();
+const limit =
+  Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;
 
-    if (!le) {
+const minZoom = 10;
+
+export const objectsFetchProcessor: Processor = {
+  stateChangePredicate: (state) =>
+    [
+      state.map.lat,
+      state.map.lon,
+      state.map.zoom,
+      ...state.objects.active,
+    ].join('\n'),
+  errorKey: 'objects.fetchingError',
+  handle: async ({ dispatch, getState }) => {
+    const ents = getState().objects.active.map((tags) =>
+      tags.split(',').map((item) => item.split('=')),
+    );
+
+    if (ents.length === 0) {
+      if (getState().objects.objects.length > 0) {
+        dispatch(objectsSetResult([]));
+      }
+
       return;
     }
 
-    const b = le.getBounds();
+    if (getState().map.zoom < minZoom) {
+      setTimeout(() => {
+        dispatch(
+          toastsAdd({
+            id: 'objects.lowZoomAlert',
+            messageKey: 'objects.lowZoomAlert.message',
+            messageParams: { minZoom },
+            style: 'warning',
+            actions: [
+              {
+                nameKey: 'objects.lowZoomAlert.zoom',
+                action: [mapRefocus({ zoom: minZoom })],
+              },
+            ],
+            cancelType: [
+              getType(clearMap),
+              getType(mapRefocus),
+              getType(objectsSetFilter),
+            ],
+          }),
+        );
+      });
 
-    const poiType = getPoiType(action.payload);
+      dispatch(objectsSetResult([]));
 
-    if (!poiType) {
-      throw new Error(`unexpected POI type number: ${action.payload}`);
+      return;
     }
 
-    const query = `[out:json][timeout:60]; ${poiType.overpassFilter.replace(
-      /\{\{bbox\}\}/g,
-      `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`,
-    )}; out center;`;
+    const b = (await mapPromise).getBounds();
+    const bb = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
+
+    const query =
+      '[out:json][timeout:15]; (' +
+      ents
+        .map(
+          (ent) =>
+            'nwr' +
+            ent.map(([key, value]) => `["${key}"="${value}"]`).join('') +
+            bb +
+            ';',
+        )
+        .join('') +
+      `); out center ${limit};`;
 
     const { data } = await httpRequest({
       getState,
@@ -36,7 +86,7 @@ export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
       url: 'https://overpass.freemap.sk/api/interpreter',
       data: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
-      cancelActions: [objectsSetFilter, clearMap, selectFeature],
+      cancelActions: [objectsSetFilter, clearMap, selectFeature, mapRefocus],
     });
 
     const result = assertType<OverpassResult>(data).elements.map((e) => ({
@@ -44,8 +94,26 @@ export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
       lat: e.type === 'node' ? e.lat : e.center.lat,
       lon: e.type === 'node' ? e.lon : e.center.lon,
       tags: e.tags,
-      typeId: action.payload,
+      type: e.type,
     }));
+
+    if (result.length >= limit) {
+      dispatch(
+        toastsAdd({
+          id: 'objects.tooManyPoints',
+          messageKey: 'objects.tooManyPoints',
+          messageParams: {
+            limit,
+          },
+          style: 'warning',
+          cancelType: [
+            getType(clearMap),
+            getType(mapRefocus),
+            getType(objectsSetFilter),
+          ],
+        }),
+      );
+    }
 
     dispatch(objectsSetResult(result));
   },

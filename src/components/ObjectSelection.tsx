@@ -16,11 +16,7 @@ export function ObjectSelection(): ReactElement {
   const selection = useSelector((state) => state.main.selection);
 
   return (
-    <Selection
-      icon={<FaMapMarkerAlt />}
-      title={m?.selections.objects}
-      deletable
-    >
+    <Selection icon={<FaMapMarkerAlt />} title={m?.selections.objects}>
       <Button
         className="ml-1"
         variant="secondary"

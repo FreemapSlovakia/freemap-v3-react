@@ -531,12 +531,13 @@ export type Messages = {
   objects: {
     type: string;
     lowZoomAlert: {
-      message: string;
+      message({ minZoom }: { minZoom: number }): string;
       zoom: string;
     };
-    fetchingError: ({ err }: Err) => string;
-    categories: Record<number, string>;
-    subcategories: Record<number, string>;
+    tooManyPoints({ limit }: { limit: number }): string;
+    fetchingError({ err }: Err): string;
+    // categories: Record<number, string>;
+    // subcategories: Record<number, string>;
   };
   external: {
     openInExternal: string;

@@ -11,7 +11,7 @@ import axios from 'axios';
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
@@ -32,12 +32,6 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   getState,
   action,
 }) => {
-  const le = getMapLeafletElement();
-
-  if (!le) {
-    return;
-  }
-
   const {
     scale,
     area,
@@ -65,7 +59,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   let s: number | undefined = undefined;
 
   if (area === 'visible') {
-    const bounds = le.getBounds();
+    const bounds = (await mapPromise).getBounds();
     w = bounds.getWest();
     n = bounds.getNorth();
     e = bounds.getEast();

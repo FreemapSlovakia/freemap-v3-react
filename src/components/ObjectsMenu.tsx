@@ -1,14 +1,17 @@
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { getOsmMapping, resolveGenericName } from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
+import { Node, OsmMapping } from 'fm3/osm/types';
+import { removeAccents } from 'fm3/stringUtils';
 import {
   ChangeEvent,
-  Fragment,
   ReactElement,
   useCallback,
+  useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -25,8 +28,6 @@ export function ObjectsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const zoom = useSelector((state) => state.map.zoom);
-
   const [filter, setFilter] = useState('');
 
   const [dropdownOpened, setDropdownOpened] = useState(false);
@@ -35,31 +36,67 @@ export function ObjectsMenu(): ReactElement {
     setFilter(e.currentTarget.value);
   }, []);
 
-  const handleSelect = useCallback(
-    (id: string | null) => {
-      if (zoom < 12) {
-        dispatch(
-          toastsAdd({
-            id: 'objects.lowZoomAlert',
-            messageKey: 'objects.lowZoomAlert.message',
-            style: 'warning',
-            actions: [
-              {
-                // name: 'Priblíž a hľadaj', TODO
-                nameKey: 'objects.lowZoomAlert.zoom',
-                action: [mapRefocus({ zoom: 12 })],
-              },
-            ],
-          }),
-        );
-      } else if (id !== null) {
-        dispatch(objectsSetFilter(Number(id)));
+  const lang = useEffectiveChosenLanguage();
 
-        setDropdownOpened(false);
-        setFilter('');
+  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
+
+  const items = useMemo(() => {
+    if (!osmMapping) {
+      return;
+    }
+
+    const res: { name: string; tags: { key: string; value?: string }[] }[] = [];
+
+    function rec(
+      n: Node,
+      tags: { key: string; value: string }[],
+      key?: string,
+    ) {
+      for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
+        if (tagKeyOrValue === '*') {
+          continue; // include for level > 1
+        }
+
+        if (typeof nodeOrName === 'string') {
+          res.push({
+            name: nodeOrName,
+            tags: [
+              ...tags,
+              key ? { key, value: tagKeyOrValue } : { key: tagKeyOrValue },
+            ],
+          });
+        } else if (key) {
+          rec(nodeOrName, [...tags, { key, value: tagKeyOrValue }]);
+        } else {
+          rec(nodeOrName, tags, tagKeyOrValue);
+        }
+      }
+    }
+
+    rec(osmMapping.osmTagToNameMapping, []);
+
+    return res;
+  }, [osmMapping]);
+
+  const active = useSelector((state) => state.objects.active);
+
+  useEffect(() => {
+    getOsmMapping(lang).then(setOsmMapping);
+  }, [lang]);
+
+  const handleSelect = useCallback(
+    (tags: string | null) => {
+      if (tags) {
+        dispatch(
+          objectsSetFilter(
+            active.includes(tags)
+              ? active.filter((item) => item !== tags)
+              : [...active, tags],
+          ),
+        );
       }
     },
-    [zoom, dispatch],
+    [dispatch, active],
   );
 
   // ugly hack not to close dropdown on open
@@ -67,10 +104,10 @@ export function ObjectsMenu(): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e, metadata) => {
     if (justOpenedRef.current) {
       justOpenedRef.current = false;
-    } else if (!isOpen) {
+    } else if (!isOpen && metadata.source !== 'select') {
       setDropdownOpened(false);
 
       if (e) {
@@ -83,6 +120,58 @@ export function ObjectsMenu(): ReactElement {
   };
 
   const sc = useScrollClasses('vertical');
+
+  const normalizedFilter = removeAccents(filter.trim().toLowerCase());
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const activeSnapshot = useMemo(() => active, [dropdownOpened]);
+
+  function makeItems(snapshot?: boolean) {
+    return !items
+      ? null
+      : items
+          .map((item) => ({
+            ...item,
+            key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
+          }))
+          .filter((item) => !snapshot || activeSnapshot.includes(item.key))
+          .filter((item) =>
+            removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
+          )
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(({ key, name, tags }) => {
+            const img = resolveGenericName(
+              osmTagToIconMapping,
+              Object.fromEntries(
+                tags.map(({ key, value }) => [key, value ?? '*']),
+              ),
+            );
+
+            return (
+              <Dropdown.Item
+                key={key}
+                eventKey={key}
+                active={active.includes(key)}
+              >
+                {img.length > 0 ? (
+                  <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+                ) : (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: '1em',
+                      height: '1em',
+                    }}
+                  />
+                )}
+                &emsp;
+                {name}
+              </Dropdown.Item>
+            );
+          });
+  }
+
+  const activeItems = makeItems(true);
 
   return (
     <ToolMenu>
@@ -106,6 +195,7 @@ export function ObjectsMenu(): ReactElement {
             ref={inputRef}
           />
         </Dropdown.Toggle>
+
         <Dropdown.Menu
           popperConfig={{
             strategy: 'fixed',
@@ -114,7 +204,7 @@ export function ObjectsMenu(): ReactElement {
           <div className="dropdown-long" ref={sc}>
             <div />
 
-            {poiTypeGroups.map((pointTypeGroup, i) => {
+            {/* {poiTypeGroups.map((pointTypeGroup, i) => {
               const gid = pointTypeGroup.id;
 
               const items = poiTypes
@@ -143,7 +233,13 @@ export function ObjectsMenu(): ReactElement {
                   {items}
                 </Fragment>
               );
-            })}
+            })} */}
+
+            {activeItems}
+
+            {activeItems?.length ? <Dropdown.Divider /> : null}
+
+            {makeItems()}
           </div>
         </Dropdown.Menu>
       </Dropdown>

@@ -50,7 +50,7 @@
     "react-stars": "2.2.5",
     "react-tag-autocomplete": "6.3.0",
     "reduce-reducers": "1.0.4",
-    "redux": "4.1.1",
+    "redux": "4.1.2",
     "redux-logger": "3.0.6",
     "reselect": "4.1.1",
     "trackjs": "3.10.1",
@@ -118,7 +118,7 @@
     "utility-types": "3.10.0",
     "webpack": "5.60.0",
     "webpack-cli": "4.9.1",
-    "webpack-dev-server": "4.3.1",
+    "webpack-dev-server": "4.4.0",
     "webpack-pwa-manifest": "4.3.0"
   },
   "repository": {

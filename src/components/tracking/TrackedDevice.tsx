@@ -1,10 +1,11 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaEdit, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = {
   device: TrackedDeviceType;
@@ -15,9 +16,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const dateFormat = new Intl.DateTimeFormat(language, {
+  const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
     day: 'numeric',

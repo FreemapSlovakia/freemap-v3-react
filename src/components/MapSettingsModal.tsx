@@ -1,4 +1,5 @@
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   baseLayers,
@@ -33,8 +34,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     (state) => state.map.overlayPaneOpacity,
   );
 
-  const language = useSelector((state) => state.l10n.language);
-
   const m = useMessages();
 
   const [layersSettings, setLayersSettings] = useState(initLayersSettings);
@@ -55,7 +54,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     ({ type }) => type === selectedLayer,
   );
 
-  const nf = Intl.NumberFormat(language, {
+  const nf = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
