@@ -45,7 +45,8 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
   .handleAction(clearMap, () => trackViewerInitialState)
   .handleAction(trackViewerSetData, (state, action) => ({
     ...state,
-    ...action.payload,
+    trackGpx: action.payload.trackGpx ?? state.trackGpx,
+    trackGeojson: action.payload.trackGeojson ?? state.trackGeojson,
   }))
   .handleAction(trackViewerSetTrackUID, (state, action) => ({
     ...state,
