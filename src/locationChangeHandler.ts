@@ -65,7 +65,7 @@ import { TrackedDevice } from './types/trackingTypes';
 
 export const handleLocationChange = (
   store: MyStore,
-  location: Location<{ sq?: string }>,
+  location: Location,
 ): void => {
   const { getState, dispatch } = store;
 
