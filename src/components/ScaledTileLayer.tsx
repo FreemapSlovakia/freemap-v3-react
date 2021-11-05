@@ -19,6 +19,8 @@ class LScaledTileLayer extends TileLayer {
   createTile(coords: Coords, done: DoneCallback) {
     const img = super.createTile(coords, done) as HTMLImageElement;
 
+    img.crossOrigin = 'anonymous';
+
     if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
         .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions

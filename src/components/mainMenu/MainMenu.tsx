@@ -102,8 +102,28 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
     [onSubmenu],
   );
 
+  const handleCacheCmd1 = () => {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.active?.postMessage('fillCache');
+    });
+  };
+
+  const handleCacheCmd2 = () => {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.active?.postMessage('emptyCache');
+    });
+  };
+
   return (
     <>
+      <Dropdown.Item as="button" eventKey="language" onSelect={handleCacheCmd1}>
+        Populate
+      </Dropdown.Item>
+
+      <Dropdown.Item as="button" eventKey="language" onSelect={handleCacheCmd2}>
+        Clear
+      </Dropdown.Item>
+
       <Dropdown.Item
         as="button"
         eventKey="language"

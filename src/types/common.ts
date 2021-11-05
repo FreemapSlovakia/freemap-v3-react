@@ -31,6 +31,7 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
+    __WB_MANIFEST: { revision: string; url: string }[];
   }
 }
 
