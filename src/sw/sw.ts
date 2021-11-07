@@ -1,5 +1,4 @@
 import { get, set } from 'idb-keyval';
-import { is } from 'typescript-is';
 
 type CacheMode = 'networkOnly' | 'networkFirst' | 'cacheFirst' | 'cacheOnly';
 
@@ -10,6 +9,7 @@ const resources = self.__WB_MANIFEST;
 const FALLBACK_CACHE_NAME = 'offline-html';
 
 const FALLBACK_HTML_URL = '/offline.html';
+
 const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
 
 sw.addEventListener('install', (event) => {
@@ -175,10 +175,10 @@ async function handleCacheAction(action: Action) {
 }
 
 sw.addEventListener('message', (e) => {
-  if (is<Action>(e.data)) {
-    e.waitUntil(handleCacheAction(e.data));
-  } else if (is<Action[]>(e.data)) {
+  if (Array.isArray(e.data)) {
     e.waitUntil(Promise.all(e.data.map((a) => handleCacheAction(a))));
+  } else if (typeof e.data === 'object' && e.data) {
+    e.waitUntil(handleCacheAction(e.data));
   }
 });
 
