@@ -11,6 +11,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaBullseye,
@@ -102,28 +103,8 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
     [onSubmenu],
   );
 
-  const handleCacheCmd1 = () => {
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.active?.postMessage('fillCache');
-    });
-  };
-
-  const handleCacheCmd2 = () => {
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.active?.postMessage('emptyCache');
-    });
-  };
-
   return (
     <>
-      <Dropdown.Item as="button" eventKey="language" onSelect={handleCacheCmd1}>
-        Populate
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="language" onSelect={handleCacheCmd2}>
-        Clear
-      </Dropdown.Item>
-
       <Dropdown.Item
         as="button"
         eventKey="language"
@@ -220,6 +201,15 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         eventKey="tracking"
       >
         <FaBullseye /> {m?.tools.tracking}
+        <FaChevronRight />
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={handleSubmenuSelect}
+        eventKey="offline"
+      >
+        <BiWifiOff /> Offline
         <FaChevronRight />
       </Dropdown.Item>
 
