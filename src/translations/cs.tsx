@@ -97,6 +97,8 @@ const cs: Messages = {
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
     componentLoadingError:
       'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.', // TODO translate
+    offline: 'Nie ste pripojený na internet.', // TODO translate
+    experimentalFunction: 'Experimentálna funkcia', // TODO translate
   },
 
   selections: {
@@ -1502,6 +1504,18 @@ const cs: Messages = {
     ),
     continue: 'Pokračovat',
     success: 'Gratulujeme, stali jste se prémiovým členem!',
+  },
+
+  // TODO translate
+  offline: {
+    offlineMode: 'Režim offline',
+    cachingActive: 'Nahrávanie do cache aktívne',
+    clearCache: 'Vymazať cache',
+    dataSource: 'Zdroj dát',
+    networkOnly: 'Iba internet',
+    networkFirst: 'Najprv internet',
+    cacheFirst: 'Najprv cache',
+    cacheOnly: 'Iba cache',
   },
 };
 

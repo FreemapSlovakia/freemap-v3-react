@@ -97,6 +97,8 @@ const hu: Messages = {
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
     componentLoadingError:
       'Component loading error. Please check your internet connection.', // TODO translate
+    offline: 'You are not connected to the internet.', // TODO translate
+    experimentalFunction: 'Experimental function', // TODO translate
   },
 
   selections: {
@@ -1512,6 +1514,18 @@ const hu: Messages = {
     ), // TODO translate
     continue: 'Continue', // TODO translate
     success: 'Congratulations, you have become a premium member!', // TODO translate
+  },
+
+  // TODO translate
+  offline: {
+    offlineMode: 'Offline mode',
+    cachingActive: 'Caching active',
+    clearCache: 'Clear cache',
+    dataSource: 'Data source',
+    networkOnly: 'Network only',
+    networkFirst: 'Network first',
+    cacheFirst: 'Cache first',
+    cacheOnly: 'Cache only',
   },
 };
 

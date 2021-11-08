@@ -22,6 +22,7 @@ import {
   FaDownload,
   FaEraser,
   FaExternalLinkAlt,
+  FaFlask,
   FaHeart,
   FaLanguage,
   FaMobileAlt,
@@ -209,7 +210,12 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         onSelect={handleSubmenuSelect}
         eventKey="offline"
       >
-        <BiWifiOff /> Offline mode
+        <BiWifiOff />{' '}
+        <FaFlask
+          title={m?.general.experimentalFunction}
+          className="text-warning"
+        />{' '}
+        {m?.offline.offlineMode}
         <FaChevronRight />
       </Dropdown.Item>
 

@@ -95,6 +95,8 @@ const en: Messages = {
     enablePopup: 'Please enable pop-up windows for this site in you browser.',
     componentLoadingError:
       'Component loading error. Please check your internet connection.',
+    offline: 'You are not connected to the internet.',
+    experimentalFunction: 'Experimental function',
   },
 
   selections: {
@@ -1489,6 +1491,17 @@ const en: Messages = {
     ),
     continue: 'Continue',
     success: 'Congratulations, you have become a premium member!',
+  },
+
+  offline: {
+    offlineMode: 'Offline mode',
+    cachingActive: 'Caching active',
+    clearCache: 'Clear cache',
+    dataSource: 'Data source',
+    networkOnly: 'Network only',
+    networkFirst: 'Network first',
+    cacheFirst: 'Cache first',
+    cacheOnly: 'Cache only',
   },
 };
 

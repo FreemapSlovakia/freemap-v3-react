@@ -42,8 +42,8 @@ sw.addEventListener('fetch', (event) => {
           freemap: { action: 'shareFile', payload: data.getAll('file') },
         });
 
-        return Response.error();
-        // return Response.redirect('/');
+        // return Response.error();
+        return Response.redirect('/');
       }
 
       const cacheMode = (await get('cacheMode')) as undefined | CacheMode;
