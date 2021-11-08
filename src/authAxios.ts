@@ -80,9 +80,19 @@ export async function httpRequest({
 
   try {
     if (!rest.url || /^(https?:)?\/\//.test(rest.url)) {
-      return await getAxios(expectedStatus).request<unknown>(params);
+      return getAxios(expectedStatus)
+        .request<unknown>(params)
+        .catch((err) => {
+          err.isAxios = true;
+          throw err;
+        });
     } else {
-      return await getAuthAxios(getState, expectedStatus).request(params);
+      return getAuthAxios(getState, expectedStatus)
+        .request(params)
+        .catch((err) => {
+          err.isAxios = true;
+          throw err;
+        });
     }
   } finally {
     if (cancelItem) {

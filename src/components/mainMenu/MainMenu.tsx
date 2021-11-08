@@ -209,7 +209,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         onSelect={handleSubmenuSelect}
         eventKey="offline"
       >
-        <BiWifiOff /> Offline
+        <BiWifiOff /> Offline mode
         <FaChevronRight />
       </Dropdown.Item>
 

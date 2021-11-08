@@ -137,3 +137,17 @@ export type MessagePaths = Leaves<Messages>;
 export interface OffscreenCanvas extends EventTarget {
   getContext(contextId: '2d'): CanvasRenderingContext2D;
 }
+
+export type CacheMode =
+  | 'networkOnly'
+  | 'networkFirst'
+  | 'cacheFirst'
+  | 'cacheOnly';
+
+export type SwCacheAction =
+  | {
+      type: 'setCacheMode';
+      payload: CacheMode;
+    }
+  | { type: 'clearCache' }
+  | { type: 'setCachingActive'; payload: boolean };

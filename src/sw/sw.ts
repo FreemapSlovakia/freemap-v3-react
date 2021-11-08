@@ -1,6 +1,5 @@
+import { CacheMode, SwCacheAction } from 'fm3/types/common';
 import { get, set } from 'idb-keyval';
-
-type CacheMode = 'networkOnly' | 'networkFirst' | 'cacheFirst' | 'cacheOnly';
 
 const sw = self as any as ServiceWorkerGlobalScope & typeof globalThis;
 
@@ -18,6 +17,8 @@ sw.addEventListener('install', (event) => {
       .open(FALLBACK_CACHE_NAME)
       .then((cache) => cache.addAll([FALLBACK_HTML_URL, FALLBACK_LOGO_URL])),
   );
+
+  sw.skipWaiting();
 });
 
 sw.addEventListener('fetch', (event) => {
@@ -51,14 +52,14 @@ sw.addEventListener('fetch', (event) => {
         return (await serveFromNetwork(event)) ?? Response.error();
       } else if (cacheMode === 'networkFirst') {
         return (
-          (await serveFromNetwork(event, true)) ??
+          (await serveFromNetwork(event)) ??
           (await serveFromCache(event)) ??
           Response.error()
         );
       } else if (cacheMode === 'cacheFirst') {
         return (
           (await serveFromCache(event)) ??
-          (await serveFromNetwork(event, true)) ??
+          (await serveFromNetwork(event)) ??
           Response.error()
         );
       } else if (cacheMode === 'cacheOnly') {
@@ -96,15 +97,20 @@ async function serveFromCache(event: FetchEvent) {
   return cache.match(url.pathname === '/' ? 'index.html' : event.request);
 }
 
-async function serveFromNetwork(event: FetchEvent, storeToCache = false) {
+async function serveFromNetwork(event: FetchEvent) {
   try {
-    const response = await fetch(event.request);
+    const [response, cachingActive] = await Promise.all([
+      fetch(event.request),
+      get('cachingActive'),
+    ]);
 
-    if (storeToCache && response.ok && event.request.method === 'GET') {
+    if (cachingActive && response.ok && event.request.method === 'GET') {
+      const clonedResponse = response.clone();
+
       (async () => {
         const cache = await caches.open('offline');
 
-        await cache.put(event.request, response.clone());
+        await cache.put(event.request, clonedResponse);
       })(); // todo handle async error
     }
 
@@ -127,47 +133,47 @@ async function serveFromNetwork(event: FetchEvent, storeToCache = false) {
 
 sw.addEventListener('activate', (event) => {
   event.waitUntil(
-    // remove old caches
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== FALLBACK_CACHE_NAME && cacheName !== 'offline') {
-            return caches.delete(cacheName);
-          }
-        }),
-      ),
-    ),
+    (async () => {
+      await Promise.all([
+        sw.clients.claim(), // TODO maybe try to eliminate this
+
+        (async () => {
+          const cacheNames = await caches.keys();
+
+          // remove old caches
+          cacheNames.map((cacheName) => {
+            if (cacheName !== FALLBACK_CACHE_NAME && cacheName !== 'offline') {
+              return caches.delete(cacheName);
+            }
+          });
+        })(),
+      ]);
+    })(),
   );
 });
 
-type Action =
-  | {
-      type: 'setCacheMode';
-      payload: {
-        clearCache: boolean;
-        mode: CacheMode;
-      };
-    }
-  | { type: 'clearCache' }
-  | { type: 'cacheStatic' };
-
-async function handleCacheAction(action: Action) {
+async function handleCacheAction(action: SwCacheAction) {
   switch (action.type) {
     case 'clearCache':
       await caches.delete('offline');
 
       break;
 
-    case 'cacheStatic': {
-      const cache = await caches.open('offline');
+    case 'setCachingActive':
+      if (action.payload) {
+        const cache = await caches.open('offline');
 
-      await cache.addAll(resources.map((resource) => resource.url));
+        await cache.addAll(resources.map((resource) => resource.url));
+
+        // TODO notify clients that static resources has been cached
+      }
+
+      await set('cachingActive', action.payload);
 
       break;
-    }
 
     case 'setCacheMode':
-      await set('cacheMode', action.payload.mode);
+      await set('cacheMode', action.payload);
 
     default:
       break;

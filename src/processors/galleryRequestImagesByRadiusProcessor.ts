@@ -14,6 +14,7 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
   typeof galleryRequestImages
 > = {
   actionCreator: galleryRequestImages,
+  id: 'gallery.picturesFetchingError',
   errorKey: 'gallery.picturesFetchingError',
   async handle({ getState, dispatch, action }) {
     const { lat, lon } = action.payload;

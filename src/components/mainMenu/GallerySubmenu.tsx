@@ -8,13 +8,12 @@ import {
   FaCamera,
   FaFilter,
   FaRegCheckCircle,
-  FaRegCheckSquare,
   FaRegCircle,
-  FaRegSquare,
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
+import { Checkbox } from '../Checkbox';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function GallerySubmenu(): JSX.Element {
@@ -74,8 +73,8 @@ export function GallerySubmenu(): JSX.Element {
         }}
         active={overlays.includes('I')}
       >
-        {overlays.includes('I') ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-        {m?.gallery.showLayer} <kbd>shift + p</kbd>
+        <Checkbox value={overlays.includes('I')} /> {m?.gallery.showLayer}{' '}
+        <kbd>shift + p</kbd>
       </Dropdown.Item>
 
       <Dropdown.Divider />
