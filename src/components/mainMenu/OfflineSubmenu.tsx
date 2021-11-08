@@ -52,7 +52,9 @@ export function OfflineSubmenu(): JSX.Element {
   const [cacheExists, setCacheExists] = useState(false);
 
   useEffect(() => {
-    get('cacheMode').then(setCacheMode);
+    get('cacheMode').then((cacheMode) =>
+      setCacheMode(cacheMode ?? 'networkOnly'),
+    );
 
     caches.keys().then((key) => setCacheExists(key.includes('offline')));
   }, []);
