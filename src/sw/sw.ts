@@ -65,7 +65,10 @@ sw.addEventListener('fetch', (event) => {
       } else if (cacheMode === 'cacheOnly') {
         return (await serveFromCache(event)) ?? Response.error();
       } else if (cacheMode) {
-        if (event.request.method !== 'GET') {
+        if (
+          event.request.method !== 'GET' ||
+          !/^https?:/.test(event.request.url)
+        ) {
           Response.error();
         }
 
@@ -104,7 +107,12 @@ async function serveFromNetwork(event: FetchEvent) {
       get('cachingActive'),
     ]);
 
-    if (cachingActive && response.ok && event.request.method === 'GET') {
+    if (
+      cachingActive &&
+      response.ok &&
+      event.request.method === 'GET' &&
+      /^https?:/.test(event.request.url)
+    ) {
       const clonedResponse = response.clone();
 
       (async () => {
