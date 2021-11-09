@@ -25,6 +25,11 @@ class LScaledTileLayer extends TileLayer {
       img.srcset = `${img.src}, ${this.extraScales
         .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
         .join(', ')}`;
+
+      img.onerror = () => {
+        img.removeAttribute('srcset');
+        img.onerror = null;
+      };
     }
 
     // TODO attempts for HDPI print, see https://github.com/FreemapSlovakia/freemap-v3-react/issues/458
