@@ -39,6 +39,7 @@ export function Layers(): ReactElement {
     errorTileUrl = missingTile,
     tileSize = 256,
     zoomOffset = 0,
+    cors = true,
   }: BaseLayerDef | OverlayLayerDef) => {
     // if (type === 'S') {
     //   return (
@@ -88,6 +89,7 @@ export function Layers(): ReactElement {
           tms={tms}
           tileSize={tileSize}
           zoomOffset={zoomOffset}
+          cors={cors}
         />
       )
     );

@@ -140,6 +140,7 @@ export interface LayerDef {
   errorTileUrl?: string;
   tileSize?: number;
   zoomOffset?: number;
+  cors?: boolean;
 }
 
 export interface BaseLayerDef extends LayerDef {
@@ -280,6 +281,7 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <FaBus />,
+    cors: false,
 
     attribution: [
       {

@@ -2,6 +2,7 @@ import { authInit, authSetUser } from 'fm3/actions/authActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
+import { get } from 'idb-keyval';
 import { assertType } from 'typescript-is';
 
 export const authInitProcessor: Processor = {
@@ -11,17 +12,31 @@ export const authInitProcessor: Processor = {
     const { user } = getState().auth;
 
     if (user) {
-      const res = await httpRequest({
-        getState,
-        url: '/auth/validate',
-        method: 'POST',
-        expectedStatus: [200, 401],
-        cancelActions: [],
-      });
+      try {
+        const res = await httpRequest({
+          getState,
+          url: '/auth/validate',
+          method: 'POST',
+          expectedStatus: [200, 401],
+          cancelActions: [],
+        });
 
-      dispatch(
-        authSetUser(res.status === 200 ? assertType<User>(res.data) : null),
-      );
+        dispatch(
+          authSetUser(res.status === 200 ? assertType<User>(res.data) : null),
+        );
+      } catch (err) {
+        if (typeof err !== 'object' || !err || 'status' in err) {
+          throw err;
+        }
+
+        const cm = await get('cacheMode');
+
+        if (!cm || cm === 'networkOnly') {
+          throw err;
+        }
+
+        dispatch(authSetUser(user));
+      }
     }
   },
 };

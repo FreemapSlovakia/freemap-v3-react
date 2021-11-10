@@ -5,4 +5,5 @@ export type Submenu =
   | 'photos'
   | 'tracking'
   | 'drawing'
+  | 'offline'
   | null;

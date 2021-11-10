@@ -97,6 +97,8 @@ const sk: Messages = {
       'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     componentLoadingError:
       'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.',
+    offline: 'Nie ste pripojený na internet.',
+    experimentalFunction: 'Experimentálna funkcia',
   },
 
   selections: {
@@ -1521,6 +1523,17 @@ const sk: Messages = {
     ),
     continue: 'Pokračovať',
     success: 'Gratulujeme, stali ste sa ste prémiovým členom!',
+  },
+
+  offline: {
+    offlineMode: 'Režim offline',
+    cachingActive: 'Nahrávanie do cache aktívne',
+    clearCache: 'Vymazať cache',
+    dataSource: 'Zdroj dát',
+    networkOnly: 'Iba internet',
+    networkFirst: 'Najprv internet',
+    cacheFirst: 'Najprv cache',
+    cacheOnly: 'Iba cache',
   },
 };
 

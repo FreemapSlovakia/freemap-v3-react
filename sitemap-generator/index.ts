@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
 import htm from 'htm';
-import marked from 'marked';
+import { marked } from 'marked';
 import vhtml from 'vhtml';
 import { objects } from './objects';
 
@@ -145,7 +145,9 @@ async function gen() {
             </head>
 
             <body>
-              ${raw(marked(await readFile(documentsDir + '/' + tip, 'utf-8')))}
+              ${raw(
+                marked.parse(await readFile(documentsDir + '/' + tip, 'utf-8')),
+              )}
             </body>
           </html>`,
       );

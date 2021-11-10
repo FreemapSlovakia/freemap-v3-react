@@ -54,6 +54,8 @@ export type Messages = {
     unnamed: string;
     enablePopup: string;
     componentLoadingError: string;
+    offline: string;
+    experimentalFunction: string;
   };
   selections: {
     objects: string;
@@ -805,5 +807,15 @@ export type Messages = {
     info: ReactNode;
     continue: string;
     success: string;
+  };
+  offline: {
+    offlineMode: string;
+    cachingActive: string;
+    clearCache: string;
+    dataSource: string;
+    networkOnly: string;
+    networkFirst: string;
+    cacheFirst: string;
+    cacheOnly: string;
   };
 };

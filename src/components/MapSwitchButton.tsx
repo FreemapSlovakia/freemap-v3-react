@@ -29,14 +29,13 @@ import {
   FaExclamationTriangle,
   FaFilter,
   FaRegCheckCircle,
-  FaRegCheckSquare,
   FaRegCircle,
   FaRegMap,
-  FaRegSquare,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typescript-is';
+import { Checkbox } from './Checkbox';
 
 function getKbdShortcut(key?: [string, boolean]) {
   return (
@@ -369,7 +368,7 @@ export function MapSwitchButton(): ReactElement {
                           : 0.5,
                     }}
                   >
-                    {active ? <FaRegCheckSquare /> : <FaRegSquare />} {icon}{' '}
+                    <Checkbox value={active} /> {icon}{' '}
                     <span
                       style={{
                         textDecoration:

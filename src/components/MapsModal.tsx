@@ -1,6 +1,7 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapsDelete, mapsLoad, mapsSave } from 'fm3/actions/mapsActions';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
+import { useOnline } from 'fm3/hooks/useOnline';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -79,6 +80,8 @@ export function MapsModal({ show }: Props): ReactElement {
       !filter || map.name.toLowerCase().includes(filter.toLowerCase().trim()),
   );
 
+  const online = useOnline();
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
@@ -103,6 +106,7 @@ export function MapsModal({ show }: Props): ReactElement {
               <FormGroup>
                 <FormLabel>{m?.general.name}</FormLabel>
                 <FormControl
+                  disabled={!online}
                   value={name}
                   onChange={(e) => setName(e.currentTarget.value)}
                 />
@@ -113,7 +117,7 @@ export function MapsModal({ show }: Props): ReactElement {
                   type="button"
                   className="mb-1"
                   onClick={() => dispatch(mapsSave({ name }))}
-                  disabled={!name}
+                  disabled={!name || !online}
                 >
                   <FaSave /> {m?.maps.save}
                 </Button>
@@ -163,6 +167,7 @@ export function MapsModal({ show }: Props): ReactElement {
                     <th>{m?.general.modifiedAt}</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {!filteredMaps
                     ? m?.maps.noMapFound
@@ -229,7 +234,7 @@ export function MapsModal({ show }: Props): ReactElement {
               <Button
                 className="ml-1"
                 variant="danger"
-                disabled={!selectedMap && !id}
+                disabled={(!selectedMap && !id) || !online}
                 onClick={() => {
                   if (
                     window.confirm(

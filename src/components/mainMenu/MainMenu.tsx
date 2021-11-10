@@ -11,6 +11,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaBullseye,
@@ -21,6 +22,7 @@ import {
   FaDownload,
   FaEraser,
   FaExternalLinkAlt,
+  FaFlask,
   FaHeart,
   FaLanguage,
   FaMobileAlt,
@@ -200,6 +202,20 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         eventKey="tracking"
       >
         <FaBullseye /> {m?.tools.tracking}
+        <FaChevronRight />
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={handleSubmenuSelect}
+        eventKey="offline"
+      >
+        <BiWifiOff />{' '}
+        <FaFlask
+          title={m?.general.experimentalFunction}
+          className="text-warning"
+        />{' '}
+        {m?.offline.offlineMode}
         <FaChevronRight />
       </Dropdown.Item>
 

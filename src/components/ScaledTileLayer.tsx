@@ -2,27 +2,39 @@ import { createTileLayerComponent } from '@react-leaflet/core';
 import { Coords, DoneCallback, TileLayer, TileLayerOptions } from 'leaflet';
 import { TileLayerProps } from 'react-leaflet';
 
-type Props = TileLayerProps & { extraScales?: number[] };
+type Props = TileLayerProps & { extraScales?: number[]; cors?: boolean };
 
 class LScaledTileLayer extends TileLayer {
   extraScales;
+  cors;
 
   constructor(
     urlTemplate: string,
     extraScales?: number[],
+    cors = true,
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
     this.extraScales = extraScales;
+    this.cors = cors;
   }
 
   createTile(coords: Coords, done: DoneCallback) {
     const img = super.createTile(coords, done) as HTMLImageElement;
 
+    if (this.cors) {
+      img.crossOrigin = 'anonymous';
+    }
+
     if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
         .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
         .join(', ')}`;
+
+      img.onerror = () => {
+        img.removeAttribute('srcset');
+        img.onerror = null;
+      };
     }
 
     // TODO attempts for HDPI print, see https://github.com/FreemapSlovakia/freemap-v3-react/issues/458
@@ -60,10 +72,10 @@ class LScaledTileLayer extends TileLayer {
 
 export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   (props, context) => {
-    const { url, extraScales, ...rest } = props;
+    const { url, extraScales, cors = true, ...rest } = props;
 
     return {
-      instance: new LScaledTileLayer(url, extraScales, rest),
+      instance: new LScaledTileLayer(url, extraScales, cors, rest),
       context,
     };
   },
