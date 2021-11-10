@@ -7,6 +7,8 @@ const resources = self.__WB_MANIFEST;
 
 const FALLBACK_CACHE_NAME = 'offline-html';
 
+const OFFLINE_CACHE_NAME = 'offline';
+
 const FALLBACK_HTML_URL = '/offline.html';
 
 const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
@@ -72,7 +74,7 @@ sw.addEventListener('fetch', (event) => {
           Response.error();
         }
 
-        const cache = await caches.open('offline');
+        const cache = await caches.open(OFFLINE_CACHE_NAME);
 
         const ok = await serveFromCache(event);
 
@@ -93,7 +95,7 @@ sw.addEventListener('fetch', (event) => {
 });
 
 async function serveFromCache(event: FetchEvent) {
-  const cache = await caches.open('offline');
+  const cache = await caches.open(OFFLINE_CACHE_NAME);
 
   const url = new URL(event.request.url);
 
@@ -116,7 +118,7 @@ async function serveFromNetwork(event: FetchEvent) {
       const clonedResponse = response.clone();
 
       (async () => {
-        const cache = await caches.open('offline');
+        const cache = await caches.open(OFFLINE_CACHE_NAME);
 
         await cache.put(event.request, clonedResponse);
       })(); // todo handle async error
@@ -150,7 +152,10 @@ sw.addEventListener('activate', (event) => {
 
           // remove old caches
           cacheNames.map((cacheName) => {
-            if (cacheName !== FALLBACK_CACHE_NAME && cacheName !== 'offline') {
+            if (
+              cacheName !== FALLBACK_CACHE_NAME &&
+              cacheName !== OFFLINE_CACHE_NAME
+            ) {
               return caches.delete(cacheName);
             }
           });
@@ -160,18 +165,26 @@ sw.addEventListener('activate', (event) => {
   );
 });
 
+async function cacheLocal() {
+  const cache = await caches.open(OFFLINE_CACHE_NAME);
+
+  await cache.addAll(resources.map((resource) => resource.url));
+}
+
 async function handleCacheAction(action: SwCacheAction) {
   switch (action.type) {
     case 'clearCache':
-      await caches.delete('offline');
+      await caches.delete(OFFLINE_CACHE_NAME);
+
+      if (await get('cachingActive')) {
+        await cacheLocal();
+      }
 
       break;
 
     case 'setCachingActive':
       if (action.payload) {
-        const cache = await caches.open('offline');
-
-        await cache.addAll(resources.map((resource) => resource.url));
+        await cacheLocal();
 
         // TODO notify clients that static resources has been cached
       }
