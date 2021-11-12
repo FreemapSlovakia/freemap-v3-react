@@ -271,7 +271,7 @@ export function TrackViewerResult({
             click: setThisTool,
           }}
         >
-          {p.startTime && (
+          {p.startTime && !isNaN(new Date(p.startTime).getTime()) && (
             <Tooltip
               className="compact"
               offset={new LPoint(10, -25)}
@@ -302,8 +302,14 @@ export function TrackViewerResult({
             permanent
           >
             <span>
-              {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
-              {p.finishTime ? ', ' : ''}
+              {p.finishTime && !isNaN(new Date(p.finishTime).getTime()) && (
+                <>
+                  {p.finishTime
+                    ? timeFormat.format(new Date(p.finishTime))
+                    : null}
+                  {p.finishTime ? ', ' : ''}
+                </>
+              )}
               {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km
             </span>
           </Tooltip>
