@@ -69,7 +69,7 @@ export function useScrollClasses(
         ref.current.removeEventListener('scroll', handleScrollEvent);
       }
 
-      if (e) {
+      if (e?.scrollTo) {
         e.scrollTo(0, 0);
 
         lastKnownScrollPositionRef.current = 0; // e.scrollLeft;
@@ -79,6 +79,8 @@ export function useScrollClasses(
         handleScroll(e);
 
         resizeObserver.current?.observe(e);
+      } else if (e) {
+        console.log('Unscrollable element: ' + e);
       } else {
         resizeObserver.current?.disconnect();
       }
