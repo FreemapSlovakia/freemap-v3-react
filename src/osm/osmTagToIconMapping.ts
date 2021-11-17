@@ -469,7 +469,7 @@ export const osmTagToIconMapping: Node = {
     mineshaft: mine,
     reservoir_covered: water_works,
     tower: {
-      tower_type: {
+      'tower:type': {
         '*': tower_other,
         bell_tower,
         communication: tower_communication,
