@@ -200,6 +200,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     residential: 'Obytný dom',
     retail: 'Budova predajne',
     semidetached_house: 'Dvojdom',
+    school: 'Budova školy',
     shrine: 'Svätyňa',
     static_caravan: 'Obytný príves, karavan',
     synagogue: 'Synagóga',

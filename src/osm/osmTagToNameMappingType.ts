@@ -200,6 +200,7 @@ export type OsmTagToNameMapping = {
     residential: string;
     retail: string;
     semidetached_house: string;
+    school: string;
     shrine: string;
     static_caravan: string;
     synagogue: string;

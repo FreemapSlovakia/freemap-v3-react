@@ -203,6 +203,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     residential: 'Residential house',
     retail: 'Retail building',
     semidetached_house: 'Duplex house',
+    school: 'School building',
     shrine: 'Shrine',
     static_caravan: 'Mobile house, caravan',
     synagogue: 'Synagogue',
