@@ -36,7 +36,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
   Chybu môžeš nahlásiť ${
     ticketId ? 'aj ' : ''
   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
-  prípadne nám poslať detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
+  prípadne nám môžete poslať podrobnosti na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
 <p>
   Ďakujeme.
@@ -78,7 +78,7 @@ const sk: Messages = {
     clear: 'Vyčistiť',
     convertToDrawing: 'Skonvertovať na kreslenie',
     simplifyPrompt:
-      'Prosím zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
+      'Prosím, zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
     copyUrl: 'Kopírovať URL',
     copyPageUrl: 'Kopírovať URL stránky',
     savingError: ({ err }) => `Chyba ukladania: ${err}`,
@@ -88,7 +88,7 @@ const sk: Messages = {
     deleted: 'Zmazané.',
     saved: 'Uložené.',
     visual: 'Zobrazenie',
-    copyOk: 'Skopírovane do schránky.',
+    copyOk: 'Skopírované do schránky.',
     noCookies: 'Táto funkcionalita vyžaduje prijatie súhlasu cookies.',
     name: 'Názov',
     load: 'Načítať',
@@ -96,8 +96,8 @@ const sk: Messages = {
     enablePopup:
       'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     componentLoadingError:
-      'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.',
-    offline: 'Nie ste pripojený na internet.',
+      'Komponent sa nepodarilo načítať. Skontrolujte svoje pripojenie k internetu.',
+    offline: 'Nie ste pripojený k internetu.',
     experimentalFunction: 'Experimentálna funkcia',
   },
 
@@ -153,7 +153,7 @@ const sk: Messages = {
     },
     development: 'vo vývoji',
     mode: {
-      route: 'Po poradí',
+      route: 'V určenom poradí',
       trip: 'Návšteva miest',
       roundtrip: 'Návšteva miest (okruh)',
     },
@@ -1442,7 +1442,7 @@ const sk: Messages = {
   },
 
   maps: {
-    noMapFound: 'Žiadna mapa nenájdena',
+    noMapFound: 'Žiadna mapa nenájdená',
     save: 'Uložiť',
     delete: 'Zmazať',
     disconnect: 'Odpojiť',
@@ -1472,8 +1472,8 @@ const sk: Messages = {
     addPoint: 'Pridať sem bod',
     startLine: 'Začať tu kresliť čiaru, merať dĺžku',
     queryFeatures: 'Zistiť detaily v okolí',
-    startRoute: 'Plánovanť odtiaľ trasu',
-    finishRoute: 'Plánovanť sem trasu',
+    startRoute: 'Plánovať odtiaľ trasu',
+    finishRoute: 'Plánovať sem trasu',
     showPhotos: 'Ukázať fotky v okolí',
   },
 
@@ -1522,7 +1522,7 @@ const sk: Messages = {
       </>
     ),
     continue: 'Pokračovať',
-    success: 'Gratulujeme, stali ste sa ste prémiovým členom!',
+    success: 'Gratulujeme, stali ste sa prémiovým členom!',
   },
 
   offline: {

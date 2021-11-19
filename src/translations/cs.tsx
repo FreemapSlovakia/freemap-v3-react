@@ -1434,7 +1434,7 @@ const cs: Messages = {
     saveError: ({ err }) => `Nastala chyba při ukládání mapy: ${err}`,
     loadToEmpty: 'Načíst do čisté mapy',
     loadInclMapAndPosition:
-      'Načíst včetně uložené podkladových mapy a jej pozice',
+      'Načíst včetně uložené podkladové mapy a její pozice',
     savedMaps: 'Uložené mapy',
     newMap: 'Nová mapa',
     SomeMap: ({ name }) => (
@@ -1445,16 +1445,16 @@ const cs: Messages = {
     unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
   },
 
-  // TODO translate
+  // check/improve translation
   mapCtxMenu: {
-    centerMap: 'Vycentrovať sem mapu',
-    measurePosition: 'Zistiť súradnice a výšku bodu',
-    addPoint: 'Pridať sem bod',
-    startLine: 'Začať tu kresliť čiaru, merať dĺžku',
-    queryFeatures: 'Zistiť detaily v okolí',
-    startRoute: 'Plánovanť odtiaľ trasu',
-    finishRoute: 'Plánovanť sem trasu',
-    showPhotos: 'Ukázať fotky v okolí',
+    centerMap: 'Zde centrovat mapu',
+    measurePosition: 'Zjistit souřadnice a výšku bodu',
+    addPoint: 'Zde přidat bod',
+    startLine: 'Zde začít křeslit/měřit vzdálenost',
+    queryFeatures: 'Zjistit detaily v okolí',
+    startRoute: 'Zde začít trasu',
+    finishRoute: 'Zde ukončit trasu',
+    showPhotos: 'Zobrazit fotky v okolí',
   },
 
   legend: {
@@ -1497,7 +1497,7 @@ const cs: Messages = {
             doplněk Rovas Connector
           </a>
           , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli
-          získáte odměnu v komunitní měňe <i>chron</i> a tu můžete použít k
+          získáte odměnu v komunitní měně <i>chron</i> a tu můžete použít k
           odstranění reklam na www.freemap.sk.
         </p>
       </>
@@ -1510,12 +1510,12 @@ const cs: Messages = {
   offline: {
     offlineMode: 'Režim offline',
     cachingActive: 'Nahrávanie do cache aktívne',
-    clearCache: 'Vymazať cache',
+    clearCache: 'Smazat cache',
     dataSource: 'Zdroj dát',
-    networkOnly: 'Iba internet',
-    networkFirst: 'Najprv internet',
-    cacheFirst: 'Najprv cache',
-    cacheOnly: 'Iba cache',
+    networkOnly: 'Pouze internet',
+    networkFirst: 'Nejdřív internet',
+    cacheFirst: 'Nejdřív cache',
+    cacheOnly: 'Pouze cache',
   },
 };
 
