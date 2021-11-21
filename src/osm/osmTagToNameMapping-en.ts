@@ -1,6 +1,9 @@
 import { OsmTagToNameMapping } from './osmTagToNameMappingType';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
+  aeroway: {
+    aerodrome: 'Airport',
+  },
   aerialway: 'Aerial way, lift',
   amenity: {
     '*': '{}',

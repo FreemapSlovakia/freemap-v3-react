@@ -202,6 +202,12 @@ function adjustTags(tags: Record<string, string>) {
     res = { ...rest };
   }
 
+  if ('attraction' in tags) {
+    const { attraction, ...rest } = tags;
+
+    res = { ...rest, attraction };
+  }
+
   if ('fixme' in tags) {
     const { fixme, ...rest } = tags;
 

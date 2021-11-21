@@ -1,6 +1,9 @@
 import { OsmTagToNameMapping } from './osmTagToNameMappingType';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
+  aeroway: {
+    aerodrome: 'Letisko',
+  },
   aerialway: 'Lanovka, vlek',
   amenity: {
     '*': '{}',
@@ -520,7 +523,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     bathroom_furnishing: 'Kúpeľňové štúdio',
     beauty: 'Kozmetický salón',
     bed: 'Predaj postelí a matracov',
-    beverages: 'Nápoje',
+    beverages: 'Obchod s nápojmi',
     bicycle: 'Predaj bicyklov',
     bookmaker: 'Stávková kancelária',
     books: 'Kníhkupectvo',

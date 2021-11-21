@@ -1,117 +1,41 @@
 // import bicycle_parking from 'fm3/images/mapIcons/cycling-bicycle_parking.png';
-// import bicycle from 'fm3/images/mapIcons/cycling-bicycle.png';
 // import bicycle_rental from 'fm3/images/mapIcons/cycling-bicycle_rental.png';
 // import bicycle_stand from 'fm3/images/mapIcons/cycling-stand.png';
-// import college from 'fm3/images/mapIcons/education-college.png';
-// import driving_school from 'fm3/images/mapIcons/education-driving_school.png';
-// import kindergarten from 'fm3/images/mapIcons/education-kindergarten.png';
-// import school from 'fm3/images/mapIcons/education-school.png';
-// import university from 'fm3/images/mapIcons/education-university.png';
-// import clinic from 'fm3/images/mapIcons/health-clinic.png';
-// import dentist from 'fm3/images/mapIcons/health-dentist.png';
-// import doctor from 'fm3/images/mapIcons/health-doctor.png';
 // import emergency from 'fm3/images/mapIcons/health-emergency.png';
-// import veterinary from 'fm3/images/mapIcons/health-veterinary.png';
-// import feeding from 'fm3/images/mapIcons/hiking-feeding.png';
-// import fireplace from 'fm3/images/mapIcons/hiking-fireplace.png';
-// import picnic_site from 'fm3/images/mapIcons/hiking-picnic_site.png';
 // import ranger_house from 'fm3/images/mapIcons/hiking-ranger_house.png';
-// import stand from 'fm3/images/mapIcons/hiking-stand.png';
 // import battlefield from 'fm3/images/mapIcons/landmark-battlefield.png';
-import chapel from 'fm3/images/mapIcons/landmark-chapel.png';
+// import border_control from 'fm3/images/mapIcons/transport-border_control.png';
+// import halt from 'fm3/images/mapIcons/transport-halt.png';
+// import helipad from 'fm3/images/mapIcons/transport-helipad.png';
+// import level_crossing from 'fm3/images/mapIcons/transport-level_crossing.png';
+// import traffic_signals from 'fm3/images/mapIcons/transport-traffic_signals.png';
+// import train from 'fm3/images/mapIcons/transport-train.png';
+// import tram_stop from 'fm3/images/mapIcons/transport-tram_stop.png';
 // import chateau from 'fm3/images/mapIcons/landmark-chateau.png';
-// import sculpture from 'fm3/images/mapIcons/landmark-sculpture.png';
+import college from 'fm3/images/mapIcons/education-college.png';
+import driving_school from 'fm3/images/mapIcons/education-driving_school.png';
+import kindergarten from 'fm3/images/mapIcons/education-kindergarten.png';
+import school from 'fm3/images/mapIcons/education-school.png';
+import university from 'fm3/images/mapIcons/education-university.png';
+import chapel from 'fm3/images/mapIcons/landmark-chapel.png';
 import zoo from 'fm3/images/mapIcons/other-zoo.png';
 import books from 'fm3/images/mapIcons/shopping-books.png';
-// import boundary_monument from 'fm3/images/mapIcons/nature-boundary_monument.png';
-// import boundary_protected_site from 'fm3/images/mapIcons/nature-boundary_protected_site.png';
-// import boundary_reserve from 'fm3/images/mapIcons/nature-boundary_reserve.png';
-// import protected_tree from 'fm3/images/mapIcons/nature-protected_tree.png';
-// import adit from 'fm3/images/mapIcons/other-adit.png';
-// import mineshaft from 'fm3/images/mapIcons/other-mineshaft.png';
-// import windmill from 'fm3/images/mapIcons/other-windmill.png';
-// import city from 'fm3/images/mapIcons/place-city.png';
-// import county from 'fm3/images/mapIcons/place-county.png';
-// import hamlet from 'fm3/images/mapIcons/place-hamlet.png';
-// import locality from 'fm3/images/mapIcons/place-locality.png';
-// import region from 'fm3/images/mapIcons/place-region.png';
-// import suburb from 'fm3/images/mapIcons/place-suburb.png';
-// import town from 'fm3/images/mapIcons/place-town.png';
-// import village from 'fm3/images/mapIcons/place-village.png';
-// import fossil from 'fm3/images/mapIcons/power-fossil.png';
-// import hydro from 'fm3/images/mapIcons/power-hydro.png';
-// import nuclear from 'fm3/images/mapIcons/power-nuclear.png';
-// import wind from 'fm3/images/mapIcons/power-wind.png';
-// import atm from 'fm3/images/mapIcons/services-atm.png';
-// import car_wash from 'fm3/images/mapIcons/services-car_wash.png';
-// import firestation from 'fm3/images/mapIcons/services-firestation.png';
-// import library from 'fm3/images/mapIcons/services-library.png';
-// import parking from 'fm3/images/mapIcons/services-parking.png';
-// import alcohol from 'fm3/images/mapIcons/shopping-alcohol.png';
-// import bakery from 'fm3/images/mapIcons/shopping-bakery.png';
-// import car from 'fm3/images/mapIcons/shopping-car.png';
-// import chemist from 'fm3/images/mapIcons/shopping-chemist.png';
-// import clothes from 'fm3/images/mapIcons/shopping-clothes.png';
-// import computer from 'fm3/images/mapIcons/shopping-computer.png';
-// import department_store from 'fm3/images/mapIcons/shopping-department_store.png';
-// import doityourself from 'fm3/images/mapIcons/shopping-doityourself.png';
-// import dry_cleaning from 'fm3/images/mapIcons/shopping-dry_cleaning.png';
-// import electronics from 'fm3/images/mapIcons/shopping-electronics.png';
-// import erotic from 'fm3/images/mapIcons/shopping-erotic.png';
-// import florist from 'fm3/images/mapIcons/shopping-florist.png';
-// import furniture from 'fm3/images/mapIcons/shopping-furniture.png';
-// import garden_centre from 'fm3/images/mapIcons/shopping-garden_centre.png';
-// import general from 'fm3/images/mapIcons/shopping-general.png';
-// import greengrocer from 'fm3/images/mapIcons/shopping-greengrocer.png';
-// import hairdresser from 'fm3/images/mapIcons/shopping-hairdresser.png';
-// import hardware from 'fm3/images/mapIcons/shopping-hardware.png';
-// import hifi from 'fm3/images/mapIcons/shopping-hifi.png';
-// import ice_cream from 'fm3/images/mapIcons/shopping-ice_cream.png';
-// import jewelry from 'fm3/images/mapIcons/shopping-jewelry.png';
-// import kiosk from 'fm3/images/mapIcons/shopping-kiosk.png';
-// import laundry from 'fm3/images/mapIcons/shopping-laundry.png';
-// import mall from 'fm3/images/mapIcons/shopping-mall.png';
-// import marketplace from 'fm3/images/mapIcons/shopping-marketplace.png';
-// import motorcycle from 'fm3/images/mapIcons/shopping-motorcycle.png';
-// import newsagent from 'fm3/images/mapIcons/shopping-newsagent.png';
-// import optician from 'fm3/images/mapIcons/shopping-optician.png';
-// import organic from 'fm3/images/mapIcons/shopping-organic.png';
-// import outdoor from 'fm3/images/mapIcons/shopping-outdoor.png';
-// import pet from 'fm3/images/mapIcons/shopping-pet.png';
-// import shoes from 'fm3/images/mapIcons/shopping-shoes.png';
-// import sports from 'fm3/images/mapIcons/shopping-sports.png';
-// import stationery from 'fm3/images/mapIcons/shopping-stationery.png';
-// import toys from 'fm3/images/mapIcons/shopping-toys.png';
-// import video from 'fm3/images/mapIcons/shopping-video.png';
-// import ten_pin from 'fm3/images/mapIcons/sport-10pin.png';
-// import archery from 'fm3/images/mapIcons/sport-archery.png';
-// import athletics from 'fm3/images/mapIcons/sport-athletics.png';
-// import baseball from 'fm3/images/mapIcons/sport-baseball.png';
-// import basketball from 'fm3/images/mapIcons/sport-basketball.png';
-// import beachvolleyball from 'fm3/images/mapIcons/sport-beachvolleyball.png';
-// import bmx from 'fm3/images/mapIcons/sport-bmx.png';
-// import boules from 'fm3/images/mapIcons/sport-boules.png';
-// import bowls from 'fm3/images/mapIcons/sport-bowls.png';
-// import canoe from 'fm3/images/mapIcons/sport-canoe.png';
-// import climbing from 'fm3/images/mapIcons/sport-climbing.png';
-// import cycling from 'fm3/images/mapIcons/sport-cycling.png';
-// import diving from 'fm3/images/mapIcons/sport-diving.png';
-// import dog_racing from 'fm3/images/mapIcons/sport-dog_racing.png';
-// import ecycle_charging from 'fm3/images/mapIcons/sport-ecycle_charging.png';
-// import equestrian from 'fm3/images/mapIcons/sport-equestrian.png';
-// import football from 'fm3/images/mapIcons/sport-football.png';
-// import gymnastics from 'fm3/images/mapIcons/sport-gymnastics.png';
-// import gym from 'fm3/images/mapIcons/sport-gym.png';
+import archery from 'fm3/images/mapIcons/sport-archery.png';
+import baseball from 'fm3/images/mapIcons/sport-baseball.png';
+import canoe from 'fm3/images/mapIcons/sport-canoe.png';
+import climbing from 'fm3/images/mapIcons/sport-climbing.png';
+import diving from 'fm3/images/mapIcons/sport-diving.png';
+import football from 'fm3/images/mapIcons/sport-football.png';
+import gym from 'fm3/images/mapIcons/sport-gym.png';
+import gymnastics from 'fm3/images/mapIcons/sport-gymnastics.png';
 import hockey from 'fm3/images/mapIcons/sport-hockey.png';
-import horse_racing from 'fm3/images/mapIcons/sport-horse_racing.png';
-// import motor from 'fm3/images/mapIcons/sport-motor.png';
-// import multi from 'fm3/images/mapIcons/sport-multi.png';
-// import shooting from 'fm3/images/mapIcons/sport-shooting.png';
-// import skateboard from 'fm3/images/mapIcons/sport-skateboard.png';
-// import skating from 'fm3/images/mapIcons/sport-skating.png';
+import motor from 'fm3/images/mapIcons/sport-motor.png';
+import skating from 'fm3/images/mapIcons/sport-skating.png';
 import skiing from 'fm3/images/mapIcons/sport-skiing.png';
 import soccer from 'fm3/images/mapIcons/sport-soccer.png';
 import swimming from 'fm3/images/mapIcons/sport-swimming.png';
+import team_handball from 'fm3/images/mapIcons/sport-team_handball.png';
+import tennis from 'fm3/images/mapIcons/sport-tennis.png';
 import aerodrome from 'fm3/images/poiIcons/aerodrome.svg';
 import alpine_hut from 'fm3/images/poiIcons/alpine_hut.svg';
 import apartment from 'fm3/images/poiIcons/apartment.svg';
@@ -119,6 +43,7 @@ import arch from 'fm3/images/poiIcons/arch.svg';
 import archaeological_site from 'fm3/images/poiIcons/archaeological_site.svg';
 import arts_centre from 'fm3/images/poiIcons/arts_centre.svg';
 import artwork from 'fm3/images/poiIcons/artwork.svg';
+import atm from 'fm3/images/poiIcons/atm.svg';
 import attraction from 'fm3/images/poiIcons/attraction.svg';
 import bank from 'fm3/images/poiIcons/bank.svg';
 import bar from 'fm3/images/poiIcons/bar.svg';
@@ -141,10 +66,8 @@ import bureau_de_change from 'fm3/images/poiIcons/bureau_de_change.svg';
 import bust from 'fm3/images/poiIcons/bust.svg';
 import bus_station from 'fm3/images/poiIcons/bus_station.svg';
 import bus_stop from 'fm3/images/poiIcons/bus_stop.svg';
-import butcher from 'fm3/images/poiIcons/butcher.svg';
 import cafe from 'fm3/images/poiIcons/cafe.svg';
 import camp_site from 'fm3/images/poiIcons/camp_site.svg';
-import car_repair from 'fm3/images/poiIcons/car_repair.svg';
 import car_wash from 'fm3/images/poiIcons/car_wash.svg';
 import casino from 'fm3/images/poiIcons/casino.svg';
 import castle from 'fm3/images/poiIcons/castle.svg';
@@ -157,8 +80,6 @@ import church from 'fm3/images/poiIcons/church.svg';
 import cinema from 'fm3/images/poiIcons/cinema.svg';
 import city_gate from 'fm3/images/poiIcons/city_gate.svg';
 import community_centre from 'fm3/images/poiIcons/community_centre.svg';
-import confectionery from 'fm3/images/poiIcons/confectionery.svg';
-import convenience from 'fm3/images/poiIcons/convenience.svg';
 import courthouse from 'fm3/images/poiIcons/courthouse.svg';
 import cross from 'fm3/images/poiIcons/cross.svg';
 import cycle_barrier from 'fm3/images/poiIcons/cycle_barrier.svg';
@@ -192,6 +113,7 @@ import cemetery from 'fm3/images/poiIcons/grave.svg';
 import guest_house from 'fm3/images/poiIcons/guest_house.svg';
 import guidepost from 'fm3/images/poiIcons/guidepost.svg';
 import gully from 'fm3/images/poiIcons/gully.svg';
+import horse_riding from 'fm3/images/poiIcons/horse_riding.svg';
 import hospital from 'fm3/images/poiIcons/hospital.svg';
 import hostel from 'fm3/images/poiIcons/hostel.svg';
 import hotel from 'fm3/images/poiIcons/hotel.svg';
@@ -254,6 +176,74 @@ import ruins from 'fm3/images/poiIcons/ruins.svg';
 import saddle from 'fm3/images/poiIcons/saddle.svg';
 import sauna from 'fm3/images/poiIcons/sauna.svg';
 import shelter from 'fm3/images/poiIcons/shelter.svg';
+import shop_alcohol from 'fm3/images/poiIcons/shop/alcohol.svg';
+import shop_art from 'fm3/images/poiIcons/shop/art.svg';
+import shop_bag from 'fm3/images/poiIcons/shop/bag.svg';
+import shop_bakery from 'fm3/images/poiIcons/shop/bakery.svg';
+import shop_beauty from 'fm3/images/poiIcons/shop/beauty.svg';
+import shop_bed from 'fm3/images/poiIcons/shop/bed.svg';
+import shop_beverages from 'fm3/images/poiIcons/shop/beverages.svg';
+import shop_bicycle from 'fm3/images/poiIcons/shop/bicycle.svg';
+import shop_bookmaker from 'fm3/images/poiIcons/shop/bookmaker.svg';
+import shop_butcher from 'fm3/images/poiIcons/shop/butcher.svg';
+import shop_car from 'fm3/images/poiIcons/shop/car.svg';
+import shop_carpet from 'fm3/images/poiIcons/shop/carpet.svg';
+import shop_car_parts from 'fm3/images/poiIcons/shop/car_parts.svg';
+import shop_car_repair from 'fm3/images/poiIcons/shop/car_repair.svg';
+import shop_charity from 'fm3/images/poiIcons/shop/charity.svg';
+import shop_chemist from 'fm3/images/poiIcons/shop/chemist.svg';
+import shop_clothes from 'fm3/images/poiIcons/shop/clothes.svg';
+import shop_coffee from 'fm3/images/poiIcons/shop/coffee.svg';
+import shop_computer from 'fm3/images/poiIcons/shop/computer.svg';
+import shop_confectionery from 'fm3/images/poiIcons/shop/confectionery.svg';
+import shop_convenience from 'fm3/images/poiIcons/shop/convenience.svg';
+import shop_copyshop from 'fm3/images/poiIcons/shop/copyshop.svg';
+import shop_dairy from 'fm3/images/poiIcons/shop/dairy.svg';
+import shop_deli from 'fm3/images/poiIcons/shop/deli.svg';
+import shop_department_store from 'fm3/images/poiIcons/shop/department_store.svg';
+import shop_diy from 'fm3/images/poiIcons/shop/diy.svg';
+import shop_electronics from 'fm3/images/poiIcons/shop/electronics.svg';
+import shop_fabric from 'fm3/images/poiIcons/shop/fabric.svg';
+import shop_florist from 'fm3/images/poiIcons/shop/florist.svg';
+import shop_furniture from 'fm3/images/poiIcons/shop/furniture.svg';
+import shop_garden_centre from 'fm3/images/poiIcons/shop/garden_centre.svg';
+import shop_gift from 'fm3/images/poiIcons/shop/gift.svg';
+import shop_greengrocer from 'fm3/images/poiIcons/shop/greengrocer.svg';
+import shop_hairdresser from 'fm3/images/poiIcons/shop/hairdresser.svg';
+import shop_hifi from 'fm3/images/poiIcons/shop/hifi.svg';
+import shop_houseware from 'fm3/images/poiIcons/shop/houseware.svg';
+import shop_interior_decoration from 'fm3/images/poiIcons/shop/interior_decoration.svg';
+import shop_jewelry from 'fm3/images/poiIcons/shop/jewelry.svg';
+import shop_laundry from 'fm3/images/poiIcons/shop/laundry.svg';
+import shop_marketplace from 'fm3/images/poiIcons/shop/marketplace.svg';
+import shop_massage from 'fm3/images/poiIcons/shop/massage.svg';
+import shop_medical_supply from 'fm3/images/poiIcons/shop/medical_supply.svg';
+import shop_mobile_phone from 'fm3/images/poiIcons/shop/mobile_phone.svg';
+import shop_music from 'fm3/images/poiIcons/shop/music.svg';
+import shop_musical_instrument from 'fm3/images/poiIcons/shop/musical_instrument.svg';
+import shop_newsagent from 'fm3/images/poiIcons/shop/newsagent.svg';
+import shop_optician from 'fm3/images/poiIcons/shop/optician.svg';
+import shop_outdoor from 'fm3/images/poiIcons/shop/outdoor.svg';
+import shop_paint from 'fm3/images/poiIcons/shop/paint.svg';
+import shop_perfumery from 'fm3/images/poiIcons/shop/perfumery.svg';
+import shop_pet from 'fm3/images/poiIcons/shop/pet.svg';
+import shop_photo from 'fm3/images/poiIcons/shop/photo.svg';
+import shop_seafood from 'fm3/images/poiIcons/shop/seafood.svg';
+import shop_second_hand from 'fm3/images/poiIcons/shop/second_hand.svg';
+import shop_shoes from 'fm3/images/poiIcons/shop/shoes.svg';
+import shop_sports from 'fm3/images/poiIcons/shop/sports.svg';
+import shop_stationery from 'fm3/images/poiIcons/shop/stationery.svg';
+import shop_supermarket from 'fm3/images/poiIcons/shop/supermarket.svg';
+import shop_tea from 'fm3/images/poiIcons/shop/tea.svg';
+import shop_ticket from 'fm3/images/poiIcons/shop/ticket.svg';
+import shop_tobacco from 'fm3/images/poiIcons/shop/tobacco.svg';
+import shop_toys from 'fm3/images/poiIcons/shop/toys.svg';
+import shop_trade from 'fm3/images/poiIcons/shop/trade.svg';
+import shop_travel_agency from 'fm3/images/poiIcons/shop/travel_agency.svg';
+import shop_tyres from 'fm3/images/poiIcons/shop/tyres.svg';
+import shop_variety_store from 'fm3/images/poiIcons/shop/variety_store.svg';
+import shop_video from 'fm3/images/poiIcons/shop/video.svg';
+import shop_video_games from 'fm3/images/poiIcons/shop/video_games.svg';
 import shower from 'fm3/images/poiIcons/shower.svg';
 import sinkhole from 'fm3/images/poiIcons/sinkhole.svg';
 import social_facility from 'fm3/images/poiIcons/social_facility.svg';
@@ -261,7 +251,6 @@ import spring from 'fm3/images/poiIcons/spring.svg';
 import statue from 'fm3/images/poiIcons/statue.svg';
 import stile from 'fm3/images/poiIcons/stile.svg';
 import stone from 'fm3/images/poiIcons/stone.svg';
-import supermarket from 'fm3/images/poiIcons/supermarket.svg';
 import taxi from 'fm3/images/poiIcons/taxi.svg';
 import telephone from 'fm3/images/poiIcons/telephone.svg';
 import theatre from 'fm3/images/poiIcons/theatre.svg';
@@ -290,20 +279,6 @@ import weather_shelter from 'fm3/images/poiIcons/weather_shelter.svg';
 import wilderness_hut from 'fm3/images/poiIcons/wilderness_hut.svg';
 import { Node } from './types';
 
-// import table_tennis from 'fm3/images/mapIcons/sport-table_tennis.png';
-// import team_handball from 'fm3/images/mapIcons/sport-team_handball.png';
-// import tennis from 'fm3/images/mapIcons/sport-tennis.png';
-// import volleyball from 'fm3/images/mapIcons/sport-volleyball.png';
-// import water_ski from 'fm3/images/mapIcons/sport-water_ski.png';
-// import airport from 'fm3/images/mapIcons/transport-airport.png';
-// import border_control from 'fm3/images/mapIcons/transport-border_control.png';
-// import halt from 'fm3/images/mapIcons/transport-halt.png';
-// import helipad from 'fm3/images/mapIcons/transport-helipad.png';
-// import level_crossing from 'fm3/images/mapIcons/transport-level_crossing.png';
-// import traffic_signals from 'fm3/images/mapIcons/transport-traffic_signals.png';
-// import train from 'fm3/images/mapIcons/transport-train.png';
-// import tram_stop from 'fm3/images/mapIcons/transport-tram_stop.png';
-
 // hack to have only single icon for churches...
 const buildingMapping = { '*': building, hut, church, chapel };
 
@@ -312,6 +287,7 @@ export const osmTagToIconMapping: Node = {
     aerodrome,
   },
   amenity: {
+    atm,
     arts_centre,
     bank,
     bar,
@@ -330,15 +306,19 @@ export const osmTagToIconMapping: Node = {
     casino,
     charging_station,
     cinema,
+    clinic: doctors,
+    college,
     community_centre,
     courthouse,
     dentist,
     doctors,
     drinking_water,
+    driving_school,
     emergency_phone,
     excrement_bags,
     fast_food,
     feeding_place: manger,
+    game_feeding: manger,
     ferry,
     fire_station,
     fountain,
@@ -347,6 +327,7 @@ export const osmTagToIconMapping: Node = {
     hunting_stand,
     ice_cream,
     internet_cafe,
+    kindergarten,
     library,
     motorcycle_parking,
     nightclub,
@@ -365,6 +346,7 @@ export const osmTagToIconMapping: Node = {
     public_bookcase,
     recycling,
     restaurant,
+    school,
     shelter: {
       '*': shelter,
       shelter_type: {
@@ -382,6 +364,7 @@ export const osmTagToIconMapping: Node = {
     theatre,
     toilets,
     townhall,
+    university,
     vehicle_inspection,
     vending_machine: {
       vending: {
@@ -443,6 +426,7 @@ export const osmTagToIconMapping: Node = {
     bird_hide,
     firepit,
     fishing,
+    horse_riding: horse_riding,
     golf_course: golf,
     miniature_golf,
     outdoor_seating,
@@ -520,18 +504,107 @@ export const osmTagToIconMapping: Node = {
     },
     viewpoint,
   },
+  route: {
+    horse: horse_riding,
+  },
   ruins: {
     '*': ruins,
   },
   shop: {
+    alcohol: shop_alcohol,
     books,
-    butcher,
-    car_repair,
-    confectionery,
-    convenience,
-    supermarket,
+    art: shop_art,
+    bag: shop_bag,
+    bakery: shop_bakery,
+    beauty: shop_beauty,
+    bed: shop_bed,
+    beverages: shop_beverages,
+    bicycle: shop_bicycle,
+    bookmaker: shop_bookmaker,
+    butcher: shop_butcher,
+    car_parts: shop_car_parts,
+    carpet: shop_carpet,
+    car_repair: shop_car_repair,
+    car: shop_car,
+    charity: shop_charity,
+    chemist: shop_chemist,
+    clothes: shop_clothes,
+    coffee: shop_coffee,
+    computer: shop_computer,
+    confectionery: shop_confectionery,
+    convenience: shop_convenience,
+    copyshop: shop_copyshop,
+    dairy: shop_dairy,
+    deli: shop_deli,
+    department_store: shop_department_store,
+    diy: shop_diy,
+    electronics: shop_electronics,
+    fabric: shop_fabric,
+    florist: shop_florist,
+    furniture: shop_furniture,
+    garden_centre: shop_garden_centre,
+    gift: shop_gift,
+    greengrocer: shop_greengrocer,
+    hairdresser: shop_hairdresser,
+    hifi: shop_hifi,
+    houseware: shop_houseware,
+    ice_cream,
+    interior_decoration: shop_interior_decoration,
+    jewelry: shop_jewelry,
+    laundry: shop_laundry,
+    marketplace: shop_marketplace,
+    massage: shop_massage,
+    medical_supply: shop_medical_supply,
+    mobile_phone: shop_mobile_phone,
+    musical_instrument: shop_musical_instrument,
+    music: shop_music,
+    newsagent: shop_newsagent,
+    optician: shop_optician,
+    outdoor: shop_outdoor,
+    paint: shop_paint,
+    perfumery: shop_perfumery,
+    pet: shop_pet,
+    photo: shop_photo,
+    seafood: shop_seafood,
+    second_hand: shop_second_hand,
+    shoes: shop_shoes,
+    sports: shop_sports,
+    stationery: shop_stationery,
+    supermarket: shop_supermarket,
+    tea: shop_tea,
+    ticket: shop_ticket,
+    tobacco: shop_tobacco,
+    toys: shop_toys,
+    trade: shop_trade,
+    travel_agency: shop_travel_agency,
+    tyres: shop_tyres,
+    variety_store: shop_variety_store,
+    video_games: shop_video_games,
+    video: shop_video,
   },
-  sport: { free_flying, skiing, soccer, swimming, golf, hockey, horse_racing },
+  sport: {
+    archery,
+    baseball,
+    canoe,
+    climbing,
+    cycling: shop_bicycle,
+    diving,
+    equestrian: horse_riding,
+    football,
+    free_flying,
+    golf,
+    gym,
+    gymnastics,
+    hockey,
+    horse_racing: horse_riding,
+    motor,
+    skating,
+    skiing,
+    soccer,
+    swimming,
+    team_handball,
+    tennis,
+  },
   tourism: {
     alpine_hut,
     apartment,
@@ -557,6 +630,7 @@ export const osmTagToIconMapping: Node = {
     },
     motel,
     museum,
+    picnic_site: picnic_table,
     wilderness_hut,
     zoo,
   },

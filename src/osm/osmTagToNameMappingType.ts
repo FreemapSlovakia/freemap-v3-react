@@ -1,4 +1,7 @@
 export type OsmTagToNameMapping = {
+  aeroway: {
+    aerodrome: string;
+  };
   aerialway: string;
   amenity: {
     '*': string;
