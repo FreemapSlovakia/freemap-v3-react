@@ -20,7 +20,6 @@
 // import battlefield from 'fm3/images/mapIcons/landmark-battlefield.png';
 import chapel from 'fm3/images/mapIcons/landmark-chapel.png';
 // import chateau from 'fm3/images/mapIcons/landmark-chateau.png';
-// import place_of_worship from 'fm3/images/mapIcons/landmark-place_of_worship.png';
 // import sculpture from 'fm3/images/mapIcons/landmark-sculpture.png';
 import zoo from 'fm3/images/mapIcons/other-zoo.png';
 import books from 'fm3/images/mapIcons/shopping-books.png';
@@ -305,6 +304,9 @@ import { Node } from './types';
 // import train from 'fm3/images/mapIcons/transport-train.png';
 // import tram_stop from 'fm3/images/mapIcons/transport-tram_stop.png';
 
+// hack to have only single icon for churches...
+const buildingMapping = { '*': building, hut, church, chapel };
+
 export const osmTagToIconMapping: Node = {
   aeroway: {
     aerodrome,
@@ -350,7 +352,10 @@ export const osmTagToIconMapping: Node = {
     nightclub,
     parking,
     pharmacy,
-    place_of_worship,
+    place_of_worship: {
+      '*': place_of_worship,
+      building: buildingMapping,
+    },
     police,
     post_box,
     post_office,
@@ -399,7 +404,7 @@ export const osmTagToIconMapping: Node = {
     toll_booth,
     cattle_grid,
   },
-  building: { '*': building, hut, church, chapel },
+  building: buildingMapping,
   fixme: {
     '*': fixme,
   },

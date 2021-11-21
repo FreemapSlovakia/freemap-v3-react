@@ -1,13 +1,14 @@
 import { osmTagToNameMapping } from './osmTagToNameMapping-sk';
 import { Node, OsmMapping } from './types';
 
-export function resolveGenericName2(
+type Part = { text: string; tags: Record<string, string>; case: string };
+
+export function resolveGenericNameWithMeta(
   m: Node,
   tags: Record<string, string>,
   usedTags: Record<string, string> = {},
-): { text: string; tags: Record<string, string>; case: string }[] {
-  const parts: { text: string; tags: Record<string, string>; case: string }[] =
-    [];
+): Part[] {
+  const parts: Part[] = [];
 
   for (const [k, vs] of Object.entries(tags)) {
     for (const v of vs.split(';').map((v) => v.trim())) {
@@ -40,7 +41,7 @@ export function resolveGenericName2(
           continue;
         }
 
-        const res = resolveGenericName2(subkeyMapping, tags, {
+        const res = resolveGenericNameWithMeta(subkeyMapping, tags, {
           ...usedTags,
           [k]: v,
         });
@@ -83,14 +84,8 @@ export function resolveGenericName2(
   return parts;
 }
 
-export function resolveGenericName(
-  m: Node,
-  tags: Record<string, string>,
-): string[] {
-  const items = resolveGenericName2(m, tags, {});
-
-  const parts: { text: string; tags: Record<string, string>; case: string }[] =
-    [];
+export function eliminateMoreGenericNames(items: Part[]): Part[] {
+  const parts: Part[] = [];
 
   outer: for (let i = 0; i < items.length; i++) {
     for (let j = 0; j < items.length; j++) {
@@ -115,7 +110,16 @@ export function resolveGenericName(
     parts.push(items[i]);
   }
 
-  return parts.map((part) => part.text);
+  return parts;
+}
+
+export function resolveGenericName(
+  m: Node,
+  tags: Record<string, string>,
+): string[] {
+  return eliminateMoreGenericNames(resolveGenericNameWithMeta(m, tags, {})).map(
+    (part) => part.text,
+  );
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
