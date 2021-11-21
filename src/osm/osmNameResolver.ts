@@ -1,4 +1,3 @@
-import { osmTagToNameMapping } from './osmTagToNameMapping-sk';
 import { Node, OsmMapping } from './types';
 
 type Part = { text: string; tags: Record<string, string>; case: string };
@@ -117,9 +116,9 @@ export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
 ): string[] {
-  return eliminateMoreGenericNames(resolveGenericNameWithMeta(m, tags, {})).map(
-    (part) => part.text,
-  );
+  return eliminateMoreGenericNames(
+    resolveGenericNameWithMeta(m, adjustTags(tags), {}),
+  ).map((part) => part.text);
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
@@ -183,14 +182,33 @@ export function getNameFromOsmElement(
   return effName ?? tags['ref'] ?? tags['operator'];
 }
 
-export function adjustTagOrder(tags: Record<string, string>) {
+function adjustTags(tags: Record<string, string>) {
+  let res = tags;
+
+  if ('building' in tags) {
+    const { building, ...rest } = tags;
+
+    res = { ...rest, building };
+  }
+
+  if (
+    tags['amenity'] === 'place_of_worship' &&
+    tags['building'] &&
+    tags['building'] !== 'yes'
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { amenity, ...rest } = tags;
+
+    res = { ...rest };
+  }
+
   if ('fixme' in tags) {
     const { fixme, ...rest } = tags;
 
-    return { ...rest, fixme };
+    res = { ...rest, fixme };
   }
 
-  return tags;
+  return res;
 }
 
 // TODO add others
@@ -227,11 +245,3 @@ export const categoryKeys = new Set([
   'water',
   'waterway',
 ]);
-
-console.log(
-  'AAAA',
-  resolveGenericName(osmTagToNameMapping, {
-    leisure: 'pitch',
-    sport: 'basketball;soccer',
-  }),
-);

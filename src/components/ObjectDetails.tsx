@@ -1,6 +1,5 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
-  adjustTagOrder,
   categoryKeys,
   getNameFromOsmElement,
   resolveGenericName,
@@ -36,7 +35,7 @@ export function ObjectDetails({
 
   const gn = useOsmNameResolver(type, tags);
 
-  const imgs = resolveGenericName(osmTagToIconMapping, adjustTagOrder(tags));
+  const imgs = resolveGenericName(osmTagToIconMapping, tags);
 
   const language = useSelector((state) => state.l10n.language);
 

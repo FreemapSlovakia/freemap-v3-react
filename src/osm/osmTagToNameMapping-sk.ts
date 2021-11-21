@@ -69,7 +69,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     parking_space: 'Parkovacie miesto',
     pharmacy: 'Lekáreň',
     place_of_mourning: 'Dom smútku',
-    place_of_worship: 'Chrám/kostol',
+    place_of_worship: 'Miesto náboženských obradov',
     planetarium: 'Planetárium',
     police: 'Polícia',
     post_box: 'Poštová schránka',

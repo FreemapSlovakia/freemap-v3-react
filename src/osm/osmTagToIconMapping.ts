@@ -404,10 +404,6 @@ export const osmTagToIconMapping: Node = {
     toll_booth,
     cattle_grid,
   },
-  building: buildingMapping,
-  fixme: {
-    '*': fixme,
-  },
   highway: { bus_stop, elevator, ford, traffic_signals },
   historic: {
     archaeological_site,
@@ -566,5 +562,11 @@ export const osmTagToIconMapping: Node = {
   },
   waterway: {
     waterfall,
+  },
+
+  // NOTE keep at the end
+  building: buildingMapping,
+  fixme: {
+    '*': fixme,
   },
 };

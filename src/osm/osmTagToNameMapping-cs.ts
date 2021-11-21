@@ -38,7 +38,7 @@ export const osmTagToNameMapping: Node = {
     parking: 'Parkování',
     pharmacy: 'Lékárna',
     place_of_mourning: 'Dům smutku',
-    place_of_worship: 'Chrám/kostel',
+    place_of_worship: 'Miesto náboženských obradov',
     planetarium: 'Planetárium',
     police: 'Policie',
     post_box: 'Poštovní schránka',
