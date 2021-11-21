@@ -1,58 +1,121 @@
+import { osmTagToNameMapping } from './osmTagToNameMapping-sk';
 import { Node, OsmMapping } from './types';
 
-export function resolveGenericName(
+export function resolveGenericName2(
   m: Node,
   tags: Record<string, string>,
-): string[] {
-  const parts = [];
+  usedTags: Record<string, string> = {},
+): { text: string; tags: Record<string, string>; case: string }[] {
+  const parts: { text: string; tags: Record<string, string>; case: string }[] =
+    [];
 
-  for (const [k, v] of Object.entries(tags)) {
-    const valMapping = m[k];
+  for (const [k, vs] of Object.entries(tags)) {
+    for (const v of vs.split(';').map((v) => v.trim())) {
+      const valMapping = m[k];
 
-    if (!valMapping) {
-      continue;
-    }
-
-    if (typeof valMapping === 'string') {
-      parts.push(valMapping.replace('{}', v));
-      continue;
-    }
-
-    if (valMapping[v]) {
-      const subkeyMapping = valMapping[v];
-
-      if (typeof subkeyMapping === 'string') {
-        parts.push(subkeyMapping.replace('{}', v));
+      if (!valMapping) {
         continue;
       }
 
-      const res = resolveGenericName(subkeyMapping, tags);
-
-      if (res.length) {
-        parts.push(...res.map((item) => item.replace('{}', v)));
+      if (typeof valMapping === 'string') {
+        parts.push({
+          text: valMapping.replace('{}', v),
+          tags: { ...usedTags, [k]: v },
+          case: 'a',
+        });
 
         continue;
       }
 
-      if (typeof subkeyMapping['*'] === 'string') {
-        parts.push(subkeyMapping['*'].replace('{}', v));
+      if (valMapping[v]) {
+        const subkeyMapping = valMapping[v];
+
+        if (typeof subkeyMapping === 'string') {
+          parts.push({
+            text: subkeyMapping.replace('{}', v),
+            tags: { ...usedTags, [k]: v },
+            case: 'b',
+          });
+
+          continue;
+        }
+
+        const res = resolveGenericName2(subkeyMapping, tags, {
+          ...usedTags,
+          [k]: v,
+        });
+
+        if (res.length) {
+          parts.push(
+            ...res.map((item) => ({
+              text: item.text.replace('{}', v),
+              tags: { ...item.tags, [k]: v },
+              case: item.case + 'c',
+            })),
+          );
+
+          continue;
+        }
+
+        if (typeof subkeyMapping['*'] === 'string') {
+          parts.push({
+            text: subkeyMapping['*'].replace('{}', v),
+            tags: { ...usedTags, [k]: v },
+            case: 'd',
+          });
+
+          continue;
+        }
+      }
+
+      if (typeof valMapping['*'] === 'string') {
+        parts.push({
+          text: valMapping['*'].replace('{}', v),
+          tags: { ...usedTags, [k]: v },
+          case: 'e',
+        });
+
         continue;
       }
-    }
-
-    if (typeof valMapping['*'] === 'string') {
-      parts.push(valMapping['*'].replace('{}', v));
-      continue;
     }
   }
 
   return parts;
 }
 
-function resolveGenericNameJoined(m: Node, tags: Record<string, string>) {
-  const parts = resolveGenericName(m, tags);
+export function resolveGenericName(
+  m: Node,
+  tags: Record<string, string>,
+): string[] {
+  const items = resolveGenericName2(m, tags, {});
 
-  return parts.length === 0 ? undefined : parts.join('; ');
+  const parts: { text: string; tags: Record<string, string>; case: string }[] =
+    [];
+
+  outer: for (let i = 0; i < items.length; i++) {
+    for (let j = 0; j < items.length; j++) {
+      if (i === j) {
+        continue;
+      }
+
+      const i1 = { ...items[i].tags };
+      const i2 = items[j].tags;
+
+      for (const [k, v] of Object.entries(i2)) {
+        if (i1[k] === v) {
+          delete i1[k];
+        }
+      }
+
+      if (Object.keys(i1).length === 0) {
+        continue outer;
+      }
+    }
+
+    parts.push(items[i]);
+  }
+
+  return parts.map((part) => part.text);
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
@@ -82,10 +145,9 @@ export function getGenericNameFromOsmElementSync(
   osmTagToNameMapping: Node,
   colorNames: Record<string, string>,
 ): string {
-  let gn: string | undefined = resolveGenericNameJoined(
-    osmTagToNameMapping,
-    tags,
-  );
+  const parts = resolveGenericName(osmTagToNameMapping, tags);
+
+  let gn = parts.length === 0 ? undefined : parts.join('; ');
 
   if (type === 'relation' && tags['type'] === 'route') {
     const color =
@@ -161,3 +223,11 @@ export const categoryKeys = new Set([
   'water',
   'waterway',
 ]);
+
+console.log(
+  'AAAA',
+  resolveGenericName(osmTagToNameMapping, {
+    leisure: 'pitch',
+    sport: 'basketball;soccer',
+  }),
+);

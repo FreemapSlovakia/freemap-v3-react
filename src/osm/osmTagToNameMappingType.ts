@@ -349,7 +349,20 @@ export type OsmTagToNameMapping = {
     nature_reserve: string;
     park: string;
     picnic_table: string;
-    pitch: string;
+    pitch: {
+      '*': string;
+      sport: {
+        badminton: string;
+        basketball: string;
+        beachvolleyball: string;
+        hockey: string;
+        ice_hockey: string;
+        multi: string;
+        soccer: string;
+        tennis: string;
+        volleyball: string;
+      };
+    };
     playground: string;
     sports_centre: string;
     sports_hall: string;
