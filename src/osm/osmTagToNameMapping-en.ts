@@ -181,7 +181,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   building: {
     '*': 'Building {}',
-    apartments: 'Apartments',
+    apartments: 'Apartments (block)',
     barn: 'Barn',
     bungalow: 'Bungalow',
     bunker: 'Bunker',

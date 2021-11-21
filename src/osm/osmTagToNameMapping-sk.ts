@@ -179,7 +179,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   building: {
     '*': 'Budova {}',
-    apartments: 'Apartmány',
+    apartments: 'Apartmány (blok)',
     barn: 'Stodola',
     bungalow: 'Bungalov',
     bunker: 'Bunker',
