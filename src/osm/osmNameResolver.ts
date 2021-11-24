@@ -93,6 +93,7 @@ export function eliminateMoreGenericNames(items: Part[]): Part[] {
       }
 
       const i1 = { ...items[i].tags };
+
       const i2 = items[j].tags;
 
       for (const [k, v] of Object.entries(i2)) {

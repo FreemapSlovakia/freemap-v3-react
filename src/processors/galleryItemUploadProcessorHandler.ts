@@ -39,7 +39,9 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   }
 
   const formData = new FormData();
+
   formData.append('image', item.file);
+
   formData.append(
     'meta',
     JSON.stringify({

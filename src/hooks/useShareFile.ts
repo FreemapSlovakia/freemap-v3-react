@@ -5,6 +5,7 @@ export function useShareFile(handleShare: (files: File[]) => void): void {
     if ('serviceWorker' in navigator) {
       const handler = (e: MessageEvent) => {
         const { data } = e;
+
         if (
           data &&
           typeof data === 'object' &&

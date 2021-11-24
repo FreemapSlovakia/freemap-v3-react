@@ -112,6 +112,7 @@ export function ObjectsMenu(): ReactElement {
 
       if (e) {
         e.preventDefault();
+
         e.stopPropagation();
       }
 
@@ -190,6 +191,7 @@ export function ObjectsMenu(): ReactElement {
             value={filter}
             onFocus={() => {
               justOpenedRef.current = true;
+
               setDropdownOpened(true);
             }}
             ref={inputRef}

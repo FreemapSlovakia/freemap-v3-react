@@ -68,6 +68,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
 
   const handleView = useCallback(() => {
     dispatch(setActiveModal('tracking-watched'));
+
     dispatch(trackingActions.modifyTrackedDevice(accessToken.token));
   }, [accessToken.token, dispatch]);
 

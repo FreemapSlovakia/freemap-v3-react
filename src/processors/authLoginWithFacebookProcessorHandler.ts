@@ -26,6 +26,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
           style: 'danger',
         }),
       );
+
       return;
     }
   }

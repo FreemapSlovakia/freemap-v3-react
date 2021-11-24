@@ -46,6 +46,7 @@ export const galleryDeletePictureProcessor: Processor = {
             newImageIds.length > idx
               ? newImageIds[idx]
               : newImageIds[newImageIds.length - 1];
+
           dispatch(galleryRequestImage(newActiveImageId));
         }
       }

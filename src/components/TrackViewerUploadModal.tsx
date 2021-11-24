@@ -31,8 +31,11 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const handleUpload = useCallback(
     (trackGpx: string) => {
       dispatch(trackViewerSetTrackUID(null));
+
       dispatch(trackViewerSetData({ trackGpx, focus: true }));
+
       dispatch(setActiveModal(null));
+
       dispatch(elevationChartClose());
     },
     [dispatch],

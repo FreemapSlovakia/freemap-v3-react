@@ -33,6 +33,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
           variant="primary"
           onClick={() => {
             dispatch(setActiveModal(null));
+
             dispatch(removeAds());
           }}
         >

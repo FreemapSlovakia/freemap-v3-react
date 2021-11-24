@@ -123,6 +123,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
 
       return;
     }
+
     if (event.code === 'KeyY') {
       history.forward();
 
@@ -152,6 +153,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
     if (event.code === 'ArrowLeft') {
       return galleryRequestImage('prev');
     }
+
     if (event.code === 'ArrowRight') {
       return galleryRequestImage('next');
     }
@@ -210,6 +212,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
       window.clearTimeout(keyTimer);
 
       keyTimer = null;
+
       initCode = null;
     }
 
@@ -228,6 +231,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
 
     keyTimer = window.setTimeout(() => {
       keyTimer = null;
+
       initCode = null;
     }, 2000);
 
@@ -327,10 +331,13 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
       switch (event.code) {
         case 'KeyA':
           return setActiveModal('account');
+
         case 'KeyG':
           return setActiveModal('export-gpx');
+
         case 'KeyP':
           return setActiveModal('export-pdf');
+
         case 'KeyE':
           return setActiveModal('embed');
       }
@@ -350,7 +357,9 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (keyTimer) {
       window.clearTimeout(keyTimer);
+
       keyTimer = null;
+
       initCode = null;
     }
 

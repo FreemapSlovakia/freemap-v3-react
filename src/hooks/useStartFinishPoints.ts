@@ -57,6 +57,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
         });
       }
     }
+
     return [startPoints, finishPoints] as const;
   }, [features]);
 }

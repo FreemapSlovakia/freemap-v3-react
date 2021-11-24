@@ -73,7 +73,9 @@ export function ChangesetsMenu(): ReactElement {
         inline
         onSubmit={(e) => {
           e.preventDefault();
+
           dispatch(changesetsSetDays(days));
+
           dispatch(changesetsSetAuthorName(authorName));
         }}
       >

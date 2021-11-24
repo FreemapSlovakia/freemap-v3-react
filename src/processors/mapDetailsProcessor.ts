@@ -114,6 +114,7 @@ export const mapDetailsProcessor: Processor = {
           });
 
           break;
+
         case 'way':
           sr.push({
             id: element.id,
@@ -122,6 +123,7 @@ export const mapDetailsProcessor: Processor = {
           });
 
           break;
+
         case 'relation':
           {
             sr.push({

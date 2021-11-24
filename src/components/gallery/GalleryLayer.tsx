@@ -52,11 +52,13 @@ function createWorker() {
 
   w.onerror = (err) => {
     console.error('worker error');
+
     console.error(err);
   };
 
   w.onmessageerror = (err) => {
     console.error('worker message error');
+
     console.error(err);
   };
 
@@ -96,6 +98,7 @@ class LGalleryLayer extends LGridLayer {
 
   constructor(options?: GalleryLayerOptions) {
     super(options);
+
     this._options = options;
 
     this.on('tileunload', ({ coords }: { coords: Coords }) => {
@@ -113,6 +116,7 @@ class LGalleryLayer extends LGridLayer {
 
   createTile(coords: Coords, done: DoneCallback) {
     const size = this.getTileSize();
+
     const map = this._map;
 
     const pointAa = map.unproject(
@@ -138,7 +142,9 @@ class LGalleryLayer extends LGridLayer {
     const tile = document.createElement('canvas');
 
     const dpr = window.devicePixelRatio || 1;
+
     tile.width = size.x * dpr;
+
     tile.height = size.y * dpr;
 
     const colorizeBy = this._options?.colorizeBy ?? null;

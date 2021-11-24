@@ -78,12 +78,17 @@ export const mouseCursorSelector = createSelector(
 
     switch (tool) {
       case 'draw-lines':
+
       case 'draw-polygons':
+
       case 'map-details':
+
       case 'draw-points':
         return 'crosshair';
+
       case 'route-planner':
         return routePlannerPickMode ? 'crosshair' : 'auto';
+
       default:
         return 'auto';
     }

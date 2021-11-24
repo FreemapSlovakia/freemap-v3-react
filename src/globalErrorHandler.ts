@@ -50,6 +50,7 @@ export function sendError(errDetails: ErrorDetails): void {
   }
 
   console.error('Application error');
+
   console.error(errDetails);
 
   if (errDetails.error) {

@@ -109,6 +109,7 @@ export function ElevationChart(): ReactElement | null {
     for (const pt of elevationProfilePoints) {
       if (pt.distance > (d / (width - ml - mr)) * x) {
         dispatch(elevationChartSetActivePoint(pt));
+
         break;
       }
     }
@@ -116,6 +117,7 @@ export function ElevationChart(): ReactElement | null {
 
   const handleMouseOut = () => {
     setMouseX(undefined);
+
     dispatch(elevationChartRemoveActivePoint());
   };
 
@@ -126,6 +128,7 @@ export function ElevationChart(): ReactElement | null {
   useEffect(() => {
     const ro = new ResizeObserver((e) => {
       setWidth(e[0].contentRect.width);
+
       setHeight(e[0].contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
@@ -183,12 +186,16 @@ export function ElevationChart(): ReactElement | null {
     };
 
     window.addEventListener('mousedown', handleMouseDown);
+
     window.addEventListener('mouseup', handleMouseUp);
+
     window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
+
       window.removeEventListener('mouseup', handleMouseUp);
+
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);

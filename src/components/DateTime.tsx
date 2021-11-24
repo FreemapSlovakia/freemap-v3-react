@@ -5,9 +5,11 @@ import { FaCalendar, FaClock } from 'react-icons/fa';
 
 function checkDatetimeLocalInput(): boolean {
   const input = document.createElement('input');
+
   input.setAttribute('type', 'datetime-local');
 
   const notADateValue = 'not-a-date';
+
   input.setAttribute('value', notADateValue);
 
   return input.value !== notADateValue;

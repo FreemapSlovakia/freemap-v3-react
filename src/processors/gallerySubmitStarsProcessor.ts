@@ -11,6 +11,7 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
     errorKey: 'gallery.ratingError',
     handle: async ({ getState, dispatch, action }) => {
       const { image } = getState().gallery;
+
       if (!image) {
         return;
       }

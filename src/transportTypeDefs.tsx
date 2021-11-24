@@ -21,6 +21,7 @@ export type TransportType =
   | 'foot';
 
 const FM_URL = 'https://routing.freemap.sk/';
+
 const EPS_URL = 'https://routing.epsilon.sk/';
 
 export const transportTypeDefs: {

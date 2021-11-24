@@ -111,6 +111,7 @@ export async function upload(
 
       break;
     }
+
     case 'gdrive':
       {
         await loadGapi();
@@ -155,9 +156,12 @@ export async function upload(
             switch (data[pkr.Response.ACTION]) {
               case pkr.Action.PICKED:
                 resolve(data[pkr.Response.DOCUMENTS][0]);
+
                 break;
+
               case pkr.Action.CANCEL:
                 resolve(undefined);
+
                 break;
             }
           }
@@ -208,6 +212,7 @@ export async function upload(
       );
 
       break;
+
     case 'download':
       FileSaver.saveAs(
         data,

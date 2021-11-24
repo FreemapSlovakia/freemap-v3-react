@@ -90,12 +90,14 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   if (activeImageId2 !== activeImageId) {
     setLoading(true);
+
     setActiveImageId(activeImageId2);
   }
 
   useEffect(() => {
     function handleFullscreenChange() {
       setIsFullscreen(document.fullscreenElement === fullscreenElement.current);
+
       setImgKey((imgKey) => imgKey + 1);
     }
 
@@ -145,6 +147,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const handleCommentFormSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
+
       dispatch(gallerySubmitComment());
     },
     [dispatch],
@@ -163,6 +166,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const handleSave = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       dispatch(gallerySavePicture());
     },
     [dispatch],
@@ -291,6 +295,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
+
                   dispatch(galleryRequestImage('prev'));
                 }}
               >
@@ -310,6 +315,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
+
                   dispatch(galleryRequestImage('next'));
                 }}
               >

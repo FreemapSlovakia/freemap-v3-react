@@ -66,6 +66,7 @@ export function TrackingResult(): ReactElement {
     <>
       {tracks1.map((track) => {
         const color = track.color || '#7239a8';
+
         const width = track.width || 4;
 
         let handleClick = clickHandlerMemo.current[track.token];
@@ -99,10 +100,12 @@ export function TrackingResult(): ReactElement {
 
           if (!curSegment) {
             curSegment = [];
+
             segments.push(curSegment);
           }
 
           curSegment.push(tp);
+
           prevTp = tp;
         }
 

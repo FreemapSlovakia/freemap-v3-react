@@ -158,6 +158,7 @@ export const routePlannerFindRouteProcessor: Processor = {
           waypoints: [],
         }),
       );
+
       dispatch(
         toastsAdd({
           id: 'routePlanner.routeNotFound',
@@ -181,7 +182,9 @@ function addMissingSegments(alt: Alternative) {
 
   for (let i = 0; i < routeSteps.length; i += 1) {
     const step = routeSteps[i];
+
     const prevStep = routeSteps[i - 1];
+
     const nextStep = routeSteps[i + 1];
 
     const prevStepLastPoint = prevStep

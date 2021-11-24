@@ -230,6 +230,7 @@ export function RoutePlannerResult(): ReactElement {
   const getPointDetails = useCallback(
     (i: number, showDiff = true, summary = false) => {
       let distanceSum = 0;
+
       let durationSum = 0;
 
       const offset = summary ? 0 : 1;
@@ -244,6 +245,7 @@ export function RoutePlannerResult(): ReactElement {
 
         if (leg) {
           distanceSum += leg.distance;
+
           durationSum += leg.duration;
         }
       }
@@ -383,12 +385,16 @@ export function RoutePlannerResult(): ReactElement {
 
       if (tRef.current) {
         clearTimeout(tRef.current);
+
         tRef.current = undefined;
       }
 
       setDragLat(e.latlng.lat);
+
       setDragLon(e.latlng.lng);
+
       setDragSegment(segment);
+
       setDragAlt(alt);
     },
     [interactive0],
@@ -401,6 +407,7 @@ export function RoutePlannerResult(): ReactElement {
 
     tRef.current = window.setTimeout(() => {
       setDragLat(undefined);
+
       setDragLon(undefined);
     }, 200);
   }, []);
@@ -414,6 +421,7 @@ export function RoutePlannerResult(): ReactElement {
   const handleFutureMouseOver = useCallback(() => {
     if (!draggingRef.current && tRef.current) {
       clearTimeout(tRef.current);
+
       tRef.current = undefined;
     }
   }, []);
@@ -427,10 +435,12 @@ export function RoutePlannerResult(): ReactElement {
   const handleDragStart = useCallback(() => {
     if (tRef.current) {
       clearTimeout(tRef.current);
+
       tRef.current = undefined;
     }
 
     draggingRef.current = true;
+
     setDragging(true);
   }, []);
 
@@ -456,6 +466,7 @@ export function RoutePlannerResult(): ReactElement {
             position: dragSegment,
           }),
         );
+
         dispatch(setTool('route-planner'));
       }
     },
@@ -465,6 +476,7 @@ export function RoutePlannerResult(): ReactElement {
   const changeAlternative = useCallback(
     (index: number) => {
       dispatch(routePlannerSetActiveAlternativeIndex(index));
+
       dispatch(setTool('route-planner'));
     },
     [dispatch],
@@ -493,21 +505,29 @@ export function RoutePlannerResult(): ReactElement {
       switch (movedPointType) {
         case 'start':
           dispatch(routePlannerSetStart({ start: { lat, lon }, move: true }));
-          dispatch(setTool('route-planner'));
-          break;
-        case 'finish':
-          dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
+
           dispatch(setTool('route-planner'));
 
           break;
+
+        case 'finish':
+          dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
+
+          dispatch(setTool('route-planner'));
+
+          break;
+
         case 'midpoint':
           if (position !== null) {
             dispatch(
               routePlannerSetMidpoint({ position, midpoint: { lat, lon } }),
             );
+
             dispatch(setTool('route-planner'));
           }
+
           break;
+
         default:
           throw new Error('unknown pointType');
       }
@@ -832,7 +852,9 @@ function addMissingSegments(alt: Alternative) {
 
   for (let i = 0; i < steps.length; i += 1) {
     const slice = steps[i];
+
     const prevSlice = steps[i - 1];
+
     const nextSlice = steps[i + 1];
 
     const prevSliceLastShapePoint = prevSlice
@@ -840,10 +862,12 @@ function addMissingSegments(alt: Alternative) {
           prevSlice.geometry.coordinates.length - 1
         ]
       : null;
+
     const firstShapePoint = slice.geometry.coordinates[0];
 
     const lastShapePoint =
       slice.geometry.coordinates[slice.geometry.coordinates.length - 1];
+
     const nextSliceFirstShapePoint = nextSlice
       ? nextSlice.geometry.coordinates[0]
       : null;

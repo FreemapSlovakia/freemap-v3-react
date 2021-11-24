@@ -72,6 +72,7 @@ export function createTrackingMiddleware(): Middleware<
 
       if (trackedDevices.length === 0 && reopenTs) {
         clearTimeout(reopenTs);
+
         reopenTs = undefined;
       }
 
@@ -100,6 +101,7 @@ export function createTrackingMiddleware(): Middleware<
         for (const td of prevTrackedDevices) {
           if (!trackedDevices.includes(td)) {
             const { token, deviceId } = mangle(td);
+
             dispatch(
               rpcCall({
                 method: 'tracking.unsubscribe',
@@ -108,6 +110,7 @@ export function createTrackingMiddleware(): Middleware<
             );
           }
         }
+
         for (const td of trackedDevices) {
           if (!prevTrackedDevices.includes(td)) {
             dispatch(

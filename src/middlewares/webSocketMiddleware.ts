@@ -102,6 +102,7 @@ export function createWebsocketMiddleware(): Middleware<
           ws.send(JSON.stringify(action.payload.message));
         } else {
           dispatch(wsInvalidState(action.payload.tag));
+
           return;
         }
       } else if (isActionOf(wsClose, action)) {
@@ -109,6 +110,7 @@ export function createWebsocketMiddleware(): Middleware<
           ws.close();
         } else {
           dispatch(wsInvalidState(action.payload));
+
           return;
         }
       }

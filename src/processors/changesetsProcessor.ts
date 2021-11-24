@@ -72,8 +72,11 @@ export const changesetsProcessor: Processor = {
       const changesetsFromThisRequest = arrayOfrawChangesets
         .map((rawChangeset) => {
           const minLat = parseFloat(rawChangeset.getAttribute('min_lat') ?? '');
+
           const maxLat = parseFloat(rawChangeset.getAttribute('max_lat') ?? '');
+
           const minLon = parseFloat(rawChangeset.getAttribute('min_lon') ?? '');
+
           const maxLon = parseFloat(rawChangeset.getAttribute('max_lon') ?? '');
 
           const descriptionTag = Array.from(

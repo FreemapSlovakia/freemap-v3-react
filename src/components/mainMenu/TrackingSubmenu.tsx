@@ -70,6 +70,7 @@ export function TrackingSubmenu(): ReactElement {
         active={trackingDisplay === 'true,false'}
         onSelect={() => {
           dispatch(trackingActions.setShowPoints(true));
+
           dispatch(trackingActions.setShowLine(false));
         }}
       >
@@ -86,6 +87,7 @@ export function TrackingSubmenu(): ReactElement {
         active={trackingDisplay === 'false,true'}
         onSelect={() => {
           dispatch(trackingActions.setShowPoints(false));
+
           dispatch(trackingActions.setShowLine(true));
         }}
       >
@@ -102,6 +104,7 @@ export function TrackingSubmenu(): ReactElement {
         active={trackingDisplay === 'true,true'}
         onSelect={() => {
           dispatch(trackingActions.setShowPoints(true));
+
           dispatch(trackingActions.setShowLine(true));
         }}
       >

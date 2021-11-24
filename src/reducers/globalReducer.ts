@@ -341,6 +341,7 @@ export function postGlobalReducer(
   } else if (isActionOf(drawingChangeLabel, action)) {
     return produce(state, (draft) => {
       const selection = draft.main.selection;
+
       if (selection?.type === 'draw-line-poly' && selection?.id !== undefined) {
         draft.drawingLines.lines[selection.id].label = action.payload.label;
       } else if (

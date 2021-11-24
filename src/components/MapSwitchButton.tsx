@@ -103,6 +103,7 @@ export function MapSwitchButton(): ReactElement {
 
         if (x instanceof SVGElement && x.dataset['filter']) {
           dispatch(setActiveModal('gallery-filter'));
+
           return true;
         }
 

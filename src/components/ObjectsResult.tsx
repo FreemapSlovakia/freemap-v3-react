@@ -71,6 +71,7 @@ export function ObjectsResult(): ReactElement | null {
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));
+
                 dispatch(
                   searchSelectResult({
                     result: { id, tags, osmType: type, detailed: true },

@@ -41,6 +41,7 @@ export function GalleryResult(): ReactElement {
   const handlePositionMarkerDragEnd = useCallback(
     (e: DragEndEvent) => {
       const coords = e.target.getLatLng();
+
       handlePositionPick(coords.lat, coords.lng);
     },
     [handlePositionPick],

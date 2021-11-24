@@ -4,12 +4,17 @@ import { LatLon } from './types/common';
 // TODO publish as npm package
 
 const N_TR = 'S';
+
 const S_TR = 'J';
+
 const E_TR = 'V';
+
 const W_TR = 'Z';
 
 const DEG = '\u00B0';
+
 const MIN = '\u2032';
+
 const SEC = '\u2033';
 
 const patterns =
@@ -27,6 +32,7 @@ const P_XML = /lat=["']([+|-]?\d+[.,]\d+)["']\s+lon=["']([+|-]?\d+[.,]\d+)["']/;
 
 export function parseCoordinates(coord: string): LatLon {
   const mXml = P_XML.exec(coord);
+
   if (mXml) {
     return assertType<LatLon>({
       ...toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
@@ -35,21 +41,25 @@ export function parseCoordinates(coord: string): LatLon {
   }
 
   const sb: string[] = [];
+
   const list: Array<string | number> = [];
 
   const P = new RegExp(patterns, 'ig');
 
   for (let i = 0; i < 100; i += 1) {
     const m = P.exec(coord);
+
     if (!m) {
       break;
     }
 
     if (m[1]) {
       sb.push('R'); // floating point number
+
       list.push(parseFloat(m[1].replace(',', '.')));
     } else if (m[2]) {
       sb.push('Z'); // integer number
+
       list.push(parseFloat(m[2]));
     } else if (m[3]) {
       sb.push('o'); // degree sign
@@ -61,7 +71,9 @@ export function parseCoordinates(coord: string): LatLon {
       sb.push(','); // separator
     } else if (m[7]) {
       sb.push('x'); // cardinal direction
+
       const c = m[7].toUpperCase();
+
       list.push(
         'NSEW'.includes(c)
           ? c
@@ -214,6 +226,7 @@ function toLatLon(
     ...toLatLon1(coord1deg, coord1min, coord1sec, card1),
     ...toLatLon1(coord2deg, coord2min, coord2sec, card2),
   };
+
   return assertType<LatLon>(latLon);
 }
 

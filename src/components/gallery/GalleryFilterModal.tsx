@@ -178,12 +178,19 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const handleEraseClick = () => {
     setTag('');
+
     setUserId('');
+
     setTakenAtFrom('');
+
     setTakenAtTo('');
+
     setCreatedAtFrom('');
+
     setCreatedAtTo('');
+
     setRatingFrom('');
+
     setRatingTo('');
   };
 

@@ -41,7 +41,9 @@ export function GallerySubmenu(): JSX.Element {
         href="?show=gallery-filter"
         onSelect={(_, e) => {
           e.preventDefault();
+
           dispatch(setActiveModal('gallery-filter'));
+
           closeMenu();
         }}
         active={filterIsActive}
@@ -53,7 +55,9 @@ export function GallerySubmenu(): JSX.Element {
         href="?show=gallery-upload"
         onSelect={(_, e) => {
           e.preventDefault();
+
           dispatch(setActiveModal('gallery-upload'));
+
           closeMenu();
         }}
       >
@@ -87,6 +91,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-createdAt'));
+
           closeMenu();
         }}
       >
@@ -97,6 +102,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-takenAt'));
+
           closeMenu();
         }}
       >
@@ -107,6 +113,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-rating'));
+
           closeMenu();
         }}
       >
@@ -117,6 +124,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-lastCommentedAt'));
+
           closeMenu();
         }}
       >
@@ -133,6 +141,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy(null));
+
           closeMenu();
         }}
       >
@@ -144,6 +153,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('mine'));
+
           closeMenu();
         }}
       >
@@ -155,6 +165,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('userId'));
+
           closeMenu();
         }}
       >
@@ -166,6 +177,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('rating'));
+
           closeMenu();
         }}
       >
@@ -177,6 +189,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('takenAt'));
+
           closeMenu();
         }}
       >
@@ -188,6 +201,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('createdAt'));
+
           closeMenu();
         }}
       >
@@ -199,6 +213,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('season'));
+
           closeMenu();
         }}
       >
