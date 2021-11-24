@@ -86,7 +86,9 @@ export function GalleryEditForm({
   const handleTagDelete = useCallback(
     (i: number) => {
       const tags = [...model.tags];
+
       tags.splice(i, 1);
+
       changeModel('tags', tags);
     },
     [changeModel, model.tags],
@@ -100,6 +102,7 @@ export function GalleryEditForm({
             ? error.slice(1)
             : (() => {
                 const v = getMessageByKey(m, error);
+
                 return typeof v === 'string' ? v : error;
               })()}
         </Alert>

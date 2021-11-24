@@ -115,6 +115,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
             type="button"
             onClick={() => {
               dispatch(authStartLogout());
+
               close();
             }}
           >

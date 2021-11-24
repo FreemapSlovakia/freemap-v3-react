@@ -22,6 +22,7 @@ export function TrackedDeviceForm(): ReactElement {
 
   const { device, forceNew } = useSelector((state) => {
     let device: TrackedDevice | undefined;
+
     let forceNew = false;
 
     if (state.tracking.modifiedTrackedDeviceId != null) {
@@ -31,6 +32,7 @@ export function TrackedDeviceForm(): ReactElement {
 
       if (!device) {
         device = { token: state.tracking.modifiedTrackedDeviceId };
+
         forceNew = true;
       }
     }

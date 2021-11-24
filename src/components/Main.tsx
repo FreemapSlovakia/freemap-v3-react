@@ -76,44 +76,74 @@ import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
 
 const objectsMenuFactory = () => import('fm3/components/ObjectsMenu');
+
 const routePlannerMenuFactory = () => import('fm3/components/RoutePlannerMenu');
+
 const trackViewerMenuFactory = () => import('fm3/components/TrackViewerMenu');
+
 const changesetsMenuFactory = () => import('fm3/components/ChangesetsMenu');
+
 const drawingLineSelectionFactory = () => import('./DrawingLineSelection');
+
 const drawingLinePointSelectionFactory = () =>
   import('./DrawingLinePointSelection');
+
 const drawingPointSelectionFactory = () => import('./DrawingPointSelection');
+
 const objectSelectionFactory = () => import('./ObjectSelection');
+
 const galleryPositionPickingMenuFactory = () =>
   import('./gallery/GalleryPositionPickingMenu');
+
 const galleryShowPositionMenuFactory = () =>
   import('./gallery/GalleryShowPositionMenu');
+
 const homeLocationPickingMenuFactory = () =>
   import('./HomeLocationPickingMenu');
+
 const adFactory = () => import('./Ad');
+
 const elevationChartFactory = () => import('fm3/components/ElevationChart');
+
 const drawingLinesToolFactory = () => import('./DrawingLinesTool');
+
 const trackingModalFactory = () =>
   import('fm3/components/tracking/TrackingModal');
+
 const accountModalFactory = () => import('fm3/components/AccountModal');
+
 const mapSettingsModalFactory = () => import('./MapSettingsModal');
+
 const embedMapModalFactory = () => import('fm3/components/EmbedMapModal');
+
 const exportGpxModalFactory = () => import('fm3/components/ExportGpxModal');
+
 const exportPdfModalFactory = () => import('fm3/components/ExportPdfModal');
+
 const documentModalFactory = () => import('fm3/components/DocumentModal');
+
 const aboutModalFactory = () => import('fm3/components/AboutModal');
+
 const supportUsModalFactory = () =>
   import('fm3/components/supportUsModal/SupportUsModal');
+
 const legendOutdoorModalFactory = () =>
   import('fm3/components/LegendOutdoorModal');
+
 const legendModalFactory = () => import('fm3/components/LegendModal');
+
 const drawingEditLabelModalFactory = () =>
   import('fm3/components/DrawingEditLabelModal');
+
 const trackViewerUploadModalFactory = () =>
   import('fm3/components/TrackViewerUploadModal');
+
 const loginModalFactory = () => import('fm3/components/LoginModal');
+
 const mapsModalFactory = () => import('./MapsModal');
+
 const removeAdsModalFactory = () => import('./RemoveAdsModal');
+
 const galleryFilterModalFactory = () =>
   import('fm3/components/gallery/GalleryFilterModal');
 
@@ -269,8 +299,11 @@ export function Main(): ReactElement {
   const onGpxDrop = useCallback(
     (trackGpx: string) => {
       dispatch(trackViewerSetTrackUID(null));
+
       dispatch(trackViewerSetData({ trackGpx }));
+
       dispatch(setActiveModal(null));
+
       dispatch(elevationChartClose());
     },
     [dispatch],

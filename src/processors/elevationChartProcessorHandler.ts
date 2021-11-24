@@ -67,7 +67,9 @@ async function resolveElevationProfilePointsViaApi(
   dispatch: Dispatch<RootAction>,
 ) {
   const totalDistanceInKm = turfLength(trackGeojson);
+
   const delta = Math.min(0.1, totalDistanceInKm / (window.innerWidth / 2));
+
   const elevationProfilePoints: {
     lat: number;
     lon: number;
@@ -77,6 +79,7 @@ async function resolveElevationProfilePointsViaApi(
 
   for (let dist = 0; dist <= totalDistanceInKm; dist += delta) {
     const [lon, lat] = getCoord(turfAlong(trackGeojson, dist));
+
     elevationProfilePoints.push({
       lat,
       lon,
@@ -107,6 +110,7 @@ async function resolveElevationProfilePointsViaApi(
   assertType<number[]>(data).forEach((ele: number, i: number) => {
     if (prevEle !== undefined) {
       const d = ele - prevEle;
+
       if (d > 0) {
         climbUp += d;
       } else {

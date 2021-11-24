@@ -11,6 +11,7 @@ export const trackViewerGpxLoadProcessor: Processor = {
   errorKey: 'trackViewer.fetchingError',
   handle: async ({ dispatch, getState }) => {
     const url = getState().trackViewer.gpxUrl;
+
     if (!url) {
       return;
     }

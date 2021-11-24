@@ -36,6 +36,7 @@ export function getHikingSkUrl(
 
   if (includePoint) {
     params['x'] = lon;
+
     params['y'] = lat;
   }
 

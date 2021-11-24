@@ -52,12 +52,17 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       switch (osmType) {
         case 'node':
           dispatch(osmLoadNode(id));
+
           break;
+
         case 'way':
           dispatch(osmLoadWay(id));
+
           break;
+
         case 'relation':
           dispatch(osmLoadRelation(id));
+
           break;
       }
     }

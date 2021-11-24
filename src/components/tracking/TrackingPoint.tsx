@@ -76,6 +76,8 @@ export const TrackingPoint = memo<TrackingPointProps>(
   },
 );
 
+TrackingPoint.displayName = 'TrackingPoint';
+
 export function tooltipText(
   df: Intl.DateTimeFormat,
   nf: Intl.NumberFormat,

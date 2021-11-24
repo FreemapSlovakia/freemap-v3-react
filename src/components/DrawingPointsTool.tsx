@@ -23,5 +23,6 @@ export function DrawingPointsTool(): null {
       [dispatch],
     ),
   );
+
   return null;
 }

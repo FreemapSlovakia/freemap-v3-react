@@ -40,6 +40,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     }
 
     let coords: LatLon | undefined;
+
     try {
       coords = parseCoordinates(query);
     } catch (e) {

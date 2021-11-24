@@ -65,6 +65,7 @@ export const objectsFetchProcessor: Processor = {
     }
 
     const b = (await mapPromise).getBounds();
+
     const bb = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
 
     const query =

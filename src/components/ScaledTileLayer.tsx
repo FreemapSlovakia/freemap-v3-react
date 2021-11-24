@@ -15,7 +15,9 @@ class LScaledTileLayer extends TileLayer {
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
+
     this.extraScales = extraScales;
+
     this.cors = cors;
   }
 
@@ -33,6 +35,7 @@ class LScaledTileLayer extends TileLayer {
 
       img.onerror = () => {
         img.removeAttribute('srcset');
+
         img.onerror = null;
       };
     }

@@ -70,6 +70,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           }
 
           break;
+
         case 'way':
           const w = ways[ref];
 
@@ -86,7 +87,9 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           }
 
           break;
+
         case 'relation':
+
         // TODO add support for relations in relation
         default:
           break;

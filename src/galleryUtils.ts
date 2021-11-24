@@ -29,6 +29,8 @@ function plusDay(d: Date | undefined | null): Date | undefined | null {
   }
 
   const r = new Date(d);
+
   r.setDate(r.getDate() + 1);
+
   return r;
 }

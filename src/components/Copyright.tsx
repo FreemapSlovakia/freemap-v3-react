@@ -130,6 +130,7 @@ export function Copyright(): ReactElement {
               as="button"
               onSelect={(_, e) => {
                 e.preventDefault();
+
                 setShow('licence');
               }}
             >
@@ -141,7 +142,9 @@ export function Copyright(): ReactElement {
                 href="?show=legend"
                 onSelect={(_, e) => {
                   e.preventDefault();
+
                   setShow(undefined);
+
                   dispatch(setActiveModal('legend'));
                 }}
               >
@@ -153,7 +156,9 @@ export function Copyright(): ReactElement {
               href="?tip=privacyPolicy"
               onSelect={(_, e) => {
                 e.preventDefault();
+
                 setShow(undefined);
+
                 dispatch(documentShow('privacyPolicy'));
               }}
             >

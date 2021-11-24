@@ -56,12 +56,15 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
     if (mapData.map) {
       if (payload.ignoreMap) {
         delete mapData.map.lat;
+
         delete mapData.map.lon;
+
         delete mapData.map.zoom;
       }
 
       if (payload.ignoreLayers) {
         delete mapData.map.mapType;
+
         delete mapData.map.overlays;
       }
     }

@@ -151,12 +151,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           ((e.ctrlKey || e.metaKey) && e.code === 'KeyF')
         ) {
           inputRef.current.focus();
+
           e.preventDefault();
         } else if (
           inputRef.current === document.activeElement &&
           e.code === 'Escape'
         ) {
           inputRef.current.blur();
+
           e.preventDefault();
         }
       }
@@ -192,6 +194,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       if (e) {
         e.preventDefault();
+
         e.stopPropagation();
       }
     }

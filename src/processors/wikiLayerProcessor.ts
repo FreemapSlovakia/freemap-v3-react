@@ -65,7 +65,9 @@ export const wikiLayerProcessor: Processor = {
           cancelActions: [mapRefocus],
           cancel: () => {
             cancelRegister.delete(cancelItem);
+
             window.clearTimeout(to);
+
             reject();
           },
         };

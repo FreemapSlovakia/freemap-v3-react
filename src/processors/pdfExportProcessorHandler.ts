@@ -54,15 +54,22 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   } = getState();
 
   let w: number | undefined = undefined;
+
   let n: number | undefined = undefined;
+
   let e: number | undefined = undefined;
+
   let s: number | undefined = undefined;
 
   if (area === 'visible') {
     const bounds = (await mapPromise).getBounds();
+
     w = bounds.getWest();
+
     n = bounds.getNorth();
+
     e = bounds.getEast();
+
     s = bounds.getSouth();
   } else {
     if (
@@ -73,8 +80,11 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
 
       for (const { lat, lon } of lines[selection.id].points) {
         w = Math.min(w === undefined ? 1000 : w, lon);
+
         n = Math.max(n === undefined ? -1000 : n, lat);
+
         e = Math.max(e === undefined ? -1000 : e, lon);
+
         s = Math.min(s === undefined ? 1000 : s, lat);
       }
     }

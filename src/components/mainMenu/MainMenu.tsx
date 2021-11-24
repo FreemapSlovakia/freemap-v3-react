@@ -126,6 +126,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         <Dropdown.Item
           onSelect={() => {
             closeMenu();
+
             dispatch(setActiveModal('login'));
           }}
         >
@@ -139,6 +140,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         as="button"
         onSelect={() => {
           closeMenu();
+
           dispatch(clearMap());
         }}
       >
@@ -149,6 +151,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         as="button"
         onSelect={() => {
           closeMenu();
+
           dispatch(setActiveModal('maps'));
         }}
       >

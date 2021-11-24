@@ -57,6 +57,7 @@ export function Ad(): ReactElement | null {
 
     script.onerror = () => {
       const a = document.createElement('a');
+
       a.href = 'https://rovas.app/node/35384';
 
       const img = document.createElement('img');
@@ -152,6 +153,7 @@ export function Ad(): ReactElement | null {
               dispatch(setActiveModal('remove-ads'));
             } else {
               dispatch(setActiveModal('login'));
+
               dispatch(removeAdsOnLogin());
             }
           }}

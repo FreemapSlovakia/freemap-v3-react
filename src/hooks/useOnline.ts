@@ -23,11 +23,14 @@ export function useOnline() {
 
   useEffect(() => {
     setOnline(navigator.onLine);
+
     window.addEventListener('online', onlineHandler);
+
     window.addEventListener('offline', offlineHandler);
 
     return () => {
       window.removeEventListener('online', onlineHandler);
+
       window.removeEventListener('offline', offlineHandler);
     };
   }, []);

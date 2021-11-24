@@ -363,6 +363,7 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
         undefined,
         toLatLon({ lat, lon }),
       );
+
       if (typeof altitude === 'number') {
         createElement(ptEle, 'ele', altitude.toString());
       }
@@ -390,19 +391,25 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
 
         if (typeof speed === 'number') {
           const elem = document.createElementNS(FM_NS, 'speed');
+
           elem.textContent = speed.toString();
+
           extEl.appendChild(elem);
         }
 
         if (typeof battery === 'number') {
           const elem = document.createElementNS(FM_NS, 'battery');
+
           elem.textContent = battery.toString();
+
           extEl.appendChild(elem);
         }
 
         if (typeof gsmSignal === 'number') {
           const elem = document.createElementNS(FM_NS, 'gsm_signal');
+
           elem.textContent = gsmSignal.toString();
+
           extEl.appendChild(elem);
         }
       }
@@ -455,7 +462,9 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 createElement(wptEle, 'name', feature.properties['name']);
               }
             }
+
             break;
+
           case 'MultiPoint': {
             if (pass === 'wpt') {
               for (const pt of g.coordinates) {
@@ -481,6 +490,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
 
             break;
           }
+
           case 'LineString': {
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
@@ -503,7 +513,9 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
 
             break;
           }
+
           case 'Polygon':
+
           case 'MultiLineString':
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
@@ -527,6 +539,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
             }
 
             break;
+
           case 'MultiPolygon':
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');

@@ -9,6 +9,7 @@ self.onmessage = (evt) => {
     self.postMessage({ id }, []);
   } catch (err) {
     console.error('error in gallery tile worker');
+
     console.error(err);
 
     self.postMessage(

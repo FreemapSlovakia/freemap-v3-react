@@ -15,6 +15,7 @@ export function useShow(show: boolean): true | null {
       const t = setTimeout(() => {
         setShown(false);
       }, 1000);
+
       return () => {
         clearTimeout(t);
       };

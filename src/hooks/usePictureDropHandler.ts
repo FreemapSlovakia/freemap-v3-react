@@ -11,10 +11,12 @@ function loadPreview(
   cb: (err?: unknown, dataUrl?: string) => void,
 ) {
   const img = new Image();
+
   const url = URL.createObjectURL(file);
 
   img.onerror = () => {
     URL.revokeObjectURL(url);
+
     cb(new Error());
   };
 
@@ -22,11 +24,15 @@ function loadPreview(
     URL.revokeObjectURL(url);
 
     const canvas = document.createElement('canvas');
+
     const ratio = 618 / img.naturalWidth;
+
     const width = img.naturalWidth * ratio;
+
     const height = img.naturalHeight * ratio;
 
     canvas.width = width;
+
     canvas.height = height;
 
     pica()
@@ -59,11 +65,13 @@ export function usePictureDropHandler(
 
       reader.onerror = () => {
         reader.abort();
+
         cb(new Error());
       };
 
       reader.onload = () => {
         let tags: { [key: string]: any };
+
         try {
           tags = ExifReader.load(reader.result as ArrayBuffer);
         } catch (e) {
@@ -85,6 +93,7 @@ export function usePictureDropHandler(
         // }
 
         const id = nextId;
+
         nextId += 1;
 
         const description = tags['description']
@@ -147,6 +156,7 @@ export function usePictureDropHandler(
               cb(err);
             } else {
               onItemChange({ id, url });
+
               cb();
             }
           });
@@ -189,8 +199,11 @@ function adaptGpsCoordinate(x: {
     // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
 
     const { description, value } = x;
+
     const p = /^(?:(\d+),)?(\d+(?:\.\d+)?)([NSWE])?$/;
+
     const m1 = p.exec(description);
+
     const m2 = p.exec(value);
 
     if (m1 && (!m2 || !m2[3])) {
@@ -221,6 +234,7 @@ function parseExifDateTime(s: string) {
   }
 
   const m = /^(\d+):(\d+):(\d+)(?: (\d+)(?::(\d+)(?::(\d+))?)?)?$/.exec(s);
+
   return (
     (m &&
       new Date(

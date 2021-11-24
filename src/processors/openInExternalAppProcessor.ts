@@ -49,6 +49,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
     switch (where) {
       case 'window':
         window.open(url);
+
         break;
 
       case 'facebook':
@@ -64,6 +65,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'twitter':
         popupCentered(getTwitterUrl(), 'twitter', 575, 280);
+
         break;
 
       case 'copy':
@@ -83,8 +85,11 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'josm': {
         let left: number;
+
         let right: number;
+
         let top: number;
+
         let bottom: number;
 
         if (includePoint) {
@@ -95,8 +100,11 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
           const bounds = (await mapPromise).getBounds();
 
           left = bounds.getWest();
+
           right = bounds.getEast();
+
           top = bounds.getNorth();
+
           bottom = bounds.getSouth();
         }
 
@@ -155,6 +163,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'zbgis':
         window.open(getZbgisUrl(lat, lon, zoom));
+
         break;
 
       case 'hiking.sk': {

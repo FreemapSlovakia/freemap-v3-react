@@ -67,11 +67,14 @@ export function TrackViewerResult({
       const smoothed = smoothElevations(getCoords(feature), eleSmoothingFactor);
 
       const eles = smoothed.map((coord) => coord[2]);
+
       const maxEle = Math.max(...eles);
+
       const minEle = Math.min(...eles);
 
       return smoothed.map((coord) => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
+
         return [coord[1], coord[0], color || 0] as const;
       });
     });
@@ -84,13 +87,19 @@ export function TrackViewerResult({
 
       return smoothed.map((coord) => {
         const [lon, lat, ele] = coord;
+
         const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
+
         let angle = 0;
+
         if (d > 0) {
           angle = (ele - prevCoord[2]) / d;
         }
+
         prevCoord = coord;
+
         const color = angle / 0.5 + 0.5;
+
         return [lat, lon, color || 0] as const;
       });
     });

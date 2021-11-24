@@ -81,6 +81,7 @@ export function TrackViewerDetailsInt({
 
   if (finishPoints.length) {
     const { lengthInKm } = finishPoints[0];
+
     tableData.push([
       'distance',
       `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`,
@@ -88,6 +89,7 @@ export function TrackViewerDetailsInt({
 
     if (duration) {
       const avgSpeed = (lengthInKm / duration) * 3600;
+
       tableData.push([
         'avgSpeed',
         `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`,

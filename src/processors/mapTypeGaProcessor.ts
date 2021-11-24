@@ -3,6 +3,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 let prevMapType: string | undefined;
+
 let prevOverlays: string[] = [];
 
 export const mapTypeGaProcessor: Processor = {

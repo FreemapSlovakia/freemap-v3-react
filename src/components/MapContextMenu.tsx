@@ -189,6 +189,7 @@ export function MapContextMenu(): ReactElement {
                   as="button"
                   onSelect={() => {
                     ctxMenuClose();
+
                     dispatch(
                       drawingMeasure({
                         position: {
