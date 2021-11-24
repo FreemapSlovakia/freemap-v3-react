@@ -666,7 +666,6 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     field_hockey: 'Field hockey',
     fitness: 'Fitness',
     floorball: 'Floorball',
-    football: 'Football',
     free_flying: 'Free flying',
     golf: 'Golf',
     gymnastics: 'Gymnastics',

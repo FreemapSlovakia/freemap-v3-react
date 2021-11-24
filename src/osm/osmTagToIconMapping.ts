@@ -1,38 +1,16 @@
-// import bicycle_parking from 'fm3/images/mapIcons/cycling-bicycle_parking.png';
-// import bicycle_rental from 'fm3/images/mapIcons/cycling-bicycle_rental.png';
-// import bicycle_stand from 'fm3/images/mapIcons/cycling-stand.png';
-// import emergency from 'fm3/images/mapIcons/health-emergency.png';
-// import ranger_house from 'fm3/images/mapIcons/hiking-ranger_house.png';
-// import battlefield from 'fm3/images/mapIcons/landmark-battlefield.png';
-// import border_control from 'fm3/images/mapIcons/transport-border_control.png';
-// import halt from 'fm3/images/mapIcons/transport-halt.png';
-// import helipad from 'fm3/images/mapIcons/transport-helipad.png';
-// import level_crossing from 'fm3/images/mapIcons/transport-level_crossing.png';
-// import traffic_signals from 'fm3/images/mapIcons/transport-traffic_signals.png';
-// import train from 'fm3/images/mapIcons/transport-train.png';
-// import tram_stop from 'fm3/images/mapIcons/transport-tram_stop.png';
-// import chateau from 'fm3/images/mapIcons/landmark-chateau.png';
-import college from 'fm3/images/mapIcons/education-college.png';
 import driving_school from 'fm3/images/mapIcons/education-driving_school.png';
-import kindergarten from 'fm3/images/mapIcons/education-kindergarten.png';
-import school from 'fm3/images/mapIcons/education-school.png';
 import university from 'fm3/images/mapIcons/education-university.png';
 import chapel from 'fm3/images/mapIcons/landmark-chapel.png';
 import zoo from 'fm3/images/mapIcons/other-zoo.png';
 import books from 'fm3/images/mapIcons/shopping-books.png';
 import archery from 'fm3/images/mapIcons/sport-archery.png';
-import baseball from 'fm3/images/mapIcons/sport-baseball.png';
-import canoe from 'fm3/images/mapIcons/sport-canoe.png';
 import climbing from 'fm3/images/mapIcons/sport-climbing.png';
 import diving from 'fm3/images/mapIcons/sport-diving.png';
-import football from 'fm3/images/mapIcons/sport-football.png';
 import gym from 'fm3/images/mapIcons/sport-gym.png';
-import gymnastics from 'fm3/images/mapIcons/sport-gymnastics.png';
 import hockey from 'fm3/images/mapIcons/sport-hockey.png';
 import motor from 'fm3/images/mapIcons/sport-motor.png';
 import skating from 'fm3/images/mapIcons/sport-skating.png';
 import skiing from 'fm3/images/mapIcons/sport-skiing.png';
-import soccer from 'fm3/images/mapIcons/sport-soccer.png';
 import swimming from 'fm3/images/mapIcons/sport-swimming.png';
 import team_handball from 'fm3/images/mapIcons/sport-team_handball.png';
 import tennis from 'fm3/images/mapIcons/sport-tennis.png';
@@ -89,6 +67,9 @@ import drinking_spring from 'fm3/images/poiIcons/drinking_spring.svg';
 import drinking_water from 'fm3/images/poiIcons/drinking_water.svg';
 import dyke from 'fm3/images/poiIcons/dyke.svg';
 import earth_bank from 'fm3/images/poiIcons/earth_bank.svg';
+import college from 'fm3/images/poiIcons/education/college.svg';
+import kindergarten from 'fm3/images/poiIcons/education/nursery.svg';
+import school from 'fm3/images/poiIcons/education/school.svg';
 import elevator from 'fm3/images/poiIcons/elevator.svg';
 import embankment from 'fm3/images/poiIcons/embankment.svg';
 import emergency_phone from 'fm3/images/poiIcons/emergency_phone.svg';
@@ -247,6 +228,9 @@ import shop_video_games from 'fm3/images/poiIcons/shop/video_games.svg';
 import shower from 'fm3/images/poiIcons/shower.svg';
 import sinkhole from 'fm3/images/poiIcons/sinkhole.svg';
 import social_facility from 'fm3/images/poiIcons/social_facility.svg';
+import baseball from 'fm3/images/poiIcons/sport/baseball.svg';
+import gymnastics from 'fm3/images/poiIcons/sport/gymnasium.svg';
+import soccer from 'fm3/images/poiIcons/sport/soccer.svg';
 import spring from 'fm3/images/poiIcons/spring.svg';
 import statue from 'fm3/images/poiIcons/statue.svg';
 import stile from 'fm3/images/poiIcons/stile.svg';
@@ -585,12 +569,10 @@ export const osmTagToIconMapping: Node = {
   sport: {
     archery,
     baseball,
-    canoe,
     climbing,
     cycling: shop_bicycle,
     diving,
     equestrian: horse_riding,
-    football,
     free_flying,
     golf,
     gym,

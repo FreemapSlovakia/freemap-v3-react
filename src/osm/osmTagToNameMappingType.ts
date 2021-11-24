@@ -663,7 +663,6 @@ export type OsmTagToNameMapping = {
     field_hockey: string;
     fitness: string;
     floorball: string;
-    football: string;
     free_flying: string;
     golf: string;
     gymnastics: string;
