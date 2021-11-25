@@ -37,6 +37,20 @@ if (window.location.search === '?reset-local-storage') {
   storage.clear();
 }
 
+// workaround to fix blurring menus on hidpi desktop chrome
+if (
+  window.devicePixelRatio > 1 &&
+  navigator.userAgent.includes('Chrome/') &&
+  !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(
+    navigator.userAgent,
+  )
+) {
+  document.documentElement.style.setProperty(
+    '--scroller-mix-blend-mode',
+    'none',
+  );
+}
+
 document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 
 const store = createReduxStore();
