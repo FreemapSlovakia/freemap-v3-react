@@ -16,6 +16,7 @@ Priame stiahnutie mapy Slovenska a Freemap štýlu pre program niektoré program
 - [štýl pre mapu V5](locus-actions://http/proxy.freemap.sk/locus/locus-theme-v5.xml)
 
 Staršia verzia (mapa aktualizovaná, štýl už nie)
+
 - [mapa Slovenska V3](locus-actions://http/download.freemap.sk/LocusMap/map_freemap_slovakia.xml)
 - [štýl pre mapu V3](locus-actions://http/download.freemap.sk/LocusMap/theme_freemap_slovakia.xml)
 
@@ -26,6 +27,7 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 - [štýl pre mapu V5](orux-mf-theme://proxy.freemap.sk/locus/freemapV5.zip)
 
 Staršia verzia (mapa aktualizovaná, štýl už nie)
+
 - [mapa Slovenska V3](orux-map://proxy.freemap.sk/locus/slovakia-topo-osm-srtm.zip)
 - [štýl pre mapu V3](orux-mf-theme://proxy.freemap.sk/locus/orux_theme.zip)
 
