@@ -106,3 +106,5 @@ export function LoginModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default LoginModal;

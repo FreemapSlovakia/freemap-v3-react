@@ -5,7 +5,7 @@ import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from 'fm3/actions/trackViewerActions';
-import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useGpxDropHandler } from 'fm3/hooks/useGpxDropHandler';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/trackViewer.scss';
 import { ReactElement, useCallback } from 'react';
@@ -16,6 +16,8 @@ import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
+
+export default TrackViewerUploadModal;
 
 export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -29,8 +31,11 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const handleUpload = useCallback(
     (trackGpx: string) => {
       dispatch(trackViewerSetTrackUID(null));
+
       dispatch(trackViewerSetData({ trackGpx, focus: true }));
+
       dispatch(setActiveModal(null));
+
       dispatch(elevationChartClose());
     },
     [dispatch],

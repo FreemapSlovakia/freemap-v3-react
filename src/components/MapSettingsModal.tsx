@@ -1,4 +1,5 @@
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   baseLayers,
@@ -24,14 +25,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default MapSettingsModal;
+
 export function MapSettingsModal({ show }: Props): ReactElement {
   const initLayersSettings = useSelector((state) => state.map.layersSettings);
 
   const initOverlayPaneOpacity = useSelector(
     (state) => state.map.overlayPaneOpacity,
   );
-
-  const language = useSelector((state) => state.l10n.language);
 
   const m = useMessages();
 
@@ -53,7 +54,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     ({ type }) => type === selectedLayer,
   );
 
-  const nf = Intl.NumberFormat(language, {
+  const nf = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });

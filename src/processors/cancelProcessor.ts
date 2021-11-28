@@ -8,6 +8,7 @@ export const cancelProcessor: Processor = {
       for (const cancelAction of cancelActions) {
         if (isActionOf(cancelAction, action)) {
           cancel();
+
           break;
         }
       }

@@ -2,9 +2,9 @@ import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
 import { ShowModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { basicModals } from 'fm3/constants';
+import { documents as allTips } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { tips as allTips } from 'fm3/tips';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
@@ -25,10 +25,10 @@ export const urlProcessor: Processor = {
       drawingLines,
       gallery: { filter: galleryFilter },
       main,
-      tips,
       tracking,
       maps,
       search,
+      objects,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -57,7 +57,7 @@ export const urlProcessor: Processor = {
       routePlanner.mode,
       routePlanner.start,
       routePlanner.transportType,
-      tips.tip,
+      main.documentKey,
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
       trackViewer.gpxUrl,
@@ -67,6 +67,7 @@ export const urlProcessor: Processor = {
       trackViewer.trackUID,
       maps.id,
       main.tool,
+      objects.active,
     ];
 
     if (
@@ -221,6 +222,10 @@ export const urlProcessor: Processor = {
       ]);
     }
 
+    if (objects.active.length) {
+      historyParts.push(['objects', objects.active.join(';')]);
+    }
+
     if (
       is<ShowModal>(main.activeModal) &&
       basicModals.includes(main.activeModal)
@@ -228,12 +233,8 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (
-      main.activeModal === 'tips' &&
-      tips.tip &&
-      is<typeof allTips[number][0]>(tips.tip)
-    ) {
-      queryParts.push(['tip', tips.tip]);
+    if (main.documentKey && is<typeof allTips[number][0]>(main.documentKey)) {
+      queryParts.push(['tip', main.documentKey]);
     }
 
     if (main.embedFeatures.length) {

@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
@@ -17,6 +17,8 @@ export function AboutModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
+  const language = useSelector((state) => state.l10n.language);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -24,6 +26,7 @@ export function AboutModal({ show }: Props): ReactElement {
           <FaRegAddressCard /> {m?.mainMenu.contacts}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <h3>{m?.contacts.ngo}</h3>
         <address>
@@ -88,7 +91,14 @@ export function AboutModal({ show }: Props): ReactElement {
           </li>
         </ul>
       </Modal.Body>
+
       <Modal.Footer>
+        {(language === 'sk' || language === 'cs') && (
+          <Button variant="link" href="https://oz.freemap.sk/">
+            Ako sa stať členom?
+          </Button>
+        )}
+
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close}
         </Button>
@@ -96,3 +106,5 @@ export function AboutModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default AboutModal;

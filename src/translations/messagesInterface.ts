@@ -53,6 +53,9 @@ export type Messages = {
     load: string;
     unnamed: string;
     enablePopup: string;
+    componentLoadingError: string;
+    offline: string;
+    experimentalFunction: string;
   };
   selections: {
     objects: string;
@@ -277,9 +280,9 @@ export type Messages = {
   };
   mainMenu: {
     title: string;
-    logOut: (name: string) => string;
+    logOut: string;
     logIn: string;
-    settings: string;
+    account: string;
     gpxExport: string;
     mapExports: string;
     embedMap: string;
@@ -464,10 +467,6 @@ export type Messages = {
     selectPointToJoin: string;
   };
   settings: {
-    tab: {
-      map: string;
-      account: string;
-    };
     map: {
       overlayPaneOpacity: string;
       homeLocation: {
@@ -534,12 +533,13 @@ export type Messages = {
   objects: {
     type: string;
     lowZoomAlert: {
-      message: string;
+      message({ minZoom }: { minZoom: number }): string;
       zoom: string;
     };
-    fetchingError: ({ err }: Err) => string;
-    categories: Record<number, string>;
-    subcategories: Record<number, string>;
+    tooManyPoints({ limit }: { limit: number }): string;
+    fetchingError({ err }: Err): string;
+    // categories: Record<number, string>;
+    // subcategories: Record<number, string>;
   };
   external: {
     openInExternal: string;
@@ -577,17 +577,7 @@ export type Messages = {
     enableLocateMe: string;
   };
   tips: {
-    previous: string;
-    next: string;
-    showOnStartup: string;
     errorLoading: string;
-  };
-  supportUs: {
-    explanation: string;
-    account: string;
-    paypal: string;
-    thanks: string;
-    registration: string;
   };
   gpxExport: {
     export: string;
@@ -817,5 +807,15 @@ export type Messages = {
     info: ReactNode;
     continue: string;
     success: string;
+  };
+  offline: {
+    offlineMode: string;
+    cachingActive: string;
+    clearCache: string;
+    dataSource: string;
+    networkOnly: string;
+    networkFirst: string;
+    cacheFirst: string;
+    cacheOnly: string;
   };
 };

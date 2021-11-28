@@ -1,5 +1,5 @@
 import { selectFeature } from 'fm3/actions/mainActions';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { ReactElement, ReactNode } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';

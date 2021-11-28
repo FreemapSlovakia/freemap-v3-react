@@ -1,5 +1,4 @@
 import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
-import axios from 'axios';
 import { GalleryColorizeBy, GalleryFilter } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
 import {
@@ -8,7 +7,7 @@ import {
   GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
-import qs from 'query-string';
+import { stringify } from 'query-string';
 import { renderGalleryTile } from './galleryTileRenderrer';
 
 type GalleryLayerOptions = GridLayerOptions & {
@@ -53,11 +52,13 @@ function createWorker() {
 
   w.onerror = (err) => {
     console.error('worker error');
+
     console.error(err);
   };
 
   w.onmessageerror = (err) => {
     console.error('worker message error');
+
     console.error(err);
   };
 
@@ -93,13 +94,29 @@ let supportsOffscreen: boolean | undefined = undefined;
 class LGalleryLayer extends LGridLayer {
   private _options?: GalleryLayerOptions;
 
+  private _acm = new Map<string, AbortController>();
+
   constructor(options?: GalleryLayerOptions) {
     super(options);
+
     this._options = options;
+
+    this.on('tileunload', ({ coords }: { coords: Coords }) => {
+      const key = `${coords.x}/${coords.y}/${coords.z}`;
+
+      const ac = this._acm.get(key);
+
+      if (ac) {
+        ac.abort();
+
+        this._acm.delete(key);
+      }
+    });
   }
 
   createTile(coords: Coords, done: DoneCallback) {
     const size = this.getTileSize();
+
     const map = this._map;
 
     const pointAa = map.unproject(
@@ -125,7 +142,9 @@ class LGalleryLayer extends LGridLayer {
     const tile = document.createElement('canvas');
 
     const dpr = window.devicePixelRatio || 1;
+
     tile.width = size.x * dpr;
+
     tile.height = size.y * dpr;
 
     const colorizeBy = this._options?.colorizeBy ?? null;
@@ -142,10 +161,18 @@ class LGalleryLayer extends LGridLayer {
       }
     }
 
-    axios
-      .get(`${process.env['API_URL']}/gallery/pictures`, {
-        // .get(`https://backend.freemap.sk/gallery/pictures`, {
-        params: {
+    const controller = new AbortController();
+
+    const key = `${coords.x}/${coords.y}/${coords.z}`;
+
+    this._acm.set(key, controller);
+
+    const { signal } = controller;
+
+    // https://backend.freemap.sk/gallery/pictures
+    fetch(
+      `${process.env['API_URL']}/gallery/pictures?` +
+        stringify({
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
@@ -155,11 +182,21 @@ class LGalleryLayer extends LGridLayer {
               : colorizeBy === 'season'
               ? 'takenAt'
               : colorizeBy,
-        },
-        paramsSerializer: (params) => qs.stringify(params),
-        validateStatus: (status) => status === 200,
+        }).toString(),
+      {
+        signal,
+      },
+    )
+      .then((response) => {
+        if (response.status !== 200) {
+          throw new Error('unexpected status ' + response.status);
+        }
+
+        return response.json();
       })
-      .then(({ data }) => {
+      .then((data) => {
+        this._acm.delete(key);
+
         const ctx = {
           data,
           dpr,
@@ -198,8 +235,13 @@ class LGalleryLayer extends LGridLayer {
         done(undefined, tile);
       })
       .catch((err) => {
-        console.error(err);
+        if (!String(err).includes('abort')) {
+          console.error(err);
+        }
+
         done(err);
+
+        this._acm.delete(key);
       });
 
     return tile;

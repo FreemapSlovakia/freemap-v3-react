@@ -10,6 +10,7 @@ import {
   getOsmUrl,
   getPeakfinderUrl,
   getTwitterUrl,
+  getWazeUrl,
   getZbgisUrl,
 } from 'fm3/externalUrlUtils';
 import { useMessages } from 'fm3/l10nInjector';
@@ -38,6 +39,7 @@ interface Props extends LatLon {
   url?: string;
   onSelect?: () => void;
   showKbdShortcut?: boolean;
+  copy?: boolean;
 }
 
 export function OpenInExternalAppDropdownItems({
@@ -51,6 +53,7 @@ export function OpenInExternalAppDropdownItems({
   url,
   onSelect,
   showKbdShortcut,
+  copy = true,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -118,7 +121,7 @@ export function OpenInExternalAppDropdownItems({
         </>
       )}
 
-      {!url && hasClipboard && (
+      {!url && hasClipboard && copy && (
         <Dropdown.Item as="button" eventKey="copy" onSelect={handleSelect}>
           <FaClipboard /> {m?.general.copyPageUrl}
           {showKbdShortcut && (
@@ -136,7 +139,7 @@ export function OpenInExternalAppDropdownItems({
         </Dropdown.Item>
       )}
 
-      {!url && (hasClipboard || hasShare) && <Dropdown.Divider />}
+      {!url && ((!!hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
 
       <Dropdown.Item as="button" eventKey="facebook" onSelect={handleSelect}>
         <FaFacebook /> Facebook
@@ -241,6 +244,14 @@ export function OpenInExternalAppDropdownItems({
         onSelect={handleSelect}
       >
         OpenStreetCam
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        href={getWazeUrl(lat, lon, zoom)}
+        target="_blank"
+        onSelect={handleSelect}
+      >
+        Waze
       </Dropdown.Item>
 
       <Dropdown.Item

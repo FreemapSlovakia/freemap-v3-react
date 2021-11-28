@@ -88,6 +88,10 @@ kbd {
   gap: 0.25rem;
 }
 
+.f-gap-2 {
+  gap: 0.5rem;
+}
+
 .dropdown-item {
   @media (pointer: coarse) {
     padding: 0.5rem 1.5rem;

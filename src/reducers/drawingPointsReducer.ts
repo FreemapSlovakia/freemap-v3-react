@@ -33,7 +33,9 @@ export const drawingPointsReducer = createReducer<
   .handleAction(drawingPointChangePosition, (state, { payload }) =>
     produce(state, (draft) => {
       const point = draft.points[payload.index];
+
       point.lat = payload.lat;
+
       point.lon = payload.lon;
     }),
   )

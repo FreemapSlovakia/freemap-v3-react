@@ -4,7 +4,6 @@ import {
   mapSetLayersSettings,
   mapSetOverlayPaneOpacity,
 } from 'fm3/actions/mapActions';
-import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -18,7 +17,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       layersSettings,
       overlayPaneOpacity,
       trackViewerEleSmoothingFactor,
-      preventTips,
       user,
     } = action.payload;
 
@@ -35,7 +33,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
           name: user.name,
           email: user.email,
           sendGalleryEmails: user.sendGalleryEmails,
-          preventTips,
           settings: {
             layersSettings,
             overlayPaneOpacity,
@@ -57,10 +54,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
 
     if (trackViewerEleSmoothingFactor !== undefined) {
       dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
-    }
-
-    if (preventTips !== undefined) {
-      dispatch(tipsPreventNextTime({ value: preventTips, save: false }));
     }
 
     dispatch(

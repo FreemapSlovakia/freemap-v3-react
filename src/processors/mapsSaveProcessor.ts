@@ -85,7 +85,9 @@ function getMapDataFromState(state: DefaultRootState): MapData {
       mode: routePlanner.mode,
       milestones: routePlanner.milestones,
     },
-    objects: objects.objects,
+    objectsV2: {
+      active: objects.active,
+    },
     galleryFilter: gallery.filter,
     trackViewer,
     map: {

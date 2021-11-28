@@ -1,17 +1,17 @@
-import { authStartLogout } from 'fm3/actions/authActions';
 import {
   clearMap,
+  documentShow,
   Modal,
   setActiveModal,
   setTool,
   Tool,
 } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
+import { DocumentKey } from 'fm3/documents';
 import { useMessages } from 'fm3/l10nInjector';
-import { TipKey } from 'fm3/tips';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaBullseye,
@@ -22,6 +22,7 @@ import {
   FaDownload,
   FaEraser,
   FaExternalLinkAlt,
+  FaFlask,
   FaHeart,
   FaLanguage,
   FaMobileAlt,
@@ -29,7 +30,6 @@ import {
   FaRegFilePdf,
   FaRegMap,
   FaSignInAlt,
-  FaSignOutAlt,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
@@ -48,13 +48,13 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const handleTipSelect = useCallback(
-    (tip: string | null, e: SyntheticEvent<unknown>) => {
+    (key: string | null, e: SyntheticEvent<unknown>) => {
       e.preventDefault();
 
       closeMenu();
 
-      if (is<TipKey>(tip)) {
-        dispatch(tipsShow(tip));
+      if (is<DocumentKey>(key)) {
+        dispatch(documentShow(key));
       }
     },
     [closeMenu, dispatch],
@@ -116,18 +116,17 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
 
       {user ? (
         <Dropdown.Item
-          as="button"
-          onSelect={() => {
-            closeMenu();
-            dispatch(authStartLogout());
-          }}
+          eventKey="account"
+          href="?show=account"
+          onSelect={showModal}
         >
-          <FaSignOutAlt /> {m?.mainMenu.logOut(user.name)}
+          <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
         </Dropdown.Item>
       ) : (
         <Dropdown.Item
           onSelect={() => {
             closeMenu();
+
             dispatch(setActiveModal('login'));
           }}
         >
@@ -135,20 +134,13 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         </Dropdown.Item>
       )}
 
-      <Dropdown.Item
-        eventKey="settings"
-        href="?show=settings"
-        onSelect={showModal}
-      >
-        <FaCog /> {m?.mainMenu.settings} <kbd>e</kbd> <kbd>s</kbd>
-      </Dropdown.Item>
-
       <Dropdown.Divider />
 
       <Dropdown.Item
         as="button"
         onSelect={() => {
           closeMenu();
+
           dispatch(clearMap());
         }}
       >
@@ -159,6 +151,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         as="button"
         onSelect={() => {
           closeMenu();
+
           dispatch(setActiveModal('maps'));
         }}
       >
@@ -214,7 +207,23 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         <FaBullseye /> {m?.tools.tracking}
         <FaChevronRight />
       </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={handleSubmenuSelect}
+        eventKey="offline"
+      >
+        <BiWifiOff />{' '}
+        <FaFlask
+          title={m?.general.experimentalFunction}
+          className="text-warning"
+        />{' '}
+        {m?.offline.offlineMode}
+        <FaChevronRight />
+      </Dropdown.Item>
+
       <Dropdown.Divider />
+
       <Dropdown.Item
         as="button"
         onSelect={handleSubmenuSelect}
@@ -222,6 +231,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
       </Dropdown.Item>
+
       <Dropdown.Item
         href="?show=export-pdf"
         eventKey="export-pdf"
@@ -229,6 +239,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaRegFilePdf /> {m?.mainMenu.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
+
       <Dropdown.Item
         eventKey="export-gpx"
         href="?show=export-gpx"
@@ -236,6 +247,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaDownload /> {m?.mainMenu.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
       </Dropdown.Item>
+
       <Dropdown.Item
         eventKey="exports"
         href="?tip=exports"
@@ -243,13 +255,17 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       >
         <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
+
       <Dropdown.Item eventKey="embed" href="?show=embed" onSelect={showModal}>
         <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
       </Dropdown.Item>
+
       <Dropdown.Divider />
+
       <Dropdown.Item as="button" onSelect={handleSubmenuSelect} eventKey="help">
         <FaBook /> {m?.mainMenu.help} <FaChevronRight />
       </Dropdown.Item>
+
       <Dropdown.Item
         href="?show=supportUs"
         eventKey="supportUs"

@@ -14,6 +14,8 @@ import { RiScissorsFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
+export default DrawingLinePointSelection;
+
 export function DrawingLinePointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 

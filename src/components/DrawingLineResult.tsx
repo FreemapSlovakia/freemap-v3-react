@@ -119,10 +119,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       };
 
       DomEvent.on(mapContainer, 'touchstart', handleTouchStart);
+
       DomEvent.on(mapContainer, 'touchend', handleTouchEnd);
 
       return () => {
         DomEvent.off(mapContainer, 'touchstart', handleTouchStart);
+
         DomEvent.off(mapContainer, 'touchend', handleTouchEnd);
       };
     }
@@ -130,6 +132,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   function addPoint(lat: number, lon: number, position: number, id0: number) {
     handleDragStart();
+
     const pos = position ? Math.ceil(position / 2) : points.length;
 
     let id: number | undefined;
@@ -183,8 +186,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       if (i < points.length - 1 || line.type === 'polygon') {
         const p1 = points[i];
+
         const p2 = points[(i + 1) % points.length];
+
         const lat = (p1.lat + p2.lat) / 2;
+
         const lon = (p1.lon + p2.lon) / 2;
 
         ps.push({

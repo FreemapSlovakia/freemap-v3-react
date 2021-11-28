@@ -142,16 +142,20 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
 
       if (action.payload === 'next') {
         const { imageIds, activeImageId } = draft;
+
         if (imageIds) {
           const index = imageIds.findIndex((id) => id === activeImageId);
+
           if (index + 1 < imageIds.length) {
             set(imageIds[index + 1]);
           }
         }
       } else if (action.payload === 'prev') {
         const { imageIds, activeImageId } = draft;
+
         if (imageIds) {
           const index = imageIds.findIndex((id) => id === activeImageId);
+
           if (index > 0) {
             set(imageIds[index - 1]);
           }
@@ -198,6 +202,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       if (!state.editModel) {
         throw new Error('editModel is null');
       }
+
       s.editModel = {
         ...state.editModel,
         dirtyPosition: state.pickingPosition
@@ -217,10 +222,12 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
           : item,
       );
     }
+
     return s;
   })
   .handleAction(gallerySetItemForPositionPicking, (state, action) => {
     let x: GalleryItem | undefined;
+
     return {
       ...state,
       pickingPositionForId: action.payload,

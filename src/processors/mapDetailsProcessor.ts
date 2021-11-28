@@ -8,8 +8,9 @@ import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions
 import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { distance } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { OverpassElement } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
@@ -22,14 +23,10 @@ const cancelType = [
   getType(mapDetailsSetUserSelectedPosition),
 ];
 
-interface OverpassElement {
+interface SimpleOverpassElement {
   id: number;
   type: 'node' | 'way' | 'relation';
   tags?: Record<string, string>;
-}
-
-interface OverpassResult {
-  elements: OverpassElement[];
 }
 
 export const mapDetailsProcessor: Processor = {
@@ -38,14 +35,12 @@ export const mapDetailsProcessor: Processor = {
   handle: async ({ dispatch, getState }) => {
     const { userSelectedLat, userSelectedLon } = getState().mapDetails;
 
-    const le = getMapLeafletElement();
-
-    if (!le) {
+    if (userSelectedLat === null || userSelectedLon === null) {
       return;
     }
 
     const kvFilter =
-      '[~"^(amenity|highway|waterway|border|landuse|route|building|man_made|natural|leisure|information|shop|tourism|barrier|sport|place|power|boundary|railway|aerialway|historic)$"~"."]';
+      '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
 
     const [{ data }, { data: data1 }] = await Promise.all([
       httpRequest({
@@ -56,9 +51,10 @@ export const mapDetailsProcessor: Processor = {
         data:
           '[out:json];(' +
           `nwr(around:33,${userSelectedLat},${userSelectedLon})${kvFilter};` +
-          ');out tags;',
+          ');out tags center;',
         expectedStatus: 200,
       }),
+
       httpRequest({
         getState,
         method: 'POST',
@@ -72,16 +68,37 @@ export const mapDetailsProcessor: Processor = {
       }),
     ]);
 
-    const oRes = assertType<OverpassResult>(data);
+    const oRes = assertType<{
+      elements: OverpassElement[];
+    }>(data);
 
-    const oRes1 = assertType<OverpassResult>(data1);
+    console.log(oRes.elements);
+
+    oRes.elements.sort((a, b) => {
+      return (
+        distance(
+          userSelectedLat,
+          userSelectedLon,
+          a.type === 'node' ? a.lat : a.center.lat,
+          a.type === 'node' ? a.lon : a.center.lon,
+        ) -
+        distance(
+          userSelectedLat,
+          userSelectedLon,
+          b.type === 'node' ? b.lat : b.center.lat,
+          b.type === 'node' ? b.lon : b.center.lon,
+        )
+      );
+    });
+
+    const oRes1 = assertType<{ elements: SimpleOverpassElement[] }>(data1);
 
     const res1Set = new Set(oRes1.elements.map((item) => item.id));
 
     const elements = [
-      ...oRes1.elements,
       ...oRes.elements.filter((item) => !res1Set.has(item.id)), // remove dupes
-    ].reverse();
+      ...oRes1.elements.reverse(),
+    ];
 
     const sr: SearchResult[] = [];
 
@@ -97,6 +114,7 @@ export const mapDetailsProcessor: Processor = {
           });
 
           break;
+
         case 'way':
           sr.push({
             id: element.id,
@@ -105,6 +123,7 @@ export const mapDetailsProcessor: Processor = {
           });
 
           break;
+
         case 'relation':
           {
             sr.push({

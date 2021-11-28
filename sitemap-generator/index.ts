@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
 import htm from 'htm';
-import marked from 'marked';
+import { marked } from 'marked';
 import vhtml from 'vhtml';
 import { objects } from './objects';
 
@@ -81,7 +81,6 @@ async function gen() {
                 >export mapy do PDF, SVG, PNG a JPEG</a
               >
             </li>
-            <li><a href="/?layers=X&show=settings&lang=sk">nastavenia</a></li>
             <li>
               <a href="/?layers=X&show=supportUs&lang=sk">podporte Freemap</a>
             </li>
@@ -106,7 +105,7 @@ async function gen() {
   //     'about',
   //     'export-gpx',
   //     'export-pdf',
-  //     'settings',
+  //     'account',
   //     'embed',
   //     'supportUs',
   //     'tracking-watched',
@@ -115,9 +114,9 @@ async function gen() {
   //   ].map((modal) => `https://www.freemap.sk/?layers=X&show=${modal}&lang=sk`),
   // );
 
-  const tipsDir = '../src/tips';
+  const documentsDir = '../src/documents';
 
-  for (const tip of await readdir(tipsDir)) {
+  for (const tip of await readdir(documentsDir)) {
     if (tip.endsWith('.md')) {
       await writeFile(
         `../sitemap/layers=X&tip=${tip.slice(0, -3)}&lang=sk`,
@@ -146,7 +145,9 @@ async function gen() {
             </head>
 
             <body>
-              ${raw(marked(await readFile(tipsDir + '/' + tip, 'utf-8')))}
+              ${raw(
+                marked.parse(await readFile(documentsDir + '/' + tip, 'utf-8')),
+              )}
             </body>
           </html>`,
       );

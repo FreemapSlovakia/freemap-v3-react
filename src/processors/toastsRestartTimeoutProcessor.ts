@@ -11,6 +11,7 @@ export const toastsRestartTimeoutProcessor: Processor<
 
     if (tm) {
       timeoutMap.delete(id);
+
       if (tm.timeoutId) {
         clearTimeout(tm.timeoutId);
       }

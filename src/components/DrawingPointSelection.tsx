@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton';
 import { Selection } from './Selection';
 
+export default DrawingPointSelection;
+
 export function DrawingPointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 

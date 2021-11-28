@@ -5,6 +5,8 @@ import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
+export default DrawingLinesTool;
+
 export function DrawingLinesTool(): null {
   const selection = useSelector((state) => state.main.selection);
 

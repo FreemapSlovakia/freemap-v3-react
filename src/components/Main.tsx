@@ -4,8 +4,8 @@ import {
   GalleryItem,
   galleryMergeItem,
 } from 'fm3/actions/galleryActions';
-import { setActiveModal, setTool } from 'fm3/actions/mainActions';
-import { mapRefocus, mapSetLeafletReady } from 'fm3/actions/mapActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
@@ -13,54 +13,26 @@ import {
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
 } from 'fm3/actions/trackViewerActions';
-import {
-  AsyncAboutModal,
-  AsyncDrawingEditLabelModal,
-  AsyncElevationChart,
-  AsyncEmbedMapModal,
-  AsyncExportGpxModal,
-  AsyncExportPdfModal,
-  AsyncGalleryFilterModal,
-  AsyncLegendModal,
-  AsyncLegendOutdoorModal,
-  AsyncLoginModal,
-  AsyncMapSettingsModal,
-  AsyncSettingsModal,
-  AsyncSupportUsModal,
-  AsyncTipsModal,
-  AsyncTrackingModal,
-  AsyncTrackViewerUploadModal,
-} from 'fm3/components/AsyncComponents';
-import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
-import { DrawingLineSelection } from 'fm3/components/DrawingLineSelection';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { DrawingPointSelection } from 'fm3/components/DrawingPointSelection';
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
 import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
-import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
-import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
-import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
 import { Layers } from 'fm3/components/Layers';
 import { LocationResult } from 'fm3/components/LocationResult';
 import { MapControls } from 'fm3/components/MapControls';
 import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
-import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
 import { ObjectsResult } from 'fm3/components/ObjectsResult';
-import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
 import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
-import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
-import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
-import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
-import { useMouseCursor } from 'fm3/hooks/mouseCursorHook';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
-import { useShareFile } from 'fm3/hooks/shareFileHook';
+import { useGpxDropHandler } from 'fm3/hooks/useGpxDropHandler';
+import { useMouseCursor } from 'fm3/hooks/useMouseCursor';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
+import { useShareFile } from 'fm3/hooks/useShareFile';
 import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
@@ -69,7 +41,6 @@ import {
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from 'fm3/selectors/mainSelectors';
-import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -84,14 +55,13 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import CloseButton from 'react-bootstrap/CloseButton';
 import { useDropzone } from 'react-dropzone';
-import { FaChartArea, FaTimes } from 'react-icons/fa';
+import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
-import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
+import { usePictureDropHandler } from '../hooks/usePictureDropHandler';
 import fmLogo from '../images/freemap-logo-print.png';
-import { Ad } from './Ad';
-import { DrawingLinePointSelection } from './DrawingLinePointSelection';
-import { DrawingLinesTool } from './DrawingLinesTool';
+import { AsyncComponent } from './AsyncComponent';
+import { AsyncModal } from './AsyncModal';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult';
@@ -99,13 +69,83 @@ import { MainMenuButton } from './mainMenu/MainMenuButton';
 import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
-import { MapsModal } from './MapsModal';
-import { ObjectSelection } from './ObjectSelection';
-import { RemoveAdsModal } from './RemoveAdsModal';
 import { SelectionTool } from './SelectionTool';
+import { ToolMenu } from './ToolMenu';
 import { TrackingSelection } from './TrackingSelection';
 import { useHtmlMeta } from './useHtmlMeta';
 import { WikiLayer } from './WikiLayer';
+
+const objectsMenuFactory = () => import('fm3/components/ObjectsMenu');
+
+const routePlannerMenuFactory = () => import('fm3/components/RoutePlannerMenu');
+
+const trackViewerMenuFactory = () => import('fm3/components/TrackViewerMenu');
+
+const changesetsMenuFactory = () => import('fm3/components/ChangesetsMenu');
+
+const drawingLineSelectionFactory = () => import('./DrawingLineSelection');
+
+const drawingLinePointSelectionFactory = () =>
+  import('./DrawingLinePointSelection');
+
+const drawingPointSelectionFactory = () => import('./DrawingPointSelection');
+
+const objectSelectionFactory = () => import('./ObjectSelection');
+
+const galleryPositionPickingMenuFactory = () =>
+  import('./gallery/GalleryPositionPickingMenu');
+
+const galleryShowPositionMenuFactory = () =>
+  import('./gallery/GalleryShowPositionMenu');
+
+const homeLocationPickingMenuFactory = () =>
+  import('./HomeLocationPickingMenu');
+
+const adFactory = () => import('./Ad');
+
+const elevationChartFactory = () => import('fm3/components/ElevationChart');
+
+const drawingLinesToolFactory = () => import('./DrawingLinesTool');
+
+const trackingModalFactory = () =>
+  import('fm3/components/tracking/TrackingModal');
+
+const accountModalFactory = () => import('fm3/components/AccountModal');
+
+const mapSettingsModalFactory = () => import('./MapSettingsModal');
+
+const embedMapModalFactory = () => import('fm3/components/EmbedMapModal');
+
+const exportGpxModalFactory = () => import('fm3/components/ExportGpxModal');
+
+const exportPdfModalFactory = () => import('fm3/components/ExportPdfModal');
+
+const documentModalFactory = () => import('fm3/components/DocumentModal');
+
+const aboutModalFactory = () => import('fm3/components/AboutModal');
+
+const supportUsModalFactory = () =>
+  import('fm3/components/supportUsModal/SupportUsModal');
+
+const legendOutdoorModalFactory = () =>
+  import('fm3/components/LegendOutdoorModal');
+
+const legendModalFactory = () => import('fm3/components/LegendModal');
+
+const drawingEditLabelModalFactory = () =>
+  import('fm3/components/DrawingEditLabelModal');
+
+const trackViewerUploadModalFactory = () =>
+  import('fm3/components/TrackViewerUploadModal');
+
+const loginModalFactory = () => import('fm3/components/LoginModal');
+
+const mapsModalFactory = () => import('./MapsModal');
+
+const removeAdsModalFactory = () => import('./RemoveAdsModal');
+
+const galleryFilterModalFactory = () =>
+  import('fm3/components/gallery/GalleryFilterModal');
 
 export function Main(): ReactElement {
   const m = useMessages();
@@ -145,9 +185,7 @@ export function Main(): ReactElement {
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const showGalleryPicker = useSelector((state) =>
-    showGalleryPickerSelector(state),
-  );
+  const showGalleryPicker = useSelector(showGalleryPickerSelector);
 
   const showMenu = useSelector(
     (state) =>
@@ -170,8 +208,6 @@ export function Main(): ReactElement {
 
   useEffect(() => {
     setMapLeafletElement(map);
-
-    dispatch(mapSetLeafletReady(map !== null));
   }, [dispatch, map]);
 
   useMouseCursor(map?.getContainer());
@@ -263,8 +299,11 @@ export function Main(): ReactElement {
   const onGpxDrop = useCallback(
     (trackGpx: string) => {
       dispatch(trackViewerSetTrackUID(null));
+
       dispatch(trackViewerSetData({ trackGpx }));
+
       dispatch(setActiveModal(null));
+
       dispatch(elevationChartClose());
     },
     [dispatch],
@@ -318,19 +357,13 @@ export function Main(): ReactElement {
     noClick: true,
   });
 
-  const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
-
   const isSelecting = useSelector(selectingModeSelector);
 
   const selectionMenu = showMenu ? selectionType : null;
 
-  const sc1 = useScrollClasses('horizontal');
+  const scLogo = useScrollClasses('horizontal');
 
-  const sc2 = useScrollClasses('horizontal');
-
-  const sc3 = useScrollClasses('horizontal');
-
-  const sc4 = useScrollClasses('horizontal');
+  const scMapControls = useScrollClasses('horizontal');
 
   const drawingLines = useSelector(drawingLinePolys);
 
@@ -378,6 +411,18 @@ export function Main(): ReactElement {
     (state) => state.main.selectingHomeLocation,
   );
 
+  const documentKey = useSelector((state) => state.main.documentKey);
+
+  const showPosition = useSelector((state) => state.gallery.showPosition);
+
+  const pickingPosition = useSelector(
+    (state) => state.gallery.pickingPositionForId !== null,
+  );
+
+  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+
+  const hasObjects = useSelector((state) => state.objects.objects.length > 0);
+
   return (
     <>
       <style>
@@ -400,12 +445,13 @@ export function Main(): ReactElement {
         {YellowBar && showInfoBar && language === 'sk' && !window.fmEmbedded && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
+
             <YellowBar />
           </div>
         )}
 
         <div className="menus">
-          <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc2}>
+          <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
             <div />
 
             <Card className="fm-toolbar mx-2 mt-2">
@@ -414,11 +460,13 @@ export function Main(): ReactElement {
                 className={progress ? 'in-progress' : 'idle'}
                 onClick={handleLogoClick}
               />
+
               {!window.fmEmbedded && showMenu && <MainMenuButton />}
+
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                 <SearchMenu
                   hidden={!showMenu}
-                  preventShortcut={!!activeModal}
+                  preventShortcut={!!activeModal || !!documentKey}
                 />
               )}
             </Card>
@@ -434,12 +482,14 @@ export function Main(): ReactElement {
                     onClick={() => dispatch(trackViewerToggleElevationChart())}
                   >
                     <FaChartArea />
+
                     <span className="d-none d-sm-inline">
                       {' '}
                       {m?.general.elevationProfile}
                     </span>
                   </Button>
                 )}
+
                 {routeFound && (
                   <Button
                     className={trackFound ? 'ml-1' : ''}
@@ -449,6 +499,7 @@ export function Main(): ReactElement {
                     title={m?.general.elevationProfile ?? '…'}
                   >
                     <FaChartArea />
+
                     <span className="d-none d-sm-inline">
                       {' '}
                       {m?.general.elevationProfile ?? '…'}
@@ -459,93 +510,75 @@ export function Main(): ReactElement {
             </Card>
           )}
 
-          {/* tool menus */}
-          {showMenu && tool && (
-            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc1}>
-              <div />
+          {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
 
-              <Card className="fm-toolbar mx-2 mt-2">
-                <ButtonToolbar>
-                  {toolDef && (
-                    <span className="align-self-center ml-1 mr-2">
-                      {toolDef.icon}
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.tools[toolDef.msgKey]}
-                      </span>
-                    </span>
-                  )}
-                  <Button
-                    className="ml-1"
-                    variant="secondary"
-                    // size="sm"
-                    onClick={() => dispatch(setTool(null))}
-                    title={m?.general.close + ' [Esc]'}
-                  >
-                    <FaTimes />
-                  </Button>
-                  {tool === 'objects' && <ObjectsMenu />}
-                  {tool === 'route-planner' && <RoutePlannerMenu />}
-                  {tool === 'track-viewer' && <TrackViewerMenu />}
-                  {tool === 'changesets' && <ChangesetsMenu />}
-                  {tool === 'map-details' && <MapDetailsMenu />}
-                </ButtonToolbar>
-              </Card>
-            </div>
+          {showMenu &&
+            (!tool ? null : tool === 'objects' ? (
+              <AsyncComponent factory={objectsMenuFactory} />
+            ) : tool === 'route-planner' ? (
+              <AsyncComponent factory={routePlannerMenuFactory} />
+            ) : tool === 'track-viewer' ? (
+              <AsyncComponent factory={trackViewerMenuFactory} />
+            ) : tool === 'changesets' ? (
+              <AsyncComponent factory={changesetsMenuFactory} />
+            ) : tool === 'map-details' ? (
+              <MapDetailsMenu />
+            ) : (
+              <ToolMenu />
+            ))}
+
+          {showMenu && showMapsMenu && <MapsMenu />}
+
+          {selectionMenu === 'draw-line-poly' ? (
+            <AsyncComponent factory={drawingLineSelectionFactory} />
+          ) : selectionMenu === 'line-point' ? (
+            <AsyncComponent factory={drawingLinePointSelectionFactory} />
+          ) : selectionMenu === 'draw-points' ? (
+            <AsyncComponent factory={drawingPointSelectionFactory} />
+          ) : selectionMenu === 'objects' ? (
+            <AsyncComponent factory={objectSelectionFactory} />
+          ) : selectionMenu === 'tracking' ? (
+            <TrackingSelection />
+          ) : null}
+
+          {pickingPosition && (
+            <AsyncComponent factory={galleryPositionPickingMenuFactory} />
           )}
 
-          {showMenu && showMapsMenu && (
-            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc4}>
-              <div />
-              <Card className="fm-toolbar mx-2 mt-2">
-                <ButtonToolbar>
-                  <MapsMenu />
-                </ButtonToolbar>
-              </Card>
-            </div>
+          {showPosition && (
+            <AsyncComponent factory={galleryShowPositionMenuFactory} />
           )}
 
-          {/* selections */}
-          {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
-          {selectionMenu === 'line-point' && <DrawingLinePointSelection />}
-          {selectionMenu === 'draw-points' && <DrawingPointSelection />}
-          {selectionMenu === 'objects' && <ObjectSelection />}
-          {selectionMenu === 'tracking' && <TrackingSelection />}
+          {selectingHomeLocation !== false && (
+            <AsyncComponent factory={homeLocationPickingMenuFactory} />
+          )}
 
-          <GalleryPositionPickingMenu />
-          <GalleryShowPositionMenu />
-          <HomeLocationPickingMenu />
-
-          {showAds && <Ad />}
+          {showAds && <AsyncComponent factory={adFactory} />}
         </div>
-        {showElevationChart && <AsyncElevationChart />}
+
+        {showElevationChart && (
+          <AsyncComponent factory={elevationChartFactory} />
+        )}
       </div>
 
       <div className="fm-type-zoom-control">
         <div>
-          <div className="fm-ib-scroller fm-ib-scroller-bottom" ref={sc3}>
+          <div
+            className="fm-ib-scroller fm-ib-scroller-bottom"
+            ref={scMapControls}
+          >
             <div />
+
             <MapControls />
           </div>
         </div>
+
         <Copyright />
       </div>
 
       <div {...getRootProps()}>
-        {isDragActive && (
-          <div
-            // TODO as class
-            style={{
-              backgroundColor: 'rgba(217,237,247,50%)',
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              zIndex: 20000,
-            }}
-          />
-        )}
+        {isDragActive && <div className="fm-drag-to-map" />}
+
         <input {...getInputProps()} />
         <div onClickCapture={handleMapWrapperClick}>
           <MapContainer
@@ -566,18 +599,27 @@ export function Main(): ReactElement {
               <>
                 {tool === 'map-details' && <MapDetailsTool />}
                 {tool === 'draw-points' && <DrawingPointsTool />}
-                {drawingLines && <DrawingLinesTool />}
+                {drawingLines && (
+                  <AsyncComponent factory={drawingLinesToolFactory} />
+                )}
                 {isSelecting && <SelectionTool />}
 
                 {showInteractiveLayer && (
                   <>
                     <SearchResults />
-                    <ObjectsResult />
+                    {hasObjects && <ObjectsResult />}
                     <RoutePlannerResult />
                     <DrawingLinesResult />
                     <DrawingPointsResult />
                     <LocationResult />
-                    <TrackViewerResult />
+                    {trackGeojson && (
+                      <AsyncComponent
+                        factory={() =>
+                          import('fm3/components/TrackViewerResult')
+                        }
+                        trackGeojson={trackGeojson}
+                      />
+                    )}
                     <ChangesetsResult />
                     <TrackingResult />
                   </>
@@ -595,7 +637,8 @@ export function Main(): ReactElement {
             <GalleryResult />
           </MapContainer>
         </div>
-        <AsyncTrackingModal
+
+        <AsyncModal
           show={
             !!activeModal &&
             [
@@ -603,26 +646,87 @@ export function Main(): ReactElement {
               'tracking-watched',
             ].includes(activeModal)
           }
+          factory={trackingModalFactory}
         />
-        <AsyncSettingsModal show={activeModal === 'settings'} />
-        <AsyncMapSettingsModal show={activeModal === 'mapSettings'} />
-        <AsyncEmbedMapModal show={activeModal === 'embed'} />
-        <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
-        <AsyncExportPdfModal show={activeModal === 'export-pdf'} />
-        <AsyncTipsModal show={activeModal === 'tips'} />
-        <AsyncAboutModal show={activeModal === 'about'} />
-        <AsyncSupportUsModal show={activeModal === 'supportUs'} />
+
+        <AsyncModal
+          show={activeModal === 'account'}
+          factory={accountModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'mapSettings'}
+          factory={mapSettingsModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'embed'}
+          factory={embedMapModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'export-gpx'}
+          factory={exportGpxModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'export-pdf'}
+          factory={exportPdfModalFactory}
+        />
+
+        <AsyncModal
+          show={!activeModal && documentKey !== null}
+          factory={documentModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'about'}
+          factory={aboutModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'supportUs'}
+          factory={supportUsModalFactory}
+        />
         {mapType === 'X' ? (
-          <AsyncLegendOutdoorModal show={activeModal === 'legend'} />
+          <AsyncModal
+            show={activeModal === 'legend'}
+            factory={legendOutdoorModalFactory}
+          />
         ) : (
-          <AsyncLegendModal show={activeModal === 'legend'} />
+          <AsyncModal
+            show={activeModal === 'legend'}
+            factory={legendModalFactory}
+          />
         )}
-        <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
-        <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
-        <AsyncLoginModal show={activeModal === 'login'} />
-        <MapsModal show={activeModal === 'maps'} />
-        <RemoveAdsModal show={activeModal === 'remove-ads'} />
-        <AsyncGalleryFilterModal show={activeModal === 'gallery-filter'} />
+
+        <AsyncModal
+          show={activeModal === 'edit-label'}
+          factory={drawingEditLabelModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'upload-track'}
+          factory={trackViewerUploadModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'login'}
+          factory={loginModalFactory}
+        />
+
+        <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
+
+        <AsyncModal
+          show={activeModal === 'remove-ads'}
+          factory={removeAdsModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'gallery-filter'}
+          factory={galleryFilterModalFactory}
+        />
+
         <GalleryModals />
       </div>
     </>

@@ -8,7 +8,7 @@ import {
 } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -40,6 +40,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     }
 
     let coords: LatLon | undefined;
+
     try {
       coords = parseCoordinates(query);
     } catch (e) {
@@ -66,9 +67,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       return;
     }
 
-    const le = getMapLeafletElement();
-    const bbox = le ? le.getBounds().toBBoxString() : undefined;
-
     const { data } = await httpRequest({
       getState,
       url: 'https://nominatim.openstreetmap.org/search',
@@ -81,7 +79,9 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         namedetails: 0, // TODO maybe use some more details
         limit: 20,
         'accept-language': getState().l10n.language,
-        viewbox: action.payload.fromUrl ? undefined : bbox,
+        viewbox: action.payload.fromUrl
+          ? undefined
+          : (await mapPromise).getBounds().toBBoxString(),
       },
       expectedStatus: 200,
       cancelActions: [clearMap, searchSetQuery],

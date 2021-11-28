@@ -68,6 +68,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
 
         if (item) {
           lang = item.lang;
+
           title = item['*'];
 
           break;

@@ -3,6 +3,7 @@ import {
   elevationChartRemoveActivePoint,
   elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/elevationChart.scss';
 import {
@@ -27,6 +28,8 @@ const ticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((k) =>
   [1, 2.5, 2, 5].map((x) => x * 10 ** k),
 );
 
+export default ElevationChart;
+
 export function ElevationChart(): ReactElement | null {
   const m = useMessages();
 
@@ -36,14 +39,12 @@ export function ElevationChart(): ReactElement | null {
     (state) => state.elevationChart.elevationProfilePoints || [],
   );
 
-  const language = useSelector((state) => state.l10n.language);
-
-  const nf0 = Intl.NumberFormat(language, {
+  const nf0 = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
 
-  const nf1 = Intl.NumberFormat(language, {
+  const nf1 = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
@@ -108,6 +109,7 @@ export function ElevationChart(): ReactElement | null {
     for (const pt of elevationProfilePoints) {
       if (pt.distance > (d / (width - ml - mr)) * x) {
         dispatch(elevationChartSetActivePoint(pt));
+
         break;
       }
     }
@@ -115,6 +117,7 @@ export function ElevationChart(): ReactElement | null {
 
   const handleMouseOut = () => {
     setMouseX(undefined);
+
     dispatch(elevationChartRemoveActivePoint());
   };
 
@@ -125,6 +128,7 @@ export function ElevationChart(): ReactElement | null {
   useEffect(() => {
     const ro = new ResizeObserver((e) => {
       setWidth(e[0].contentRect.width);
+
       setHeight(e[0].contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
@@ -182,12 +186,16 @@ export function ElevationChart(): ReactElement | null {
     };
 
     window.addEventListener('mousedown', handleMouseDown);
+
     window.addEventListener('mouseup', handleMouseUp);
+
     window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
+
       window.removeEventListener('mouseup', handleMouseUp);
+
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);

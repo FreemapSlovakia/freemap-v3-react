@@ -1,5 +1,5 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { useTextInputState } from 'fm3/hooks/inputHooks';
+import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
 import Button from 'react-bootstrap/Button';

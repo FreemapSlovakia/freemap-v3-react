@@ -8,10 +8,10 @@ export function getOsmUrl(
   includePoint?: boolean,
 ): string {
   return includePoint
-    ? `https://www.openstreetmap.org/#map=${Math.min(zoom, 19)}/${lat.toFixed(
+    ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=${zoom}`
+    : `https://www.openstreetmap.org/#map=${Math.min(zoom, 19)}/${lat.toFixed(
         5,
-      )}/${lon.toFixed(5)}`
-    : `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=${zoom}`;
+      )}/${lon.toFixed(5)}`;
 }
 
 export function getZbgisUrl(lat: number, lon: number, zoom: number): string {
@@ -36,6 +36,7 @@ export function getHikingSkUrl(
 
   if (includePoint) {
     params['x'] = lon;
+
     params['y'] = lat;
   }
 
@@ -66,6 +67,10 @@ export function getMapyCzUrl(
   return `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
     zoom > 19 ? 19 : zoom
   }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`;
+}
+
+export function getWazeUrl(lat: number, lon: number, zoom: number): string {
+  return `https://www.waze.com/ul?ll=${lat},${lon}&zoom=${zoom}&navigate=yes`;
 }
 
 export function getOpenStreetCamUrl(

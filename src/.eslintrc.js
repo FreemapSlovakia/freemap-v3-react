@@ -41,6 +41,20 @@ module.exports = {
     'react/react-in-jsx-scope': 0,
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    'react/self-closing-comp': [
+      'warn',
+      {
+        component: true,
+        html: true,
+      },
+    ],
+    'padding-line-between-statements': [
+      'warn',
+      { blankLine: 'always', prev: '*', next: '*' },
+      { blankLine: 'any', prev: 'import', next: '*' },
+      { blankLine: 'any', prev: 'export', next: '*' },
+    ],
+    curly: ['warn', 'all'],
   },
   globals: {
     L: true,

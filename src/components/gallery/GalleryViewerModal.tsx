@@ -18,6 +18,7 @@ import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/gallery.scss';
 import {
@@ -52,6 +53,8 @@ import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 
 type Props = { show: boolean };
 
+export default GalleryViewerModal;
+
 export function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
 
@@ -73,8 +76,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const allTags = useSelector((state) => state.gallery.tags);
 
-  const language = useSelector((state) => state.l10n.language);
-
   const [loading, setLoading] = useState(true);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -89,12 +90,14 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   if (activeImageId2 !== activeImageId) {
     setLoading(true);
+
     setActiveImageId(activeImageId2);
   }
 
   useEffect(() => {
     function handleFullscreenChange() {
       setIsFullscreen(document.fullscreenElement === fullscreenElement.current);
+
       setImgKey((imgKey) => imgKey + 1);
     }
 
@@ -144,6 +147,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const handleCommentFormSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
+
       dispatch(gallerySubmitComment());
     },
     [dispatch],
@@ -162,6 +166,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const handleSave = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       dispatch(gallerySavePicture());
     },
     [dispatch],
@@ -190,7 +195,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   // TODO const loadingMeta = !image || image.id !== activeImageId;
 
-  const dateFormat = new Intl.DateTimeFormat(language, {
+  const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -290,6 +295,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
+
                   dispatch(galleryRequestImage('prev'));
                 }}
               >
@@ -309,6 +315,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
+
                   dispatch(galleryRequestImage('next'));
                 }}
               >

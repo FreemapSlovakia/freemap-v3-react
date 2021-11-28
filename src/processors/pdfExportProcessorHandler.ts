@@ -11,7 +11,7 @@ import axios from 'axios';
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
@@ -32,12 +32,6 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   getState,
   action,
 }) => {
-  const le = getMapLeafletElement();
-
-  if (!le) {
-    return;
-  }
-
   const {
     scale,
     area,
@@ -60,15 +54,22 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   } = getState();
 
   let w: number | undefined = undefined;
+
   let n: number | undefined = undefined;
+
   let e: number | undefined = undefined;
+
   let s: number | undefined = undefined;
 
   if (area === 'visible') {
-    const bounds = le.getBounds();
+    const bounds = (await mapPromise).getBounds();
+
     w = bounds.getWest();
+
     n = bounds.getNorth();
+
     e = bounds.getEast();
+
     s = bounds.getSouth();
   } else {
     if (
@@ -79,8 +80,11 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
 
       for (const { lat, lon } of lines[selection.id].points) {
         w = Math.min(w === undefined ? 1000 : w, lon);
+
         n = Math.max(n === undefined ? -1000 : n, lat);
+
         e = Math.max(e === undefined ? -1000 : e, lon);
+
         s = Math.min(s === undefined ? 1000 : s, lat);
       }
     }

@@ -1,7 +1,7 @@
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
@@ -77,10 +77,8 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const set = new Set(action.payload.exportables);
 
-  const le = getMapLeafletElement();
-
-  if (le && set.has('pictures')) {
-    const b = le.getBounds();
+  if (set.has('pictures')) {
+    const b = (await mapPromise).getBounds();
 
     const { data } = await httpRequest({
       getState,
@@ -365,6 +363,7 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
         undefined,
         toLatLon({ lat, lon }),
       );
+
       if (typeof altitude === 'number') {
         createElement(ptEle, 'ele', altitude.toString());
       }
@@ -392,19 +391,25 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
 
         if (typeof speed === 'number') {
           const elem = document.createElementNS(FM_NS, 'speed');
+
           elem.textContent = speed.toString();
+
           extEl.appendChild(elem);
         }
 
         if (typeof battery === 'number') {
           const elem = document.createElementNS(FM_NS, 'battery');
+
           elem.textContent = battery.toString();
+
           extEl.appendChild(elem);
         }
 
         if (typeof gsmSignal === 'number') {
           const elem = document.createElementNS(FM_NS, 'gsm_signal');
+
           elem.textContent = gsmSignal.toString();
+
           extEl.appendChild(elem);
         }
       }
@@ -457,7 +462,9 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 createElement(wptEle, 'name', feature.properties['name']);
               }
             }
+
             break;
+
           case 'MultiPoint': {
             if (pass === 'wpt') {
               for (const pt of g.coordinates) {
@@ -483,6 +490,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
 
             break;
           }
+
           case 'LineString': {
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
@@ -505,7 +513,9 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
 
             break;
           }
+
           case 'Polygon':
+
           case 'MultiLineString':
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
@@ -529,6 +539,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
             }
 
             break;
+
           case 'MultiPolygon':
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');

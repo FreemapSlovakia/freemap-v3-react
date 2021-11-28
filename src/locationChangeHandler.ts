@@ -17,6 +17,7 @@ import {
   gallerySetFilter,
 } from 'fm3/actions/galleryActions';
 import {
+  documentShow,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -32,19 +33,18 @@ import {
   osmLoadWay,
 } from 'fm3/actions/osmActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
 } from 'fm3/actions/trackViewerActions';
+import { DocumentKey } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
-import { TipKey } from 'fm3/tips';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
@@ -54,6 +54,7 @@ import { is } from 'typescript-is';
 import { RootAction } from './actions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { mapsLoad } from './actions/mapsActions';
+import { objectsSetFilter } from './actions/objectsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
 import { basicModals, tools } from './constants';
@@ -64,7 +65,7 @@ import { TrackedDevice } from './types/trackingTypes';
 
 export const handleLocationChange = (
   store: MyStore,
-  location: Location<{ sq?: string }>,
+  location: Location,
 ): void => {
   const { getState, dispatch } = store;
 
@@ -82,6 +83,7 @@ export const handleLocationChange = (
     dispatch(
       mapsLoad({
         id,
+        skipLoading: !!sq,
         ignoreMap: 'map' in parsedQuery,
         ignoreLayers: 'layers' in parsedQuery,
       }),
@@ -129,16 +131,17 @@ export const handleLocationChange = (
       const { start, finish, midpoints, transportType, mode, milestones } =
         getState().routePlanner;
 
-      const latLons = points
-        .map((point) => (point ? { lat: point[0], lon: point[1] } : null))
-        .filter((x): x is LatLon => !!x);
+      const latLons = points.map((point) =>
+        point ? { lat: point[0], lon: point[1] } : null,
+      );
 
       const nextStart = latLons[0];
 
-      const nextMidpoints = latLons.slice(1, latLons.length - 1);
+      const nextMidpoints = latLons
+        .slice(1, latLons.length - 1)
+        .filter((x): x is LatLon => !!x);
 
-      const nextFinish =
-        latLons.length > 1 ? latLons[latLons.length - 1] : null;
+      const nextFinish = latLons[latLons.length - 1];
 
       if (
         query['transport'] !== transportType ||
@@ -211,6 +214,7 @@ export const handleLocationChange = (
   }
 
   const trackUID = query['track-uid'];
+
   if (
     typeof trackUID === 'string' &&
     getState().trackViewer.trackUID !== trackUID
@@ -219,6 +223,7 @@ export const handleLocationChange = (
   }
 
   const colorizeTrackBy = query['track-colorize-by'];
+
   if (typeof colorizeTrackBy === 'string') {
     if (getState().trackViewer.colorizeTrackBy !== colorizeTrackBy) {
       dispatch(trackViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
@@ -230,6 +235,7 @@ export const handleLocationChange = (
   handleInfoPoint(getState, dispatch, query);
 
   const changesetsDay = query['changesets-days'];
+
   if (typeof changesetsDay === 'string') {
     const urlDays = parseInt(changesetsDay, 10);
 
@@ -256,7 +262,9 @@ export const handleLocationChange = (
     }
   } else if (getState().changesets.changesets.length) {
     dispatch(changesetsSetDays(null));
+
     dispatch(changesetsSetAuthorName(null));
+
     dispatch(changesetsSet([]));
   }
 
@@ -273,14 +281,16 @@ export const handleLocationChange = (
 
       const points = line
         .split(',')
-        .map((point) => point.split('/').map((coord) => parseFloat(coord)))
+        .map((point) =>
+          point
+            .split('/')
+            .map((coord) => parseFloat(coord))
+            .filter((x) => !isNaN(x)),
+        )
+        .filter((pair) => pair.length == 2)
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
 
-      if (
-        points.every(
-          (point) => !Number.isNaN(point.lat) && !Number.isNaN(point.lon),
-        )
-      ) {
+      if (points.length > 0) {
         lines.push({
           type:
             key === 'distance-measurement-points' || key === 'line'
@@ -304,22 +314,28 @@ export const handleLocationChange = (
 
   if (transformed) {
     const { lat, lon } = transformed;
+
     dispatch(drawingPointAdd({ lat, lon }));
   }
 
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
+
   if (f2) {
     const { lat, lon, label } = f2;
+
     dispatch(drawingPointAdd({ lat, lon, label }));
   }
 
   const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */
+
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
 
   const osmNode = query['osm-node'];
+
   const osmNodeId = typeof osmNode === 'string' && parseInt(osmNode, 10);
+
   if (osmNodeId) {
     if (osmNodeId !== getState().search.osmNodeId) {
       dispatch(osmLoadNode(osmNodeId));
@@ -329,7 +345,9 @@ export const handleLocationChange = (
   }
 
   const osmWay = query['osm-way'];
+
   const osmWayId = typeof osmWay === 'string' && parseInt(osmWay, 10);
+
   if (osmWayId) {
     if (osmWayId !== getState().search.osmWayId) {
       dispatch(osmLoadWay(osmWayId));
@@ -339,6 +357,7 @@ export const handleLocationChange = (
   }
 
   const osmRelation = query['osm-relation'];
+
   const osmRelationId =
     typeof osmRelation === 'string' && parseInt(osmRelation, 10);
 
@@ -373,44 +392,64 @@ export const handleLocationChange = (
     dispatch(setActiveModal(null));
   }
 
-  if (typeof query['tip'] === 'string' && is<TipKey>(query['tip'])) {
-    if (
-      getState().main.activeModal !== 'tips' ||
-      getState().tips.tip !== query['tip']
-    ) {
-      dispatch(tipsShow(query['tip']));
+  const tip = query['tip'];
+
+  if (typeof tip === 'string' && is<DocumentKey>(tip)) {
+    if (getState().main.documentKey !== tip) {
+      dispatch(documentShow(tip));
     }
-  } else if (getState().main.activeModal === 'tips') {
-    dispatch(setActiveModal(null));
+  } else if (getState().main.documentKey) {
+    dispatch(documentShow(null));
   }
 
-  if ((query['embed'] ?? '') !== getState().main.embedFeatures.join(',')) {
+  const embed = query['embed'];
+
+  if ((embed ?? '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
-        !query['embed'] || typeof query['embed'] !== 'string'
-          ? []
-          : query['embed'].split(','),
+        embed && typeof embed === 'string' ? embed.split(',') : [],
+      ),
+    );
+  }
+
+  const objects = query['objects'];
+
+  if ((objects ?? '') !== getState().objects.active.join(';')) {
+    dispatch(
+      objectsSetFilter(
+        objects && typeof objects === 'string' ? objects.split(';') : [],
       ),
     );
   }
 
   const { track } = query;
+
   const trackings = !track ? [] : Array.isArray(track) ? track : [track];
+
   const parsedTd: TrackedDevice[] = [];
 
   for (const tracking of trackings) {
     const [id, ...parts] = tracking.split('/');
+
     let fromTime: Date | null = null;
+
     let maxAge: number | null = null;
+
     let maxCount: number | null = null;
+
     let label: string | null = null;
+
     let color: string | null = null;
+
     let width: number | null = null;
+
     let splitDistance: number | null = null;
+
     let splitDuration: number | null = null;
 
     for (const part of parts) {
       const m = /^([a-z]+):(.+)/.exec(part);
+
       if (!m) {
         continue;
       }
@@ -420,28 +459,44 @@ export const handleLocationChange = (
       switch (type) {
         case 'f':
           fromTime = new Date(value);
+
           break;
+
         case 'a':
           maxAge = Number.parseInt(value, 10);
+
           break;
+
         case 'w':
           width = Number.parseFloat(value);
+
           break;
+
         case 'c':
           color = value;
+
           break;
+
         case 'n':
           maxCount = Number.parseInt(value, 10);
+
           break;
+
         case 'l':
           label = value;
+
           break;
+
         case 'sd':
           splitDistance = Number.parseInt(value, 10);
+
           break;
+
         case 'st':
           splitDuration = Number.parseInt(value, 10);
+
           break;
+
         default:
           break;
       }
@@ -507,27 +562,35 @@ function handleGallery(
   query: ParsedQuery<string>,
 ) {
   let a = query['gallery-user-id'];
+
   const qUserId = typeof a === 'string' ? parseInt(a, 10) : undefined;
 
   a = query['gallery-tag'];
+
   const qGalleryTag = typeof a === 'string' ? a : undefined;
 
   a = query['gallery-rating-from'];
+
   const qRatingFrom = typeof a === 'string' ? parseFloat(a) : undefined;
 
   a = query['gallery-rating-to'];
+
   const qRatingTo = typeof a === 'string' ? parseFloat(a) : undefined;
 
   a = query['gallery-taken-at-from'];
+
   const qTakenAtFrom = typeof a === 'string' ? new Date(a) : undefined;
 
   a = query['gallery-taken-at-to'];
+
   const qTakenAtTo = typeof a === 'string' ? new Date(a) : undefined;
 
   a = query['gallery-created-at-from'];
+
   const qCreatedAtFrom = typeof a === 'string' ? new Date(a) : undefined;
 
   a = query['gallery-created-at-to'];
+
   const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
 
   if (
@@ -541,7 +604,9 @@ function handleGallery(
     qCreatedAtTo
   ) {
     const { filter } = getState().gallery;
+
     const newFilter: GalleryFilter = {};
+
     if (qUserId && filter.userId !== qUserId) {
       newFilter.userId = qUserId;
     }
@@ -589,6 +654,7 @@ function handleGallery(
     ) {
       newFilter.createdAtTo = qCreatedAtTo;
     }
+
     if (Object.keys(newFilter).length !== 0) {
       dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
@@ -641,6 +707,7 @@ function handleInfoPoint(
 
   // backward compatibility
   const ipl = query['info-point-label'];
+
   if (ipl && ips.length) {
     ips[0].label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
   }
@@ -672,7 +739,7 @@ function serializePoints(line: Line): string {
     .join(',')}`;
 }
 
-function serializePoint(point: LatLon | null): string {
+function serializePoint(point: LatLon | null | undefined): string {
   return point && typeof point.lat === 'number' && typeof point.lon === 'number'
     ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}`
     : '';

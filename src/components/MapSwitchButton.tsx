@@ -1,6 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
@@ -29,14 +29,13 @@ import {
   FaExclamationTriangle,
   FaFilter,
   FaRegCheckCircle,
-  FaRegCheckSquare,
   FaRegCircle,
   FaRegMap,
-  FaRegSquare,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typescript-is';
+import { Checkbox } from './Checkbox';
 
 function getKbdShortcut(key?: [string, boolean]) {
   return (
@@ -104,6 +103,7 @@ export function MapSwitchButton(): ReactElement {
 
         if (x instanceof SVGElement && x.dataset['filter']) {
           dispatch(setActiveModal('gallery-filter'));
+
           return true;
         }
 
@@ -272,7 +272,7 @@ export function MapSwitchButton(): ReactElement {
             <div />
 
             <Dropdown.Item
-              key="settings"
+              key="mapSettings"
               as="button"
               onSelect={() => {
                 setShow(false);
@@ -369,7 +369,7 @@ export function MapSwitchButton(): ReactElement {
                           : 0.5,
                     }}
                   >
-                    {active ? <FaRegCheckSquare /> : <FaRegSquare />} {icon}{' '}
+                    <Checkbox value={active} /> {icon}{' '}
                     <span
                       style={{
                         textDecoration:

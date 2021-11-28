@@ -10,6 +10,9 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaEraser, FaSync } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { ToolMenu } from './ToolMenu';
+
+export default ChangesetsMenu;
 
 export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
@@ -34,7 +37,7 @@ export function ChangesetsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   return (
-    <>
+    <ToolMenu>
       <Dropdown
         className="ml-1"
         onSelect={(d) => {
@@ -46,6 +49,7 @@ export function ChangesetsMenu(): ReactElement {
         <Dropdown.Toggle variant="secondary" id="days">
           {m?.changesets.olderThanFull({ days }) ?? '…'}
         </Dropdown.Toggle>
+
         <Dropdown.Menu
           popperConfig={{
             strategy: 'fixed',
@@ -63,12 +67,15 @@ export function ChangesetsMenu(): ReactElement {
           ))}
         </Dropdown.Menu>
       </Dropdown>
+
       <Form
         className="ml-1 d-flex flex-nowrap"
         inline
         onSubmit={(e) => {
           e.preventDefault();
+
           dispatch(changesetsSetDays(days));
+
           dispatch(changesetsSetAuthorName(authorName));
         }}
       >
@@ -81,6 +88,7 @@ export function ChangesetsMenu(): ReactElement {
             }}
             value={authorName ?? ''}
           />
+
           <InputGroup.Append>
             <Button
               variant="secondary"
@@ -93,6 +101,7 @@ export function ChangesetsMenu(): ReactElement {
             </Button>
           </InputGroup.Append>
         </InputGroup>
+
         <Button
           className="ml-1"
           variant="secondary"
@@ -104,6 +113,6 @@ export function ChangesetsMenu(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
         </Button>
       </Form>
-    </>
+    </ToolMenu>
   );
 }

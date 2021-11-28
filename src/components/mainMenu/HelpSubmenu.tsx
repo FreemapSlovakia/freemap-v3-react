@@ -1,16 +1,13 @@
-import { Modal, setActiveModal } from 'fm3/actions/mainActions';
-import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
+import { documentShow, Modal, setActiveModal } from 'fm3/actions/mainActions';
+import { DocumentKey, documents } from 'fm3/documents';
 import { useMessages } from 'fm3/l10nInjector';
-import { TipKey, tips } from 'fm3/tips';
 import { SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import {
   FaBook,
   FaRegAddressCard,
-  FaRegCheckSquare,
   FaRegLightbulb,
   FaRegMap,
-  FaRegSquare,
   FaUsers,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -49,14 +46,12 @@ export function HelpSubmenu(): JSX.Element {
 
       closeMenu();
 
-      if (is<TipKey>(tip)) {
-        dispatch(tipsShow(tip));
+      if (is<DocumentKey>(tip)) {
+        dispatch(documentShow(tip));
       }
     },
     [closeMenu, dispatch],
   );
-
-  const preventTips = useSelector((state) => state.tips.preventTips);
 
   return (
     <>
@@ -102,7 +97,7 @@ export function HelpSubmenu(): JSX.Element {
             <FaRegLightbulb /> {m?.mainMenu.tips}
           </Dropdown.Header>
 
-          {tips.map(([key, name, icon, hidden]) =>
+          {documents.map(([key, name, icon, hidden]) =>
             hidden ? null : (
               <Dropdown.Item
                 key={key}
@@ -114,21 +109,6 @@ export function HelpSubmenu(): JSX.Element {
               </Dropdown.Item>
             ),
           )}
-
-          <Dropdown.Divider />
-
-          <Dropdown.Item
-            as="button"
-            onSelect={() => {
-              dispatch(
-                tipsPreventNextTime({ value: !preventTips, save: true }),
-              );
-            }}
-            active={!preventTips}
-          >
-            {preventTips ? <FaRegSquare /> : <FaRegCheckSquare />}{' '}
-            {m?.tips.showOnStartup}
-          </Dropdown.Item>
         </>
       )}
     </>

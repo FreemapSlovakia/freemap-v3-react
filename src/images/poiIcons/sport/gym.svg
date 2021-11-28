@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg:svg version="1.0" width="524.51398" height="524.51398" id="svg2" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" sodipodi:docname="gym.svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1883" inkscape:window-height="1062" id="namedview16" showgrid="false" inkscape:zoom="0.45172414" inkscape:cx="223.58779" inkscape:cy="262.32824" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg2" inkscape:pagecheckerboard="0" fit-margin-top="0" fit-margin-left="0" fit-margin-right="0" fit-margin-bottom="0" />
+  <svg:metadata id="metadata2975">
+    <RDF>
+      <Work about="">
+        <format>image/svg+xml</format>
+        <type resource="http://purl.org/dc/dcmitype/StillImage" />
+        <license resource="http://web.resource.org/cc/PublicDomain" />
+        <language>en</language>
+      </Work>
+    </RDF>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </svg:metadata>
+  <svg:defs id="defs4" />
+  <svg:g id="g1327" transform="translate(-67.757,-28.086998)" />
+  <svg:g id="g837" transform="translate(-26.670011,-28.08701)">
+    <svg:circle cx="123.427" cy="496.92999" r="33" style="fill:#000000" id="circle2531" />
+    <svg:circle cx="428.427" cy="470.92999" r="59" style="fill:#000000" id="circle2533" />
+    <svg:path d="M 415.364,390.179 L 415.042,390.229 L 113.414,442.163 C 86.927,447.025 67.757,470.053 67.757,496.931 C 67.757,527.627 92.731,552.601 123.427,552.601 H 428.427 C 473.46,552.601 510.097,515.964 510.097,470.931 C 510.097,425.898 473.46,389.261 428.427,389.261 C 421.846,389.26 416.391,390.025 415.364,390.179 Z M 417.433,404.024 C 417.957,403.946 422.718,403.259 428.427,403.259 C 465.74,403.259 496.097,433.615 496.097,470.929 C 496.097,488.972 489.049,505.957 476.252,518.754 C 463.455,531.551 446.47,538.6 428.427,538.6 H 123.427 C 100.45,538.6 81.757,519.907 81.757,496.93 C 81.757,476.81 96.102,459.574 115.865,455.946 C 115.865,455.946 417.195,404.064 417.344,404.039 C 417.388,404.031 417.433,404.024 417.433,404.024 Z" style="fill:#000000" id="path2535" inkscape:connector-curvature="0" />
+    <svg:path d="M 271.778,127.273 C 268.049,117.886 257.468,113.275 248.063,116.881 L 202.533,134.962 C 201.572,135.174 200.614,135.442 199.669,135.818 C 194.877,137.722 191.335,141.414 189.487,145.821 C 187.553,150.188 187.3,155.297 189.203,160.086 C 189.578,161.03 190.039,161.91 190.545,162.754 L 208.647,208.278 C 212.48,217.593 223.095,222.123 232.481,218.393 C 241.867,214.664 246.479,204.082 242.872,194.678 L 230.492,163.502 L 261.663,151.108 C 270.978,147.275 275.508,136.66 271.778,127.273 Z" style="fill:#000000" id="path2537" inkscape:connector-curvature="0" />
+    <svg:path d="M 351.263,326.572 C 350.678,325.557 350.004,324.629 349.286,323.749 L 321.039,274.789 C 315.112,264.792 302.238,261.388 292.143,267.209 C 282.049,273.028 278.546,285.878 284.229,296.014 L 303.554,329.546 L 270.031,348.887 C 260.035,354.814 256.631,367.687 262.452,377.783 C 268.272,387.878 281.12,391.382 291.257,385.698 L 340.233,357.472 C 341.294,357.071 342.341,356.605 343.356,356.02 C 348.507,353.049 351.937,348.247 353.314,342.91 C 354.796,337.602 354.234,331.726 351.263,326.572 Z" style="fill:#000000" id="path2539" inkscape:connector-curvature="0" />
+    <svg:circle cx="336.24799" cy="72.086998" r="44" style="fill:#000000" id="circle2541" />
+    <svg:path d="M 402.479,164.292 C 397.714,155.781 386.995,152.71 378.449,157.362 L 350.176,173.183 L 329.628,136.489 C 328.18,130.092 323.821,124.447 317.336,121.65 C 306.636,117.035 294.241,121.905 289.51,132.52 L 178.514,389.862 C 173.864,400.644 178.835,413.153 189.617,417.802 C 200.399,422.452 212.908,417.482 217.558,406.699 L 314.395,182.126 L 326.407,203.593 C 326.731,204.485 327.111,205.367 327.59,206.223 C 330.024,210.57 334.011,213.492 338.466,214.7 C 342.894,215.995 347.817,215.587 352.159,213.155 C 353.014,212.676 353.799,212.122 354.542,211.531 L 395.83,188.401 C 404.261,183.547 407.247,172.805 402.479,164.292 Z" style="fill:#000000" id="path2543" inkscape:connector-curvature="0" />
+  </svg:g>
+</svg:svg>

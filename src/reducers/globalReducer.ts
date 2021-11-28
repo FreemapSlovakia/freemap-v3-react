@@ -90,10 +90,6 @@ export function preGlobalReducer(
 
           draft.drawingPoints.change++;
 
-          draft.objects.objects = draft.objects.objects.filter(
-            (object) => object.id !== payload.id,
-          );
-
           draft.main.selection = {
             type: 'draw-points',
             id: draft.drawingPoints.points.length - 1,
@@ -249,22 +245,6 @@ export function preGlobalReducer(
         trackViewer: {
           ...trackViewerInitialState,
           colorizeTrackBy: trackViewer.colorizeTrackBy,
-          eleSmoothingFactor: trackViewer.eleSmoothingFactor,
-        },
-      };
-    } else if (state.main.selection?.type === 'objects') {
-      const {
-        objects,
-        main: { selection },
-      } = state;
-
-      return {
-        ...state,
-        objects: {
-          ...objects,
-          objects: objects.objects.filter(
-            (object) => object.id !== selection.id,
-          ),
         },
       };
     } else if (state.main.tool === 'route-planner') {
@@ -361,6 +341,7 @@ export function postGlobalReducer(
   } else if (isActionOf(drawingChangeLabel, action)) {
     return produce(state, (draft) => {
       const selection = draft.main.selection;
+
       if (selection?.type === 'draw-line-poly' && selection?.id !== undefined) {
         draft.drawingLines.lines[selection.id].label = action.payload.label;
       } else if (

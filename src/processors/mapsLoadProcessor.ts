@@ -15,7 +15,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
   actionCreator: mapsLoad,
   errorKey: 'maps.fetchError',
   handle: async ({ getState, dispatch, action: { payload } }) => {
-    if (payload.id === undefined) {
+    if (payload.id === undefined || payload.skipLoading) {
       return;
     }
 
@@ -26,22 +26,45 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
       expectedStatus: 200,
     });
 
-    const map =
-      assertType<{ name: string; data: StringDates<MapData<Line | OldLine>> }>(
-        data,
-      );
+    try {
+      const features = (data as any).data.trackViewer?.trackGeojson?.features;
+
+      // typescript-is fails if feature property contains array; TODO find out why
+
+      if (Array.isArray(features)) {
+        for (const feature of features) {
+          if (feature.properties) {
+            for (const k in feature.properties) {
+              if (typeof feature.properties[k] !== 'string') {
+                delete feature.properties[k];
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // ifnore
+    }
+
+    const map = assertType<{
+      name: string;
+      data: StringDates<MapData<Line | OldLine>>;
+    }>(data);
 
     const mapData = map.data;
 
     if (mapData.map) {
       if (payload.ignoreMap) {
         delete mapData.map.lat;
+
         delete mapData.map.lon;
+
         delete mapData.map.zoom;
       }
 
       if (payload.ignoreLayers) {
         delete mapData.map.mapType;
+
         delete mapData.map.overlays;
       }
     }

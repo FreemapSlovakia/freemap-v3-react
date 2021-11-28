@@ -1,5 +1,4 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
+import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   forwardRef,
@@ -131,6 +130,7 @@ export function Copyright(): ReactElement {
               as="button"
               onSelect={(_, e) => {
                 e.preventDefault();
+
                 setShow('licence');
               }}
             >
@@ -142,7 +142,9 @@ export function Copyright(): ReactElement {
                 href="?show=legend"
                 onSelect={(_, e) => {
                   e.preventDefault();
+
                   setShow(undefined);
+
                   dispatch(setActiveModal('legend'));
                 }}
               >
@@ -154,8 +156,10 @@ export function Copyright(): ReactElement {
               href="?tip=privacyPolicy"
               onSelect={(_, e) => {
                 e.preventDefault();
+
                 setShow(undefined);
-                dispatch(tipsShow('privacyPolicy'));
+
+                dispatch(documentShow('privacyPolicy'));
               }}
             >
               <FaLock /> Privacy policy

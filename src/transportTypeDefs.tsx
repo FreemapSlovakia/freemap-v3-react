@@ -3,11 +3,9 @@ import {
   FaBicycle,
   FaBus,
   FaCar,
-  FaHiking,
   FaSkiing,
   FaSkiingNordic,
   FaWalking,
-  FaWheelchair,
 } from 'react-icons/fa';
 
 export type TransportType =
@@ -24,6 +22,7 @@ export type TransportType =
   | 'foot';
 
 const FM_URL = 'https://routing.freemap.sk/';
+
 const EPS_URL = 'https://routing.epsilon.sk/';
 
 export const transportTypeDefs: {
@@ -71,26 +70,26 @@ export const transportTypeDefs: {
     url: `${EPS_URL}$MODE/v1/bikesharing`,
     development: true,
   },
-  {
-    type: 'foot',
-    api: 'osrm',
-    icon: <FaHiking />,
-    url: `${FM_URL}$MODE/v1/foot`,
-    hidden: true,
-  },
+  // {
+  //   type: 'foot',
+  //   api: 'osrm',
+  //   icon: <FaHiking />,
+  //   url: `${FM_URL}$MODE/v1/foot`,
+  //   hidden: true,
+  // },
   {
     type: 'foot-osm',
     api: 'osrm',
     icon: <FaWalking />,
     url: 'https://routing.openstreetmap.de/routed-foot/$MODE/v1/driving',
   },
-  {
-    type: 'foot-stroller',
-    api: 'osrm',
-    icon: <FaWheelchair />,
-    url: `${FM_URL}$MODE/v1/foot`,
-    exclude: 'stroller',
-  },
+  // {
+  //   type: 'foot-stroller',
+  //   api: 'osrm',
+  //   icon: <FaWheelchair />,
+  //   url: `${FM_URL}$MODE/v1/foot`,
+  //   exclude: 'stroller',
+  // },
   {
     type: 'nordic',
     api: 'osrm',

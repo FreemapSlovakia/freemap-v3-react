@@ -70,9 +70,11 @@ export function SubmenuHeader({
       <Dropdown.Header>
         {icon} {title}
       </Dropdown.Header>
+
       <Dropdown.Item as="button" onSelect={ctx.onBack}>
         <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
       </Dropdown.Item>
+
       <Dropdown.Divider />
     </>
   );

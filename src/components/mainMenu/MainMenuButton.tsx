@@ -1,4 +1,4 @@
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   Fragment,
@@ -20,6 +20,7 @@ import { GallerySubmenu } from './GallerySubmenu';
 import { HelpSubmenu } from './HelpSubmenu';
 import { LanguageSubmenu } from './LanguageSubmenu';
 import { MainMenu } from './MainMenu';
+import { OfflineSubmenu } from './OfflineSubmenu';
 import { SocialButtons } from './SocialButtons';
 import { Submenu } from './submenu';
 import { MenuProvier, SubmenuHeader } from './SubmenuHeader';
@@ -73,6 +74,7 @@ export function MainMenuButton(): ReactElement {
       >
         <FaBars />
       </Button>
+
       <Overlay
         rootClose
         placement="bottom"
@@ -86,6 +88,8 @@ export function MainMenuButton(): ReactElement {
 
             {submenu === null ? (
               <MainMenu onSubmenu={setSubmenu} />
+            ) : submenu === 'offline' ? (
+              <OfflineSubmenu />
             ) : submenu === 'help' ? (
               <HelpSubmenu />
             ) : submenu === 'openExternally' ? (

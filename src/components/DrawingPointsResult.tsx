@@ -26,6 +26,7 @@ export function DrawingPointsResult(): ReactElement {
     ({ latlng: { lat, lng: lon } }) => {
       if (activeIndex !== null) {
         dispatch(drawingPointChangePosition({ index: activeIndex, lat, lon }));
+
         dispatch(drawingMeasure({ elevation: false }));
       }
     },
@@ -36,6 +37,7 @@ export function DrawingPointsResult(): ReactElement {
     (e: DragEndEvent) => {
       if (activeIndex !== null) {
         const coords = e.target.getLatLng();
+
         dispatch(
           drawingPointChangePosition({
             index: activeIndex,
@@ -43,6 +45,7 @@ export function DrawingPointsResult(): ReactElement {
             lon: coords.lng,
           }),
         );
+
         dispatch(drawingMeasure({}));
       }
     },
@@ -56,6 +59,7 @@ export function DrawingPointsResult(): ReactElement {
       new Array(points.length).fill(0).map((_, id) => () => {
         if (id !== activeIndex) {
           dispatch(selectFeature({ type: 'draw-points', id }));
+
           dispatch(drawingMeasure({}));
         }
       }),

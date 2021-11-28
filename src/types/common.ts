@@ -18,7 +18,6 @@ export interface User {
     layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
   };
-  preventTips?: boolean;
   lat?: number | null;
   lon?: number | null;
   language?: string | null;
@@ -32,6 +31,7 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
+    __WB_MANIFEST: { revision: string; url: string }[];
   }
 }
 
@@ -137,3 +137,17 @@ export type MessagePaths = Leaves<Messages>;
 export interface OffscreenCanvas extends EventTarget {
   getContext(contextId: '2d'): CanvasRenderingContext2D;
 }
+
+export type CacheMode =
+  | 'networkOnly'
+  | 'networkFirst'
+  | 'cacheFirst'
+  | 'cacheOnly';
+
+export type SwCacheAction =
+  | {
+      type: 'setCacheMode';
+      payload: CacheMode;
+    }
+  | { type: 'clearCache' }
+  | { type: 'setCachingActive'; payload: boolean };

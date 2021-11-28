@@ -1,7 +1,8 @@
 import { toggleLocate } from 'fm3/actions/mainActions';
 import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
+import { Map } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -31,7 +32,11 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  const map = getMapLeafletElement();
+  const [map, setMap] = useState<Map>();
+
+  useEffect(() => {
+    mapPromise.then(setMap);
+  }, []);
 
   const handleFullscreenClick = useCallback(() => {
     if (!document.exitFullscreen) {
@@ -57,11 +62,7 @@ export function MapControls(): ReactElement | null {
     };
   }, [forceUpdate, setForceUpdate]);
 
-  if (!map) {
-    return null;
-  }
-
-  return (
+  return !map ? null : (
     <Card className="fm-toolbar mx-2 mb-2">
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />

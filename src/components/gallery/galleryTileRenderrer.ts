@@ -40,8 +40,11 @@ export function renderGalleryTile({
   const zk = Math.min(1, 1.1 ** zoom / 3);
 
   ctx.scale(dpr, dpr);
+
   ctx.strokeStyle = '#000';
+
   ctx.fillStyle = '#ff0';
+
   ctx.lineWidth = 1 * zk; // zoom > 9 ? 1.5 : 1;
 
   const k = 2 ** zoom;
@@ -127,20 +130,26 @@ export function renderGalleryTile({
   >) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
+
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
     ctx.beginPath();
+
     ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
 
     switch (colorizeBy) {
       case 'userId':
         ctx.fillStyle = color.lch(90, 70, -userId * 11313).hex();
+
         break;
+
       case 'rating':
         ctx.fillStyle = color
           .hsv(60, 100, (Math.tanh(rating - 2.5) + 1) * 50)
           .hex();
+
         break;
+
       case 'takenAt':
         ctx.fillStyle = !takenAt
           ? '#a22'
@@ -152,7 +161,9 @@ export function renderGalleryTile({
                 100 - ((now - takenAt) * 100) ** 0.185,
               )
               .hex();
+
         break;
+
       case 'season':
         {
           if (!takenAt) {
@@ -164,8 +175,11 @@ export function renderGalleryTile({
           const hs = 366 / 4;
 
           const winter = [70, -5, -52];
+
           const spring = [70, -62, 42];
+
           const summer = [90, -4, 74];
+
           const fall = [70, 48, 43];
 
           // 2847600
@@ -187,7 +201,9 @@ export function renderGalleryTile({
             fill(fall, winter, (x - 3 * hs) / hs);
           }
         }
+
         break;
+
       case 'createdAt':
         ctx.fillStyle = color
           .hsl(
@@ -197,13 +213,17 @@ export function renderGalleryTile({
             100 - ((now - createdAt) * 100) ** 0.185,
           )
           .hex();
+
         break;
+
       case 'mine':
         ctx.fillStyle = userId === myUserId ? '#ff0' : '#fa4';
+
         break;
     }
 
     ctx.fill();
+
     ctx.stroke();
   }
 }

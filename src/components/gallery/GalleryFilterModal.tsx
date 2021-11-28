@@ -20,6 +20,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default GalleryFilterModal;
+
 export function GalleryFilterModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
@@ -176,12 +178,19 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const handleEraseClick = () => {
     setTag('');
+
     setUserId('');
+
     setTakenAtFrom('');
+
     setTakenAtTo('');
+
     setCreatedAtFrom('');
+
     setCreatedAtTo('');
+
     setRatingFrom('');
+
     setRatingTo('');
   };
 

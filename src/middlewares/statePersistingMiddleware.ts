@@ -37,19 +37,12 @@ function persistSelectedState(state: DefaultRootState) {
         cookieConsentResult: state.main.cookieConsentResult,
         homeLocation: state.main.homeLocation,
       },
-      tips: {
-        lastTip: state.tips.lastTip,
-        preventTips: state.tips.preventTips,
-      },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,
         transportType: state.routePlanner.transportType,
       },
       auth: {
         user: state.auth.user,
-      },
-      trackViewer: {
-        eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
       },
       map: {
         layersSettings: state.map.layersSettings,

@@ -9,7 +9,9 @@ export function loadGapi(): Promise<void> {
     const js = document.createElement('script');
 
     js.async = true;
+
     js.defer = true;
+
     js.src = 'https://apis.google.com/js/api.js';
 
     js.onload = () => {

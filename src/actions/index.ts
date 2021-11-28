@@ -14,7 +14,6 @@ import * as osm from 'fm3/actions/osmActions';
 import * as routePlanner from 'fm3/actions/routePlannerActions';
 import * as rpc from 'fm3/actions/rpcActions';
 import * as search from 'fm3/actions/searchActions';
-import * as tips from 'fm3/actions/tipsActions';
 import * as toasts from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import * as trackViewer from 'fm3/actions/trackViewerActions';
@@ -40,7 +39,6 @@ export const actions = {
   osm,
   routePlanner,
   search,
-  tips,
   toasts,
   trackViewer,
   maps,

@@ -29,6 +29,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
+import { ToolMenu } from './ToolMenu';
+
+export default TrackViewerMenu;
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
@@ -65,7 +68,7 @@ export function TrackViewerMenu(): ReactElement {
   }, [dispatch, m]);
 
   return (
-    <>
+    <ToolMenu>
       <Button
         className="ml-1"
         variant="secondary"
@@ -76,6 +79,7 @@ export function TrackViewerMenu(): ReactElement {
         <FaUpload />
         <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
       </Button>
+
       {enableElevationChart && (
         <Button
           className="ml-1"
@@ -92,6 +96,7 @@ export function TrackViewerMenu(): ReactElement {
           </span>
         </Button>
       )}
+
       {enableElevationChart && (
         <Dropdown
           className="ml-1"
@@ -107,6 +112,7 @@ export function TrackViewerMenu(): ReactElement {
             <FaPaintBrush />{' '}
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </Dropdown.Toggle>
+
           <Dropdown.Menu
             popperConfig={{
               strategy: 'fixed',
@@ -124,6 +130,7 @@ export function TrackViewerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       )}
+
       {enableElevationChart && (
         <Button
           className="ml-1"
@@ -143,6 +150,7 @@ export function TrackViewerMenu(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
         </Button>
       )}
+
       {canUpload && (
         <Button
           className="ml-1"
@@ -155,6 +163,7 @@ export function TrackViewerMenu(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
         </Button>
       )}
+
       {hasTrack && (
         <Button
           className="ml-1"
@@ -170,6 +179,6 @@ export function TrackViewerMenu(): ReactElement {
         </Button>
       )}
       {hasTrack && <DeleteButton />}
-    </>
+    </ToolMenu>
   );
 }

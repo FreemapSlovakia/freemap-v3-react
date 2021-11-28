@@ -8,13 +8,12 @@ import {
   FaCamera,
   FaFilter,
   FaRegCheckCircle,
-  FaRegCheckSquare,
   FaRegCircle,
-  FaRegSquare,
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
+import { Checkbox } from '../Checkbox';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function GallerySubmenu(): JSX.Element {
@@ -42,7 +41,9 @@ export function GallerySubmenu(): JSX.Element {
         href="?show=gallery-filter"
         onSelect={(_, e) => {
           e.preventDefault();
+
           dispatch(setActiveModal('gallery-filter'));
+
           closeMenu();
         }}
         active={filterIsActive}
@@ -54,7 +55,9 @@ export function GallerySubmenu(): JSX.Element {
         href="?show=gallery-upload"
         onSelect={(_, e) => {
           e.preventDefault();
+
           dispatch(setActiveModal('gallery-upload'));
+
           closeMenu();
         }}
       >
@@ -74,8 +77,8 @@ export function GallerySubmenu(): JSX.Element {
         }}
         active={overlays.includes('I')}
       >
-        {overlays.includes('I') ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-        {m?.gallery.showLayer} <kbd>shift + p</kbd>
+        <Checkbox value={overlays.includes('I')} /> {m?.gallery.showLayer}{' '}
+        <kbd>shift + p</kbd>
       </Dropdown.Item>
 
       <Dropdown.Divider />
@@ -88,6 +91,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-createdAt'));
+
           closeMenu();
         }}
       >
@@ -98,6 +102,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-takenAt'));
+
           closeMenu();
         }}
       >
@@ -108,6 +113,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-rating'));
+
           closeMenu();
         }}
       >
@@ -118,6 +124,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryList('-lastCommentedAt'));
+
           closeMenu();
         }}
       >
@@ -134,6 +141,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy(null));
+
           closeMenu();
         }}
       >
@@ -145,6 +153,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('mine'));
+
           closeMenu();
         }}
       >
@@ -156,6 +165,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('userId'));
+
           closeMenu();
         }}
       >
@@ -167,6 +177,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('rating'));
+
           closeMenu();
         }}
       >
@@ -178,6 +189,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('takenAt'));
+
           closeMenu();
         }}
       >
@@ -189,6 +201,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('createdAt'));
+
           closeMenu();
         }}
       >
@@ -200,6 +213,7 @@ export function GallerySubmenu(): JSX.Element {
         as="button"
         onSelect={() => {
           dispatch(galleryColorizeBy('season'));
+
           closeMenu();
         }}
       >

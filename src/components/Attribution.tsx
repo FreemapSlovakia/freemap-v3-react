@@ -60,10 +60,13 @@ function categorize(
 
   for (const attribution of attributions) {
     let x = res[attribution.type];
+
     if (!x) {
       x = [];
+
       res[attribution.type] = x;
     }
+
     if (!x.includes(attribution)) {
       x.push(attribution);
     }

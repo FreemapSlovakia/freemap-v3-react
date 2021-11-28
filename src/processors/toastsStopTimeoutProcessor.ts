@@ -9,6 +9,7 @@ export const toastsStopTimeoutProcessor: Processor<typeof toastsStopTimeout> = {
 
     if (tm?.timeoutId != null) {
       clearTimeout(tm.timeoutId);
+
       tm.timeoutId = null;
     }
   },

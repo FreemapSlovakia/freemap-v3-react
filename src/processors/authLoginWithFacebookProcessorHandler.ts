@@ -11,7 +11,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   await loadFb();
 
   let response = await new Promise<fb.StatusResponse>((resolve) =>
-    FB.getLoginStatus(resolve),
+    FB.getLoginStatus(resolve, true),
   );
 
   if (response.status !== 'connected') {
@@ -26,6 +26,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
           style: 'danger',
         }),
       );
+
       return;
     }
   }
@@ -39,7 +40,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     data: {
       accessToken: response.authResponse.accessToken,
       language: getState().l10n.chosenLanguage,
-      preventTips: getState().tips.preventTips,
       // homeLocation: getState().main.homeLocation,
     },
   });

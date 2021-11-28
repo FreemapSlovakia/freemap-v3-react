@@ -10,6 +10,7 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const cssnano = require('cssnano');
+const { InjectManifest } = require('workbox-webpack-plugin');
 
 const skMessages = require('./src/translations/sk-shared.json');
 const csMessages = require('./src/translations/cs-shared.json');
@@ -77,7 +78,7 @@ module.exports = {
         options: {
           search: '(win && chrome) ? 2 * window.devicePixelRatio :',
           replace:
-            "(win && chrome) ? 2 * window.devicePixelRatio : (navigator.platform.indexOf('Linux') === 0 && chrome) ? window.devicePixelRatio :",
+            "(win && chrome || navigator.platform.indexOf('Linux') === 0) ? 2 * window.devicePixelRatio :",
           strict: true,
         },
       },
@@ -176,6 +177,10 @@ module.exports = {
     ],
   },
   plugins: [
+    new InjectManifest({
+      swSrc: './sw/sw.ts',
+      maximumFileSizeToCacheInBytes: 100000000,
+    }),
     new ForkTsCheckerWebpackPlugin({
       eslint: {
         enabled: !fastDev,

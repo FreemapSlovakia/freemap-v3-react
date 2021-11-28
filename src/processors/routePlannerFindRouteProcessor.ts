@@ -270,7 +270,7 @@ export const routePlannerFindRouteProcessor: Processor = {
           timestamp: Date.now(),
           transportType,
           alternatives,
-          waypoints: waypoints || [],
+          waypoints: waypoints ?? [],
         }),
       );
     }
@@ -314,7 +314,9 @@ function addMissingSegments(alt: Alternative) {
 
   for (let i = 0; i < routeSteps.length; i += 1) {
     const step = routeSteps[i];
+
     const prevStep = routeSteps[i - 1];
+
     const nextStep = routeSteps[i + 1];
 
     const prevStepLastPoint = prevStep

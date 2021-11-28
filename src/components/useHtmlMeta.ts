@@ -10,7 +10,7 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   about: 'mainMenu.contacts',
   'export-gpx': 'mainMenu.gpxExport',
   'export-pdf': 'mainMenu.pdfExport',
-  settings: 'mainMenu.settings',
+  account: 'mainMenu.account',
   mapSettings: 'mapLayers.layers',
   embed: 'mainMenu.embedMap',
   supportUs: 'mainMenu.supportUs',

@@ -1,7 +1,7 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
-import { useTextInputState } from 'fm3/hooks/inputHooks';
+import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';

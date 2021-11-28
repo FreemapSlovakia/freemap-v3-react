@@ -118,7 +118,19 @@ export function createProcessorMiddleware(): MW {
                     id: id ?? Math.random().toString(36).slice(2),
                     messageKey: errorKey,
                     messageParams:
-                      err instanceof Error ? { err: err.message } : {},
+                      err instanceof Error
+                        ? (err as any).isAxios &&
+                          !(err as any).status &&
+                          navigator.onLine === false
+                          ? {
+                              err:
+                                window.translations?.general.offline ||
+                                err.message,
+                            }
+                          : {
+                              err: err.message,
+                            }
+                        : {},
 
                     style: 'danger',
                   }),

@@ -50,6 +50,8 @@ const exportableDefinitions: readonly {
 
 type Props = { show: boolean };
 
+export default ExportGpxModal;
+
 export function ExportGpxModal({ show }: Props): ReactElement {
   const m = useMessages();
 
@@ -64,6 +66,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
     if (state.routePlanner.alternatives.length) {
       exportables.push('plannedRoute');
+
       exportables.push('plannedRouteWithStops');
     }
 
@@ -160,11 +163,13 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     }
 
     const set = new Set(exportables);
+
     if (exportables.includes(type)) {
       set.delete(type);
     } else {
       set.add(type);
     }
+
     setExportables([...set]);
   };
 

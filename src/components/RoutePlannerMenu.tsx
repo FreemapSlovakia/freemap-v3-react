@@ -16,7 +16,7 @@ import {
   RoutingMode,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
 import {
@@ -46,6 +46,9 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
+import { ToolMenu } from './ToolMenu';
+
+export default RoutePlannerMenu;
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
@@ -142,7 +145,7 @@ export function RoutePlannerMenu(): ReactElement {
   const sc = useScrollClasses('vertical');
 
   return (
-    <>
+    <ToolMenu>
       <Dropdown
         className="ml-1"
         id="transport-type"
@@ -260,7 +263,7 @@ export function RoutePlannerMenu(): ReactElement {
         >
           <Dropdown.Toggle
             variant="secondary"
-            className={pickPointMode === 'start' ? 'active' : ''}
+            active={pickPointMode === 'start'}
           >
             <FaPlay color="#409a40" />
 
@@ -323,13 +326,12 @@ export function RoutePlannerMenu(): ReactElement {
             <Dropdown
               as={ButtonGroup}
               variant="secondary"
-              className={pickPointMode === 'finish' ? 'active' : ''}
               id="set-finish-dropdown"
               onSelect={() => dispatch(routePlannerSetPickMode('finish'))}
             >
               <Dropdown.Toggle
                 variant="secondary"
-                className={pickPointMode === 'finish' ? 'active' : ''}
+                active={pickPointMode === 'finish'}
               >
                 <FaStop color="#d9534f" />
 
@@ -426,6 +428,6 @@ export function RoutePlannerMenu(): ReactElement {
           {canDelete && <DeleteButton />}
         </>
       )}
-    </>
+    </ToolMenu>
   );
 }

@@ -14,6 +14,7 @@ export function setupTimeout(
 ): void {
   const timeoutId = window.setTimeout(() => {
     timeoutMap.delete(id);
+
     dispatch(toastsRemove(id));
   }, timeout);
 
@@ -28,6 +29,7 @@ export function removeTimeout(id: string): void {
 
   if (tm?.timeoutId != null) {
     timeoutMap.delete(id);
+
     clearTimeout(tm.timeoutId);
   }
 }

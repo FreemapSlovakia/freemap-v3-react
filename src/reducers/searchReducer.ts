@@ -66,8 +66,14 @@ export const searchReducer = createReducer<SearchState, RootAction>(
   }))
   .handleAction(searchSelectResult, (state, action) =>
     produce(state, (draft) => {
+      if (action.payload?.storeResult === false) {
+        return;
+      }
+
       draft.osmNodeId = null;
+
       draft.osmWayId = null;
+
       draft.osmRelationId = null;
 
       const { payload } = action;
@@ -82,12 +88,17 @@ export const searchReducer = createReducer<SearchState, RootAction>(
         switch (result.osmType) {
           case 'node':
             draft.osmNodeId = result.id;
+
             break;
+
           case 'way':
             draft.osmWayId = result.id;
+
             break;
+
           case 'relation':
             draft.osmRelationId = result.id;
+
             break;
         }
       }

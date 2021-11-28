@@ -18,7 +18,6 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
     data: {
       ...action.payload,
       language: getState().l10n.chosenLanguage,
-      preventTips: getState().tips.preventTips,
       // homeLocation: getState().main.homeLocation,
     },
     expectedStatus: 200,

@@ -6,7 +6,6 @@ import { createAction } from 'typesafe-actions';
 import { Line } from './drawingLineActions';
 import { DrawingPoint } from './drawingPointActions';
 import { GalleryFilter } from './galleryActions';
-import { ObjectsResult } from './objectsActions';
 
 export interface MapMeta {
   id: string;
@@ -19,7 +18,6 @@ export interface MapMeta {
 export interface MapData<LT = Line> {
   lines?: LT[];
   points?: DrawingPoint[];
-  objects?: ObjectsResult[];
   tracking?: Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>;
   routePlanner?: Pick<
     RoutePlannerState,
@@ -36,6 +34,9 @@ export interface MapData<LT = Line> {
   map?: Partial<
     Pick<MapState, 'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays'>
   >;
+  objectsV2?: {
+    active: string[];
+  };
 }
 
 export const mapsLoad = createAction('MAPS_LOAD')<{
@@ -43,6 +44,7 @@ export const mapsLoad = createAction('MAPS_LOAD')<{
   ignoreMap?: boolean;
   ignoreLayers?: boolean;
   merge?: boolean;
+  skipLoading?: boolean;
 }>();
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();

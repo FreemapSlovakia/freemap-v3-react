@@ -13,6 +13,8 @@ import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
+export default EmbedMapModal;
+
 export function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
 
