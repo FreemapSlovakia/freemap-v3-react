@@ -580,6 +580,7 @@ export function Main(): ReactElement {
         {isDragActive && <div className="fm-drag-to-map" />}
 
         <input {...getInputProps()} />
+
         <div onClickCapture={handleMapWrapperClick}>
           <MapContainer
             zoomControl={false}
@@ -688,6 +689,7 @@ export function Main(): ReactElement {
           show={activeModal === 'supportUs'}
           factory={supportUsModalFactory}
         />
+
         {mapType === 'X' ? (
           <AsyncModal
             show={activeModal === 'legend'}

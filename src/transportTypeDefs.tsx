@@ -1,7 +1,6 @@
 import { ReactElement } from 'react';
 import {
   FaBicycle,
-  FaBus,
   FaCar,
   FaSkiing,
   FaSkiingNordic,
@@ -10,16 +9,16 @@ import {
 
 export type TransportType =
   | 'car-free'
-  | 'foot-stroller'
+  // | 'foot-stroller'
   | 'car'
   | 'bikesharing'
-  | 'imhd'
+  // | 'imhd'
   | 'bike'
   | 'bike-osm'
   | 'nordic'
   | 'ski'
-  | 'foot-osm'
-  | 'foot';
+  | 'foot-osm';
+// | 'foot'
 
 const FM_URL = 'https://routing.freemap.sk/';
 
@@ -43,13 +42,13 @@ export const transportTypeDefs: {
     url: `${FM_URL}$MODE/v1/car`,
     exclude: 'toll',
   },
-  {
-    type: 'imhd',
-    api: 'osrm',
-    icon: <FaBus />,
-    special: true,
-    url: `${EPS_URL}$MODE/v1/imhd`,
-  },
+  // {
+  //   type: 'imhd',
+  //   api: 'osrm',
+  //   icon: <FaBus />,
+  //   special: true,
+  //   url: `${EPS_URL}$MODE/v1/imhd`,
+  // },
   {
     type: 'bike',
     api: 'osrm',
