@@ -242,7 +242,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     transportation: 'Budova prepravy',
     university: 'Budova univerzity',
     warehouse: 'Sklad',
-    yes: 'Budova',
+    yes: 'Neurčitá budova',
   },
   highway: {
     '*': 'Cesta {}',
@@ -468,7 +468,17 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     shingle: 'Štrk (vodný)',
     shrub: 'Krík',
     sinkhole: 'Závrt',
-    spring: 'Prameň',
+    spring: {
+      '*': 'Prameň',
+      drinking_water: {
+        yes: 'Pitný prameň',
+        no: 'Nepitný prameň',
+      },
+      refitted: {
+        yes: 'Upravený prameň',
+        no: 'Neupravený prameň',
+      },
+    },
     stone: 'Balvan',
     tree: 'Strom',
     tree_row: 'Stromoradie / vetrolam',

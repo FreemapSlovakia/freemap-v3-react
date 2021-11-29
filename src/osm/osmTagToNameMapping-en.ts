@@ -244,7 +244,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     transportation: 'Transportation building',
     university: 'University building',
     warehouse: 'Warehouse',
-    yes: 'Building',
+    yes: 'Indeterminate building',
   },
   highway: {
     '*': 'Road {}',
@@ -471,7 +471,17 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     shingle: 'Shingle',
     shrub: 'Shrub',
     sinkhole: 'Sinkhole',
-    spring: 'Spring',
+    spring: {
+      '*': 'Spring',
+      drinking_water: {
+        yes: 'Drinkable spring',
+        no: 'Non-drinking spring',
+      },
+      refitted: {
+        yes: 'Refitted spring',
+        no: 'Non-refitted spring',
+      },
+    },
     stone: 'Stone',
     tree: 'Tree',
     tree_row: 'Tree row',

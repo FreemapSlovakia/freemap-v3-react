@@ -139,11 +139,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy(null));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy(null))}
       >
         {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.disable}
@@ -151,11 +147,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy('mine'));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy('mine'))}
       >
         {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.mine}
@@ -163,11 +155,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy('userId'));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy('userId'))}
       >
         {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.author}
@@ -175,11 +163,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy('rating'));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy('rating'))}
       >
         {colorizeBy === 'rating' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.rating}
@@ -187,11 +171,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy('takenAt'));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy('takenAt'))}
       >
         {colorizeBy === 'takenAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.takenAt}
@@ -199,11 +179,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy('createdAt'));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy('createdAt'))}
       >
         {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.createdAt}
@@ -211,11 +187,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(galleryColorizeBy('season'));
-
-          closeMenu();
-        }}
+        onSelect={() => dispatch(galleryColorizeBy('season'))}
       >
         {colorizeBy === 'season' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.season}
