@@ -53,17 +53,26 @@ export function ObjectsMenu(): ReactElement {
       key?: string,
     ) {
       for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
-        if (tagKeyOrValue === '*') {
-          continue; // include for level > 1
+        if (nodeOrName === '{}') {
+          continue;
         }
 
         if (typeof nodeOrName === 'string') {
+          if (key && tagKeyOrValue === '*') {
+            continue;
+          }
+
           res.push({
-            name: nodeOrName,
-            tags: [
-              ...tags,
-              key ? { key, value: tagKeyOrValue } : { key: tagKeyOrValue },
-            ],
+            name: nodeOrName.replace('{}', '').trim(),
+            tags:
+              !key && tagKeyOrValue === '*'
+                ? tags
+                : [
+                    ...tags,
+                    key
+                      ? { key, value: tagKeyOrValue }
+                      : { key: tagKeyOrValue },
+                  ],
           });
         } else if (key) {
           rec(nodeOrName, [...tags, { key, value: tagKeyOrValue }]);
@@ -136,8 +145,11 @@ export function ObjectsMenu(): ReactElement {
             key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
           }))
           .filter((item) => !snapshot || activeSnapshot.includes(item.key))
-          .filter((item) =>
-            removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
+          .filter(
+            (item) =>
+              snapshot ||
+              !normalizedFilter ||
+              removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
           )
           .sort((a, b) => a.name.localeCompare(b.name))
           .map(({ key, name, tags }) => {

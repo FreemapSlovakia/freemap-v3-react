@@ -468,7 +468,17 @@ export type OsmTagToNameMapping = {
     shingle: string;
     shrub: string;
     sinkhole: string;
-    spring: string;
+    spring: {
+      '*': string;
+      drinking_water: {
+        yes: string;
+        no: string;
+      };
+      refitted: {
+        yes: string;
+        no: string;
+      };
+    };
     stone: string;
     tree: string;
     tree_row: string;
