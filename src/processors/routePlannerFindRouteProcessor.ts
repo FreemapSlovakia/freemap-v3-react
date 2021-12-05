@@ -37,31 +37,31 @@ const updateRouteTypes = [
   mapsDataLoaded,
 ];
 
-enum GraphhopperSign {
-  TURN_SHARP_LEFT = -3,
-  TURN_LEFT = -2,
-  TURN_SLIGHT_LEFT = -1,
-  CONTINUE_ON_STREET = 0,
-  TURN_SLIGHT_RIGHT = 1,
-  TURN_RIGHT = 2,
-  TURN_SHARP_RIGHT = 3,
-  FINISH = 4,
-  VIA_REACHED = 5,
-  USE_ROUNDABOUT = 6,
-  KEEP_RIGHT = 7,
-}
+// enum GraphhopperSign {
+//   TURN_SHARP_LEFT = -3,
+//   TURN_LEFT = -2,
+//   TURN_SLIGHT_LEFT = -1,
+//   CONTINUE_ON_STREET = 0,
+//   TURN_SLIGHT_RIGHT = 1,
+//   TURN_RIGHT = 2,
+//   TURN_SHARP_RIGHT = 3,
+//   FINISH = 4,
+//   VIA_REACHED = 5,
+//   USE_ROUNDABOUT = 6,
+//   KEEP_RIGHT = 7,
+// }
 
-type GraphhopperInstruction = {
-  distance: number;
-  heading: number;
-  sign: GraphhopperSign;
-  interval: [number, number];
-  text: string;
-  time: number;
-  street_name: string;
-  exit_number?: number; // only for USE_ROUNDABOUT instructions
-  turn_angle?: number; // only for USE_ROUNDABOUT instructions
-};
+// type GraphhopperInstruction = {
+//   distance: number;
+//   heading: number;
+//   sign: GraphhopperSign;
+//   interval: [number, number];
+//   text: string;
+//   time: number;
+//   street_name: string;
+//   exit_number?: number; // only for USE_ROUNDABOUT instructions
+//   turn_angle?: number; // only for USE_ROUNDABOUT instructions
+// };
 
 type GraphhopperPath = {
   distance: number;
@@ -71,7 +71,7 @@ type GraphhopperPath = {
   points_encoded: boolean;
   bbox: [number, number, number, number];
   points: LineString;
-  instructions: GraphhopperInstruction[];
+  // instructions: GraphhopperInstruction[];
   legs?: unknown[]; // missing in doc
   details: Record<string, unknown>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
   ascend: number;

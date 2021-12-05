@@ -163,7 +163,7 @@ export function RoutePlannerMenu(): ReactElement {
                   '',
                 ) ?? '…'}{' '}
                 <small className="text-dark">
-                  {activeTTDef.api === 'osrm' ? 'OSRM' : 'GrapHopper'}
+                  {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
                 </small>
               </span>
             </>
@@ -183,7 +183,7 @@ export function RoutePlannerMenu(): ReactElement {
                     'OSRM'
                   ) : (
                     <>
-                      {'GrapHopper '}
+                      {'GraphHopper '}
                       <FaFlask
                         title={m?.general.experimentalFunction}
                         className="text-warning"
