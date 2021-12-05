@@ -7,6 +7,8 @@ export type PickMode = 'start' | 'finish';
 
 export type RoutingMode = 'trip' | 'roundtrip' | 'route';
 
+export type Weighting = 'shortest' | 'short_fastest' | 'fastest';
+
 export type SliceMode =
   | 'foot'
   | 'walking'
@@ -147,6 +149,10 @@ export const routePlannerSetMode = createAction(
   'ROUTE_PLANNER_SET_MODE',
 )<RoutingMode>();
 
+export const routePlannerSetWeighting = createAction(
+  'ROUTE_PLANNER_SET_WEIGHTING',
+)<Weighting>();
+
 export const routePlannerSetPickMode = createAction(
   'ROUTE_PLANNER_SET_PICK_MODE',
 )<PickMode>();
@@ -168,6 +174,7 @@ export const routePlannerSetParams = createAction('ROUTE_PLANNER_SET_PARAMS')<{
   midpoints: LatLon[];
   transportType: TransportType;
   mode?: RouteMode | null;
+  weighting?: Weighting | null;
   milestones?: boolean;
 }>();
 

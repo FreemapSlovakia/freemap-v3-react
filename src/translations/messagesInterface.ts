@@ -1,4 +1,7 @@
+import { Weighting } from 'fm3/actions/routePlannerActions';
 import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
+import { RouteMode } from 'fm3/reducers/routePlannerReducer';
+import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { ReactNode } from 'react';
 
@@ -92,25 +95,10 @@ export type Messages = {
       current: string;
       home: string;
     };
-    transportType: {
-      car: string;
-      'car-free': string;
-      bikesharing: string;
-      imhd: string;
-      'bike-osm': string;
-      bike: string;
-      'foot-stroller': string;
-      nordic: string;
-      ski: string;
-      'foot-osm': string;
-      foot: string;
-    };
+    transportType: Record<TransportTypeMsgKey, string>;
     development: string;
-    mode: {
-      route: string;
-      trip: string;
-      roundtrip: string;
-    };
+    mode: Record<RouteMode, string>;
+    weighting: Record<Weighting, string>;
     alternative: string;
     distance: ({
       value,
@@ -646,22 +634,6 @@ export type Messages = {
   };
   osm: {
     fetchingError: ({ err }: Err) => string;
-  };
-  roadDetails: {
-    roadType: string;
-    surface: string;
-    suitableBikeType: string;
-    lastChange: string;
-    showDetails: string;
-    surfaces: Record<string, string>;
-    trackClasses: Record<string, string>;
-    bicycleTypes: {
-      'road-bike': string;
-      'trekking-bike': string;
-      'mtb-bike': string;
-      'no-bike': string;
-      unknown: string;
-    };
   };
   tracking: {
     unauthenticatedError: string;

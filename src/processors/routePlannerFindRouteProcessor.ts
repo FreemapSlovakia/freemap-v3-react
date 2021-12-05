@@ -12,8 +12,8 @@ import {
   routePlannerSetResult,
   routePlannerSetStart,
   routePlannerSetTransportType,
+  routePlannerSetWeighting,
   routePlannerSwapEnds,
-  Step,
   Waypoint,
 } from 'fm3/actions/routePlannerActions';
 import { ToastAction, toastsAdd } from 'fm3/actions/toastsActions';
@@ -33,6 +33,7 @@ const updateRouteTypes = [
   routePlannerSetTransportType,
   routePlannerSetMode,
   routePlannerSetParams,
+  routePlannerSetWeighting,
   mapsDataLoaded,
 ];
 
@@ -92,20 +93,35 @@ type OsrmResult = {
 
 export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
+  id: 'routePlanner.fetchingError',
   errorKey: 'routePlanner.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
-    const { start, finish, midpoints, transportType, mode } =
+    const { start, finish, midpoints, transportType, mode, weighting } =
       getState().routePlanner;
 
     if (!start || !finish || !transportType) {
       return;
     }
 
-    const ttDef = transportTypeDefs.find(({ type }) => type === transportType);
+    const ttDef = transportTypeDefs[transportType];
 
     if (!ttDef) {
       throw new Error(`unknown transport type: ${transportType}`);
     }
+
+    const clearResultAction = routePlannerSetResult({
+      timestamp: Date.now(),
+      transportType,
+      alternatives: [],
+      waypoints: [],
+    });
+
+    const rnfToastAction = toastsAdd({
+      id: 'routePlanner.routeNotFound',
+      messageKey: 'routePlanner.routeNotFound',
+      style: 'warning',
+      timeout: 5000,
+    });
 
     const params = {
       alternatives: mode === 'route' || undefined,
@@ -129,30 +145,40 @@ export const routePlannerFindRouteProcessor: Processor = {
             method: 'POST',
             url: 'https://local.gruveo.com/gh/route',
             data: {
-              // avoid: 'toll',
+              // avoid: 'toll', // wut? doesn't work
+              // snap_preventions: ['trunk', 'motorway'], // without effect
+
+              // elevation: true, // if to return also elevations
+
+              algorithm: midpoints.length > 0 ? undefined : 'alternative_route',
+
               // algorithm: 'round_trip',
-              algorithm: midpoints.length > 0 ? 'alternative_route' : undefined,
-              round_trip: {
-                distance: 10000,
-                seed: 546,
-                max_paths: 2,
+              // round_trip: {
+              //   distance: 10000,
+              //   seed: 546,
+              //   max_paths: 2,
+              // },
+
+              alternative_route: {
+                max_paths: 3, // default is 2
+                // max_weight_factor: 1.4,
+                // max_share_factor: 0.6,
               },
-              profile:
-                (transportType === 'bike'
-                  ? 'mtb'
-                  : transportType === 'bike-osm'
-                  ? 'bike2'
-                  : transportType === 'car'
-                  ? 'car'
-                  : transportType === 'car-free'
-                  ? 'car'
-                  : transportType === 'nordic'
-                  ? 'hike'
-                  : transportType === 'foot-osm'
-                  ? 'foot'
-                  : 'car') + '_fastest',
-              // weighting: 'fastest', // vs short_fastest
-              optimize: String(mode === 'trip'),
+
+              instructions: false, // so far we don't use it
+
+              // profile: ttDef.profile,
+              // profile: 'wheelchair',
+
+              weighting:
+                weighting === 'fastest' && ttDef.vehicle === 'wheelchair'
+                  ? 'short_fastest'
+                  : weighting, // fastest|short_fastest|shortest|curvature
+
+              // turn_costs: true,
+              vehicle: ttDef.vehicle,
+
+              // optimize: String(mode === 'trip'), // not included in (free) directions API
               points_encoded: false,
               locale: getState().l10n.language,
               points: [
@@ -161,9 +187,22 @@ export const routePlannerFindRouteProcessor: Processor = {
                 [finish.lon, finish.lat],
               ],
             },
+            expectedStatus: [200, 400],
             cancelActions: updateRouteTypes,
           })
         ).data;
+
+        if (
+          data &&
+          typeof data === 'object' &&
+          String((data as any)['message']).startsWith('Cannot find point ')
+        ) {
+          dispatch(clearResultAction);
+
+          dispatch(rnfToastAction);
+
+          return;
+        }
       } else {
         const allPoints = [
           [start.lon, start.lat].join(','),
@@ -186,14 +225,7 @@ export const routePlannerFindRouteProcessor: Processor = {
         ).data;
       }
     } catch (err) {
-      dispatch(
-        routePlannerSetResult({
-          timestamp: Date.now(),
-          transportType,
-          alternatives: [],
-          waypoints: [],
-        }),
-      );
+      dispatch(clearResultAction);
 
       throw err;
     }
@@ -210,7 +242,7 @@ export const routePlannerFindRouteProcessor: Processor = {
             distance: p.distance,
             legs: [
               {
-                duration: p.time,
+                duration: p.time / 1000,
                 distance: p.distance,
                 steps: [
                   {
@@ -237,33 +269,21 @@ export const routePlannerFindRouteProcessor: Processor = {
       const { code, trips, routes, waypoints } = assertType<OsrmResult>(data);
 
       if (code !== 'Ok') {
-        dispatch(
-          routePlannerSetResult({
-            timestamp: Date.now(),
-            transportType,
-            alternatives: [],
-            waypoints: [],
-          }),
-        );
+        dispatch(clearResultAction);
 
-        dispatch(
-          toastsAdd({
-            id: 'routePlanner.routeNotFound',
-            messageKey: 'routePlanner.routeNotFound',
-            style: 'warning',
-            timeout: 5000,
-          }),
-        );
+        dispatch(rnfToastAction);
 
         return;
       }
 
-      const alts = routes || trips || [];
+      const alternatives = routes || trips || [];
 
-      const alternatives: Alternative[] =
-        transportType === 'imhd'
-          ? alts.map((alt: Alternative) => addMissingSegments(alt))
-          : alts;
+      // const alts = routes || trips || [];
+      //
+      // const alternatives: Alternative[] =
+      //   transportType === 'imhd'
+      //     ? alts.map((alt: Alternative) => addMissingSegments(alt))
+      //     : alts;
 
       dispatch(
         routePlannerSetResult({
@@ -303,59 +323,59 @@ export const routePlannerFindRouteProcessor: Processor = {
   },
 };
 
-function coord(step: Step) {
-  return step.geometry.coordinates;
-}
-
-function addMissingSegments(alt: Alternative) {
-  const steps: Step[] = [];
-
-  const routeSteps = alt.legs.flatMap((leg) => leg.steps);
-
-  for (let i = 0; i < routeSteps.length; i += 1) {
-    const step = routeSteps[i];
-
-    const prevStep = routeSteps[i - 1];
-
-    const nextStep = routeSteps[i + 1];
-
-    const prevStepLastPoint = prevStep
-      ? coord(prevStep)[coord(prevStep).length - 1]
-      : null;
-
-    const firstPoint = coord(step)[0];
-
-    const lastShapePoint = coord(step)[coord(step).length - 1];
-
-    const nextStepFirstPoint = nextStep?.geometry.coordinates[0] ?? null;
-
-    const c = coord(step);
-
-    const coordinates = [c[0], c[1]];
-
-    if (step.mode === 'foot') {
-      if (
-        prevStepLastPoint &&
-        (Math.abs(prevStepLastPoint[0] - firstPoint[0]) > 0.0000001 ||
-          Math.abs(prevStepLastPoint[1] - firstPoint[1]) > 0.0000001)
-      ) {
-        coordinates.unshift(prevStepLastPoint);
-      }
-
-      if (
-        nextStepFirstPoint &&
-        (Math.abs(nextStepFirstPoint[0] - lastShapePoint[0]) > 0.0000001 ||
-          Math.abs(nextStepFirstPoint[1] - lastShapePoint[1]) > 0.0000001)
-      ) {
-        coordinates.push(nextStepFirstPoint);
-      }
-    }
-
-    steps.push({
-      ...step,
-      geometry: { coordinates },
-    });
-  }
-
-  return { ...alt, itinerary: steps };
-}
+// function coord(step: Step) {
+//   return step.geometry.coordinates;
+// }
+//
+// function addMissingSegments(alt: Alternative) {
+//   const steps: Step[] = [];
+//
+//   const routeSteps = alt.legs.flatMap((leg) => leg.steps);
+//
+//   for (let i = 0; i < routeSteps.length; i += 1) {
+//     const step = routeSteps[i];
+//
+//     const prevStep = routeSteps[i - 1];
+//
+//     const nextStep = routeSteps[i + 1];
+//
+//     const prevStepLastPoint = prevStep
+//       ? coord(prevStep)[coord(prevStep).length - 1]
+//       : null;
+//
+//     const firstPoint = coord(step)[0];
+//
+//     const lastShapePoint = coord(step)[coord(step).length - 1];
+//
+//     const nextStepFirstPoint = nextStep?.geometry.coordinates[0] ?? null;
+//
+//     const c = coord(step);
+//
+//     const coordinates = [c[0], c[1]];
+//
+//     if (step.mode === 'foot') {
+//       if (
+//         prevStepLastPoint &&
+//         (Math.abs(prevStepLastPoint[0] - firstPoint[0]) > 0.0000001 ||
+//           Math.abs(prevStepLastPoint[1] - firstPoint[1]) > 0.0000001)
+//       ) {
+//         coordinates.unshift(prevStepLastPoint);
+//       }
+//
+//       if (
+//         nextStepFirstPoint &&
+//         (Math.abs(nextStepFirstPoint[0] - lastShapePoint[0]) > 0.0000001 ||
+//           Math.abs(nextStepFirstPoint[1] - lastShapePoint[1]) > 0.0000001)
+//       ) {
+//         coordinates.push(nextStepFirstPoint);
+//       }
+//     }
+//
+//     steps.push({
+//       ...step,
+//       geometry: { coordinates },
+//     });
+//   }
+//
+//   return { ...alt, itinerary: steps };
+// }

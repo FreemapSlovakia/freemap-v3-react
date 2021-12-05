@@ -16,10 +16,12 @@ import {
   routePlannerSetResult,
   routePlannerSetStart,
   routePlannerSetTransportType,
+  routePlannerSetWeighting,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
   Waypoint,
+  Weighting,
 } from 'fm3/actions/routePlannerActions';
 import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
@@ -62,13 +64,15 @@ export const cleanState: RoutePlannerCleanState = {
 export interface RoutePlannerState extends RoutePlannerCleanState {
   transportType: TransportType;
   mode: RouteMode;
+  weighting: Weighting;
   milestones: boolean;
   preventHint: boolean;
 }
 
 export const routePlannerInitialState: RoutePlannerState = {
-  transportType: 'foot-osm',
+  transportType: 'foot',
   mode: 'route',
+  weighting: 'short_fastest',
   milestones: false,
   preventHint: false,
   ...cleanState,
@@ -128,6 +132,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       ? 'route'
       : action.payload.mode || 'route',
     milestones: !!action.payload.milestones,
+    weighting: action.payload.weighting ?? 'short_fastest',
   }))
   .handleAction(routePlannerSetStart, (state, action) => ({
     ...state,
@@ -198,6 +203,11 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     ...clearResult,
     mode: isSpecial(state.transportType) ? 'route' : action.payload,
+  }))
+  .handleAction(routePlannerSetWeighting, (state, action) => ({
+    ...state,
+    ...clearResult,
+    weighting: action.payload,
   }))
   .handleAction(routePlannerSetPickMode, (state, action) => ({
     ...state,

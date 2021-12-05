@@ -113,11 +113,7 @@ export function TrackViewerMenu(): ReactElement {
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu
-            popperConfig={{
-              strategy: 'fixed',
-            }}
-          >
+          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
             {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
               <Dropdown.Item
                 eventKey={mode}
@@ -172,6 +168,7 @@ export function TrackViewerMenu(): ReactElement {
           title={m?.general.convertToDrawing}
         >
           <FaPencilAlt />
+
           <span className="d-none d-sm-inline">
             {' '}
             {m?.general.convertToDrawing}

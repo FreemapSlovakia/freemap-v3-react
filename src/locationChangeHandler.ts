@@ -32,7 +32,10 @@ import {
   osmLoadRelation,
   osmLoadWay,
 } from 'fm3/actions/osmActions';
-import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
+import {
+  routePlannerSetParams,
+  Weighting,
+} from 'fm3/actions/routePlannerActions';
 import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
@@ -59,7 +62,7 @@ import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
 import { basicModals, tools } from './constants';
 import { MyStore } from './storeCreator';
-import { isTransportType } from './transportTypeDefs';
+import { TransportType, transportTypeDefs } from './transportTypeDefs';
 import { LatLon } from './types/common';
 import { TrackedDevice } from './types/trackingTypes';
 
@@ -124,12 +127,19 @@ export const handleLocationChange = (
       );
 
     if (
-      typeof query['transport'] === 'string' &&
-      isTransportType(query['transport']) &&
+      transportTypeDefs[query['transport'] as TransportType] && // for dev
+      is<TransportType>(query['transport']) && // for prod
       pointsOk
     ) {
-      const { start, finish, midpoints, transportType, mode, milestones } =
-        getState().routePlanner;
+      const {
+        start,
+        finish,
+        midpoints,
+        transportType,
+        mode,
+        milestones,
+        weighting,
+      } = getState().routePlanner;
 
       const latLons = points.map((point) =>
         point ? { lat: point[0], lon: point[1] } : null,
@@ -153,9 +163,13 @@ export const handleLocationChange = (
             serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
+        (weighting === 'fastest' ? undefined : weighting) !==
+          query['route-weighting'] ||
         (milestones && !query['milestones'])
       ) {
         const routeMode = query['route-mode'];
+
+        const weighting = query['route-weighting'];
 
         dispatch(
           routePlannerSetParams({
@@ -167,6 +181,7 @@ export const handleLocationChange = (
               routeMode === 'trip' || routeMode === 'roundtrip'
                 ? routeMode
                 : 'route',
+            weighting: is<Weighting>(weighting) ? weighting : undefined,
             milestones: !!query['milestones'],
           }),
         );
