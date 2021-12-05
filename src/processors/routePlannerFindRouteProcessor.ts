@@ -143,7 +143,8 @@ export const routePlannerFindRouteProcessor: Processor = {
           await httpRequest({
             getState,
             method: 'POST',
-            url: 'https://local.gruveo.com/gh/route',
+            // url: 'https://local.gruveo.com/gh/route',
+            url: 'https://graphhopper.freemap.sk/route',
             data: {
               // avoid: 'toll', // wut? doesn't work
               // snap_preventions: ['trunk', 'motorway'], // without effect
