@@ -93,7 +93,7 @@ type OsrmResult = {
 
 export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
-  id: 'routePlanner.fetchingError',
+  id: 'routePlanner',
   errorKey: 'routePlanner.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
     const { start, finish, midpoints, transportType, mode, weighting } =
@@ -117,7 +117,7 @@ export const routePlannerFindRouteProcessor: Processor = {
     });
 
     const rnfToastAction = toastsAdd({
-      id: 'routePlanner.routeNotFound',
+      id: 'routePlanner',
       messageKey: 'routePlanner.routeNotFound',
       style: 'warning',
       timeout: 5000,
@@ -139,68 +139,95 @@ export const routePlannerFindRouteProcessor: Processor = {
 
     try {
       if (ttDef.api === 'gh') {
-        data = (
-          await httpRequest({
-            getState,
-            method: 'POST',
+        const { data: ghDdata, status } = await httpRequest({
+          getState,
+          method: 'POST',
             // url: 'https://local.gruveo.com/gh/route',
             url: 'https://graphhopper.freemap.sk/route',
             data: {
               // avoid: 'toll', // wut? doesn't work
               // snap_preventions: ['trunk', 'motorway'], // without effect
+          data: {
+            // avoid: 'toll', // wut? doesn't work
+            // snap_preventions: ['trunk', 'motorway'], // without effect
 
-              // elevation: true, // if to return also elevations
+            // elevation: true, // if to return also elevations
 
-              algorithm: midpoints.length > 0 ? undefined : 'alternative_route',
+            algorithm: midpoints.length > 0 ? undefined : 'alternative_route',
 
-              // algorithm: 'round_trip',
-              // round_trip: {
-              //   distance: 10000,
-              //   seed: 546,
-              //   max_paths: 2,
-              // },
+            // algorithm: 'round_trip',
+            // round_trip: {
+            //   distance: 10000,
+            //   seed: 546,
+            //   max_paths: 2,
+            // },
 
-              alternative_route: {
-                max_paths: 3, // default is 2
-                // max_weight_factor: 1.4,
-                // max_share_factor: 0.6,
-              },
-
-              instructions: false, // so far we don't use it
-
-              // profile: ttDef.profile,
-              // profile: 'wheelchair',
-
-              weighting:
-                weighting === 'fastest' && ttDef.vehicle === 'wheelchair'
-                  ? 'short_fastest'
-                  : weighting, // fastest|short_fastest|shortest|curvature
-
-              // turn_costs: true,
-              vehicle: ttDef.vehicle,
-
-              // optimize: String(mode === 'trip'), // not included in (free) directions API
-              points_encoded: false,
-              locale: getState().l10n.language,
-              points: [
-                [start.lon, start.lat],
-                ...midpoints.map((mp) => [mp.lon, mp.lat]),
-                [finish.lon, finish.lat],
-              ],
+            alternative_route: {
+              max_paths: 3, // default is 2
+              // max_weight_factor: 1.4,
+              // max_share_factor: 0.6,
             },
-            expectedStatus: [200, 400],
-            cancelActions: updateRouteTypes,
-          })
-        ).data;
 
-        if (
-          data &&
-          typeof data === 'object' &&
-          String((data as any)['message']).startsWith('Cannot find point ')
-        ) {
+            instructions: false, // so far we don't use it
+
+            // profile: ttDef.profile,
+            // profile: 'wheelchair',
+
+            weighting:
+              weighting === 'fastest' && ttDef.vehicle === 'wheelchair'
+                ? 'short_fastest'
+                : weighting, // fastest|short_fastest|shortest|curvature
+
+            // turn_costs: true,
+            vehicle: ttDef.vehicle,
+
+            // optimize: String(mode === 'trip'), // not included in (free) directions API
+            points_encoded: false,
+            locale: getState().l10n.language,
+            points: [
+              [start.lon, start.lat],
+              ...midpoints.map((mp) => [mp.lon, mp.lat]),
+              [finish.lon, finish.lat],
+            ],
+          },
+          expectedStatus: [200, 400],
+          cancelActions: updateRouteTypes,
+        });
+
+        data = ghDdata;
+
+        if (status === 400) {
           dispatch(clearResultAction);
 
-          dispatch(rnfToastAction);
+          let err: string | undefined;
+
+          if (
+            data &&
+            typeof data === 'object' &&
+            typeof (data as any)['message'] === 'string'
+          ) {
+            if (
+              String((data as any)['message']).startsWith('Cannot find point ')
+            ) {
+              dispatch(rnfToastAction);
+            } else {
+              err = String((data as any)['message']);
+            }
+          } else {
+            err = '?';
+          }
+
+          if (err) {
+            dispatch(
+              toastsAdd({
+                id: 'routePlanner',
+                messageKey: 'general.operationError',
+                messageParams: { err },
+                style: 'danger',
+                timeout: 5000,
+              }),
+            );
+          }
 
           return;
         }
