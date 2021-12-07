@@ -217,6 +217,32 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaInfo /> {m?.mapCtxMenu.queryFeatures}
                 </Dropdown.Item>
+                {/* TODO only if photo layer is not active */}
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    ctxMenuClose();
+
+                    dispatch(
+                      galleryRequestImages({
+                        lat: contextMenu.lat,
+                        lon: contextMenu.lon,
+                      }),
+                    );
+                  }}
+                >
+                  <FaCamera /> {m?.mapCtxMenu.showPhotos}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  as="button"
+                  onSelect={() => {
+                    setOpenInExternal(true);
+                  }}
+                >
+                  <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
+                  <FaChevronRight />
+                </Dropdown.Item>
+                <Dropdown.Divider />
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -254,7 +280,8 @@ export function MapContextMenu(): ReactElement {
                   }}
                 >
                   <MdTimeline /> {m?.mapCtxMenu.startLine}
-                </Dropdown.Item>{' '}
+                </Dropdown.Item>
+                <Dropdown.Divider />
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -292,31 +319,6 @@ export function MapContextMenu(): ReactElement {
                   }}
                 >
                   <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
-                </Dropdown.Item>
-                {/* TODO only if photo layer is not active */}
-                <Dropdown.Item
-                  as="button"
-                  onSelect={() => {
-                    ctxMenuClose();
-
-                    dispatch(
-                      galleryRequestImages({
-                        lat: contextMenu.lat,
-                        lon: contextMenu.lon,
-                      }),
-                    );
-                  }}
-                >
-                  <FaCamera /> {m?.mapCtxMenu.showPhotos}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  as="button"
-                  onSelect={() => {
-                    setOpenInExternal(true);
-                  }}
-                >
-                  <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
-                  <FaChevronRight />
                 </Dropdown.Item>
               </>
             )}
