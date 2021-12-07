@@ -9,23 +9,19 @@ import {
   routePlannerSetPickMode,
   routePlannerSetStart,
   routePlannerSetTransportType,
+  routePlannerSetWeighting,
   routePlannerSwapEnds,
   // routePlannerToggleItineraryVisibility,
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
   RoutingMode,
+  Weighting,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
-import {
-  MouseEvent,
-  ReactElement,
-  SyntheticEvent,
-  useCallback,
-  useMemo,
-} from 'react';
+import { Fragment, ReactElement, SyntheticEvent, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -36,7 +32,6 @@ import {
   FaCrosshairs,
   FaFlask,
   FaHome,
-  FaInfoCircle,
   FaMapMarkerAlt,
   FaMoneyBill,
   FaPencilAlt,
@@ -59,11 +54,13 @@ export function RoutePlannerMenu(): ReactElement {
 
   const homeLocation = useSelector((state) => state.main.homeLocation);
 
-  const transportType = useSelector(
+  const activeTransportType = useSelector(
     (state) => state.routePlanner.transportType,
   );
 
-  const mode = useSelector((state) => state.routePlanner.mode);
+  const activeMode = useSelector((state) => state.routePlanner.mode);
+
+  const activeWeighting = useSelector((state) => state.routePlanner.weighting);
 
   const pickPointMode = useSelector((state) => state.routePlanner.pickMode);
 
@@ -120,14 +117,11 @@ export function RoutePlannerMenu(): ReactElement {
     }
   }
 
-  const activeTransportType = useMemo(
-    () => transportTypeDefs.find(({ type }) => type === transportType),
-    [transportType],
-  );
+  const activeTTDef = transportTypeDefs[activeTransportType];
 
-  const stopPropagation = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  // const stopPropagation = useCallback((e: MouseEvent) => {
+  //   e.stopPropagation();
+  // }, []);
 
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
@@ -156,55 +150,64 @@ export function RoutePlannerMenu(): ReactElement {
         }}
       >
         <Dropdown.Toggle variant="secondary">
-          {activeTransportType ? (
+          {activeTTDef ? (
             <>
-              {activeTransportType.icon}{' '}
-              {['car', 'bikesharing'].includes(activeTransportType.type) && (
-                <FaMoneyBill />
-              )}
+              {activeTTDef.icon}{' '}
+              {['car', 'car-toll', 'bikesharing'].includes(
+                activeTransportType,
+              ) && <FaMoneyBill />}
               <span className="d-none d-md-inline">
                 {' '}
-                {m?.routePlanner.transportType[
-                  activeTransportType.type
-                ].replace(/\s*,.*/, '') ?? '…'}
+                {m?.routePlanner.transportType[activeTTDef.key].replace(
+                  /\s*,.*/,
+                  '',
+                ) ?? '…'}{' '}
+                <small className="text-dark">
+                  {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
+                </small>
               </span>
             </>
           ) : (
             ''
-          )}{' '}
+          )}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          popperConfig={{
-            strategy: 'fixed',
-          }}
-        >
+        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
           <div className="dropdown-long" ref={sc}>
             <div />
 
-            {transportTypeDefs
-              .filter(({ hidden }) => !hidden)
-              .map(({ type, icon, development }) => (
-                <Dropdown.Item
-                  as="button"
-                  eventKey={type}
-                  key={type}
-                  title={m?.routePlanner.transportType[type] ?? '…'}
-                  active={transportType === type}
-                >
-                  {icon}{' '}
-                  {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
-                  {m?.routePlanner.transportType[type] ?? '…'}
-                  {development && (
+            {(['osrm', 'gh'] as const).map((api) => (
+              <Fragment key={api}>
+                <Dropdown.Header>
+                  {api === 'osrm' ? (
+                    'OSRM'
+                  ) : (
                     <>
-                      {' '}
+                      {'GraphHopper '}
                       <FaFlask
-                        title={m?.routePlanner.development ?? '…'}
+                        title={m?.general.experimentalFunction}
                         className="text-warning"
                       />
                     </>
                   )}
-                  {type === 'bikesharing' && (
+                </Dropdown.Header>
+
+                {Object.entries(transportTypeDefs)
+                  .filter(([, def]) => !def.hidden && def.api === api)
+                  .map(([type, { icon, key }]) => (
+                    <Dropdown.Item
+                      as="button"
+                      eventKey={type}
+                      key={type}
+                      title={m?.routePlanner.transportType[key] ?? '…'}
+                      active={activeTransportType === type}
+                    >
+                      {icon}{' '}
+                      {['car', 'car-toll', 'bikesharing'].includes(type) && (
+                        <FaMoneyBill />
+                      )}{' '}
+                      {m?.routePlanner.transportType[key] ?? '…'}
+                      {/* {type === 'bikesharing' && (
                     <>
                       {' '}
                       <a
@@ -216,44 +219,74 @@ export function RoutePlannerMenu(): ReactElement {
                         <FaInfoCircle />
                       </a>
                     </>
-                  )}
-                </Dropdown.Item>
-              ))}
+                  )} */}
+                    </Dropdown.Item>
+                  ))}
+              </Fragment>
+            ))}
           </div>
         </Dropdown.Menu>
       </Dropdown>
 
-      <Dropdown
-        className="ml-1"
-        onSelect={(mode) => {
-          dispatch(routePlannerSetMode(mode as RoutingMode));
-        }}
-      >
-        <Dropdown.Toggle
-          id="mode"
-          variant="secondary"
-          disabled={transportType === 'imhd' || transportType === 'bikesharing'}
-        >
-          {m?.routePlanner.mode[mode] ?? '…'}
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu
-          popperConfig={{
-            strategy: 'fixed',
+      {activeTTDef?.api === 'gh' && (
+        <Dropdown
+          className="ml-1"
+          onSelect={(weighting) => {
+            dispatch(routePlannerSetWeighting(weighting as Weighting));
           }}
         >
-          {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
-            <Dropdown.Item
-              eventKey={mode1}
-              key={mode1}
-              title={m?.routePlanner.mode[mode1] ?? '…'}
-              active={mode === mode1}
-            >
-              {m?.routePlanner.mode[mode1] ?? '…'}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+          <Dropdown.Toggle id="mode" variant="secondary">
+            {m?.routePlanner.weighting[activeWeighting] ?? '…'}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+            {(['fastest', 'short_fastest', 'shortest'] as const).map(
+              (weighting) => (
+                <Dropdown.Item
+                  eventKey={weighting}
+                  key={weighting}
+                  title={m?.routePlanner.weighting[weighting] ?? '…'}
+                  active={activeWeighting === weighting}
+                >
+                  {m?.routePlanner.weighting[weighting] ?? '…'}
+                </Dropdown.Item>
+              ),
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
+
+      {activeTTDef?.api === 'osrm' && (
+        <Dropdown
+          className="ml-1"
+          onSelect={(mode) => {
+            dispatch(routePlannerSetMode(mode as RoutingMode));
+          }}
+        >
+          <Dropdown.Toggle
+            id="mode"
+            variant="secondary"
+            // disabled={
+            //   transportType === 'imhd' || transportType === 'bikesharing'
+            // }
+          >
+            {m?.routePlanner.mode[activeMode] ?? '…'}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+            {(['route', 'trip', 'roundtrip'] as const).map((mode) => (
+              <Dropdown.Item
+                eventKey={mode}
+                key={mode}
+                title={m?.routePlanner.mode[mode] ?? '…'}
+                active={activeMode === mode}
+              >
+                {m?.routePlanner.mode[mode] ?? '…'}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
 
       <ButtonGroup className="ml-1">
         <Dropdown
@@ -273,11 +306,7 @@ export function RoutePlannerMenu(): ReactElement {
             </span>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu
-            popperConfig={{
-              strategy: 'fixed',
-            }}
-          >
+          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
             <Dropdown.Item>
               <FaMapMarkerAlt /> {m?.routePlanner.point.pick ?? '…'}
             </Dropdown.Item>
@@ -311,7 +340,7 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
 
-        {mode !== 'roundtrip' && (
+        {activeMode !== 'roundtrip' && (
           <>
             <Button
               as={ButtonGroup}
@@ -341,11 +370,7 @@ export function RoutePlannerMenu(): ReactElement {
                 </span>
               </Dropdown.Toggle>
 
-              <Dropdown.Menu
-                popperConfig={{
-                  strategy: 'fixed',
-                }}
-              >
+              <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
                 <Dropdown.Item>
                   <FaMapMarkerAlt />
                   {m?.routePlanner.point.pick ?? '…'}

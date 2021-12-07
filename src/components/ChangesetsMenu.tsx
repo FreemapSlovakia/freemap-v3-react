@@ -50,11 +50,7 @@ export function ChangesetsMenu(): ReactElement {
           {m?.changesets.olderThanFull({ days }) ?? '…'}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          popperConfig={{
-            strategy: 'fixed',
-          }}
-        >
+        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
           {[3, 7, 14, 30].map((d) => (
             <Dropdown.Item
               key={d}

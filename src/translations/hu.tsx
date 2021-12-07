@@ -141,21 +141,30 @@ const hu: Messages = {
     transportType: {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
-      bikesharing: 'Kerékpármegosztás',
-      imhd: 'Tömegközlekedés (Pozsony)',
-      'bike-osm': 'Kerékpár (OSM)',
-      bike: 'Kerékpártúrázás',
+      // bikesharing: 'Kerékpármegosztás',
+      // imhd: 'Tömegközlekedés (Pozsony)',
+      bike: 'Bicycle', // TODO translate
+      bicycle_touring: 'Kerékpártúrázás',
       'foot-stroller': 'Babakocsi / kerekesszék',
       nordic: 'Sífutás',
       ski: 'Alpesi sí',
       foot: 'Gyaloglás',
-      'foot-osm': 'Gyaloglás (OSM)',
+      hiking: 'Turisztika', // TODO translate
+      mtb: 'Mountain bike', // TODO translate
+      racingbike: 'Racing bike', // TODO translate
+      motorcycle: 'Motorcycle', // TODO translate
     },
     development: 'fejlesztés alatt',
     mode: {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',
       roundtrip: 'Legrövidebb úton (körutazás)',
+    },
+    // TODO translate
+    weighting: {
+      fastest: 'Fastest',
+      short_fastest: 'Fast, short',
+      shortest: 'Shortest',
     },
     alternative: 'Alternatíva',
     // eslint-disable-next-line
@@ -1120,59 +1129,6 @@ const hu: Messages = {
   osm: {
     fetchingError: ({ err }) =>
       `Hiba történt az OSM-adatok lekérésénél: ${err}`,
-  },
-
-  roadDetails: {
-    roadType: 'Úttípus:',
-    surface: 'Burkolat:',
-    suitableBikeType: 'Ajánlott kerékpártípus:',
-    lastChange: 'Utolsó módosítás:',
-    showDetails: 'Részletek megjelenítése az osm.org-on',
-    surfaces: {
-      asphalt: 'aszfalt',
-      gravel: 'zúzott kő',
-      fine_gravel: 'murva',
-      dirt: 'por',
-      ground: 'föld',
-      cobblestone: 'nagy kavics (görgeteg)',
-      compacted: 'tömörített',
-      paved: 'burkolt',
-      unknown: 'ismeretlen',
-      unpaved: 'buroklatlan',
-      'concrete:plates': 'betonlapok',
-      concrete: 'beton',
-      grass: 'fű',
-    },
-    trackClasses: {
-      motorway: 'autópálya',
-      trunk: 'autóút',
-      primary: 'első- vagy másodrendű főút',
-      secondary: 'összekötő út',
-      tertiary: 'bekötőút',
-      service: 'szervizút',
-      unclassified: 'egyéb közút',
-      residential: 'lakóút',
-      grade1: 'burkolt vagy erősen tömörített, szilárd felületű (1. osztály)',
-      grade2:
-        'burkolatlan út, felszíne zúzott kő, változó mennyiségű homokkal, kőzetliszttel és agyaggal keverve (2. osztály)',
-      grade3: 'szinte mindig burkolatlan út (3. osztály)',
-      grade4:
-        'szinte mindig burkolatlan út, elsődlegesen föld/homok/fű (4. osztály)',
-      grade5: 'szinte mindig burkolatlan út szilárd anyag nélkül (5. osztály)',
-      path: 'ösvény',
-      footway: 'gyalogút',
-      pedestrian: 'sétálóutca',
-      unknown: 'ismeretlen',
-      living_street: 'lakó-pihenő övezet',
-      construction: 'építés alatt',
-    },
-    bicycleTypes: {
-      'road-bike': 'országúti kerékpár',
-      'trekking-bike': 'túrakerékpár',
-      'mtb-bike': 'hegyi kerékpár (MTB)',
-      'no-bike': 'kerékpárral tilos',
-      unknown: 'ismeretlen',
-    },
   },
 
   tracking: {

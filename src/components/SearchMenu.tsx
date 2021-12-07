@@ -236,6 +236,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     <FaTimes />
                   </Button>
                 )}
+
                 <Button
                   variant="secondary"
                   type="submit"
@@ -247,12 +248,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </InputGroup.Append>
             </InputGroup>
           </Dropdown.Toggle>
+
           <Dropdown.Menu
             key={searchSeq}
             className="fm-search-dropdown"
-            popperConfig={{
-              strategy: 'fixed',
-            }}
+            popperConfig={{ strategy: 'fixed' }}
           >
             <div className="dropdown-long" ref={sc}>
               <div />

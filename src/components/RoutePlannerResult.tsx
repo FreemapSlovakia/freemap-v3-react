@@ -12,7 +12,6 @@ import {
   routePlannerSetMidpoint,
   routePlannerSetPickMode,
   routePlannerSetStart,
-  RouteStepExtra,
   Step,
 } from 'fm3/actions/routePlannerActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
@@ -310,23 +309,24 @@ export function RoutePlannerResult(): ReactElement {
   }, []);
 
   const maneuverToText = useCallback(
-    (
-      name: string,
-      { type, modifier }: Step['maneuver'],
-      extra?: RouteStepExtra,
-    ) =>
-      transportType === 'imhd'
+    (name: string, { type, modifier }: Step['maneuver']) =>
+      // extra?: RouteStepExtra,
+      /* transportType === 'imhd'
         ? extra && imhdStep(m, language, extra)
         : transportType === 'bikesharing'
         ? extra && bikesharingStep(m, extra)
-        : m?.routePlanner[name ? 'maneuverWithName' : 'maneuverWithoutName']({
-            type: m?.routePlanner.maneuver.types[type],
-            modifier: modifier
-              ? ' ' + m?.routePlanner.maneuver.modifiers[modifier]
-              : '',
-            name,
-          }),
-    [m, transportType, language],
+        :*/ m?.routePlanner[name ? 'maneuverWithName' : 'maneuverWithoutName']({
+        type: m?.routePlanner.maneuver.types[type],
+        modifier: modifier
+          ? ' ' + m?.routePlanner.maneuver.modifiers[modifier]
+          : '',
+        name,
+      }),
+    [
+      m,
+      // transportType,
+      // language
+    ],
   );
 
   const handleStartPointClick = useCallback(() => {
@@ -650,7 +650,7 @@ export function RoutePlannerResult(): ReactElement {
               special &&
               legs
                 .flatMap((leg) => leg.steps)
-                .map(({ geometry, name, maneuver, extra }, i: number) => (
+                .map(({ geometry, name, maneuver /*, extra*/ }, i: number) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -658,7 +658,7 @@ export function RoutePlannerResult(): ReactElement {
                   >
                     {!dragging && (
                       <Tooltip direction="right" permanent>
-                        <div>{maneuverToText(name, maneuver, extra)}</div>
+                        <div>{maneuverToText(name, maneuver /*, extra*/)}</div>
                       </Tooltip>
                     )}
                   </Marker>
@@ -682,7 +682,7 @@ export function RoutePlannerResult(): ReactElement {
                       changeAlternative(alt);
                     },
                     mousemove: special
-                      ? undefined
+                      ? () => undefined
                       : (e: LeafletMouseEvent) =>
                           handlePolyMouseMove(e, routeSlice.legIndex, alt),
 
@@ -943,32 +943,32 @@ function imhdSummary(
   });
 }
 
-function imhdStep(
-  m: Messages | undefined,
-  language: string,
-  { type, destination, departure, duration, number }: RouteStepExtra,
-) {
-  const dateFormat = new Intl.DateTimeFormat(language, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+// function imhdStep(
+//   m: Messages | undefined,
+//   language: string,
+//   { type, destination, departure, duration, number }: RouteStepExtra,
+// ) {
+//   const dateFormat = new Intl.DateTimeFormat(language, {
+//     hour: '2-digit',
+//     minute: '2-digit',
+//   });
 
-  return m?.routePlanner.imhd.step[type === 'foot' ? 'foot' : 'bus']({
-    type: (m?.routePlanner.imhd.type as any)[type], // TODO
-    destination,
-    departure:
-      departure === undefined ? undefined : dateFormat.format(departure * 1000),
-    duration: duration === undefined ? undefined : Math.round(duration / 60),
-    number,
-  });
-}
+//   return m?.routePlanner.imhd.step[type === 'foot' ? 'foot' : 'bus']({
+//     type: (m?.routePlanner.imhd.type as any)[type], // TODO
+//     destination,
+//     departure:
+//       departure === undefined ? undefined : dateFormat.format(departure * 1000),
+//     duration: duration === undefined ? undefined : Math.round(duration / 60),
+//     number,
+//   });
+// }
 
-function bikesharingStep(
-  m: Messages | undefined,
-  { type, destination, duration }: RouteStepExtra,
-) {
-  return m?.routePlanner.bikesharing.step[type]({
-    destination,
-    duration: duration === undefined ? undefined : Math.round(duration / 60),
-  });
-}
+// function bikesharingStep(
+//   m: Messages | undefined,
+//   { type, destination, duration }: RouteStepExtra,
+// ) {
+//   return m?.routePlanner.bikesharing.step[type]({
+//     destination,
+//     duration: duration === undefined ? undefined : Math.round(duration / 60),
+//   });
+// }

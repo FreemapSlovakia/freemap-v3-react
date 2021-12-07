@@ -210,11 +210,7 @@ export function ObjectsMenu(): ReactElement {
           />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          popperConfig={{
-            strategy: 'fixed',
-          }}
-        >
+        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
           <div className="dropdown-long" ref={sc}>
             <div />
 
