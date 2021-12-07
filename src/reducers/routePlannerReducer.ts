@@ -111,6 +111,8 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     preventHint: state.preventHint,
     transportType: state.transportType,
     mode: state.mode,
+    milestones: state.milestones,
+    pickMode: 'start',
   }))
   .handleAction(routePlannerSetParams, (state, action) => ({
     ...state,

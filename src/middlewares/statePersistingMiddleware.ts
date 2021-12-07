@@ -40,6 +40,7 @@ function persistSelectedState(state: DefaultRootState) {
       routePlanner: {
         preventHint: state.routePlanner.preventHint,
         transportType: state.routePlanner.transportType,
+        milestones: state.routePlanner.milestones,
       },
       auth: {
         user: state.auth.user,
