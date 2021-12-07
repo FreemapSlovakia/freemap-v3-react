@@ -70,9 +70,9 @@ export interface RoutePlannerState extends RoutePlannerCleanState {
 }
 
 export const routePlannerInitialState: RoutePlannerState = {
-  transportType: 'foot',
+  transportType: 'hiking',
   mode: 'route',
-  weighting: 'short_fastest',
+  weighting: 'fastest',
   milestones: false,
   preventHint: false,
   ...cleanState,
@@ -132,7 +132,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       ? 'route'
       : action.payload.mode || 'route',
     milestones: !!action.payload.milestones,
-    weighting: action.payload.weighting ?? 'short_fastest',
+    weighting: action.payload.weighting ?? 'fastest',
   }))
   .handleAction(routePlannerSetStart, (state, action) => ({
     ...state,

@@ -96,8 +96,14 @@ export const routePlannerFindRouteProcessor: Processor = {
   id: 'routePlanner',
   errorKey: 'routePlanner.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
-    const { start, finish, midpoints, transportType, mode, weighting } =
-      getState().routePlanner;
+    const {
+      start,
+      finish,
+      midpoints,
+      transportType,
+      mode,
+      weighting: weig,
+    } = getState().routePlanner;
 
     if (!start || !finish || !transportType) {
       return;
@@ -139,14 +145,16 @@ export const routePlannerFindRouteProcessor: Processor = {
 
     try {
       if (ttDef.api === 'gh') {
+        const weighting =
+          weig === 'fastest' && ttDef.vehicle === 'wheelchair'
+            ? 'short_fastest'
+            : weig;
+
         const { data: ghDdata, status } = await httpRequest({
           getState,
           method: 'POST',
-            // url: 'https://local.gruveo.com/gh/route',
-            url: 'https://graphhopper.freemap.sk/route',
-            data: {
-              // avoid: 'toll', // wut? doesn't work
-              // snap_preventions: ['trunk', 'motorway'], // without effect
+          // url: 'https://local.gruveo.com/gh/route',
+          url: 'https://graphhopper.freemap.sk/route',
           data: {
             // avoid: 'toll', // wut? doesn't work
             // snap_preventions: ['trunk', 'motorway'], // without effect
@@ -162,6 +170,8 @@ export const routePlannerFindRouteProcessor: Processor = {
             //   max_paths: 2,
             // },
 
+            'ch.disable': weighting !== 'fastest',
+
             alternative_route: {
               max_paths: 3, // default is 2
               // max_weight_factor: 1.4,
@@ -173,10 +183,7 @@ export const routePlannerFindRouteProcessor: Processor = {
             // profile: ttDef.profile,
             // profile: 'wheelchair',
 
-            weighting:
-              weighting === 'fastest' && ttDef.vehicle === 'wheelchair'
-                ? 'short_fastest'
-                : weighting, // fastest|short_fastest|shortest|curvature
+            weighting, // fastest|short_fastest|shortest|curvature
 
             // turn_costs: true,
             vehicle: ttDef.vehicle,
@@ -206,12 +213,15 @@ export const routePlannerFindRouteProcessor: Processor = {
             typeof data === 'object' &&
             typeof (data as any)['message'] === 'string'
           ) {
+            const msg = String((data as any)['message']);
+
             if (
-              String((data as any)['message']).startsWith('Cannot find point ')
+              msg.startsWith('Cannot find point ') ||
+              msg.startsWith('Connection between locations not found')
             ) {
               dispatch(rnfToastAction);
             } else {
-              err = String((data as any)['message']);
+              err = msg;
             }
           } else {
             err = '?';
