@@ -166,19 +166,14 @@ export const routePlannerFindRouteProcessor: Processor = {
             algorithm: midpoints.length > 0 ? undefined : 'alternative_route',
 
             // algorithm: 'round_trip',
-            // round_trip: {
-            //   distance: 10000,
-            //   seed: 546,
-            //   max_paths: 2,
-            // },
+            // 'round_trip.distance': 50000,
+            // 'round_trip.seed': 17,
 
             'ch.disable': weighting !== 'fastest',
 
-            alternative_route: {
-              max_paths: 3, // default is 2
-              // max_weight_factor: 1.4,
-              // max_share_factor: 0.6,
-            },
+            'alternative_route.max_paths': 2, // default is 2
+            // 'alternative_route.max_weight_factor': 1.4,
+            // 'alternative_route.max_paths': 0.6,
 
             instructions: true,
             details:
