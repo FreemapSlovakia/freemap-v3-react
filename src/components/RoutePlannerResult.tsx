@@ -212,6 +212,7 @@ export function RoutePlannerResult(): ReactElement {
     const line = lineString(
       alternatives[activeAlternativeIndex].legs
         .flatMap((leg) => leg.steps)
+        .filter((step) => step.geometry.coordinates.length > 1)
         .flatMap((step) => step.geometry.coordinates),
     );
 
@@ -668,59 +669,65 @@ export function RoutePlannerResult(): ReactElement {
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
-              .map((routeSlice, i: number) => (
-                <Polyline
-                  key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
-                  interactive={interactive1}
-                  ref={bringToFront}
-                  positions={routeSlice.geometry.coordinates.map(reverse)}
-                  weight={10}
-                  color="#fff"
-                  bubblingMouseEvents={false}
-                  eventHandlers={{
-                    click() {
-                      changeAlternative(alt);
-                    },
-                    mousemove: special
-                      ? () => undefined
-                      : (e: LeafletMouseEvent) =>
-                          handlePolyMouseMove(e, routeSlice.legIndex, alt),
+              .map((routeSlice, i: number) =>
+                routeSlice.geometry.coordinates.length < 2 ? null : (
+                  <Polyline
+                    key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
+                    interactive={interactive1}
+                    ref={bringToFront}
+                    positions={routeSlice.geometry.coordinates.map(reverse)}
+                    weight={10}
+                    color="#fff"
+                    bubblingMouseEvents={false}
+                    eventHandlers={{
+                      click() {
+                        changeAlternative(alt);
+                      },
+                      mousemove: special
+                        ? () => undefined
+                        : (e: LeafletMouseEvent) =>
+                            handlePolyMouseMove(e, routeSlice.legIndex, alt),
 
-                    mouseout: handlePolyMouseOut,
-                  }}
-                />
-              ))}
+                      mouseout: handlePolyMouseOut,
+                    }}
+                  />
+                ),
+              )}
 
             {legs
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
-              .map((routeSlice, i: number) => (
-                <Polyline
-                  key={`slice-${timestamp}-${alt}-${i}-${
-                    interactive1 ? 'a' : 'b'
-                  }`}
-                  ref={bringToFront}
-                  positions={routeSlice.geometry.coordinates.map(reverse)}
-                  weight={6}
-                  pathOptions={{
-                    color:
-                      alt !== activeAlternativeIndex
-                        ? '#868e96'
-                        : !special && routeSlice.legIndex % 2
-                        ? 'hsl(211, 100%, 66%)'
-                        : 'hsl(211, 100%, 50%)',
-                  }}
-                  opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                  dashArray={
-                    ['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode)
-                      ? '0, 10'
-                      : undefined
-                  }
-                  interactive={false}
-                  bubblingMouseEvents={false}
-                />
-              ))}
+              .map((routeSlice, i: number) =>
+                routeSlice.geometry.coordinates.length < 2 ? null : (
+                  <Polyline
+                    key={`slice-${timestamp}-${alt}-${i}-${
+                      interactive1 ? 'a' : 'b'
+                    }`}
+                    ref={bringToFront}
+                    positions={routeSlice.geometry.coordinates.map(reverse)}
+                    weight={6}
+                    pathOptions={{
+                      color:
+                        alt !== activeAlternativeIndex
+                          ? '#868e96'
+                          : !special && routeSlice.legIndex % 2
+                          ? 'hsl(211, 100%, 66%)'
+                          : 'hsl(211, 100%, 50%)',
+                    }}
+                    opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                    dashArray={
+                      ['foot', 'pushing bike', 'ferry'].includes(
+                        routeSlice.mode,
+                      )
+                        ? '0, 10'
+                        : undefined
+                    }
+                    interactive={false}
+                    bubblingMouseEvents={false}
+                  />
+                ),
+              )}
           </Fragment>
         )),
     [

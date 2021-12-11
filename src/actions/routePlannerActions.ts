@@ -67,7 +67,7 @@ export interface Leg {
 
 export interface Step {
   maneuver: {
-    location: [number, number];
+    // location: [number, number];
     type:
       | 'turn'
       | 'new name'
