@@ -181,7 +181,12 @@ export const routePlannerFindRouteProcessor: Processor = {
             },
 
             instructions: true,
-            details: ['get_off_bike'],
+            details:
+              ttDef.vehicle === 'bike2' ||
+              ttDef.vehicle === 'mtb' ||
+              ttDef.vehicle === 'racingbike'
+                ? ['get_off_bike']
+                : undefined,
 
             // profile: ttDef.profile,
             // profile: 'wheelchair',
@@ -291,8 +296,6 @@ export const routePlannerFindRouteProcessor: Processor = {
               let steps: Step[] = [];
 
               const gob = (p.details['get_off_bike'] ?? []).filter((q) => q[2]);
-
-              console.log('GGGGGGGG', { gob });
 
               for (const instruction of p.instructions) {
                 dist += instruction.distance;
