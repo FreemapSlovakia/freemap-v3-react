@@ -75,7 +75,7 @@ type GraphhopperPath = {
   points: LineString;
   instructions: GraphhopperInstruction[];
   legs?: unknown[]; // missing in doc
-  details: Record<string, unknown>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
+  details: Record<string, [number, number, unknown][]>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
   ascend: number;
   descend: number;
   snapped_waypoints: unknown; // LineString;
@@ -290,6 +290,10 @@ export const routePlannerFindRouteProcessor: Processor = {
 
               let steps: Step[] = [];
 
+              const gob = (p.details['get_off_bike'] ?? []).filter((q) => q[2]);
+
+              console.log('GGGGGGGG', { gob });
+
               for (const instruction of p.instructions) {
                 dist += instruction.distance;
 
@@ -304,7 +308,13 @@ export const routePlannerFindRouteProcessor: Processor = {
                     type: 'continue',
                   },
                   name: instruction.text,
-                  mode: 'cycling',
+                  mode: gob.some(
+                    (seg) =>
+                      instruction.interval[0] >= seg[0] &&
+                      instruction.interval[1] <= seg[1],
+                  )
+                    ? 'foot'
+                    : 'cycling', // TODO for non-cycling...; TODO can it happen that not whole interval has the same GOB value?
                   geometry: {
                     coordinates: p.points.coordinates.slice(
                       instruction.interval[0],
