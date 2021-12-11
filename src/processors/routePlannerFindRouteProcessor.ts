@@ -40,6 +40,11 @@ const updateRouteTypes = [
 ];
 
 enum GraphhopperSign {
+  UNKNOWN = -99,
+  U_TURN_UNKNOWN = -98,
+  U_TURN_LEFT = -8,
+  KEEP_LEFT = -7,
+  LEAVE_ROUNDABOUT = -6,
   TURN_SHARP_LEFT = -3,
   TURN_LEFT = -2,
   TURN_SLIGHT_LEFT = -1,
@@ -48,14 +53,19 @@ enum GraphhopperSign {
   TURN_RIGHT = 2,
   TURN_SHARP_RIGHT = 3,
   FINISH = 4,
-  VIA_REACHED = 5,
+  REACHED_VIA = 5,
   USE_ROUNDABOUT = 6,
+  IGNORE = -2147483648,
   KEEP_RIGHT = 7,
+  U_TURN_RIGHT = 8,
+  PT_START_TRIP = 101,
+  PT_TRANSFER = 102,
+  PT_END_TRIP = 103,
 }
 
 type GraphhopperInstruction = {
   distance: number;
-  heading: number;
+  heading?: number;
   sign: GraphhopperSign;
   interval: [number, number];
   text: string;
@@ -323,7 +333,7 @@ export const routePlannerFindRouteProcessor: Processor = {
 
                 if (
                   instruction.sign === GraphhopperSign.FINISH ||
-                  instruction.sign === GraphhopperSign.VIA_REACHED
+                  instruction.sign === GraphhopperSign.REACHED_VIA
                 ) {
                   legs.push({
                     distance: dist,
