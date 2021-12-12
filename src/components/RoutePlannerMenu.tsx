@@ -240,18 +240,19 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
-            {(['fastest', 'short_fastest', 'shortest'] as const).map(
-              (weighting) => (
-                <Dropdown.Item
-                  eventKey={weighting}
-                  key={weighting}
-                  title={m?.routePlanner.weighting[weighting] ?? '…'}
-                  active={activeWeighting === weighting}
-                >
-                  {m?.routePlanner.weighting[weighting] ?? '…'}
-                </Dropdown.Item>
-              ),
-            )}
+            {(activeTransportType === 'foot-stroller'
+              ? (['short_fastest', 'shortest'] as const)
+              : (['fastest', 'short_fastest', 'shortest'] as const)
+            ).map((weighting) => (
+              <Dropdown.Item
+                eventKey={weighting}
+                key={weighting}
+                title={m?.routePlanner.weighting[weighting] ?? '…'}
+                active={activeWeighting === weighting}
+              >
+                {m?.routePlanner.weighting[weighting] ?? '…'}
+              </Dropdown.Item>
+            ))}
           </Dropdown.Menu>
         </Dropdown>
       )}

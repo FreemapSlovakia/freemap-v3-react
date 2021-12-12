@@ -122,6 +122,11 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
           preventHint: state.preventHint,
           transportType: state.transportType,
           mode: state.mode,
+          weighting:
+            state.transportType === 'foot-stroller' &&
+            state.weighting === 'fastest'
+              ? 'short_fastest'
+              : state.weighting,
         }
       : {}),
     start: action.payload.start,
@@ -134,7 +139,11 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       ? 'route'
       : action.payload.mode || 'route',
     milestones: !!action.payload.milestones,
-    weighting: action.payload.weighting ?? 'fastest',
+    weighting:
+      state.transportType === 'foot-stroller' &&
+      (action.payload.weighting ?? 'fastest') === 'fastest'
+        ? 'short_fastest'
+        : action.payload.weighting ?? 'fastest',
   }))
   .handleAction(routePlannerSetStart, (state, action) => ({
     ...state,
@@ -200,6 +209,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...clearResult,
     transportType: action.payload,
     mode: isSpecial(action.payload) ? 'route' : state.mode,
+    weighting: action.payload === 'foot-stroller' ? 'short_fastest' : 'fastest',
   }))
   .handleAction(routePlannerSetMode, (state, action) => ({
     ...state,

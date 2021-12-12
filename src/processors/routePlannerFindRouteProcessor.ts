@@ -179,7 +179,10 @@ export const routePlannerFindRouteProcessor: Processor = {
             // 'round_trip.distance': 50000,
             // 'round_trip.seed': 17,
 
-            'ch.disable': weighting !== 'fastest',
+            'ch.disable':
+              ttDef.vehicle === 'wheelchair'
+                ? weighting !== 'short_fastest'
+                : weighting !== 'fastest',
 
             'alternative_route.max_paths': 2, // default is 2
             // 'alternative_route.max_weight_factor': 1.4,
