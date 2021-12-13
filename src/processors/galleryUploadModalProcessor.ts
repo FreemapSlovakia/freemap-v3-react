@@ -4,7 +4,7 @@ import {
   GalleryTag,
 } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -24,13 +24,12 @@ export const galleryUploadModalProcessor: Processor = {
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: '/gallery/picture-tags',
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetTags(assertType<GalleryTag[]>(data)));
+    dispatch(gallerySetTags(assertType<GalleryTag[]>(await res.json())));
   },
 };

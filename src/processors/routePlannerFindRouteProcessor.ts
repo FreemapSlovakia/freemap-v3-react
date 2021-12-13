@@ -19,8 +19,9 @@ import {
   Waypoint,
 } from 'fm3/actions/routePlannerActions';
 import { ToastAction, toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -141,18 +142,6 @@ export const routePlannerFindRouteProcessor: Processor = {
       timeout: 5000,
     });
 
-    const params = {
-      alternatives: mode === 'route' || undefined,
-      steps: true,
-      geometries: 'geojson',
-      roundtrip:
-        mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
-      source: mode === 'route' ? undefined : 'first',
-      destination: mode === 'trip' ? 'last' : undefined,
-      // continue_straight: true,
-      exclude: ttDef.exclude,
-    };
-
     let data: unknown;
 
     try {
@@ -162,7 +151,7 @@ export const routePlannerFindRouteProcessor: Processor = {
             ? 'short_fastest'
             : weig;
 
-        const { data: ghDdata, status } = await httpRequest({
+        const response = await httpRequest({
           getState,
           method: 'POST',
           // url: 'https://local.gruveo.com/gh/route',
@@ -217,9 +206,9 @@ export const routePlannerFindRouteProcessor: Processor = {
           cancelActions: updateRouteTypes,
         });
 
-        data = ghDdata;
+        data = await response.json();
 
-        if (status === 400) {
+        if (response.status === 400) {
           dispatch(clearResultAction);
 
           let err: string | undefined;
@@ -264,19 +253,33 @@ export const routePlannerFindRouteProcessor: Processor = {
           [finish.lon, finish.lat].join(','),
         ].join(';');
 
-        data = (
-          await httpRequest({
-            getState,
-            method: 'GET',
-            url: `${ttDef.url.replace(
+        const response = await httpRequest({
+          getState,
+          url:
+            `${ttDef.url.replace(
               '$MODE',
               mode === 'route' ? 'route' : 'trip',
-            )}/${allPoints}`,
-            params,
-            expectedStatus: [200, 400],
-            cancelActions: updateRouteTypes,
-          })
-        ).data;
+            )}/${allPoints}?` +
+            objectToURLSearchParams({
+              alternatives: mode === 'route' || undefined,
+              steps: true,
+              geometries: 'geojson',
+              roundtrip:
+                mode === 'roundtrip'
+                  ? true
+                  : mode === 'trip'
+                  ? false
+                  : undefined,
+              source: mode === 'route' ? undefined : 'first',
+              destination: mode === 'trip' ? 'last' : undefined,
+              // continue_straight: true,
+              exclude: ttDef.exclude,
+            }),
+          expectedStatus: [200, 400],
+          cancelActions: updateRouteTypes,
+        });
+
+        data = await response.json();
       }
     } catch (err) {
       dispatch(clearResultAction);

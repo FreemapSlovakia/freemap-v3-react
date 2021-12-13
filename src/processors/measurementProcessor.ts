@@ -9,7 +9,7 @@ import {
   setTool,
 } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
@@ -44,17 +44,13 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           }),
         );
 
-        const { data } = await httpRequest({
+        const res = await httpRequest({
           getState,
-          method: 'GET',
-          url: '/geotools/elevation',
-          params: {
-            coordinates: `${point.lat},${point.lon}`,
-          },
+          url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
           cancelActions: [drawingMeasure, clearMap],
         });
 
-        elevation = assertType<[number]>(data)[0];
+        elevation = assertType<[number]>(await res.json())[0];
       }
 
       dispatch(

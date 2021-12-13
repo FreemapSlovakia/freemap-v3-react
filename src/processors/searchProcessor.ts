@@ -6,10 +6,11 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
-import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
@@ -67,27 +68,27 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      url: 'https://nominatim.openstreetmap.org/search',
-      method: 'GET',
-      params: {
-        q: query,
-        format: 'json',
-        polygon_geojson: 1,
-        extratags: 1,
-        namedetails: 0, // TODO maybe use some more details
-        limit: 20,
-        'accept-language': getState().l10n.language,
-        viewbox: action.payload.fromUrl
-          ? undefined
-          : (await mapPromise).getBounds().toBBoxString(),
-      },
+      url:
+        'https://nominatim.openstreetmap.org/search?' +
+        objectToURLSearchParams({
+          q: query,
+          format: 'json',
+          polygon_geojson: 1,
+          extratags: 1,
+          namedetails: 0, // TODO maybe use some more details
+          limit: 20,
+          'accept-language': getState().l10n.language,
+          viewbox: action.payload.fromUrl
+            ? undefined
+            : (await mapPromise).getBounds().toBBoxString(),
+        }),
       expectedStatus: 200,
       cancelActions: [clearMap, searchSetQuery],
     });
 
-    const results = assertType<NominatimResult[]>(data)
+    const results = assertType<NominatimResult[]>(await res.json())
       .filter(
         (item) =>
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,

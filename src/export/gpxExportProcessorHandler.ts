@@ -1,6 +1,6 @@
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
+import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
@@ -9,8 +9,8 @@ import { ObjectsState } from 'fm3/reducers/objectsReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
-import qs from 'query-string';
 import { assertType } from 'typescript-is';
 import { addAttribute, createElement, GPX_NS } from './gpxExporter';
 import { licenseNotice, upload } from './upload';
@@ -80,21 +80,20 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   if (set.has('pictures')) {
     const b = (await mapPromise).getBounds();
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
-      url: '/gallery/pictures',
-      params: {
-        by: 'bbox',
-        bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-        ...createFilter(getState().gallery.filter),
-        fields: ['id', 'title', 'description', 'takenAt'],
-      },
-      paramsSerializer: qs.stringify,
+      url:
+        '/gallery/pictures?' +
+        objectToURLSearchParams({
+          by: 'bbox',
+          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+          ...createFilter(getState().gallery.filter),
+          fields: ['id', 'title', 'description', 'takenAt'],
+        }),
       expectedStatus: 200,
     });
 
-    addPictures(doc, assertType<Picture[]>(data));
+    addPictures(doc, assertType<Picture[]>(await res.json()));
   }
 
   if (set.has('drawingLines')) {

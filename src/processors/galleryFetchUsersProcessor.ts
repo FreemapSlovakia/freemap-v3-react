@@ -1,6 +1,6 @@
 import { gallerySetUsers, GalleryUser } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -16,13 +16,12 @@ export const galleryFetchUsersProcessor: Processor = {
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: '/gallery/picture-users',
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetUsers(assertType<GalleryUser[]>(data)));
+    dispatch(gallerySetUsers(assertType<GalleryUser[]>(await res.json())));
   },
 };

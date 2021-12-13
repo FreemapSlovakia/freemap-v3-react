@@ -6,7 +6,7 @@ import {
 } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const saveSettingsProcessor: Processor<typeof saveSettings> = {

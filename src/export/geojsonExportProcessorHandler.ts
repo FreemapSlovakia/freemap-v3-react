@@ -9,13 +9,13 @@ import {
   polygon,
 } from '@turf/helpers';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
+import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
-import qs from 'query-string';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { assertType } from 'typescript-is';
 import { licenseNotice, upload } from './upload';
 
@@ -58,28 +58,27 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   if (set.has('pictures')) {
     const b = (await mapPromise).getBounds();
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
-      url: '/gallery/pictures',
-      params: {
-        by: 'bbox',
-        bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-        ...createFilter(getState().gallery.filter),
-        fields: [
-          'id',
-          'title',
-          'description',
-          'takenAt',
-          'createdAt',
-          'rating',
-        ], // TODO author
-      },
-      paramsSerializer: qs.stringify,
+      url:
+        '/gallery/pictures?' +
+        objectToURLSearchParams({
+          by: 'bbox',
+          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+          ...createFilter(getState().gallery.filter),
+          fields: [
+            'id',
+            'title',
+            'description',
+            'takenAt',
+            'createdAt',
+            'rating',
+          ], // TODO author
+        }),
       expectedStatus: 200,
     });
 
-    addPictures(fc, assertType<Picture[]>(data));
+    addPictures(fc, assertType<Picture[]>(await res.json()));
   }
 
   if (set.has('drawingLines')) {

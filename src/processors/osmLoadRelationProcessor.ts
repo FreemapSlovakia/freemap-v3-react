@@ -10,8 +10,8 @@ import {
 import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { httpRequest } from 'fm3/authAxios';
 import { mergeLines } from 'fm3/geoutils';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmNode, OsmRelation, OsmResult, OsmWay } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -22,19 +22,20 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   handle: async ({ dispatch, getState, action }) => {
     const id = action.payload;
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/relation/${id}/full`,
       expectedStatus: 200,
       cancelActions: [clearMap, searchSelectResult],
     });
 
+    const data = assertType<OsmResult>(await res.json());
+
     const nodes: Record<number, OsmNode> = {};
 
     const ways: Record<number, OsmWay> = {};
 
-    for (const item of assertType<OsmResult>(data).elements) {
+    for (const item of data.elements) {
       if (item.type === 'node') {
         nodes[item.id] = item;
       } else if (item.type === 'way') {
@@ -42,7 +43,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       }
     }
 
-    const relations = assertType<OsmResult>(data).elements.filter(
+    const relations = data.elements.filter(
       (el) => el.type === 'relation',
     ) as OsmRelation[];
 

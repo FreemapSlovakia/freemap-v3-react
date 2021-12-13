@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { RootAction } from 'fm3/actions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -106,7 +105,7 @@ export function createProcessorMiddleware(): MW {
             (!actionPredicate || actionPredicate(action))
           ) {
             const handleError = (err: unknown) => {
-              if (axios.isCancel(err)) {
+              if (err instanceof DOMException && err.name === 'AbortError') {
                 console.log('Canceled: ' + errorKey);
               } else {
                 console.log('Error key: ' + errorKey);
@@ -119,8 +118,7 @@ export function createProcessorMiddleware(): MW {
                     messageKey: errorKey,
                     messageParams:
                       err instanceof Error
-                        ? (err as any).isAxios &&
-                          !(err as any).status &&
+                        ? (err as any)._fm_fetchError &&
                           navigator.onLine === false
                           ? {
                               err:

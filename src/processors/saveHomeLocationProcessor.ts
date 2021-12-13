@@ -1,5 +1,5 @@
 import { saveHomeLocation } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const saveHomeLocationProcessor: Processor<typeof saveHomeLocation> = {

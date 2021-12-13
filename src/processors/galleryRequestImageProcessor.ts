@@ -3,7 +3,7 @@ import {
   gallerySetImage,
   Picture,
 } from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -13,21 +13,20 @@ export const galleryRequestImageProcessor: Processor = {
   actionCreator: galleryRequestImage,
   errorKey: 'gallery.pictureFetchingError',
   async handle({ getState, dispatch }) {
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: `/gallery/pictures/${getState().gallery.activeImageId}`,
       expectedStatus: 200,
     });
 
-    const okData = assertType<StringDates<Picture>>(data);
+    const data = assertType<StringDates<Picture>>(await res.json());
 
     dispatch(
       gallerySetImage({
-        ...okData,
-        createdAt: new Date(okData.createdAt),
-        takenAt: okData.takenAt === null ? null : new Date(okData.takenAt),
-        comments: okData.comments.map((comment) => ({
+        ...data,
+        createdAt: new Date(data.createdAt),
+        takenAt: data.takenAt === null ? null : new Date(data.takenAt),
+        comments: data.comments.map((comment) => ({
           ...comment,
           createdAt: new Date(comment.createdAt),
         })),

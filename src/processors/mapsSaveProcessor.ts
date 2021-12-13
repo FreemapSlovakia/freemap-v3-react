@@ -5,7 +5,7 @@ import {
   mapsSave,
 } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { DefaultRootState } from 'react-redux';
 import { assertType } from 'typescript-is';
@@ -28,7 +28,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     const { id } = getState().maps;
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
       method: id ? 'PATCH' : 'POST',
       url: `/maps/${id ?? ''}`,
@@ -51,7 +51,9 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
     dispatch(mapsLoadList());
 
     if (!id) {
-      dispatch(mapsLoad({ id: assertType<{ id: string }>(data).id })); // TODO skip loading in this case
+      dispatch(
+        mapsLoad({ id: assertType<{ id: string }>(await res.json()).id }),
+      ); // TODO skip loading in this case
     }
   },
 };

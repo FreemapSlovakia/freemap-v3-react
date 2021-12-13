@@ -1,6 +1,6 @@
 import { Line, Point } from 'fm3/actions/drawingLineActions';
 import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -19,15 +19,15 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: `/maps/${payload.id}`,
       expectedStatus: 200,
     });
 
     try {
-      const features = (data as any).data.trackViewer?.trackGeojson?.features;
+      const features = (await res.json()).data.trackViewer?.trackGeojson
+        ?.features;
 
       // typescript-is fails if feature property contains array; TODO find out why
 
@@ -49,7 +49,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
     const map = assertType<{
       name: string;
       data: StringDates<MapData<Line | OldLine>>;
-    }>(data);
+    }>(await res.json());
 
     const mapData = map.data;
 

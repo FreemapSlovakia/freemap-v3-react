@@ -3,7 +3,7 @@ import {
   trackViewerSetTrackUID,
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -42,7 +42,7 @@ export async function handleTrackUpload({
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
       method: 'POST',
       url: '/tracklogs',
@@ -53,7 +53,9 @@ export async function handleTrackUpload({
       expectedStatus: 201,
     });
 
-    dispatch(trackViewerSetTrackUID(assertType<{ uid: string }>(data).uid));
+    dispatch(
+      trackViewerSetTrackUID(assertType<{ uid: string }>(await res.json()).uid),
+    );
   }
 
   dispatch(

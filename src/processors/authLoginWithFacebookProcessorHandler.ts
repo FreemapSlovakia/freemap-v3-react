@@ -1,8 +1,8 @@
 import { authSetUser } from 'fm3/actions/authActions';
 import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { loadFb } from 'fm3/fbLoader';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -31,7 +31,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     }
   }
 
-  const { data } = await httpRequest({
+  const res = await httpRequest({
     getState,
     method: 'POST',
     url: `/auth/login-fb`,
@@ -44,7 +44,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     },
   });
 
-  const user = assertType<User>(data);
+  const user = assertType<User>(await res.json());
 
   dispatch(
     toastsAdd({

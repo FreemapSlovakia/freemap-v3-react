@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { writeFile } from 'fs/promises';
 import htm from 'htm';
 import vhtml from 'vhtml';
@@ -39,20 +38,21 @@ export async function objects(sitemapNames: string[]) {
   for (const [category, query] of Object.entries(queries)) {
     console.log('Category:', category);
 
-    const res = await axios.request({
+    const res = await fetch('https://overpass.freemap.sk/api/interpreter', {
       method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
       headers: { 'Content-Type': 'text/plain' },
-      data: `[out:json][timeout:120]; (${query}); out center tags;`,
+      body: `[out:json][timeout:120]; (${query}); out center tags;`,
     });
 
     const name = `sitemap-feat-${category}.txt`;
 
     sitemapNames.push(name);
 
+    const data = await res.json();
+
     await writeFile(
       '../sitemap/' + name,
-      res.data.elements
+      data.elements
         .map(
           (el) =>
             `https://www.freemap.sk/?layers=X&osm-${el.type}=${el.id}&lang=sk`,
@@ -60,7 +60,7 @@ export async function objects(sitemapNames: string[]) {
         .join('\n'),
     );
 
-    for (const element of res.data.elements) {
+    for (const element of data.elements) {
       const [genName, name] = getNameFromOsmElementSync(
         element.tags,
         element.type,

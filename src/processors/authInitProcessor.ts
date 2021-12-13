@@ -1,5 +1,5 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { get } from 'idb-keyval';
@@ -22,7 +22,9 @@ export const authInitProcessor: Processor = {
         });
 
         dispatch(
-          authSetUser(res.status === 200 ? assertType<User>(res.data) : null),
+          authSetUser(
+            res.status === 200 ? assertType<User>(await res.json()) : null,
+          ),
         );
       } catch (err) {
         if (typeof err !== 'object' || !err || 'status' in err) {

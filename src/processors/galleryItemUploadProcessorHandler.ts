@@ -6,8 +6,8 @@ import {
 } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {

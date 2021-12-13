@@ -7,10 +7,9 @@ import {
   point,
   polygon,
 } from '@turf/helpers';
-import axios from 'axios';
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
@@ -187,7 +186,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     }
   }
 
-  const { data } = await httpRequest({
+  const res = await httpRequest({
     getState,
     method: 'POST',
     url: `${fmMapserverUrl}/export`,
@@ -209,7 +208,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     expectedStatus: 200,
   });
 
-  const okData = assertType<{ token: string }>(data);
+  const data = assertType<{ token: string }>(await res.json());
 
   dispatch(setActiveModal(null));
 
@@ -222,22 +221,18 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   );
 
   for (let i = 0; ; i++) {
-    try {
-      await httpRequest({
-        getState,
-        method: 'HEAD',
-        url: `${fmMapserverUrl}/export`,
-        params: {
-          token: okData.token,
-        },
-        expectedStatus: 200,
-      });
+    const response = await httpRequest({
+      getState,
+      method: 'HEAD',
+      url: `${fmMapserverUrl}/export?token=${encodeURIComponent(data.token)}`,
+    });
 
+    if (response.status === 200) {
       break;
-    } catch (err) {
-      if ((axios.isAxiosError(err) && err.response) || i > 10) {
-        throw err;
-      }
+    }
+
+    if (i > 10) {
+      throw new Error('timed out');
     }
   }
 
@@ -246,7 +241,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
       id: 'pdfExport.export',
       messageKey: 'pdfExport.exported',
       messageParams: {
-        url: `${fmMapserverUrl}/export?token=${okData.token}`,
+        url: `${fmMapserverUrl}/export?token=${data.token}`,
       },
       style: 'info',
     }),

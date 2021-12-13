@@ -5,11 +5,11 @@ import {
 } from 'fm3/actions/changesetsActions';
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { getType } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
 
 // interface Changeset {
 //   userName: string | null;
@@ -46,24 +46,21 @@ export const changesetsProcessor: Processor = {
       toTime0: string | null,
       changesetsFromPreviousRequest: Changeset[],
     ): Promise<void> {
-      const { data } = await httpRequest({
+      const res = await httpRequest({
         getState,
-        method: 'GET',
-        url: '//api.openstreetmap.org/api/0.6/changesets',
+        url:
+          '//api.openstreetmap.org/api/0.6/changesets?' +
+          objectToURLSearchParams({
+            bbox,
+            time: fromTime + (toTime0 ? `,${toTime0}` : ''),
+            // eslint-disable-next-line
+            display_name: state.changesets.authorName,
+          }),
         expectedStatus: [200, 404],
-        params: {
-          bbox,
-          time: fromTime + (toTime0 ? `,${toTime0}` : ''),
-          // eslint-disable-next-line
-          display_name: state.changesets.authorName,
-        },
         cancelActions: [changesetsSetAuthorName, selectFeature, clearMap],
       });
 
-      const xml = new DOMParser().parseFromString(
-        assertType<string>(data),
-        'text/xml',
-      );
+      const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
 
       const rawChangesets = xml.getElementsByTagName('changeset');
 

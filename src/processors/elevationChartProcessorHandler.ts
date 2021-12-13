@@ -9,8 +9,8 @@ import {
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
 import { selectFeature } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
 import { containsElevations, distance } from 'fm3/geoutils';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import { DefaultRootState } from 'react-redux';
@@ -88,7 +88,7 @@ async function resolveElevationProfilePointsViaApi(
     });
   }
 
-  const { data } = await httpRequest({
+  const res = await httpRequest({
     getState,
     method: 'POST',
     url: '/geotools/elevation',
@@ -107,7 +107,7 @@ async function resolveElevationProfilePointsViaApi(
 
   let prevEle: number | undefined;
 
-  assertType<number[]>(data).forEach((ele: number, i: number) => {
+  assertType<number[]>(await res.json()).forEach((ele: number, i: number) => {
     if (prevEle !== undefined) {
       const d = ele - prevEle;
 

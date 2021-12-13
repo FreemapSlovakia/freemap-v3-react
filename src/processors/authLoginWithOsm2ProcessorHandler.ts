@@ -1,7 +1,7 @@
 import { authLoginWithOsm2, authSetUser } from 'fm3/actions/authActions';
 import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -11,7 +11,7 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
   dispatch,
   action,
 }) => {
-  const { data } = await httpRequest({
+  const res = await httpRequest({
     getState,
     method: 'POST',
     url: '/auth/login2',
@@ -23,7 +23,7 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
     expectedStatus: 200,
   });
 
-  const user = assertType<User>(data);
+  const user = assertType<User>(await res.json());
 
   dispatch(
     toastsAdd({

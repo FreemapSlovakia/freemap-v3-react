@@ -1,7 +1,7 @@
 import { authSetPremium } from 'fm3/actions/authActions';
 import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
@@ -18,7 +18,7 @@ export const removeAdsProcessor: Processor = {
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
       url: '/auth/rovasToken',
       method: 'POST',
@@ -26,7 +26,7 @@ export const removeAdsProcessor: Processor = {
       cancelActions: [],
     });
 
-    const { rovasToken } = assertType<Response>(data);
+    const { rovasToken } = assertType<Response>(await res.json());
 
     const w = window.open(
       process.env['ROVAS_URL_PREFIX'] +

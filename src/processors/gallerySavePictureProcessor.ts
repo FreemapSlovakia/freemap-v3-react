@@ -3,8 +3,8 @@ import {
   gallerySavePicture,
   gallerySetLayerDirty,
 } from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const gallerySavePictureProcessor: Processor = {

@@ -7,8 +7,8 @@ import {
 import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
 import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { distance } from 'fm3/geoutils';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
@@ -42,13 +42,13 @@ export const mapDetailsProcessor: Processor = {
     const kvFilter =
       '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
 
-    const [{ data }, { data: data1 }] = await Promise.all([
+    const [res0, res1] = await Promise.all([
       httpRequest({
         getState,
         method: 'POST',
         url: 'https://overpass.freemap.sk/api/interpreter',
         headers: { 'Content-Type': 'text/plain' },
-        data:
+        body:
           '[out:json];(' +
           `nwr(around:33,${userSelectedLat},${userSelectedLon})${kvFilter};` +
           ');out tags center;',
@@ -60,7 +60,7 @@ export const mapDetailsProcessor: Processor = {
         method: 'POST',
         url: 'https://overpass.freemap.sk/api/interpreter',
         headers: { 'Content-Type': 'text/plain' },
-        data: `[out:json];
+        body: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;
           nwr(pivot.a)${kvFilter};
           out tags;`,
@@ -70,7 +70,7 @@ export const mapDetailsProcessor: Processor = {
 
     const oRes = assertType<{
       elements: OverpassElement[];
-    }>(data);
+    }>(await res0.json());
 
     console.log(oRes.elements);
 
@@ -91,7 +91,9 @@ export const mapDetailsProcessor: Processor = {
       );
     });
 
-    const oRes1 = assertType<{ elements: SimpleOverpassElement[] }>(data1);
+    const oRes1 = assertType<{ elements: SimpleOverpassElement[] }>(
+      await res1.json(),
+    );
 
     const res1Set = new Set(oRes1.elements.map((item) => item.id));
 

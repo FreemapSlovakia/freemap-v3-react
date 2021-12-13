@@ -1,8 +1,8 @@
 import FileSaver from 'file-saver';
 import { Destination } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
+import { httpRequest } from 'fm3/httpRequest';
 import qs from 'query-string';
 import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -96,7 +96,7 @@ export async function upload(
             path: `/freemap-export-${new Date().toISOString()}.${type}`,
           }),
         },
-        data,
+        data: data,
         expectedStatus: 200,
       });
 
@@ -197,7 +197,7 @@ export async function upload(
           method: 'POST',
           url: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
           headers: { Authorization: `Bearer ${ar.access_token}` },
-          data: formData,
+          body: formData,
           expectedStatus: 200,
         });
       }

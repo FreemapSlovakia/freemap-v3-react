@@ -2,8 +2,8 @@ import { lineString, polygon } from '@turf/helpers';
 import { clearMap } from 'fm3/actions/mainActions';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { httpRequest } from 'fm3/authAxios';
 import { positionsEqual, shouldBeArea } from 'fm3/geoutils';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
@@ -14,9 +14,8 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   handle: async ({ dispatch, getState, action }) => {
     const id = action.payload;
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: `//api.openstreetmap.org/api/0.6/way/${id}/full`,
       expectedStatus: 200,
       cancelActions: [clearMap, searchSelectResult],
@@ -24,7 +23,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
     const nodes: Record<string, [number, number]> = {};
 
-    const { elements } = assertType<OsmResult>(data);
+    const { elements } = assertType<OsmResult>(await res.json());
 
     for (const item of elements) {
       if (item.type === 'node') {

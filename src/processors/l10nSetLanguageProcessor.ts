@@ -3,7 +3,7 @@ import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { getEffectiveChosenLanguage } from 'fm3/langUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';

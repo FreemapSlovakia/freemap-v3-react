@@ -1,6 +1,6 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { Device } from 'fm3/types/trackingTypes';
 import { assertType } from 'typescript-is';
@@ -48,11 +48,12 @@ export const loadDevicesProcessor: Processor<
   actionCreator: trackingActions.loadDevices,
   errorKey: 'general.loadError',
   handle: async ({ dispatch, getState }) => {
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: '/tracking/devices',
     });
+
+    const data = await res.json();
 
     if (Array.isArray(data)) {
       for (const device of data) {

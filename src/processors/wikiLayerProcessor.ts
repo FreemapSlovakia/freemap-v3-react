@@ -1,9 +1,10 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
-import { httpRequest } from 'fm3/authAxios';
 import { cancelRegister } from 'fm3/cancelRegister';
+import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { OverpassElement, OverpassResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
@@ -80,11 +81,11 @@ export const wikiLayerProcessor: Processor = {
 
     const bb = (await mapPromise).getBounds();
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
       method: 'POST',
       url: 'https://overpass.freemap.sk/api/interpreter',
-      data:
+      body:
         `[out:json][bbox:${bb.getSouth()},${bb.getWest()},${bb.getNorth()},${bb.getEast()}];(` +
         `node[~"^wikipedia$|^wikidata$"~"."];` +
         `way[~"^wikipedia$|^wikidata$"~"."];` +
@@ -94,13 +95,13 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus],
     });
 
-    const okData = assertType<OverpassResult>(data);
-
     const m = new Map<string, OverpassElement>();
 
     const wikidatas: string[] = [];
 
-    for (const e of okData.elements) {
+    const data = assertType<OverpassResult>(await res.json());
+
+    for (const e of data.elements) {
       if (e.tags['wikipedia']) {
         e.tags['wikipedia'] = decodeURIComponent(
           e.tags['wikipedia'].replace(/_/g, ' '),
@@ -139,30 +140,30 @@ export const wikiLayerProcessor: Processor = {
 
     const { language } = getState().l10n;
 
-    const { data: data1 } = await httpRequest({
+    const res1 = await httpRequest({
       getState,
-      method: 'GET',
-      url: 'https://www.wikidata.org/w/api.php',
-      params: {
-        origin: '*',
-        action: 'wbgetentities',
-        props: 'sitelinks',
-        format: 'json',
-        ids: wikidatas.slice(0, 50).join('|'), // API limit is 50
-        sitefilter: `${language}wiki|enwiki`,
-      },
+      url:
+        'https://www.wikidata.org/w/api.php?' +
+        objectToURLSearchParams({
+          origin: '*',
+          action: 'wbgetentities',
+          props: 'sitelinks',
+          format: 'json',
+          ids: wikidatas.slice(0, 50).join('|'), // API limit is 50
+          sitefilter: `${language}wiki|enwiki`,
+        }),
       expectedStatus: 200,
       cancelActions: [mapRefocus],
     });
 
-    const okData1 = assertType<WikiResponse>(data1);
+    const data1 = assertType<WikiResponse>(await res1.json());
 
-    for (const e of okData.elements) {
+    for (const e of data.elements) {
       if (e.tags['wikipedia']) {
         continue;
       }
 
-      const sitelinks = okData1.entities?.[e.tags['wikidata']]?.sitelinks;
+      const sitelinks = data1.entities?.[e.tags['wikidata']]?.sitelinks;
 
       if (!sitelinks) {
         continue;
