@@ -11,6 +11,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const cssnano = require('cssnano');
 const { InjectManifest } = require('workbox-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const skMessages = require('./src/translations/sk-shared.json');
 const csMessages = require('./src/translations/cs-shared.json');
@@ -97,6 +98,7 @@ module.exports = {
               },
             ],
           ],
+          plugins: [!prod && require('react-refresh/babel')].filter(Boolean),
         },
       },
       {
@@ -177,6 +179,7 @@ module.exports = {
     ],
   },
   plugins: [
+    !prod && new ReactRefreshWebpackPlugin(),
     new InjectManifest({
       swSrc: './sw/sw.ts',
       maximumFileSizeToCacheInBytes: 100000000,
@@ -331,8 +334,5 @@ module.exports = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-  ].filter((x) => x),
-  devServer: {
-    allowedHosts: 'all',
-  },
+  ].filter(Boolean),
 };

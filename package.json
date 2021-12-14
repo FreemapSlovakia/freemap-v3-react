@@ -35,7 +35,7 @@
     "leaflet-hotline": "0.4.0",
     "local-storage-fallback": "4.1.2",
     "marked": "4.0.7",
-    "pica": "9.0.0",
+    "pica": "9.0.1",
     "popup-centered": "1.2.0",
     "query-string": "7.0.1",
     "react": "17.0.2",
@@ -60,8 +60,9 @@
     "vhtml": "2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "7.16.0",
-    "@babel/preset-env": "7.16.4",
+    "@babel/core": "7.16.5",
+    "@babel/preset-env": "7.16.5",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.5.3",
     "@types/color": "3.0.2",
     "@types/facebook-js-sdk": "3.3.5",
     "@types/facebook-pixel": "0.0.24",
@@ -83,6 +84,7 @@
     "@types/react-stars": "2.2.1",
     "@types/react-tag-autocomplete": "6.1.1",
     "@types/vhtml": "2.2.4",
+    "@types/webpack-env": "1.16.3",
     "@typescript-eslint/eslint-plugin": "5.7.0",
     "@typescript-eslint/parser": "5.7.0",
     "babel-loader": "8.2.3",
@@ -105,6 +107,7 @@
     "node-sass": "7.0.0",
     "prettier": "2.5.1",
     "prettier-plugin-organize-imports": "2.3.4",
+    "react-refresh": "0.11.0",
     "redux-devtools-extension": "2.13.9",
     "sass-loader": "12.4.0",
     "source-map-loader": "3.0.0",
@@ -135,6 +138,6 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "start": "webpack serve --no-client-overlay --https-key ssl/freemap.sk.key --https-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --static-directory=src"
+    "start": "webpack serve --hot --no-client-overlay --https-key ssl/freemap.sk.key --https-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all"
   }
 }
