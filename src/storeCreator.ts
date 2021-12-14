@@ -8,7 +8,6 @@ import { is } from 'typescript-is';
 import { RootAction } from './actions';
 import { GalleryColorizeBy } from './actions/galleryActions';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
-import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { createProcessorMiddleware } from './middlewares/processorMiddleware';
 import { statePersistingMiddleware } from './middlewares/statePersistingMiddleware';
 import { createTrackingMiddleware } from './middlewares/trackingMiddleware';
@@ -89,7 +88,7 @@ export function createReduxStore(): MyStore {
     composeWithDevTools(
       applyMiddleware(
         errorHandlingMiddleware,
-        loggerMiddleware,
+        // process.env['NODE_ENV'] !== 'production' && loggerMiddleware,
         statePersistingMiddleware,
         createWebsocketMiddleware(),
         processorMiddleware,
