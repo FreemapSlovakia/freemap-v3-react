@@ -1,25 +1,48 @@
+import storage from 'local-storage-fallback';
 import { DefaultRootState } from 'react-redux';
 import reduceReducers from 'reduce-reducers';
 import { combineReducers } from 'redux';
 import { StateType } from 'typesafe-actions';
-import { authReducer } from './reducers/authReducer';
+import { is } from 'typescript-is';
+import { GalleryColorizeBy } from './actions/galleryActions';
+import {
+  authInitialState,
+  authReducer,
+  AuthState,
+} from './reducers/authReducer';
 import { changesetReducer } from './reducers/changesetsReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
-import { galleryReducer } from './reducers/galleryReducer';
+import { galleryInitialState, galleryReducer } from './reducers/galleryReducer';
 import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
-import { l10nReducer } from './reducers/l10nReducer';
-import { mainReducer } from './reducers/mainReducer';
+import {
+  l10nInitialState,
+  l10nReducer,
+  L10nState,
+} from './reducers/l10nReducer';
+import {
+  mainInitialState,
+  mainReducer,
+  MainState,
+} from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
-import { mapReducer } from './reducers/mapReducer';
+import { mapInitialState, mapReducer, MapState } from './reducers/mapReducer';
 import { mapsReducer } from './reducers/mapsReducer';
 import { objectsReducer } from './reducers/objectsReducer';
-import { routePlannerReducer } from './reducers/routePlannerReducer';
+import {
+  routePlannerInitialState,
+  routePlannerReducer,
+  RoutePlannerState,
+} from './reducers/routePlannerReducer';
 import { searchReducer } from './reducers/searchReducer';
 import { toastsReducer } from './reducers/toastsReducer';
 import { trackingReducer } from './reducers/trackingReducer';
-import { trackViewerReducer } from './reducers/trackViewerReducer';
+import {
+  trackViewerInitialState,
+  trackViewerReducer,
+  TrackViewerState,
+} from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
 import { wikiReducer } from './reducers/wikiReducer';
 
@@ -47,11 +70,11 @@ const reducers = {
 
 const combinedReducers = combineReducers(reducers);
 
-export type CR = typeof combinedReducers;
+export type CombinedReducers = typeof combinedReducers;
 
 declare module 'react-redux' {
   // eslint-disable-next-line
-  export interface DefaultRootState extends StateType<CR> {}
+  export interface DefaultRootState extends StateType<CombinedReducers> {}
 }
 
 export const rootReducer = reduceReducers<DefaultRootState>(
@@ -59,3 +82,54 @@ export const rootReducer = reduceReducers<DefaultRootState>(
   combinedReducers,
   postGlobalReducer,
 );
+
+export function getInitialState() {
+  let persisted: Partial<Record<keyof DefaultRootState, unknown>> = {};
+
+  try {
+    persisted = JSON.parse(storage.getItem('store') ?? '{}');
+  } catch {
+    // nothing
+  }
+
+  const initial: Partial<DefaultRootState> = {};
+
+  if (is<Partial<MapState>>(persisted.map)) {
+    initial.map = { ...mapInitialState, ...persisted.map };
+  }
+
+  if (is<Partial<L10nState>>(persisted.l10n)) {
+    initial.l10n = { ...l10nInitialState, ...persisted.l10n };
+  }
+
+  if (is<Partial<AuthState>>(persisted.auth)) {
+    initial.auth = { ...authInitialState, ...persisted.auth };
+  }
+
+  if (is<Partial<MainState>>(persisted.main)) {
+    initial.main = { ...mainInitialState, ...persisted.main };
+  }
+
+  if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {
+    initial.routePlanner = {
+      ...routePlannerInitialState,
+      ...persisted.routePlanner,
+    };
+  }
+
+  if (is<Partial<TrackViewerState>>(persisted.trackViewer)) {
+    initial.trackViewer = {
+      ...trackViewerInitialState,
+      ...persisted.trackViewer,
+    };
+  }
+
+  if (is<{ colorizeBy: GalleryColorizeBy | null }>(persisted.gallery)) {
+    initial.gallery = {
+      ...galleryInitialState,
+      ...persisted.gallery,
+    };
+  }
+
+  return initial;
+}
