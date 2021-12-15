@@ -1,5 +1,7 @@
 import { Tool } from 'fm3/actions/mainActions';
 import { PickMode } from 'fm3/actions/routePlannerActions';
+import marker from 'fm3/images/cursors/marker.svg';
+import pencil from 'fm3/images/cursors/pencil.svg';
 import { Track } from 'fm3/types/trackingTypes';
 import { DefaultRootState } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -57,34 +59,48 @@ export const showGalleryViewerSelector = (state: DefaultRootState): boolean =>
   state.gallery.activeImageId !== null &&
   !state.gallery.showPosition;
 
+const pencilCursor = `url(${pencil}) 1.5 20, crosshair`;
+
+const markerCursor = `url(${marker}) 13 26, crosshair`;
+
 export const mouseCursorSelector = createSelector(
   selectingHomeLocationSelector,
   toolSelector,
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   galleryShowPositionSelector,
+  (state: DefaultRootState) => state.drawingLines.drawing,
   (
     selectingHomeLocation,
     tool,
     routePlannerPickMode,
     showGalleryPicker,
     galleryShowPosition,
+    drawing,
   ) => {
     if (galleryShowPosition) {
       return 'auto';
-    } else if (selectingHomeLocation || showGalleryPicker) {
+    }
+
+    if (selectingHomeLocation || showGalleryPicker) {
       return 'crosshair';
+    }
+
+    if (drawing) {
+      return pencilCursor;
     }
 
     switch (tool) {
       case 'draw-lines':
 
       case 'draw-polygons':
+        return pencilCursor;
 
       case 'map-details':
+        return 'crosshair';
 
       case 'draw-points':
-        return 'crosshair';
+        return markerCursor;
 
       case 'route-planner':
         return routePlannerPickMode ? 'crosshair' : 'auto';

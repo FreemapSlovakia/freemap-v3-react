@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="0 0 453.81818 605.09091" height="26" width="26" version="1.1" id="svg4" sodipodi:docname="marker.svg" inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <defs id="defs8">
+    <filter style="color-interpolation-filters:sRGB" inkscape:label="Drop Shadow" id="filter4546" x="-0.25126167" y="-0.18025109" width="1.5273784" height="1.4157194">
+      <feFlood flood-opacity="0.501961" flood-color="rgb(0,0,0)" result="flood" id="feFlood4536" />
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1" id="feComposite4538" />
+      <feGaussianBlur in="composite1" stdDeviation="24" result="blur" id="feGaussianBlur4540" />
+      <feOffset dx="8" dy="8" result="offset" id="feOffset4542" />
+      <feComposite in="SourceGraphic" in2="offset" operator="over" result="composite2" id="feComposite4544" />
+    </filter>
+  </defs>
+  <sodipodi:namedview id="namedview6" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="true" showgrid="false" inkscape:zoom="16.931818" inkscape:cx="13.761074" inkscape:cy="18.574497" inkscape:window-width="1883" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg4" />
+  <path d="M 206.36982,491.33098 C 84.581863,312.6713 61.97576,294.33536 61.97576,228.67524 C 61.97576,138.73515 134.02778,65.824786 222.90909,65.824786 C 311.79037,65.824786 383.8424,138.73515 383.8424,228.67524 C 383.8424,294.33536 361.2363,312.6713 239.44834,491.33098 L 222.86684,514.49198 Z M 222.90909,296.5296 C 259.94302,296.5296 289.96464,266.15036 289.96464,228.67524 C 289.96464,191.20014 259.94302,160.82088 222.90909,160.82088 C 185.87514,160.82088 155.85354,191.20014 155.85354,228.67524 C 155.85354,266.15036 185.87514,296.5296 222.90909,296.5296 Z" id="path2" style="stroke:#ffffff;stroke-width:46.5455;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;filter:url(#filter4546)" sodipodi:nodetypes="cssscccsssss" />
+</svg>

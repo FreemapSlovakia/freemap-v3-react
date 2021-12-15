@@ -145,10 +145,6 @@ export function MarkerIcon({
         )}
       </svg>
 
-      {/* {image && (
-        <img className="fa-icon-inside-leaflet-icon-holder" src={image} />
-      )} */}
-
       {faIcon && (
         <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
       )}

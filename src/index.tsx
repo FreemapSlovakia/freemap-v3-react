@@ -112,6 +112,7 @@ if (window.fmEmbedded || window.isRobot) {
 render(
   <Provider store={store}>
     <IconContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
       }}
