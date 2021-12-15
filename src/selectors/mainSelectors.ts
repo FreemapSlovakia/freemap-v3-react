@@ -97,7 +97,7 @@ export const mouseCursorSelector = createSelector(
         return pencilCursor;
 
       case 'map-details':
-        return 'crosshair';
+        return 'help';
 
       case 'draw-points':
         return markerCursor;
