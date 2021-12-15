@@ -98,6 +98,7 @@ const sk: Messages = {
     componentLoadingError:
       'Komponent sa nepodarilo načítať. Skontrolujte svoje pripojenie k internetu.',
     offline: 'Nie ste pripojený k internetu.',
+    connectionError: 'Chyba spojenia so serverom.',
     experimentalFunction: 'Experimentálna funkcia',
   },
 

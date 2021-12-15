@@ -58,6 +58,7 @@ export type Messages = {
     enablePopup: string;
     componentLoadingError: string;
     offline: string;
+    connectionError: string;
     experimentalFunction: string;
   };
   selections: {

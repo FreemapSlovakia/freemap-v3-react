@@ -98,6 +98,7 @@ const hu: Messages = {
     componentLoadingError:
       'Component loading error. Please check your internet connection.', // TODO translate
     offline: 'You are not connected to the internet.', // TODO translate
+    connectionError: 'Error connecting the server.', // TODO translate
     experimentalFunction: 'Experimental function', // TODO translate
   },
 

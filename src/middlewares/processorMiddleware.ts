@@ -116,20 +116,19 @@ export function createProcessorMiddleware(): MW {
                   toastsAdd({
                     id: id ?? Math.random().toString(36).slice(2),
                     messageKey: errorKey,
-                    messageParams:
-                      err instanceof Error
-                        ? (err as any)._fm_fetchError &&
-                          navigator.onLine === false
-                          ? {
-                              err:
-                                window.translations?.general.offline ||
-                                err.message,
-                            }
-                          : {
-                              err: err.message,
-                            }
-                        : {},
-
+                    messageParams: !(err instanceof Error)
+                      ? { err: String(err) }
+                      : (err as any)._fm_fetchError
+                      ? {
+                          err:
+                            (navigator.onLine === false
+                              ? window.translations?.general.offline
+                              : window.translations?.general.connectionError) ??
+                            err.message,
+                        }
+                      : {
+                          err: err.message,
+                        },
                     style: 'danger',
                   }),
                 );

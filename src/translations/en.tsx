@@ -96,6 +96,7 @@ const en: Messages = {
     componentLoadingError:
       'Component loading error. Please check your internet connection.',
     offline: 'You are not connected to the internet.',
+    connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
   },
 

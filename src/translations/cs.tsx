@@ -98,6 +98,7 @@ const cs: Messages = {
     componentLoadingError:
       'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.', // TODO translate
     offline: 'Nie ste pripojený na internet.', // TODO translate
+    connectionError: 'Chyba spojenia so serverom.', // TODO translate
     experimentalFunction: 'Experimentálna funkcia', // TODO translate
   },
 
