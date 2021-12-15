@@ -61,7 +61,7 @@ export const showGalleryViewerSelector = (state: DefaultRootState): boolean =>
 
 const pencilCursor = `url(${pencil}) 1.5 20, crosshair`;
 
-const markerCursor = `url(${marker}) 13 26, crosshair`;
+const markerCursor = `url(${marker}) 13.5 26, crosshair`;
 
 export const mouseCursorSelector = createSelector(
   selectingHomeLocationSelector,
