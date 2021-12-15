@@ -4,7 +4,7 @@ import { ComponentType, ReactElement, useMemo } from 'react';
 
 type Props<T extends ComponentType<ShowProps>> = {
   show: boolean;
-  factory(): Promise<{ default: T }>;
+  factory: () => Promise<{ default: T }>;
 };
 
 export function AsyncModal({

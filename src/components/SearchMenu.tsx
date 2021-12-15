@@ -53,7 +53,7 @@ const typeSymbol = {
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
-  function HiddenInt({ children }, ref) {
+  ({ children }, ref) => {
     return (
       <span className="fm-no-after" ref={ref}>
         {children}
@@ -61,6 +61,8 @@ export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
     );
   },
 );
+
+HideArrow.displayName = 'HideArrow';
 
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();

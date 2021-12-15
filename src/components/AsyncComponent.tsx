@@ -4,7 +4,7 @@ import { ComponentType, ReactElement } from 'react';
 type Props<T extends ComponentType<any> = ComponentType<any>> =
   T extends ComponentType<infer P>
     ? {
-        factory(): Promise<{ default: T }>;
+        factory: () => Promise<{ default: T }>;
       } & P
     : never;
 

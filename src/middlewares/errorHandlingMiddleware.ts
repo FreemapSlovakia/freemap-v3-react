@@ -7,10 +7,8 @@ export const errorHandlingMiddleware: Middleware<
   RootAction | null,
   DefaultRootState,
   Dispatch<RootAction>
-> =
-  () =>
-  (next: Dispatch) =>
-  (action: RootAction): RootAction | null => {
+> = () => (next: Dispatch) =>
+  function (action: RootAction): RootAction | null {
     try {
       return next(action);
     } catch (error) {

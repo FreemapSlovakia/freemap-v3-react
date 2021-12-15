@@ -14,7 +14,7 @@ export async function handleTrackUpload({
   getState,
 }: {
   dispatch: Dispatch;
-  getState(): DefaultRootState;
+  getState: () => DefaultRootState;
 }): Promise<void> {
   const { trackGpx, trackUID } = getState().trackViewer;
 

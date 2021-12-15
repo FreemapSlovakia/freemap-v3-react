@@ -21,8 +21,9 @@ export function ObjectSelection(): ReactElement {
         className="ml-1"
         variant="secondary"
         onClick={() => {
-          selection?.type === 'objects' &&
+          if (selection?.type === 'objects') {
             dispatch(convertToDrawing(selection));
+          }
         }}
         title={m?.general.convertToDrawing}
       >

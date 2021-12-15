@@ -119,7 +119,7 @@ export function preGlobalReducer(
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
-          } else if (geometry?.type == 'LineString') {
+          } else if (geometry?.type === 'LineString') {
             let id = 0;
 
             const points: Point[] = [];

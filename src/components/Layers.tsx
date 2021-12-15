@@ -10,7 +10,7 @@ import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import missingTile from '../images/missing-tile-256x256.png';
 
-export function Layers(): ReactElement {
+export function Layers(): ReactElement | null {
   const overlays = useSelector((state) => state.map.overlays);
 
   const mapType = useSelector((state) => state.map.mapType);
@@ -95,20 +95,17 @@ export function Layers(): ReactElement {
     );
   };
 
-  return (
+  return window.isRobot ? null : (
     <>
-      {window.isRobot
-        ? []
-        : [
-            ...baseLayers
-              .filter(({ type }) => type === mapType)
-              .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map((item) => getTileLayer(item)),
-            ...overlayLayers
-              .filter(({ type }) => overlays.includes(type))
-              .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map((item) => getTileLayer(item)),
-          ]}
+      {...baseLayers
+        .filter(({ type }) => type === mapType)
+        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .map((item) => getTileLayer(item))}
+      {...overlayLayers
+        .filter(({ type }) => overlays.includes(type))
+        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .map((item) => getTileLayer(item))}
+      ]
     </>
   );
 }

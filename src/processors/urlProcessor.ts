@@ -84,7 +84,7 @@ export const urlProcessor: Processor = {
       ['map', `${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`],
       [
         'layers',
-        `${map.mapType}${map.overlays.filter((l) => l != 'i').join('')}`,
+        `${map.mapType}${map.overlays.filter((l) => l !== 'i').join('')}`,
       ],
     ];
 
@@ -109,9 +109,9 @@ export const urlProcessor: Processor = {
     ) {
       historyParts.push([
         'points',
-        `${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
+        [routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
           .map((point) => serializePoint(point))
-          .join(',')}`,
+          .join(','),
       ]);
 
       historyParts.push(['transport', routePlanner.transportType]);

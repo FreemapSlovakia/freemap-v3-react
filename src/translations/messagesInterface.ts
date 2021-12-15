@@ -522,11 +522,11 @@ export type Messages = {
   objects: {
     type: string;
     lowZoomAlert: {
-      message({ minZoom }: { minZoom: number }): string;
+      message: ({ minZoom }: { minZoom: number }) => string;
       zoom: string;
     };
-    tooManyPoints({ limit }: { limit: number }): string;
-    fetchingError({ err }: Err): string;
+    tooManyPoints: ({ limit }: { limit: number }) => string;
+    fetchingError: ({ err }: Err) => string;
     // categories: Record<number, string>;
     // subcategories: Record<number, string>;
   };
@@ -748,7 +748,7 @@ export type Messages = {
     loadInclMapAndPosition: string;
     savedMaps: string;
     newMap: string;
-    SomeMap(props: { name: string }): JSX.Element;
+    SomeMap: (props: { name: string }) => JSX.Element;
     unauthenticatedError: string;
   };
   legend: {

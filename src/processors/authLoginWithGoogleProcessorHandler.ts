@@ -5,6 +5,7 @@ import { getAuth2 } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
+import { hasProperty } from 'fm3/typeUtils';
 import { assertType } from 'typescript-is';
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
@@ -48,9 +49,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     }
   } catch (err) {
     if (
-      typeof err !== 'object' ||
-      !err ||
-      !['popup_closed_by_user', 'access_denied'].includes((err as any)['error'])
+      !hasProperty(err, 'error') ||
+      !['popup_closed_by_user', 'access_denied'].includes(String(err['error']))
     ) {
       throw err;
     }

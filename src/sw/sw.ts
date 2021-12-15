@@ -80,13 +80,13 @@ sw.addEventListener('fetch', (event) => {
 
         if (ok) {
           return ok;
-        } else {
-          const response = await fetch(event.request);
-
-          cache.put(event.request, response.clone()); // todo handle async error
-
-          return response;
         }
+
+        const response = await fetch(event.request);
+
+        cache.put(event.request, response.clone()); // todo handle async error
+
+        return response;
       }
 
       return Response.error();
@@ -144,22 +144,17 @@ async function serveFromNetwork(event: FetchEvent) {
 sw.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
+      const cacheNames = await caches.keys();
+
       await Promise.all([
         sw.clients.claim(), // TODO maybe try to eliminate this
 
-        (async () => {
-          const cacheNames = await caches.keys();
-
-          // remove old caches
-          cacheNames.map((cacheName) => {
-            if (
-              cacheName !== FALLBACK_CACHE_NAME &&
-              cacheName !== OFFLINE_CACHE_NAME
-            ) {
-              return caches.delete(cacheName);
-            }
-          });
-        })(),
+        // remove old caches
+        ...cacheNames.map((cacheName) =>
+          cacheName !== FALLBACK_CACHE_NAME && cacheName !== OFFLINE_CACHE_NAME
+            ? caches.delete(cacheName)
+            : undefined,
+        ),
       ]);
     })(),
   );

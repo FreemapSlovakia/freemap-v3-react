@@ -29,9 +29,9 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
   }) => Action | null | undefined | void;
   handle?: ProcessorHandler<T>;
   actionCreator?: T | T[];
-  actionPredicate?(action: ActionType<T>): boolean;
-  statePredicate?(state: DefaultRootState): boolean;
-  stateChangePredicate?(state: DefaultRootState): unknown;
+  actionPredicate?: (action: ActionType<T>) => boolean;
+  statePredicate?: (state: DefaultRootState) => boolean;
+  stateChangePredicate?: (state: DefaultRootState) => unknown;
   errorKey?: MessagePaths;
   id?: string; // toast collapse key
 }

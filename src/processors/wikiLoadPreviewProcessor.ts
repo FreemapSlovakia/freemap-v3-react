@@ -66,7 +66,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
         );
 
         const item = Object.values(okData.query.pages)[0]?.langlinks?.find(
-          (ll) => ll.lang == language,
+          (ll) => ll.lang === language,
         );
 
         if (item) {

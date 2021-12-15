@@ -96,7 +96,7 @@ export async function upload(
             path: `/freemap-export-${new Date().toISOString()}.${type}`,
           }),
         },
-        data: data,
+        data,
         expectedStatus: 200,
       });
 

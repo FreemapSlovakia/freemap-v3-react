@@ -409,7 +409,7 @@ export const osmTagToIconMapping: Node = {
     bird_hide,
     firepit,
     fishing,
-    horse_riding: horse_riding,
+    horse_riding,
     golf_course: golf,
     miniature_golf,
     outdoor_seating,

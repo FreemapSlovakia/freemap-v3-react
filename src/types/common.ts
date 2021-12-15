@@ -135,7 +135,7 @@ type Leaves<T, D extends number = 10> = [D] extends [never]
 export type MessagePaths = Leaves<Messages>;
 
 export interface OffscreenCanvas extends EventTarget {
-  getContext(contextId: '2d'): CanvasRenderingContext2D;
+  getContext: (contextId: '2d') => CanvasRenderingContext2D;
 }
 
 export type CacheMode =

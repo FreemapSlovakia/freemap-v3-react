@@ -23,6 +23,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
+import { hasProperty } from 'fm3/typeUtils';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
@@ -213,12 +214,8 @@ export const routePlannerFindRouteProcessor: Processor = {
 
           let err: string | undefined;
 
-          if (
-            data &&
-            typeof data === 'object' &&
-            typeof (data as any)['message'] === 'string'
-          ) {
-            const msg = String((data as any)['message']);
+          if (hasProperty(data, 'message')) {
+            const msg = String(data['message']);
 
             if (
               msg.startsWith('Cannot find point ') ||

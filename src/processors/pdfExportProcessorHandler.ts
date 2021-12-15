@@ -70,22 +70,20 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     e = bounds.getEast();
 
     s = bounds.getSouth();
-  } else {
-    if (
-      selection?.type === 'draw-line-poly' &&
-      lines[selection.id]?.type === 'polygon'
-    ) {
-      // selected polygon
+  } else if (
+    selection?.type === 'draw-line-poly' &&
+    lines[selection.id]?.type === 'polygon'
+  ) {
+    // selected polygon
 
-      for (const { lat, lon } of lines[selection.id].points) {
-        w = Math.min(w === undefined ? 1000 : w, lon);
+    for (const { lat, lon } of lines[selection.id].points) {
+      w = Math.min(w === undefined ? 1000 : w, lon);
 
-        n = Math.max(n === undefined ? -1000 : n, lat);
+      n = Math.max(n === undefined ? -1000 : n, lat);
 
-        e = Math.max(e === undefined ? -1000 : e, lon);
+      e = Math.max(e === undefined ? -1000 : e, lon);
 
-        s = Math.min(s === undefined ? 1000 : s, lat);
-      }
+      s = Math.min(s === undefined ? 1000 : s, lat);
     }
   }
 

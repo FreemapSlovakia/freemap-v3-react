@@ -118,7 +118,9 @@ export const changesetsProcessor: Processor = {
             'closed_at',
           );
 
-        return loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
+        await loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
+
+        return;
       }
 
       if (allChangesetsSoFar.length === 0) {

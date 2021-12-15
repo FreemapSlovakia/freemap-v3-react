@@ -134,7 +134,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
         tracks: [
           ...state.tracks.filter(({ token: id }) => id !== token),
           {
-            token: token,
+            token,
             trackPoints: payload.result.map((tp) => ({
               ...tp,
               ts: new Date(tp.ts),

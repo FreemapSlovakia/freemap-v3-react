@@ -610,7 +610,7 @@ export function RoutePlannerResult(): ReactElement {
         >
           {!dragging && mode !== 'roundtrip' && getSummary(endPointHovering)}
 
-          {!dragging && mode == 'roundtrip' && (
+          {!dragging && mode === 'roundtrip' && (
             <Tooltip direction="top" offset={[0, -36]}>
               {getPointDetails(midpoints.length)}
             </Tooltip>

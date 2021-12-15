@@ -140,7 +140,9 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                           active={type === selectedLayer}
                         >
                           {icon} {m?.mapLayers.letters[type]}
-                          {overlayLetters.includes(type as any) && (
+                          {(overlayLetters as readonly string[]).includes(
+                            type,
+                          ) && (
                             <>
                               {' ('}
                               {nf.format(
