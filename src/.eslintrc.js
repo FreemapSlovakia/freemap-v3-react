@@ -57,7 +57,7 @@ module.exports = {
     'no-param-reassign': 1,
     'no-return-assign': 1,
     'no-unneeded-ternary': 1,
-    'no-unused-expressions': [1],
+    'no-unused-expressions': 1,
     'object-shorthand': [1, 'always'],
     'padding-line-between-statements': [
       1,
