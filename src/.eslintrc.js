@@ -98,8 +98,4 @@ module.exports = {
       },
     ],
   },
-  globals: {
-    L: true,
-    __ENV__: true,
-  },
 };
