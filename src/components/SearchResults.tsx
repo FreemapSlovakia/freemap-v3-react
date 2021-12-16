@@ -83,7 +83,11 @@ export function SearchResults(): ReactElement | null {
     [language],
   );
 
-  return !selectedResult?.geojson ? null : (
+  if (!selectedResult?.geojson) {
+    return null;
+  }
+
+  return (
     <Fragment key={language + selectedResultSeq}>
       <GeoJSON
         interactive={false}

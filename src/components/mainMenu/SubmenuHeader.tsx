@@ -10,8 +10,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { FaChevronLeft } from 'react-icons/fa';
 
 type Ctx = {
-  onBack(): void;
-  onClose(): void;
+  handleBack: () => void;
+  onClose: () => void;
 };
 
 const SubmenuContext = createContext<Ctx | undefined>(undefined);
@@ -21,16 +21,16 @@ type CtxProps = Ctx & {
 };
 
 export function MenuProvier({
-  onBack,
+  handleBack,
   onClose,
   children,
 }: CtxProps): JSX.Element {
   const ctx = useMemo(
     () => ({
-      onBack,
+      handleBack,
       onClose,
     }),
-    [onBack, onClose],
+    [handleBack, onClose],
   );
 
   return (
@@ -71,7 +71,7 @@ export function SubmenuHeader({
         {icon} {title}
       </Dropdown.Header>
 
-      <Dropdown.Item as="button" onSelect={ctx.onBack}>
+      <Dropdown.Item as="button" onSelect={ctx.handleBack}>
         <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
       </Dropdown.Item>
 

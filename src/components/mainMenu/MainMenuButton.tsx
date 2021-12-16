@@ -64,7 +64,7 @@ export function MainMenuButton(): ReactElement {
   }, []);
 
   return (
-    <MenuProvier onBack={handleBack} onClose={closeMenu}>
+    <MenuProvier handleBack={handleBack} onClose={closeMenu}>
       <Button
         ref={button}
         onClick={handleButtonClick}

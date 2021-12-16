@@ -55,7 +55,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
     if (
       document.querySelector('*[data-popper-reference-hidden=false]') !== null
     ) {
-      return;
+      return undefined;
     }
 
     if (state.gallery.pickingPositionForId) {
@@ -63,11 +63,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
     }
 
     if (showGalleryViewerSelector(state)) {
-      if (state.gallery.editModel) {
-        return galleryEditPicture();
-      } else {
-        return galleryClear();
-      }
+      return state.gallery.editModel ? galleryEditPicture() : galleryClear();
     }
 
     if (state.elevationChart.elevationProfilePoints) {
@@ -107,32 +103,32 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
       return setTool(null);
     }
 
-    return;
+    return undefined;
   }
 
   if (
     event.target instanceof HTMLElement &&
     ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
   ) {
-    return;
+    return undefined;
   }
 
   if (!showingModal && (event.ctrlKey || event.metaKey)) {
     if (event.code === 'KeyZ') {
       history.back();
 
-      return;
+      return undefined;
     }
 
     if (event.code === 'KeyY') {
       history.forward();
 
-      return;
+      return undefined;
     }
   }
 
   if (withModifiers) {
-    return;
+    return undefined;
   }
 
   if (showGalleryViewerSelector(state)) {
@@ -216,7 +212,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
       initCode = null;
     }
 
-    return;
+    return undefined;
   }
 
   if (
@@ -256,7 +252,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
         return setTool(toolDefinition.tool);
       }
 
-      return;
+      return undefined;
     }
 
     if (initCode === 'KeyJ') {
@@ -308,7 +304,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
         return openInExternalApp({ where: 'mapillary' });
       }
 
-      return;
+      return undefined;
     }
 
     if (initCode === 'KeyP') {
@@ -324,7 +320,7 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
         return setActiveModal('gallery-filter');
       }
 
-      return;
+      return undefined;
     }
 
     if (initCode === 'KeyE') {
@@ -342,9 +338,11 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
           return setActiveModal('embed');
       }
 
-      return;
+      return undefined;
     }
   }
+
+  return undefined;
 }
 
 export function attachKeyboardHandler(store: MyStore): void {

@@ -19,9 +19,9 @@ type GalleryLayerOptions = GridLayerOptions & {
 const jobMap = new Map<
   number,
   {
-    reject(e: any): void;
-    resolve(): void;
-    run(w: Worker): void;
+    reject: (e: any) => void;
+    resolve: () => void;
+    run: (w: Worker) => void;
     started?: true;
   }
 >();
@@ -33,9 +33,7 @@ function createWorker() {
     // console.log('OK', evt.data.id, resMap.has(evt.data.id));
     const job = jobMap.get(evt.data.id);
 
-    if (!job) {
-      console.error('no such job', evt.data.id);
-    } else {
+    if (job) {
       if (evt.data.error) {
         job.reject(evt.data.error);
       } else {
@@ -43,6 +41,8 @@ function createWorker() {
       }
 
       jobMap.delete(evt.data.id);
+    } else {
+      console.error('no such job', evt.data.id);
     }
 
     workerPool.push(w);
@@ -209,27 +209,27 @@ class LGalleryLayer extends LGridLayer {
           tile,
         };
 
-        if (supportsOffscreen) {
-          return new Promise<void>((resolve, reject) => {
-            const myId = id++;
-
-            jobMap.set(myId, {
-              resolve,
-              reject,
-              run(w) {
-                const offscreen = (tile as any).transferControlToOffscreen();
-
-                w.postMessage({ ...ctx, id: myId, tile: offscreen }, [
-                  offscreen,
-                ]);
-              },
-            });
-
-            runNextJob();
-          });
-        } else {
+        if (!supportsOffscreen) {
           renderGalleryTile(ctx);
+
+          return undefined;
         }
+
+        return new Promise<void>((resolve, reject) => {
+          const myId = id++;
+
+          jobMap.set(myId, {
+            resolve,
+            reject,
+            run(w) {
+              const offscreen = (tile as any).transferControlToOffscreen();
+
+              w.postMessage({ ...ctx, id: myId, tile: offscreen }, [offscreen]);
+            },
+          });
+
+          runNextJob();
+        });
       })
       .then(() => {
         done(undefined, tile);

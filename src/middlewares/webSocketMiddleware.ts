@@ -39,7 +39,7 @@ export function createWebsocketMiddleware(): Middleware<
         if (ws && ws.readyState !== WebSocket.CLOSED) {
           dispatch(wsInvalidState(action.payload));
 
-          return;
+          return undefined;
         }
 
         const { user } = getState().auth;
@@ -103,7 +103,7 @@ export function createWebsocketMiddleware(): Middleware<
         } else {
           dispatch(wsInvalidState(action.payload.tag));
 
-          return;
+          return undefined;
         }
       } else if (isActionOf(wsClose, action)) {
         if (ws && ws.readyState !== WebSocket.CLOSED) {
@@ -111,7 +111,7 @@ export function createWebsocketMiddleware(): Middleware<
         } else {
           dispatch(wsInvalidState(action.payload));
 
-          return;
+          return undefined;
         }
       }
 

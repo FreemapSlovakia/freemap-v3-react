@@ -40,7 +40,11 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
   const DeleteInfo = m?.settings.account.DeleteInfo;
 
-  return !user ? null : (
+  if (!user) {
+    return null;
+  }
+
+  return (
     <Modal show={show} onHide={close}>
       <Form
         onSubmit={(e) => {

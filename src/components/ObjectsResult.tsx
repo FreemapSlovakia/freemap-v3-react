@@ -46,7 +46,11 @@ export function ObjectsResult(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  return !osmMapping ? null : (
+  if (!osmMapping) {
+    return null;
+  }
+
+  return (
     <>
       {objects.map(({ id, lat, lon, tags, type }) => {
         const name = getNameFromOsmElement(tags, language);

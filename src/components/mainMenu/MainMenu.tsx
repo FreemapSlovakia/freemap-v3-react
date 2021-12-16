@@ -37,7 +37,7 @@ import { Submenu } from './submenu';
 import { useMenuClose } from './SubmenuHeader';
 
 type Props = {
-  onSubmenu(submenu: Submenu): void;
+  onSubmenu: (submenu: Submenu) => void;
 };
 
 export function MainMenu({ onSubmenu }: Props): ReactElement {

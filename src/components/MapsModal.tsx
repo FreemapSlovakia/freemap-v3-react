@@ -169,9 +169,8 @@ export function MapsModal({ show }: Props): ReactElement {
                 </thead>
 
                 <tbody>
-                  {!filteredMaps
-                    ? m?.maps.noMapFound
-                    : filteredMaps.map((map) => (
+                  {filteredMaps
+                    ? filteredMaps.map((map) => (
                         <tr
                           role="button"
                           key={map.id}
@@ -192,7 +191,8 @@ export function MapsModal({ show }: Props): ReactElement {
                           <td>{dateFormat.format(map.createdAt)}</td>
                           <td>{dateFormat.format(map.modifiedAt)}</td>
                         </tr>
-                      ))}
+                      ))
+                    : m?.maps.noMapFound}
                 </tbody>
               </Table>
             </div>

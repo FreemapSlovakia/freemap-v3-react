@@ -21,7 +21,11 @@ const circularIcon = divIcon({
 export function LocationResult(): ReactElement | null {
   const gpsLocation = useSelector((state) => state.main.location);
 
-  return !gpsLocation ? null : (
+  if (!gpsLocation) {
+    return null;
+  }
+
+  return (
     <>
       <Circle
         center={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}
@@ -29,6 +33,7 @@ export function LocationResult(): ReactElement | null {
         weight={1}
         stroke={false}
       />
+
       <Marker
         icon={circularIcon}
         position={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}

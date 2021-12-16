@@ -39,11 +39,11 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
           overlays: [],
         }
       : undefined;
-  } else if (is<BaseLayerLetters>(oldFreemapUrlParams['m'])) {
-    return { mapType: oldFreemapUrlParams['m'], overlays: [] };
-  } else {
-    return { mapType: 'X', overlays: [] };
   }
+
+  return is<BaseLayerLetters>(oldFreemapUrlParams['m'])
+    ? { mapType: oldFreemapUrlParams['m'], overlays: [] }
+    : { mapType: 'X', overlays: [] };
 }
 
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A

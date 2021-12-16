@@ -3,9 +3,11 @@ import { GalleryColorizeBy } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 import { LatLng } from 'leaflet';
 
-type Sortable<T = unknown> = {
-  sort: number;
-  value: T;
+type Marble = LatLon & {
+  rating: number;
+  userId: number;
+  createdAt: number;
+  takenAt?: number | null;
 };
 
 type Props = {
@@ -13,7 +15,7 @@ type Props = {
   zoom: number;
   dpr: number;
   colorizeBy: GalleryColorizeBy | null;
-  data: any[];
+  data: Marble[];
   myUserId: number | null;
   size: { x: number; y: number };
   pointB: LatLng;
@@ -45,47 +47,51 @@ export function renderGalleryTile({
 
   ctx.fillStyle = '#ff0';
 
-  ctx.lineWidth = 1 * zk; // zoom > 9 ? 1.5 : 1;
+  ctx.lineWidth = zk; // zoom > 9 ? 1.5 : 1;
 
   const k = 2 ** zoom;
 
   const s = new Set();
 
+  let items: Marble[];
+
   if (colorizeBy === 'userId') {
-    data = data
+    items = data
       .map((a) => ({ sort: Math.random(), value: a }))
-      .sort((a: Sortable, b: Sortable) => a.sort - b.sort)
-      .map((a: Sortable) => a.value);
+      .sort((a, b) => a.sort - b.sort)
+      .map((a) => a.value);
   } else if (
     colorizeBy === 'takenAt' ||
     colorizeBy === 'createdAt' ||
     colorizeBy === 'rating'
   ) {
-    data = data
-      .map((a) => ({ sort: a[colorizeBy], value: a }))
-      .sort((a: Sortable, b: Sortable) => a.sort - b.sort)
-      .map((a: Sortable) => a.value);
+    items = data
+      .map((a) => ({ sort: Number(a[colorizeBy]), value: a }))
+      .sort((a, b) => a.sort - b.sort)
+      .map((a) => a.value);
   } else if (colorizeBy === 'mine') {
-    data = data
+    items = data
       .map((a) => ({
         sort: a.userId === myUserId ? 1 : 0,
         value: a,
       }))
-      .sort((a: Sortable, b: Sortable) => a.sort - b.sort)
-      .map((a: Sortable) => a.value);
+      .sort((a, b) => a.sort - b.sort)
+      .map((a) => a.value);
+  } else {
+    items = data;
   }
 
   // remove "dense" pictures
-  data = data
+  const marbles: Marble[] = items
     .reverse()
-    .map(({ lat, lon, ...rest }: LatLon) => {
+    .map(({ lat, lon, ...rest }) => {
       return {
         lat: Math.round(lat * k),
         lon: Math.round(lon * k),
         ...rest,
       };
     })
-    .filter(({ lat, lon }: LatLon) => {
+    .filter(({ lat, lon }) => {
       const key = `${lat},${lon}`;
 
       const has = s.has(key);
@@ -96,14 +102,14 @@ export function renderGalleryTile({
 
       return !has;
     })
-    .map(({ lat, lon, ...rest }: LatLon) => ({
+    .map(({ lat, lon, ...rest }) => ({
       lat: lat / k,
       lon: lon / k,
       ...rest,
     }))
     .reverse();
 
-  for (const { lat, lon } of data as LatLon[]) {
+  for (const { lat, lon } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
@@ -120,14 +126,7 @@ export function renderGalleryTile({
 
   const now = Date.now() / 1000;
 
-  for (const { lat, lon, rating, createdAt, takenAt, userId } of data as Array<
-    LatLon & {
-      rating: number;
-      userId: number;
-      createdAt: number;
-      takenAt?: number | null;
-    }
-  >) {
+  for (const { lat, lon, rating, createdAt, takenAt, userId } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
@@ -151,16 +150,16 @@ export function renderGalleryTile({
         break;
 
       case 'takenAt':
-        ctx.fillStyle = !takenAt
-          ? '#a22'
-          : color
+        ctx.fillStyle = takenAt
+          ? color
               .hsl(
                 60,
                 100,
                 // 100 - ((now - takenAt) * 10) ** 0.2,
                 100 - ((now - takenAt) * 100) ** 0.185,
               )
-              .hex();
+              .hex()
+          : '#a22';
 
         break;
 

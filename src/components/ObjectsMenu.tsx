@@ -137,51 +137,47 @@ export function ObjectsMenu(): ReactElement {
   const activeSnapshot = useMemo(() => active, [dropdownOpened]);
 
   function makeItems(snapshot?: boolean) {
-    return !items
-      ? null
-      : items
-          .map((item) => ({
-            ...item,
-            key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
-          }))
-          .filter((item) => !snapshot || activeSnapshot.includes(item.key))
-          .filter(
-            (item) =>
-              snapshot ||
-              !normalizedFilter ||
-              removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
-          )
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map(({ key, name, tags }) => {
-            const img = resolveGenericName(
-              osmTagToIconMapping,
-              Object.fromEntries(
-                tags.map(({ key, value }) => [key, value ?? '*']),
-              ),
-            );
+    if (!items) {
+      return null;
+    }
 
-            return (
-              <Dropdown.Item
-                key={key}
-                eventKey={key}
-                active={active.includes(key)}
-              >
-                {img.length > 0 ? (
-                  <img src={img[0]} style={{ width: '1em', height: '1em' }} />
-                ) : (
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      width: '1em',
-                      height: '1em',
-                    }}
-                  />
-                )}
-                &emsp;
-                {name}
-              </Dropdown.Item>
-            );
-          });
+    return items
+      .map((item) => ({
+        ...item,
+        key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
+      }))
+      .filter((item) => !snapshot || activeSnapshot.includes(item.key))
+      .filter(
+        (item) =>
+          snapshot ||
+          !normalizedFilter ||
+          removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(({ key, name, tags }) => {
+        const img = resolveGenericName(
+          osmTagToIconMapping,
+          Object.fromEntries(tags.map(({ key, value }) => [key, value ?? '*'])),
+        );
+
+        return (
+          <Dropdown.Item key={key} eventKey={key} active={active.includes(key)}>
+            {img.length > 0 ? (
+              <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+            ) : (
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '1em',
+                  height: '1em',
+                }}
+              />
+            )}
+            &emsp;
+            {name}
+          </Dropdown.Item>
+        );
+      });
   }
 
   const activeItems = makeItems(true);

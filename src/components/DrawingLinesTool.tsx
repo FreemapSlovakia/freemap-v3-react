@@ -13,9 +13,9 @@ export function DrawingLinesTool(): null {
   const tool = useSelector((state) => state.main.tool);
 
   const linePoints = useSelector((state) =>
-    state.main.selection?.type !== 'draw-line-poly'
-      ? []
-      : state.drawingLines.lines[state.main.selection.id].points,
+    state.main.selection?.type === 'draw-line-poly'
+      ? state.drawingLines.lines[state.main.selection.id].points
+      : [],
   );
 
   const dispatch = useDispatch();

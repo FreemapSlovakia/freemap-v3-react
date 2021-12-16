@@ -39,7 +39,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 0, // TODO remove one day
     '@typescript-eslint/no-use-before-define': 0,
     'array-callback-return': 1,
-    // 'consistent-return': 1,
+    // 'consistent-return': 1, // NOTE many useEffect hooks are inconsistent
     curly: [1, 'all'],
     eqeqeq: [1, 'allow-null'],
     'no-else-return': 1,

@@ -302,7 +302,7 @@ export const handleLocationChange = (
             .map((coord) => parseFloat(coord))
             .filter((x) => !isNaN(x)),
         )
-        .filter((pair) => pair.length == 2)
+        .filter((pair) => pair.length === 2)
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
 
       if (points.length > 0) {

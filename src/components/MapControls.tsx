@@ -62,7 +62,11 @@ export function MapControls(): ReactElement | null {
     };
   }, [forceUpdate, setForceUpdate]);
 
-  return !map ? null : (
+  if (!map) {
+    return null;
+  }
+
+  return (
     <Card className="fm-toolbar mx-2 mb-2">
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />

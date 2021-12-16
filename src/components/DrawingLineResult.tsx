@@ -345,7 +345,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                   dispatch(drawingMeasure({}));
                 },
                 click() {
-                  if (joinWith !== undefined) {
+                  if (joinWith) {
                     dispatch(
                       drawingLineJoinFinish({
                         lineIndex: index,

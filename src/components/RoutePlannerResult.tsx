@@ -594,7 +594,7 @@ export function RoutePlannerResult(): ReactElement {
               ? waypoints[waypoints.length - 1]?.waypoint_index
               : undefined
           }
-          color={mode !== 'roundtrip' ? '#d9534f' : undefined}
+          color={mode === 'roundtrip' ? undefined : '#d9534f'}
           zIndexOffset={10}
           draggable={interactive0 && !window.fmEmbedded}
           position={{ lat: finish.lat, lng: finish.lon }}
@@ -638,7 +638,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const paths = useMemo(
     () =>
-      (!special ? alternatives : alternatives.map(addMissingSegments))
+      (special ? alternatives.map(addMissingSegments) : alternatives)
         .map((x, index) => ({
           ...x,
           alt: index,
