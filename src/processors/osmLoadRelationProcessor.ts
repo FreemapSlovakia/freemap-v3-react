@@ -24,7 +24,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
     const res = await httpRequest({
       getState,
-      url: `//api.openstreetmap.org/api/0.6/relation/${id}/full`,
+      url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,
       expectedStatus: 200,
       cancelActions: [clearMap, searchSelectResult],
     });

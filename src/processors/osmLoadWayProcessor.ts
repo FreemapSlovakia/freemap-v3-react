@@ -16,7 +16,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
     const res = await httpRequest({
       getState,
-      url: `//api.openstreetmap.org/api/0.6/way/${id}/full`,
+      url: `//api.openstreetmap.org/api/0.6/way/${id}/full.json`,
       expectedStatus: 200,
       cancelActions: [clearMap, searchSelectResult],
     });
