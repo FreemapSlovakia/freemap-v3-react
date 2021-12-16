@@ -67,7 +67,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       getState,
       method: 'POST',
       url: '/gallery/pictures',
-      data: formData,
+      body: formData,
       expectedStatus: 200,
       cancelActions: [setActiveModal], // if upload modal is closed
     });
