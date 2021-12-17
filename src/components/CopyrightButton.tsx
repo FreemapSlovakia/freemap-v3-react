@@ -26,9 +26,7 @@ export function CopyrightButton(): ReactElement {
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const [nonce, setNonce] = useState(0);
-
-  useAttributionInfo(nonce);
+  const showAttribution = useAttributionInfo();
 
   return (
     <Card className="fm-toolbar mr-2 mb-2">
@@ -58,7 +56,7 @@ export function CopyrightButton(): ReactElement {
 
                 setShow(undefined);
 
-                setNonce((n) => n + 1);
+                showAttribution();
               }}
             >
               <FaRegCopyright /> {m?.main.copyright}

@@ -1,8 +1,10 @@
 import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-export function useAttributionInfo(nonce: number) {
+export function useAttributionInfo() {
+  const [nonce, setNonce] = useState(0);
+
   const dispatch = useDispatch();
 
   const mapType = useSelector((state) => state.map.mapType);
@@ -73,4 +75,8 @@ export function useAttributionInfo(nonce: number) {
       }),
     );
   }, [mapType, overlays, dispatch, nonce]);
+
+  return useCallback(() => {
+    setNonce((n) => n + 1);
+  }, []);
 }
