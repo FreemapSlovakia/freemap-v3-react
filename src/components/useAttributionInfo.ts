@@ -56,6 +56,8 @@ export function useAttributionInfo(nonce: number) {
       return;
     }
 
+    prevNonceRef.current = nonce;
+
     mapTypes.add(mapType);
 
     for (const o of overlays) {

@@ -63,6 +63,7 @@ export function CopyrightButton(): ReactElement {
             >
               <FaRegCopyright /> {m?.main.copyright}
             </Dropdown.Item>
+
             {showLegendButton && (
               <Dropdown.Item
                 key="legend"
@@ -78,6 +79,7 @@ export function CopyrightButton(): ReactElement {
                 <FaRegMap /> {m?.mainMenu.mapLegend}
               </Dropdown.Item>
             )}
+
             <Dropdown.Item
               key="privacyPolicy"
               href="?tip=privacyPolicy"
