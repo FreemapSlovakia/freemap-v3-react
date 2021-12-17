@@ -11,7 +11,7 @@ export function Attribution(): ReactElement {
   const m = useMessages();
 
   return (
-    <ul className="pl-4 pt-3">
+    <ul className="m-0 ml-n4 mr-n4">
       {categorize(
         [
           ...baseLayers.filter(({ type }) => mapType === type),

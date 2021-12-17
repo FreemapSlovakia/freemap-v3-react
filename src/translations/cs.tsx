@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
 import {
@@ -100,6 +101,7 @@ const cs: Messages = {
     offline: 'Nie ste pripojený na internet.', // TODO translate
     connectionError: 'Chyba spojenia so serverom.', // TODO translate
     experimentalFunction: 'Experimentálna funkcia', // TODO translate
+    attribution: () => <Attribution />,
   },
 
   selections: {

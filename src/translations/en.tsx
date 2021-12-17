@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
 import {
@@ -98,6 +99,7 @@ const en: Messages = {
     offline: 'You are not connected to the internet.',
     connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
+    attribution: () => <Attribution />,
   },
 
   selections: {

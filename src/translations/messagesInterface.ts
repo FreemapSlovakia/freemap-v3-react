@@ -60,6 +60,7 @@ export type Messages = {
     offline: string;
     connectionError: string;
     experimentalFunction: string;
+    attribution: () => JSX.Element;
   };
   selections: {
     objects: string;

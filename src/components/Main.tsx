@@ -14,7 +14,7 @@ import {
   trackViewerToggleElevationChart,
 } from 'fm3/actions/trackViewerActions';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
-import { Copyright } from 'fm3/components/Copyright';
+import { CopyrightButton } from 'fm3/components/CopyrightButton';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
 import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
@@ -573,7 +573,7 @@ export function Main(): ReactElement {
           </div>
         </div>
 
-        <Copyright />
+        <CopyrightButton />
       </div>
 
       <div {...getRootProps()}>
