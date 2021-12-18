@@ -4,7 +4,6 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { assertType } from 'typescript-is';
 
 export const trackViewerGpxLoadProcessor: Processor = {
   actionCreator: trackViewerGpxLoad,
@@ -22,8 +21,6 @@ export const trackViewerGpxLoadProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    dispatch(
-      trackViewerSetData({ trackGpx: assertType<string>(await res.text()) }),
-    );
+    dispatch(trackViewerSetData({ trackGpx: await res.text() }));
   },
 };
