@@ -25,9 +25,10 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
       expectedStatus: 200,
     });
 
+    const data = await res.json();
+
     try {
-      const features = (await res.json()).data.trackViewer?.trackGeojson
-        ?.features;
+      const features = data.data.trackViewer.trackGeojson.features;
 
       // typescript-is fails if feature property contains array; TODO find out why
 
@@ -43,13 +44,13 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         }
       }
     } catch {
-      // ifnore
+      // ignore
     }
 
     const map = assertType<{
       name: string;
       data: StringDates<MapData<Line | OldLine>>;
-    }>(await res.json());
+    }>(data);
 
     const mapData = map.data;
 
