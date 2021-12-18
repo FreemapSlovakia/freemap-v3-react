@@ -74,7 +74,7 @@ export const handleLocationChange = (
 
   const search = document.location.search;
 
-  const sq = history.location.state?.sq ?? '';
+  const sq = (history.location.state as any)?.sq ?? '';
 
   const parsedQuery = queryString.parse(search);
 

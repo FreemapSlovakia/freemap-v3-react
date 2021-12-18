@@ -306,7 +306,7 @@ export const urlProcessor: Processor = {
     const urlSearch = serializeQuery(queryParts);
 
     if (
-      (isMap && sq !== history.location.state?.sq) ||
+      (isMap && sq !== (history.location.state as any)?.sq) ||
       urlSearch !== window.location.search
     ) {
       const method =
