@@ -23,7 +23,7 @@ export const trackViewerGpxLoadProcessor: Processor = {
     });
 
     dispatch(
-      trackViewerSetData({ trackGpx: assertType<string>(await res.json()) }),
+      trackViewerSetData({ trackGpx: assertType<string>(await res.text()) }),
     );
   },
 };
