@@ -43,7 +43,7 @@ export function TrackViewerMenu(): ReactElement {
   const canUpload = useSelector((state) => !state.trackViewer.trackUID);
 
   const elevationChartActive = useSelector(
-    (state) => !!state.elevationChart.trackGeojson,
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const colorizeTrackBy = useSelector(

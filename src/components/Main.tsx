@@ -370,7 +370,7 @@ export function Main(): ReactElement {
   const YellowBar = m?.main.YellowBar;
 
   const elevationChartActive = useSelector(
-    (state) => !!state.elevationChart.trackGeojson,
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const trackFound = useSelector(trackGeojsonIsSuitableForElevationChart);

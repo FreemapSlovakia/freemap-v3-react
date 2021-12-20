@@ -1,6 +1,5 @@
 import {
   elevationChartClose,
-  elevationChartRemoveActivePoint,
   elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
@@ -118,7 +117,7 @@ export function ElevationChart(): ReactElement | null {
   const handleMouseOut = () => {
     setMouseX(undefined);
 
-    dispatch(elevationChartRemoveActivePoint());
+    dispatch(elevationChartSetActivePoint(null));
   };
 
   const [ref, setRef] = useState<HTMLDivElement | null>(null);

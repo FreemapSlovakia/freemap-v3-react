@@ -69,7 +69,7 @@ export function RoutePlannerMenu(): ReactElement {
   );
 
   const elevationProfileIsVisible = useSelector(
-    (state) => !!state.elevationChart.trackGeojson,
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const canSwap = useSelector(

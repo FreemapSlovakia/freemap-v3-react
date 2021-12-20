@@ -33,14 +33,14 @@ export function DrawingLineSelection(): ReactElement | null {
       : undefined,
   );
 
-  const elevationChartTrackGeojson = useSelector(
-    (state) => state.elevationChart.trackGeojson,
+  const showElevationChart = useSelector(
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const toggleElevationChart = useCallback(() => {
     // TODO to processor
 
-    if (elevationChartTrackGeojson) {
+    if (showElevationChart) {
       dispatch(elevationChartClose());
     } else if (line) {
       dispatch(
@@ -49,7 +49,7 @@ export function DrawingLineSelection(): ReactElement | null {
         ),
       );
     }
-  }, [line, elevationChartTrackGeojson, dispatch]);
+  }, [line, showElevationChart, dispatch]);
 
   if (!line) {
     return null;
@@ -92,7 +92,7 @@ export function DrawingLineSelection(): ReactElement | null {
         <Button
           className="ml-1"
           variant="secondary"
-          active={elevationChartTrackGeojson !== null}
+          active={showElevationChart}
           onClick={toggleElevationChart}
         >
           <FaChartArea />

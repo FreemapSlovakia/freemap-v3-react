@@ -42,7 +42,7 @@ export function TrackViewerResult({
   const [startPoints, finishPoints] = useStartFinishPoints();
 
   const displayingElevationChart = useSelector(
-    (state) => state.elevationChart.trackGeojson !== null,
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const colorizeTrackBy = useSelector(

@@ -8,7 +8,7 @@ import {
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { containsElevations, distance } from 'fm3/geoutils';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
@@ -17,12 +17,14 @@ import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { assertType } from 'typescript-is';
 
-const handle: ProcessorHandler = async ({ dispatch, getState }) => {
-  const { trackGeojson } = getState().elevationChart;
+const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
+  dispatch,
+  getState,
+  action,
+}) => {
+  const trackGeojson = action.payload;
 
-  if (!trackGeojson) {
-    // should not happen
-  } else if (containsElevations(trackGeojson)) {
+  if (containsElevations(trackGeojson)) {
     resolveElevationProfilePointsLocally(trackGeojson, dispatch);
   } else {
     await resolveElevationProfilePointsViaApi(getState, trackGeojson, dispatch);
@@ -98,6 +100,7 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartSetTrackGeojson,
       selectFeature,
       elevationChartClose,
+      clearMap,
     ],
   });
 
