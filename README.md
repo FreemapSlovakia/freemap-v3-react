@@ -10,7 +10,7 @@ Features:
 
 ## Requirements
 
-- Node 8
+- Node 12
 - [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
 
 ## Compiling and running in development mode
