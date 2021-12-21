@@ -54,7 +54,7 @@ export const changesetsProcessor: Processor = {
             bbox,
             time: fromTime + (toTime0 ? `,${toTime0}` : ''),
             // eslint-disable-next-line
-            display_name: state.changesets.authorName,
+            display_name: state.changesets.authorName ?? undefined,
           }),
         expectedStatus: [200, 404],
         cancelActions: [changesetsSetAuthorName, selectFeature, clearMap],
