@@ -23,7 +23,10 @@ export const changesetReducer = createReducer<ChangesetsState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
-  .handleAction(setTool, () => ({ ...initialState, days: 3 }))
+  .handleAction(setTool, (_state, action) => ({
+    ...initialState,
+    days: action.payload === 'changesets' ? 3 : null,
+  }))
   .handleAction(changesetsSet, (state, action) => ({
     ...state,
     changesets: action.payload,
