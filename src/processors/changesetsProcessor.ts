@@ -13,6 +13,7 @@ import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { getType } from 'typesafe-actions';
 
 export const changesetsProcessor: Processor = {
+  id: 'changeset.detail',
   actionCreator: [changesetsSetParams, mapRefocus, setTool],
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
@@ -166,6 +167,7 @@ export const changesetsProcessor: Processor = {
               getType(changesetsSetParams),
               getType(setTool),
               getType(clearMap),
+              getType(mapRefocus),
             ],
             timeout: 5000,
             style: 'info',

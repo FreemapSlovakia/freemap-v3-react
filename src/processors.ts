@@ -74,6 +74,7 @@ import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor'
 
 export const processors = [
   errorProcessor,
+  toastsCancelTypeProcessor,
   cancelProcessor,
   setToolProcessor,
   cookieConsentProcessor,
@@ -97,7 +98,6 @@ export const processors = [
   osmLoadRelationProcessor,
   mapTypeGaProcessor,
   toastsAddProcessor,
-  toastsCancelTypeProcessor,
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
