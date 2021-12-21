@@ -55,8 +55,8 @@ export interface MainState {
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
-  cookieConsentResult: boolean | null;
-  analyticCookiesAllowed: boolean;
+  cookieConsentResult: boolean | null; // true if analyticCookiesAllowed; false if not; null if no cookies accepted
+  analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
   removeAdsOnLogin: boolean;
   documentKey: DocumentKey | null;
 }
@@ -74,7 +74,7 @@ export const mainInitialState: MainState = {
   embedFeatures: [],
   selection: null,
   cookieConsentResult: null,
-  analyticCookiesAllowed: true,
+  analyticCookiesAllowed: true, // NOTE this is a local "thing" used only for applyCookieConsent action
   removeAdsOnLogin: false,
   documentKey: null,
 };

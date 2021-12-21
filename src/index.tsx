@@ -89,23 +89,19 @@ setVh();
 
 const cookieConsentResult = store.getState().main.cookieConsentResult;
 
-if (window.fmEmbedded || window.isRobot) {
-  // nothing for embed or robot
-} else if (cookieConsentResult !== null) {
+if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
   store.dispatch(
-    cookieConsentResult === null
-      ? toastsAdd({
-          messageKey: 'main.cookieConsent',
-          style: 'warning',
-          actions: [
-            {
-              nameKey: 'general.ok',
-              action: applyCookieConsent(),
-              style: 'secondary',
-            },
-          ],
-        })
-      : applyCookieConsent(),
+    toastsAdd({
+      messageKey: 'main.cookieConsent',
+      style: 'warning',
+      actions: [
+        {
+          nameKey: 'general.ok',
+          action: applyCookieConsent(),
+          style: 'secondary',
+        },
+      ],
+    }),
   );
 }
 
