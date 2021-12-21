@@ -20,7 +20,7 @@ export function useAttributionInfo() {
 
   // hide attribution on mouse down
   useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
+    const handlePointerDown = (e: MouseEvent) => {
       if (e.target instanceof Element) {
         let el: Element | null = e.target;
 
@@ -36,10 +36,10 @@ export function useAttributionInfo() {
       dispatch(toastsRemove('attribution'));
     };
 
-    document.body.addEventListener('mousedown', handleMouseDown);
+    document.body.addEventListener('pointerdown', handlePointerDown);
 
     return () => {
-      document.body.removeEventListener('mousedown', handleMouseDown);
+      document.body.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [dispatch]);
 
