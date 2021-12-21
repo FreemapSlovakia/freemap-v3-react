@@ -637,7 +637,8 @@ const cs: Messages = {
 
   changesets: {
     allAuthors: 'Všichni autoři',
-    download: 'Stáhnout změny',
+    tooBig:
+      'Požiadavka na získanie zmien môže vrátiť veľa záznamov. Skúste priblížiť mapu, zvoliť menej dní, alebo zadať konkrétneho autora.', // TODO translate
     olderThan: ({ days }) => `${days} dn ${days === 3 ? 'i' : 'í'}`,
     olderThanFull: ({ days }) =>
       `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,

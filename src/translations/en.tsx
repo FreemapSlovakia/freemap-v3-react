@@ -627,7 +627,8 @@ const en: Messages = {
 
   changesets: {
     allAuthors: 'All authors',
-    download: 'Download changes',
+    tooBig:
+      'Changesets request may return too many items. Please try zoom in, choose fewer days or enter the specific author.',
     olderThan: ({ days }) => `${days} days`,
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',

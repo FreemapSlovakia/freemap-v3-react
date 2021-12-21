@@ -2,8 +2,7 @@ import { RootAction } from 'fm3/actions';
 import {
   Changeset,
   changesetsSet,
-  changesetsSetAuthorName,
-  changesetsSetDays,
+  changesetsSetParams,
 } from 'fm3/actions/changesetsActions';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
 import { createReducer } from 'typesafe-actions';
@@ -23,16 +22,13 @@ export const initialState: ChangesetsState = {
 export const changesetReducer = createReducer<ChangesetsState, RootAction>(
   initialState,
 )
-  .handleAction([clearMap, setTool], () => initialState)
+  .handleAction(clearMap, () => initialState)
+  .handleAction(setTool, () => ({ ...initialState, days: 3 }))
   .handleAction(changesetsSet, (state, action) => ({
     ...state,
     changesets: action.payload,
   }))
-  .handleAction(changesetsSetDays, (state, action) => ({
+  .handleAction(changesetsSetParams, (state, action) => ({
     ...state,
-    days: action.payload,
-  }))
-  .handleAction(changesetsSetAuthorName, (state, action) => ({
-    ...state,
-    authorName: action.payload,
+    ...action.payload,
   }));

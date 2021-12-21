@@ -1,7 +1,4 @@
-import {
-  Changeset,
-  changesetsSetAuthorName,
-} from 'fm3/actions/changesetsActions';
+import { Changeset, changesetsSetParams } from 'fm3/actions/changesetsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
@@ -50,7 +47,7 @@ export function ChangesetsResult(): ReactElement {
         messageParams: {
           changeset,
         },
-        cancelType: getType(changesetsSetAuthorName),
+        cancelType: getType(changesetsSetParams),
         style: 'info',
       }),
     );

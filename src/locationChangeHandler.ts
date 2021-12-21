@@ -1,7 +1,7 @@
 import {
+  ChangesetParams,
   changesetsSet,
-  changesetsSetAuthorName,
-  changesetsSetDays,
+  changesetsSetParams,
 } from 'fm3/actions/changesetsActions';
 import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
 import {
@@ -249,17 +249,19 @@ export const handleLocationChange = (
 
   handleInfoPoint(getState, dispatch, query);
 
-  const changesetsDay = query['changesets-days'];
+  const changesetsDays = query['changesets-days'];
 
-  if (typeof changesetsDay === 'string') {
-    const urlDays = parseInt(changesetsDay, 10);
+  const changesetParams: ChangesetParams = {};
+
+  if (typeof changesetsDays === 'string') {
+    const urlDays = Number(changesetsDays);
 
     const reduxDays = getState().changesets.days;
 
     const daysDiff = reduxDays !== urlDays;
 
     if (daysDiff) {
-      dispatch(changesetsSetDays(urlDays));
+      changesetParams.days = urlDays;
     }
 
     const reduxAuthor = getState().changesets.authorName;
@@ -270,17 +272,18 @@ export const handleLocationChange = (
       (urlAuthor === null || typeof urlAuthor === 'string') &&
       (daysDiff || (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor))
     ) {
-      // we need timeout otherwise map bounds can't be read
-      window.setTimeout(() => {
-        dispatch(changesetsSetAuthorName(urlAuthor));
-      }, 1000);
+      changesetParams.authorName = urlAuthor;
     }
   } else if (getState().changesets.changesets.length) {
-    dispatch(changesetsSetDays(null));
+    changesetParams.days = null;
 
-    dispatch(changesetsSetAuthorName(null));
+    changesetParams.authorName = null;
 
     dispatch(changesetsSet([]));
+  }
+
+  if (Object.keys(changesetParams).length) {
+    dispatch(changesetsSetParams(changesetParams));
   }
 
   const lines: Line[] = [];

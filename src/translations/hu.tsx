@@ -639,7 +639,8 @@ const hu: Messages = {
 
   changesets: {
     allAuthors: 'Minden szerző',
-    download: 'Változások letöltése',
+    tooBig:
+      'Changesets request may return too many items. Please try zoom in, choose fewer days or enter the specific author.', // TODO translate
     olderThan: ({ days }) => `${days} nap`,
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',

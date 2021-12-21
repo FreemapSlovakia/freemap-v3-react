@@ -655,7 +655,8 @@ const sk: Messages = {
 
   changesets: {
     allAuthors: 'Všetci autori',
-    download: 'Stiahnuť zmeny',
+    tooBig:
+      'Požiadavka na získanie zmien môže vrátiť veľa záznamov. Skúste priblížiť mapu, zvoliť menej dní, alebo zadať konkrétneho autora.',
     olderThan: ({ days }) => `${days} dn${days === 3 ? 'i' : 'í'}`,
     olderThanFull: ({ days }) =>
       `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`,

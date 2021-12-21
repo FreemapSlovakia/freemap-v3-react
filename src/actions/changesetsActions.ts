@@ -9,12 +9,13 @@ export interface Changeset {
   centerLon: number;
 }
 
+export type ChangesetParams = {
+  days?: number | null;
+  authorName?: string | null;
+};
+
 export const changesetsSet = createAction('CHANGESETS_SET')<Changeset[]>();
 
-export const changesetsSetDays = createAction('CHANGESETS_SET_DAYS')<
-  number | null
->();
-
-export const changesetsSetAuthorName = createAction(
-  'CHANGESETS_SET_AUTHOR_NAME',
-)<string | null>();
+export const changesetsSetParams = createAction(
+  'CHANGESETS_SET_PARAMS',
+)<ChangesetParams>();

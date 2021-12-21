@@ -487,7 +487,7 @@ export type Messages = {
   };
   changesets: {
     allAuthors: string;
-    download: string;
+    tooBig: string;
     olderThan: ({ days }: { days: number }) => string;
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;

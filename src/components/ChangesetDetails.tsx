@@ -1,7 +1,4 @@
-import {
-  Changeset,
-  changesetsSetAuthorName,
-} from 'fm3/actions/changesetsActions';
+import { Changeset, changesetsSetParams } from 'fm3/actions/changesetsActions';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import { CSSProperties, ReactElement } from 'react';
@@ -33,7 +30,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
             tabIndex={0}
             style={linkStyle}
             onClick={() => {
-              dispatch(changesetsSetAuthorName(changeset.userName));
+              dispatch(changesetsSetParams({ authorName: changeset.userName }));
             }}
           >
             {changeset.userName}

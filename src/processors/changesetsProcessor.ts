@@ -1,38 +1,65 @@
 import {
   Changeset,
   changesetsSet,
-  changesetsSetAuthorName,
+  changesetsSetParams,
 } from 'fm3/actions/changesetsActions';
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { getType } from 'typesafe-actions';
 
-// interface Changeset {
-//   userName: string | null;
-//   id: string | null;
-//   centerLat: number;
-//   centerLon: number;
-//   closedAt: Date;
-//   description: string | null | undefined;
-// }
-
 export const changesetsProcessor: Processor = {
-  actionCreator: changesetsSetAuthorName,
+  actionCreator: [changesetsSetParams, mapRefocus, setTool],
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
     const state = getState();
 
-    if (state.changesets.days === null) {
+    if (state.main.tool !== 'changesets') {
       return;
     }
 
+    const { zoom } = state.map;
+
+    const { days, authorName } = state.changesets;
+
+    const days2 = days ?? 3;
+
+    if (
+      !authorName &&
+      ((days2 > 2 && zoom < 10) ||
+        (days2 > 6 && zoom < 11) ||
+        (days2 > 13 && zoom < 12) ||
+        (days2 > 29 && zoom < 13))
+    ) {
+      dispatch(changesetsSet([]));
+
+      dispatch(
+        toastsAdd({
+          id: 'changeset.detail',
+          messageKey: 'changesets.tooBig',
+          cancelType: [
+            getType(selectFeature),
+            getType(changesetsSetParams),
+            getType(setTool),
+            getType(clearMap),
+          ],
+          timeout: 5000,
+          style: 'warning',
+        }),
+      );
+
+      return;
+    }
+
+    dispatch(toastsRemove('changeset.detail'));
+
     const t = new Date();
 
-    t.setDate(t.getDate() - state.changesets.days);
+    t.setDate(t.getDate() - (state.changesets.days ?? 3));
 
     const fromTime = `${t.getFullYear()}/${
       t.getMonth() + 1
@@ -57,7 +84,13 @@ export const changesetsProcessor: Processor = {
             display_name: state.changesets.authorName ?? undefined,
           }),
         expectedStatus: [200, 404],
-        cancelActions: [changesetsSetAuthorName, selectFeature, clearMap],
+        cancelActions: [
+          changesetsSetParams,
+          mapRefocus,
+          selectFeature,
+          clearMap,
+          setTool,
+        ],
       });
 
       const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
@@ -130,7 +163,9 @@ export const changesetsProcessor: Processor = {
             messageKey: 'changesets.notFound',
             cancelType: [
               getType(selectFeature),
-              getType(changesetsSetAuthorName),
+              getType(changesetsSetParams),
+              getType(setTool),
+              getType(clearMap),
             ],
             timeout: 5000,
             style: 'info',
