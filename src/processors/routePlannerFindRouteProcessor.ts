@@ -11,6 +11,7 @@ import {
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetResult,
+  routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
   routePlannerSetWeighting,
@@ -38,6 +39,7 @@ const updateRouteTypes = [
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetWeighting,
+  routePlannerSetRoundtripParams,
   mapsDataLoaded,
 ];
 
@@ -116,10 +118,11 @@ export const routePlannerFindRouteProcessor: Processor = {
       midpoints,
       transportType,
       mode,
-      weighting: weig,
+      weighting,
+      roundtripParams,
     } = getState().routePlanner;
 
-    if (!start || !finish || !transportType) {
+    if (!start || !transportType) {
       return;
     }
 
@@ -127,6 +130,10 @@ export const routePlannerFindRouteProcessor: Processor = {
 
     if (!ttDef) {
       throw new Error(`unknown transport type: ${transportType}`);
+    }
+
+    if (!finish && !(ttDef.api === 'gh' && mode !== 'route')) {
+      return;
     }
 
     const clearResultAction = routePlannerSetResult({
@@ -147,11 +154,6 @@ export const routePlannerFindRouteProcessor: Processor = {
 
     try {
       if (ttDef.api === 'gh') {
-        const weighting =
-          weig === 'fastest' && ttDef.vehicle === 'wheelchair'
-            ? 'short_fastest'
-            : weig;
-
         const response = await httpRequest({
           getState,
           method: 'POST',
@@ -163,13 +165,17 @@ export const routePlannerFindRouteProcessor: Processor = {
 
             // elevation: true, // if to return also elevations
 
-            algorithm: midpoints.length > 0 ? undefined : 'alternative_route',
+            algorithm:
+              mode === 'roundtrip'
+                ? 'round_trip'
+                : midpoints.length > 0
+                ? undefined
+                : 'alternative_route',
 
-            // algorithm: 'round_trip',
-            // 'round_trip.distance': 50000,
-            // 'round_trip.seed': 17,
+            'round_trip.distance': roundtripParams.distance,
+            'round_trip.seed': roundtripParams.seed,
 
-            'ch.disable': weighting !== 'fastest',
+            'ch.disable': weighting !== 'fastest' || mode === 'roundtrip',
 
             'alternative_route.max_paths': 2, // default is 2
             // 'alternative_route.max_weight_factor': 1.4,
@@ -194,11 +200,13 @@ export const routePlannerFindRouteProcessor: Processor = {
             // optimize: String(mode === 'trip'), // not included in (free) directions API
             points_encoded: false,
             locale: getState().l10n.language,
-            points: [
-              [start.lon, start.lat],
-              ...midpoints.map((mp) => [mp.lon, mp.lat]),
-              [finish.lon, finish.lat],
-            ],
+            points: finish
+              ? [
+                  [start.lon, start.lat],
+                  ...midpoints.map((mp) => [mp.lon, mp.lat]),
+                  [finish.lon, finish.lat],
+                ]
+              : [[start.lon, start.lat]],
           },
           expectedStatus: [200, 400],
           cancelActions: updateRouteTypes,
@@ -240,7 +248,7 @@ export const routePlannerFindRouteProcessor: Processor = {
 
           return;
         }
-      } else {
+      } else if (finish) {
         const allPoints = [
           [start.lon, start.lat].join(','),
           ...midpoints.map((mp) => [mp.lon, mp.lat].join(',')),

@@ -132,6 +132,16 @@ const hu: Messages = {
   },
 
   routePlanner: {
+    // TODO translate
+    ghParams: {
+      tripParameters: 'Trip parameters',
+      seed: 'Random seed',
+      distance: 'Distance',
+      isochroneParameters: 'Isochrone parameters',
+      buckets: 'Buckets',
+      timeLimit: 'Time limit',
+      distanceLimit: 'Distance limit',
+    },
     milestones: 'Távolságszelvények',
     start: 'Kiindulás',
     finish: 'Úti cél',
@@ -162,6 +172,8 @@ const hu: Messages = {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',
       roundtrip: 'Legrövidebb úton (körutazás)',
+      'routndtrip-gh': 'Roundtrip', // TODO translate
+      isochrone: 'Isochrones', // TODO translate
     },
     // TODO translate
     weighting: {

@@ -132,6 +132,16 @@ const cs: Messages = {
   },
 
   routePlanner: {
+    // TODO translate
+    ghParams: {
+      tripParameters: 'Parametre výletu',
+      seed: 'Random seed',
+      distance: 'Vzdialenosť',
+      isochroneParameters: 'Parametre izochrónov',
+      buckets: 'Počet delení',
+      timeLimit: 'Časový limit',
+      distanceLimit: 'Limit vzdialenosti',
+    },
     milestones: 'Kilometrovník',
     start: 'Start',
     finish: 'Cíl',
@@ -167,6 +177,8 @@ const cs: Messages = {
       route: 'Po pořadí',
       trip: 'Návštěva míst',
       roundtrip: 'Návštěva míst (okruh)',
+      'routndtrip-gh': 'Výlet',
+      isochrone: 'Izochróny',
     },
     alternative: 'Alternativa',
     // eslint-disable-next-line

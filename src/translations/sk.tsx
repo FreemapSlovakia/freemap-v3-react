@@ -132,6 +132,15 @@ const sk: Messages = {
   },
 
   routePlanner: {
+    ghParams: {
+      tripParameters: 'Parametre výletu',
+      seed: 'Random seed',
+      distance: 'Vzdialenosť',
+      isochroneParameters: 'Parametre izochrónov',
+      buckets: 'Počet delení',
+      timeLimit: 'Časový limit',
+      distanceLimit: 'Limit vzdialenosti',
+    },
     milestones: 'Kilometrovník',
     start: 'Štart',
     finish: 'Cieľ',
@@ -162,6 +171,8 @@ const sk: Messages = {
       route: 'V určenom poradí',
       trip: 'Návšteva miest',
       roundtrip: 'Návšteva miest (okruh)',
+      'routndtrip-gh': 'Výlet',
+      isochrone: 'Izochróny',
     },
     weighting: {
       fastest: 'Najrýchlejšia',

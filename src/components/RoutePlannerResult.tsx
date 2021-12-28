@@ -20,7 +20,7 @@ import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Messages } from 'fm3/translations/messagesInterface';
-import { isSpecial } from 'fm3/transportTypeDefs';
+import { isSpecial, transportTypeDefs } from 'fm3/transportTypeDefs';
 import {
   divIcon,
   DragEndEvent,
@@ -108,6 +108,9 @@ export function RoutePlannerResult(): ReactElement {
 
   const [dragging, setDragging] = useState(false);
 
+  const onlyStart =
+    transportTypeDefs[transportType].api === 'gh' && mode !== 'route';
+
   useMapEvent(
     'click',
     useCallback(
@@ -116,7 +119,7 @@ export function RoutePlannerResult(): ReactElement {
           // nothing
         } else if (tool !== 'route-planner') {
           // nothing
-        } else if (pickMode === 'start') {
+        } else if (pickMode === 'start' || onlyStart) {
           dispatch(
             routePlannerSetStart({
               start: { lat: latlng.lat, lon: latlng.lng },
@@ -130,7 +133,7 @@ export function RoutePlannerResult(): ReactElement {
           );
         }
       },
-      [pickMode, dispatch, tool, dragging],
+      [pickMode, dispatch, tool, dragging, onlyStart],
     ),
   );
 
@@ -683,10 +686,11 @@ export function RoutePlannerResult(): ReactElement {
                       click() {
                         changeAlternative(alt);
                       },
-                      mousemove: special
-                        ? () => undefined
-                        : (e: LeafletMouseEvent) =>
-                            handlePolyMouseMove(e, routeSlice.legIndex, alt),
+                      mousemove:
+                        special || onlyStart
+                          ? () => undefined
+                          : (e: LeafletMouseEvent) =>
+                              handlePolyMouseMove(e, routeSlice.legIndex, alt),
 
                       mouseout: handlePolyMouseOut,
                     }}
@@ -732,6 +736,7 @@ export function RoutePlannerResult(): ReactElement {
         )),
     [
       special,
+      onlyStart,
       alternatives,
       activeAlternativeIndex,
       timestamp,

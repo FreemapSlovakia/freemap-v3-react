@@ -7,6 +7,7 @@ import {
   routePlannerSetFromCurrentPosition,
   routePlannerSetMode,
   routePlannerSetPickMode,
+  routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
   routePlannerSetWeighting,
@@ -21,7 +22,18 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
-import { Fragment, ReactElement, SyntheticEvent, useCallback } from 'react';
+import {
+  ChangeEvent,
+  Children,
+  FormEvent,
+  forwardRef,
+  Fragment,
+  ReactElement,
+  SyntheticEvent,
+  useCallback,
+  useState,
+} from 'react';
+import { FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -40,10 +52,168 @@ import {
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
+import { useDebouncedCallback } from 'use-debounce';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';
 
 export default RoutePlannerMenu;
+
+const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
+  ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+    const dispatch = useDispatch();
+
+    const [seed, setSeed] = useState(
+      String(useSelector((state) => state.routePlanner.roundtripParams.seed)),
+    );
+
+    const seedCallback = useDebouncedCallback((seed: string) => {
+      dispatch(routePlannerSetRoundtripParams({ seed: Number(seed) || 0 }));
+    }, 1000);
+
+    const handleSeedChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.currentTarget;
+
+      setSeed(value);
+
+      seedCallback(value);
+
+      if (Math.abs(Number(seed) - Number(value)) === 1) {
+        seedCallback.flush();
+      }
+    };
+
+    const handleSeedSubmit = (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      seedCallback.flush();
+    };
+
+    const [distance, setDistance] = useState(
+      useSelector(
+        (state) => state.routePlanner.roundtripParams.distance / 1000,
+      ).toFixed(1),
+    );
+
+    const distanceCallback = useDebouncedCallback((distance: string) => {
+      dispatch(
+        routePlannerSetRoundtripParams({
+          distance: Number(distance) * 1000 || 5000,
+        }),
+      );
+    }, 1000);
+
+    const handleDistanceChange = useCallback(
+      (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.currentTarget;
+
+        setDistance(value);
+
+        distanceCallback(value);
+      },
+      [distanceCallback],
+    );
+
+    const handleDistanceSubmit = (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      distanceCallback.flush();
+    };
+
+    const m = useMessages();
+
+    const ghParams = m?.routePlanner.ghParams;
+
+    return (
+      <div
+        ref={ref}
+        style={style}
+        className={className}
+        aria-labelledby={labeledBy}
+      >
+        {children}
+
+        {Children.toArray(children)
+          .filter((item) => (item as any).props.active)
+          .map((item) => {
+            return (
+              <Fragment key={'m-' + (item as any).props.eventKey}>
+                {(item as any).props.eventKey === 'roundtrip' ? (
+                  <>
+                    <hr />
+
+                    <fieldset className="mx-4 mb-4 w-auto">
+                      <legend>{ghParams?.tripParameters}</legend>
+
+                      <FormGroup as="form" onSubmit={handleDistanceSubmit}>
+                        <FormLabel>{ghParams?.distance}</FormLabel>
+
+                        <InputGroup>
+                          <FormControl
+                            type="number"
+                            value={distance}
+                            onChange={handleDistanceChange}
+                            min={0.1}
+                            step="any"
+                            max={1000}
+                          />
+
+                          <InputGroup.Append>
+                            <InputGroup.Text>㎞</InputGroup.Text>
+                          </InputGroup.Append>
+                        </InputGroup>
+                      </FormGroup>
+
+                      <FormGroup as="form" onSubmit={handleSeedSubmit}>
+                        <FormLabel className="mt-2">{ghParams?.seed}</FormLabel>
+
+                        <FormControl
+                          type="number"
+                          value={seed}
+                          onChange={handleSeedChange}
+                        />
+                      </FormGroup>
+                    </fieldset>
+                  </>
+                ) : (item as any).props.eventKey === 'isochrone' ? (
+                  <>
+                    <hr />
+
+                    <fieldset className="mx-4 mb-4 w-auto">
+                      <legend>{ghParams?.isochroneParameters}</legend>
+
+                      <FormGroup>
+                        <FormLabel>{ghParams?.buckets}</FormLabel>
+
+                        <FormControl type="number" />
+                      </FormGroup>
+
+                      <FormGroup>
+                        <FormLabel className="mt-2">
+                          {ghParams?.timeLimit}
+                        </FormLabel>
+
+                        <FormControl type="number" />
+                      </FormGroup>
+
+                      <FormGroup>
+                        <FormLabel className="mt-2">
+                          {ghParams?.distanceLimit}
+                        </FormLabel>
+
+                        <FormControl type="number" />
+                      </FormGroup>
+                    </fieldset>
+                  </>
+                ) : null}
+              </Fragment>
+            );
+          })}
+      </div>
+    );
+  },
+);
+
+GraphopperModeMenu.displayName = 'GraphopperModeMenu';
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
@@ -256,6 +426,39 @@ export function RoutePlannerMenu(): ReactElement {
         </Dropdown>
       )}
 
+      {activeTTDef?.api === 'gh' && (
+        <Dropdown
+          className="ml-1"
+          onSelect={(mode) => {
+            dispatch(routePlannerSetMode(mode as RoutingMode));
+          }}
+        >
+          <Dropdown.Toggle id="mode" variant="secondary">
+            {m?.routePlanner.mode[
+              activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
+            ] ?? '…'}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu
+            popperConfig={{ strategy: 'fixed' }}
+            as={GraphopperModeMenu}
+          >
+            {(['route', 'roundtrip' /*, 'isochrone'*/] as const).map((mode) => (
+              <Dropdown.Item
+                eventKey={mode}
+                key={mode}
+                title={m?.routePlanner.mode[mode] ?? '…'}
+                active={activeMode === mode}
+              >
+                {m?.routePlanner.mode[
+                  mode === 'roundtrip' ? 'routndtrip-gh' : mode
+                ] ?? '…'}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
+
       {activeTTDef?.api === 'osrm' && (
         <Dropdown
           className="ml-1"
@@ -340,7 +543,7 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
 
-        {activeMode !== 'roundtrip' && (
+        {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
           <>
             <Button
               as={ButtonGroup}

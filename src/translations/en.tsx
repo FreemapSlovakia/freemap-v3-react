@@ -130,6 +130,15 @@ const en: Messages = {
   },
 
   routePlanner: {
+    ghParams: {
+      tripParameters: 'Trip parameters',
+      seed: 'Random seed',
+      distance: 'Distance',
+      isochroneParameters: 'Isochrone parameters',
+      buckets: 'Buckets',
+      timeLimit: 'Time limit',
+      distanceLimit: 'Distance limit',
+    },
     milestones: 'Milestones',
     start: 'Start',
     finish: 'Finish',
@@ -165,6 +174,8 @@ const en: Messages = {
       route: 'Ordered',
       trip: 'Visiting places',
       roundtrip: 'Visiting places (roundtrip)',
+      'routndtrip-gh': 'Roundtrip',
+      isochrone: 'Isochrones',
     },
     alternative: 'Alternative',
     // eslint-disable-next-line

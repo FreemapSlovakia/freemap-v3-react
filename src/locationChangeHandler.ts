@@ -139,6 +139,7 @@ export const handleLocationChange = (
         mode,
         milestones,
         weighting,
+        roundtripParams,
       } = getState().routePlanner;
 
       const latLons = points.map((point) =>
@@ -165,7 +166,9 @@ export const handleLocationChange = (
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         (weighting === 'fastest' ? undefined : weighting) !==
           query['route-weighting'] ||
-        (milestones && !query['milestones'])
+        (milestones && !query['milestones']) ||
+        (String(roundtripParams.seed) !== query['trip-seed'] ?? '0') ||
+        (String(roundtripParams.distance) !== query['trip-distance'] ?? '5000')
       ) {
         const routeMode = query['route-mode'];
 
@@ -183,6 +186,10 @@ export const handleLocationChange = (
                 : 'route',
             weighting: is<Weighting>(weighting) ? weighting : undefined,
             milestones: !!query['milestones'],
+            roundtripParams: {
+              seed: Number(query['trip-seed']) || 0,
+              distance: Number(query['trip-distance']) || 5000,
+            },
           }),
         );
       }

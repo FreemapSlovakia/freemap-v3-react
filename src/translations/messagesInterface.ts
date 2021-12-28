@@ -1,6 +1,5 @@
-import { Weighting } from 'fm3/actions/routePlannerActions';
+import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
 import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
-import { RouteMode } from 'fm3/reducers/routePlannerReducer';
 import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { ReactNode } from 'react';
@@ -88,6 +87,15 @@ export type Messages = {
     maps: string;
   };
   routePlanner: {
+    ghParams: {
+      tripParameters: string;
+      seed: string;
+      distance: string;
+      isochroneParameters: string;
+      buckets: string;
+      timeLimit: string;
+      distanceLimit: string;
+    };
     milestones: string;
     start: string;
     finish: string;
@@ -99,7 +107,7 @@ export type Messages = {
     };
     transportType: Record<TransportTypeMsgKey, string>;
     development: string;
-    mode: Record<RouteMode, string>;
+    mode: Record<RoutingMode | 'routndtrip-gh', string>;
     weighting: Record<Weighting, string>;
     alternative: string;
     distance: ({

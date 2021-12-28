@@ -5,6 +5,7 @@ import { basicModals } from 'fm3/constants';
 import { documents as allTips } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
@@ -58,6 +59,7 @@ export const urlProcessor: Processor = {
       routePlanner.weighting,
       routePlanner.start,
       routePlanner.transportType,
+      routePlanner.roundtripParams,
       main.documentKey,
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
@@ -126,6 +128,19 @@ export const urlProcessor: Processor = {
 
       if (routePlanner.milestones) {
         historyParts.push(['milestones', 1]);
+      }
+
+      // routePlanner.roundtripParams
+      if (
+        transportTypeDefs[routePlanner.transportType].api === 'gh' &&
+        routePlanner.mode !== 'route'
+      ) {
+        historyParts.push([
+          'trip-distance',
+          routePlanner.roundtripParams.distance,
+        ]);
+
+        historyParts.push(['trip-seed', routePlanner.roundtripParams.seed]);
       }
     }
 

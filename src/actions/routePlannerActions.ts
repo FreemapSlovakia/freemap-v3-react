@@ -1,11 +1,10 @@
-import { RouteMode } from 'fm3/reducers/routePlannerReducer';
 import { TransportType } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 
 export type PickMode = 'start' | 'finish';
 
-export type RoutingMode = 'trip' | 'roundtrip' | 'route';
+export type RoutingMode = 'route' | 'trip' | 'roundtrip' | 'isochrone';
 
 export type Weighting = 'shortest' | 'short_fastest' | 'fastest';
 
@@ -115,6 +114,11 @@ export interface Waypoint {
   trips_index?: number;
 }
 
+export type RoundtripParams = {
+  distance: number;
+  seed: number;
+};
+
 export const routePlannerSetStart = createAction('ROUTE_PLANNER_SET_START')<{
   start: LatLon | null;
   move?: boolean;
@@ -146,7 +150,11 @@ export const routePlannerSetTransportType = createAction(
 )<TransportType>();
 
 export const routePlannerSetMode = createAction(
-  'ROUTE_PLANNER_SET_MODE',
+  'ROUTE_PLANNER_SET_OSRM_MODE',
+)<RoutingMode>();
+
+export const routePlannerSetGhMode = createAction(
+  'ROUTE_PLANNER_SET_GH_MODE',
 )<RoutingMode>();
 
 export const routePlannerSetWeighting = createAction(
@@ -173,9 +181,10 @@ export const routePlannerSetParams = createAction('ROUTE_PLANNER_SET_PARAMS')<{
   finish: LatLon | null;
   midpoints: LatLon[];
   transportType: TransportType;
-  mode?: RouteMode | null;
+  mode?: RoutingMode | null;
   weighting?: Weighting | null;
   milestones?: boolean;
+  roundtripParams?: Partial<RoundtripParams>;
 }>();
 
 export const routePlannerPreventHint = createAction(
@@ -195,3 +204,7 @@ export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS')();
 export const routePlannerToggleMilestones = createAction(
   'ROUTE_PLANNER_TOGGLE_MILESTONES',
 )<boolean | undefined>();
+
+export const routePlannerSetRoundtripParams = createAction(
+  'ROUTE_PLANNER_SET_ROUNDTRIP_PARAMS',
+)<Partial<RoundtripParams>>();
