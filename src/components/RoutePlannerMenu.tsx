@@ -5,6 +5,7 @@ import {
 import {
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
+  routePlannerSetIsochroneParams,
   routePlannerSetMode,
   routePlannerSetPickMode,
   routePlannerSetRoundtripParams,
@@ -58,71 +59,244 @@ import { ToolMenu } from './ToolMenu';
 
 export default RoutePlannerMenu;
 
-const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
-  ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
-    const dispatch = useDispatch();
+function useParam(
+  initValue: number,
+  fallbackValue: number,
+  flushOnIncrement = false,
+  commitCallback: (value: number) => void,
+) {
+  const [value, setValue] = useState(String(initValue));
 
-    const [seed, setSeed] = useState(
-      String(useSelector((state) => state.routePlanner.roundtripParams.seed)),
-    );
+  const debounceCallback = useDebouncedCallback(
+    useCallback(
+      (value: string) => {
+        commitCallback(Number(value) || fallbackValue);
+      },
+      [commitCallback, fallbackValue],
+    ),
+    1000,
+  );
 
-    const seedCallback = useDebouncedCallback((seed: string) => {
-      dispatch(routePlannerSetRoundtripParams({ seed: Number(seed) || 0 }));
-    }, 1000);
-
-    const handleSeedChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
 
-      setSeed(value);
+      if (flushOnIncrement) {
+        setValue((old) => {
+          if (Math.abs(Number(old) - Number(value)) === 1) {
+            debounceCallback.flush();
+          }
 
-      seedCallback(value);
-
-      if (Math.abs(Number(seed) - Number(value)) === 1) {
-        seedCallback.flush();
+          return value;
+        });
+      } else {
+        setValue(value);
       }
-    };
 
-    const handleSeedSubmit = (e: FormEvent<HTMLFormElement>) => {
+      debounceCallback(value);
+    },
+    [debounceCallback, flushOnIncrement],
+  );
+
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      seedCallback.flush();
-    };
+      debounceCallback.flush();
+    },
+    [debounceCallback],
+  );
 
-    const [distance, setDistance] = useState(
-      useSelector(
-        (state) => state.routePlanner.roundtripParams.distance / 1000,
-      ).toFixed(1),
-    );
+  return [value, handleChange, handleSubmit] as const;
+}
 
-    const distanceCallback = useDebouncedCallback((distance: string) => {
-      dispatch(
-        routePlannerSetRoundtripParams({
-          distance: Number(distance) * 1000 || 5000,
-        }),
-      );
-    }, 1000);
+function TripSettings() {
+  const dispatch = useDispatch();
 
-    const handleDistanceChange = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.currentTarget;
-
-        setDistance(value);
-
-        distanceCallback(value);
+  const [seed, handleSeedChange, handleSeedSubmit] = useParam(
+    useSelector((state) => state.routePlanner.roundtripParams.seed),
+    0,
+    true,
+    useCallback(
+      (seed: number) => {
+        dispatch(routePlannerSetRoundtripParams({ seed }));
       },
-      [distanceCallback],
+      [dispatch],
+    ),
+  );
+
+  const [distance, handleDistanceChange, handleDistanceSubmit] = useParam(
+    useSelector(
+      (state) =>
+        Math.round(state.routePlanner.roundtripParams.distance / 100) / 10,
+    ),
+    5,
+    false,
+    useCallback(
+      (value: number) => {
+        dispatch(routePlannerSetRoundtripParams({ distance: value * 1000 }));
+      },
+      [dispatch],
+    ),
+  );
+
+  const m = useMessages();
+
+  const ghParams = m?.routePlanner.ghParams;
+
+  return (
+    <>
+      <hr />
+
+      <fieldset className="mx-4 mb-4 w-auto">
+        <legend>{ghParams?.tripParameters}</legend>
+
+        <FormGroup as="form" onSubmit={handleDistanceSubmit}>
+          <FormLabel>{ghParams?.distance}</FormLabel>
+
+          <InputGroup>
+            <FormControl
+              type="number"
+              value={distance}
+              onChange={handleDistanceChange}
+              min={0.1}
+              step="any"
+              max={1000}
+            />
+
+            <InputGroup.Append>
+              <InputGroup.Text>㎞</InputGroup.Text>
+            </InputGroup.Append>
+          </InputGroup>
+        </FormGroup>
+
+        <FormGroup as="form" onSubmit={handleSeedSubmit}>
+          <FormLabel className="mt-2">{ghParams?.seed}</FormLabel>
+
+          <FormControl type="number" value={seed} onChange={handleSeedChange} />
+        </FormGroup>
+      </fieldset>
+    </>
+  );
+}
+
+function IsochroneSettings() {
+  const dispatch = useDispatch();
+
+  const [buckets, handleBucketsChange, handleBucketsSubmit] = useParam(
+    useSelector((state) => state.routePlanner.isochroneParams.buckets),
+    0,
+    true,
+    useCallback(
+      (buckets: number) => {
+        dispatch(routePlannerSetIsochroneParams({ buckets }));
+      },
+      [dispatch],
+    ),
+  );
+
+  const [distanceLimit, handleDistanceLimitChange, handleDistanceLimitSubmit] =
+    useParam(
+      useSelector(
+        (state) =>
+          Math.round(state.routePlanner.isochroneParams.distanceLimit / 100) /
+          10,
+      ),
+      0,
+      false,
+      useCallback(
+        (value: number) => {
+          dispatch(
+            routePlannerSetIsochroneParams({ distanceLimit: value * 1000 }),
+          );
+        },
+        [dispatch],
+      ),
     );
 
-    const handleDistanceSubmit = (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const [timeLimit, handleTimeLimitChange, handleTimeLimitSubmit] = useParam(
+    useSelector((state) =>
+      Math.round(state.routePlanner.isochroneParams.timeLimit / 60),
+    ),
+    10,
+    false,
+    useCallback(
+      (value: number) => {
+        dispatch(routePlannerSetIsochroneParams({ timeLimit: value * 60 }));
+      },
+      [dispatch],
+    ),
+  );
 
-      distanceCallback.flush();
-    };
+  const m = useMessages();
 
-    const m = useMessages();
+  const ghParams = m?.routePlanner.ghParams;
 
-    const ghParams = m?.routePlanner.ghParams;
+  return (
+    <>
+      <hr />
 
+      <fieldset className="mx-4 mb-4 w-auto">
+        <legend>{ghParams?.isochroneParameters}</legend>
+
+        <FormGroup as="form" onSubmit={handleTimeLimitSubmit}>
+          <FormLabel>{ghParams?.timeLimit}</FormLabel>
+
+          <InputGroup>
+            <FormControl
+              type="number"
+              value={timeLimit}
+              onChange={handleTimeLimitChange}
+              min={0.1}
+              step="any"
+              max={12 * 60}
+              disabled={distanceLimit !== '0'}
+            />
+
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
+          </InputGroup>
+        </FormGroup>
+
+        <FormGroup as="form" onSubmit={handleDistanceLimitSubmit}>
+          <FormLabel className="mt-2">{ghParams?.distanceLimit}</FormLabel>
+
+          <InputGroup>
+            <FormControl
+              type="number"
+              value={distanceLimit === '0' ? '' : distanceLimit}
+              onChange={handleDistanceLimitChange}
+              min={0}
+              step="any"
+              max={1000}
+            />
+
+            <InputGroup.Append>
+              <InputGroup.Text>㎞</InputGroup.Text>
+            </InputGroup.Append>
+          </InputGroup>
+        </FormGroup>
+
+        <FormGroup as="form" onSubmit={handleBucketsSubmit}>
+          <FormLabel className="mt-2">{ghParams?.buckets}</FormLabel>
+
+          <FormControl
+            type="number"
+            value={buckets}
+            onChange={handleBucketsChange}
+            min={1}
+            step={1}
+            max={5}
+          />
+        </FormGroup>
+      </fieldset>
+    </>
+  );
+}
+
+const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
+  ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
     return (
       <div
         ref={ref}
@@ -138,72 +312,9 @@ const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
             return (
               <Fragment key={'m-' + (item as any).props.eventKey}>
                 {(item as any).props.eventKey === 'roundtrip' ? (
-                  <>
-                    <hr />
-
-                    <fieldset className="mx-4 mb-4 w-auto">
-                      <legend>{ghParams?.tripParameters}</legend>
-
-                      <FormGroup as="form" onSubmit={handleDistanceSubmit}>
-                        <FormLabel>{ghParams?.distance}</FormLabel>
-
-                        <InputGroup>
-                          <FormControl
-                            type="number"
-                            value={distance}
-                            onChange={handleDistanceChange}
-                            min={0.1}
-                            step="any"
-                            max={1000}
-                          />
-
-                          <InputGroup.Append>
-                            <InputGroup.Text>㎞</InputGroup.Text>
-                          </InputGroup.Append>
-                        </InputGroup>
-                      </FormGroup>
-
-                      <FormGroup as="form" onSubmit={handleSeedSubmit}>
-                        <FormLabel className="mt-2">{ghParams?.seed}</FormLabel>
-
-                        <FormControl
-                          type="number"
-                          value={seed}
-                          onChange={handleSeedChange}
-                        />
-                      </FormGroup>
-                    </fieldset>
-                  </>
+                  <TripSettings />
                 ) : (item as any).props.eventKey === 'isochrone' ? (
-                  <>
-                    <hr />
-
-                    <fieldset className="mx-4 mb-4 w-auto">
-                      <legend>{ghParams?.isochroneParameters}</legend>
-
-                      <FormGroup>
-                        <FormLabel>{ghParams?.buckets}</FormLabel>
-
-                        <FormControl type="number" />
-                      </FormGroup>
-
-                      <FormGroup>
-                        <FormLabel className="mt-2">
-                          {ghParams?.timeLimit}
-                        </FormLabel>
-
-                        <FormControl type="number" />
-                      </FormGroup>
-
-                      <FormGroup>
-                        <FormLabel className="mt-2">
-                          {ghParams?.distanceLimit}
-                        </FormLabel>
-
-                        <FormControl type="number" />
-                      </FormGroup>
-                    </fieldset>
-                  </>
+                  <IsochroneSettings />
                 ) : null}
               </Fragment>
             );
@@ -443,7 +554,7 @@ export function RoutePlannerMenu(): ReactElement {
             popperConfig={{ strategy: 'fixed' }}
             as={GraphopperModeMenu}
           >
-            {(['route', 'roundtrip' /*, 'isochrone'*/] as const).map((mode) => (
+            {(['route', 'roundtrip', 'isochrone'] as const).map((mode) => (
               <Dropdown.Item
                 eventKey={mode}
                 key={mode}

@@ -1,8 +1,10 @@
+import { Feature, Polygon } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
+  IsochroneParams,
   PickMode,
   RoundtripParams,
   routePlannerAddMidpoint,
@@ -10,6 +12,8 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
+  routePlannerSetIsochroneParams,
+  routePlannerSetIsochrones,
   routePlannerSetMidpoint,
   routePlannerSetMode,
   routePlannerSetParams,
@@ -40,6 +44,7 @@ export interface RoutePlannerCleanResultState {
   waypoints: Waypoint[];
   activeAlternativeIndex: number;
   timestamp: number | null;
+  isochrones: Feature<Polygon>[] | null;
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
@@ -49,6 +54,7 @@ export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   pickMode: PickMode | null;
   itineraryIsVisible: boolean;
   roundtripParams: RoundtripParams;
+  isochroneParams: IsochroneParams;
 }
 
 const clearResult: RoutePlannerCleanResultState = {
@@ -56,6 +62,7 @@ const clearResult: RoutePlannerCleanResultState = {
   waypoints: [],
   activeAlternativeIndex: 0,
   timestamp: null,
+  isochrones: null,
 };
 
 export const cleanState: RoutePlannerCleanState = {
@@ -67,6 +74,11 @@ export const cleanState: RoutePlannerCleanState = {
   roundtripParams: {
     distance: 5000,
     seed: 0,
+  },
+  isochroneParams: {
+    distanceLimit: 0,
+    timeLimit: 600,
+    buckets: 1,
   },
   ...clearResult,
 };
@@ -162,6 +174,10 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     roundtripParams: {
       ...state.roundtripParams,
       ...payload.roundtripParams,
+    },
+    isochroneParams: {
+      ...state.isochroneParams,
+      ...payload.isochroneParams,
     },
   }))
   .handleAction(routePlannerSetStart, (state, { payload }) => ({
@@ -269,6 +285,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       { payload: { alternatives, waypoints, timestamp, transportType } },
     ) => ({
       ...state,
+      ...clearResult,
       alternatives,
       waypoints,
       timestamp,
@@ -281,6 +298,16 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
           : state.midpoints,
     }),
   )
+  .handleAction(
+    routePlannerSetIsochrones,
+    (state, { payload: { isochrones, timestamp } }) => ({
+      ...state,
+      ...clearResult,
+      isochrones,
+      timestamp,
+      midpoints: [],
+    }),
+  )
   .handleAction(routePlannerSetActiveAlternativeIndex, (state, action) => ({
     ...state,
     activeAlternativeIndex: action.payload,
@@ -289,6 +316,13 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     roundtripParams: {
       ...state.roundtripParams,
+      ...payload,
+    },
+  }))
+  .handleAction(routePlannerSetIsochroneParams, (state, { payload }) => ({
+    ...state,
+    isochroneParams: {
+      ...state.isochroneParams,
       ...payload,
     },
   }))

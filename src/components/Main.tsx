@@ -399,7 +399,9 @@ export function Main(): ReactElement {
     }
 
     if (
-      document.querySelector('*[data-popper-reference-hidden=false]') !== null
+      document.querySelector(
+        '*[data-popper-reference-hidden=false], .dropdown-menu.show',
+      ) !== null
     ) {
       e.stopPropagation();
 

@@ -1,4 +1,4 @@
-import { LineString } from '@turf/helpers';
+import { Feature, LineString, Polygon } from '@turf/helpers';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -7,6 +7,8 @@ import {
   routePlannerPreventHint,
   routePlannerRemoveMidpoint,
   routePlannerSetFinish,
+  routePlannerSetIsochroneParams,
+  routePlannerSetIsochrones,
   routePlannerSetMidpoint,
   routePlannerSetMode,
   routePlannerSetParams,
@@ -40,6 +42,7 @@ const updateRouteTypes = [
   routePlannerSetParams,
   routePlannerSetWeighting,
   routePlannerSetRoundtripParams,
+  routePlannerSetIsochroneParams,
   mapsDataLoaded,
 ];
 
@@ -100,6 +103,10 @@ type GraphhopperResult = {
   paths: GraphhopperPath[];
 };
 
+type IsochroneResponse = {
+  polygons: Feature<Polygon>[];
+};
+
 type OsrmResult = {
   code: string;
   trips?: Alternative[];
@@ -120,6 +127,7 @@ export const routePlannerFindRouteProcessor: Processor = {
       mode,
       weighting,
       roundtripParams,
+      isochroneParams,
     } = getState().routePlanner;
 
     if (!start || !transportType) {
@@ -153,6 +161,38 @@ export const routePlannerFindRouteProcessor: Processor = {
     let data: unknown;
 
     try {
+      if (ttDef.api === 'gh' && mode === 'isochrone') {
+        const response = await httpRequest({
+          getState,
+          // url: 'https://local.gruveo.com/gh/isochrone',
+          url:
+            'https://graphhopper.freemap.sk/isochrone?' +
+            objectToURLSearchParams({
+              profile:
+                ttDef.vehicle +
+                (weighting === 'shortest' || weighting === 'fastest'
+                  ? '_' + weighting
+                  : ''),
+              buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
+              time_limit: isochroneParams.timeLimit,
+              distance_limit: isochroneParams.distanceLimit || -1,
+              point: start.lat + ',' + start.lon,
+            }),
+          expectedStatus: 200,
+          cancelActions: updateRouteTypes,
+        });
+
+        dispatch(
+          routePlannerSetIsochrones({
+            isochrones: assertType<IsochroneResponse>(await response.json())
+              .polygons,
+            timestamp: Date.now(),
+          }),
+        );
+
+        return;
+      }
+
       if (ttDef.api === 'gh') {
         const response = await httpRequest({
           getState,
@@ -394,7 +434,7 @@ export const routePlannerFindRouteProcessor: Processor = {
     }
 
     const showHint =
-      // TODO ??? !getState().routePlanner.shapePoints &&
+      !(ttDef.api === 'gh' && mode !== 'route') &&
       !getState().routePlanner.preventHint &&
       !midpoints.length &&
       isActionOf([routePlannerSetStart, routePlannerSetFinish], action);

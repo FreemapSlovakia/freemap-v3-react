@@ -130,10 +130,9 @@ export const urlProcessor: Processor = {
         historyParts.push(['milestones', 1]);
       }
 
-      // routePlanner.roundtripParams
       if (
         transportTypeDefs[routePlanner.transportType].api === 'gh' &&
-        routePlanner.mode !== 'route'
+        routePlanner.mode === 'roundtrip'
       ) {
         historyParts.push([
           'trip-distance',
@@ -141,6 +140,28 @@ export const urlProcessor: Processor = {
         ]);
 
         historyParts.push(['trip-seed', routePlanner.roundtripParams.seed]);
+      }
+
+      if (
+        transportTypeDefs[routePlanner.transportType].api === 'gh' &&
+        routePlanner.mode === 'isochrone'
+      ) {
+        historyParts.push([
+          'iso-buckets',
+          routePlanner.isochroneParams.buckets,
+        ]);
+
+        if (routePlanner.isochroneParams.distanceLimit) {
+          historyParts.push([
+            'iso-distance-limit',
+            routePlanner.isochroneParams.distanceLimit,
+          ]);
+        } else {
+          historyParts.push([
+            'iso-time-limit',
+            routePlanner.isochroneParams.timeLimit,
+          ]);
+        }
       }
     }
 

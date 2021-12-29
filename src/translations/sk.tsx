@@ -135,7 +135,7 @@ const sk: Messages = {
     ghParams: {
       tripParameters: 'Parametre výletu',
       seed: 'Random seed',
-      distance: 'Vzdialenosť',
+      distance: 'Orientačná vzdialenosť',
       isochroneParameters: 'Parametre izochrónov',
       buckets: 'Počet delení',
       timeLimit: 'Časový limit',

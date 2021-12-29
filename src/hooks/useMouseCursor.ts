@@ -2,6 +2,8 @@ import { mouseCursorSelector } from 'fm3/selectors/mainSelectors';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+// TODO handle also dropdown menus (.dropdown-menu.show)
+
 export function useMouseCursor(element?: HTMLElement): void {
   const [open, setOpen] = useState(false);
 

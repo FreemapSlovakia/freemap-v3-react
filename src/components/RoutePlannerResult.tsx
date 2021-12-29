@@ -40,6 +40,7 @@ import {
 import { FaPlay, FaStop } from 'react-icons/fa';
 import {
   CircleMarker,
+  GeoJSON,
   Marker,
   Polyline,
   Tooltip,
@@ -67,6 +68,8 @@ export function RoutePlannerResult(): ReactElement {
   const alternatives = useSelector((state) => state.routePlanner.alternatives);
 
   const waypoints = useSelector((state) => state.routePlanner.waypoints);
+
+  const isochrones = useSelector((state) => state.routePlanner.isochrones);
 
   const activeAlternativeIndex = useSelector(
     (state) => state.routePlanner.activeAlternativeIndex,
@@ -842,6 +845,29 @@ export function RoutePlannerResult(): ReactElement {
             </Tooltip>
           )}
         </CircleMarker>
+      ))}
+
+      {isochrones?.map((isochrone) => (
+        <GeoJSON
+          key={'iso_' + timestamp + '_' + isochrone.properties?.['bucket']}
+          interactive={false}
+          style={(f) =>
+            f?.properties['bucket'] === isochrones.length - 1
+              ? { weight: 5, color: '#3388ff', fillOpacity: 0.15 }
+              : {
+                  weight: 5,
+                  fill: false,
+                  color: [
+                    '#3388ff',
+                    '#5f6fc8',
+                    '#8b5692',
+                    '#b73d5b',
+                    '#e32525',
+                  ][isochrones.length - f?.properties['bucket'] - 1],
+                }
+          }
+          data={isochrone}
+        />
       ))}
 
       <ElevationChartActivePoint />

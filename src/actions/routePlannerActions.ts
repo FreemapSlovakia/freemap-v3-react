@@ -1,3 +1,4 @@
+import { Feature, Polygon } from '@turf/helpers';
 import { TransportType } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
@@ -119,6 +120,12 @@ export type RoundtripParams = {
   seed: number;
 };
 
+export type IsochroneParams = {
+  buckets: number;
+  distanceLimit: number;
+  timeLimit: number;
+};
+
 export const routePlannerSetStart = createAction('ROUTE_PLANNER_SET_START')<{
   start: LatLon | null;
   move?: boolean;
@@ -172,6 +179,10 @@ export const routePlannerSetResult = createAction('ROUTE_PLANNER_SET_RESULT')<{
   waypoints: Waypoint[];
 }>();
 
+export const routePlannerSetIsochrones = createAction(
+  'ROUTE_PLANNER_SET_ISOCHRONES',
+)<{ isochrones: Feature<Polygon>[]; timestamp: number }>();
+
 export const routePlannerToggleItineraryVisibility = createAction(
   'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY',
 )();
@@ -185,6 +196,7 @@ export const routePlannerSetParams = createAction('ROUTE_PLANNER_SET_PARAMS')<{
   weighting?: Weighting | null;
   milestones?: boolean;
   roundtripParams?: Partial<RoundtripParams>;
+  isochroneParams?: Partial<IsochroneParams>;
 }>();
 
 export const routePlannerPreventHint = createAction(
@@ -208,3 +220,7 @@ export const routePlannerToggleMilestones = createAction(
 export const routePlannerSetRoundtripParams = createAction(
   'ROUTE_PLANNER_SET_ROUNDTRIP_PARAMS',
 )<Partial<RoundtripParams>>();
+
+export const routePlannerSetIsochroneParams = createAction(
+  'ROUTE_PLANNER_SET_ISOCHRONE_PARAMS',
+)<Partial<IsochroneParams>>();

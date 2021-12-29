@@ -140,6 +140,7 @@ export const handleLocationChange = (
         milestones,
         weighting,
         roundtripParams,
+        isochroneParams,
       } = getState().routePlanner;
 
       const latLons = points.map((point) =>
@@ -167,8 +168,13 @@ export const handleLocationChange = (
         (weighting === 'fastest' ? undefined : weighting) !==
           query['route-weighting'] ||
         (milestones && !query['milestones']) ||
-        (String(roundtripParams.seed) !== query['trip-seed'] ?? '0') ||
-        (String(roundtripParams.distance) !== query['trip-distance'] ?? '5000')
+        String(roundtripParams.seed) !== (query['trip-seed'] ?? '0') ||
+        String(roundtripParams.distance) !==
+          (query['trip-distance'] ?? '5000') ||
+        String(isochroneParams.buckets) !== (query['iso-buckets'] ?? '1') ||
+        String(isochroneParams.distanceLimit) !==
+          (query['iso-distance-limit'] ?? '0') ||
+        String(isochroneParams.timeLimit) !== (query['iso-time-limit'] ?? '600')
       ) {
         const routeMode = query['route-mode'];
 
@@ -181,7 +187,9 @@ export const handleLocationChange = (
             midpoints: nextMidpoints,
             transportType: query['transport'],
             mode:
-              routeMode === 'trip' || routeMode === 'roundtrip'
+              routeMode === 'trip' ||
+              routeMode === 'roundtrip' ||
+              routeMode === 'isochrone'
                 ? routeMode
                 : 'route',
             weighting: is<Weighting>(weighting) ? weighting : undefined,
@@ -189,6 +197,11 @@ export const handleLocationChange = (
             roundtripParams: {
               seed: Number(query['trip-seed']) || 0,
               distance: Number(query['trip-distance']) || 5000,
+            },
+            isochroneParams: {
+              distanceLimit: Number(query['iso-distance-limit']) || 0,
+              timeLimit: Number(query['iso-time-limit']) || 600,
+              buckets: Number(query['iso-buckets']) || 1,
             },
           }),
         );

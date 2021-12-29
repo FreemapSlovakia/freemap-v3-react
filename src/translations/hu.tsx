@@ -136,7 +136,7 @@ const hu: Messages = {
     ghParams: {
       tripParameters: 'Trip parameters',
       seed: 'Random seed',
-      distance: 'Distance',
+      distance: 'Approximate distance',
       isochroneParameters: 'Isochrone parameters',
       buckets: 'Buckets',
       timeLimit: 'Time limit',
