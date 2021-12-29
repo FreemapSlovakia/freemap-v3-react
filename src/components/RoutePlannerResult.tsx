@@ -210,6 +210,12 @@ export function RoutePlannerResult(): ReactElement {
       ? 25
       : 50;
 
+  const ensureTool = useCallback(() => {
+    if (tool !== 'route-planner') {
+      dispatch(setTool('route-planner'));
+    }
+  }, [dispatch, tool]);
+
   const milestones = useMemo(() => {
     if (!showMilestones || !alternatives[activeAlternativeIndex]) {
       return [];
@@ -474,19 +480,19 @@ export function RoutePlannerResult(): ReactElement {
           }),
         );
 
-        dispatch(setTool('route-planner'));
+        ensureTool();
       }
     },
-    [dispatch, dragSegment],
+    [dispatch, dragSegment, ensureTool],
   );
 
   const changeAlternative = useCallback(
     (index: number) => {
       dispatch(routePlannerSetActiveAlternativeIndex(index));
 
-      dispatch(setTool('route-planner'));
+      ensureTool();
     },
-    [dispatch],
+    [dispatch, ensureTool],
   );
 
   const handleFutureClick = useCallback(() => {
@@ -513,14 +519,14 @@ export function RoutePlannerResult(): ReactElement {
         case 'start':
           dispatch(routePlannerSetStart({ start: { lat, lon }, move: true }));
 
-          dispatch(setTool('route-planner'));
+          ensureTool();
 
           break;
 
         case 'finish':
           dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
 
-          dispatch(setTool('route-planner'));
+          ensureTool();
 
           break;
 
@@ -530,7 +536,7 @@ export function RoutePlannerResult(): ReactElement {
               routePlannerSetMidpoint({ position, midpoint: { lat, lon } }),
             );
 
-            dispatch(setTool('route-planner'));
+            ensureTool();
           }
 
           break;
@@ -539,7 +545,7 @@ export function RoutePlannerResult(): ReactElement {
           throw new Error('unknown pointType');
       }
     },
-    [dispatch],
+    [dispatch, ensureTool],
   );
 
   const special = !!transportType && isSpecial(transportType);
