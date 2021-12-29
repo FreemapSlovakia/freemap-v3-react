@@ -101,6 +101,23 @@ export const handleLocationChange = (
           ...queryString.parse(sq),
         };
 
+  const tool =
+    !query['tool'] || typeof query['tool'] !== 'string'
+      ? null
+      : query['tool'] === 'info-point'
+      ? 'draw-points'
+      : query['tool'] === 'measure-area'
+      ? 'draw-polygons'
+      : query['tool'] === 'measure-dist'
+      ? 'draw-lines'
+      : tools.includes(query['tool'] as Tool)
+      ? (query['tool'] as Tool)
+      : null;
+
+  if (getState().main.tool !== tool) {
+    dispatch(setTool(tool));
+  }
+
   const params = new URLSearchParams(
     id === undefined ? search : sq,
   ) as URLSearchParams & Map<string, string>;
@@ -229,23 +246,6 @@ export const handleLocationChange = (
     ['en', 'sk', 'cs', 'hu'].includes(lang as string)
   ) {
     dispatch(l10nSetChosenLanguage({ language: lang }));
-  }
-
-  const tool =
-    !query['tool'] || typeof query['tool'] !== 'string'
-      ? null
-      : query['tool'] === 'info-point'
-      ? 'draw-points'
-      : query['tool'] === 'measure-area'
-      ? 'draw-polygons'
-      : query['tool'] === 'measure-dist'
-      ? 'draw-lines'
-      : tools.includes(query['tool'] as Tool)
-      ? (query['tool'] as Tool)
-      : null;
-
-  if (getState().main.tool !== tool) {
-    dispatch(setTool(tool));
   }
 
   const trackUID = query['track-uid'];
