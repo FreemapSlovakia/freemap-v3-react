@@ -1,4 +1,5 @@
 import { Feature, LineString, Polygon } from '@turf/helpers';
+import { clearMap, setTool } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -45,6 +46,8 @@ const updateRouteTypes = [
   routePlannerSetIsochroneParams,
   mapsDataLoaded,
 ];
+
+const cancelTypes = [...updateRouteTypes, clearMap, setTool];
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -179,7 +182,7 @@ export const routePlannerFindRouteProcessor: Processor = {
               point: start.lat + ',' + start.lon,
             }),
           expectedStatus: 200,
-          cancelActions: updateRouteTypes,
+          cancelActions: cancelTypes,
         });
 
         dispatch(
@@ -249,7 +252,7 @@ export const routePlannerFindRouteProcessor: Processor = {
               : [[start.lon, start.lat]],
           },
           expectedStatus: [200, 400],
-          cancelActions: updateRouteTypes,
+          cancelActions: cancelTypes,
         });
 
         data = await response.json();
@@ -318,7 +321,7 @@ export const routePlannerFindRouteProcessor: Processor = {
               exclude: ttDef.exclude,
             }),
           expectedStatus: [200, 400],
-          cancelActions: updateRouteTypes,
+          cancelActions: cancelTypes,
         });
 
         data = await response.json();
