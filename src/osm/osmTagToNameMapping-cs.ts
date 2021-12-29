@@ -52,7 +52,7 @@ export const osmTagToNameMapping: Node = {
       '*': 'Přístřešek',
       shelter_type: {
         '*': 'Přístřešek {}',
-        basic_hut: 'Jednoduchá chata, bivak',
+        basic_hut: 'Jednoduchá chata, bivak, útulna',
         changing_rooms: 'Převlékárna',
         field_shelter: 'Polní přístřešek',
         lean_to: 'Přístřešek s otevřenou stěnou',

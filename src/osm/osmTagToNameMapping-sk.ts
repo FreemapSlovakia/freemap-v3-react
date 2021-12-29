@@ -88,7 +88,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       '*': 'Prístrešok',
       shelter_type: {
         '*': 'Prístrešok {}',
-        basic_hut: 'Jednoduchá chata, bivak',
+        basic_hut: 'Jednoduchá chata, bivak, útulňa',
         changing_rooms: 'Prezliekáreň',
         field_shelter: 'Poľný prístrešok',
         lean_to: 'Prístrešok s otvorenou stenou',
