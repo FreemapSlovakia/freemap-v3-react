@@ -18,8 +18,16 @@ export function useAttributionInfo() {
 
   const prevNonceRef = useRef(0);
 
+  const showingAttribution = useSelector((state) =>
+    state.toasts.toasts.some((toast) => toast.id === 'attribution'),
+  );
+
   // hide attribution on mouse down
   useEffect(() => {
+    if (!showingAttribution) {
+      return;
+    }
+
     const handlePointerDown = (e: MouseEvent) => {
       if (e.target instanceof Element) {
         let el: Element | null = e.target;
@@ -41,7 +49,7 @@ export function useAttributionInfo() {
     return () => {
       document.body.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [dispatch]);
+  }, [dispatch, showingAttribution]);
 
   useEffect(() => {
     if (window.isRobot) {
