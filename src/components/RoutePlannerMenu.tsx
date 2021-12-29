@@ -346,7 +346,11 @@ export function RoutePlannerMenu(): ReactElement {
   const pickPointMode = useSelector((state) => state.routePlanner.pickMode);
 
   const routeFound = useSelector(
-    (state) => !!state.routePlanner.alternatives.length,
+    (state) => state.routePlanner.alternatives.length > 0,
+  );
+
+  const isochronesFound = useSelector(
+    (state) => !!state.routePlanner.isochrones,
   );
 
   const elevationProfileIsVisible = useSelector(
@@ -763,10 +767,10 @@ export function RoutePlannerMenu(): ReactElement {
             checked={milestones}
             label={m?.routePlanner.milestones ?? '…'}
           />
-
-          {canDelete && <DeleteButton />}
         </>
       )}
+
+      {(routeFound || isochronesFound || canDelete) && <DeleteButton />}
     </ToolMenu>
   );
 }
