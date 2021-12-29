@@ -164,7 +164,12 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
         ? []
         : payload.midpoints,
     transportType: payload.transportType,
-    mode: isSpecial(payload.transportType) ? 'route' : payload.mode || 'route',
+    mode: isSpecial(payload.transportType)
+      ? 'route'
+      : transportTypeDefs[payload.transportType].api !== 'gh' &&
+        payload.mode === 'isochrone'
+      ? 'route'
+      : payload.mode || 'route',
     milestones: !!payload.milestones,
     weighting:
       state.transportType === 'foot-stroller' &&
@@ -247,7 +252,12 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       ...state,
       ...clearResult,
       transportType,
-      mode: isSpecial(transportType) ? 'route' : state.mode,
+      mode:
+        isSpecial(transportType) ||
+        (transportTypeDefs[transportType].api !== 'gh' &&
+          state.mode === 'isochrone')
+          ? 'route'
+          : state.mode,
       weighting:
         transportType === 'foot-stroller' ? 'short_fastest' : 'fastest',
     }),
@@ -263,7 +273,12 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       transportTypeDefs[state.transportType].api === 'gh' && mode !== 'route'
         ? null
         : state.finish,
-    mode: isSpecial(state.transportType) ? 'route' : mode,
+    mode:
+      isSpecial(state.transportType) ||
+      (transportTypeDefs[state.transportType].api !== 'gh' &&
+        mode === 'isochrone')
+        ? 'route'
+        : mode,
   }))
   .handleAction(routePlannerSetWeighting, (state, action) => ({
     ...state,
