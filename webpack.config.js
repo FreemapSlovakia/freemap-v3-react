@@ -296,7 +296,7 @@ module.exports = {
           sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
         },
       ],
-      orientation: 'any',
+      // orientation: 'any', // any doesn't respect orientation lock
       share_target: {
         action: '/',
         method: 'POST',
