@@ -3,7 +3,6 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
@@ -49,6 +48,7 @@ module.exports = {
   context: path.resolve(__dirname, 'src'),
   entry: './index.tsx',
   output: {
+    clean: true,
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist'),
@@ -226,7 +226,6 @@ module.exports = {
         }[process.env.DEPLOYMENT] ||
         'https://dev.merit.world/rewpro?paytype=project&recipient=24130',
     }),
-    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
     new HtmlWebpackPlugin({
       ...htmlPluginProps,
