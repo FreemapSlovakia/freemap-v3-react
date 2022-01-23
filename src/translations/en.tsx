@@ -513,11 +513,12 @@ const en: Messages = {
     elevation: 'Point',
     area: 'Polygon',
     elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
-    elevationInfo: ({ elevation, point }) => (
+    elevationInfo: ({ elevation, point, tile }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
           <div key={format}>{latLonToString(point, 'en', format)}</div>
         ))}
+        <div>Tile: {tile}</div>
         {elevation != null && (
           <div>
             Elevation: {nf01.format(elevation)}&nbsp;{masl}

@@ -26,7 +26,10 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
   actionCreator: drawingMeasure,
   errorKey: 'measurement.elevationFetchError',
   handle: async ({ getState, dispatch, action }) => {
-    const { selection } = getState().main;
+    const {
+      main: { selection },
+      map: { zoom },
+    } = getState();
 
     let id;
 
@@ -53,11 +56,25 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         elevation = assertType<[number]>(await res.json())[0];
       }
 
+      const x = Math.floor(2 ** zoom * ((point.lon + 180) / 360));
+
+      const y = Math.floor(
+        2 ** zoom *
+          ((1 - Math.asinh(Math.tan((point.lat * Math.PI) / 180.0)) / Math.PI) /
+            2),
+      );
+
+      console.log({ x, y });
+
       dispatch(
         toastsAdd({
           id: 'measurementInfo',
           messageKey: 'measurement.elevationInfo',
-          messageParams: { point, elevation },
+          messageParams: {
+            point,
+            elevation,
+            tile: `${zoom}/${x}/${y}`,
+          },
           timeout: 500000,
           cancelType,
         }),

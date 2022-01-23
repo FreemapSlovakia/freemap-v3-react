@@ -525,11 +525,13 @@ const hu: Messages = {
     area: 'Terület',
     elevationFetchError: ({ err }) =>
       `Hiba történt a pont magasságának beolvasásakor: ${err}`,
-    elevationInfo: ({ elevation, point }) => (
+    elevationInfo: ({ elevation, point, tile }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
           <div key={format}>{latLonToString(point, 'hu', format)}</div>
         ))}
+        <div>Tile: {tile}</div>
+        {/*TODO translate*/}
         {elevation != null && (
           <div>
             Magasság: {nf01.format(elevation)}&nbsp;{masl}

@@ -523,11 +523,12 @@ const cs: Messages = {
     area: 'Polygon',
     elevationFetchError: ({ err }) =>
       `Nastala chyba při získávání výšky bodu: ${err}`,
-    elevationInfo: ({ elevation, point }) => (
+    elevationInfo: ({ elevation, point, tile }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
           <div key={format}>{latLonToString(point, 'cs', format)}</div>
         ))}
+        <div>Dlaždice: {tile}</div>
         {elevation != null && (
           <div>
             Nadmořská výška: {nf01.format(elevation)}&nbsp;{masl}

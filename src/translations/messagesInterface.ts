@@ -410,9 +410,11 @@ export type Messages = {
     elevationInfo: ({
       elevation,
       point,
+      tile,
     }: {
       elevation: number;
       point: LatLon;
+      tile: string;
     }) => JSX.Element;
     areaInfo: ({ area }: { area: number }) => JSX.Element;
     distanceInfo: ({ length }: { length: number }) => JSX.Element;
