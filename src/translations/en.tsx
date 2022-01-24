@@ -3,22 +3,17 @@
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import { ElevationInfo } from 'fm3/components/ElevationInfo';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
 } from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './en-shared.json';
 import { Messages } from './messagesInterface';
-
-const nf01 = new Intl.NumberFormat('en', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 1,
-});
 
 const nf33 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 3,
@@ -513,18 +508,13 @@ const en: Messages = {
     elevation: 'Point',
     area: 'Polygon',
     elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
-    elevationInfo: ({ elevation, point, tile }) => (
-      <>
-        {(['D', 'DM', 'DMS'] as const).map((format) => (
-          <div key={format}>{latLonToString(point, 'en', format)}</div>
-        ))}
-        <div>Tile: {tile}</div>
-        {elevation != null && (
-          <div>
-            Elevation: {nf01.format(elevation)}&nbsp;{masl}
-          </div>
-        )}
-      </>
+    elevationInfo: (params) => (
+      <ElevationInfo
+        {...params}
+        lang="cs"
+        tileMessage="Tile"
+        maslMessage="Elevation"
+      />
     ),
     areaInfo: ({ area }) => (
       <>

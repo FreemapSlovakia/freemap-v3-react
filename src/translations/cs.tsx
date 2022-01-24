@@ -3,22 +3,17 @@
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import { ElevationInfo } from 'fm3/components/ElevationInfo';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
 } from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './cs-shared.json';
 import { Messages } from './messagesInterface';
-
-const nf01 = new Intl.NumberFormat('cs', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 1,
-});
 
 const nf33 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 3,
@@ -523,18 +518,13 @@ const cs: Messages = {
     area: 'Polygon',
     elevationFetchError: ({ err }) =>
       `Nastala chyba při získávání výšky bodu: ${err}`,
-    elevationInfo: ({ elevation, point, tile }) => (
-      <>
-        {(['D', 'DM', 'DMS'] as const).map((format) => (
-          <div key={format}>{latLonToString(point, 'cs', format)}</div>
-        ))}
-        <div>Dlaždice: {tile}</div>
-        {elevation != null && (
-          <div>
-            Nadmořská výška: {nf01.format(elevation)}&nbsp;{masl}
-          </div>
-        )}
-      </>
+    elevationInfo: (params) => (
+      <ElevationInfo
+        {...params}
+        lang="cs"
+        tileMessage="Dlaždice"
+        maslMessage="Nadmořská výška"
+      />
     ),
     areaInfo: ({ area }) => (
       <>

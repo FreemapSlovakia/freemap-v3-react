@@ -9,6 +9,7 @@ import {
   setTool,
 } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
@@ -28,7 +29,6 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
   handle: async ({ getState, dispatch, action }) => {
     const {
       main: { selection },
-      map: { zoom },
     } = getState();
 
     let id;
@@ -36,11 +36,16 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
     async function measurePoint(point: LatLon) {
       let elevation;
 
+      const toastParams: ElevationInfoBaseProps = {
+        point,
+        elevation: null,
+      };
+
       if (action.payload.elevation !== false) {
         dispatch(
           toastsAdd({
             messageKey: 'measurement.elevationInfo',
-            messageParams: { point, elevation: null },
+            messageParams: toastParams,
             timeout: 500000,
             id: 'measurementInfo',
             cancelType,
@@ -56,24 +61,13 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         elevation = assertType<[number]>(await res.json())[0];
       }
 
-      const x = Math.floor(2 ** zoom * ((point.lon + 180) / 360));
-
-      const y = Math.floor(
-        2 ** zoom *
-          ((1 - Math.asinh(Math.tan((point.lat * Math.PI) / 180.0)) / Math.PI) /
-            2),
-      );
-
-      console.log({ x, y });
-
       dispatch(
         toastsAdd({
           id: 'measurementInfo',
           messageKey: 'measurement.elevationInfo',
           messageParams: {
-            point,
+            ...toastParams,
             elevation,
-            tile: `${zoom}/${x}/${y}`,
           },
           timeout: 500000,
           cancelType,

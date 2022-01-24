@@ -1,7 +1,7 @@
 import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
+import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
 import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
 import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
-import { LatLon } from 'fm3/types/common';
 import { ReactNode } from 'react';
 
 type Err = { err: string };
@@ -407,15 +407,7 @@ export type Messages = {
     elevation: string;
     area: string;
     elevationFetchError: ({ err }: Err) => string;
-    elevationInfo: ({
-      elevation,
-      point,
-      tile,
-    }: {
-      elevation: number;
-      point: LatLon;
-      tile: string;
-    }) => JSX.Element;
+    elevationInfo: (params: ElevationInfoBaseProps) => JSX.Element;
     areaInfo: ({ area }: { area: number }) => JSX.Element;
     distanceInfo: ({ length }: { length: number }) => JSX.Element;
   };

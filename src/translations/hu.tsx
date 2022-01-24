@@ -3,22 +3,17 @@
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import { ElevationInfo } from 'fm3/components/ElevationInfo';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
 } from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
-
-const nf01 = new Intl.NumberFormat('hu', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 1,
-});
 
 const nf33 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 3,
@@ -525,19 +520,13 @@ const hu: Messages = {
     area: 'Terület',
     elevationFetchError: ({ err }) =>
       `Hiba történt a pont magasságának beolvasásakor: ${err}`,
-    elevationInfo: ({ elevation, point, tile }) => (
-      <>
-        {(['D', 'DM', 'DMS'] as const).map((format) => (
-          <div key={format}>{latLonToString(point, 'hu', format)}</div>
-        ))}
-        <div>Tile: {tile}</div>
-        {/*TODO translate*/}
-        {elevation != null && (
-          <div>
-            Magasság: {nf01.format(elevation)}&nbsp;{masl}
-          </div>
-        )}
-      </>
+    elevationInfo: (params) => (
+      <ElevationInfo
+        {...params}
+        lang="hu"
+        tileMessage="Tile" // TODO translate
+        maslMessage="Magasság"
+      />
     ),
     areaInfo: ({ area }) => (
       <>
