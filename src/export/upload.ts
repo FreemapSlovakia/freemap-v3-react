@@ -8,7 +8,7 @@ import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 
 export const licenseNotice =
-  'Various licenses may apply - like OpenStreetMap (http://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
+  'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
 
 export async function upload(
   type: 'gpx' | 'geojson',

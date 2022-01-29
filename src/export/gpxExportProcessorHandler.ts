@@ -9,11 +9,11 @@ import { ObjectsState } from 'fm3/reducers/objectsReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
+import { escapeHtml, objectToURLSearchParams } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 import { addAttribute, createElement, GPX_NS } from './gpxExporter';
-import { licenseNotice, upload } from './upload';
+import { upload } from './upload';
 
 type Picture = {
   lat: number;
@@ -22,6 +22,9 @@ type Picture = {
   takenAt: number | null;
   title: string | null;
   description: string | null;
+  tags: string[];
+  user: string;
+  rating: number;
 };
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
@@ -58,9 +61,17 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   createElement(link, 'type', 'text/html');
 
-  const copyright = createElement(meta, 'copyright');
+  // TODO add other licences depending on exported items
 
-  createElement(copyright, 'license', licenseNotice);
+  const copyright = createElement(meta, 'copyright', undefined, {
+    author: 'OpenStreetMap contributors',
+  });
+
+  createElement(
+    copyright,
+    'license',
+    'https://www.openstreetmap.org/copyright',
+  );
 
   createElement(meta, 'time', new Date().toISOString());
 
@@ -73,6 +84,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     routePlanner,
     tracking,
     trackViewer,
+    l10n: { language },
   } = getState();
 
   const set = new Set(action.payload.exportables);
@@ -88,12 +100,20 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
           by: 'bbox',
           bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
           ...createFilter(getState().gallery.filter),
-          fields: ['id', 'title', 'description', 'takenAt'],
+          fields: [
+            'id',
+            'title',
+            'description',
+            'takenAt',
+            'rating',
+            'tags',
+            'user',
+          ],
         }),
       expectedStatus: 200,
     });
 
-    addPictures(doc, assertType<Picture[]>(await res.json()));
+    addPictures(doc, assertType<Picture[]>(await res.json()), language);
   }
 
   if (set.has('drawingLines')) {
@@ -166,8 +186,18 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
 export default handle;
 
-function addPictures(doc: Document, pictures: Picture[]) {
-  for (const { lat, lon, id, takenAt, title, description } of pictures) {
+function addPictures(doc: Document, pictures: Picture[], lang: string) {
+  for (const {
+    lat,
+    lon,
+    id,
+    takenAt,
+    title,
+    description,
+    tags,
+    rating,
+    user,
+  } of pictures) {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
       lon: String(lon),
@@ -181,17 +211,64 @@ function addPictures(doc: Document, pictures: Picture[]) {
       createElement(wptEle, 'name', title);
     }
 
+    const href = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+
+    const lines: [string, string][] = [];
+
+    lines.push([
+      window.translations?.gallery.filterModal.author ?? 'Author',
+      user,
+    ]);
+
     if (description) {
-      createElement(wptEle, 'description', description);
+      lines.push([
+        window.translations?.gallery.filterModal.takenAt ?? 'Taken at',
+        description,
+      ]);
     }
 
+    if (takenAt) {
+      lines.push([
+        window.translations?.gallery.filterModal.takenAt ?? 'Taken at',
+        new Date(takenAt * 1000).toLocaleString(lang),
+      ]);
+    }
+
+    if (tags) {
+      lines.push([
+        window.translations?.gallery.editForm.tags ?? 'Tags',
+        tags.join(', '),
+      ]);
+    }
+
+    lines.push([
+      window.translations?.gallery.filterModal.rating ?? 'Rating',
+      rating.toFixed(1) + '/5',
+    ]);
+
+    createElement(wptEle, 'desc', {
+      cdata:
+        `<table width="100%">` +
+        `<tr><td colspan="2">` +
+        `<a href="${escapeHtml(href)}" target="_blank">` +
+        `<img src="${escapeHtml(href)}"></a></td></tr>` +
+        lines
+          .map(
+            (line) =>
+              `<tr><td>${escapeHtml(line[0])}</td>` +
+              `<td>${escapeHtml(line[1])}</td></tr>`,
+          )
+          .join('') +
+        '</table>',
+    });
+
     const link = createElement(wptEle, 'link', undefined, {
-      href: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+      href,
     });
 
     createElement(link, 'type', 'image/jpeg');
 
-    // TODO add tags and author to cmt
+    // TODO add comments to cmt
   }
 }
 
