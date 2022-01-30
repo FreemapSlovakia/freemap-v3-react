@@ -36,6 +36,12 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 }) => {
   const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
+  doc.documentElement.setAttributeNS(
+    'http://www.w3.org/2001/XMLSchema-instance',
+    'schemaLocation',
+    'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd',
+  );
+
   addAttribute(doc.documentElement, 'version', '1.1');
 
   addAttribute(doc.documentElement, 'creator', 'https://www.freemap.sk/');
