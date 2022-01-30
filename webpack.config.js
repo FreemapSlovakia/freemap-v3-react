@@ -11,6 +11,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const cssnano = require('cssnano');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const skMessages = require('./src/translations/sk-shared.json');
 const csMessages = require('./src/translations/cs-shared.json');
@@ -185,10 +186,6 @@ module.exports = {
       maximumFileSizeToCacheInBytes: 100000000,
     }),
     new ForkTsCheckerWebpackPlugin({
-      eslint: {
-        enabled: !fastDev,
-        files: './**/*.{ts,tsx,js,jsx}',
-      },
       typescript: {
         configFile: path.resolve(__dirname, './tsconfig.json'),
       },
@@ -333,5 +330,10 @@ module.exports = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
+    prod &&
+      new ESLintPlugin({
+        extensions: ['js', 'jsx', 'ts', 'tsx'],
+        threads: 4,
+      }),
   ].filter(Boolean),
 };
