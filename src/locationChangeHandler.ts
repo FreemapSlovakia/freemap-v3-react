@@ -89,7 +89,7 @@ export const handleLocationChange = (
     dispatch(
       mapsLoad({
         id,
-        skipLoading: !!sq,
+        // skipLoading: !!sq, // commented-out otherwise reload won't refresh possibly modified map
         ignoreMap: 'map' in parsedQuery,
         ignoreLayers: 'layers' in parsedQuery,
         name: mapName,
