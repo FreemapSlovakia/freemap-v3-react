@@ -8,7 +8,8 @@ export interface Point {
 
 export interface Line {
   type: 'polygon' | 'line';
-  label?: string;
+  label: string;
+  color: string;
   points: Point[];
 }
 

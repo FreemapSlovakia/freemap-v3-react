@@ -15,7 +15,12 @@ export function DrawingPointsTool(): null {
     useCallback(
       ({ latlng }: LeafletMouseEvent) => {
         dispatch(
-          drawingPointAdd({ lat: latlng.lat, lon: latlng.lng, label: '' }),
+          drawingPointAdd({
+            lat: latlng.lat,
+            lon: latlng.lng,
+            label: '',
+            color: '',
+          }),
         );
 
         dispatch(drawingMeasure({}));

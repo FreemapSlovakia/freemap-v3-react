@@ -575,9 +575,10 @@ const en: Messages = {
   },
 
   drawing: {
-    modify: 'Change label',
+    modify: 'Properties',
     edit: {
-      title: 'Change label',
+      title: 'Properties',
+      color: 'Color:',
       label: 'Label:',
       hint: 'To remove label leave its field empty.',
     },

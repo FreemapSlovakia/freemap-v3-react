@@ -1,3 +1,4 @@
+import Color from 'color';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
@@ -30,14 +31,14 @@ const circularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-normal, ${colors.normal})"></div>`,
 });
 
 const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.selected}"></div>`,
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-selected, ${colors.selected})"></div>`,
 });
 
 type Props = {
@@ -65,6 +66,21 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       ? state.main.selection.pointId
       : undefined,
   );
+
+  const color = line.color;
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    root.style.setProperty('--color-normal', color ?? colors.normal);
+
+    root.style.setProperty(
+      '--color-selected',
+      Color(color || colors.normal)
+        .lighten(0.75)
+        .hex(),
+    );
+  }, [color]);
 
   const joinWith = useSelector((state) => state.drawingLines.joinWith);
 
@@ -247,7 +263,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           <Polyline
             weight={4}
             pathOptions={{
-              color: selected ? colors.selected : colors.normal,
+              color: selected
+                ? Color(line.color || colors.normal)
+                    .lighten(0.75)
+                    .hex()
+                : line.color || colors.normal,
             }}
             interactive={false}
             positions={ps
@@ -268,7 +288,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
-            color: selected ? colors.selected : colors.normal,
+            color: selected
+              ? Color(line.color || colors.normal)
+                  .lighten(0.75)
+                  .hex()
+              : line.color || colors.normal,
           }}
           interactive={interactiveLine}
           bubblingMouseEvents={false}
@@ -294,7 +318,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {futureLinePositions && (
         <Polyline
-          color={colors.selected}
+          color={Color(line.color || colors.normal)
+            .lighten(0.75)
+            .hex()}
           weight={4}
           dashArray="6,8"
           interactive={false}

@@ -1,3 +1,4 @@
+import Color from 'color';
 import {
   drawingMeasure,
   drawingPointChangePosition,
@@ -70,7 +71,7 @@ export function DrawingPointsResult(): ReactElement {
 
   return (
     <>
-      {points.map(({ lat, lon, label }, i) => {
+      {points.map(({ lat, lon, label, color }, i) => {
         const interactive = interactive0 || activeIndex === i;
 
         return (
@@ -83,7 +84,13 @@ export function DrawingPointsResult(): ReactElement {
               click: onSelects[i],
             }}
             position={{ lat, lng: lon }}
-            color={activeIndex === i ? colors.selected : undefined}
+            color={
+              activeIndex === i
+                ? Color(color || colors.normal)
+                    .lighten(0.75)
+                    .hex()
+                : color || colors.normal
+            }
             draggable={!window.fmEmbedded && activeIndex === i}
             interactive={interactive}
           >

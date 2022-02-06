@@ -252,6 +252,8 @@ export function MapContextMenu(): ReactElement {
                       drawingPointAdd({
                         lat: contextMenu.lat,
                         lon: contextMenu.lon,
+                        label: '',
+                        color: '',
                       }),
                     );
 

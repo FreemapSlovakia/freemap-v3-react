@@ -586,9 +586,10 @@ const cs: Messages = {
   },
 
   drawing: {
-    modify: 'Změnit popis',
+    modify: 'Vlastnosti',
     edit: {
-      title: 'Změnit popis',
+      title: 'Vlastnosti',
+      color: 'Barva',
       label: 'Popis:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
     },

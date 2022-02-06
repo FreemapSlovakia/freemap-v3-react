@@ -319,7 +319,7 @@ export const handleLocationChange = (
       key === 'line' ||
       key === 'polygon'
     ) {
-      const [line, label] = value.split(';');
+      const [line, ...rest] = value.split(';');
 
       const points = line
         .split(',')
@@ -339,7 +339,8 @@ export const handleLocationChange = (
               ? 'line'
               : 'polygon',
           points,
-          label,
+          label: rest[1] ?? rest[0] ?? '',
+          color: rest[0] ?? '',
         });
       }
     }
@@ -357,7 +358,7 @@ export const handleLocationChange = (
   if (transformed) {
     const { lat, lon } = transformed;
 
-    dispatch(drawingPointAdd({ lat, lon }));
+    dispatch(drawingPointAdd({ lat, lon, label: '', color: '' }));
   }
 
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
@@ -365,7 +366,7 @@ export const handleLocationChange = (
   if (f2) {
     const { lat, lon, label } = f2;
 
-    dispatch(drawingPointAdd({ lat, lon, label }));
+    dispatch(drawingPointAdd({ lat, lon, label, color: '' }));
   }
 
   const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */
@@ -742,16 +743,23 @@ function handleInfoPoint(
   )
     .concat(typeof emp === 'string' ? [emp] : [])
     .map(
-      (ip) => ip && /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip),
+      (ip) =>
+        ip &&
+        /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)([,;].*?)?([,;].*)?$/.exec(ip),
     ) // comma (,) is for compatibility
     .filter((ipMatch) => ipMatch)
-    .map((ipMatch) => ({
+    .map((ipMatch) => {
       // see https://github.com/microsoft/TypeScript/issues/29642
       /* eslint-disable @typescript-eslint/no-non-null-assertion */
-      lat: parseFloat(ipMatch![1]),
-      lon: parseFloat(ipMatch![2]),
-      label: ipMatch![3] ? decodeURIComponent(ipMatch![3]) : '',
-    }));
+      const m = ipMatch!;
+
+      return {
+        lat: parseFloat(m[1]),
+        lon: parseFloat(m[2]),
+        label: m[3] ? decodeURIComponent(m[m[4] ? 4 : 3].slice(1)) : '',
+        color: m[3] && m[4] != null ? m[3].slice(1) : '',
+      };
+    });
 
   // backward compatibility
   const ipl = query['info-point-label'];
@@ -763,16 +771,21 @@ function handleInfoPoint(
   // compare
   if (
     ips
-      .map(({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`)
+      .map(
+        ({ lat, lon, label, color }) =>
+          `${serializePoint({ lat, lon })},${label},${color}`,
+      )
       .sort()
       .join('\n') !==
     getState()
       .drawingPoints.points.map(
-        ({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`,
+        ({ lat, lon, label, color }) =>
+          `${serializePoint({ lat, lon })},${label},${color}`,
       )
       .sort()
       .join('\n')
   ) {
+    // console.log({ ips });
     dispatch(drawingPointSetAll(ips));
   }
 

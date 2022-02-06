@@ -132,8 +132,8 @@ const legendOutdoorModalFactory = () =>
 
 const legendModalFactory = () => import('fm3/components/LegendModal');
 
-const drawingEditLabelModalFactory = () =>
-  import('fm3/components/DrawingEditLabelModal');
+const drawingPropertiesModalFactory = () =>
+  import('fm3/components/DrawingPropertiesModal');
 
 const trackViewerUploadModalFactory = () =>
   import('fm3/components/TrackViewerUploadModal');
@@ -704,7 +704,7 @@ export function Main(): ReactElement {
 
         <AsyncModal
           show={activeModal === 'edit-label'}
-          factory={drawingEditLabelModalFactory}
+          factory={drawingPropertiesModalFactory}
         />
 
         <AsyncModal

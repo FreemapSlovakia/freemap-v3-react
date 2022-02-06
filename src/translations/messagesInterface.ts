@@ -449,6 +449,7 @@ export type Messages = {
     modify: string;
     edit: {
       title: string;
+      color: string;
       label: string;
       hint: string;
     };

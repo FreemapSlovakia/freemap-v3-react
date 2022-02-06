@@ -1,5 +1,6 @@
-import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
+import { drawingChangeProperties } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
@@ -32,7 +33,19 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       : '???';
   });
 
+  const color = useSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-points' && selection.id !== undefined
+      ? state.drawingPoints.points[selection.id]?.color
+      : selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? state.drawingLines.lines[selection.id]?.color
+      : '???';
+  });
+
   const [editedLabel, setEditedLabel] = useState(label);
+
+  const [editedColor, setEditedColor] = useState(color);
 
   const dispatch = useDispatch();
 
@@ -44,16 +57,25 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      dispatch(drawingChangeLabel({ label: editedLabel }));
+      dispatch(
+        drawingChangeProperties({ label: editedLabel, color: editedColor }),
+      );
 
       close();
     },
-    [editedLabel, dispatch, close],
+    [dispatch, editedLabel, editedColor, close],
   );
 
   const handleLocalLabelChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setEditedLabel(e.currentTarget.value);
+    },
+    [],
+  );
+
+  const handleLocalColorChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setEditedColor(e.currentTarget.value);
     },
     [],
   );
@@ -64,9 +86,11 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
           <FormGroup>
             <FormLabel>{m?.drawing.edit.label}</FormLabel>
+
             <FormControl
               autoFocus
               type="text"
@@ -74,12 +98,25 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               onChange={handleLocalLabelChange}
             />
           </FormGroup>
+
           <Alert variant="secondary">{m?.drawing.edit.hint}</Alert>
+
+          <FormGroup>
+            <FormLabel>{m?.drawing.edit.color}</FormLabel>
+
+            <FormControl
+              type="color"
+              value={editedColor || colors.normal}
+              onChange={handleLocalColorChange}
+            />
+          </FormGroup>
         </Modal.Body>
+
         <Modal.Footer>
           <Button type="submit" variant="info">
             <FaCheck /> {m?.general.save}
           </Button>
+
           <Button variant="dark" type="button" onClick={close}>
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>

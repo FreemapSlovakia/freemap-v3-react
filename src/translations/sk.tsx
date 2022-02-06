@@ -603,9 +603,10 @@ const sk: Messages = {
   },
 
   drawing: {
-    modify: 'Zmeniť popis',
+    modify: 'Vlastnosti',
     edit: {
-      title: 'Zmeniť popis',
+      title: 'Vlastnosti',
+      color: 'Farba',
       label: 'Popis:',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
     },

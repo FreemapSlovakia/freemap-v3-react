@@ -587,9 +587,10 @@ const hu: Messages = {
   },
 
   drawing: {
-    modify: 'Felirat módosítása',
+    modify: 'Properties', // TODO translate
     edit: {
-      title: 'Felirat módosítása',
+      title: 'Properties', // TODO translate
+      color: 'Color', // TODO translate
       label: 'Felirat:',
       hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
     },

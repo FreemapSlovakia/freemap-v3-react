@@ -9,7 +9,7 @@ import {
   Point,
 } from 'fm3/actions/drawingLineActions';
 import {
-  drawingChangeLabel,
+  drawingChangeProperties as drawingChangeProperties,
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
 import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
@@ -61,6 +61,8 @@ export function preGlobalReducer(
 
         draft.drawingLines.lines.push({
           type: 'line',
+          label: '',
+          color: '',
           points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
@@ -86,6 +88,7 @@ export function preGlobalReducer(
             lat: object.lat,
             lon: object.lon,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
+            color: '',
           });
 
           draft.drawingPoints.change++;
@@ -118,6 +121,7 @@ export function preGlobalReducer(
               label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
+              color: '',
             });
           } else if (geometry?.type === 'LineString') {
             let id = 0;
@@ -135,6 +139,7 @@ export function preGlobalReducer(
             draft.drawingLines.lines.push({
               type: 'line',
               label: feature.properties?.['name'],
+              color: '',
               points,
             });
           }
@@ -166,6 +171,7 @@ export function preGlobalReducer(
               label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
+              color: '',
             });
           } else if (geometry?.type === 'LineString') {
             let id = 0;
@@ -183,6 +189,8 @@ export function preGlobalReducer(
             lines.push({
               type: 'line',
               // label: feature.properties?.['name'], // ignore street names
+              label: '',
+              color: '',
               points,
             });
           } else if (geometry?.type === 'Polygon') {
@@ -202,7 +210,8 @@ export function preGlobalReducer(
 
             lines.push({
               type: 'line',
-              label: feature.properties?.['name'],
+              label: feature.properties?.['name'] ?? '',
+              color: '',
               points,
             });
           }
@@ -338,17 +347,17 @@ export function postGlobalReducer(
         id: draft.drawingPoints.points.length - 1,
       };
     });
-  } else if (isActionOf(drawingChangeLabel, action)) {
+  } else if (isActionOf(drawingChangeProperties, action)) {
     return produce(state, (draft) => {
       const selection = draft.main.selection;
 
       if (selection?.type === 'draw-line-poly' && selection?.id !== undefined) {
-        draft.drawingLines.lines[selection.id].label = action.payload.label;
+        Object.assign(draft.drawingLines.lines[selection.id], action.payload);
       } else if (
         selection?.type === 'draw-points' &&
         selection?.id !== undefined
       ) {
-        draft.drawingPoints.points[selection.id].label = action.payload.label;
+        Object.assign(draft.drawingPoints.points[selection.id], action.payload);
       }
     });
   }
