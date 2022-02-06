@@ -467,6 +467,10 @@ export const handleLocationChange = (
   const parsedTd: TrackedDevice[] = [];
 
   for (const tracking of trackings) {
+    if (!tracking) {
+      continue;
+    }
+
     const [id, ...parts] = tracking.split('/');
 
     let fromTime: Date | null = null;
@@ -733,7 +737,9 @@ function handleInfoPoint(
       : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
-    .map((ip) => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility
+    .map(
+      (ip) => ip && /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip),
+    ) // comma (,) is for compatibility
     .filter((ipMatch) => ipMatch)
     .map((ipMatch) => ({
       // see https://github.com/microsoft/TypeScript/issues/29642

@@ -54,10 +54,12 @@ export async function upload(
               e.data.freemap.payload.slice(1),
             );
 
-            if (accessToken) {
-              resolve(
-                Array.isArray(accessToken) ? accessToken[0] : accessToken,
-              );
+            const at = Array.isArray(accessToken)
+              ? accessToken[0]
+              : accessToken;
+
+            if (at) {
+              resolve(at);
             } else {
               reject(new Error(`OAuth: ${error}`));
             }
