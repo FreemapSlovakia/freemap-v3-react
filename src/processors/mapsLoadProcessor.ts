@@ -8,7 +8,15 @@ import { assertType } from 'typescript-is';
 interface OldLine {
   type: 'area' | 'distance';
   label?: string;
+  color?: string;
   points: Point[];
+}
+
+interface CompatDrawingPoint {
+  lat: number;
+  lon: number;
+  label?: string;
+  color?: string;
 }
 
 export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
@@ -49,7 +57,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
 
     const map = assertType<{
       name: string;
-      data: StringDates<MapData<Line | OldLine>>;
+      data: StringDates<MapData<Line | OldLine, CompatDrawingPoint>>;
     }>(data);
 
     const mapData = map.data;
@@ -76,18 +84,22 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         merge: payload.merge,
         ...mapData,
         // get rid of OldLines
-        lines: mapData.lines?.map(
-          (line) =>
-            ({
-              ...line,
-              type:
-                line.type === 'area'
-                  ? 'polyline'
-                  : line.type === 'distance'
-                  ? 'line'
-                  : line.type,
-            } as Line),
-        ),
+        lines: mapData.lines?.map((line) => ({
+          ...line,
+          color: line.color ?? '',
+          label: line.label ?? '',
+          type:
+            line.type === 'area'
+              ? 'polygon'
+              : line.type === 'distance'
+              ? 'line'
+              : line.type,
+        })),
+        points: mapData.points?.map((point) => ({
+          ...point,
+          label: point.label ?? '',
+          color: point.color ?? '',
+        })),
         tracking: mapData.tracking && {
           ...mapData.tracking,
           trackedDevices: mapData.tracking.trackedDevices.map((device) => ({

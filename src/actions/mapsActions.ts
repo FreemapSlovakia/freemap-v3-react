@@ -15,9 +15,9 @@ export interface MapMeta {
   modifiedAt: Date;
 }
 
-export interface MapData<LT = Line> {
+export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];
-  points?: DrawingPoint[];
+  points?: PT[];
   tracking?: Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>;
   routePlanner?: Pick<
     RoutePlannerState,
