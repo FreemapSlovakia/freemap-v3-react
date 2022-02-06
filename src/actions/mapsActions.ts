@@ -45,6 +45,7 @@ export const mapsLoad = createAction('MAPS_LOAD')<{
   ignoreLayers?: boolean;
   merge?: boolean;
   skipLoading?: boolean;
+  name?: string;
 }>();
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();

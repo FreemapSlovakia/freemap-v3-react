@@ -12,9 +12,18 @@ import { useDispatch, useSelector } from 'react-redux';
 export function MapsMenu(): ReactElement {
   const m = useMessages();
 
-  const mapName = useSelector((state) => state.maps.name);
+  const mapName = useSelector(
+    (state) =>
+      state.maps.name ??
+      (state.maps.id &&
+        state.maps.maps.find((map) => map.id === state.maps.id)?.name),
+  );
 
-  const id = useSelector((state) => state.maps.id);
+  const isOwnMap = useSelector(
+    (state) =>
+      !!state.maps.id &&
+      state.maps.maps.some((map) => map.id === state.maps.id),
+  );
 
   const authenticated = useSelector((state) => !!state.auth.user);
 
@@ -36,9 +45,11 @@ export function MapsMenu(): ReactElement {
             <FaRegMap />
           </Button>
 
-          <span className="align-self-center ml-1 mr-2">{mapName}</span>
+          <span className="align-self-center ml-1 mr-2">
+            {mapName ?? '???'}
+          </span>
 
-          {authenticated && id !== undefined && (
+          {authenticated && isOwnMap && (
             <Button
               className="ml-1"
               variant="secondary"
@@ -52,7 +63,7 @@ export function MapsMenu(): ReactElement {
           <Button
             className="ml-1"
             variant="secondary"
-            onClick={() => dispatch(mapsLoad({ id: undefined }))}
+            onClick={() => dispatch(mapsLoad({}))}
             title={m?.maps.disconnect}
           >
             <FaUnlink />

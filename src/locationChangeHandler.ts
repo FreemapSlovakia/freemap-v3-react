@@ -74,7 +74,10 @@ export const handleLocationChange = (
 
   const search = document.location.search;
 
-  const sq = (history.location.state as any)?.sq ?? '';
+  const { sq, mapName } = (history.location.state as any) ?? {
+    sq: undefined,
+    mapName: undefined,
+  };
 
   const parsedQuery = queryString.parse(search);
 
@@ -89,6 +92,7 @@ export const handleLocationChange = (
         skipLoading: !!sq,
         ignoreMap: 'map' in parsedQuery,
         ignoreLayers: 'layers' in parsedQuery,
+        name: mapName,
       }),
     );
   }

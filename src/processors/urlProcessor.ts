@@ -69,6 +69,7 @@ export const urlProcessor: Processor = {
       search.osmWayId,
       trackViewer.trackUID,
       maps.id,
+      maps.name,
       main.tool,
       objects.active,
     ];
@@ -357,7 +358,7 @@ export const urlProcessor: Processor = {
           search: urlSearch,
           hash: '',
         },
-        { sq },
+        { sq, mapName: maps.name },
       );
 
       if (window.fmEmbedded) {

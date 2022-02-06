@@ -33,7 +33,10 @@ export function MapsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const maps = useSelector((state) => state.maps.maps);
+  const { maps, name: nameFromRedux, id } = useSelector((state) => state.maps);
+
+  const mapName =
+    nameFromRedux ?? (id ? maps.find((map) => map.id === id)?.name : undefined);
 
   const sortedMaps = useMemo(
     () =>
@@ -43,9 +46,7 @@ export function MapsModal({ show }: Props): ReactElement {
     [maps],
   );
 
-  const id = useSelector((state) => state.maps.id);
-
-  const mapName = maps.find((m) => m.id === id)?.name;
+  const isOwnMap = maps.some((map) => map.id === id);
 
   const [name, setName] = useState(mapName ?? '');
 
@@ -94,38 +95,47 @@ export function MapsModal({ show }: Props): ReactElement {
         <Card className="mb-2">
           <Card.Body>
             <Card.Title>
-              {!mapName ? (
+              {mapName ? (
+                m ? (
+                  <m.maps.SomeMap name={mapName} />
+                ) : (
+                  mapName
+                )
+              ) : !id ? (
                 m?.maps.newMap
-              ) : m ? (
-                <m.maps.SomeMap name={mapName} />
               ) : (
-                mapName
+                '???'
               )}
             </Card.Title>
             <form>
-              <FormGroup>
-                <FormLabel>{m?.general.name}</FormLabel>
-                <FormControl
-                  disabled={!online}
-                  value={name}
-                  onChange={(e) => setName(e.currentTarget.value)}
-                />
-              </FormGroup>
+              {(isOwnMap || !id) && (
+                <FormGroup>
+                  <FormLabel>{m?.general.name}</FormLabel>
+
+                  <FormControl
+                    disabled={!online}
+                    value={name}
+                    onChange={(e) => setName(e.currentTarget.value)}
+                  />
+                </FormGroup>
+              )}
 
               <div className="d-flex flex-row flex-wrap align-items-baseline">
-                <Button
-                  type="button"
-                  className="mb-1"
-                  onClick={() => dispatch(mapsSave({ name }))}
-                  disabled={!name || !online}
-                >
-                  <FaSave /> {m?.maps.save}
-                </Button>
+                {(isOwnMap || !id) && (
+                  <Button
+                    type="button"
+                    className="mb-1 mr-1"
+                    onClick={() => dispatch(mapsSave({ name }))}
+                    disabled={!name || !online}
+                  >
+                    <FaSave /> {m?.maps.save}
+                  </Button>
+                )}
 
                 {id && (
                   <Button
                     type="button"
-                    className="ml-1 mb-1"
+                    className="mb-1"
                     onClick={() => dispatch(mapsLoad({ id: undefined }))}
                   >
                     <FaUnlink /> {m?.maps.disconnect}
@@ -224,6 +234,7 @@ export function MapsModal({ show }: Props): ReactElement {
                       merge: !clear,
                       ignoreLayers: !inclPosition,
                       ignoreMap: !inclPosition,
+                      name: selectedMap.name,
                     }),
                   )
                 }

@@ -24,12 +24,14 @@ export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
   .handleAction(mapsSetList, (state, { payload }) => ({
     ...state,
     maps: payload,
-    name: state.id && payload.find((m) => m.id === state.id)?.name,
+    name: state.id
+      ? payload.find((m) => m.id === state.id)?.name ?? state.name
+      : undefined,
   }))
   .handleAction(mapsLoad, (state, { payload }) => ({
     ...state,
     id: payload.id,
-    name: payload.id ? state.name : undefined,
+    name: payload.name,
   }))
   .handleAction(mapsDataLoaded, (state, { payload }) => ({
     ...state,
