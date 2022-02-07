@@ -5,11 +5,11 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
-interface OldLine {
-  type: 'area' | 'distance';
+interface CompatLine {
+  type: 'polygon' | 'line' | 'area' | 'distance';
+  points: Point[];
   label?: string;
   color?: string;
-  points: Point[];
 }
 
 interface CompatDrawingPoint {
@@ -57,7 +57,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
 
     const map = assertType<{
       name: string;
-      data: StringDates<MapData<Line | OldLine, CompatDrawingPoint>>;
+      data: StringDates<MapData<Line | CompatLine, CompatDrawingPoint>>;
     }>(data);
 
     const mapData = map.data;
