@@ -319,9 +319,13 @@ export const handleLocationChange = (
       key === 'line' ||
       key === 'polygon'
     ) {
-      const [line, ...rest] = value.split(';');
+      const m = /([^;\x1e]*)([;\x1e].*)?/.exec(value);
 
-      const points = line
+      if (!m) {
+        continue;
+      }
+
+      const points = m[1]
         .split(',')
         .map((point) =>
           point
@@ -339,8 +343,7 @@ export const handleLocationChange = (
               ? 'line'
               : 'polygon',
           points,
-          label: rest[1] ?? rest[0] ?? '',
-          color: rest[0] ?? '',
+          ...parseColorAndLabel(m[2] ?? ''),
         });
       }
     }
@@ -724,6 +727,35 @@ function handleGallery(
   }
 }
 
+function parseColorAndLabel(m: string) {
+  let label = '';
+
+  console.log({ m });
+
+  let color = '';
+
+  // compatibility
+  if (m.startsWith(',') || m.startsWith(';')) {
+    if (m[1] === '#') {
+      color = m.slice(1, 8);
+
+      label = m.slice(9);
+    } else {
+      label = m.replace(/^[,;]*/, '');
+    }
+  } else if (m.startsWith('\x1e')) {
+    for (const field of m.slice(1).split('\x1e')) {
+      if (field[0] === 'L') {
+        label = field.slice(1);
+      } else if (field[0] === 'C') {
+        color = field.slice(1);
+      }
+    }
+  }
+
+  return { label, color };
+}
+
 function handleInfoPoint(
   getState: () => DefaultRootState,
   dispatch: Dispatch,
@@ -742,22 +774,21 @@ function handleInfoPoint(
       : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
-    .map(
-      (ip) =>
-        ip &&
-        /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)([,;].*?)?([,;].*)?$/.exec(ip),
-    ) // comma (,) is for compatibility
+    .map((ip) =>
+      ip ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)(.*?)?$/.exec(ip) : null,
+    )
     .filter((ipMatch) => ipMatch)
     .map((ipMatch) => {
       // see https://github.com/microsoft/TypeScript/issues/29642
       /* eslint-disable @typescript-eslint/no-non-null-assertion */
       const m = ipMatch!;
 
+      console.log({ m });
+
       return {
         lat: parseFloat(m[1]),
         lon: parseFloat(m[2]),
-        label: m[3] ? decodeURIComponent(m[m[4] ? 4 : 3].slice(1)) : '',
-        color: m[3] && m[4] != null ? m[3].slice(1) : '',
+        ...parseColorAndLabel(m[3] ?? ''),
       };
     });
 

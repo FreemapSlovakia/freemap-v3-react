@@ -206,8 +206,8 @@ export const urlProcessor: Processor = {
       for (const point of drawingPoints.points) {
         historyParts.push([
           'point',
-          `${serializePoint(point)}${point.color ? `;${point.color}` : ''}${
-            point.label || point.color ? `;${point.label}` : ''
+          `${serializePoint(point)}${point.color ? `\x1eC${point.color}` : ''}${
+            point.label ? `\x1eL${point.label}` : ''
           }`,
         ]);
       }
@@ -217,8 +217,8 @@ export const urlProcessor: Processor = {
       historyParts.push([
         line.type,
         `${line.points.map((point) => serializePoint(point)).join(',')}${
-          line.color ? `;${line.color}` : ''
-        }${line.label || line.color ? `;${line.label}` : ''}`,
+          line.color ? `\x1eC${line.color}` : ''
+        }${line.label ? `\x1eL${line.label}` : ''}`,
       ]);
     }
 
