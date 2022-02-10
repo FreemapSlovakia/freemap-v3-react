@@ -41,7 +41,7 @@
     "react": "17.0.2",
     "react-bootstrap": "1.6.4",
     "react-dom": "17.0.2",
-    "react-dropzone": "12.0.1",
+    "react-dropzone": "12.0.2",
     "react-icons": "4.3.1",
     "react-leaflet": "3.2.5",
     "react-overlays": "5.1.1",
@@ -60,7 +60,7 @@
     "vhtml": "2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "7.17.0",
+    "@babel/core": "7.17.2",
     "@babel/preset-env": "7.16.11",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.4",
     "@types/color": "3.0.3",
@@ -99,7 +99,7 @@
     "eslint-plugin-react": "7.28.0",
     "eslint-plugin-react-hooks": "4.3.0",
     "eslint-webpack-plugin": "3.1.1",
-    "fork-ts-checker-webpack-plugin": "7.1.1",
+    "fork-ts-checker-webpack-plugin": "7.2.0",
     "html-loader": "3.1.0",
     "html-webpack-plugin": "5.5.0",
     "markdown-loader": "8.0.0",
