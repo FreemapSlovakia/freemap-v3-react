@@ -9,7 +9,7 @@ Mapové dáta © OpenStreetMap prispievatelia. Licencované pod ODbL 1.0.
 Priame stiahnutie mapy Slovenska a Freemap štýlu pre program niektoré programy:
 (Upozornenie: odkazy sú funkčné len cez prehliadač v mobilnom telefóne s nainštalovanou aplikáciou)
 
-#### Locus Map:
+#### Locus Map
 
 - [mapa Slovenska V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v5.xml)
 - [mapa Českej republiky V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-cz-v5.xml)
@@ -20,7 +20,12 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 - [mapa Slovenska V3](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v3.xml.xml)
 - [štýl pre mapu V3](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-theme-v3.xml)
 
-#### OruxMaps:
+Dodatočné mapy pre Locus
+
+- [DMR5 hillshading, Lesné cesty NLC (online) a Strava Heatmap](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Lesné cesty NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
+
+#### OruxMaps
 
 - [mapa Slovenska V5](orux-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [mapa Českej republiky V5](orux-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
