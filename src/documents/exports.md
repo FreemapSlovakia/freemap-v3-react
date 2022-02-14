@@ -26,7 +26,7 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 Dodatočné mapy pre Locus
 
-- [DMR5 hillshading, Lesné cesty NLC (online) a Strava Heatmap](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Ortofotomozaika SR, DMR5 hillshading, Lesné cesty NLC (online) a Strava Heatmap](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
 - [Lesné cesty NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 #### OruxMaps
