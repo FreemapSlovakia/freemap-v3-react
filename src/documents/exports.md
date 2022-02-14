@@ -3,22 +3,26 @@ Freemap Slovakia vytvára pravidelné exporty mapy pre rôzne mobilné aplikáci
 Mapové dáta © OpenStreetMap prispievatelia. Licencované pod ODbL 1.0.
 
 ### Mobilné aplikácie (Android / iOS)
-
-[Freemap plugin](https://play.google.com/store/apps/details?id=sk.freemap.locus.addon.routePlanner) pre aplikáciu [Locus Map](https://www.locusmap.eu/) slúži na spravovanie offline vektorových máp a štýlov Freemap. Ostatné funkcie pluginu už nie sú udržiavané. Starší návod na inštaláciu a použitie nájdete na [Geoblogu](http://geoblog.freemap.sk/2013/04/02/freemap-vektorove-topograficke-mapy/).
-
 Priame stiahnutie mapy Slovenska a Freemap štýlu pre program niektoré programy:
 (Upozornenie: odkazy sú funkčné len cez prehliadač v mobilnom telefóne s nainštalovanou aplikáciou)
 
 #### Locus Map
-
-- [mapa Slovenska V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v5.xml)
-- [mapa Českej republiky V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-cz-v5.xml)
 - [štýl pre mapu V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-theme-v5.xml)
+
+- [mapa Slovensko V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v5.xml)
+- [mapa Česká republika V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-cz-v5.xml)
+- [mapa Polsko - juh V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-pl_s-v5.xml)
+- [mapa Rakúsko - sever V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-at_n-v5.xml)
+- [mapa Rakúsko - juh V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-at_s-v5.xml)
+
+- [POI Slovensko]locus-actions://https/download.freemap.sk/LocusMap/xml/locus-db-sk-v5.xml)
+- [POI Česká republika]locus-actions://https/download.freemap.sk/LocusMap/xml/locus-db-cz-v5.xml)
 
 Staršia verzia (mapa aktualizovaná, štýl už nie)
 
-- [mapa Slovenska V3](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v3.xml.xml)
 - [štýl pre mapu V3](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-theme-v3.xml)
+- [mapa Slovenska V3](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v3.xml.xml)
+
 
 Dodatočné mapy pre Locus
 
@@ -27,38 +31,60 @@ Dodatočné mapy pre Locus
 
 #### OruxMaps
 
-- [mapa Slovenska V5](orux-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
-- [mapa Českej republiky V5](orux-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
 - [štýl pre mapu V5](orux-mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
+- [mapa Slovensko V5](orux-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
+- [mapa Česká republika V5](orux-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
+- [mapa Polsko - juh V5](orux-map://download.freemap.sk/LocusMap/freemapV5-poland_south.zip)
+- [mapa Rakúsko - sever V5](orux-map://download.freemap.sk/LocusMap/freemapV5-austria_north.zip)
+- [mapa Rakúsko - juh V5](orux-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
 
 Staršia verzia (mapa aktualizovaná, štýl už nie)
 
-- [mapa Slovenska V3](orux-map://download.freemap.sk/LocusMap/slovakia-topo-osm-srtm.zip)
 - [štýl pre mapu V3](orux-mf-theme://download.freemap.sk/LocusMap/orux_theme.zip)
+- [mapa Slovensko V3](orux-map://download.freemap.sk/LocusMap/slovakia-topo-osm-srtm.zip)
+
 
 #### BackCountry Navigator
 
-- [mapa Slovenska V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
-- [mapa Českej republiky V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
 - [štýl pre mapu V5](backcountrynav-action://download.freemap.sk/LocusMap/locus/freemapV5.zip)
+- [mapa Slovensko V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
+- [mapa Česká republika V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
+- [mapa Polsko - juh V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-poland_south.zip)
+- [mapa Rakúsko - sever V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-austria_north.zip)
+- [mapa Rakúsko - juh V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
+
 
 #### BikeComputer
 
-- [mapa Slovenska V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
-- [mapa Českej republiky V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
 - [štýl pre mapu V5](bikecomputer-mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
+- [mapa Slovensko V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
+- [mapa Česká republika V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
+- [mapa Polsko - juh V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-poland_south.zip)
+- [mapa Rakúsko - sever V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-austria_north.zip)
+- [mapa Rakúsko - juh V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
 
 #### Iné aplikácie (napr. XCTrack, ...)
 
-- [mapa Slovenska V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
-- [mapa Českej republiky V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
 - [štýl pre mapu V5](mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
+- [mapa Slovensko V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
+- [mapa Česká republika V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
+- [mapa Polsko - juh V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-poland_south.zip)
+- [mapa Rakúsko - sever V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-austria_north.zip)
+- [mapa Rakúsko- juh V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
+
 
 Pokiaľ používate aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge, ale nie je možné mapu stiahnuť cez vyššie uvedené odkazy, môžete si stiahnuť nasledovné súbory ručne a tie potom musíte uložiť do priečinka, kde si to aplikácia vyžaduje. Kde konkrétne to je, zistíte buď priamo v aplikácií, alebo na web stránke aplikácie.
 
-- [mapa Slovenska V5](https://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
-- [mapa Českej republiky V5](https://download.freemap.sk/LocusMap/freemapV5-czech.zip)
 - [štýl pre mapu V5](https://download.freemap.sk/LocusMap/freemapV5.zip)
+- [mapa Slovensko V5](https://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
+- [mapa Česká republika V5](https://download.freemap.sk/LocusMap/freemapV5-czech.zip)
+- [mapa Polsko - juh V5](https://download.freemap.sk/LocusMap/freemapV5-poland_south.zip)
+- [mapa Rakúsko - sever V5](https://download.freemap.sk/LocusMap/freemapV5-austria_north.zip)
+- [mapa Rakúsko - juh V5](https://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
+
+- [POI Slovensko](https://download.freemap.sk/LocusMap/freemapV5-slovakia-poi.zip)
+- [POI Česká republika](https://download.freemap.sk/LocusMap/freemapV5-czech-poi.zip)
+
 
 Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
 
