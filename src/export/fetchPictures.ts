@@ -1,0 +1,47 @@
+import { createFilter } from 'fm3/galleryUtils';
+import { httpRequest } from 'fm3/httpRequest';
+import { mapPromise } from 'fm3/leafletElementHolder';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
+import { DefaultRootState } from 'react-redux';
+import { assertType } from 'typescript-is';
+
+export type Picture = {
+  lat: number;
+  lon: number;
+  id: number;
+  takenAt: number | null;
+  createdAt: number | null;
+  title: string | null;
+  description: string | null;
+  tags: string[];
+  user: string;
+  rating: number;
+};
+
+export async function fetchPictures(getState: () => DefaultRootState) {
+  const b = (await mapPromise).getBounds();
+
+  const res = await httpRequest({
+    getState,
+    url:
+      '/gallery/pictures?' +
+      objectToURLSearchParams({
+        by: 'bbox',
+        bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+        ...createFilter(getState().gallery.filter),
+        fields: [
+          'id',
+          'title',
+          'description',
+          'takenAt',
+          'createdAt',
+          'rating',
+          'tags',
+          'user',
+        ],
+      }),
+    expectedStatus: 200,
+  });
+
+  return assertType<Picture[]>(await res.json());
+}

@@ -9,26 +9,11 @@ import {
   polygon,
 } from '@turf/helpers';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { createFilter } from 'fm3/galleryUtils';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { assertType } from 'typescript-is';
+import { fetchPictures, Picture } from './fetchPictures';
 import { licenseNotice, upload } from './upload';
-
-type Picture = {
-  lat: number;
-  lon: number;
-  id: number;
-  takenAt: string | null;
-  createdAt: string | null;
-  title: string | null;
-  description: string | null;
-  author: string; // TODO
-};
 
 const handle: ProcessorHandler<typeof exportGpx> = async ({
   getState,
@@ -56,29 +41,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   const set = new Set(action.payload.exportables);
 
   if (set.has('pictures')) {
-    const b = (await mapPromise).getBounds();
-
-    const res = await httpRequest({
-      getState,
-      url:
-        '/gallery/pictures?' +
-        objectToURLSearchParams({
-          by: 'bbox',
-          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-          ...createFilter(getState().gallery.filter),
-          fields: [
-            'id',
-            'title',
-            'description',
-            'takenAt',
-            'createdAt',
-            'rating',
-          ], // TODO author
-        }),
-      expectedStatus: 200,
-    });
-
-    addPictures(fc, assertType<Picture[]>(await res.json()));
+    addPictures(fc, await fetchPictures(getState));
   }
 
   if (set.has('drawingLines')) {
@@ -88,7 +51,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       fc.features.push(
         lineString(
           line.points.map((p) => [p.lon, p.lat]),
-          { name: line.label },
+          { name: line.label, color: line.color },
         ),
       );
     }
@@ -101,6 +64,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       fc.features.push(
         polygon([[...line.points, line.points[0]].map((p) => [p.lon, p.lat])], {
           name: line.label,
+          color: line.color,
         }),
       );
     }
@@ -108,7 +72,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   if (set.has('drawingPoints')) {
     for (const p of drawingPoints.points) {
-      fc.features.push(point([p.lon, p.lat], { name: p.label }));
+      fc.features.push(
+        point([p.lon, p.lat], { name: p.label, color: p.color }),
+      );
     }
   }
 
@@ -161,16 +127,18 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
     title,
     description,
     createdAt,
+    user,
+    tags,
   } of pictures) {
     fc.features.push(
       point([lon, lat], {
-        takenAt,
-        publishedAt: createdAt,
+        takenAt: takenAt ? new Date(takenAt).toISOString() : undefined,
+        publishedAt: createdAt ? new Date(createdAt).toISOString() : undefined,
         name: title,
         description,
         link: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
-        // TODO author
-        // TODO tags
+        author: user,
+        tags,
       }),
     );
   }

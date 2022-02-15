@@ -1,7 +1,4 @@
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { createFilter } from 'fm3/galleryUtils';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
@@ -9,23 +6,11 @@ import { ObjectsState } from 'fm3/reducers/objectsReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { escapeHtml, objectToURLSearchParams } from 'fm3/stringUtils';
+import { escapeHtml } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { fetchPictures, Picture } from './fetchPictures';
 import { addAttribute, createElement, GPX_NS } from './gpxExporter';
 import { upload } from './upload';
-
-type Picture = {
-  lat: number;
-  lon: number;
-  id: number;
-  takenAt: number | null;
-  title: string | null;
-  description: string | null;
-  tags: string[];
-  user: string;
-  rating: number;
-};
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
@@ -96,30 +81,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   const set = new Set(action.payload.exportables);
 
   if (set.has('pictures')) {
-    const b = (await mapPromise).getBounds();
-
-    const res = await httpRequest({
-      getState,
-      url:
-        '/gallery/pictures?' +
-        objectToURLSearchParams({
-          by: 'bbox',
-          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-          ...createFilter(getState().gallery.filter),
-          fields: [
-            'id',
-            'title',
-            'description',
-            'takenAt',
-            'rating',
-            'tags',
-            'user',
-          ],
-        }),
-      expectedStatus: 200,
-    });
-
-    addPictures(doc, assertType<Picture[]>(await res.json()), language);
+    addPictures(doc, await fetchPictures(getState), language);
   }
 
   if (set.has('drawingLines')) {
@@ -198,6 +160,7 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     lon,
     id,
     takenAt,
+    createdAt,
     title,
     description,
     tags,
@@ -217,8 +180,6 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
       createElement(wptEle, 'name', title);
     }
 
-    const href = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
-
     const lines: [string, string][] = [];
 
     lines.push([
@@ -228,8 +189,15 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
 
     if (description) {
       lines.push([
-        window.translations?.gallery.filterModal.takenAt ?? 'Taken at',
+        window.translations?.gallery.filterModal.takenAt ?? 'Capture date',
         description,
+      ]);
+    }
+
+    if (createdAt) {
+      lines.push([
+        window.translations?.gallery.filterModal.createdAt ?? 'Upload date',
+        new Date(createdAt * 1000).toLocaleString(lang),
       ]);
     }
 
@@ -247,34 +215,36 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
       ]);
     }
 
+    // 3.5: ★★★⯪☆
+    const ratingFract = rating - Math.floor(rating);
+
     lines.push([
       window.translations?.gallery.filterModal.rating ?? 'Rating',
-      rating.toFixed(1) + '/5',
+      '★'.repeat(Math.floor(rating)) +
+        (ratingFract < 0.25 ? '☆' : ratingFract < 0.75 ? '⯪' : '★') +
+        '☆'.repeat(4 - Math.floor(rating)),
     ]);
 
     createElement(wptEle, 'desc', {
       cdata:
-        `<table width="100%">` +
-        `<tr><td colspan="2">` +
-        `<a href="${escapeHtml(href)}" target="_blank">` +
-        `<img src="${escapeHtml(href)}"></a></td></tr>` +
+        `<img src="${escapeHtml(
+          `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+        )}" width="100%"><p>` +
         lines
           .map(
-            (line) =>
-              `<tr><td>${escapeHtml(line[0])}</td>` +
-              `<td>${escapeHtml(line[1])}</td></tr>`,
+            ([key, value]) => `<b>${escapeHtml(key)}</b>: ` + escapeHtml(value),
           )
-          .join('') +
-        '</table>',
+          .join('｜') +
+        '</p>',
     });
 
     const link = createElement(wptEle, 'link', undefined, {
-      href,
+      href: `${process.env['BASE_URL']}?image=${id}`,
     });
 
-    createElement(link, 'type', 'image/jpeg');
+    createElement(link, 'type', 'text/html');
 
-    // TODO add comments to cmt
+    // TODO add comments to cmt?
   }
 }
 
