@@ -202,7 +202,7 @@ export function Main(): ReactElement {
 
   const isUserValidated = useSelector((state) => state.auth.validated);
 
-  const [showInfoBar, setShowInfoBar] = useState(true);
+  const [showInfoBar, setShowInfoBar] = useState(!window.fmEmbedded);
 
   const [map, setMap] = useState<Leaflet.Map | null>(null);
 
@@ -442,7 +442,7 @@ export function Main(): ReactElement {
       <Toasts />
 
       <div className="header">
-        {YellowBar && showInfoBar && language === 'sk' && !window.fmEmbedded && (
+        {YellowBar && showInfoBar && language === 'sk' && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
 
