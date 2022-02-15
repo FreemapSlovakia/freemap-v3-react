@@ -43,6 +43,7 @@ import {
   FaBullseye,
   FaChartArea,
   FaCrosshairs,
+  FaDiceThree,
   FaFlask,
   FaHome,
   FaMapMarkerAlt,
@@ -62,7 +63,6 @@ export default RoutePlannerMenu;
 function useParam(
   initValue: number,
   fallbackValue: number,
-  flushOnIncrement = false,
   commitCallback: (value: number) => void,
 ) {
   const [value, setValue] = useState(String(initValue));
@@ -81,21 +81,11 @@ function useParam(
     (e: ChangeEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
 
-      if (flushOnIncrement) {
-        setValue((old) => {
-          if (Math.abs(Number(old) - Number(value)) === 1) {
-            debounceCallback.flush();
-          }
-
-          return value;
-        });
-      } else {
-        setValue(value);
-      }
+      setValue(value);
 
       debounceCallback(value);
     },
-    [debounceCallback, flushOnIncrement],
+    [debounceCallback],
   );
 
   const handleSubmit = useCallback(
@@ -107,16 +97,15 @@ function useParam(
     [debounceCallback],
   );
 
-  return [value, handleChange, handleSubmit] as const;
+  return [value, handleChange, handleSubmit, setValue] as const;
 }
 
 function TripSettings() {
   const dispatch = useDispatch();
 
-  const [seed, handleSeedChange, handleSeedSubmit] = useParam(
+  const [seed, handleSeedChange, handleSeedSubmit, setSeed] = useParam(
     useSelector((state) => state.routePlanner.roundtripParams.seed),
     0,
-    true,
     useCallback(
       (seed: number) => {
         dispatch(routePlannerSetRoundtripParams({ seed }));
@@ -131,7 +120,6 @@ function TripSettings() {
         Math.round(state.routePlanner.roundtripParams.distance / 100) / 10,
     ),
     5,
-    false,
     useCallback(
       (value: number) => {
         dispatch(routePlannerSetRoundtripParams({ distance: value * 1000 }));
@@ -173,7 +161,31 @@ function TripSettings() {
         <FormGroup as="form" onSubmit={handleSeedSubmit}>
           <FormLabel className="mt-2">{ghParams?.seed}</FormLabel>
 
-          <FormControl type="number" value={seed} onChange={handleSeedChange} />
+          <InputGroup>
+            <FormControl
+              type="number"
+              value={seed}
+              onChange={handleSeedChange}
+            />
+
+            <InputGroup.Append>
+              <Button
+                onClick={() => {
+                  const seed = Math.floor(Math.random() * 100000);
+
+                  setSeed(String(seed));
+
+                  return dispatch(
+                    routePlannerSetRoundtripParams({
+                      seed,
+                    }),
+                  );
+                }}
+              >
+                <FaDiceThree />
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
         </FormGroup>
       </fieldset>
     </>
@@ -186,7 +198,6 @@ function IsochroneSettings() {
   const [buckets, handleBucketsChange, handleBucketsSubmit] = useParam(
     useSelector((state) => state.routePlanner.isochroneParams.buckets),
     0,
-    true,
     useCallback(
       (buckets: number) => {
         dispatch(routePlannerSetIsochroneParams({ buckets }));
@@ -203,7 +214,6 @@ function IsochroneSettings() {
           10,
       ),
       0,
-      false,
       useCallback(
         (value: number) => {
           dispatch(
@@ -219,7 +229,6 @@ function IsochroneSettings() {
       Math.round(state.routePlanner.isochroneParams.timeLimit / 60),
     ),
     10,
-    false,
     useCallback(
       (value: number) => {
         dispatch(routePlannerSetIsochroneParams({ timeLimit: value * 60 }));
