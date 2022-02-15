@@ -10,6 +10,7 @@ interface IconProps {
   image?: string;
   faIcon?: ReactElement;
   cacheKey?: string;
+  imageOpacity?: number;
 }
 
 interface Props extends MarkerProps, IconProps {
@@ -70,6 +71,7 @@ export class MarkerLeafletIcon extends Icon<
 
 export function MarkerIcon({
   image,
+  imageOpacity,
   faIcon,
   color = colors.normal,
   label,
@@ -141,7 +143,14 @@ export function MarkerIcon({
         )}
 
         {image && (
-          <image x={74} y={84} width={160} height={160} xlinkHref={image} />
+          <image
+            x={74}
+            y={84}
+            width={160}
+            height={160}
+            xlinkHref={image}
+            opacity={imageOpacity}
+          />
         )}
       </svg>
 

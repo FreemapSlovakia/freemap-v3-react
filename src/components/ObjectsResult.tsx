@@ -66,12 +66,15 @@ export function ObjectsResult(): ReactElement | null {
 
         const { ele } = tags;
 
+        const access = tags['access'];
+
         return (
           <RichMarker
             key={`poi-${id}-${interactive ? 'a' : 'b'}`}
             interactive={interactive}
             position={{ lat, lng: lon }}
             image={img[0]}
+            imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));
