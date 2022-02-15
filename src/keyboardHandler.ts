@@ -304,6 +304,10 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
         return openInExternalApp({ where: 'mapillary' });
       }
 
+      if (event.code === 'Digit4') {
+        return openInExternalApp({ where: 'f4map' });
+      }
+
       return undefined;
     }
 

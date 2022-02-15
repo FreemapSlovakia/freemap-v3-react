@@ -5,6 +5,7 @@ import { openInExternalApp } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { copyToClipboard } from 'fm3/clipboardUtils';
 import {
+  getF4mapUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIdUrl,
@@ -206,6 +207,9 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         window.open(getWazeUrl(lat, lon, zoom));
 
         break;
+
+      case 'f4map':
+        window.open(getF4mapUrl(lat, lon, zoom));
 
       case 'url':
         (navigator as any)

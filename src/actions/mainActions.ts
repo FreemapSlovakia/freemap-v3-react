@@ -145,24 +145,25 @@ export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
 >();
 
 export type ExternalTargets =
-  | 'window'
-  | 'facebook'
-  | 'twitter'
   | 'copy'
-  | 'osm.org'
-  | 'osm.org/id'
-  | 'josm'
-  | 'zbgis'
-  | 'hiking.sk'
+  | 'f4map'
+  | 'facebook'
   | 'google'
+  | 'hiking.sk'
+  | 'image'
+  | 'josm'
+  | 'mapillary'
   | 'mapy.cz'
   | 'oma.sk'
   | 'openstreetcam'
-  | 'mapillary'
-  | 'url'
-  | 'image'
+  | 'osm.org'
+  | 'osm.org/id'
   | 'peakfinder'
-  | 'waze';
+  | 'twitter'
+  | 'url'
+  | 'waze'
+  | 'window'
+  | 'zbgis';
 
 export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   where: ExternalTargets;

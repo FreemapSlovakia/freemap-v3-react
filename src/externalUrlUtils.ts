@@ -73,6 +73,13 @@ export function getWazeUrl(lat: number, lon: number, zoom: number): string {
   return `https://www.waze.com/ul?ll=${lat},${lon}&zoom=${zoom}&navigate=yes`;
 }
 
+export function getF4mapUrl(lat: number, lon: number, zoom: number): string {
+  return `https://demo.f4map.com/#lat=${lat}&lon=${lon}&zoom=${Math.max(
+    16,
+    zoom,
+  )}`;
+}
+
 export function getOpenStreetCamUrl(
   lat: number,
   lon: number,

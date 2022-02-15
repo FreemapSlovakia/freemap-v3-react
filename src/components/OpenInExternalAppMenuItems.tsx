@@ -1,5 +1,6 @@
 import { ExternalTargets, openInExternalApp } from 'fm3/actions/mainActions';
 import {
+  getF4mapUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIdUrl,
@@ -206,6 +207,20 @@ export function OpenInExternalAppDropdownItems({
           <>
             {' '}
             <kbd>j</kbd> <kbd>g</kbd>
+          </>
+        )}
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        href={getF4mapUrl(lat, lon, zoom)}
+        target="_blank"
+        onSelect={handleSelect}
+      >
+        F4Map
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <kbd>j</kbd> <kbd>4</kbd>
           </>
         )}
       </Dropdown.Item>
