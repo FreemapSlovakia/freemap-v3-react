@@ -79,8 +79,7 @@ module.exports = {
         loader: 'string-replace-loader',
         options: {
           search: '(win && chrome) ? 2 * window.devicePixelRatio :',
-          replace:
-            "(win && chrome || navigator.platform.indexOf('Linux') === 0) ? 2 * window.devicePixelRatio :",
+          replace: 'true ? 2 * window.devicePixelRatio :',
           strict: true,
         },
       },
