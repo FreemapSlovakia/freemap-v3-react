@@ -132,11 +132,14 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
   } of pictures) {
     fc.features.push(
       point([lon, lat], {
-        takenAt: takenAt ? new Date(takenAt).toISOString() : undefined,
-        publishedAt: createdAt ? new Date(createdAt).toISOString() : undefined,
+        takenAt: takenAt ? new Date(takenAt * 1000).toISOString() : undefined,
+        publishedAt: createdAt
+          ? new Date(createdAt * 1000).toISOString()
+          : undefined,
         name: title,
         description,
-        link: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+        imageUrl: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+        webUrl: `${process.env['BASE_URL']}?image=${id}`,
         author: user,
         tags,
       }),

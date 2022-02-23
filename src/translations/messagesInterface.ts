@@ -401,6 +401,8 @@ export type Messages = {
       noTags: string;
     };
     noPicturesFound: string;
+    linkToWww: string;
+    linkToImage: string;
   };
   measurement: {
     distance: string;

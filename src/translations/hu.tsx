@@ -512,6 +512,8 @@ const hu: Messages = {
       noTags: 'nincs címke',
     },
     noPicturesFound: 'There were no photos found on this place.', // TODO translate
+    linkToWww: 'photo at www.freemap.sk', // TODO translate
+    linkToImage: 'photo image file', // TODO translate
   },
 
   measurement: {

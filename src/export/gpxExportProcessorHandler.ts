@@ -173,63 +173,54 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     });
 
     if (takenAt) {
-      createElement(wptEle, 'time', new Date(takenAt).toISOString());
+      createElement(wptEle, 'time', new Date(takenAt * 1000).toISOString());
     }
 
     if (title) {
       createElement(wptEle, 'name', title);
     }
 
+    const gm = window.translations?.gallery;
+
     const lines: [string, string][] = [];
 
-    lines.push([
-      window.translations?.gallery.filterModal.author ?? 'Author',
-      user,
-    ]);
+    lines.push([gm?.filterModal.author ?? 'Author', user]);
 
     if (description) {
-      lines.push([
-        window.translations?.gallery.filterModal.takenAt ?? 'Capture date',
-        description,
-      ]);
+      lines.push([gm?.filterModal.takenAt ?? 'Capture date', description]);
     }
 
     if (createdAt) {
       lines.push([
-        window.translations?.gallery.filterModal.createdAt ?? 'Upload date',
+        gm?.filterModal.createdAt ?? 'Upload date',
         new Date(createdAt * 1000).toLocaleString(lang),
       ]);
     }
 
     if (takenAt) {
       lines.push([
-        window.translations?.gallery.filterModal.takenAt ?? 'Taken at',
+        gm?.filterModal.takenAt ?? 'Taken at',
         new Date(takenAt * 1000).toLocaleString(lang),
       ]);
     }
 
-    if (tags) {
-      lines.push([
-        window.translations?.gallery.editForm.tags ?? 'Tags',
-        tags.join(', '),
-      ]);
-    }
+    lines.push([gm?.editForm.tags ?? 'Tags', tags.join(', ') || '-']);
 
     // 3.5: ★★★⯪☆
     const ratingFract = rating - Math.floor(rating);
 
     lines.push([
-      window.translations?.gallery.filterModal.rating ?? 'Rating',
+      gm?.filterModal.rating ?? 'Rating',
       '★'.repeat(Math.floor(rating)) +
         (ratingFract < 0.25 ? '☆' : ratingFract < 0.75 ? '⯪' : '★') +
         '☆'.repeat(4 - Math.floor(rating)),
     ]);
 
+    const imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+
     createElement(wptEle, 'desc', {
       cdata:
-        `<img src="${escapeHtml(
-          `${process.env['API_URL']}/gallery/pictures/${id}/image`,
-        )}" width="100%"><p>` +
+        `<img src="${escapeHtml(imageUrl)}" width="100%"><p>` +
         lines
           .map(
             ([key, value]) => `<b>${escapeHtml(key)}</b>: ` + escapeHtml(value),
@@ -238,11 +229,21 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
         '</p>',
     });
 
-    const link = createElement(wptEle, 'link', undefined, {
+    const link1 = createElement(wptEle, 'link', undefined, {
       href: `${process.env['BASE_URL']}?image=${id}`,
     });
 
-    createElement(link, 'type', 'text/html');
+    createElement(link1, 'text', gm?.linkToWww ?? 'photo at www.freemap.sk');
+
+    createElement(link1, 'type', 'text/html');
+
+    const link2 = createElement(wptEle, 'link', undefined, {
+      href: imageUrl,
+    });
+
+    createElement(link2, 'text', gm?.linkToImage ?? 'photo image file');
+
+    createElement(link2, 'type', 'image/jpeg');
 
     // TODO add comments to cmt?
   }

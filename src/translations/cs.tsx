@@ -510,6 +510,8 @@ const cs: Messages = {
       noTags: 'bez tagů',
     },
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
+    linkToWww: 'fotografia na www.freemap.sk', // TODO translate
+    linkToImage: 'súbor fotografie', // TODO translate
   },
 
   measurement: {

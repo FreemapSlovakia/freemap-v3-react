@@ -501,6 +501,8 @@ const en: Messages = {
       noTags: 'no tags',
     },
     noPicturesFound: 'There were no photos found on this place.',
+    linkToWww: 'photo at www.freemap.sk',
+    linkToImage: 'photo image file',
   },
 
   measurement: {

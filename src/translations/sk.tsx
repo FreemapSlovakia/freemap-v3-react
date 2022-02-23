@@ -538,6 +538,8 @@ const sk: Messages = {
       noTags: 'bez tagov',
     },
     noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
+    linkToWww: 'fotografia na www.freemap.sk',
+    linkToImage: 'súbor fotografie',
   },
 
   measurement: {
