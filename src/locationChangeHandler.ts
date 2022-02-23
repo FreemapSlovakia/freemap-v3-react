@@ -730,8 +730,6 @@ function handleGallery(
 function parseColorAndLabel(m: string) {
   let label = '';
 
-  console.log({ m });
-
   let color = '';
 
   // compatibility
@@ -782,8 +780,6 @@ function handleInfoPoint(
       // see https://github.com/microsoft/TypeScript/issues/29642
       /* eslint-disable @typescript-eslint/no-non-null-assertion */
       const m = ipMatch!;
-
-      console.log({ m });
 
       return {
         lat: parseFloat(m[1]),
