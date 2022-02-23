@@ -26,7 +26,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       return;
     }
 
-    const { id } = getState().maps;
+    const id = getState().maps.activeMap?.id;
 
     const res = await httpRequest({
       getState,
@@ -35,8 +35,9 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       expectedStatus: [200, 204],
       data: {
         name: action.payload?.name,
-        data: getMapDataFromState(getState()),
         public: true, // TODO
+        writers: action.payload?.writers,
+        data: getMapDataFromState(getState()),
       },
     });
 

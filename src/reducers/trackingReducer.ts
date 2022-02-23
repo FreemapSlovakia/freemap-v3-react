@@ -1,6 +1,6 @@
 import { RootAction } from 'fm3/actions';
 import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
@@ -184,14 +184,25 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
 
     return state;
   })
-  .handleAction(mapsDataLoaded, (state, { payload: { tracking, merge } }) => {
-    return {
-      ...state,
-      trackedDevices: [
-        ...(merge ? state.trackedDevices : []),
-        ...(tracking?.trackedDevices ?? initialState.trackedDevices),
-      ],
-      showLine: tracking?.showLine ?? initialState.showLine,
-      showPoints: tracking?.showPoints ?? initialState.showPoints,
-    };
-  });
+  .handleAction(
+    mapsLoaded,
+    (
+      state,
+      {
+        payload: {
+          data: { tracking },
+          merge,
+        },
+      },
+    ) => {
+      return {
+        ...state,
+        trackedDevices: [
+          ...(merge ? state.trackedDevices : []),
+          ...(tracking?.trackedDevices ?? initialState.trackedDevices),
+        ],
+        showLine: tracking?.showLine ?? initialState.showLine,
+        showPoints: tracking?.showPoints ?? initialState.showPoints,
+      };
+    },
+  );

@@ -68,8 +68,7 @@ export const urlProcessor: Processor = {
       search.osmRelationId,
       search.osmWayId,
       trackViewer.trackUID,
-      maps.id,
-      maps.name,
+      maps.activeMap,
       main.tool,
       objects.active,
     ];
@@ -95,13 +94,13 @@ export const urlProcessor: Processor = {
       queryParts.push(['tool', main.tool]);
     }
 
-    const isMap = maps.id !== undefined;
+    const mapId = maps.loadMeta?.id || maps.activeMap?.id;
 
-    if (maps.id !== undefined) {
-      queryParts.push(['id', maps.id]);
+    if (mapId) {
+      queryParts.push(['id', mapId]);
     }
 
-    const historyParts: [string, string | number | boolean][] = isMap
+    const historyParts: [string, string | number | boolean][] = mapId
       ? []
       : queryParts;
 
@@ -340,12 +339,12 @@ export const urlProcessor: Processor = {
       queryParts.push(['follow', main.selection?.id]);
     }
 
-    const sq = isMap ? serializeQuery(historyParts) : undefined;
+    const sq = mapId ? serializeQuery(historyParts) : undefined;
 
     const urlSearch = serializeQuery(queryParts);
 
     if (
-      (isMap && sq !== (history.location.state as any)?.sq) ||
+      (mapId && sq !== (history.location.state as any)?.sq) ||
       urlSearch !== window.location.search
     ) {
       const method =
@@ -360,7 +359,7 @@ export const urlProcessor: Processor = {
           search: urlSearch,
           hash: '',
         },
-        { sq, mapName: maps.name },
+        { sq },
       );
 
       if (window.fmEmbedded) {

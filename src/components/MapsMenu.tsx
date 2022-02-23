@@ -1,5 +1,5 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapsLoad, mapsSave } from 'fm3/actions/mapsActions';
+import { mapsDisconnect, mapsSave } from 'fm3/actions/mapsActions';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
@@ -12,20 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 export function MapsMenu(): ReactElement {
   const m = useMessages();
 
-  const mapName = useSelector(
-    (state) =>
-      state.maps.name ??
-      (state.maps.id &&
-        state.maps.maps.find((map) => map.id === state.maps.id)?.name),
-  );
-
-  const isOwnMap = useSelector(
-    (state) =>
-      !!state.maps.id &&
-      state.maps.maps.some((map) => map.id === state.maps.id),
-  );
-
-  const authenticated = useSelector((state) => !!state.auth.user);
+  const activeMap = useSelector((state) => state.maps.activeMap);
 
   const dispatch = useDispatch();
 
@@ -46,10 +33,10 @@ export function MapsMenu(): ReactElement {
           </Button>
 
           <span className="align-self-center ml-1 mr-2">
-            {mapName ?? '???'}
+            {activeMap?.name ?? '???'}
           </span>
 
-          {authenticated && isOwnMap && (
+          {activeMap?.canWrite && (
             <Button
               className="ml-1"
               variant="secondary"
@@ -63,7 +50,7 @@ export function MapsMenu(): ReactElement {
           <Button
             className="ml-1"
             variant="secondary"
-            onClick={() => dispatch(mapsLoad({}))}
+            onClick={() => dispatch(mapsDisconnect())}
             title={m?.maps.disconnect}
           >
             <FaUnlink />

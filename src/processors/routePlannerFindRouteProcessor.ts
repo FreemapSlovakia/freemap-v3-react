@@ -1,6 +1,6 @@
 import { Feature, LineString, Polygon } from '@turf/helpers';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
   Leg,
@@ -44,7 +44,7 @@ const updateRouteTypes = [
   routePlannerSetWeighting,
   routePlannerSetRoundtripParams,
   routePlannerSetIsochroneParams,
-  mapsDataLoaded,
+  mapsLoaded,
 ];
 
 const cancelTypes = [...updateRouteTypes, clearMap, setTool];

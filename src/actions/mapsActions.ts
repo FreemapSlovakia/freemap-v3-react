@@ -11,8 +11,11 @@ export interface MapMeta {
   id: string;
   name: string;
   public: boolean;
+  canWrite: boolean;
   createdAt: Date;
   modifiedAt: Date;
+  userId: number;
+  writers?: number[];
 }
 
 export interface MapData<LT = Line, PT = DrawingPoint> {
@@ -39,27 +42,29 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   };
 }
 
-export const mapsLoad = createAction('MAPS_LOAD')<{
-  id?: string | undefined;
+export type MapLoadMeta = {
+  id: string;
   ignoreMap?: boolean;
   ignoreLayers?: boolean;
   merge?: boolean;
-  skipLoading?: boolean;
-  name?: string;
-}>();
+};
+
+export const mapsLoad = createAction('MAPS_LOAD')<MapLoadMeta>();
+
+export const mapsDisconnect = createAction('MAPS_DISCONNECT')();
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();
 
 export const mapsSetList = createAction('MAPS_SET_LIST')<MapMeta[]>();
 
 export const mapsSave = createAction('MAPS_SAVE')<
-  { name: string; asCopy?: boolean } | undefined
+  { name?: string; writers?: number[]; asCopy?: boolean } | undefined
 >();
 
-export const mapsDelete = createAction('MAPS_DELETE')<string | undefined>();
+export const mapsDelete = createAction('MAPS_DELETE')<string>();
 
-export const mapsRename = createAction('MAPS_RENAME')();
-
-export const mapsDataLoaded = createAction('MAPS_DATA_LOADED')<
-  MapData & { merge?: boolean; name: string }
->();
+export const mapsLoaded = createAction('MAPS_LOADED')<{
+  meta: MapMeta;
+  data: MapData;
+  merge?: boolean;
+}>();

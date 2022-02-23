@@ -74,9 +74,8 @@ export const handleLocationChange = (
 
   const search = document.location.search;
 
-  const { sq, mapName } = (history.location.state as any) ?? {
+  const { sq } = (history.location.state as any) ?? {
     sq: undefined,
-    mapName: undefined,
   };
 
   const parsedQuery = queryString.parse(search);
@@ -85,14 +84,15 @@ export const handleLocationChange = (
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
-  if (id !== getState().maps.id) {
+  if (
+    id !== undefined &&
+    id !== (getState().maps.loadMeta?.id ?? getState().maps.activeMap?.id)
+  ) {
     dispatch(
       mapsLoad({
         id,
-        // skipLoading: !!sq, // commented-out otherwise reload won't refresh possibly modified map
         ignoreMap: 'map' in parsedQuery,
         ignoreLayers: 'layers' in parsedQuery,
-        name: mapName,
       }),
     );
   }

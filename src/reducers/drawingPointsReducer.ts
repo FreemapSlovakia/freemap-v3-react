@@ -6,7 +6,7 @@ import {
   drawingPointSetAll,
 } from 'fm3/actions/drawingPointActions';
 import { clearMap } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 
@@ -43,12 +43,12 @@ export const drawingPointsReducer = createReducer<
     ...state,
     points: payload,
   }))
-  .handleAction(mapsDataLoaded, (state, { payload }) => {
+  .handleAction(mapsLoaded, (state, { payload }) => {
     return {
       ...initialState,
       points: [
         ...(payload.merge ? state.points : []),
-        ...(payload.points ?? initialState.points),
+        ...(payload.data.points ?? initialState.points),
       ],
     };
   });

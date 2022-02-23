@@ -381,7 +381,7 @@ export function Main(): ReactElement {
 
   useHtmlMeta();
 
-  const showMapsMenu = useSelector((state) => state.maps.id !== undefined);
+  const showMapsMenu = useSelector((state) => !!state.maps.activeMap);
 
   // prevents map click action if popper is open
   const handleMapWrapperClick = (e: MouseEvent) => {

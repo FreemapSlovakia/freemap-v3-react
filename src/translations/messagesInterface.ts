@@ -756,6 +756,7 @@ export type Messages = {
     newMap: string;
     SomeMap: (props: { name: string }) => JSX.Element;
     unauthenticatedError: string;
+    writers: string;
   };
   legend: {
     body: () => JSX.Element;

@@ -1417,6 +1417,7 @@ const hu: Messages = {
       </>
     ),
     unauthenticatedError: 'Please log-in to access My maps functionality.', // TODO translate
+    writers: 'Editors', // TODO translate
   },
 
   // TODO translate

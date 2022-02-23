@@ -34,7 +34,7 @@ import {
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 import { toDatetimeLocal } from 'fm3/dateUtils';
@@ -339,10 +339,10 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     colorizeBy: action.payload,
   }))
-  .handleAction(mapsDataLoaded, (state, action) => {
+  .handleAction(mapsLoaded, (state, action) => {
     return {
       ...state,
-      filter: action.payload.galleryFilter ?? galleryInitialState.filter,
+      filter: action.payload.data.galleryFilter ?? galleryInitialState.filter,
     };
   });
 

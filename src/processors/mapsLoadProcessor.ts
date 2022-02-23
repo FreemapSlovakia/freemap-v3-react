@@ -1,5 +1,11 @@
+import { authLogout, authSetUser } from 'fm3/actions/authActions';
 import { Line, Point } from 'fm3/actions/drawingLineActions';
-import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
+import {
+  MapData,
+  MapMeta,
+  mapsLoad,
+  mapsLoaded,
+} from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
@@ -19,18 +25,21 @@ interface CompatDrawingPoint {
   color?: string;
 }
 
-export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
-  actionCreator: mapsLoad,
+export const mapsLoadProcessor: Processor = {
+  actionCreator: [mapsLoad, authSetUser, authLogout],
   errorKey: 'maps.fetchError',
-  handle: async ({ getState, dispatch, action: { payload } }) => {
-    if (payload.id === undefined || payload.skipLoading) {
+  handle: async ({ getState, dispatch }) => {
+    const { loadMeta } = getState().maps;
+
+    if (!loadMeta || !getState().auth.validated) {
       return;
     }
 
     const res = await httpRequest({
       getState,
-      url: `/maps/${payload.id}`,
+      url: `/maps/${loadMeta.id}`,
       expectedStatus: 200,
+      cancelActions: [mapsLoad, authSetUser, authLogout],
     });
 
     const data = await res.json();
@@ -55,15 +64,17 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
       // ignore
     }
 
-    const map = assertType<{
-      name: string;
-      data: StringDates<MapData<Line | CompatLine, CompatDrawingPoint>>;
-    }>(data);
+    const map = assertType<
+      StringDates<{
+        meta: MapMeta;
+        data: MapData<Line | CompatLine, CompatDrawingPoint>;
+      }>
+    >(data);
 
     const mapData = map.data;
 
     if (mapData.map) {
-      if (payload.ignoreMap) {
+      if (loadMeta.ignoreMap) {
         delete mapData.map.lat;
 
         delete mapData.map.lon;
@@ -71,7 +82,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         delete mapData.map.zoom;
       }
 
-      if (payload.ignoreLayers) {
+      if (loadMeta.ignoreLayers) {
         delete mapData.map.mapType;
 
         delete mapData.map.overlays;
@@ -79,54 +90,60 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
     }
 
     dispatch(
-      mapsDataLoaded({
-        name: map.name,
-        merge: payload.merge,
-        ...mapData,
-        // get rid of OldLines
-        lines: mapData.lines?.map((line) => ({
-          ...line,
-          color: line.color ?? '',
-          label: line.label ?? '',
-          type:
-            line.type === 'area'
-              ? 'polygon'
-              : line.type === 'distance'
-              ? 'line'
-              : line.type,
-        })),
-        points: mapData.points?.map((point) => ({
-          ...point,
-          label: point.label ?? '',
-          color: point.color ?? '',
-        })),
-        tracking: mapData.tracking && {
-          ...mapData.tracking,
-          trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
-            ...device,
-            fromTime: device.fromTime ? new Date(device.fromTime) : null,
+      mapsLoaded({
+        merge: loadMeta.merge,
+        meta: {
+          ...map.meta,
+          createdAt: new Date(map.meta.createdAt),
+          modifiedAt: new Date(map.meta.createdAt),
+        },
+        data: {
+          ...mapData,
+          // get rid of OldLines
+          lines: mapData.lines?.map((line) => ({
+            ...line,
+            color: line.color ?? '',
+            label: line.label ?? '',
+            type:
+              line.type === 'area'
+                ? 'polygon'
+                : line.type === 'distance'
+                ? 'line'
+                : line.type,
           })),
+          points: mapData.points?.map((point) => ({
+            ...point,
+            label: point.label ?? '',
+            color: point.color ?? '',
+          })),
+          tracking: mapData.tracking && {
+            ...mapData.tracking,
+            trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
+              ...device,
+              fromTime: device.fromTime ? new Date(device.fromTime) : null,
+            })),
+          },
+          galleryFilter: mapData.galleryFilter && {
+            ...mapData.galleryFilter,
+            createdAtFrom:
+              mapData.galleryFilter.createdAtFrom === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.createdAtFrom),
+            createdAtTo:
+              mapData.galleryFilter.createdAtTo === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.createdAtTo),
+            takenAtFrom:
+              mapData.galleryFilter.takenAtFrom === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.takenAtFrom),
+            takenAtTo:
+              mapData.galleryFilter.takenAtTo === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.takenAtTo),
+          },
+          trackViewer: mapData.trackViewer,
         },
-        galleryFilter: mapData.galleryFilter && {
-          ...mapData.galleryFilter,
-          createdAtFrom:
-            mapData.galleryFilter.createdAtFrom === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.createdAtFrom),
-          createdAtTo:
-            mapData.galleryFilter.createdAtTo === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.createdAtTo),
-          takenAtFrom:
-            mapData.galleryFilter.takenAtFrom === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.takenAtFrom),
-          takenAtTo:
-            mapData.galleryFilter.takenAtTo === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.takenAtTo),
-        },
-        trackViewer: mapData.trackViewer,
       }),
     );
   },

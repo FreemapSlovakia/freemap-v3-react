@@ -1,6 +1,6 @@
 import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
   ObjectsResult,
   objectsSetFilter,
@@ -32,13 +32,13 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
       objects: action.payload,
     };
   })
-  .handleAction(mapsDataLoaded, (state, { payload }) => {
+  .handleAction(mapsLoaded, (state, { payload: { merge, data } }) => {
     return {
       ...state,
-      active: !payload.merge
-        ? payload.objectsV2?.active ?? []
-        : payload.objectsV2
-        ? [...new Set([...state.active, ...payload.objectsV2?.active])]
+      active: !merge
+        ? data.objectsV2?.active ?? []
+        : data.objectsV2
+        ? [...new Set([...state.active, ...data.objectsV2?.active])]
         : state.active,
     };
   });

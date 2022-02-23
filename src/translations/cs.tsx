@@ -1410,6 +1410,7 @@ const cs: Messages = {
       </>
     ),
     unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
+    writers: 'Editori',
   },
 
   // check/improve translation

@@ -1,40 +1,52 @@
 import { RootAction } from 'fm3/actions';
 import { authLogout } from 'fm3/actions/authActions';
 import {
+  MapLoadMeta,
   MapMeta,
-  mapsDataLoaded,
+  mapsDisconnect,
   mapsLoad,
+  mapsLoaded,
   mapsSetList,
 } from 'fm3/actions/mapsActions';
 import { createReducer } from 'typesafe-actions';
 
 export interface MapsState {
+  loadMeta: MapLoadMeta | undefined;
   maps: MapMeta[];
-  id: undefined | string;
-  name: undefined | string;
+  activeMap: MapMeta | undefined;
 }
 
 const initialState: MapsState = {
+  loadMeta: undefined,
   maps: [],
-  id: undefined,
-  name: undefined,
+  activeMap: undefined,
 };
 
 export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
   .handleAction(mapsSetList, (state, { payload }) => ({
     ...state,
     maps: payload,
-    name: state.id
-      ? payload.find((m) => m.id === state.id)?.name ?? state.name
-      : undefined,
+  }))
+  .handleAction(mapsLoaded, (state, { payload }) => ({
+    ...state,
+    activeMap: payload.meta,
+    loadMeta: undefined,
   }))
   .handleAction(mapsLoad, (state, { payload }) => ({
     ...state,
-    id: payload.id,
-    name: payload.name,
+    loadMeta: payload,
   }))
-  .handleAction(mapsDataLoaded, (state, { payload }) => ({
+  .handleAction(mapsDisconnect, (state) => ({
     ...state,
-    name: payload.name,
+    activeMap: undefined,
   }))
-  .handleAction(authLogout, (state) => ({ ...initialState, id: state.id }));
+  .handleAction(authLogout, (state) => ({
+    ...initialState,
+    activeMap: state.activeMap?.public
+      ? {
+          ...state.activeMap,
+          canWrite: false,
+          writers: undefined,
+        }
+      : undefined,
+  }));

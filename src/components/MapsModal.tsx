@@ -1,8 +1,15 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapsDelete, mapsLoad, mapsSave } from 'fm3/actions/mapsActions';
+import {
+  mapsDelete,
+  mapsDisconnect,
+  mapsLoad,
+  mapsSave,
+} from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useOnline } from 'fm3/hooks/useOnline';
 import { useMessages } from 'fm3/l10nInjector';
+import 'fm3/styles/react-tag-autocomplete.css';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -23,8 +30,15 @@ import {
   FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import ReactTags, { Tag } from 'react-tag-autocomplete';
+import { assertType } from 'typescript-is';
 
 type Props = { show: boolean };
+
+type User = {
+  id: number;
+  name: string;
+};
 
 export function MapsModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
@@ -33,10 +47,9 @@ export function MapsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const { maps, name: nameFromRedux, id } = useSelector((state) => state.maps);
+  const { maps, activeMap } = useSelector((state) => state.maps);
 
-  const mapName =
-    nameFromRedux ?? (id ? maps.find((map) => map.id === id)?.name : undefined);
+  const mapName = activeMap?.name;
 
   const sortedMaps = useMemo(
     () =>
@@ -46,13 +59,21 @@ export function MapsModal({ show }: Props): ReactElement {
     [maps],
   );
 
-  const isOwnMap = maps.some((map) => map.id === id);
+  const myUserId = useSelector((state) => state.auth.user?.id);
+
+  const isOwnMap = activeMap?.userId === myUserId;
 
   const [name, setName] = useState(mapName ?? '');
+
+  const [writers, setWriters] = useState<number[]>();
 
   useEffect(() => {
     setName(mapName ?? '');
   }, [mapName]);
+
+  useEffect(() => {
+    setWriters(activeMap?.writers);
+  }, [activeMap]);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -83,6 +104,49 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const online = useOnline();
 
+  const [users, setUsers] = useState<User[]>();
+
+  useEffect(() => {
+    fetch(`${process.env['API_URL']}/users`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+
+        throw new Error();
+      })
+      .then((data) => {
+        setUsers(assertType<User[]>(data));
+      })
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.loadError',
+            messageParams: { err },
+          }),
+        );
+      });
+  }, [dispatch]);
+
+  const userMap = useMemo(() => {
+    const userMap = new Map<number, string>();
+
+    for (const user of users ?? []) {
+      userMap.set(user.id, user.name);
+    }
+
+    return userMap;
+  }, [users]);
+
+  const handleWriterAddition = (tag: Tag) => {
+    setWriters((writers) => writers && [...writers, Number(tag.id)]);
+  };
+
+  const handleWriterDelete = (index: number) => {
+    setWriters((writers) => writers?.filter((_, i) => i !== index));
+  };
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
@@ -95,20 +159,19 @@ export function MapsModal({ show }: Props): ReactElement {
         <Card className="mb-2">
           <Card.Body>
             <Card.Title>
-              {mapName ? (
+              {activeMap ? (
                 m ? (
-                  <m.maps.SomeMap name={mapName} />
+                  <m.maps.SomeMap name={activeMap.name} />
                 ) : (
-                  mapName
+                  activeMap.name
                 )
-              ) : !id ? (
-                m?.maps.newMap
               ) : (
-                '???'
+                m?.maps.newMap
               )}
             </Card.Title>
+
             <form>
-              {(isOwnMap || !id) && (
+              {(isOwnMap || !activeMap) && (
                 <FormGroup>
                   <FormLabel>{m?.general.name}</FormLabel>
 
@@ -120,23 +183,50 @@ export function MapsModal({ show }: Props): ReactElement {
                 </FormGroup>
               )}
 
+              {(isOwnMap || !activeMap) && (
+                <FormGroup>
+                  <FormLabel>{m?.maps.writers}</FormLabel>
+
+                  <ReactTags
+                    placeholderText={m?.gallery.editForm.tags}
+                    tags={writers?.map((id) => ({
+                      id,
+                      name: userMap.get(id) ?? '???',
+                    }))}
+                    suggestions={users?.filter(
+                      (user) =>
+                        user.id !== myUserId && !writers?.includes(user.id),
+                    )}
+                    onAddition={handleWriterAddition}
+                    onDelete={handleWriterDelete}
+                  />
+                </FormGroup>
+              )}
+
               <div className="d-flex flex-row flex-wrap align-items-baseline">
-                {(isOwnMap || !id) && (
+                {(!activeMap || activeMap?.canWrite) && (
                   <Button
                     type="button"
                     className="mb-1 mr-1"
-                    onClick={() => dispatch(mapsSave({ name }))}
+                    onClick={() =>
+                      dispatch(
+                        mapsSave({
+                          name,
+                          writers,
+                        }),
+                      )
+                    }
                     disabled={!name || !online}
                   >
                     <FaSave /> {m?.maps.save}
                   </Button>
                 )}
 
-                {id && (
+                {activeMap && (
                   <Button
                     type="button"
                     className="mb-1"
-                    onClick={() => dispatch(mapsLoad({ id: undefined }))}
+                    onClick={() => dispatch(mapsDisconnect())}
                   >
                     <FaUnlink /> {m?.maps.disconnect}
                   </Button>
@@ -165,6 +255,7 @@ export function MapsModal({ show }: Props): ReactElement {
                               <FaFilter />
                             </InputGroup.Text>
                           </InputGroup.Prepend>
+
                           <FormControl
                             value={filter}
                             onChange={(e) => setFilter(e.currentTarget.value)}
@@ -173,7 +264,9 @@ export function MapsModal({ show }: Props): ReactElement {
                       </div>
                       {m?.general.name}
                     </th>
+
                     <th>{m?.general.createdAt}</th>
+
                     <th>{m?.general.modifiedAt}</th>
                   </tr>
                 </thead>
@@ -187,7 +280,7 @@ export function MapsModal({ show }: Props): ReactElement {
                           className={
                             map === selectedMap
                               ? 'table-active'
-                              : map.id === id
+                              : map.id === activeMap?.id
                               ? 'table-success'
                               : undefined
                           }
@@ -198,7 +291,9 @@ export function MapsModal({ show }: Props): ReactElement {
                           }
                         >
                           <td>{map.name}</td>
+
                           <td>{dateFormat.format(map.createdAt)}</td>
+
                           <td>{dateFormat.format(map.modifiedAt)}</td>
                         </tr>
                       ))
@@ -234,7 +329,6 @@ export function MapsModal({ show }: Props): ReactElement {
                       merge: !clear,
                       ignoreLayers: !inclPosition,
                       ignoreMap: !inclPosition,
-                      name: selectedMap.name,
                     }),
                   )
                 }
@@ -245,16 +339,16 @@ export function MapsModal({ show }: Props): ReactElement {
               <Button
                 className="ml-1"
                 variant="danger"
-                disabled={(!selectedMap && !id) || !online}
+                disabled={
+                  !myUserId ||
+                  (selectedMap ?? activeMap)?.userId !== myUserId ||
+                  !online
+                }
                 onClick={() => {
-                  if (
-                    window.confirm(
-                      m?.maps.deleteConfirm(
-                        selectedMap ? selectedMap.name : mapName ?? '???',
-                      ),
-                    )
-                  ) {
-                    dispatch(mapsDelete(selectedMap?.id));
+                  const map = selectedMap ?? activeMap;
+
+                  if (map && window.confirm(m?.maps.deleteConfirm(map.name))) {
+                    dispatch(mapsDelete(map.id));
                   }
                 }}
               >

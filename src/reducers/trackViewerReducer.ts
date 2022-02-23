@@ -5,7 +5,7 @@ import {
 } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { osmClear } from 'fm3/actions/osmActions';
 import {
   trackViewerColorizeTrackBy,
@@ -65,6 +65,16 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
     gpxUrl: action.payload,
   }))
   .handleAction(osmClear, () => trackViewerInitialState)
-  .handleAction(mapsDataLoaded, (_state, { payload: { trackViewer } }) => {
-    return trackViewer ?? trackViewerInitialState;
-  });
+  .handleAction(
+    mapsLoaded,
+    (
+      _state,
+      {
+        payload: {
+          data: { trackViewer },
+        },
+      },
+    ) => {
+      return trackViewer ?? trackViewerInitialState;
+    },
+  );

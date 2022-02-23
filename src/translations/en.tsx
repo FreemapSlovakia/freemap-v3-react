@@ -1394,6 +1394,7 @@ const en: Messages = {
       </>
     ),
     unauthenticatedError: 'Please log-in to access My maps functionality.',
+    writers: 'Editors',
   },
 
   mapCtxMenu: {

@@ -8,7 +8,7 @@ import {
   mapSetOverlayPaneOpacity,
   MapStateBase,
 } from 'fm3/actions/mapActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { createReducer } from 'typesafe-actions';
 
 export interface MapState extends MapStateBase {
@@ -98,11 +98,21 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
         }
       : state;
   })
-  .handleAction(mapsDataLoaded, (state, { payload: { map } }) => ({
-    ...state,
-    lat: map?.lat ?? state.lat,
-    lon: map?.lon ?? state.lon,
-    zoom: map?.zoom ?? state.zoom,
-    mapType: map?.mapType ?? state.mapType,
-    overlays: map?.overlays ?? state.overlays,
-  }));
+  .handleAction(
+    mapsLoaded,
+    (
+      state,
+      {
+        payload: {
+          data: { map },
+        },
+      },
+    ) => ({
+      ...state,
+      lat: map?.lat ?? state.lat,
+      lon: map?.lon ?? state.lon,
+      zoom: map?.zoom ?? state.zoom,
+      mapType: map?.mapType ?? state.mapType,
+      overlays: map?.overlays ?? state.overlays,
+    }),
+  );

@@ -1,7 +1,7 @@
 import { Feature, Polygon } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
   IsochroneParams,
@@ -341,8 +341,16 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       ...payload,
     },
   }))
-  .handleAction(mapsDataLoaded, (state, { payload: { routePlanner } }) => {
-    return {
+  .handleAction(
+    mapsLoaded,
+    (
+      state,
+      {
+        payload: {
+          data: { routePlanner },
+        },
+      },
+    ) => ({
       ...routePlannerInitialState,
       preventHint: state.preventHint,
       transportType:
@@ -354,5 +362,5 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       mode: routePlanner?.mode ?? routePlannerInitialState.mode,
       milestones:
         routePlanner?.milestones ?? routePlannerInitialState.milestones,
-    };
-  });
+    }),
+  );

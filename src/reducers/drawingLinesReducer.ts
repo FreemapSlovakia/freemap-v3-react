@@ -13,7 +13,7 @@ import {
   Point,
 } from 'fm3/actions/drawingLineActions';
 import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 
@@ -126,12 +126,12 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         }
       }),
   )
-  .handleAction(mapsDataLoaded, (state, { payload }) => ({
+  .handleAction(mapsLoaded, (state, { payload }) => ({
     joinWith: undefined,
     drawing: false,
     lines: [
       ...(payload.merge ? state.lines : []),
-      ...(payload.lines ?? initialState.lines).map((line) => ({
+      ...(payload.data.lines ?? initialState.lines).map((line) => ({
         ...line,
         type:
           // compatibility

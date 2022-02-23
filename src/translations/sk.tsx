@@ -1441,6 +1441,7 @@ const sk: Messages = {
       </>
     ),
     unauthenticatedError: 'Pre funkciu Moje mapy musíte byť prihlásený.',
+    writers: 'Editori',
   },
 
   mapCtxMenu: {
