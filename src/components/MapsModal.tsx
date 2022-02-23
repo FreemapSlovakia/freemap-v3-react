@@ -49,8 +49,6 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const { maps, activeMap } = useSelector((state) => state.maps);
 
-  const mapName = activeMap?.name;
-
   const sortedMaps = useMemo(
     () =>
       [...maps].sort((a, b) =>
@@ -63,13 +61,15 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const isOwnMap = activeMap?.userId === myUserId;
 
-  const [name, setName] = useState(mapName ?? '');
-
-  const [writers, setWriters] = useState<number[]>();
+  const mapName = activeMap?.name ?? '';
 
   useEffect(() => {
-    setName(mapName ?? '');
+    setName(mapName);
   }, [mapName]);
+
+  const [name, setName] = useState(mapName);
+
+  const [writers, setWriters] = useState<number[]>();
 
   useEffect(() => {
     setWriters(activeMap?.writers);
