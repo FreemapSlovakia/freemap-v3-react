@@ -95,7 +95,7 @@ export const mapsLoadProcessor: Processor = {
         meta: {
           ...map.meta,
           createdAt: new Date(map.meta.createdAt),
-          modifiedAt: new Date(map.meta.createdAt),
+          modifiedAt: new Date(map.meta.modifiedAt),
         },
         data: {
           ...mapData,

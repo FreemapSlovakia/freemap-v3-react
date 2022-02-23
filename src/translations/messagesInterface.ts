@@ -757,6 +757,7 @@ export type Messages = {
     SomeMap: (props: { name: string }) => JSX.Element;
     unauthenticatedError: string;
     writers: string;
+    conflictError: string;
   };
   legend: {
     body: () => JSX.Element;

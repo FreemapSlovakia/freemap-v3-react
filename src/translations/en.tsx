@@ -1395,6 +1395,7 @@ const en: Messages = {
     ),
     unauthenticatedError: 'Please log-in to access My maps functionality.',
     writers: 'Editors',
+    conflictError: 'The map has been modified in the meantime.',
   },
 
   mapCtxMenu: {

@@ -68,3 +68,7 @@ export const mapsLoaded = createAction('MAPS_LOADED')<{
   data: MapData;
   merge?: boolean;
 }>();
+
+export const mapsMergeMeta = createAction('MAPS_SET_MODIFIED_AT')<
+  Partial<MapMeta>
+>();

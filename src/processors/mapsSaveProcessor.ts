@@ -1,12 +1,15 @@
 import {
   MapData,
+  MapMeta,
   mapsLoad,
   mapsLoadList,
+  mapsMergeMeta,
   mapsSave,
 } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { StringDates } from 'fm3/types/common';
 import { DefaultRootState } from 'react-redux';
 import { assertType } from 'typescript-is';
 import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
@@ -26,13 +29,18 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       return;
     }
 
-    const id = getState().maps.activeMap?.id;
+    const { activeMap } = getState().maps;
 
     const res = await httpRequest({
       getState,
-      method: id ? 'PATCH' : 'POST',
-      url: `/maps/${id ?? ''}`,
-      expectedStatus: [200, 204],
+      method: activeMap ? 'PATCH' : 'POST',
+      url: `/maps/${activeMap?.id ?? ''}`,
+      expectedStatus: [200, 412],
+      headers: activeMap
+        ? {
+            'If-Unmodified-Since': activeMap.modifiedAt.toUTCString(),
+          }
+        : {},
       data: {
         name: action.payload?.name,
         public: true, // TODO
@@ -40,6 +48,18 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         data: getMapDataFromState(getState()),
       },
     });
+
+    if (res.status === 412) {
+      dispatch(
+        toastsAdd({
+          id: 'maps.conflictError',
+          style: 'danger',
+          messageKey: 'maps.conflictError',
+        }),
+      );
+
+      return;
+    }
 
     dispatch(
       toastsAdd({
@@ -51,10 +71,24 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     dispatch(mapsLoadList());
 
-    if (!id) {
+    if (activeMap) {
+      const data = assertType<StringDates<MapMeta>>(await res.json());
+
+      dispatch(
+        mapsMergeMeta({
+          ...data,
+          createdAt:
+            data.createdAt === undefined ? undefined : new Date(data.createdAt),
+          modifiedAt:
+            data.modifiedAt === undefined
+              ? undefined
+              : new Date(data.modifiedAt),
+        }),
+      );
+    } else {
       dispatch(
         mapsLoad({ id: assertType<{ id: string }>(await res.json()).id }),
-      ); // TODO skip loading in this case
+      ); // TODO skip loading; let server return meta
     }
   },
 };

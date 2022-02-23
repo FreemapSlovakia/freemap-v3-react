@@ -1411,6 +1411,7 @@ const cs: Messages = {
     ),
     unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
     writers: 'Editori',
+    conflictError: 'Mapa bola medzičasom modifikovaná.', // TODO translate
   },
 
   // check/improve translation
