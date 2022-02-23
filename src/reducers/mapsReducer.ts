@@ -6,8 +6,8 @@ import {
   mapsDisconnect,
   mapsLoad,
   mapsLoaded,
-  mapsMergeMeta,
   mapsSetList,
+  mapsSetMeta,
 } from 'fm3/actions/mapsActions';
 import { createReducer } from 'typesafe-actions';
 
@@ -41,12 +41,11 @@ export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
     ...state,
     activeMap: undefined,
   }))
-  .handleAction(mapsMergeMeta, (state, { payload }) => ({
+  .handleAction(mapsSetMeta, (state, { payload }) => ({
     ...state,
-    activeMap:
-      state.activeMap && state.activeMap.id === payload.id
-        ? Object.assign({}, state.activeMap, payload)
-        : undefined,
+    activeMap: state.activeMap
+      ? Object.assign({}, state.activeMap, payload)
+      : payload,
   }))
   .handleAction(authLogout, (state) => ({
     ...initialState,

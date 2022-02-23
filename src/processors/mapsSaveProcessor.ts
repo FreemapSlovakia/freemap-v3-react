@@ -1,10 +1,9 @@
 import {
   MapData,
   MapMeta,
-  mapsLoad,
   mapsLoadList,
-  mapsMergeMeta,
   mapsSave,
+  mapsSetMeta,
 } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
@@ -71,25 +70,15 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     dispatch(mapsLoadList());
 
-    if (activeMap) {
-      const data = assertType<StringDates<MapMeta>>(await res.json());
+    const data = assertType<StringDates<MapMeta>>(await res.json());
 
-      dispatch(
-        mapsMergeMeta({
-          ...data,
-          createdAt:
-            data.createdAt === undefined ? undefined : new Date(data.createdAt),
-          modifiedAt:
-            data.modifiedAt === undefined
-              ? undefined
-              : new Date(data.modifiedAt),
-        }),
-      );
-    } else {
-      dispatch(
-        mapsLoad({ id: assertType<{ id: string }>(await res.json()).id }),
-      ); // TODO skip loading; let server return meta
-    }
+    dispatch(
+      mapsSetMeta({
+        ...data,
+        createdAt: new Date(data.createdAt),
+        modifiedAt: new Date(data.modifiedAt),
+      }),
+    );
   },
 };
 

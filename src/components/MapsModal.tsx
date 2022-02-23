@@ -69,10 +69,10 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const [name, setName] = useState(mapName);
 
-  const [writers, setWriters] = useState<number[]>();
+  const [writers, setWriters] = useState<number[]>([]);
 
   useEffect(() => {
-    setWriters(activeMap?.writers);
+    setWriters(activeMap?.writers ?? []);
   }, [activeMap]);
 
   const dateFormat = useDateTimeFormat({
