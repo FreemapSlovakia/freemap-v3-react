@@ -432,6 +432,9 @@ export function RoutePlannerMenu(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
+  const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
+    useState(false);
+
   return (
     <ToolMenu>
       <Dropdown
@@ -555,6 +558,12 @@ export function RoutePlannerMenu(): ReactElement {
           className="ml-1"
           onSelect={(mode) => {
             dispatch(routePlannerSetMode(mode as RoutingMode));
+          }}
+          show={routePlannerDropdownOpen}
+          onToggle={(isOpen, _event, { source }) => {
+            if (source !== 'select') {
+              setRoutePlannerDropdownOpen(isOpen);
+            }
           }}
         >
           <Dropdown.Toggle id="mode" variant="secondary">
