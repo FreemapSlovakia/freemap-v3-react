@@ -188,7 +188,6 @@ export function MapsModal({ show }: Props): ReactElement {
                   <FormLabel>{m?.maps.writers}</FormLabel>
 
                   <ReactTags
-                    placeholderText={m?.gallery.editForm.tags}
                     tags={writers?.map((id) => ({
                       id,
                       name: userMap.get(id) ?? '???',
