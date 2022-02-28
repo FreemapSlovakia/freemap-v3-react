@@ -4,7 +4,7 @@ import {
   GalleryItem,
   galleryMergeItem,
 } from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { hideInfoBar, setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -202,7 +202,7 @@ export function Main(): ReactElement {
 
   const isUserValidated = useSelector((state) => state.auth.validated);
 
-  const [showInfoBar, setShowInfoBar] = useState(!window.fmEmbedded);
+  const showInfoBar = useSelector((state) => state.main.showInfoBar);
 
   const [map, setMap] = useState<Leaflet.Map | null>(null);
 
@@ -270,10 +270,6 @@ export function Main(): ReactElement {
       );
     }
   }, [dispatch]);
-
-  const handleInfoBarCloseClick = useCallback(() => {
-    setShowInfoBar(false);
-  }, [setShowInfoBar]);
 
   const handlePictureAdded = useCallback(
     (item: GalleryItem) => {
@@ -444,7 +440,7 @@ export function Main(): ReactElement {
       <div className="header">
         {YellowBar && showInfoBar && language === 'sk' && (
           <div className="info-bar">
-            <CloseButton onClick={handleInfoBarCloseClick} />
+            <CloseButton onClick={() => dispatch(hideInfoBar())} />
 
             <YellowBar />
           </div>

@@ -182,3 +182,5 @@ export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT')();
 export const setAnalyticCookiesAllowed = createAction(
   'SET_ANALYTICS_COOKIES_ALLOWED',
 )<boolean>();
+
+export const hideInfoBar = createAction('HIDE_INFO_BAR')();

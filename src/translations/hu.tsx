@@ -408,6 +408,13 @@ const hu: Messages = {
         analytics="Analytics cookies"
       />
     ),
+    // TODO translate
+    YellowBar: () => (
+      <>
+        🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
+        inhabitants in their defense against Russia's military aggression. 🇺🇦
+      </>
+    ),
   },
 
   gallery: {

@@ -36,6 +36,7 @@ function persistSelectedState(state: DefaultRootState) {
       main: {
         cookieConsentResult: state.main.cookieConsentResult,
         homeLocation: state.main.homeLocation,
+        showInfoBar: state.main.showInfoBar,
       },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,

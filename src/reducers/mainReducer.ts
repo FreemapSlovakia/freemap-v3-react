@@ -18,6 +18,7 @@ import {
   deleteFeature,
   documentShow,
   enableUpdatingUrl,
+  hideInfoBar,
   Modal,
   removeAdsOnLogin,
   saveHomeLocation,
@@ -59,6 +60,7 @@ export interface MainState {
   analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
   removeAdsOnLogin: boolean;
   documentKey: DocumentKey | null;
+  showInfoBar: boolean;
 }
 
 export const mainInitialState: MainState = {
@@ -77,6 +79,7 @@ export const mainInitialState: MainState = {
   analyticCookiesAllowed: true, // NOTE this is a local "thing" used only for applyCookieConsent action
   removeAdsOnLogin: false,
   documentKey: null,
+  showInfoBar: true,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -233,5 +236,11 @@ export const mainReducer = createReducer<MainState, RootAction>(
       ...state,
       documentKey: action.payload === null ? null : action.payload,
       activeModal: action.payload === null ? state.activeModal : null,
+    };
+  })
+  .handleAction(hideInfoBar, (state) => {
+    return {
+      ...state,
+      showInfoBar: false,
     };
   });
