@@ -438,7 +438,7 @@ export function Main(): ReactElement {
       <Toasts />
 
       <div className="header">
-        {YellowBar && showInfoBar && language === 'sk' && (
+        {YellowBar && showInfoBar && (
           <div className="info-bar">
             <CloseButton onClick={() => dispatch(hideInfoBar())} />
 
