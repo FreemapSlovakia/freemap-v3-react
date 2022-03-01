@@ -17,5 +17,3 @@ declare module '*.overpass' {
   const value: any;
   export default value;
 }
-
-declare module '@mapbox/togeojson';

@@ -51,7 +51,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       fc.features.push(
         lineString(
           line.points.map((p) => [p.lon, p.lat]),
-          { name: line.label, color: line.color },
+          { title: line.label, stroke: line.color },
         ),
       );
     }
@@ -63,8 +63,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     )) {
       fc.features.push(
         polygon([[...line.points, line.points[0]].map((p) => [p.lon, p.lat])], {
-          name: line.label,
-          color: line.color,
+          title: line.label,
+          stroke: line.color,
+          fill: line.color,
         }),
       );
     }
@@ -73,14 +74,14 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   if (set.has('drawingPoints')) {
     for (const p of drawingPoints.points) {
       fc.features.push(
-        point([p.lon, p.lat], { name: p.label, color: p.color }),
+        point([p.lon, p.lat], { title: p.label, 'marker-color': p.color }),
       );
     }
   }
 
   if (set.has('objects')) {
     for (const { lat, lon, tags } of objects.objects) {
-      fc.features.push(point([lon, lat], tags));
+      fc.features.push(point([lon, lat], { title: tags['name'], tags }));
     }
   }
 
@@ -132,16 +133,18 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
   } of pictures) {
     fc.features.push(
       point([lon, lat], {
-        takenAt: takenAt ? new Date(takenAt * 1000).toISOString() : undefined,
-        publishedAt: createdAt
-          ? new Date(createdAt * 1000).toISOString()
-          : undefined,
-        name: title,
+        title,
         description,
-        imageUrl: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
-        webUrl: `${process.env['BASE_URL']}?image=${id}`,
-        author: user,
-        tags,
+        details: {
+          takenAt: takenAt ? new Date(takenAt * 1000).toISOString() : undefined,
+          publishedAt: createdAt
+            ? new Date(createdAt * 1000).toISOString()
+            : undefined,
+          imageUrl: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+          webUrl: `${process.env['BASE_URL']}?image=${id}`,
+          author: user,
+          tags,
+        },
       }),
     );
   }
@@ -157,16 +160,16 @@ function addPlannedRoute(
 
   if (withStops) {
     if (start) {
-      fc.features.push(point([start.lon, start.lat], { name: 'Štart' })); // TODO translate
+      fc.features.push(point([start.lon, start.lat], { title: 'Štart' })); // TODO translate
     }
 
     if (finish) {
-      fc.features.push(point([finish.lon, finish.lat], { name: 'Cieľ' })); // TODO translate
+      fc.features.push(point([finish.lon, finish.lat], { title: 'Cieľ' })); // TODO translate
     }
 
     midpoints.forEach((midpoint, i: number) => {
       fc.features.push(
-        point([midpoint.lon, midpoint.lat], { name: `Zastávka ${i + 1}` }), // TODO translate
+        point([midpoint.lon, midpoint.lat], { title: `Zastávka ${i + 1}` }), // TODO translate
       );
     });
   }
@@ -177,7 +180,7 @@ function addPlannedRoute(
         legs.flatMap((leg) =>
           leg.steps.map((step) => step.geometry.coordinates),
         ),
-        { name: `Alternatíva ${i + 1}` }, // TODO translate
+        { title: `Alternatíva ${i + 1}` }, // TODO translate
       ),
     );
   });
@@ -199,14 +202,16 @@ function addTracking(
       lineString(
         track.trackPoints.map((tp) => [tp.lon, tp.lat]),
         {
-          name: track.label,
-          color: track.color,
-          width: track.width,
-          maxAge: track.maxAge,
-          maxCount: track.maxCount,
-          fromTime: track.fromTime,
-          splitDistance: track.splitDistance,
-          splitDuration: track.splitDuration,
+          title: track.label,
+          stroke: track.color,
+          'stroke-width': track.width,
+          details: {
+            maxAge: track.maxAge,
+            maxCount: track.maxCount,
+            fromTime: track.fromTime,
+            splitDistance: track.splitDistance,
+            splitDuration: track.splitDuration,
+          },
         },
       ),
     );
@@ -224,17 +229,16 @@ function addTracking(
       message,
     } of track.trackPoints) {
       fc.features.push(
-        point([lon, lat], {
-          time: ts,
-          lat,
-          lon,
-          altitude,
-          speed,
-          accuracy,
-          bearing,
-          battery,
-          gsmSignal,
-          message,
+        point(altitude == null ? [lon, lat] : [lon, lat, altitude], {
+          details: {
+            time: ts,
+            speed,
+            accuracy,
+            bearing,
+            battery,
+            gsmSignal,
+            message,
+          },
         }),
       );
     }

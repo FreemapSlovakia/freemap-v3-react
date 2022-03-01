@@ -1,3 +1,4 @@
+import { DOMParser } from '@xmldom/xmldom';
 import {
   Changeset,
   changesetsSet,

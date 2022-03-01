@@ -1,3 +1,4 @@
+import { DOMParser } from '@xmldom/xmldom';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
