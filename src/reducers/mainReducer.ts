@@ -60,7 +60,7 @@ export interface MainState {
   analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
   removeAdsOnLogin: boolean;
   documentKey: DocumentKey | null;
-  showInfoBar: boolean;
+  hiddenInfoBars: Record<string, number>;
 }
 
 export const mainInitialState: MainState = {
@@ -79,7 +79,7 @@ export const mainInitialState: MainState = {
   analyticCookiesAllowed: true, // NOTE this is a local "thing" used only for applyCookieConsent action
   removeAdsOnLogin: false,
   documentKey: null,
-  showInfoBar: true,
+  hiddenInfoBars: {},
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -238,9 +238,12 @@ export const mainReducer = createReducer<MainState, RootAction>(
       activeModal: action.payload === null ? state.activeModal : null,
     };
   })
-  .handleAction(hideInfoBar, (state) => {
+  .handleAction(hideInfoBar, (state, action) => {
     return {
       ...state,
-      showInfoBar: false,
+      hiddenInfoBars: {
+        ...state.hiddenInfoBars,
+        [action.payload.key]: action.payload.ts,
+      },
     };
   });

@@ -183,4 +183,5 @@ export const setAnalyticCookiesAllowed = createAction(
   'SET_ANALYTICS_COOKIES_ALLOWED',
 )<boolean>();
 
-export const hideInfoBar = createAction('HIDE_INFO_BAR')();
+export const hideInfoBar =
+  createAction('HIDE_INFO_BAR')<{ key: string; ts: number }>();

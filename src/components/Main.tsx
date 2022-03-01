@@ -4,7 +4,7 @@ import {
   GalleryItem,
   galleryMergeItem,
 } from 'fm3/actions/galleryActions';
-import { hideInfoBar, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -53,7 +53,6 @@ import {
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
-import CloseButton from 'react-bootstrap/CloseButton';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
@@ -65,6 +64,7 @@ import { AsyncModal } from './AsyncModal';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult';
+import { InfoBar } from './InfoBar';
 import { MainMenuButton } from './mainMenu/MainMenuButton';
 import { MapContextMenu } from './MapContextMenu';
 import { MapDetailsTool } from './MapDetailsTool';
@@ -201,8 +201,6 @@ export function Main(): ReactElement {
   const language = useSelector((state) => state.l10n.language);
 
   const isUserValidated = useSelector((state) => state.auth.validated);
-
-  const showInfoBar = useSelector((state) => state.main.showInfoBar);
 
   const [map, setMap] = useState<Leaflet.Map | null>(null);
 
@@ -363,8 +361,6 @@ export function Main(): ReactElement {
 
   const drawingLines = useSelector(drawingLinePolys);
 
-  const YellowBar = m?.main.YellowBar;
-
   const elevationChartActive = useSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
@@ -438,13 +434,7 @@ export function Main(): ReactElement {
       <Toasts />
 
       <div className="header">
-        {YellowBar && showInfoBar && (
-          <div className="info-bar">
-            <CloseButton onClick={() => dispatch(hideInfoBar())} />
-
-            <YellowBar />
-          </div>
-        )}
+        <InfoBar />
 
         <div className="menus">
           <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>

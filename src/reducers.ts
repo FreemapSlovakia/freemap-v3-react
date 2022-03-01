@@ -84,12 +84,12 @@ export const rootReducer = reduceReducers<DefaultRootState>(
 );
 
 export function getInitialState() {
-  let persisted: Partial<Record<keyof DefaultRootState, unknown>> = {};
+  let persisted: Partial<Record<keyof DefaultRootState, unknown>>;
 
   try {
     persisted = JSON.parse(storage.getItem('store') ?? '{}');
   } catch {
-    // nothing
+    persisted = {};
   }
 
   const initial: Partial<DefaultRootState> = {};

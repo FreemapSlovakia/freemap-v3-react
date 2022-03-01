@@ -403,12 +403,14 @@ const en: Messages = {
         analytics="Analytics cookies"
       />
     ),
-    YellowBar: () => (
-      <>
-        🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
-        inhabitants in their defense against Russia's military aggression. 🇺🇦
-      </>
-    ),
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
+          inhabitants in their defense against Russia's military aggression. 🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {

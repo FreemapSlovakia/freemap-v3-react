@@ -408,12 +408,14 @@ const cs: Messages = {
         analytics="Analytické cookies"
       />
     ),
-    YellowBar: () => (
-      <>
-        🇺🇦 Slovenská komunita OpenStreetMap vyjadřuje podporu obyvatelům
-        Ukrajiny v jejich obraně před vojenskou agresí Ruska. 🇺🇦
-      </>
-    ),
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Slovenská komunita OpenStreetMap vyjadřuje podporu obyvatelům
+          Ukrajiny v jejich obraně před vojenskou agresí Ruska. 🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {
