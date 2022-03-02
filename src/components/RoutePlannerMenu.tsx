@@ -44,7 +44,6 @@ import {
   FaChartArea,
   FaCrosshairs,
   FaDiceThree,
-  FaFlask,
   FaHome,
   FaMapMarkerAlt,
   FaMoneyBill,
@@ -473,20 +472,10 @@ export function RoutePlannerMenu(): ReactElement {
           <div className="dropdown-long" ref={sc}>
             <div />
 
-            {(['osrm', 'gh'] as const).map((api) => (
+            {(['gh', 'osrm'] as const).map((api) => (
               <Fragment key={api}>
                 <Dropdown.Header>
-                  {api === 'osrm' ? (
-                    'OSRM'
-                  ) : (
-                    <>
-                      {'GraphHopper '}
-                      <FaFlask
-                        title={m?.general.experimentalFunction}
-                        className="text-warning"
-                      />
-                    </>
-                  )}
+                  {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
                 </Dropdown.Header>
 
                 {Object.entries(transportTypeDefs)
