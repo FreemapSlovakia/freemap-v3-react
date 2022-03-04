@@ -148,14 +148,14 @@ const hu: Messages = {
     },
     transportType: {
       car: 'Gépkocsi',
-      'car-free': 'Gépkocsi (útdíj nélkül)',
+      // 'car-free': 'Gépkocsi (útdíj nélkül)',
       // bikesharing: 'Kerékpármegosztás',
       // imhd: 'Tömegközlekedés (Pozsony)',
       bike: 'Bicycle', // TODO translate
       bicycle_touring: 'Kerékpártúrázás',
       'foot-stroller': 'Babakocsi / kerekesszék',
       nordic: 'Sífutás',
-      ski: 'Alpesi sí',
+      // ski: 'Alpesi sí',
       foot: 'Gyaloglás',
       hiking: 'Turisztika', // TODO translate
       mtb: 'Mountain bike', // TODO translate
@@ -409,12 +409,14 @@ const hu: Messages = {
       />
     ),
     // TODO translate
-    YellowBar: () => (
-      <>
-        🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
-        inhabitants in their defense against Russia's military aggression. 🇺🇦
-      </>
-    ),
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
+          inhabitants in their defense against Russia's military aggression. 🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {

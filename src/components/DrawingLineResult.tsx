@@ -67,20 +67,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       : undefined,
   );
 
-  const color = line.color;
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    root.style.setProperty('--color-normal', color ?? colors.normal);
-
-    root.style.setProperty(
-      '--color-selected',
-      Color(color || colors.normal)
-        .lighten(0.75)
-        .hex(),
-    );
-  }, [color]);
+  const color = line.color || colors.normal;
 
   const joinWith = useSelector((state) => state.drawingLines.joinWith);
 
@@ -263,11 +250,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           <Polyline
             weight={4}
             pathOptions={{
-              color: selected
-                ? Color(line.color || colors.normal)
-                    .lighten(0.75)
-                    .hex()
-                : line.color || colors.normal,
+              color: selected ? Color(color).lighten(0.75).hex() : color,
             }}
             interactive={false}
             positions={ps
@@ -288,11 +271,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
-            color: selected
-              ? Color(line.color || colors.normal)
-                  .lighten(0.75)
-                  .hex()
-              : line.color || colors.normal,
+            color: selected ? Color(color).lighten(0.75).hex() : color,
           }}
           interactive={interactiveLine}
           bubblingMouseEvents={false}
@@ -318,9 +297,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {futureLinePositions && (
         <Polyline
-          color={Color(line.color || colors.normal)
-            .lighten(0.75)
-            .hex()}
+          color={Color(color).lighten(0.75).hex()}
           weight={4}
           dashArray="6,8"
           interactive={false}

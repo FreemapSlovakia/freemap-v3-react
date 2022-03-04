@@ -311,7 +311,7 @@ export type Messages = {
     zoomOut: string;
     devInfo: () => JSX.Element;
     copyright: string;
-    YellowBar?: () => JSX.Element;
+    infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
   };
   gallery: {

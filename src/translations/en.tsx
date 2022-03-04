@@ -145,14 +145,14 @@ const en: Messages = {
     },
     transportType: {
       car: 'Car',
-      'car-free': 'Car (toll free)',
+      // 'car-free': 'Car (toll free)',
       // bikesharing: 'Bike sharing',
       // imhd: 'Public transport in Bratislava',
       bike: 'Bicycle',
       bicycle_touring: 'Bicycle touring',
       'foot-stroller': 'Stroller / Wheelchair',
       nordic: 'Nordic skiing',
-      ski: 'Downhill skiing',
+      // ski: 'Downhill skiing',
       foot: 'Walking',
       hiking: 'Hiking',
       mtb: 'Mountain bike',
@@ -403,12 +403,14 @@ const en: Messages = {
         analytics="Analytics cookies"
       />
     ),
-    YellowBar: () => (
-      <>
-        🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
-        inhabitants in their defense against Russia's military aggression. 🇺🇦
-      </>
-    ),
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
+          inhabitants in their defense against Russia's military aggression. 🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {

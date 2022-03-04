@@ -45,6 +45,7 @@ import {
 } from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
 import { wikiReducer } from './reducers/wikiReducer';
+import { transportTypeDefs } from './transportTypeDefs';
 
 const reducers = {
   auth: authReducer,
@@ -84,12 +85,12 @@ export const rootReducer = reduceReducers<DefaultRootState>(
 );
 
 export function getInitialState() {
-  let persisted: Partial<Record<keyof DefaultRootState, unknown>> = {};
+  let persisted: Partial<Record<keyof DefaultRootState, unknown>>;
 
   try {
     persisted = JSON.parse(storage.getItem('store') ?? '{}');
   } catch {
-    // nothing
+    persisted = {};
   }
 
   const initial: Partial<DefaultRootState> = {};
@@ -129,6 +130,12 @@ export function getInitialState() {
       ...galleryInitialState,
       ...persisted.gallery,
     };
+  }
+
+  const tt = initial.routePlanner?.transportType;
+
+  if (initial.routePlanner && tt && !transportTypeDefs[tt]) {
+    initial.routePlanner.transportType = 'hiking';
   }
 
   return initial;

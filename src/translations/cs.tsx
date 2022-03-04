@@ -147,15 +147,16 @@ const cs: Messages = {
       home: 'Domů',
     },
     transportType: {
-      car: 'Auto, včetně zpoplatněných silnic',
-      'car-free': 'Auto, mimo zpoplatněných silnic',
+      car: 'Auto',
+      // 'car-toll': 'Auto, včetně zpoplatněných silnic',
+      // 'car-free': 'Auto, mimo zpoplatněných silnic',
       // bikesharing: 'Sdílené kolo',
       // imhd: 'MHD v Bratislavě',
       bike: 'Kolo',
       bicycle_touring: 'Cykloturistika',
       'foot-stroller': 'S kočárkem / Inv. vozík',
       nordic: 'Běžky',
-      ski: 'Sjezdové lyžování',
+      // ski: 'Sjezdové lyžování',
       foot: 'Pěšky',
       hiking: 'Turistika',
       mtb: 'Horské kolo',
@@ -408,12 +409,14 @@ const cs: Messages = {
         analytics="Analytické cookies"
       />
     ),
-    YellowBar: () => (
-      <>
-        🇺🇦 Slovenská komunita OpenStreetMap vyjadřuje podporu obyvatelům
-        Ukrajiny v jejich obraně před vojenskou agresí Ruska. 🇺🇦
-      </>
-    ),
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Slovenská komunita OpenStreetMap vyjadřuje podporu obyvatelům
+          Ukrajiny v jejich obraně před vojenskou agresí Ruska. 🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {

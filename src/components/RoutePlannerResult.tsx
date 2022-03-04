@@ -112,7 +112,7 @@ export function RoutePlannerResult(): ReactElement {
   const [dragging, setDragging] = useState(false);
 
   const onlyStart =
-    transportTypeDefs[transportType].api === 'gh' && mode !== 'route';
+    transportTypeDefs[transportType]?.api === 'gh' && mode !== 'route';
 
   useMapEvent(
     'click',
