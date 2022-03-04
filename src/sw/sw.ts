@@ -1,7 +1,9 @@
+/// <reference lib="webworker" />
+
+declare const self: ServiceWorkerGlobalScope;
+
 import { CacheMode, SwCacheAction } from 'fm3/types/common';
 import { get, set } from 'idb-keyval';
-
-const sw = self as any as ServiceWorkerGlobalScope & typeof globalThis;
 
 const resources = self.__WB_MANIFEST;
 
@@ -13,17 +15,17 @@ const FALLBACK_HTML_URL = '/offline.html';
 
 const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
 
-sw.addEventListener('install', (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(FALLBACK_CACHE_NAME)
       .then((cache) => cache.addAll([FALLBACK_HTML_URL, FALLBACK_LOGO_URL])),
   );
 
-  sw.skipWaiting();
+  self.skipWaiting();
 });
 
-sw.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event) => {
   event.respondWith(
     (async () => {
       const url = new URL(event.request.url);
@@ -36,7 +38,7 @@ sw.addEventListener('fetch', (event) => {
       ) {
         const data = await event.request.formData();
 
-        const client = await sw.clients.get(
+        const client = await self.clients.get(
           event.resultingClientId || event.clientId,
         );
 
@@ -141,13 +143,13 @@ async function serveFromNetwork(event: FetchEvent) {
   }
 }
 
-sw.addEventListener('activate', (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       const cacheNames = await caches.keys();
 
       await Promise.all([
-        sw.clients.claim(), // TODO maybe try to eliminate this
+        self.clients.claim(), // TODO maybe try to eliminate this
 
         // remove old caches
         ...cacheNames.map((cacheName) =>
@@ -196,7 +198,7 @@ async function handleCacheAction(action: SwCacheAction) {
   }
 }
 
-sw.addEventListener('message', (e) => {
+self.addEventListener('message', (e) => {
   if (Array.isArray(e.data)) {
     e.waitUntil(Promise.all(e.data.map((a) => handleCacheAction(a))));
   } else if (typeof e.data === 'object' && e.data) {

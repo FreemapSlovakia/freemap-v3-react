@@ -31,6 +31,9 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
+  }
+
+  interface ServiceWorkerGlobalScope {
     __WB_MANIFEST: { revision: string; url: string }[];
   }
 }
