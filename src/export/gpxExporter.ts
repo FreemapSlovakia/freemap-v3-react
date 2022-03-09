@@ -1,14 +1,21 @@
 export const GPX_NS = 'http://www.topografix.com/GPX/1/1';
 
+export const GARMIN_NS = 'http://www.garmin.com/xmlschemas/GpxExtensions/v3';
+
+export const GPX_STYLE_NS = 'http://www.topografix.com/GPX/gpx_style/0/2"';
+
 export function createElement(
   parent: Element,
-  name: string,
-  text?: { cdata: string } | string | null,
+  name: string | [string, string],
+  text: { cdata: string } | string | null = null,
   attributes: { [key: string]: string } = {},
+  ns = GPX_NS,
 ): Element {
   const doc = parent.ownerDocument;
 
-  const elem = doc.createElementNS(GPX_NS, name);
+  const elem = Array.isArray(name)
+    ? doc.createElementNS(name[0], name[1])
+    : doc.createElementNS(ns, name);
 
   if (text == null) {
     // nothing
