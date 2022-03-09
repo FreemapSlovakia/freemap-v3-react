@@ -219,18 +219,20 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   );
 
   for (let i = 0; ; i++) {
-    const response = await httpRequest({
-      getState,
-      method: 'HEAD',
-      url: `${fmMapserverUrl}/export?token=${encodeURIComponent(data.token)}`,
-    });
+    const t = Date.now();
 
-    if (response.status === 200) {
+    try {
+      await httpRequest({
+        getState,
+        method: 'HEAD',
+        url: `${fmMapserverUrl}/export?token=${encodeURIComponent(data.token)}`,
+      });
+
       break;
-    }
-
-    if (i > 10) {
-      throw new Error('timed out');
+    } catch (err) {
+      if (i > 10 || Date.now() - t < 15000) {
+        throw err;
+      }
     }
   }
 

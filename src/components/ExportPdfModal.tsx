@@ -350,7 +350,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             custom
             value={scale}
             min={60}
-            max={1200}
+            max={960}
             step={10}
             onChange={(e) => {
               setScale(Number(e.currentTarget.value));
