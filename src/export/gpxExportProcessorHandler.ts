@@ -9,7 +9,13 @@ import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
 import { escapeHtml } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
 import { fetchPictures, Picture } from './fetchPictures';
-import { addAttribute, createElement, GPX_NS } from './gpxExporter';
+import {
+  addAttribute,
+  createElement,
+  GARMIN_NS,
+  GPX_NS,
+  GPX_STYLE_NS,
+} from './gpxExporter';
 import { upload } from './upload';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
@@ -24,7 +30,9 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   doc.documentElement.setAttributeNS(
     'http://www.w3.org/2001/XMLSchema-instance',
     'schemaLocation',
-    'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd',
+    `${GPX_NS} http://www.topografix.com/GPX/1/1/gpx.xsd
+      ${GARMIN_NS} https://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd
+      ${GPX_STYLE_NS} https://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd`,
   );
 
   addAttribute(doc.documentElement, 'version', '1.1');
@@ -93,7 +101,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   }
 
   if (set.has('drawingPoints')) {
-    addInfoPoint(doc, drawingPoints);
+    addDrawingPoints(doc, drawingPoints);
   }
 
   if (set.has('objects')) {
@@ -263,6 +271,12 @@ function addADMeasurement(
       createElement(trkEle, 'name', line.label);
     }
 
+    const extEle = createElement(trkEle, 'extensions');
+
+    const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
+
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], line.color);
+
     const trksegEle = createElement(trkEle, 'trkseg');
 
     const points =
@@ -274,7 +288,7 @@ function addADMeasurement(
   }
 }
 
-function addInfoPoint(doc: Document, { points }: DrawingPointsState) {
+function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
   for (const { lat, lon, label } of points) {
     const wptEle = createElement(
       doc.documentElement,
