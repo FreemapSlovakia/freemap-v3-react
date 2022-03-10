@@ -36,7 +36,7 @@ export const trackViewerSetTrackDataProcessor: Processor<
       trackGeojson.features = trackGeojson.features.filter((f) => f.geometry);
     }
 
-    // console.log(trackGeojson);
+    console.log(trackGeojson);
 
     if (action.payload.focus) {
       const geojsonBounds = geoJSON(trackGeojson).getBounds();

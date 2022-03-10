@@ -4,7 +4,7 @@
   "description": "Freemap web portal.",
   "dependencies": {
     "@react-leaflet/core": "1.1.1",
-    "@tmcw/togeojson": "4.5.0",
+    "@tmcw/togeojson": "4.7.0",
     "@turf/along": "6.5.0",
     "@turf/area": "6.5.0",
     "@turf/bbox": "6.5.0",

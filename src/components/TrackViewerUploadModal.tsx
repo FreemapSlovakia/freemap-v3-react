@@ -60,7 +60,7 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleGpxDrop,
     accept:
-      'application/gpx+xml,application/octet-stream,.gpx,application/vnd.google-earth.kml+xml,.kml',
+      'application/gpx+xml,.gpx,application/vnd.google-earth.kml+xml,.kml',
     multiple: false,
   });
 

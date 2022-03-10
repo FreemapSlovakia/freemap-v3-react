@@ -333,8 +333,10 @@ export function Main(): ReactElement {
         }
       }
 
-      const gpxFiles = acceptedFiles.filter((file) =>
-        file.name.toLowerCase().endsWith('.gpx'),
+      const gpxFiles = acceptedFiles.filter(
+        (file) =>
+          file.name.toLowerCase().endsWith('.gpx') ||
+          file.name.toLowerCase().endsWith('.kml'),
       );
 
       if (gpxFiles.length) {
@@ -349,6 +351,8 @@ export function Main(): ReactElement {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
+    accept:
+      'image/jpeg,.jpg,.jpeg,application/gpx+xml,.gpx,application/vnd.google-earth.kml+xml,.kml',
   });
 
   const isSelecting = useSelector(selectingModeSelector);

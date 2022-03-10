@@ -172,7 +172,7 @@ export function TrackViewerResult({
   }`; // otherwise GeoJSON will still display the first data
 
   const xxx = getFeatures('LineString').map((feature) => ({
-    name: feature.properties && feature.properties['name'],
+    props: feature.properties,
     lineData: feature.geometry.coordinates.map(([lng, lat]) => ({
       lat,
       lng,
@@ -191,21 +191,22 @@ export function TrackViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
-      {xxx.map(({ lineData, name }, i) => (
+      {xxx.map(({ lineData, props }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
-          weight={10}
+          weight={8}
           interactive={interactive}
           positions={lineData}
           color="#fff"
+          opacity={0.5}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: setThisTool,
           }}
         >
-          {name && (
+          {props?.['name'] && (
             <Tooltip className="compact" direction="top" permanent>
-              <span>{name}</span>
+              <span>{props?.['name']}</span>
             </Tooltip>
           )}
         </Polyline>
@@ -224,24 +225,25 @@ export function TrackViewerResult({
                 ? { 0.0: 'black', 0.5: '#838', 1.0: 'white' }
                 : { 0.0: 'green', 0.5: 'white', 1.0: 'red' }
             }
-            weight={6}
+            weight={4}
             outlineWidth={0}
           />
         ))}
 
-      {colorizeTrackBy === null && (
-        <Polyline
-          key={`poly-${interactive ? 'a' : 'b'}`}
-          weight={6}
-          interactive={interactive}
-          positions={xxx.map(({ lineData }) => lineData)}
-          color="#838"
-          bubblingMouseEvents={false}
-          eventHandlers={{
-            click: setThisTool,
-          }}
-        />
-      )}
+      {colorizeTrackBy === null &&
+        xxx.map(({ lineData, props }, i) => (
+          <Polyline
+            key={`poly-${i}-${interactive ? 'a' : 'b'}`}
+            weight={4}
+            interactive={interactive}
+            positions={lineData}
+            color={props?.['stroke'] ?? '#838'}
+            bubblingMouseEvents={false}
+            eventHandlers={{
+              click: setThisTool,
+            }}
+          />
+        ))}
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <RichMarker

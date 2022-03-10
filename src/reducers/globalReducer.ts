@@ -9,7 +9,7 @@ import {
   Point,
 } from 'fm3/actions/drawingLineActions';
 import {
-  drawingChangeProperties as drawingChangeProperties,
+  drawingChangeProperties,
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
 import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
@@ -19,12 +19,12 @@ import { DefaultRootState } from 'react-redux';
 import { isActionOf } from 'typesafe-actions';
 import {
   cleanState as routePlannerCleanState,
-  routePlannerInitialState as routePlannerInitialState,
+  routePlannerInitialState,
 } from './routePlannerReducer';
 import { searchInitialState } from './searchReducer';
 import {
   cleanState as trackViewerCleanState,
-  trackViewerInitialState as trackViewerInitialState,
+  trackViewerInitialState,
 } from './trackViewerReducer';
 
 export function preGlobalReducer(
@@ -117,18 +117,27 @@ export function preGlobalReducer(
             : feature;
 
           if (geometry?.type === 'Point') {
+            const color = new URL(
+              feature.properties?.['icon'] ?? 'about:blank',
+            ).searchParams.get('color');
+
             draft.drawingPoints.points.push({
               label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
-              color: '',
+              color: color ? '#' + color : '',
             });
-          } else if (geometry?.type === 'LineString') {
+          } else if (
+            geometry?.type === 'LineString' ||
+            geometry?.type === 'Polygon'
+          ) {
             let id = 0;
 
             const points: Point[] = [];
 
-            for (const node of geometry.coordinates) {
+            for (const node of geometry?.type === 'Polygon'
+              ? geometry.coordinates[0]
+              : geometry.coordinates) {
               points.push({
                 lat: node[1],
                 lon: node[0],
@@ -137,9 +146,9 @@ export function preGlobalReducer(
             }
 
             draft.drawingLines.lines.push({
-              type: 'line',
+              type: geometry?.type === 'Polygon' ? 'polygon' : 'line',
               label: feature.properties?.['name'],
-              color: '',
+              color: feature.properties?.['stroke'] ?? '',
               points,
             });
           }
