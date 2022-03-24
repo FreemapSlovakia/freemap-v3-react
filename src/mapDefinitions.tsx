@@ -137,8 +137,7 @@ export interface LayerDef {
   tms?: boolean;
   extraScales?: number[];
   errorTileUrl?: string;
-  tileSize?: number;
-  zoomOffset?: number;
+  scaleWithDpi?: boolean;
   cors?: boolean;
 }
 
@@ -151,8 +150,6 @@ export interface OverlayLayerDef extends LayerDef {
   type: OverlayLetters;
   key?: [code: string, shift: boolean];
 }
-
-const isHdpi = (window.devicePixelRatio || 1) > 1.4;
 
 function legacyFreemap(
   type: BaseLayerLetters,
@@ -208,9 +205,8 @@ export const baseLayers: BaseLayerDef[] = [
     subdomains: ['server', 'services'],
     icon: <FaPlane />,
     minZoom: 0,
-    maxNativeZoom: isHdpi ? 18 : 19,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
     key: ['KeyS', false],
     attribution: [
       {
@@ -224,7 +220,8 @@ export const baseLayers: BaseLayerDef[] = [
     type: 'Z',
     url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minNativeZoom: 0,
-    maxNativeZoom: isHdpi ? 18 : 19,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
     icon: <FaPlane />,
     attribution: [
       {
@@ -235,8 +232,6 @@ export const baseLayers: BaseLayerDef[] = [
     ],
     key: ['KeyZ', false],
     errorTileUrl: white1x1,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
   },
   {
     type: 'M',
@@ -306,7 +301,7 @@ export const baseLayers: BaseLayerDef[] = [
     type: '4',
     url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minNativeZoom: 0,
-    maxNativeZoom: isHdpi ? 17 : 18,
+    maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
       {
@@ -317,14 +312,13 @@ export const baseLayers: BaseLayerDef[] = [
     ],
     key: ['KeyD', true],
     errorTileUrl: white1x1,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
+    scaleWithDpi: true,
   },
   {
     type: '5',
     url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minNativeZoom: 0,
-    maxNativeZoom: isHdpi ? 16 : 17,
+    maxNativeZoom: 17,
     icon: <GiHills />,
     attribution: [
       {
@@ -335,8 +329,7 @@ export const baseLayers: BaseLayerDef[] = [
     ],
     key: ['KeyD', false],
     errorTileUrl: black1x1,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
+    scaleWithDpi: true,
   },
 ];
 

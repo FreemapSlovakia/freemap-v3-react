@@ -427,9 +427,19 @@ export const handleLocationChange = (
     typeof customLayers === 'string' &&
     JSON.stringify(getState().map.customLayers) !== customLayers
   ) {
-    dispatch(
-      mapSetCustomLayers(assertType<CustomMap[]>(JSON.parse(customLayers))),
-    );
+    try {
+      const cms = assertType<CustomMap[]>(JSON.parse(customLayers));
+
+      for (const cm of cms) {
+        if ((cm as any).tileSize) {
+          cm.scaleWithDpi = true;
+        }
+      }
+
+      dispatch(mapSetCustomLayers(cms));
+    } catch {
+      // ignore
+    }
   } else if (getState().map.customLayers.length && !customLayers) {
     dispatch(mapSetCustomLayers([]));
   }

@@ -25,8 +25,7 @@ export type CustomMap = Pick<
   | 'subdomains'
   | 'tms'
   | 'extraScales'
-  | 'tileSize'
-  | 'zoomOffset'
+  | 'scaleWithDpi'
   | 'cors'
 > & { type: `.${number}` | `:${number}`; url: string };
 

@@ -38,8 +38,7 @@ export function Layers(): ReactElement | null {
     extraScales,
     tms,
     errorTileUrl = missingTile,
-    tileSize = 256,
-    zoomOffset = 0,
+    scaleWithDpi = false,
     cors = true,
   }: Pick<
     LayerDef,
@@ -51,9 +50,8 @@ export function Layers(): ReactElement | null {
     | 'extraScales'
     | 'tms'
     | 'errorTileUrl'
-    | 'tileSize'
-    | 'zoomOffset'
     | 'cors'
+    | 'scaleWithDpi'
   > & { type: BaseLayerLetters | OverlayLetters }) => {
     if (type === 'I') {
       return (
@@ -75,6 +73,8 @@ export function Layers(): ReactElement | null {
       return;
     }
 
+    const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
+
     return (
       !!url && (
         <ScaledTileLayer
@@ -82,15 +82,21 @@ export function Layers(): ReactElement | null {
           url={url}
           minZoom={minZoom}
           maxZoom={20}
-          maxNativeZoom={maxNativeZoom}
+          maxNativeZoom={
+            maxNativeZoom === undefined
+              ? undefined
+              : isHdpi
+              ? maxNativeZoom - 1
+              : maxNativeZoom
+          }
           opacity={layersSettings[type]?.opacity ?? 1}
           zIndex={zIndex}
           subdomains={subdomains}
           errorTileUrl={errorTileUrl}
           extraScales={extraScales}
           tms={tms}
-          tileSize={tileSize}
-          zoomOffset={zoomOffset}
+          tileSize={isHdpi ? 128 : 256}
+          zoomOffset={isHdpi ? 1 : 0}
           cors={cors}
         />
       )
