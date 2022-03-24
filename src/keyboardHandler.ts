@@ -1,4 +1,9 @@
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  overlayLayers,
+  OverlayLetters,
+} from 'fm3/mapDefinitions';
 import { DefaultRootState } from 'react-redux';
 import {
   drawingLineJoinStart,
@@ -164,23 +169,37 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
       (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
     );
 
-    if (baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)) {
-      return mapRefocus({ mapType: baseLayer.type });
+    const baseLayerType = (
+      event.code.startsWith('Digit') && !event.shiftKey
+        ? '.' + event.code.slice(5)
+        : baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)
+        ? baseLayer.type
+        : null
+    ) as BaseLayerLetters;
+
+    if (baseLayerType) {
+      return mapRefocus({ mapType: baseLayerType });
     }
 
     const overlayLayer = overlayLayers.find(
       (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
     );
 
-    if (overlayLayer && (!overlayLayer.adminOnly || state.auth.user?.isAdmin)) {
-      const { type } = overlayLayer;
+    const overlayLayerType = (
+      event.code.startsWith('Digit') && event.shiftKey
+        ? ':' + event.code.slice(5)
+        : overlayLayer && (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
+        ? overlayLayer.type
+        : null
+    ) as OverlayLetters;
 
+    if (overlayLayerType) {
       const next = new Set(state.map.overlays);
 
-      if (next.has(type)) {
-        next.delete(type);
+      if (next.has(overlayLayerType)) {
+        next.delete(overlayLayerType);
       } else {
-        next.add(type);
+        next.add(overlayLayerType);
       }
 
       return mapRefocus({ overlays: [...next] });

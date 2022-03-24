@@ -4,6 +4,7 @@ import { gallerySetFilter } from 'fm3/actions/galleryActions';
 import { Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
+  mapSetCustomLayers,
   mapSetLayersSettings,
   mapSetOverlayPaneOpacity,
   MapStateBase,
@@ -28,12 +29,17 @@ export const mapInitialState: MapState = {
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
+  customLayers: [],
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
   .handleAction(mapSetLayersSettings, (state, action) => ({
     ...state,
     layersSettings: action.payload,
+  }))
+  .handleAction(mapSetCustomLayers, (state, action) => ({
+    ...state,
+    customLayers: action.payload,
   }))
   .handleAction(mapSetOverlayPaneOpacity, (state, action) => ({
     ...state,

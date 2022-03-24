@@ -42,7 +42,11 @@ export function getMapStateFromUrl(
 
   const layers = typeof query['layers'] === 'string' ? query['layers'] : '';
 
-  const base = layers.charAt(0);
+  let base = layers.charAt(0);
+
+  if (base === '.') {
+    base += layers.charAt(1);
+  }
 
   const mapType = is<BaseLayerLetters>(base) ? base : undefined;
 

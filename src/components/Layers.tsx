@@ -1,10 +1,11 @@
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
 import {
-  BaseLayerDef,
+  BaseLayerLetters,
   baseLayers,
-  OverlayLayerDef,
+  LayerDef,
   overlayLayers,
+  OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
@@ -40,19 +41,20 @@ export function Layers(): ReactElement | null {
     tileSize = 256,
     zoomOffset = 0,
     cors = true,
-  }: BaseLayerDef | OverlayLayerDef) => {
-    // if (type === 'S') {
-    //   return (
-    //     <BingLayer
-    //       key="S"
-    //       bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-    //       maxNativeZoom={maxNativeZoom}
-    //       maxZoom={20}
-    //       zIndex={zIndex}
-    //     />
-    //   );
-    // }
-
+  }: Pick<
+    LayerDef,
+    | 'url'
+    | 'minZoom'
+    | 'maxNativeZoom'
+    | 'zIndex'
+    | 'subdomains'
+    | 'extraScales'
+    | 'tms'
+    | 'errorTileUrl'
+    | 'tileSize'
+    | 'zoomOffset'
+    | 'cors'
+  > & { type: BaseLayerLetters | OverlayLetters }) => {
     if (type === 'I') {
       return (
         <GalleryLayer
@@ -95,16 +97,24 @@ export function Layers(): ReactElement | null {
     );
   };
 
+  const customLayers = useSelector((state) => state.map.customLayers);
+
   return window.isRobot ? null : (
     <>
-      {...baseLayers
+      {baseLayers
         .filter(({ type }) => type === mapType)
         .filter(({ adminOnly }) => isAdmin || !adminOnly)
         .map((item) => getTileLayer(item))}
-      {...overlayLayers
+      {customLayers
+        .filter(({ type }) => type === mapType)
+        .map((cm) => getTileLayer(cm))}
+      {overlayLayers
         .filter(({ type }) => overlays.includes(type))
         .filter(({ adminOnly }) => isAdmin || !adminOnly)
         .map((item) => getTileLayer(item))}
+      {customLayers
+        .filter(({ type }) => overlays.includes(type as any))
+        .map((cm) => getTileLayer(cm))}
       ]
     </>
   );

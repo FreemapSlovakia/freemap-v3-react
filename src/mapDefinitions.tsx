@@ -120,9 +120,9 @@ export const overlayLetters = [
   'w',
 ] as const;
 
-export type BaseLayerLetters = typeof baseLayerLetters[number];
+export type BaseLayerLetters = typeof baseLayerLetters[number] | `.${number}`;
 
-export type OverlayLetters = typeof overlayLetters[number];
+export type OverlayLetters = typeof overlayLetters[number] | `:${number}`;
 
 export interface LayerDef {
   icon: ReactElement;
@@ -134,7 +134,6 @@ export interface LayerDef {
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
   subdomains?: string | string[];
-  strava?: boolean;
   tms?: boolean;
   extraScales?: number[];
   errorTileUrl?: string;
@@ -255,7 +254,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['Digit1', true],
+    key: ['KeyQ', false],
   },
   {
     type: 'p',
@@ -273,7 +272,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['Digit2', true],
+    key: ['KeyN', false],
   },
   {
     type: 'd',
@@ -291,7 +290,7 @@ export const baseLayers: BaseLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: ['Digit3', true],
+    key: ['KeyQ', false],
   },
   {
     type: 'h',
@@ -301,7 +300,7 @@ export const baseLayers: BaseLayerDef[] = [
     icon: <AiFillBank />,
 
     attribution: [],
-    key: ['Digit9', true],
+    key: ['KeyH', false],
   },
   {
     type: '4',
@@ -316,7 +315,7 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
-    key: ['Digit4', false],
+    key: ['KeyD', true],
     errorTileUrl: white1x1,
     tileSize: isHdpi ? 128 : 256,
     zoomOffset: isHdpi ? 1 : 0,
@@ -334,7 +333,7 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
-    key: ['Digit5', false],
+    key: ['KeyD', false],
     errorTileUrl: black1x1,
     tileSize: isHdpi ? 128 : 256,
     zoomOffset: isHdpi ? 1 : 0,
@@ -400,7 +399,6 @@ export const overlayLayers: OverlayLayerDef[] = [
       | [string, boolean]
       | undefined,
     zIndex: 3,
-    strava: true,
     errorTileUrl: transparent1x1,
   })),
   {
@@ -455,19 +453,17 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   ...(
     [
-      ['n1', ['Digit1', false], ''],
-      ['n2', ['Digit2', false], 'h'],
-      ['n3', ['Digit3', false], 'c'],
+      ['n1', ''],
+      ['n2', 'h'],
+      ['n3', 'c'],
     ] as const
-  ).map(([type, key, suffix]) => ({
+  ).map(([type, suffix]) => ({
     type,
     icon: <FaFont />,
     url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: key as [string, boolean] | undefined,
-
     zIndex: 3,
   })),
   {
@@ -477,7 +473,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 12,
     key: ['KeyR', true],
-
     zIndex: 5,
     attribution: [FM_ATTR],
   },

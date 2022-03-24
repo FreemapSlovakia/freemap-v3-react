@@ -25,7 +25,11 @@ import {
   ShowModal,
   Tool,
 } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
+import {
+  CustomMap,
+  mapRefocus,
+  mapSetCustomLayers,
+} from 'fm3/actions/mapActions';
 import {
   osmClear,
   osmLoadNode,
@@ -53,7 +57,7 @@ import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
 import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
-import { is } from 'typescript-is';
+import { assertType, is } from 'typescript-is';
 import { RootAction } from './actions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { mapsLoad } from './actions/mapsActions';
@@ -416,6 +420,19 @@ export const handleLocationChange = (
   }
 
   handleGallery(getState, dispatch, query);
+
+  const customLayers = query['custom-layers'];
+
+  if (
+    typeof customLayers === 'string' &&
+    JSON.stringify(getState().map.customLayers) !== customLayers
+  ) {
+    dispatch(
+      mapSetCustomLayers(assertType<CustomMap[]>(JSON.parse(customLayers))),
+    );
+  } else if (getState().map.customLayers.length && !customLayers) {
+    dispatch(mapSetCustomLayers([]));
+  }
 
   const diff = getMapStateDiffFromUrl(
     getMapStateFromUrl(location),

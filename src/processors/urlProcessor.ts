@@ -104,6 +104,10 @@ export const urlProcessor: Processor = {
       ? []
       : queryParts;
 
+    if (map.customLayers.length) {
+      historyParts.push(['custom-layers', JSON.stringify(map.customLayers)]);
+    }
+
     if (
       routePlanner.start ||
       routePlanner.finish ||
