@@ -1112,6 +1112,8 @@ const hu: Messages = {
       '4': 'Light Hillshading DMR 5.0', // TODO translate
       '5': 'Gray Hillshading DMR 5.0', // TODO translate
     },
+    customBase: 'Custom map', // TODO translate
+    customOverlay: 'Custom map overlay', // TODO translate
     type: {
       map: 'térkép',
       data: 'adatok',

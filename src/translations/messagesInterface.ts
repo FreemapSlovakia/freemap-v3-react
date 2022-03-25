@@ -619,6 +619,8 @@ export type Messages = {
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
     letters: Record<BaseLayerLetters | OverlayLetters, string>;
+    customBase: string;
+    customOverlay: string;
     type: {
       map: string;
       data: string;

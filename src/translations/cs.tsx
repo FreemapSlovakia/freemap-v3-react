@@ -1110,6 +1110,8 @@ const cs: Messages = {
       '4': 'Světlé stínování DMR 5.0',
       '5': 'Šedé stínování DMR 5.0',
     },
+    customBase: 'Vlastná mapa', // TODO translate
+    customOverlay: 'Vlastné prekrytie mapy', // TODO translate
     type: {
       map: 'mapa',
       data: 'data',

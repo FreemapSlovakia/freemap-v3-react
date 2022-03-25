@@ -2,10 +2,12 @@ import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import {
+  BaseLayerLetters,
   baseLayers,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
   overlayLayers,
+  OverlayLetters,
   overlayLetters,
 } from 'fm3/mapDefinitions';
 import { Fragment, ReactElement, useCallback, useState } from 'react';
@@ -21,6 +23,7 @@ import {
   FaRegListAlt,
   FaTimes,
 } from 'react-icons/fa';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
@@ -50,10 +53,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     overlayPaneOpacity !== initOverlayPaneOpacity ||
     layersSettings !== initLayersSettings;
 
-  const selectedLayerDetails = [...baseLayers, ...overlayLayers].find(
-    ({ type }) => type === selectedLayer,
-  );
-
   const nf = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -62,6 +61,44 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
+
+  const customLayers = useSelector((state) => state.map.customLayers);
+
+  const bases = [
+    ...baseLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith('.'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), false] as const,
+      })),
+  ];
+
+  const ovls = [
+    ...overlayLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith(':'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), true] as const,
+      })),
+  ];
+
+  const selectedLayerDetails = [...bases, ...ovls].find(
+    ({ type }) => type === selectedLayer,
+  );
+
+  function getName(type: BaseLayerLetters | OverlayLetters) {
+    return type.startsWith('.')
+      ? m?.mapLayers.customBase + ' ' + type.slice(1)
+      : type.startsWith(':')
+      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+      : m?.mapLayers.letters[type];
+  }
 
   return (
     <Modal show={show} onHide={close}>
@@ -123,7 +160,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                   title={
                     <>
                       {selectedLayerDetails.icon}{' '}
-                      {m?.mapLayers.letters[selectedLayerDetails.type]}{' '}
+                      {getName(selectedLayerDetails.type)}{' '}
                       {nf.format(
                         (layersSettings[selectedLayer]?.opacity ?? 1) * 100,
                       )}{' '}
@@ -131,46 +168,45 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     </>
                   }
                 >
-                  {[...baseLayers, ...overlayLayers].map(
-                    ({ type, icon }, i) => (
-                      <Fragment key={type}>
-                        {i === baseLayers.length && <Dropdown.Divider />}
-                        <Dropdown.Item
-                          eventKey={type}
-                          active={type === selectedLayer}
-                        >
-                          {icon} {m?.mapLayers.letters[type]}
-                          {(overlayLetters as readonly string[]).includes(
-                            type,
-                          ) && (
-                            <>
-                              {' ('}
-                              {nf.format(
-                                (layersSettings[type]?.opacity ?? 1) * 100,
-                              )}{' '}
-                              %)
-                            </>
-                          )}{' '}
-                          <FaEllipsisH
-                            color={
-                              layersSettings[type]?.showInToolbar ??
-                              defaultToolbarLayerLetters.includes(type)
-                                ? ''
-                                : '#ddd'
-                            }
-                          />{' '}
-                          <FaRegListAlt
-                            color={
-                              layersSettings[type]?.showInMenu ??
-                              defaultMenuLayerLetters.includes(type)
-                                ? ''
-                                : '#ddd'
-                            }
-                          />
-                        </Dropdown.Item>
-                      </Fragment>
-                    ),
-                  )}
+                  {[...bases, ...ovls].map(({ type, icon }, i) => (
+                    <Fragment key={type}>
+                      {i === bases.length && <Dropdown.Divider />}
+                      <Dropdown.Item
+                        eventKey={type}
+                        active={type === selectedLayer}
+                      >
+                        {icon} {getName(type)}
+                        {((overlayLetters as readonly string[]).includes(
+                          type,
+                        ) ||
+                          type.charAt(0) === ':') && (
+                          <>
+                            {' ('}
+                            {nf.format(
+                              (layersSettings[type]?.opacity ?? 1) * 100,
+                            )}{' '}
+                            %)
+                          </>
+                        )}{' '}
+                        <FaEllipsisH
+                          color={
+                            layersSettings[type]?.showInToolbar ??
+                            defaultToolbarLayerLetters.includes(type)
+                              ? ''
+                              : '#ddd'
+                          }
+                        />{' '}
+                        <FaRegListAlt
+                          color={
+                            layersSettings[type]?.showInMenu ??
+                            defaultMenuLayerLetters.includes(type)
+                              ? ''
+                              : '#ddd'
+                          }
+                        />
+                      </Dropdown.Item>
+                    </Fragment>
+                  ))}
                 </DropdownButton>
               </Form.Group>
 
@@ -226,7 +262,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 }}
               />
 
-              {overlayLetters.includes(selectedLayer as any) && (
+              {(overlayLetters.includes(selectedLayer as any) ||
+                selectedLayer.charAt(0) === ':') && (
                 <Form.Group className="mt-2">
                   <Form.Label>{m?.settings.overlayOpacity}</Form.Label>
 

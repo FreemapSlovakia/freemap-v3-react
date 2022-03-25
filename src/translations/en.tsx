@@ -1094,6 +1094,8 @@ const en: Messages = {
       '4': 'Light Hillshading DMR 5.0',
       '5': 'Gray Hillshading DMR 5.0',
     },
+    customBase: 'Custom map',
+    customOverlay: 'Custom map overlay',
     type: {
       map: 'map',
       data: 'data',

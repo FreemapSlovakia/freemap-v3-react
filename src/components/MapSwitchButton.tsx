@@ -32,12 +32,13 @@ import {
   FaRegCircle,
   FaRegMap,
 } from 'react-icons/fa';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typescript-is';
 import { Checkbox } from './Checkbox';
 
-function getKbdShortcut(key?: [string, boolean]) {
+function getKbdShortcut(key?: readonly [string, boolean]) {
   return (
     key && (
       <kbd className="ml-1">
@@ -174,10 +175,36 @@ export function MapSwitchButton(): ReactElement {
 
   const layersSettings = useSelector((state) => state.map.layersSettings);
 
+  const customLayers = useSelector((state) => state.map.customLayers);
+
+  const bases = [
+    ...baseLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith('.'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), false] as const,
+      })),
+  ];
+
+  const ovls = [
+    ...overlayLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith(':'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), true] as const,
+      })),
+  ];
+
   return (
     <>
       <ButtonGroup className="dropup d-none d-sm-inline-flex">
-        {baseLayers
+        {bases
           .filter(
             (l) =>
               layersSettings[l.type]?.showInToolbar ??
@@ -186,7 +213,11 @@ export function MapSwitchButton(): ReactElement {
           .map(({ type, icon }) => (
             <Button
               variant="secondary"
-              title={m?.mapLayers.letters[type]}
+              title={
+                type.startsWith('.')
+                  ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                  : m?.mapLayers.letters[type]
+              }
               key={type}
               data-type={type}
               active={mapType === type}
@@ -196,7 +227,7 @@ export function MapSwitchButton(): ReactElement {
             </Button>
           ))}
 
-        {overlayLayers
+        {ovls
           .filter(
             (l) =>
               (l.type === 'i' && overlays.includes('i')) ||
@@ -207,10 +238,14 @@ export function MapSwitchButton(): ReactElement {
           .map(({ type, icon }) => (
             <Button
               variant="secondary"
-              title={m?.mapLayers.letters[type]}
+              title={
+                type.startsWith(':')
+                  ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                  : m?.mapLayers.letters[type]
+              }
               key={type}
               data-type={type}
-              active={overlays.includes(type)}
+              active={overlays.includes(type as OverlayLetters)}
               onClick={handleOverlayClick}
             >
               {icon}
@@ -287,7 +322,7 @@ export function MapSwitchButton(): ReactElement {
 
             {
               // TODO base and overlay layers have too much duplicate code
-              baseLayers
+              bases
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .filter(
                   (l) =>
@@ -322,7 +357,9 @@ export function MapSwitchButton(): ReactElement {
                             : 'none',
                       }}
                     >
-                      {m?.mapLayers.letters[type]}
+                      {type.startsWith('.')
+                        ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                        : m?.mapLayers.letters[type]}
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
@@ -378,7 +415,9 @@ export function MapSwitchButton(): ReactElement {
                             : 'none',
                       }}
                     >
-                      {m?.mapLayers.letters[type]}
+                      {type.startsWith(':')
+                        ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                        : m?.mapLayers.letters[type]}
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (

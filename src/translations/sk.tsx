@@ -1140,6 +1140,8 @@ const sk: Messages = {
       '4': 'Svetlé tieňovanie DMR 5.0',
       '5': 'Sivé tieňovanie DMR 5.0',
     },
+    customBase: 'Vlastná mapa',
+    customOverlay: 'Vlastné prekrytie mapy',
     type: {
       map: 'mapa',
       data: 'dáta',
