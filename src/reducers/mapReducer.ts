@@ -120,5 +120,6 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
       zoom: map?.zoom ?? state.zoom,
       mapType: map?.mapType ?? state.mapType,
       overlays: map?.overlays ?? state.overlays,
+      customLayers: map?.customLayers ?? state.customLayers,
     }),
   );

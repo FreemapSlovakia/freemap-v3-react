@@ -35,7 +35,10 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   galleryFilter?: GalleryFilter;
   trackViewer?: TrackViewerState;
   map?: Partial<
-    Pick<MapState, 'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays'>
+    Pick<
+      MapState,
+      'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays' | 'customLayers'
+    >
   >;
   objectsV2?: {
     active: string[];

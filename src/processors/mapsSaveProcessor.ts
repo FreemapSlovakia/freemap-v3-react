@@ -122,6 +122,7 @@ function getMapDataFromState(state: DefaultRootState): MapData {
       lon: map.lon,
       zoom: map.zoom,
       overlays: map.overlays,
+      customLayers: map.customLayers,
     },
   };
 }
