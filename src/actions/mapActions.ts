@@ -1,4 +1,9 @@
-import { BaseLayerLetters, LayerDef, OverlayLetters } from 'fm3/mapDefinitions';
+import {
+  BaseLayerLetters,
+  LayerDef,
+  Num1digit,
+  OverlayLetters,
+} from 'fm3/mapDefinitions';
 import { createAction } from 'typesafe-actions';
 
 export interface MapViewState {
@@ -15,11 +20,10 @@ export type LayerSettings = {
   showInToolbar?: boolean;
 };
 
-export type CustomMap = Pick<
+export type CustomLayer = Pick<
   LayerDef,
   | 'url'
   | 'minZoom'
-  | 'minNativeZoom'
   | 'maxNativeZoom'
   | 'zIndex'
   | 'subdomains'
@@ -27,12 +31,12 @@ export type CustomMap = Pick<
   | 'extraScales'
   | 'scaleWithDpi'
   | 'cors'
-> & { type: `.${number}` | `:${number}`; url: string };
+> & { type: `.${Num1digit}` | `:${Num1digit}`; url: string };
 
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   overlayPaneOpacity: number;
-  customLayers: CustomMap[]; // URL is mandatory here
+  customLayers: CustomLayer[]; // URL is mandatory here
 }
 
 export const mapRefocus = createAction('MAP_REFOCUS')<
@@ -48,5 +52,5 @@ export const mapSetOverlayPaneOpacity = createAction(
 )<number>();
 
 export const mapSetCustomLayers = createAction('MAP_SET_CUSTOM_LAYERS')<
-  CustomMap[]
+  CustomLayer[]
 >();

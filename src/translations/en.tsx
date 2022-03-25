@@ -625,8 +625,8 @@ const en: Messages = {
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
     },
-    layer: 'Layer:',
-    overlayOpacity: 'Opacity:',
+    layer: 'Layer',
+    overlayOpacity: 'Opacity',
     showInMenu: 'Show in menu', // TODO translate
     showInToolbar: 'Show in toolbar', // TODO translate
     trackViewerEleSmoothing: {
@@ -636,6 +636,8 @@ const en: Messages = {
     },
     saveSuccess: 'Settings have been saved.',
     savingError: ({ err }) => `Error saving settings: ${err}`,
+    customLayersDef: 'Custom map layers definition',
+    customLayersDefError: 'Invalid definition of custom map layers.',
   },
 
   changesets: {

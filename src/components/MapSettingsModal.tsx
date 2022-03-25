@@ -1,4 +1,6 @@
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
+import { CustomLayer, mapSetCustomLayers } from 'fm3/actions/mapActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import {
@@ -6,11 +8,20 @@ import {
   baseLayers,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
+  NoncustomLayerLetters,
   overlayLayers,
   OverlayLetters,
   overlayLetters,
 } from 'fm3/mapDefinitions';
-import { Fragment, ReactElement, useCallback, useState } from 'react';
+import {
+  FormEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import { FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -20,11 +31,13 @@ import {
   FaCheck,
   FaCog,
   FaEllipsisH,
+  FaFlask,
   FaRegListAlt,
   FaTimes,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
+import { assertType } from 'typescript-is';
 
 type Props = { show: boolean };
 
@@ -48,10 +61,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const [selectedLayer, setSelectedLeyer] = useState('X');
 
   const dispatch = useDispatch();
-
-  const userMadeChanges =
-    overlayPaneOpacity !== initOverlayPaneOpacity ||
-    layersSettings !== initLayersSettings;
 
   const nf = useNumberFormat({
     minimumFractionDigits: 0,
@@ -97,23 +106,76 @@ export function MapSettingsModal({ show }: Props): ReactElement {
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
       ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-      : m?.mapLayers.letters[type];
+      : m?.mapLayers.letters[type as NoncustomLayerLetters];
   }
+
+  const initialCustomLayersDef = useMemo(
+    () =>
+      customLayers.length
+        ? JSON.stringify(customLayers, null, 2)
+        : `// this is a temporary least-effort solution of configuring custom map definitions
+// remove all commentes (starting with // to end of line) because it must be a valid JSON
+[
+  {
+    "type": ".1", // prefix 1-digit number with "." for base layers and ":" for overlay layers
+    "url": "https://example.com/{z}/{x}/{y}.jpg",
+    "minZoom": 0,
+    "maxNativeZoom": 18,
+    // "zIndex": 0, // for overlays
+    // "subdomains": "abc",
+    // "tms": false, // set to true for TMS, false for XYZ
+    // "extraScales": [2, 3], // for maps supporting multiple scales
+    // "scaleWithDpi": true,
+    // "cors": false
+  }
+]
+      `,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const [customLayersDef, setCustomLayersDef] = useState(
+    initialCustomLayersDef,
+  );
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      dispatch(
+        mapSetCustomLayers(
+          assertType<CustomLayer[]>(JSON.parse(customLayersDef)),
+        ),
+      );
+    } catch {
+      dispatch(
+        toastsAdd({
+          id: 'cusomLayersDef',
+          style: 'danger',
+          timeout: 5000,
+          messageKey: 'settings.customLayersDefError',
+        }),
+      );
+
+      return;
+    }
+
+    dispatch(
+      saveSettings({
+        layersSettings,
+        overlayPaneOpacity,
+      }),
+    );
+  };
+
+  const userMadeChanges =
+    overlayPaneOpacity !== initOverlayPaneOpacity ||
+    layersSettings !== initLayersSettings ||
+    customLayersDef !== initialCustomLayersDef;
 
   return (
     <Modal show={show} onHide={close}>
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          dispatch(
-            saveSettings({
-              layersSettings,
-              overlayPaneOpacity,
-            }),
-          );
-        }}
-      >
+      <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
             <FaCog /> {m?.mapLayers.settings}
@@ -288,6 +350,26 @@ export function MapSettingsModal({ show }: Props): ReactElement {
               )}
             </>
           )}
+
+          <hr />
+
+          <FormGroup>
+            <FormLabel>
+              {m?.settings.customLayersDef}{' '}
+              <FaFlask
+                title={m?.general.experimentalFunction}
+                className="text-warning"
+              />
+            </FormLabel>
+
+            <FormControl
+              as="textarea"
+              value={customLayersDef}
+              onChange={(e) => setCustomLayersDef(e.target.value)}
+              rows={12}
+              className="text-monospace text-nowrap"
+            />
+          </FormGroup>
         </Modal.Body>
 
         <Modal.Footer>

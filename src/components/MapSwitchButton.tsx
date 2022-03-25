@@ -7,6 +7,7 @@ import {
   baseLayers,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
+  NoncustomLayerLetters,
   overlayLayers,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
@@ -216,7 +217,7 @@ export function MapSwitchButton(): ReactElement {
               title={
                 type.startsWith('.')
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                  : m?.mapLayers.letters[type]
+                  : m?.mapLayers.letters[type as NoncustomLayerLetters]
               }
               key={type}
               data-type={type}
@@ -241,7 +242,7 @@ export function MapSwitchButton(): ReactElement {
               title={
                 type.startsWith(':')
                   ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                  : m?.mapLayers.letters[type]
+                  : m?.mapLayers.letters[type as NoncustomLayerLetters]
               }
               key={type}
               data-type={type}
@@ -359,7 +360,7 @@ export function MapSwitchButton(): ReactElement {
                     >
                       {type.startsWith('.')
                         ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                        : m?.mapLayers.letters[type]}
+                        : m?.mapLayers.letters[type as NoncustomLayerLetters]}
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
@@ -417,7 +418,7 @@ export function MapSwitchButton(): ReactElement {
                     >
                       {type.startsWith(':')
                         ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                        : m?.mapLayers.letters[type]}
+                        : m?.mapLayers.letters[type as NoncustomLayerLetters]}
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (

@@ -26,7 +26,7 @@ import {
   Tool,
 } from 'fm3/actions/mainActions';
 import {
-  CustomMap,
+  CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
 } from 'fm3/actions/mapActions';
@@ -428,7 +428,7 @@ export const handleLocationChange = (
     JSON.stringify(getState().map.customLayers) !== customLayers
   ) {
     try {
-      const cms = assertType<CustomMap[]>(JSON.parse(customLayers));
+      const cms = assertType<CustomLayer[]>(JSON.parse(customLayers));
 
       for (const cm of cms) {
         if ((cm as any).tileSize) {

@@ -120,16 +120,23 @@ export const overlayLetters = [
   'w',
 ] as const;
 
-export type BaseLayerLetters = typeof baseLayerLetters[number] | `.${number}`;
+export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
-export type OverlayLetters = typeof overlayLetters[number] | `:${number}`;
+export type NoncustomLayerLetters =
+  | typeof baseLayerLetters[number]
+  | typeof overlayLetters[number];
+
+export type BaseLayerLetters =
+  | typeof baseLayerLetters[number]
+  | `.${Num1digit}`;
+
+export type OverlayLetters = typeof overlayLetters[number] | `:${Num1digit}`;
 
 export interface LayerDef {
   icon: ReactElement;
   url?: string;
   attribution: AttributionDef[];
   minZoom?: number;
-  minNativeZoom?: number;
   maxNativeZoom?: number;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
@@ -219,7 +226,7 @@ export const baseLayers: BaseLayerDef[] = [
   {
     type: 'Z',
     url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minNativeZoom: 0,
+    minZoom: 0,
     maxNativeZoom: 19,
     scaleWithDpi: true,
     icon: <FaPlane />,
@@ -290,7 +297,7 @@ export const baseLayers: BaseLayerDef[] = [
   {
     type: 'h',
     url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
-    minNativeZoom: 8,
+    minZoom: 8,
     maxNativeZoom: 12,
     icon: <AiFillBank />,
 
@@ -300,7 +307,7 @@ export const baseLayers: BaseLayerDef[] = [
   {
     type: '4',
     url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minNativeZoom: 0,
+    minZoom: 0,
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
@@ -317,7 +324,7 @@ export const baseLayers: BaseLayerDef[] = [
   {
     type: '5',
     url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minNativeZoom: 0,
+    minZoom: 0,
     maxNativeZoom: 17,
     icon: <GiHills />,
     attribution: [

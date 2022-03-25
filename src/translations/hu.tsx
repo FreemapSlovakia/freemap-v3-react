@@ -639,8 +639,8 @@ const hu: Messages = {
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
     },
-    layer: 'Layer:', // TODO translate
-    overlayOpacity: 'Opacity:', // TODO translate
+    layer: 'Layer', // TODO translate
+    overlayOpacity: 'Opacity', // TODO translate
     showInMenu: 'Show in menu', // TODO translate
     showInToolbar: 'Show in toolbar', // TODO translate
     trackViewerEleSmoothing: {
@@ -650,6 +650,8 @@ const hu: Messages = {
     },
     saveSuccess: 'A beállítások el lettek mentve.',
     savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
+    customLayersDef: 'Custom map layers definition', // TODO translate
+    customLayersDefError: 'Invalid definition of custom map layers.', // TODO translate
   },
 
   changesets: {

@@ -637,8 +637,8 @@ const cs: Messages = {
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
     },
-    layer: 'Vrstva:',
-    overlayOpacity: 'Viditelnost:',
+    layer: 'Vrstva',
+    overlayOpacity: 'Viditelnost',
     showInMenu: 'Zobraziť v menu', // TODO translate
     showInToolbar: 'Zobraziť v lište', // TODO translate
     trackViewerEleSmoothing: {
@@ -648,6 +648,8 @@ const cs: Messages = {
     },
     saveSuccess: 'Změny byly uloženy.',
     savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
+    customLayersDef: 'Definícia vlastných mapových vrstiev', // TODO translate
+    customLayersDefError: 'Chybný formát definície vlasyných mapových vrstiev.', // TODO translate
   },
 
   changesets: {

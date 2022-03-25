@@ -1,6 +1,6 @@
 import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
 import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
-import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
+import { NoncustomLayerLetters } from 'fm3/mapDefinitions';
 import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { ReactNode } from 'react';
 
@@ -489,6 +489,8 @@ export type Messages = {
     };
     saveSuccess: string;
     savingError: ({ err }: Err) => string;
+    customLayersDef: string;
+    customLayersDefError: string;
   };
   changesets: {
     allAuthors: string;
@@ -618,7 +620,7 @@ export type Messages = {
     photoFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
-    letters: Record<BaseLayerLetters | OverlayLetters, string>;
+    letters: Record<NoncustomLayerLetters, string>;
     customBase: string;
     customOverlay: string;
     type: {
