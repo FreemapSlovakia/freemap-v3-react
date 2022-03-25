@@ -2,6 +2,7 @@ import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { Card } from 'react-bootstrap';
 import Accordion from 'react-bootstrap/Accordion';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -365,32 +366,41 @@ export function ExportPdfModal({ show }: Props): ReactElement {
         <hr />
 
         <Accordion>
-          <Accordion.Toggle as={Button} eventKey="0">
-            {m?.pdfExport.advancedSettings}
-          </Accordion.Toggle>
+          <Card>
+            <Card.Header>
+              <Accordion.Toggle
+                as={Button}
+                variant="link"
+                eventKey="0"
+                className="text-left w-100"
+              >
+                {m?.pdfExport.advancedSettings}
+              </Accordion.Toggle>
+            </Card.Header>
 
-          <Accordion.Collapse eventKey="0">
-            <FormGroup className="mt-2">
-              <FormLabel>
-                {m?.pdfExport.styles}{' '}
-                <a
-                  href="http://mapnik.org/mapnik-reference/"
-                  target="mapnik_reference"
-                >
-                  <FaRegQuestionCircle />
-                </a>
-              </FormLabel>
+            <Accordion.Collapse eventKey="0" className="p-2">
+              <FormGroup className="mt-2">
+                <FormLabel>
+                  {m?.pdfExport.styles}{' '}
+                  <a
+                    href="http://mapnik.org/mapnik-reference/"
+                    target="mapnik_reference"
+                  >
+                    <FaRegQuestionCircle />
+                  </a>
+                </FormLabel>
 
-              <FormControl
-                as="textarea"
-                value={style}
-                onChange={handleStyleChange}
-                rows={6}
-                disabled={!(drawing || plannedRoute || track)}
-                className="text-monospace"
-              />
-            </FormGroup>
-          </Accordion.Collapse>
+                <FormControl
+                  as="textarea"
+                  value={style}
+                  onChange={handleStyleChange}
+                  rows={12}
+                  disabled={!(drawing || plannedRoute || track)}
+                  className="text-monospace"
+                />
+              </FormGroup>
+            </Accordion.Collapse>
+          </Card>
         </Accordion>
       </Modal.Body>
 

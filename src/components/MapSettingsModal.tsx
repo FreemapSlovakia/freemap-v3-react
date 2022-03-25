@@ -21,7 +21,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { FormControl, FormGroup, FormLabel } from 'react-bootstrap';
+import {
+  Accordion,
+  Card,
+  FormControl,
+  FormGroup,
+  FormLabel,
+} from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -73,42 +79,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
   const customLayers = useSelector((state) => state.map.customLayers);
 
-  const bases = [
-    ...baseLayers,
-    ...customLayers
-      .filter((cl) => cl.type.startsWith('.'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), false] as const,
-      })),
-  ];
-
-  const ovls = [
-    ...overlayLayers,
-    ...customLayers
-      .filter((cl) => cl.type.startsWith(':'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), true] as const,
-      })),
-  ];
-
-  const selectedLayerDetails = [...bases, ...ovls].find(
-    ({ type }) => type === selectedLayer,
-  );
-
-  function getName(type: BaseLayerLetters | OverlayLetters) {
-    return type.startsWith('.')
-      ? m?.mapLayers.customBase + ' ' + type.slice(1)
-      : type.startsWith(':')
-      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-      : m?.mapLayers.letters[type as NoncustomLayerLetters];
-  }
-
   const initialCustomLayersDef = useMemo(
     () =>
       customLayers.length
@@ -137,6 +107,50 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const [customLayersDef, setCustomLayersDef] = useState(
     initialCustomLayersDef,
   );
+
+  let localCustomLayers: CustomLayer[];
+
+  try {
+    localCustomLayers = assertType<CustomLayer[]>(JSON.parse(customLayersDef));
+  } catch {
+    localCustomLayers = customLayers;
+  }
+
+  const bases = [
+    ...baseLayers,
+    ...localCustomLayers
+      .filter((cl) => cl.type.startsWith('.'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), false] as const,
+      })),
+  ];
+
+  const ovls = [
+    ...overlayLayers,
+    ...localCustomLayers
+      .filter((cl) => cl.type.startsWith(':'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), true] as const,
+      })),
+  ];
+
+  const selectedLayerDetails = [...bases, ...ovls].find(
+    ({ type }) => type === selectedLayer,
+  );
+
+  function getName(type: BaseLayerLetters | OverlayLetters) {
+    return type.startsWith('.')
+      ? m?.mapLayers.customBase + ' ' + type.slice(1)
+      : type.startsWith(':')
+      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+      : m?.mapLayers.letters[type as NoncustomLayerLetters];
+  }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -353,23 +367,40 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
           <hr />
 
-          <FormGroup>
-            <FormLabel>
-              {m?.settings.customLayersDef}{' '}
-              <FaFlask
-                title={m?.general.experimentalFunction}
-                className="text-warning"
-              />
-            </FormLabel>
+          <Accordion>
+            <Card>
+              <Card.Header>
+                <Accordion.Toggle
+                  as={Button}
+                  eventKey="0"
+                  variant="link"
+                  className="text-left w-100"
+                >
+                  {m?.pdfExport.advancedSettings}
+                </Accordion.Toggle>
+              </Card.Header>
 
-            <FormControl
-              as="textarea"
-              value={customLayersDef}
-              onChange={(e) => setCustomLayersDef(e.target.value)}
-              rows={12}
-              className="text-monospace text-nowrap"
-            />
-          </FormGroup>
+              <Accordion.Collapse eventKey="0" className="p-2">
+                <FormGroup>
+                  <FormLabel>
+                    {m?.settings.customLayersDef}{' '}
+                    <FaFlask
+                      title={m?.general.experimentalFunction}
+                      className="text-warning"
+                    />
+                  </FormLabel>
+
+                  <FormControl
+                    as="textarea"
+                    value={customLayersDef}
+                    onChange={(e) => setCustomLayersDef(e.target.value)}
+                    rows={12}
+                    className="text-monospace text-nowrap"
+                  />
+                </FormGroup>
+              </Accordion.Collapse>
+            </Card>
+          </Accordion>
         </Modal.Body>
 
         <Modal.Footer>
