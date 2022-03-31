@@ -4,6 +4,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { basicModals } from 'fm3/constants';
 import { documents as allTips } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
+import { OverlayLetters } from 'fm3/mapDefinitions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
@@ -51,6 +52,7 @@ export const urlProcessor: Processor = {
       map.lon,
       map.mapType,
       map.overlays,
+      map.customLayers,
       routePlanner,
       routePlanner.finish,
       routePlanner.midpoints,
@@ -104,8 +106,16 @@ export const urlProcessor: Processor = {
       ? []
       : queryParts;
 
-    if (map.customLayers.length) {
-      historyParts.push(['custom-layers', JSON.stringify(map.customLayers)]);
+    const filteredCustomLayers = map.customLayers?.filter(
+      ({ type }) =>
+        type === map.mapType || map.overlays.includes(type as OverlayLetters),
+    );
+
+    if (filteredCustomLayers.length) {
+      historyParts.push([
+        'custom-layers',
+        JSON.stringify(filteredCustomLayers),
+      ]);
     }
 
     if (

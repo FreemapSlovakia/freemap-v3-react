@@ -427,21 +427,27 @@ export const handleLocationChange = (
     typeof customLayers === 'string' &&
     JSON.stringify(getState().map.customLayers) !== customLayers
   ) {
+    const existingClsStrings = getState().map.customLayers.map((cl) =>
+      JSON.stringify(cl),
+    );
+
     try {
-      const cms = assertType<CustomLayer[]>(JSON.parse(customLayers));
+      const newCls = assertType<CustomLayer[]>(JSON.parse(customLayers)).filter(
+        (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
+      );
 
-      for (const cm of cms) {
-        if ((cm as any).tileSize) {
-          cm.scaleWithDpi = true;
+      if (newCls.length) {
+        for (const cm of newCls) {
+          if ((cm as any).tileSize) {
+            cm.scaleWithDpi = true;
+          }
         }
-      }
 
-      dispatch(mapSetCustomLayers(cms));
+        dispatch(mapSetCustomLayers(newCls));
+      }
     } catch {
       // ignore
     }
-  } else if (getState().map.customLayers.length && !customLayers) {
-    dispatch(mapSetCustomLayers([]));
   }
 
   const diff = getMapStateDiffFromUrl(

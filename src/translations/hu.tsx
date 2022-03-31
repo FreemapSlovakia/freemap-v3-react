@@ -96,7 +96,7 @@ const hu: Messages = {
     offline: 'You are not connected to the internet.', // TODO translate
     connectionError: 'Error connecting the server.', // TODO translate
     experimentalFunction: 'Experimental function', // TODO translate
-    attribution: () => <Attribution />,
+    attribution: () => <Attribution unknown="Map licence is not specified" />, // TODO translate
   },
 
   selections: {

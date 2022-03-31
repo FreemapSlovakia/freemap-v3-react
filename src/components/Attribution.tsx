@@ -3,23 +3,29 @@ import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 
-export function Attribution(): ReactElement {
+type Props = { unknown: string };
+
+export function Attribution({ unknown }: Props): ReactElement {
   const mapType = useSelector((state) => state.map.mapType);
 
   const overlays = useSelector((state) => state.map.overlays);
 
   const m = useMessages();
 
-  return (
+  const categorized = categorize(
+    [
+      ...baseLayers.filter(({ type }) => mapType === type),
+      ...overlayLayers.filter(({ type }) =>
+        (overlays as string[]).includes(type),
+      ),
+    ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+  );
+
+  return categorized.length === 0 ? (
+    <div>{unknown}</div>
+  ) : (
     <ul className="m-0 ml-n4 mr-n4">
-      {categorize(
-        [
-          ...baseLayers.filter(({ type }) => mapType === type),
-          ...overlayLayers.filter(({ type }) =>
-            (overlays as string[]).includes(type),
-          ),
-        ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
-      ).map(({ type, attributions }) => (
+      {categorized.map(({ type, attributions }) => (
         <li key={type}>
           {m?.mapLayers.type[type]}{' '}
           {attributions.map((a, j) => [

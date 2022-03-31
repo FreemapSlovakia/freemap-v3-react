@@ -94,7 +94,7 @@ const en: Messages = {
     offline: 'You are not connected to the internet.',
     connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
-    attribution: () => <Attribution />,
+    attribution: () => <Attribution unknown="Map licence is not specified" />,
   },
 
   selections: {

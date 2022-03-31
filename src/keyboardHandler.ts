@@ -177,7 +177,11 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
         : null
     ) as BaseLayerLetters;
 
-    if (baseLayerType) {
+    if (
+      baseLayerType &&
+      (baseLayerType.charAt(0) !== '.' ||
+        state.map.customLayers.some(({ type }) => type === baseLayerType))
+    ) {
       return mapRefocus({ mapType: baseLayerType });
     }
 
@@ -193,7 +197,11 @@ function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
         : null
     ) as OverlayLetters;
 
-    if (overlayLayerType) {
+    if (
+      overlayLayerType &&
+      (overlayLayerType.charAt(0) !== ':' ||
+        state.map.customLayers.some(({ type }) => type === overlayLayerType))
+    ) {
       const next = new Set(state.map.overlays);
 
       if (next.has(overlayLayerType)) {

@@ -98,7 +98,9 @@ const sk: Messages = {
     offline: 'Nie ste pripojený k internetu.',
     connectionError: 'Chyba spojenia so serverom.',
     experimentalFunction: 'Experimentálna funkcia',
-    attribution: () => <Attribution />,
+    attribution: () => (
+      <Attribution unknown="Licencia mapy nie je špecifikovaná" />
+    ),
   },
 
   selections: {

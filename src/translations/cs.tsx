@@ -96,7 +96,9 @@ const cs: Messages = {
     offline: 'Nie ste pripojený na internet.', // TODO translate
     connectionError: 'Chyba spojenia so serverom.', // TODO translate
     experimentalFunction: 'Experimentálna funkcia', // TODO translate
-    attribution: () => <Attribution />,
+    attribution: () => (
+      <Attribution unknown="Licencia mapy nie je špecifikovaná" /> // TODO translate
+    ),
   },
 
   selections: {

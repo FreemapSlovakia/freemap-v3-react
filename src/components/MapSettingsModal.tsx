@@ -19,6 +19,7 @@ import {
   ReactElement,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -80,11 +81,29 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const customLayers = useSelector((state) => state.map.customLayers);
 
   const initialCustomLayersDef = useMemo(
-    () =>
-      customLayers.length
-        ? JSON.stringify(customLayers, null, 2)
-        : `// this is a temporary least-effort solution of configuring custom map definitions
-// remove all commentes (starting with // to end of line) because it must be a valid JSON
+    () => (customLayers.length ? JSON.stringify(customLayers, null, 2) : ''),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const [customLayersDef, setCustomLayersDef] = useState(
+    initialCustomLayersDef,
+  );
+
+  let localCustomLayers: CustomLayer[];
+
+  try {
+    localCustomLayers = assertType<CustomLayer[]>(
+      JSON.parse(customLayersDef || '[]'),
+    );
+  } catch {
+    localCustomLayers = customLayers;
+  }
+
+  const wasFocused = useRef(false);
+
+  const customLayersHelp = `// remove all commentes (starting with // to end of line) because it must be a valid JSON
 [
   {
     "type": ".1", // prefix 1-digit number with "." for base layers and ":" for overlay layers
@@ -99,22 +118,15 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     // "cors": false
   }
 ]
-      `,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+`;
 
-  const [customLayersDef, setCustomLayersDef] = useState(
-    initialCustomLayersDef,
-  );
+  const handleCustomLayersDefFocus = () => {
+    if (!wasFocused.current && !customLayersDef) {
+      setCustomLayersDef(customLayersHelp);
+    }
 
-  let localCustomLayers: CustomLayer[];
-
-  try {
-    localCustomLayers = assertType<CustomLayer[]>(JSON.parse(customLayersDef));
-  } catch {
-    localCustomLayers = customLayers;
-  }
+    wasFocused.current = true;
+  };
 
   const bases = [
     ...baseLayers,
@@ -158,7 +170,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     try {
       dispatch(
         mapSetCustomLayers(
-          assertType<CustomLayer[]>(JSON.parse(customLayersDef)),
+          assertType<CustomLayer[]>(JSON.parse(customLayersDef || '[]')),
         ),
       );
     } catch {
@@ -395,7 +407,9 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     value={customLayersDef}
                     onChange={(e) => setCustomLayersDef(e.target.value)}
                     rows={12}
-                    className="text-monospace text-nowrap"
+                    className="text-monospace text-pre"
+                    onFocus={handleCustomLayersDefFocus}
+                    placeholder={customLayersHelp}
                   />
                 </FormGroup>
               </Accordion.Collapse>
