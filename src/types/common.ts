@@ -1,4 +1,4 @@
-import { LayerSettings } from 'fm3/actions/mapActions';
+import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 
 export interface LatLon {
@@ -14,9 +14,9 @@ export interface User {
   authToken: string;
   isAdmin: boolean;
   settings?: {
-    trackViewerEleSmoothingFactor?: number;
     layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
+    customLayers?: CustomLayer[];
   };
   lat?: number | null;
   lon?: number | null;
@@ -120,7 +120,7 @@ type Prev = [
   18,
   19,
   20,
-  ...0[]
+  ...0[],
 ];
 
 type Join<K, P> = K extends string | number

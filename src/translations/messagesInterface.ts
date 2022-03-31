@@ -483,10 +483,6 @@ export type Messages = {
     overlayOpacity: string;
     showInMenu: string;
     showInToolbar: string;
-    trackViewerEleSmoothing: {
-      label: (value: number) => string;
-      info: string;
-    };
     saveSuccess: string;
     savingError: ({ err }: Err) => string;
     customLayersDef: string;

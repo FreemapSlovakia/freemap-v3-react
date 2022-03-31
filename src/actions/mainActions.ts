@@ -82,7 +82,6 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 export const saveSettings = createAction('SAVE_SETTINGS')<{
   layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
-  trackViewerEleSmoothingFactor?: number;
   user?: {
     name: string;
     email: string | null;
@@ -183,5 +182,7 @@ export const setAnalyticCookiesAllowed = createAction(
   'SET_ANALYTICS_COOKIES_ALLOWED',
 )<boolean>();
 
-export const hideInfoBar =
-  createAction('HIDE_INFO_BAR')<{ key: string; ts: number }>();
+export const hideInfoBar = createAction('HIDE_INFO_BAR')<{
+  key: string;
+  ts: number;
+}>();

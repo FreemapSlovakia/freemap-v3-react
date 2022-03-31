@@ -28,10 +28,6 @@ export const trackViewerUploadTrack = createAction(
   'TRACK_VIEWER_UPLOAD_TRACK',
 )();
 
-export const trackViewerSetEleSmoothingFactor = createAction(
-  'TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR',
-)<number>();
-
 export const trackViewerColorizeTrackBy = createAction(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
 )<ColorizingMode | null>();

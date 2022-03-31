@@ -671,11 +671,6 @@ const sk: Messages = {
     overlayOpacity: 'Viditeľnosť',
     showInMenu: 'Zobraziť v menu',
     showInToolbar: 'Zobraziť v lište',
-    trackViewerEleSmoothing: {
-      label: (value) =>
-        `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
-      info: 'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
-    },
     saveSuccess: 'Zmeny boli uložené.',
     savingError: ({ err }) => `Nastala chyba pri ukladaní nastavení: ${err}`,
     customLayersDef: 'Definícia vlastných mapových vrstiev',

@@ -643,11 +643,6 @@ const hu: Messages = {
     overlayOpacity: 'Opacity', // TODO translate
     showInMenu: 'Show in menu', // TODO translate
     showInToolbar: 'Show in toolbar', // TODO translate
-    trackViewerEleSmoothing: {
-      label: (value) =>
-        `A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: ${value}`,
-      info: '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
-    },
     saveSuccess: 'A beállítások el lettek mentve.',
     savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
     customLayersDef: 'Custom map layers definition', // TODO translate

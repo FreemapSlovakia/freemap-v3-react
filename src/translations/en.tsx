@@ -627,13 +627,8 @@ const en: Messages = {
     },
     layer: 'Layer',
     overlayOpacity: 'Opacity',
-    showInMenu: 'Show in menu', // TODO translate
-    showInToolbar: 'Show in toolbar', // TODO translate
-    trackViewerEleSmoothing: {
-      label: (value) =>
-        `Smoothing level for computing total climb/descend in Track viewer: ${value}`,
-      info: 'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
-    },
+    showInMenu: 'Show in menu',
+    showInToolbar: 'Show in toolbar',
     saveSuccess: 'Settings have been saved.',
     savingError: ({ err }) => `Error saving settings: ${err}`,
     customLayersDef: 'Custom map layers definition',

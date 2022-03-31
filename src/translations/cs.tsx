@@ -641,11 +641,6 @@ const cs: Messages = {
     overlayOpacity: 'Viditelnost',
     showInMenu: 'Zobraziť v menu', // TODO translate
     showInToolbar: 'Zobraziť v lište', // TODO translate
-    trackViewerEleSmoothing: {
-      label: (value) =>
-        `Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných metrů v prohlížeči tras: ${value}`,
-      info: 'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
-    },
     saveSuccess: 'Změny byly uloženy.',
     savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
     customLayersDef: 'Definícia vlastných mapových vrstiev', // TODO translate

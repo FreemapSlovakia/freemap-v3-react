@@ -93,14 +93,12 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
     return settings
       ? {
           ...state,
-          layersSettings:
-            settings.layersSettings === undefined
-              ? state.layersSettings
-              : settings.layersSettings,
+          layersSettings: settings.layersSettings ?? state.layersSettings,
           overlayPaneOpacity:
-            typeof settings.overlayPaneOpacity === 'number'
-              ? settings.overlayPaneOpacity
-              : state.overlayPaneOpacity,
+            settings.overlayPaneOpacity ?? state.overlayPaneOpacity,
+          customLayers: settings.customLayers?.length
+            ? settings.customLayers
+            : state.customLayers,
         }
       : state;
   })
