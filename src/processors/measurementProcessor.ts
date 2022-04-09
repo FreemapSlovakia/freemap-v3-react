@@ -1,13 +1,14 @@
 import area from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import length from '@turf/length';
-import { drawingMeasure as drawingMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import {
   clearMap,
   deleteFeature,
   selectFeature,
   setTool,
 } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
 import { httpRequest } from 'fm3/httpRequest';
@@ -21,6 +22,7 @@ const cancelType = [
   getType(selectFeature),
   getType(deleteFeature),
   getType(setTool),
+  getType(mapRefocus),
 ];
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
