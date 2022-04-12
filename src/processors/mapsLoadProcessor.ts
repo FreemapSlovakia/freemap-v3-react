@@ -74,7 +74,7 @@ export const mapsLoadProcessor: Processor = {
         routePlanner.transportType = 'car';
       }
     } catch {
-      // ifnore
+      // ignore
     }
 
     const map = assertType<
