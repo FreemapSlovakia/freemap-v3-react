@@ -64,6 +64,19 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
+    // backward compat.
+    try {
+      const { routePlanner } = data.data;
+
+      if (routePlanner.transportType === 'bike') {
+        routePlanner.transportType = 'bicycle_touring';
+      } else if (routePlanner.transportType.startsWith('car-')) {
+        routePlanner.transportType = 'car';
+      }
+    } catch {
+      // ifnore
+    }
+
     const map = assertType<
       StringDates<{
         meta: MapMeta;
