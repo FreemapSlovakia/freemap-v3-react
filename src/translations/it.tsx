@@ -382,111 +382,111 @@ const en: Messages = {
   main: {
     title: shared.title,
     description: shared.description,
-    clearMap: 'Clear map elements',
-    close: 'Close',
-    closeTool: 'Close tool',
-    locateMe: 'Locate me',
-    locationError: 'Error getting location.',
-    zoomIn: 'Zoom in',
-    zoomOut: 'Zoom out',
+    clearMap: 'Pulisci la mappa',
+    close: 'Chiudi',
+    closeTool: 'Chiudi lo strumento',
+    locateMe: 'Localizzami',
+    locationError: 'Errore nel determinare la locazione.',
+    zoomIn: 'Zoom avanti',
+    zoomOut: 'Zoom indietro',
     devInfo: () => (
       <div>
-        This is a testing version of Freemap Slovakia. For production version
-        navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+        Questa è una versione di test di Freemap Slovakia. Per la versione effettiva
+        vai a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
     copyright: 'Copyright',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Some features may require cookies. Accept:"
-        local="Cookies of local settings and login via social networks"
-        analytics="Analytics cookies"
+        prompt="Alcune funzionalità richiedono i cookies. Accetta:"
+        local="Cookies su impostazioni locali e accesso tramite social networks"
+        analytics="Cookies analitici"
       />
     ),
     infoBars: {
       ua: () => (
         <>
-          🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
-          inhabitants in their defense against Russia's military aggression. 🇺🇦
+          🇺🇦 La Comunità Slovacca di OpenStreetMap esprime il proprio supporto
+          per gli abitanti dell'Ucraina nella loro difesa contro l'aggressione militare russa. 🇺🇦
         </>
       ),
     },
   },
 
   gallery: {
-    filter: 'Filter',
-    showPhotosFrom: 'View photos',
-    showLayer: 'Show the layer',
-    upload: 'Upload',
+    filter: 'Filtro',
+    showPhotosFrom: 'Vedi le foto',
+    showLayer: 'Mostra il livello',
+    upload: 'Carica',
     f: {
-      firstUploaded: 'from first uploaded',
-      lastUploaded: 'from last uploaded',
-      firstCaptured: 'from oldest',
-      lastCaptured: 'from newest',
-      leastRated: 'from least rated',
-      mostRated: 'from most rated',
-      lastComment: 'from last comment',
+      firstUploaded: 'dai primi caricati',
+      lastUploaded: 'dagli ultimi caricati',
+      firstCaptured: 'dai più vecchi',
+      lastCaptured: 'dai più recenti',
+      leastRated: 'dai meno valutati',
+      mostRated: 'dai più valutati',
+      lastComment: 'dall''ultimo commento',
     },
-    colorizeBy: 'Colorize by',
+    colorizeBy: 'Colora in base',
     c: {
-      disable: "don't colorize",
-      mine: 'differ mine',
-      author: 'author',
-      rating: 'rating',
-      takenAt: 'taken date',
-      createdAt: 'upload date',
-      season: 'season',
+      disable: "non colorare",
+      mine: 'diversi dai miei',
+      author: 'autore',
+      rating: 'valutazioni',
+      takenAt: 'data scatto',
+      createdAt: 'data di caricamento',
+      season: 'stagione',
     },
     viewer: {
-      title: 'Photo',
-      comments: 'Comments',
-      newComment: 'New comment',
-      addComment: 'Add',
-      yourRating: 'Your rating:',
-      showOnTheMap: 'Show on the map',
-      openInNewWindow: 'Open in…',
+      title: 'Foto',
+      comments: 'Commenti',
+      newComment: 'Nuovo commento',
+      addComment: 'Aggiungi',
+      yourRating: 'La tua valutazione:',
+      showOnTheMap: 'Mostra sulla mappa',
+      openInNewWindow: 'Apri in…',
       uploaded: ({ username, createdAt }) => (
         <>
-          Uploaded by {username} on {createdAt}
+          Caricato da {username} il {createdAt}
         </>
       ),
       captured: (takenAt) => <>Captured on {takenAt}</>,
-      deletePrompt: 'Delete this picture?',
-      modify: 'Modify',
+      deletePrompt: 'Eliminare questa foto?',
+      modify: 'Modifica',
     },
     editForm: {
-      name: 'Name',
-      description: 'Description',
+      name: 'Nome',
+      description: 'Descrizione',
       takenAt: {
-        datetime: 'Capture date and time',
-        date: 'Capture date',
-        time: 'Capture time',
+        datetime: 'Data e ora dello scatto',
+        date: 'Data scatto',
+        time: 'Orario scatto',
       },
-      location: 'Location',
-      tags: 'Tags',
-      setLocation: 'Set the location',
+      location: 'Luogo',
+      tags: 'Tag',
+      setLocation: 'Imposta il luogo',
     },
     uploadModal: {
-      title: 'Upload photos',
+      title: 'Carica foto',
       uploading: (n) => `Uploading (${n})`,
-      upload: 'Upload',
+      upload: 'Carica',
       rules: `
-        <p>Drop your photos here or click here to select them.</p>
+        <p>Trascina qui le tue foto o clicca qui per selezionarle.</p>
         <ul>
-          <li>Do not upload too small photos (thumbnails). Maximum dimensions are not limited. The maximum file size is limited to 10MB. Bigger files will be rejected.</li>
-          <li>Upload only photos of landscapes or documentation pictures. Portraits and macro photos are undesirable and will be deleted without warning.</li>
-          <li>Please upload only your own photos.</li>
-          <li>By uploading the photos, you agree they will be distributed under the terms of CC-BY-SA 4.0 license.</li>
-          <li>The operator (Freemap.sk) hereby disclaims all liability and is not liable for direct or indirect damages resulting from publication of a photo in the gallery. The person who has uploaded the picture on the server is fully responsible for the photo.</li>
-          <li>The operator reserves the right to edit the description, name, position and tags of photo, or to delete the photo if the content is inappropriate (violate these rules).</li>
-          <li>The operator reserves the right to delete the account in case that the user repeatedly violates the gallery policy by publishing inappropriate content.</li>
+          <li>Non caricare foto troppo piccole (diapositive). Le dimensioni massime non sono limitate. La dimensione massima del file è limitata a 10 MB. I file più grandi saranno respinti.</li>
+          <li>Carica soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>
+          <li>Carica soltanto foto scattate da te e di tua proprietà.</li>
+          <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini di licenza CC-BY-SA 4.0.</li>
+          <li>L'operatore (Freemap.sk) declina ogni responsabilità e non risponde per danni diretti o indiretti derivanti dalla pubblicazione di una foto in galleria. La persona che ha caricato l'immagine sul server è pienamente responsabile della foto.</li>
+          <li>L'operatore si riserva il diritto di modificare la descrizione, il nome, la posizione e i tag della foto, o di eliminare la foto se il contenuto è inappropriato (in violazione di queste regole).</li>
+          <li>L'operatore si riserva il diritto di eliminare l'account nel caso in cui l'utente violi ripetutamente la politica della galleria pubblicando contenuti inappropriati.</li>
         </ul>
       `,
-      success: 'Pictures have been successfully uploaded.',
-      showPreview: 'Show previews (uses more CPU load and memory)',
+      success: 'Le foto sono state caricate con successo.',
+      showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
     },
     locationPicking: {
-      title: 'Select photo location',
+      title: 'Selezione l''ubicazione della foto',
     },
     deletingError: ({ err }) => `Error deleting photo: ${err}`,
     tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
@@ -495,22 +495,22 @@ const en: Messages = {
     savingError: ({ err }) => `Error saving photo: ${err}`,
     commentAddingError: ({ err }) => `Error adding comment: ${err}`,
     ratingError: ({ err }) => `Error rating photo: ${err}`,
-    unauthenticatedError: 'Please log-in to upload the photos to the gallery.',
-    missingPositionError: 'Missing location.',
-    invalidPositionError: 'Invalid location coordinates format.',
-    invalidTakenAt: 'Invalid capture date and time.',
+    unauthenticatedError: 'Per favore effettua il log-in per caricare foto nella galleria.',
+    missingPositionError: 'Luogo mancante.',
+    invalidPositionError: 'Formato coordinate di posizione non valide.',
+    invalidTakenAt: 'Data e orario di scatto non valide.',
     filterModal: {
-      title: 'Photo filtering',
+      title: 'Filtro foto',
       tag: 'Tag',
-      createdAt: 'Upload date',
-      takenAt: 'Capture date',
-      author: 'Author',
-      rating: 'Rating',
-      noTags: 'no tags',
+      createdAt: 'Data di caricamento',
+      takenAt: 'Data di scatto',
+      author: 'Autore',
+      rating: 'Valutazione',
+      noTags: 'no tag',
     },
-    noPicturesFound: 'There were no photos found on this place.',
-    linkToWww: 'photo at www.freemap.sk',
-    linkToImage: 'photo image file',
+    noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
+    linkToWww: 'foto su www.freemap.sk',
+    linkToImage: 'file immagine',
   },
 
   measurement: {
