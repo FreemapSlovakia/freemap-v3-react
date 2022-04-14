@@ -51,3 +51,15 @@ You'll then find all static web resources in `dist` directory.
 ## Other env varialbes
 
 - FM_MAPSERVER_URL - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
+
+## Translation
+
+Files:
+
+- [webpack.config.js](webpack.config.js) - texts in `htmlPluginProps`
+- [src/translations/en-shared.json](src/translations/en-shared.json)
+- [src/translations/en.tsx](src/translations/en.tsx)
+- [src/components/supportUsModal/translations/en.tsx](src/components/supportUsModal/translations/en.tsx)
+- [src/globalErrorHandler.ts](src/globalErrorHandler.ts) - bottom error message
+- [src/osm/osmTagToNameMapping-en.ts](src/osm/osmTagToNameMapping-en.ts)
+- https://github.com/FreemapSlovakia/freemap-mapnik/blob/develop/legend.js
