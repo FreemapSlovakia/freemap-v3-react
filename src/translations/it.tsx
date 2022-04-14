@@ -170,9 +170,9 @@ const en: Messages = {
       trip: 'Luoghi da visitare',
       roundtrip: 'Luoghi da visitare (Andata e ritorno)',
       'routndtrip-gh': 'Andata e ritorno',
-      isochrone: 'Isocrone',
+      isochrone: 'Isocrono',
     },
-    alternative: 'Alternative',
+    alternative: 'Alternativo',
     // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
@@ -238,20 +238,20 @@ const en: Messages = {
       },
 
       modifiers: {
-        uturn: 'take a U-turn',
-        'sharp right': 'sharply right',
-        'slight right': 'slightly right',
-        right: 'right',
-        'sharp left': 'sharply left',
-        'slight left': 'slightly left',
-        left: 'left',
-        straight: 'straight',
+        uturn: 'fai inversione a U',
+        'sharp right': 'a destra',
+        'slight right': 'leggermente a destra',
+        right: 'destra',
+        'sharp left': 'a sinistra',
+        'slight left': 'leggermente a sinistra',
+        left: 'sinistra',
+        straight: 'diritto',
       },
     },
     imhd: {
       total: {
         // eslint-disable-next-line
-        short: ({ arrival, price, numbers }) => (
+        short: ({ arrivo, prezzo, numeri }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
             {numbers?.map((n, i) => (
@@ -312,10 +312,10 @@ const en: Messages = {
         ),
       },
       type: {
-        bus: 'take bus',
-        tram: 'take tram',
-        trolleybus: 'take trolleybus',
-        foot: 'walk',
+        bus: 'prendi un autobus',
+        tram: 'prendi un tram',
+        trolleybus: 'prendi un filobus',
+        foot: 'cammina',
       },
     },
     bikesharing: {
@@ -330,7 +330,7 @@ const en: Messages = {
               </b>
             )}{' '}
             {destination === 'TARGET' ? (
-              <b>to destination</b>
+              <b>alla destinazione</b>
             ) : (
               <>
                 to <b>{destination}</b>
@@ -356,26 +356,26 @@ const en: Messages = {
   },
 
   mainMenu: {
-    title: 'Main menu',
-    logOut: 'Log out',
-    logIn: 'Log in',
+    title: 'Menu principale',
+    logOut: 'Esci',
+    logIn: 'Accedi',
     account: 'Account',
-    gpxExport: 'Export to GPX / GeoJSON',
-    mapExports: 'Map for GPS devices',
-    embedMap: 'Embed map',
-    supportUs: 'Support Freemap',
-    help: 'Help',
-    back: 'Back',
-    mapLegend: 'Map legend',
-    contacts: 'Contacts',
-    tips: 'Tips',
-    facebook: 'Freemap on Facebook',
-    twitter: 'Freemap on Twitter',
-    youtube: 'Freemap on YouTube',
-    github: 'Freemap on GitHub',
-    automaticLanguage: 'Automatic',
-    pdfExport: 'Export map',
-    osmWiki: 'OpenStreetMap documentation',
+    gpxExport: 'Esporta in GPX / GeoJSON',
+    mapExports: 'Mappa per apparati GPS',
+    embedMap: 'Incorpora la mappa',
+    supportUs: 'Supporta Freemap',
+    help: 'Aiuto',
+    back: 'Indietro',
+    mapLegend: 'Legenda',
+    contacts: 'Contatti',
+    tips: 'Consigli',
+    facebook: 'Freemap su Facebook',
+    twitter: 'Freemap su Twitter',
+    youtube: 'Freemap su YouTube',
+    github: 'Freemap su GitHub',
+    automaticLanguage: 'Automatico',
+    pdfExport: 'Esporta la mappa',
+    osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
 
