@@ -939,7 +939,7 @@ const en: Messages = {
     //   248: 'Riserva naturale',
     //   249: 'Monumento naturale',
     //   250: 'Area protetta',
-    //  251: 'Area paesaggistica protetta',
+    //   251: 'Area paesaggistica protetta',
     //   252: 'Parco Nazionale',
     //   253: 'Distributore automatico di latte',
     //   254: 'Zona umida (RAMSAR)',
@@ -948,7 +948,7 @@ const en: Messages = {
     //   257: 'Modifica',
     //   258: 'Bene',
     //   259: 'Croce',
-    //  260: 'Santuario',
+    //   260: 'Santuario',
     //   261: 'Fitness',
     //   262: 'Centrale a vapore',
     //   263: 'Casa padronale',
@@ -968,79 +968,79 @@ const en: Messages = {
   },
 
   external: {
-    openInExternal: 'Share / Open in external app.',
+    openInExternal: 'Condividi / Apri su altra App.',
     osm: 'OpenStreetMap',
     oma: 'OMA',
     googleMaps: 'Google Maps',
     hiking_sk: 'Hiking.sk',
     zbgis: 'ZBGIS',
     mapy_cz: 'Mapy.cz',
-    josm: 'Edit in JOSM',
-    id: 'Edit in iD',
-    window: 'New window',
-    url: 'Share URL',
-    image: 'Share photo',
+    josm: 'Modifica con JOSM',
+    id: 'Modifica con iD',
+    window: 'Nuova finestra',
+    url: 'Condividi URL',
+    image: 'Condividi foto',
   },
 
   search: {
-    inProgress: 'Searching…',
-    noResults: 'No results found',
-    prompt: 'Enter the place',
-    routeFrom: 'Route from here',
-    routeTo: 'Route to here',
+    inProgress: 'Ricerca in corso…',
+    noResults: 'Nessun risultato trovato',
+    prompt: 'Inserisci il luogo',
+    routeFrom: 'Percorso da qui',
+    routeTo: 'Percorso fino a qui',
     fetchingError: ({ err }) => `Searching error: ${err}`,
-    buttonTitle: 'Search',
-    placeholder: 'Search in the map',
+    buttonTitle: 'Cerca',
+    placeholder: 'Cerca sulla mappa',
   },
 
   embed: {
-    code: 'Put the following code to your HTML page:',
-    example: 'The result will look like this:',
-    dimensions: 'Dimensions:',
-    height: 'Height:',
-    width: 'Width:',
-    enableFeatures: 'Enable features:',
-    enableSearch: 'search',
-    enableMapSwitch: 'map layer switch',
-    enableLocateMe: 'find me',
+    code: 'Inserisci il codice seguente nella tua pagina HTML:',
+    example: 'Il risultato sarà simile a questo:',
+    dimensions: 'Dimensioni:',
+    height: 'Altezza:',
+    width: 'Larghezza:',
+    enableFeatures: 'Abilita caratteristiche:',
+    enableSearch: 'cerca',
+    enableMapSwitch: 'Cambia livello mappa',
+    enableLocateMe: 'trovami',
   },
 
   tips: {
-    errorLoading: 'Error loading tip.',
+    errorLoading: 'Errore caricamento consigli.',
   },
 
   gpxExport: {
     export: 'Download',
-    format: 'Format',
-    exportToDrive: 'Save to Google Drive',
-    exportToDropbox: 'Save to Dropbox',
+    format: 'Formato',
+    exportToDrive: 'Salva su Google Drive',
+    exportToDropbox: 'Salva su Dropbox',
     exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
-      plannedRoute: 'found route',
-      plannedRouteWithStops: 'found route including stops',
-      objects: 'objects (POIs)',
-      pictures: 'photos (in the visible map area)',
-      drawingLines: 'drawing - lines',
-      drawingAreas: 'drawing - polygons',
-      drawingPoints: 'drawing - points',
-      tracking: 'live tracking',
-      gpx: 'GPX track',
+      plannedRoute: 'trova percorso',
+      plannedRouteWithStops: 'trova percorso incluse fermate',
+      objects: 'oggetti (POI)',
+      pictures: 'foto (area di mappa visibile)',
+      drawingLines: 'disegno - linee',
+      drawingAreas: 'disegno - poligoni',
+      drawingPoints: 'disegno - punti',
+      tracking: 'tracciamento in tempo reale',
+      gpx: 'traccia GPX',
     },
     disabledAlert:
-      'Only checkboxes having anything in the map to export are enabled.',
+      'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
     licenseAlert:
-      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
-    exportedToDropbox: 'File has been saved to Dropboxu.',
-    exportedToGdrive: 'File has been saved to Google Drive.',
+      'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
+    exportedToDropbox: 'Il file è stato salvato su Dropbox.',
+    exportedToGdrive: 'Il file è stato salvato su Google Drive.',
   },
 
   logIn: {
     with: {
-      facebook: 'Log in with Facebook',
-      google: 'Log in with Google',
-      osm: 'Log in with OpenStreetMap',
+      facebook: 'Accedi con Facebook',
+      google: 'Accedi con Google',
+      osm: 'Accedi con OpenStreetMap',
     },
-    success: 'You have been successfully logged in.',
+    success: 'Accesso eseguito correttamente.',
     logInError: ({ err }) => `Error logging in: ${err}`,
     logInError2: 'Error logging in.',
     logOutError: ({ err }) => `Error logging out: ${err}`,
@@ -1048,55 +1048,55 @@ const en: Messages = {
   },
 
   logOut: {
-    success: 'You have been successfully logged out.',
+    success: 'Disconnessione avvenuta correttamente.',
   },
 
   mapLayers: {
-    showAll: 'Show all layers',
-    settings: 'Map layers settings',
-    layers: 'Map layers',
-    photoFilterWarning: 'Photo filtering is active',
-    interactiveLayerWarning: 'Interactive layer is hidden',
+    showAll: 'Mostra tutti i livelli',
+    settings: 'Impostazioni livelli mappa',
+    layers: 'Livelli mappa',
+    photoFilterWarning: 'Il filtro foto è attivo',
+    interactiveLayerWarning: 'Il livello interattivo è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
-      A: 'Car',
-      T: 'Hiking',
-      C: 'Bicycle',
-      K: 'Crosscountry Ski',
-      S: 'Aerial',
+      A: 'Auto',
+      T: 'Escursione',
+      C: 'Bici',
+      K: 'Sci di fondo',
+      S: 'Aereo',
       Z: 'Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       p: 'OpenTopoMap',
-      d: 'Public transport (ÖPNV)',
-      h: 'Historic',
+      d: 'Trasporti pubblici (ÖPNV)',
+      h: 'Storica',
       X: outdoorMap,
-      i: 'Interactive layer',
-      I: 'Photos',
+      i: 'Livello interattivo',
+      I: 'Foto',
       l: 'Forest tracks NLC (SK)',
-      n1: 'Names (car)',
-      n2: 'Names (hiking)',
-      n3: 'Names (bicycle)',
-      g: 'OSM GPS traces',
-      t: 'Hiking trails',
-      c: 'Bicycle trails',
+      n1: 'Nomi (auto)',
+      n2: 'Nomi (escursione)',
+      n3: 'Nomi (bici)',
+      g: 'Tracce GPS OSM',
+      t: 'Percorsi escursionistici',
+      c: 'Percorsi ciclistici',
       q: 'OpenSnowMap',
-      r: 'Rendering clients',
-      s0: 'Strava (all)',
-      s1: 'Strava (rides)',
-      s2: 'Strava (runs)',
-      s3: 'Strava (water activities)',
-      s4: 'Strava (winter activities)',
+      r: 'Client di Rendering',
+      s0: 'Strava (tutti)',
+      s1: 'Strava (bici)',
+      s2: 'Strava (corsa)',
+      s3: 'Strava (sport acquatici)',
+      s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
-      '4': 'Light Hillshading DMR 5.0',
-      '5': 'Gray Hillshading DMR 5.0',
+      '4': 'Ombreggiatura leggera DMR 5.0',
+      '5': 'Ombreggiatura grigia DMR 5.0',
     },
-    customBase: 'Custom map',
-    customOverlay: 'Custom map overlay',
+    customBase: 'Mappa personalizzata',
+    customOverlay: 'Sovrapposizione mappa personalizzata',
     type: {
-      map: 'map',
+      map: 'mappa',
       data: 'data',
-      photos: 'pictures',
+      photos: 'foto',
     },
     attr: {
       freemap: '©\xa0Freemap Slovakia',
@@ -1107,7 +1107,7 @@ const en: Messages = {
   },
 
   elevationChart: {
-    distance: 'Distance [km]',
+    distance: 'Distanza [km]',
     ele: `Elevation [${masl}]`,
     fetchError: ({ err }) => `Error fetching elevation profile data: ${err}`,
   },
@@ -1115,12 +1115,12 @@ const en: Messages = {
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
-        You can try:
+        Puoi provare:
       </p>
       <ul>
-        <li><a href="">reload last page</a></li>
-        <li><a href="/">load initial page</a></li>
-        <li><a href="/?reset-local-storage">clear local data and load initial page</a></li>
+        <li><a href="">ricaricare ultima pagina</a></li>
+        <li><a href="/">caricare pagina iniziale</a></li>
+        <li><a href="/?reset-local-storage">pulire dati locali e caricare pagina iniziale</a></li>
       </ul>
     `,
   },
@@ -1130,23 +1130,23 @@ const en: Messages = {
   },
 
   tracking: {
-    unauthenticatedError: 'Please log-in to manage your devices.',
+    unauthenticatedError: 'Per favore accedi per gestire i tuoi dispositivi.',
     trackedDevices: {
-      button: 'Watched',
-      modalTitle: 'Watched Devices',
-      desc: 'Manage watched devices to see the position of your friends.',
+      button: 'Visto',
+      modalTitle: 'Dispositivi visti',
+      desc: 'Gestisci i dispositivi viti per vedere la posizione dei tuoi amici.',
       modifyTitle: (name) => (
         <>
-          Modify Watched Device <i>{name}</i>
+          Modifica nome dispositivo <i>{name}</i>
         </>
       ),
       createTitle: (name) => (
         <>
-          Watch Device <i>{name}</i>
+          Vedi dispositivo <i>{name}</i>
         </>
       ),
       storageWarning:
-        'Please note that the list of devices is only reflected in the page URL. If you want to save it, use the "My Maps" function.',
+        'Tieni presente che l''elenco dei dispositivi si riflette solo nell''URL della pagina. Se vuoi salvarlo, usa la funzione ''Le mie mappe''.',
     },
     accessToken: {
       token: 'Watch Token',
