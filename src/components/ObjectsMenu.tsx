@@ -1,4 +1,5 @@
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
@@ -17,7 +18,7 @@ import {
 } from 'react';
 import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import FormControl from 'react-bootstrap/FormControl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { HideArrow } from './SearchMenu';
 import { ToolMenu } from './ToolMenu';
 
@@ -87,7 +88,7 @@ export function ObjectsMenu(): ReactElement {
     return res;
   }, [osmMapping]);
 
-  const active = useSelector((state) => state.objects.active);
+  const active = useAppSelector((state) => state.objects.active);
 
   useEffect(() => {
     getOsmMapping(lang).then(setOsmMapping);

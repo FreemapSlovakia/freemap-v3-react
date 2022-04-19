@@ -5,6 +5,7 @@ import {
   TrackingPoint,
 } from 'fm3/components/tracking/TrackingPoint';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
@@ -12,7 +13,7 @@ import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 // TODO functional component with hooks was causing massive re-rendering
 export function TrackingResult(): ReactElement {
@@ -20,15 +21,17 @@ export function TrackingResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const showLine = useSelector((state) => state.tracking.showLine);
+  const showLine = useAppSelector((state) => state.tracking.showLine);
 
-  const showPoints = useSelector((state) => state.tracking.showPoints);
+  const showPoints = useAppSelector((state) => state.tracking.showPoints);
 
-  const trackedDevices = useSelector((state) => state.tracking.trackedDevices);
+  const trackedDevices = useAppSelector(
+    (state) => state.tracking.trackedDevices,
+  );
 
-  const tracks = useSelector((state) => state.tracking.tracks);
+  const tracks = useAppSelector((state) => state.tracking.tracks);
 
   const tracks1 = useMemo(() => {
     const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
@@ -39,7 +42,7 @@ export function TrackingResult(): ReactElement {
     }));
   }, [trackedDevices, tracks]);
 
-  const activeTrackId = useSelector((state) =>
+  const activeTrackId = useAppSelector((state) =>
     state.main.selection?.type === 'tracking'
       ? state.main.selection?.id
       : undefined,
@@ -60,7 +63,7 @@ export function TrackingResult(): ReactElement {
     maximumFractionDigits: 1,
   });
 
-  const interactive = useSelector(selectingModeSelector);
+  const interactive = useAppSelector(selectingModeSelector);
 
   return (
     <>

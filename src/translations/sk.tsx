@@ -1469,7 +1469,7 @@ const sk: Messages = {
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Legenda k mape <i>{outdoorMap}</i>:
       </>

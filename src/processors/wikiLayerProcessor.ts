@@ -18,6 +18,8 @@ interface WikiResponse {
   };
 }
 
+let initial = true;
+
 export const wikiLayerProcessor: Processor = {
   errorKey: 'general.loadError',
   async handle({ getState, dispatch, prevState }) {
@@ -36,9 +38,14 @@ export const wikiLayerProcessor: Processor = {
 
     const prevOk = prevOk0 && prevMap.zoom >= 12;
 
-    if (`${lat},${lon},${ok}` === `${prevMap.lat},${prevMap.lon},${prevOk}`) {
+    if (
+      !initial &&
+      `${lat},${lon},${ok}` === `${prevMap.lat},${prevMap.lon},${prevOk}`
+    ) {
       return;
     }
+
+    initial = false;
 
     if (!ok) {
       if (prevOk) {

@@ -1,5 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import {
@@ -34,7 +35,7 @@ import {
   FaRegMap,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typescript-is';
 import { Checkbox } from './Checkbox';
@@ -53,17 +54,17 @@ function getKbdShortcut(key?: readonly [string, boolean]) {
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
-  const pictureFilterIsActive = useSelector((state) =>
+  const pictureFilterIsActive = useAppSelector((state) =>
     Object.values(state.gallery.filter).some((x) => x),
   );
 
-  const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
+  const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
   const dispatch = useDispatch();
 
@@ -174,9 +175,9 @@ export function MapSwitchButton(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  const layersSettings = useSelector((state) => state.map.layersSettings);
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const customLayers = useSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector((state) => state.map.customLayers);
 
   const bases = [
     ...baseLayers,

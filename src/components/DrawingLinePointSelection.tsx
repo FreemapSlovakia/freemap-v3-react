@@ -3,6 +3,7 @@ import {
   drawingLineJoinStart,
   drawingLineSplit,
 } from 'fm3/actions/drawingLineActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -11,7 +12,7 @@ import { CgArrowsMergeAltH } from 'react-icons/cg';
 import { FaDrawPolygon, FaRegPlayCircle, FaTimes } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { RiScissorsFill } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Selection } from './Selection';
 
 export default DrawingLinePointSelection;
@@ -21,15 +22,15 @@ export function DrawingLinePointSelection(): ReactElement | null {
 
   const m = useMessages();
 
-  const selection = useSelector((state) => state.main.selection);
+  const selection = useAppSelector((state) => state.main.selection);
 
-  const line = useSelector((state) =>
+  const line = useAppSelector((state) =>
     state.main.selection?.type === 'line-point'
       ? state.drawingLines.lines[state.main.selection.lineIndex]
       : undefined,
   );
 
-  const joining = useSelector(
+  const joining = useAppSelector(
     (state) => state.drawingLines.joinWith !== undefined,
   );
 

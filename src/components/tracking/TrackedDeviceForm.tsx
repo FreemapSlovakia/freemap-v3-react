@@ -2,6 +2,7 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
@@ -13,14 +14,14 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaBullseye } from 'react-icons/fa';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 
 export function TrackedDeviceForm(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const { device, forceNew } = useSelector((state) => {
+  const { device, forceNew } = useAppSelector((state) => {
     let device: TrackedDevice | undefined;
 
     let forceNew = false;

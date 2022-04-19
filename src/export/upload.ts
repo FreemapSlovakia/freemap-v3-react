@@ -3,8 +3,8 @@ import { Destination } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
+import { RootState } from 'fm3/reducers';
 import qs from 'query-string';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 
 export const licenseNotice =
@@ -14,7 +14,7 @@ export async function upload(
   type: 'gpx' | 'geojson',
   data: Blob,
   destination: Destination,
-  getState: () => DefaultRootState,
+  getState: () => RootState,
   dispatch: Dispatch,
 ): Promise<void> {
   switch (destination) {

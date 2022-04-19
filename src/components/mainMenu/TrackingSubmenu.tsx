@@ -1,5 +1,6 @@
 import { Modal, setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -11,7 +12,7 @@ import {
   FaRegCircle,
   FaRegEye,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typescript-is';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
@@ -22,7 +23,7 @@ export function TrackingSubmenu(): ReactElement {
 
   const m = useMessages();
 
-  const trackingDisplay = useSelector(
+  const trackingDisplay = useAppSelector(
     (state) => state.tracking.showPoints + ',' + state.tracking.showLine,
   );
 

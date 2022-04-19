@@ -1,6 +1,7 @@
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
 import { CustomLayer, mapSetCustomLayers } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import {
@@ -43,7 +44,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { assertType } from 'typescript-is';
 
 type Props = { show: boolean };
@@ -51,9 +52,11 @@ type Props = { show: boolean };
 export default MapSettingsModal;
 
 export function MapSettingsModal({ show }: Props): ReactElement {
-  const initLayersSettings = useSelector((state) => state.map.layersSettings);
+  const initLayersSettings = useAppSelector(
+    (state) => state.map.layersSettings,
+  );
 
-  const initOverlayPaneOpacity = useSelector(
+  const initOverlayPaneOpacity = useAppSelector(
     (state) => state.map.overlayPaneOpacity,
   );
 
@@ -78,7 +81,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const customLayers = useSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector((state) => state.map.customLayers);
 
   const initialCustomLayersDef = useMemo(
     () => (customLayers.length ? JSON.stringify(customLayers, null, 2) : ''),

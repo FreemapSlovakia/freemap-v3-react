@@ -1,9 +1,9 @@
 import { latLonToString, toXY } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { LatLon } from 'fm3/types/common';
 import { Alert } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;
@@ -28,7 +28,7 @@ export function ElevationInfo({
     maximumFractionDigits: 1,
   });
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   const { x, y } = toXY(point.lat, point.lon, zoom);
 
@@ -42,9 +42,9 @@ export function ElevationInfo({
 
   const m = useMessages();
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
   const overlayTileUrls = overlays
     .map((type) => ({

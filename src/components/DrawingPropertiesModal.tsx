@@ -1,6 +1,7 @@
 import { drawingChangeProperties } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
@@ -16,14 +17,14 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
 export function DrawingEditLabelModal({ show }: Props): ReactElement {
   const m = useMessages();
 
-  const label = useSelector((state) => {
+  const label = useAppSelector((state) => {
     const { selection } = state.main;
 
     return selection?.type === 'draw-points' && selection.id !== undefined
@@ -33,7 +34,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       : '???';
   });
 
-  const color = useSelector((state) => {
+  const color = useAppSelector((state) => {
     const { selection } = state.main;
 
     return selection?.type === 'draw-points' && selection.id !== undefined

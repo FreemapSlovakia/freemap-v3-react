@@ -1,5 +1,6 @@
 import { Feature, GeometryObject } from '@turf/helpers';
 import { searchSelectResult } from 'fm3/actions/searchActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
   getGenericNameFromOsmElement,
   getNameFromOsmElement,
@@ -10,7 +11,7 @@ import { escapeHtml } from 'fm3/stringUtils';
 import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
 
 function pointToLayer(feature: Feature, latLng: LatLng) {
@@ -61,13 +62,13 @@ function annotateFeature(
 }
 
 export function SearchResults(): ReactElement | null {
-  const selectedResult = useSelector((state) => state.search.selectedResult);
+  const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  const selectedResultSeq = useSelector(
+  const selectedResultSeq = useAppSelector(
     (state) => state.search.searchResultSeq,
   );
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const dispatch = useDispatch();
 

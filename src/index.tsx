@@ -15,7 +15,7 @@ import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { setDefaultGetErrorObject } from 'typescript-is';
@@ -105,7 +105,13 @@ if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
   );
 }
 
-render(
+const rootElement = document.getElementById('app');
+
+if (!rootElement) {
+  throw new Error('root element not found');
+}
+
+createRoot(rootElement).render(
   <Provider store={store}>
     <IconContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
@@ -120,8 +126,6 @@ render(
       </MessagesProvider>
     </IconContext.Provider>
   </Provider>,
-
-  document.getElementById('app'),
 );
 
 if ('serviceWorker' in navigator) {

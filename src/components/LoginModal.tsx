@@ -4,6 +4,7 @@ import {
   authLoginWithOsm,
 } from 'fm3/actions/authActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -17,7 +18,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { SiOpenstreetmap } from 'react-icons/si';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
@@ -42,11 +43,11 @@ export function LoginModal({ show }: Props): ReactElement {
     dispatch(authLoginWithOsm());
   }, [dispatch]);
 
-  const cookieConsentResult = useSelector(
+  const cookieConsentResult = useAppSelector(
     (state) => state.main.cookieConsentResult,
   );
 
-  const removeAds = useSelector((state) => state.main.removeAdsOnLogin);
+  const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
 
   return (
     <Modal show={show} onHide={close}>

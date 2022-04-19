@@ -1,6 +1,7 @@
 import { galleryColorizeBy, galleryList } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import Dropdown from 'react-bootstrap/Dropdown';
 import {
@@ -12,7 +13,7 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Checkbox } from '../Checkbox';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
@@ -21,15 +22,15 @@ export function GallerySubmenu(): JSX.Element {
 
   const dispatch = useDispatch();
 
-  const filterIsActive = useSelector(
+  const filterIsActive = useAppSelector(
     (state) =>
       Object.values(state.gallery.filter).filter((v) => v !== undefined)
         .length > 0,
   );
 
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
-  const colorizeBy = useSelector((state) => state.gallery.colorizeBy);
+  const colorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
   const closeMenu = useMenuClose();
 

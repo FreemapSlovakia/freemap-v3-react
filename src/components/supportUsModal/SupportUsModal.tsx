@@ -1,17 +1,18 @@
 import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useLocalMessages, useMessages } from 'fm3/l10nInjector';
 import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { SupportUsMessages } from './translations/SupportUsMessages';
 
 type Props = { show: boolean };
 
 export function SupportUsModal({ show }: Props): ReactElement {
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const lm = useLocalMessages<SupportUsMessages>(
     () => import(`./translations/${language}.tsx`),

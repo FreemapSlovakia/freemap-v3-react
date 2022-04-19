@@ -1,7 +1,7 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from './reduxSelectHook';
 
 export function useDateTimeFormat(options: Intl.DateTimeFormatOptions) {
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   return new Intl.DateTimeFormat(language, options);
 }

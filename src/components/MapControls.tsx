@@ -1,5 +1,6 @@
 import { toggleLocate } from 'fm3/actions/mainActions';
 import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Map } from 'leaflet';
@@ -9,7 +10,7 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { MapSwitchButton } from './MapSwitchButton';
 
 export function MapControls(): ReactElement | null {
@@ -17,13 +18,13 @@ export function MapControls(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
-  const embedFeatures = useSelector((state) => state.main.embedFeatures);
+  const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
-  const locate = useSelector((state) => state.main.locate);
+  const locate = useAppSelector((state) => state.main.locate);
 
-  const gpsTracked = useSelector((state) => state.map.gpsTracked);
+  const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
 
   const onMapRefocus = useCallback(
     (changes: Partial<MapViewState>) => {

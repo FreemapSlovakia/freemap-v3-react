@@ -1417,7 +1417,7 @@ const en: Messages = {
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Map legend for <i>{outdoorMap}</i>:
       </>

@@ -17,6 +17,7 @@ import {
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Messages } from 'fm3/translations/messagesInterface';
@@ -46,7 +47,7 @@ import {
   Tooltip,
   useMapEvent,
 } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
@@ -59,35 +60,39 @@ export function RoutePlannerResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const start = useSelector((state) => state.routePlanner.start);
+  const start = useAppSelector((state) => state.routePlanner.start);
 
-  const finish = useSelector((state) => state.routePlanner.finish);
+  const finish = useAppSelector((state) => state.routePlanner.finish);
 
-  const midpoints = useSelector((state) => state.routePlanner.midpoints);
+  const midpoints = useAppSelector((state) => state.routePlanner.midpoints);
 
-  const alternatives = useSelector((state) => state.routePlanner.alternatives);
+  const alternatives = useAppSelector(
+    (state) => state.routePlanner.alternatives,
+  );
 
-  const waypoints = useSelector((state) => state.routePlanner.waypoints);
+  const waypoints = useAppSelector((state) => state.routePlanner.waypoints);
 
-  const isochrones = useSelector((state) => state.routePlanner.isochrones);
+  const isochrones = useAppSelector((state) => state.routePlanner.isochrones);
 
-  const activeAlternativeIndex = useSelector(
+  const activeAlternativeIndex = useAppSelector(
     (state) => state.routePlanner.activeAlternativeIndex,
   );
 
-  const transportType = useSelector(
+  const transportType = useAppSelector(
     (state) => state.routePlanner.transportType,
   );
 
-  const mode = useSelector((state) => state.routePlanner.mode);
+  const mode = useAppSelector((state) => state.routePlanner.mode);
 
-  const timestamp = useSelector((state) => state.routePlanner.timestamp);
+  const timestamp = useAppSelector((state) => state.routePlanner.timestamp);
 
-  const showMilestones = useSelector((state) => state.routePlanner.milestones);
+  const showMilestones = useAppSelector(
+    (state) => state.routePlanner.milestones,
+  );
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   const tRef = useRef<number>();
 
@@ -101,13 +106,13 @@ export function RoutePlannerResult(): ReactElement {
 
   const [dragAlt, setDragAlt] = useState<number>();
 
-  const pickMode = useSelector((state) => state.routePlanner.pickMode);
+  const pickMode = useAppSelector((state) => state.routePlanner.pickMode);
 
-  const tool = useSelector((state) => state.main.tool);
+  const tool = useAppSelector((state) => state.main.tool);
 
   const interactive0 = tool === 'route-planner'; // draggable
 
-  const interactive1 = useSelector(selectingModeSelector) || interactive0; // markers, lines
+  const interactive1 = useAppSelector(selectingModeSelector) || interactive0; // markers, lines
 
   const [dragging, setDragging] = useState(false);
 

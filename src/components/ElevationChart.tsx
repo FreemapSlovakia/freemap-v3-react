@@ -2,6 +2,7 @@ import {
   elevationChartClose,
   elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/elevationChart.scss';
@@ -16,7 +17,7 @@ import {
 } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const ml = 50,
   mr = 30,
@@ -34,7 +35,7 @@ export function ElevationChart(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const elevationProfilePoints = useSelector(
+  const elevationProfilePoints = useAppSelector(
     (state) => state.elevationChart.elevationProfilePoints || [],
   );
 

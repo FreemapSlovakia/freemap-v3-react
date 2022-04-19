@@ -1,8 +1,8 @@
 import { createFilter } from 'fm3/galleryUtils';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
+import { RootState } from 'fm3/reducers';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { DefaultRootState } from 'react-redux';
 import { assertType } from 'typescript-is';
 
 export type Picture = {
@@ -18,7 +18,7 @@ export type Picture = {
   rating: number;
 };
 
-export async function fetchPictures(getState: () => DefaultRootState) {
+export async function fetchPictures(getState: () => RootState) {
   const b = (await mapPromise).getBounds();
 
   const res = await httpRequest({

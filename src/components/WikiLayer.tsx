@@ -1,11 +1,12 @@
 import { wikiLoadPreview } from 'fm3/actions/wikiActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { Icon } from 'leaflet';
 import { ReactElement, useEffect, useRef } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { FaExternalLinkAlt, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Popup, Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 class WikiIcon extends Icon {
   static template: ChildNode | undefined;
@@ -20,7 +21,9 @@ class WikiIcon extends Icon {
     if (WikiIcon.template) {
       div.appendChild(WikiIcon.template.cloneNode());
     } else {
-      render(<FaWikipediaW />, div);
+      const root = createRoot(div);
+
+      root.render(<FaWikipediaW />);
 
       WikiIcon.template = div.childNodes.item(0);
     }
@@ -45,9 +48,9 @@ const wikiIcon = new WikiIcon({
 export function WikiLayer(): ReactElement {
   const m = useMessages();
 
-  const points = useSelector((state) => state.wiki.points);
+  const points = useAppSelector((state) => state.wiki.points);
 
-  const preview = useSelector((state) => state.wiki.preview);
+  const preview = useAppSelector((state) => state.wiki.preview);
 
   const dispatch = useDispatch();
 
@@ -94,7 +97,11 @@ export function WikiLayer(): ReactElement {
               </div>
             </Tooltip>
           )}
-          <Popup onOpen={cbMapRef.current.get(wikipedia)}>
+          <Popup
+            eventHandlers={{
+              add: cbMapRef.current.get(wikipedia),
+            }}
+          >
             <h4>
               <a
                 href={

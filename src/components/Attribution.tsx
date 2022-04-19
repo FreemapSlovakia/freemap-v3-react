@@ -1,14 +1,14 @@
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 
 type Props = { unknown: string };
 
 export function Attribution({ unknown }: Props): ReactElement {
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
   const m = useMessages();
 

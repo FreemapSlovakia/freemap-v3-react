@@ -1,5 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapsDisconnect, mapsSave } from 'fm3/actions/mapsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
@@ -7,12 +8,12 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ButtonToolbar from 'react-bootstrap/esm/ButtonToolbar';
 import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
 
-  const activeMap = useSelector((state) => state.maps.activeMap);
+  const activeMap = useAppSelector((state) => state.maps.activeMap);
 
   const dispatch = useDispatch();
 

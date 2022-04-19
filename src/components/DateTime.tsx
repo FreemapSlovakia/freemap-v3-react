@@ -35,7 +35,7 @@ export function DateTime({
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value ?? '') || ['', '', ''];
 
   const propagateChange = useCallback(
-    (date, time) => {
+    (date: string, time: string) => {
       onChange(date ? `${date}T${time || '00:00:00'}` : '');
     },
     [onChange],

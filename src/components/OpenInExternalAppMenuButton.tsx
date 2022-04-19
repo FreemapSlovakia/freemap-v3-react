@@ -1,10 +1,10 @@
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Overlay, { Placement } from 'react-bootstrap/esm/Overlay';
 import Popover from 'react-bootstrap/Popover';
-import { useSelector } from 'react-redux';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
 interface Props extends LatLon {
@@ -50,9 +50,9 @@ export function OpenInExternalAppMenuButton({
 
   const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   return (
     <>

@@ -10,6 +10,7 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
   drawingLinePolys,
   selectingModeSelector,
@@ -25,7 +26,7 @@ import {
   useMap,
   useMapEvent,
 } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
@@ -48,19 +49,19 @@ type Props = {
 export function DrawingLineResult({ index }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const drawing = useSelector(drawingLinePolys);
+  const drawing = useAppSelector(drawingLinePolys);
 
-  const line = useSelector((state) => state.drawingLines.lines[index]);
+  const line = useAppSelector((state) => state.drawingLines.lines[index]);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const selected = useSelector(
+  const selected = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
       index === state.main.selection.id,
   );
 
-  const selectedPointId = useSelector((state) =>
+  const selectedPointId = useAppSelector((state) =>
     state.main.selection?.type === 'line-point' &&
     index === state.main.selection.lineIndex
       ? state.main.selection.pointId
@@ -69,9 +70,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   const color = line.color || colors.normal;
 
-  const joinWith = useSelector((state) => state.drawingLines.joinWith);
+  const joinWith = useAppSelector((state) => state.drawingLines.joinWith);
 
-  const interactive = useSelector(selectingModeSelector);
+  const interactive = useAppSelector(selectingModeSelector);
 
   const interactiveLine = interactive && joinWith === undefined;
 

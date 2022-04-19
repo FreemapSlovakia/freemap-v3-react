@@ -1,11 +1,13 @@
 import turfLength from '@turf/length';
 import { TrackPoint } from 'fm3/actions/trackViewerActions';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { assertType } from 'typescript-is';
+import { useAppSelector } from './reduxSelectHook';
 
 export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
-  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+  const trackGeojson = useAppSelector(
+    (state) => state.trackViewer.trackGeojson,
+  );
 
   const features = trackGeojson?.features;
 

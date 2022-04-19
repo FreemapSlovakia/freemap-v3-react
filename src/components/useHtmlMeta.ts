@@ -1,8 +1,8 @@
 import { Modal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import { MessagePaths } from 'fm3/types/common';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 
 const modalTitleKeys: Record<Modal, MessagePaths> = {
   legend: 'mainMenu.mapLegend',
@@ -28,7 +28,7 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
 export function useHtmlMeta(): void {
   const m = useMessages();
 
-  const activeModal = useSelector((state) => state.main.activeModal);
+  const activeModal = useAppSelector((state) => state.main.activeModal);
 
   useEffect(() => {
     if (!m) {

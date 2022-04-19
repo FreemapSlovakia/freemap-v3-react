@@ -1,5 +1,6 @@
 import { gallerySetFilter } from 'fm3/actions/galleryActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
@@ -16,7 +17,7 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
@@ -27,11 +28,11 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
-  const filter = useSelector((state) => state.gallery.filter);
+  const filter = useAppSelector((state) => state.gallery.filter);
 
-  const users = useSelector((state) => state.gallery.users);
+  const users = useAppSelector((state) => state.gallery.users);
 
-  const tags = useSelector((state) => state.gallery.tags);
+  const tags = useAppSelector((state) => state.gallery.tags);
 
   const [tag, setTag] = useState('');
 

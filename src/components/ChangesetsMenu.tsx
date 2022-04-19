@@ -1,4 +1,5 @@
 import { changesetsSetParams } from 'fm3/actions/changesetsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -6,7 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaEraser } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ToolMenu } from './ToolMenu';
 
 export default ChangesetsMenu;
@@ -15,10 +16,10 @@ export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
 
   const [authorName, setAuthorName] = useState<string | null>(
-    useSelector((state) => state.changesets.authorName),
+    useAppSelector((state) => state.changesets.authorName),
   );
 
-  const days = useSelector((state) => state.changesets.days || 3);
+  const days = useAppSelector((state) => state.changesets.days || 3);
 
   const dispatch = useDispatch();
 

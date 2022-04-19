@@ -1,8 +1,9 @@
 import { hideInfoBar } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function InfoBar(): ReactElement | null {
   const m = useMessages();
@@ -11,7 +12,7 @@ export function InfoBar(): ReactElement | null {
 
   const [show, setShow] = useState(1);
 
-  const hiddenInfoBars = useSelector((state) => state.main.hiddenInfoBars);
+  const hiddenInfoBars = useAppSelector((state) => state.main.hiddenInfoBars);
 
   useEffect(() => {
     const ref = window.setInterval(

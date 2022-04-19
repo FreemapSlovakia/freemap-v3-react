@@ -1,12 +1,12 @@
-import { DefaultRootState } from 'react-redux';
 import { ActionCreator } from 'typesafe-actions';
 import { clearMap } from './actions/mainActions';
 import { CancelItem, cancelRegister } from './cancelRegister';
+import { RootState } from './reducers';
 
 interface HttpRequestParams extends Omit<RequestInit, 'signal'> {
   url: string;
   data?: unknown;
-  getState: () => DefaultRootState;
+  getState: () => RootState;
   expectedStatus?: number | number[];
   cancelActions?: ActionCreator<string>[];
 }

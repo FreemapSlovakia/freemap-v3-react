@@ -1,10 +1,10 @@
 import { RootAction } from 'fm3/actions';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 import { Dispatch, Middleware } from 'redux';
 
 export const loggerMiddleware: Middleware<
   RootAction,
-  DefaultRootState,
+  RootState,
   Dispatch<RootAction>
 > =
   ({ getState }) =>

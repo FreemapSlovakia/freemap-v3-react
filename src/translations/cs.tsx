@@ -1437,7 +1437,7 @@ const cs: Messages = {
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Legenda k mapě <i>{outdoorMap}</i>:
       </>

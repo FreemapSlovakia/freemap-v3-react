@@ -1,5 +1,6 @@
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { Card } from 'react-bootstrap';
@@ -20,14 +21,14 @@ import {
   FaRegQuestionCircle,
   FaTimes,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
 export default ExportPdfModal;
 
 export function ExportPdfModal({ show }: Props): ReactElement {
-  const canExportByPolygon = useSelector(
+  const canExportByPolygon = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
       state.main.selection.id !== undefined,

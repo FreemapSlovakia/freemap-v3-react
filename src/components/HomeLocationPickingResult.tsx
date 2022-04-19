@@ -1,9 +1,10 @@
 import { setSelectingHomeLocation } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
 import { FaHome } from 'react-icons/fa';
 import { useMapEvent } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { RichMarker } from './RichMarker';
 
 export function HomeLocationPickingResult(): ReactElement | null {
@@ -21,7 +22,7 @@ export function HomeLocationPickingResult(): ReactElement | null {
     ),
   );
 
-  const selectingHomeLocation = useSelector(
+  const selectingHomeLocation = useAppSelector(
     (state) => state.main.selectingHomeLocation,
   );
 

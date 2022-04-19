@@ -8,8 +8,8 @@ import {
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { RootState } from 'fm3/reducers';
 import { StringDates } from 'fm3/types/common';
-import { DefaultRootState } from 'react-redux';
 import { assertType } from 'typescript-is';
 import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
 
@@ -82,7 +82,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   },
 };
 
-function getMapDataFromState(state: DefaultRootState): MapData {
+function getMapDataFromState(state: RootState): MapData {
   const {
     tracking,
     drawingLines,

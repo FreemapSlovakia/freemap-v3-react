@@ -29,6 +29,7 @@ import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useGpxDropHandler } from 'fm3/hooks/useGpxDropHandler';
 import { useMouseCursor } from 'fm3/hooks/useMouseCursor';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
@@ -56,7 +57,7 @@ import Card from 'react-bootstrap/Card';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler';
 import fmLogo from '../images/freemap-logo-print.png';
 import { AsyncComponent } from './AsyncComponent';
@@ -152,55 +153,55 @@ export function Main(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const lat = useSelector((state) => state.map.lat);
+  const lat = useAppSelector((state) => state.map.lat);
 
-  const lon = useSelector((state) => state.map.lon);
+  const lon = useAppSelector((state) => state.map.lon);
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const showInteractiveLayer = useSelector(
+  const showInteractiveLayer = useAppSelector(
     (state) => !state.map.overlays.includes('i'),
   );
 
-  const selectionType = useSelector((state) => state.main.selection?.type);
+  const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  const tool = useSelector((state) => state.main.tool);
+  const tool = useAppSelector((state) => state.main.tool);
 
-  const embedFeatures = useSelector((state) => state.main.embedFeatures);
+  const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
-  const activeModal = useSelector((state) => state.main.activeModal);
+  const activeModal = useAppSelector((state) => state.main.activeModal);
 
-  const progress = useSelector((state) => !!state.main.progress.length);
+  const progress = useAppSelector((state) => !!state.main.progress.length);
 
-  const authenticated = useSelector((state) => !!state.auth.user);
+  const authenticated = useAppSelector((state) => !!state.auth.user);
 
-  const showAds = useSelector(
+  const showAds = useAppSelector(
     (state) =>
       !window.isRobot && !window.fmEmbedded && !state.auth.user?.isPremium,
   );
 
-  const showElevationChart = useSelector(
+  const showElevationChart = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const showGalleryPicker = useSelector(showGalleryPickerSelector);
+  const showGalleryPicker = useAppSelector(showGalleryPickerSelector);
 
-  const showMenu = useSelector(
+  const showMenu = useAppSelector(
     (state) =>
       state.main.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition,
   );
 
-  const overlayPaneOpacity = useSelector(
+  const overlayPaneOpacity = useAppSelector(
     (state) => state.map.overlayPaneOpacity,
   );
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const isUserValidated = useSelector((state) => state.auth.validated);
+  const isUserValidated = useAppSelector((state) => state.auth.validated);
 
   const [map, setMap] = useState<Leaflet.Map | null>(null);
 
@@ -351,7 +352,7 @@ export function Main(): ReactElement {
     noClick: true,
   });
 
-  const isSelecting = useSelector(selectingModeSelector);
+  const isSelecting = useAppSelector(selectingModeSelector);
 
   const selectionMenu = showMenu ? selectionType : null;
 
@@ -359,21 +360,21 @@ export function Main(): ReactElement {
 
   const scMapControls = useScrollClasses('horizontal');
 
-  const drawingLines = useSelector(drawingLinePolys);
+  const drawingLines = useAppSelector(drawingLinePolys);
 
-  const elevationChartActive = useSelector(
+  const elevationChartActive = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const trackFound = useSelector(trackGeojsonIsSuitableForElevationChart);
+  const trackFound = useAppSelector(trackGeojsonIsSuitableForElevationChart);
 
-  const routeFound = useSelector(
+  const routeFound = useAppSelector(
     (state) => !!state.routePlanner.alternatives.length,
   );
 
   useHtmlMeta();
 
-  const showMapsMenu = useSelector((state) => !!state.maps.activeMap);
+  const showMapsMenu = useAppSelector((state) => !!state.maps.activeMap);
 
   // prevents map click action if popper is open
   const handleMapWrapperClick = (e: MouseEvent) => {
@@ -399,21 +400,25 @@ export function Main(): ReactElement {
     }
   };
 
-  const selectingHomeLocation = useSelector(
+  const selectingHomeLocation = useAppSelector(
     (state) => state.main.selectingHomeLocation,
   );
 
-  const documentKey = useSelector((state) => state.main.documentKey);
+  const documentKey = useAppSelector((state) => state.main.documentKey);
 
-  const showPosition = useSelector((state) => state.gallery.showPosition);
+  const showPosition = useAppSelector((state) => state.gallery.showPosition);
 
-  const pickingPosition = useSelector(
+  const pickingPosition = useAppSelector(
     (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+  const trackGeojson = useAppSelector(
+    (state) => state.trackViewer.trackGeojson,
+  );
 
-  const hasObjects = useSelector((state) => state.objects.objects.length > 0);
+  const hasObjects = useAppSelector(
+    (state) => state.objects.objects.length > 0,
+  );
 
   return (
     <>
@@ -572,7 +577,7 @@ export function Main(): ReactElement {
             zoomControl={false}
             attributionControl={false}
             maxZoom={20}
-            whenCreated={setMap}
+            ref={setMap}
             center={{ lat, lng: lon }}
             zoom={zoom}
           >

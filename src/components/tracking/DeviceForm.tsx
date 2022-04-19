@@ -1,4 +1,5 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
@@ -11,7 +12,7 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaBullseye, FaSync } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
@@ -24,7 +25,7 @@ export function DeviceForm(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const device = useSelector((state) =>
+  const device = useAppSelector((state) =>
     state.tracking.modifiedDeviceId
       ? state.tracking.devices.find(
           (device) => device.id === state.tracking.modifiedDeviceId,
@@ -71,8 +72,10 @@ export function DeviceForm(): ReactElement {
   );
 
   const onSelect = useCallback(
-    (type) => {
-      setType(type);
+    (type: string | null) => {
+      if (type) {
+        setType(type);
+      }
     },
     [setType],
   );

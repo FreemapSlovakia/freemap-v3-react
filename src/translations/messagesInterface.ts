@@ -760,7 +760,7 @@ export type Messages = {
     conflictError: string;
   };
   legend: {
-    body: () => JSX.Element;
+    body: JSX.Element;
   };
   contacts: {
     ngo: string;

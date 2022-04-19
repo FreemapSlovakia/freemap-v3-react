@@ -1,4 +1,5 @@
 import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -7,7 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useAttributionInfo } from './useAttributionInfo';
 
 export function CopyrightButton(): ReactElement {
@@ -15,7 +16,7 @@ export function CopyrightButton(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const showLegendButton = useSelector((state) =>
+  const showLegendButton = useAppSelector((state) =>
     (['sk', 'cs'].includes(state.l10n.language)
       ? ['A', 'K', 'T', 'C', 'X', 'O']
       : ['X', 'O']

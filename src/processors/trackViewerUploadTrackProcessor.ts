@@ -5,7 +5,7 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 import { Dispatch } from 'redux';
 import { assertType } from 'typescript-is';
 
@@ -14,7 +14,7 @@ export async function handleTrackUpload({
   getState,
 }: {
   dispatch: Dispatch;
-  getState: () => DefaultRootState;
+  getState: () => RootState;
 }): Promise<void> {
   const { trackGpx, trackUID } = getState().trackViewer;
 

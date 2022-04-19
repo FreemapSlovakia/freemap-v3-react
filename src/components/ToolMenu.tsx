@@ -1,4 +1,5 @@
 import { setTool } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { toolDefinitions } from 'fm3/toolDefinitions';
@@ -8,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import { FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = {
   children?: ReactNode;
@@ -21,7 +22,7 @@ export function ToolMenu({ children }: Props): ReactElement {
 
   const m = useMessages();
 
-  const tool = useSelector((state) => state.main.tool);
+  const tool = useAppSelector((state) => state.main.tool);
 
   const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
 

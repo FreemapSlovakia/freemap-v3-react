@@ -1,15 +1,17 @@
 import { Geometries, GeometryCollection } from '@turf/helpers';
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { useMessages } from 'fm3/l10nInjector';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 
 export function TrackViewerDetails(): ReactElement | null {
-  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+  const trackGeojson = useAppSelector(
+    (state) => state.trackViewer.trackGeojson,
+  );
 
   return trackGeojson ? (
     <TrackViewerDetailsInt geometry={trackGeojson.features[0].geometry} />
@@ -172,7 +174,8 @@ export function TrackViewerDetailsInt({
   return (
     <dl className="trackInfo dl-horizontal">
       {tableData.map(([key, value]) => [
-        <dt key={`${key}-dt`}>{m?.trackViewer.details[key]}:</dt>,
+        <dt key={`${key}-dt`}>{(m?.trackViewer.details[key] ?? '') + ':'}</dt>,
+
         <dd key={`${key}-dd`} className="infoValue">
           {value}
         </dd>,

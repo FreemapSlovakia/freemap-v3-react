@@ -1,5 +1,6 @@
 import { authStartLogout } from 'fm3/actions/authActions';
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
@@ -7,14 +8,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaCog, FaSignOutAlt, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
 export default AccountModal;
 
 export function AccountModal({ show }: Props): ReactElement | null {
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const m = useMessages();
 

@@ -12,8 +12,8 @@ import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { containsElevations, distance } from 'fm3/geoutils';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
+import { RootState } from 'fm3/reducers';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { assertType } from 'typescript-is';
 
@@ -64,7 +64,7 @@ function resolveElevationProfilePointsLocally(
 }
 
 async function resolveElevationProfilePointsViaApi(
-  getState: () => DefaultRootState,
+  getState: () => RootState,
   trackGeojson: Feature<LineString>,
   dispatch: Dispatch<RootAction>,
 ) {

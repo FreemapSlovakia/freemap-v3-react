@@ -6,11 +6,12 @@ import {
   toastsStopTimeout,
 } from 'fm3/actions/toastsActions';
 import { Toast } from 'fm3/components/Toast';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/toasts.scss';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 function tx(m: Messages | undefined, { name, nameKey }: ToastAction) {
   if (name !== undefined) {
@@ -37,7 +38,7 @@ export function Toasts(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const toasts = useSelector((state) => state.toasts.toasts);
+  const toasts = useAppSelector((state) => state.toasts.toasts);
 
   const items = useMemo(
     () =>

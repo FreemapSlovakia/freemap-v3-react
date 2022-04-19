@@ -5,26 +5,28 @@ import {
 } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { DragEndEvent, Point } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { RichMarker } from './RichMarker';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
 
-  const interactive0 = useSelector(selectingModeSelector);
+  const interactive0 = useAppSelector(selectingModeSelector);
 
-  const activeIndex = useSelector((state) =>
+  const activeIndex = useAppSelector((state) =>
     state.main.selection?.type === 'draw-points'
       ? state.main.selection.id ?? null
       : null,
   );
 
-  const handleDrag = useCallback(
-    ({ latlng: { lat, lng: lon } }) => {
+  const handleMove = useCallback(
+    // see https://github.com/PaulLeCam/react-leaflet/issues/981
+    ({ latlng: { lat, lng: lon } }: any) => {
       if (activeIndex !== null) {
         dispatch(drawingPointChangePosition({ index: activeIndex, lat, lon }));
 
@@ -53,7 +55,7 @@ export function DrawingPointsResult(): ReactElement {
     [activeIndex, dispatch],
   );
 
-  const points = useSelector((state) => state.drawingPoints.points);
+  const points = useAppSelector((state) => state.drawingPoints.points);
 
   const onSelects = useMemo(
     () =>
@@ -67,7 +69,7 @@ export function DrawingPointsResult(): ReactElement {
     [points.length, activeIndex, dispatch],
   );
 
-  const change = useSelector((state) => state.drawingPoints.change);
+  const change = useAppSelector((state) => state.drawingPoints.change);
 
   return (
     <>
@@ -80,7 +82,7 @@ export function DrawingPointsResult(): ReactElement {
             eventHandlers={{
               dragstart: onSelects[i],
               dragend: handleDragEnd,
-              drag: handleDrag,
+              move: handleMove,
               click: onSelects[i],
             }}
             position={{ lat, lng: lon }}

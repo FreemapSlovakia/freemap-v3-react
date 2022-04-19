@@ -10,6 +10,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
@@ -38,7 +39,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
 type Props = {
@@ -69,13 +70,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const results = useSelector((state) => state.search.results);
+  const results = useAppSelector((state) => state.search.results);
 
-  const selectedResult = useSelector((state) => state.search.selectedResult);
+  const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  const searchSeq = useSelector((state) => state.search.searchSeq);
+  const searchSeq = useAppSelector((state) => state.search.searchSeq);
 
-  // const inProgress = useSelector((state) => state.search.inProgress);
+  // const inProgress = useAppSelector((state) => state.search.inProgress);
 
   const [value, setValue] = useState('');
 

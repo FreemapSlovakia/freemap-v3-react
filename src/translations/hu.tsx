@@ -1442,7 +1442,7 @@ const hu: Messages = {
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Jelmagyarázat: <i>{outdoorMap}</i>:
       </>

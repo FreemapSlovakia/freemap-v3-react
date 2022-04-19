@@ -1,11 +1,11 @@
 import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/reducers';
 import storage from 'local-storage-fallback';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 
 export const statePersistingMiddleware: Middleware<
   RootAction | null,
-  DefaultRootState,
+  RootState,
   Dispatch<RootAction>
 > =
   ({ getState }) =>
@@ -22,7 +22,7 @@ export const statePersistingMiddleware: Middleware<
     return result;
   };
 
-function persistSelectedState(state: DefaultRootState) {
+function persistSelectedState(state: RootState) {
   if (window.fmEmbedded) {
     return;
   }
@@ -59,6 +59,6 @@ function persistSelectedState(state: DefaultRootState) {
       gallery: {
         colorizeBy: state.gallery.colorizeBy,
       },
-    } as Partial<DefaultRootState>),
+    } as Partial<RootState>),
   );
 }

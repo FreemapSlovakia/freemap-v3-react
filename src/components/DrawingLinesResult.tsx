@@ -1,13 +1,13 @@
 import Color from 'color';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { ReactElement, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { DrawingLineResult } from './DrawingLineResult';
 
 function useLinePointColor() {
   const color =
-    useSelector((state) =>
+    useAppSelector((state) =>
       state.main.selection?.type === 'draw-line-poly'
         ? state.drawingLines.lines[state.main.selection.id]?.color
         : state.main.selection?.type === 'line-point'
@@ -28,7 +28,7 @@ function useLinePointColor() {
 }
 
 export function DrawingLinesResult(): ReactElement {
-  const lines = useSelector((state) => state.drawingLines.lines);
+  const lines = useAppSelector((state) => state.drawingLines.lines);
 
   useLinePointColor();
 

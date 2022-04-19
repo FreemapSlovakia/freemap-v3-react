@@ -1,6 +1,6 @@
 import { mouseCursorSelector } from 'fm3/selectors/mainSelectors';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from './reduxSelectHook';
 
 // TODO handle also dropdown menus (.dropdown-menu.show)
 
@@ -27,7 +27,7 @@ export function useMouseCursor(element?: HTMLElement): void {
     };
   }, []);
 
-  const mouseCursor = useSelector(mouseCursorSelector);
+  const mouseCursor = useAppSelector(mouseCursorSelector);
 
   useEffect(() => {
     const style = element?.style;

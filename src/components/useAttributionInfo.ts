@@ -1,15 +1,16 @@
 import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function useAttributionInfo() {
   const [nonce, setNonce] = useState(0);
 
   const dispatch = useDispatch();
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
   const licenceShownForRef = useRef([
     new Set<string>(),
@@ -18,7 +19,7 @@ export function useAttributionInfo() {
 
   const prevNonceRef = useRef(0);
 
-  const showingAttribution = useSelector((state) =>
+  const showingAttribution = useAppSelector((state) =>
     state.toasts.toasts.some((toast) => toast.id === 'attribution'),
   );
 

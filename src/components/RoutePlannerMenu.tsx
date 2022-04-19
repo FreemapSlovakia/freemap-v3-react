@@ -20,6 +20,7 @@ import {
   Weighting,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
@@ -51,7 +52,7 @@ import {
   FaPlay,
   FaStop,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typescript-is';
 import { useDebouncedCallback } from 'use-debounce';
 import { DeleteButton } from './DeleteButton';
@@ -103,7 +104,7 @@ function TripSettings() {
   const dispatch = useDispatch();
 
   const [seed, handleSeedChange, handleSeedSubmit, setSeed] = useParam(
-    useSelector((state) => state.routePlanner.roundtripParams.seed),
+    useAppSelector((state) => state.routePlanner.roundtripParams.seed),
     0,
     useCallback(
       (seed: number) => {
@@ -114,7 +115,7 @@ function TripSettings() {
   );
 
   const [distance, handleDistanceChange, handleDistanceSubmit] = useParam(
-    useSelector(
+    useAppSelector(
       (state) =>
         Math.round(state.routePlanner.roundtripParams.distance / 100) / 10,
     ),
@@ -195,7 +196,7 @@ function IsochroneSettings() {
   const dispatch = useDispatch();
 
   const [buckets, handleBucketsChange, handleBucketsSubmit] = useParam(
-    useSelector((state) => state.routePlanner.isochroneParams.buckets),
+    useAppSelector((state) => state.routePlanner.isochroneParams.buckets),
     0,
     useCallback(
       (buckets: number) => {
@@ -207,7 +208,7 @@ function IsochroneSettings() {
 
   const [distanceLimit, handleDistanceLimitChange, handleDistanceLimitSubmit] =
     useParam(
-      useSelector(
+      useAppSelector(
         (state) =>
           Math.round(state.routePlanner.isochroneParams.distanceLimit / 100) /
           10,
@@ -224,7 +225,7 @@ function IsochroneSettings() {
     );
 
   const [timeLimit, handleTimeLimitChange, handleTimeLimitSubmit] = useParam(
-    useSelector((state) =>
+    useAppSelector((state) =>
       Math.round(state.routePlanner.isochroneParams.timeLimit / 60),
     ),
     10,
@@ -339,37 +340,39 @@ export function RoutePlannerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const milestones = useSelector((state) => state.routePlanner.milestones);
+  const milestones = useAppSelector((state) => state.routePlanner.milestones);
 
-  const homeLocation = useSelector((state) => state.main.homeLocation);
+  const homeLocation = useAppSelector((state) => state.main.homeLocation);
 
-  const activeTransportType = useSelector(
+  const activeTransportType = useAppSelector(
     (state) => state.routePlanner.transportType,
   );
 
-  const activeMode = useSelector((state) => state.routePlanner.mode);
+  const activeMode = useAppSelector((state) => state.routePlanner.mode);
 
-  const activeWeighting = useSelector((state) => state.routePlanner.weighting);
+  const activeWeighting = useAppSelector(
+    (state) => state.routePlanner.weighting,
+  );
 
-  const pickPointMode = useSelector((state) => state.routePlanner.pickMode);
+  const pickPointMode = useAppSelector((state) => state.routePlanner.pickMode);
 
-  const routeFound = useSelector(
+  const routeFound = useAppSelector(
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
-  const isochronesFound = useSelector(
+  const isochronesFound = useAppSelector(
     (state) => !!state.routePlanner.isochrones,
   );
 
-  const elevationProfileIsVisible = useSelector(
+  const elevationProfileIsVisible = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const canSwap = useSelector(
+  const canSwap = useAppSelector(
     (state) => !!(state.routePlanner.start && state.routePlanner.finish),
   );
 
-  const canDelete = useSelector(
+  const canDelete = useAppSelector(
     (state) =>
       !!(
         state.routePlanner.start ||

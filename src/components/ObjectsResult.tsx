@@ -2,6 +2,7 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useMessages } from 'fm3/l10nInjector';
@@ -16,20 +17,20 @@ import { OsmMapping } from 'fm3/osm/types';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const interactive = useSelector(selectingModeSelector);
+  const interactive = useAppSelector(selectingModeSelector);
 
-  const objects = useSelector((state) => state.objects.objects);
+  const objects = useAppSelector((state) => state.objects.objects);
 
   const language = useEffectiveChosenLanguage();
 
-  const activeId = useSelector((state) =>
+  const activeId = useAppSelector((state) =>
     state.main.selection?.type === 'objects'
       ? state.main.selection.id ?? null
       : null,

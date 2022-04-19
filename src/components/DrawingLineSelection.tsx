@@ -5,6 +5,7 @@ import {
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -15,7 +16,7 @@ import {
   FaTag,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Selection } from './Selection';
 
 export default DrawingLineSelection;
@@ -25,15 +26,15 @@ export function DrawingLineSelection(): ReactElement | null {
 
   const m = useMessages();
 
-  const drawing = useSelector((state) => state.drawingLines.drawing);
+  const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
-  const line = useSelector((state) =>
+  const line = useAppSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'
       ? state.drawingLines.lines[state.main.selection.id]
       : undefined,
   );
 
-  const showElevationChart = useSelector(
+  const showElevationChart = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 

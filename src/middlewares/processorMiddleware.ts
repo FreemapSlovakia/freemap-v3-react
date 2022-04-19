@@ -2,8 +2,8 @@ import { RootAction } from 'fm3/actions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
+import { RootState } from 'fm3/reducers';
 import { MessagePaths } from 'fm3/types/common';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import {
   Action,
@@ -14,29 +14,29 @@ import {
 
 export type ProcessorHandler<T extends ActionCreator = ActionCreator> =
   (params: {
-    prevState: DefaultRootState;
-    getState: () => DefaultRootState;
+    prevState: RootState;
+    getState: () => RootState;
     dispatch: Dispatch;
     action: ActionType<T>;
   }) => void | Promise<void>;
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
-    prevState: DefaultRootState;
-    getState: () => DefaultRootState;
+    prevState: RootState;
+    getState: () => RootState;
     dispatch: Dispatch;
     action: ActionType<T>;
   }) => Action | null | undefined | void;
   handle?: ProcessorHandler<T>;
   actionCreator?: T | T[];
   actionPredicate?: (action: ActionType<T>) => boolean;
-  statePredicate?: (state: DefaultRootState) => boolean;
-  stateChangePredicate?: (state: DefaultRootState) => unknown;
+  statePredicate?: (state: RootState) => boolean;
+  stateChangePredicate?: (state: RootState) => unknown;
   errorKey?: MessagePaths;
   id?: string; // toast collapse key
 }
 
-type MW = Middleware<unknown, DefaultRootState, Dispatch<RootAction>> & {
+type MW = Middleware<unknown, RootState, Dispatch<RootAction>> & {
   processors: Processor[];
 };
 

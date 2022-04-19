@@ -18,6 +18,7 @@ import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/gallery.scss';
@@ -46,7 +47,7 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
@@ -60,21 +61,21 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const imageIds = useSelector((state) => state.gallery.imageIds);
+  const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
-  const image = useSelector((state) => state.gallery.image);
+  const image = useAppSelector((state) => state.gallery.image);
 
-  const activeImageId2 = useSelector((state) => state.gallery.activeImageId);
+  const activeImageId2 = useAppSelector((state) => state.gallery.activeImageId);
 
-  const comment = useSelector((state) => state.gallery.comment);
+  const comment = useAppSelector((state) => state.gallery.comment);
 
-  const editModel = useSelector((state) => state.gallery.editModel);
+  const editModel = useAppSelector((state) => state.gallery.editModel);
 
-  const saveErrors = useSelector((state) => state.gallery.saveErrors);
+  const saveErrors = useAppSelector((state) => state.gallery.saveErrors);
 
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
-  const allTags = useSelector((state) => state.gallery.tags);
+  const allTags = useAppSelector((state) => state.gallery.tags);
 
   const [loading, setLoading] = useState(true);
 

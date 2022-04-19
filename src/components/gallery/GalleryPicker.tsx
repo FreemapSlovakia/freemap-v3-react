@@ -1,12 +1,13 @@
 import { galleryRequestImages } from 'fm3/actions/galleryActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { LatLon } from 'fm3/types/common';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function GalleryPicker(): ReactElement | null {
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   const dispatch = useDispatch();
 

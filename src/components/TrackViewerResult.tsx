@@ -17,6 +17,7 @@ import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
@@ -25,7 +26,7 @@ import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString, Properties>[];
@@ -41,11 +42,11 @@ export function TrackViewerResult({
 }): ReactElement | null {
   const [startPoints, finishPoints] = useStartFinishPoints();
 
-  const displayingElevationChart = useSelector(
+  const displayingElevationChart = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const colorizeTrackBy = useSelector(
+  const colorizeTrackBy = useAppSelector(
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
@@ -158,7 +159,7 @@ export function TrackViewerResult({
   //   return turfLength(turfLineSlice(p1, p2, geojsonLineString));
   // };
 
-  const interactive = useSelector(selectingModeSelector);
+  const interactive = useAppSelector(selectingModeSelector);
 
   const dispatch = useDispatch();
 

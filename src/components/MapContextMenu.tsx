@@ -11,6 +11,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { LeafletMouseEvent } from 'leaflet';
@@ -40,7 +41,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useMapEvent } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
 export function MapContextMenu(): ReactElement {
@@ -88,9 +89,9 @@ export function MapContextMenu(): ReactElement {
     setContextMenu((m) => ({ ...m, shown: false }));
   };
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
   const UpdatingPopover = useMemo(
     () =>

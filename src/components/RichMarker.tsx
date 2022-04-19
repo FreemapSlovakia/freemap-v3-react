@@ -1,7 +1,7 @@
 import { colors } from 'fm3/constants';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
 import { ReactElement, useEffect, useMemo, useRef } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 
 interface IconProps {
@@ -59,7 +59,9 @@ export class MarkerLeafletIcon extends Icon<
 
     (this as any)._setIconStyles(div, 'icon');
 
-    render(this.options.icon, div);
+    const root = createRoot(div);
+
+    root.render(this.options.icon);
 
     return div;
   }

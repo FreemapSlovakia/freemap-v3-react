@@ -4,7 +4,6 @@ import {
   overlayLayers,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
-import { DefaultRootState } from 'react-redux';
 import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
@@ -30,6 +29,7 @@ import {
 } from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
 import { history } from './historyHolder';
+import { RootState } from './reducers';
 import { showGalleryViewerSelector } from './selectors/mainSelectors';
 import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
@@ -38,7 +38,7 @@ let keyTimer: number | null = null;
 
 let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | null = null;
 
-function handleEvent(event: KeyboardEvent, state: DefaultRootState) {
+function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 

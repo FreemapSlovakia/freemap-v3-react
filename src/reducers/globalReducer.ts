@@ -9,28 +9,28 @@ import {
   Point,
 } from 'fm3/actions/drawingLineActions';
 import {
-  drawingChangeProperties as drawingChangeProperties,
+  drawingChangeProperties,
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
 import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
 import { mergeLines } from 'fm3/geoutils';
+import { RootState } from 'fm3/reducers';
 import produce from 'immer';
-import { DefaultRootState } from 'react-redux';
 import { isActionOf } from 'typesafe-actions';
 import {
   cleanState as routePlannerCleanState,
-  routePlannerInitialState as routePlannerInitialState,
+  routePlannerInitialState,
 } from './routePlannerReducer';
 import { searchInitialState } from './searchReducer';
 import {
   cleanState as trackViewerCleanState,
-  trackViewerInitialState as trackViewerInitialState,
+  trackViewerInitialState,
 } from './trackViewerReducer';
 
 export function preGlobalReducer(
-  state: DefaultRootState,
+  state: RootState,
   action: RootAction,
-): DefaultRootState {
+): RootState {
   if (isActionOf(convertToDrawing, action)) {
     const payload = action.payload;
 
@@ -328,9 +328,9 @@ export function preGlobalReducer(
 }
 
 export function postGlobalReducer(
-  state: DefaultRootState,
+  state: RootState,
   action: RootAction,
-): DefaultRootState {
+): RootState {
   if (isActionOf(drawingLineAddPoint, action)) {
     return produce(state, (draft) => {
       const index = action.payload.index ?? draft.drawingLines.lines.length - 1;

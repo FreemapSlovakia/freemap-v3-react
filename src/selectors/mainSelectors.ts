@@ -2,32 +2,30 @@ import { Tool } from 'fm3/actions/mainActions';
 import { PickMode } from 'fm3/actions/routePlannerActions';
 import marker from 'fm3/images/cursors/marker.svg';
 import pencil from 'fm3/images/cursors/pencil.svg';
+import { RootState } from 'fm3/reducers';
 import { Track } from 'fm3/types/trackingTypes';
-import { DefaultRootState } from 'react-redux';
 import { createSelector } from 'reselect';
 
-export const toolSelector = (state: DefaultRootState): Tool | null =>
-  state.main.tool;
+export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 
-export const mapOverlaysSelector = (state: DefaultRootState): string[] =>
+export const mapOverlaysSelector = (state: RootState): string[] =>
   state.map.overlays;
 
-export const selectingHomeLocationSelector = (
-  state: DefaultRootState,
-): boolean => state.main.selectingHomeLocation !== false;
+export const selectingHomeLocationSelector = (state: RootState): boolean =>
+  state.main.selectingHomeLocation !== false;
 
 export const routePlannerPickModeSelector = (
-  state: DefaultRootState,
+  state: RootState,
 ): PickMode | null => state.routePlanner.pickMode;
 
 export const galleryPickingPositionForIdSelector = (
-  state: DefaultRootState,
+  state: RootState,
 ): number | null => state.gallery.pickingPositionForId;
 
-export const galleryShowPositionSelector = (state: DefaultRootState): boolean =>
+export const galleryShowPositionSelector = (state: RootState): boolean =>
   state.gallery.showPosition;
 
-export const drawingLineSelector = (state: DefaultRootState): boolean =>
+export const drawingLineSelector = (state: RootState): boolean =>
   state.drawingLines.drawing;
 
 export const showGalleryPickerSelector = createSelector(
@@ -54,7 +52,7 @@ export const showGalleryPickerSelector = createSelector(
     !drawingLine,
 );
 
-export const showGalleryViewerSelector = (state: DefaultRootState): boolean =>
+export const showGalleryViewerSelector = (state: RootState): boolean =>
   state.gallery.pickingPositionForId === null &&
   state.gallery.activeImageId !== null &&
   !state.gallery.showPosition;
@@ -69,7 +67,7 @@ export const mouseCursorSelector = createSelector(
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   galleryShowPositionSelector,
-  (state: DefaultRootState) => state.drawingLines.drawing,
+  (state: RootState) => state.drawingLines.drawing,
   (
     selectingHomeLocation,
     tool,
@@ -113,11 +111,11 @@ export const mouseCursorSelector = createSelector(
 
 ////
 
-export const trackingTracksSelector = (state: DefaultRootState): Track[] =>
+export const trackingTracksSelector = (state: RootState): Track[] =>
   state.tracking.tracks;
 
 export const trackingActiveTrackIdSelector = (
-  state: DefaultRootState,
+  state: RootState,
 ): string | number | undefined =>
   state.main.selection?.type === 'tracking'
     ? state.main.selection.id
@@ -132,7 +130,7 @@ export const trackingTrackSelector = createSelector(
       : undefined,
 );
 
-export const selectingModeSelector = (state: DefaultRootState): boolean =>
+export const selectingModeSelector = (state: RootState): boolean =>
   !window.fmEmbedded &&
   !state.drawingLines.drawing &&
   (state.main.tool === null ||
@@ -142,13 +140,13 @@ export const selectingModeSelector = (state: DefaultRootState): boolean =>
     (state.main.tool === 'route-planner' &&
       state.routePlanner.pickMode === null));
 
-export const drawingLinePolys = (state: DefaultRootState): boolean =>
+export const drawingLinePolys = (state: RootState): boolean =>
   state.drawingLines.drawing ||
   state.main.tool === 'draw-lines' ||
   state.main.tool === 'draw-polygons';
 
 export const trackGeojsonIsSuitableForElevationChart = (
-  state: DefaultRootState,
+  state: RootState,
 ): boolean => {
   const { trackGeojson } = state.trackViewer;
 

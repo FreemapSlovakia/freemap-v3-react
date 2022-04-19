@@ -3,15 +3,15 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
+import { RootState } from 'fm3/reducers';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
 
 export function createTrackingMiddleware(): Middleware<
   unknown,
-  DefaultRootState,
+  RootState,
   Dispatch
 > {
   let reopenTs: number | undefined;

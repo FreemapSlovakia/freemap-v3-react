@@ -1,5 +1,6 @@
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
   BaseLayerLetters,
   baseLayers,
@@ -8,25 +9,24 @@ import {
   OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import missingTile from '../images/missing-tile-256x256.png';
 
 export function Layers(): ReactElement | null {
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const layersSettings = useSelector((state) => state.map.layersSettings);
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const galleryFilter = useSelector((state) => state.gallery.filter);
+  const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
-  const galleryColorizeBy = useSelector((state) => state.gallery.colorizeBy);
+  const galleryColorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
-  const galleryDirtySeq = useSelector((state) => state.gallery.dirtySeq);
+  const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);
 
-  const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
+  const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
-  const userId = useSelector((state) => state.auth.user?.id);
+  const userId = useAppSelector((state) => state.auth.user?.id);
 
   const getTileLayer = ({
     type,
@@ -103,7 +103,7 @@ export function Layers(): ReactElement | null {
     );
   };
 
-  const customLayers = useSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector((state) => state.map.customLayers);
 
   return window.isRobot ? null : (
     <>

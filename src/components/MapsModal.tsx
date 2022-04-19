@@ -6,6 +6,7 @@ import {
   mapsSave,
 } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useOnline } from 'fm3/hooks/useOnline';
 import { useMessages } from 'fm3/l10nInjector';
@@ -29,7 +30,7 @@ import {
   FaTrash,
   FaUnlink,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { assertType } from 'typescript-is';
 
@@ -47,7 +48,7 @@ export function MapsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const { maps, activeMap } = useSelector((state) => state.maps);
+  const { maps, activeMap } = useAppSelector((state) => state.maps);
 
   const sortedMaps = useMemo(
     () =>
@@ -57,7 +58,7 @@ export function MapsModal({ show }: Props): ReactElement {
     [maps],
   );
 
-  const myUserId = useSelector((state) => state.auth.user?.id);
+  const myUserId = useAppSelector((state) => state.auth.user?.id);
 
   const isOwnMap = activeMap?.userId === myUserId;
 

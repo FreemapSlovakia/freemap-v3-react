@@ -11,6 +11,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -18,7 +19,7 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import Modal from 'react-bootstrap/Modal';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes, FaUpload } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { usePictureDropHandler } from '../../hooks/usePictureDropHandler';
 import { PictureModel } from './GalleryEditForm';
 
@@ -31,15 +32,15 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const items = useSelector((state) => state.gallery.items);
+  const items = useAppSelector((state) => state.gallery.items);
 
-  const uploading = useSelector((state) => !!state.gallery.uploadingId);
+  const uploading = useAppSelector((state) => !!state.gallery.uploadingId);
 
-  const allTags = useSelector((state) => state.gallery.tags);
+  const allTags = useAppSelector((state) => state.gallery.tags);
 
-  const showPreview = useSelector((state) => state.gallery.showPreview);
+  const showPreview = useAppSelector((state) => state.gallery.showPreview);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const handleItemMerge = useCallback(
     (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {

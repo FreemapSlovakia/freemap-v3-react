@@ -11,6 +11,7 @@ import {
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { trackGeojsonIsSuitableForElevationChart } from 'fm3/selectors/mainSelectors';
 import 'fm3/styles/trackViewer.scss';
@@ -25,7 +26,7 @@ import {
   FaPencilAlt,
   FaUpload,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
@@ -38,19 +39,19 @@ export function TrackViewerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const hasTrack = useSelector((state) => !!state.trackViewer.trackGeojson);
+  const hasTrack = useAppSelector((state) => !!state.trackViewer.trackGeojson);
 
-  const canUpload = useSelector((state) => !state.trackViewer.trackUID);
+  const canUpload = useAppSelector((state) => !state.trackViewer.trackUID);
 
-  const elevationChartActive = useSelector(
+  const elevationChartActive = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const colorizeTrackBy = useSelector(
+  const colorizeTrackBy = useAppSelector(
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const enableElevationChart = useSelector(
+  const enableElevationChart = useAppSelector(
     trackGeojsonIsSuitableForElevationChart,
   );
 

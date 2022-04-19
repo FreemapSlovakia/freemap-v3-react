@@ -1,4 +1,5 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
   categoryKeys,
   getNameFromOsmElement,
@@ -9,7 +10,7 @@ import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
 import { Fragment, ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export type ObjectDetailBasicProps = {
   id: number;
@@ -37,7 +38,7 @@ export function ObjectDetails({
 
   const imgs = resolveGenericName(osmTagToIconMapping, tags);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const name = getNameFromOsmElement(tags, language);
 

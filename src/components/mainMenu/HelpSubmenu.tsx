@@ -1,5 +1,6 @@
 import { documentShow, Modal, setActiveModal } from 'fm3/actions/mainActions';
 import { DocumentKey, documents } from 'fm3/documents';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -10,18 +11,18 @@ import {
   FaRegMap,
   FaUsers,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typescript-is';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function HelpSubmenu(): JSX.Element {
   const m = useMessages();
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const skCz = ['sk', 'cs'].includes(language);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
   const dispatch = useDispatch();
 

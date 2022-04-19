@@ -1,10 +1,11 @@
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
 import 'fm3/styles/gallery.scss';
 import { LeafletMouseEvent, Map } from 'leaflet';
 import { ReactElement, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AsyncModal } from '../AsyncModal';
 
 const galleryViewerModalFactory = () =>
@@ -16,13 +17,13 @@ const galleryUploadModalFactory = () =>
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
 
-  const isPickingPosition = useSelector(
+  const isPickingPosition = useAppSelector(
     (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const showGalleryViewer = useSelector(showGalleryViewerSelector);
+  const showGalleryViewer = useAppSelector(showGalleryViewerSelector);
 
-  const showUploadModal = useSelector(
+  const showUploadModal = useAppSelector(
     (state) =>
       state.main.activeModal === 'gallery-upload' &&
       state.gallery.pickingPositionForId === null,

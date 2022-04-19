@@ -1,6 +1,6 @@
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { Component, ReactNode } from 'react';
-import { useSelector } from 'react-redux';
 
 interface State {
   error?: Error;
@@ -9,7 +9,7 @@ interface State {
 function Error() {
   const m = useMessages();
 
-  const errorTicketId = useSelector((state) => state.main.errorTicketId);
+  const errorTicketId = useAppSelector((state) => state.main.errorTicketId);
 
   return m ? (
     <div
@@ -21,7 +21,11 @@ function Error() {
   ) : null;
 }
 
-export class ErrorCatcher extends Component<unknown, State> {
+type Props = {
+  children: ReactNode;
+};
+
+export class ErrorCatcher extends Component<Props, State> {
   state: State = {};
 
   componentDidCatch(error: Error): void {

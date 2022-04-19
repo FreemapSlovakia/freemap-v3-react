@@ -55,7 +55,6 @@ import {
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { assertType, is } from 'typescript-is';
 import { RootAction } from './actions';
@@ -65,6 +64,7 @@ import { objectsSetFilter } from './actions/objectsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
 import { basicModals, tools } from './constants';
+import { RootState } from './reducers';
 import { MyStore } from './storeCreator';
 import { TransportType, transportTypeDefs } from './transportTypeDefs';
 import { LatLon } from './types/common';
@@ -640,7 +640,7 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
 }
 
 function handleGallery(
-  getState: () => DefaultRootState,
+  getState: () => RootState,
   dispatch: Dispatch<RootAction>,
   query: ParsedQuery<string>,
 ) {
@@ -788,7 +788,7 @@ function parseColorAndLabel(m: string) {
 }
 
 function handleInfoPoint(
-  getState: () => DefaultRootState,
+  getState: () => RootState,
   dispatch: Dispatch,
   query: queryString.ParsedQuery<string>,
 ) {

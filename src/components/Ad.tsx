@@ -1,9 +1,10 @@
 import { removeAdsOnLogin, setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import fallback from 'fm3/images/rovas_reklama.svg';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const dims: [number, number][] = [
   // [1024, 768],
@@ -100,7 +101,7 @@ export function Ad(): ReactElement | null {
 
   const m = useMessages();
 
-  const isLoggedIn = useSelector((state) => !!state.auth.user);
+  const isLoggedIn = useAppSelector((state) => !!state.auth.user);
 
   const [closeTime, setCloseTime] = useState(0);
 

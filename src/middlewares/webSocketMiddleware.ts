@@ -7,13 +7,13 @@ import {
   wsSend,
   wsStateChanged,
 } from 'fm3/actions/websocketActions';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 
 export function createWebsocketMiddleware(): Middleware<
   unknown,
-  DefaultRootState,
+  RootState,
   Dispatch
 > {
   let ws: WebSocket | null = null;

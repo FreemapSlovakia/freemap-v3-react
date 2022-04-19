@@ -1,5 +1,4 @@
 import storage from 'local-storage-fallback';
-import { DefaultRootState } from 'react-redux';
 import reduceReducers from 'reduce-reducers';
 import { combineReducers } from 'redux';
 import { StateType } from 'typesafe-actions';
@@ -73,19 +72,16 @@ const combinedReducers = combineReducers(reducers);
 
 export type CombinedReducers = typeof combinedReducers;
 
-declare module 'react-redux' {
-  // eslint-disable-next-line
-  export interface DefaultRootState extends StateType<CombinedReducers> {}
-}
+export type RootState = StateType<CombinedReducers>;
 
-export const rootReducer = reduceReducers<DefaultRootState>(
+export const rootReducer = reduceReducers<RootState>(
   preGlobalReducer,
   combinedReducers,
   postGlobalReducer,
 );
 
 export function getInitialState() {
-  let persisted: Partial<Record<keyof DefaultRootState, unknown>>;
+  let persisted: Partial<Record<keyof RootState, unknown>>;
 
   try {
     persisted = JSON.parse(storage.getItem('store') ?? '{}');
@@ -93,7 +89,7 @@ export function getInitialState() {
     persisted = {};
   }
 
-  const initial: Partial<DefaultRootState> = {};
+  const initial: Partial<RootState> = {};
 
   if (is<Partial<MapState>>(persisted.map)) {
     initial.map = { ...mapInitialState, ...persisted.map };

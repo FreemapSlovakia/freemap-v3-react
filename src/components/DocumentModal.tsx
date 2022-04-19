@@ -1,12 +1,13 @@
 import { documentShow } from 'fm3/actions/mainActions';
 import { documents } from 'fm3/documents';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegLightbulb, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
@@ -17,7 +18,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const documentKey = useSelector((state) => state.main.documentKey);
+  const documentKey = useAppSelector((state) => state.main.documentKey);
 
   const [loading, setLoading] = useState(false);
 

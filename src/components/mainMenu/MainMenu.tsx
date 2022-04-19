@@ -7,6 +7,7 @@ import {
   Tool,
 } from 'fm3/actions/mainActions';
 import { DocumentKey } from 'fm3/documents';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
@@ -31,7 +32,7 @@ import {
   FaRegMap,
   FaSignInAlt,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typescript-is';
 import { Submenu } from './submenu';
 import { useMenuClose } from './SubmenuHeader';
@@ -41,7 +42,7 @@ type Props = {
 };
 
 export function MainMenu({ onSubmenu }: Props): ReactElement {
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const closeMenu = useMenuClose();
 
@@ -62,7 +63,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
 
   const m = useMessages();
 
-  const tool = useSelector((state) => state.main.tool);
+  const tool = useAppSelector((state) => state.main.tool);
 
   const handleToolSelect = useCallback(
     (tool: string | null, e: SyntheticEvent<unknown>) => {

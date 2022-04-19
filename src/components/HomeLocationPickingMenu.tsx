@@ -2,19 +2,20 @@ import {
   saveHomeLocation,
   setSelectingHomeLocation,
 } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { FaCheck, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export default HomeLocationPickingMenu;
 
 export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
-  const selectingHomeLocation = useSelector(
+  const selectingHomeLocation = useAppSelector(
     (state) => state.main.selectingHomeLocation,
   );
 

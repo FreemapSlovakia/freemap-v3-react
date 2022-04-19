@@ -78,7 +78,8 @@ module.exports = {
         test: /\bnode_modules\/leaflet\/dist\/leaflet-src\.js/,
         loader: 'string-replace-loader',
         options: {
-          search: '(win && chrome) ? 2 * window.devicePixelRatio :',
+          search:
+            '(Browser.win && Browser.chrome) ? 2 * window.devicePixelRatio :',
           replace: 'true ? 2 * window.devicePixelRatio :',
           strict: true,
         },

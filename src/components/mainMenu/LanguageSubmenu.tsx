@@ -1,15 +1,16 @@
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { FaLanguage } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();
 
-  const chosenLanguage = useSelector((state) => state.l10n.chosenLanguage);
+  const chosenLanguage = useAppSelector((state) => state.l10n.chosenLanguage);
 
   const dispatch = useDispatch();
 
