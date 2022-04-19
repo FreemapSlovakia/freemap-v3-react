@@ -53,15 +53,19 @@ export class MarkerLeafletIcon extends Icon<
   BaseIconOptions & { icon: ReactElement }
 > {
   createIcon(oldIcon?: HTMLElement): HTMLElement {
-    const reuse = oldIcon && oldIcon.tagName === 'DIV';
+    const reuse = oldIcon?.tagName === 'DIV';
 
-    const div = oldIcon && reuse ? oldIcon : document.createElement('div');
+    const div = (reuse ? oldIcon : document.createElement('div')) as any;
 
-    (this as any)._setIconStyles(div, 'icon');
+    if (!div._fm_root) {
+      (this as any)._setIconStyles(div, 'icon');
 
-    const root = createRoot(div);
+      div._fm_root = createRoot(div);
 
-    root.render(this.options.icon);
+      div._fm_root.render(this.options.icon);
+    }
+
+    div._fm_root.render(this.options.icon);
 
     return div;
   }
