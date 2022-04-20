@@ -1150,123 +1150,123 @@ const en: Messages = {
     },
     accessToken: {
       token: 'Watch Token',
-      timeFrom: 'From',
-      timeTo: 'To',
-      listingLabel: 'Listing Label',
+      timeFrom: 'Da',
+      timeTo: 'A',
+      listingLabel: 'Etichetta inserzione',
       note: 'Note',
-      delete: 'Delete access token?',
+      delete: 'Eliminare il token?',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
         <>
-          Watch Tokens for <i>{deviceName}</i>
+          Watch Tokens per <i>{deviceName}</i>
         </>
       ),
       desc: (deviceName) => (
         <>
-          Define watch tokens to share position of your device{' '}
-          <i>{deviceName}</i> with your friends.
+          Definisci gli watch token per condividere la posizione del tuo dispositivo{' '}
+          <i>{deviceName}</i> con i tuoi amici.
         </>
       ),
       createTitle: (deviceName) => (
         <>
-          Add Watch Token for <i>{deviceName}</i>
+          Aggiungi Watch Token per <i>{deviceName}</i>
         </>
       ),
       modifyTitle: ({ token, deviceName }) => (
         <>
-          Modify Watch Token <i>{token}</i> for <i>{deviceName}</i>
+          Modifica Watch Token <i>{token}</i> per <i>{deviceName}</i>
         </>
       ),
     },
     trackedDevice: {
       token: 'Watch Token',
-      label: 'Label',
-      fromTime: 'Since',
-      maxAge: 'Max Age',
-      maxCount: 'Max Count',
-      splitDistance: 'Split Distance',
-      splitDuration: 'Split Duration',
-      color: 'Color',
-      width: 'Width',
+      label: 'Etichetta',
+      fromTime: 'Da',
+      maxAge: 'Durata Massima',
+      maxCount: 'Conteggio massimo',
+      splitDistance: 'Dividi distanza',
+      splitDuration: 'Divita durata',
+      color: 'Colore',
+      width: 'Larghezza',
     },
     devices: {
-      button: 'My Devices',
-      modalTitle: 'My tracked devices',
-      createTitle: 'Create Tracking Device',
-      watchTokens: 'Watch tokens',
-      watchPrivately: 'Watch privately',
-      watch: 'Watch',
-      delete: 'Delete device?',
+      button: 'Miei dispositivi',
+      modalTitle: 'Miei dispositivi tracciati',
+      createTitle: 'Crea dispositivo di tracciamento',
+      watchTokens: 'Watch token',
+      watchPrivately: 'Guarda privatamente',
+      watch: 'Guarda',
+      delete: 'Eliminare dispositivo?',
       modifyTitle: ({ name }) => (
         <>
-          Modify Tracking Device <i>{name}</i>
+          Modifica dispositivo di tracciamento <i>{name}</i>
         </>
       ),
       desc: () => (
         <>
           <p>
-            Manage your devices so that others can watch your position if you
-            give them watch token (you can create it through <FaKey /> icon).
+            Gestisci i tuoi dispositivi in modo che gli altri possano vedere 
+            la tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
           </p>
           <hr />
           <p>
-            Enter following URL to your tracker (eg.{' '}
+            Inserisci questo URL sul tuo tracker (eg.{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
               Locus
             </a>{' '}
-            or OsmAnd):{' '}
+            o OsmAnd):{' '}
             <code>
               {process.env['API_URL']}/tracking/track/<i>token</i>
             </code>{' '}
-            where <i>token</i> is listed in the table below.
+            dove <i>token</i> è elencato nella tabella sotto.
           </p>
           <p>
-            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with
-            URL-encoded parameters:
+            L'endpoint supporta HTTP<code>GET</code> o <code>POST</code> 
+            con i parametri codificati URL:
           </p>
           <ul>
             <li>
-              <code>lat</code> - latitude in degrees (mandatory)
+              <code>lat</code> - latitudine in gradi (obbligatoria)
             </li>
             <li>
-              <code>lon</code> - longitude in degrees (mandatory)
+              <code>lon</code> - longitudine in gradi (obbligatoria)
             </li>
             <li>
-              <code>time</code>, <code>timestamp</code> - JavaScript parsable
-              datetime or Unix time in s or ms
+              <code>time</code>, <code>timestamp</code> - datetime parsabile in JavaScript
+              o time Unix in s o ms
             </li>
             <li>
-              <code>alt</code>, <code>altitude</code> - altitude in meters
+              <code>alt</code>, <code>altitude</code> - altitudine in metri
             </li>
             <li>
-              <code>speed</code> - speed in m/s
+              <code>speed</code> - velocità in m/s
             </li>
             <li>
-              <code>speedKmh</code> - speed in km/h
+              <code>speedKmh</code> - velocità in km/h
             </li>
             <li>
-              <code>acc</code> - accuracy in meters
+              <code>acc</code> - precisione in metri
             </li>
             <li>
-              <code>hdop</code> - horizontal DOP
+              <code>hdop</code> - DOP orizzontale
             </li>
             <li>
-              <code>bearing</code> - bearing in degrees
+              <code>bearing</code> - gradi
             </li>
             <li>
-              <code>battery</code> - battery in percents
+              <code>battery</code> - batteria in percentuale
             </li>
             <li>
-              <code>gsm_signal</code> - GSM signal in percents
+              <code>gsm_signal</code> - Segnale GSM in percentuale
             </li>
             <li>
-              <code>message</code> - message (note)
+              <code>message</code> - messagggio (note)
             </li>
           </ul>
           <hr />
           <p>
-            In the case of tracker TK102B, configure it's address to{' '}
+            In caso di dispositivo TK102B, configura il suo indirizzo come{' '}
             <code>
               {process.env['API_URL']
                 ?.replace(/https?:\/\//, '')
@@ -1278,73 +1278,73 @@ const en: Messages = {
       ),
     },
     device: {
-      token: 'Track Token',
-      name: 'Name',
-      maxAge: 'Max Age',
-      maxCount: 'Max Count',
-      regenerateToken: 'Regenerate',
-      generatedToken: 'will be generated on save',
+      token: 'Token di traccia',
+      name: 'Nome',
+      maxAge: 'Durata massima',
+      maxCount: 'Conteggio massimo',
+      regenerateToken: 'Rigenera',
+      generatedToken: 'sarà rigenerato al salvataggio',
     },
     visual: {
-      line: 'Line',
-      points: 'Points',
-      'line+points': 'Line + Points',
+      line: 'Linea',
+      points: 'Punti',
+      'line+points': 'Linea + Punti',
     },
     subscribeNotFound: ({ id }) => (
       <>
-        Watch token <i>{id}</i> doesn't exist.
+        Il token <i>{id}</i> non esiste.
       </>
     ),
     subscribeError: ({ id }) => (
       <>
-        Error watching using token <i>{id}</i>.
+        Errore nell'utilizzo del token <i>{id}</i>.
       </>
     ),
   },
   pdfExport: {
-    advancedSettings: 'Advanced options',
-    styles: 'Interactive layer styles',
-    export: 'Export',
+    advancedSettings: 'Opzioni avanzate',
+    styles: 'Stili livelli interattivi',
+    export: 'Esporta',
     exportError: ({ err }) => `Error exporting map: ${err}`,
-    exporting: 'Please wait, exporting map…',
+    exporting: 'Attendere prego, esportazione in corso…',
     exported: ({ url }) => (
       <>
-        Map export has finished.{' '}
+        Esportazione mappa completata.{' '}
         <Alert.Link href={url} target="_blank">
-          Open.
+          Aprire.
         </Alert.Link>
       </>
     ),
-    area: 'Export area:',
+    area: 'Esporta area:',
     areas: {
-      visible: 'Visible area of the map',
-      pinned: 'Area containing selected polygon (drawing)',
+      visible: 'Area visibile della mappa',
+      pinned: 'Area contenente i poligoni selezionati (disegno)',
     },
-    format: 'Format:',
-    layersTitle: 'Optional layers:',
+    format: 'Formato:',
+    layersTitle: 'Livelli opzionali:',
     layers: {
-      contours: 'Contours',
-      shading: 'Shaded relief',
-      hikingTrails: 'Hiking trails',
-      bicycleTrails: 'Bicycle trails',
-      skiTrails: 'Ski trails',
-      horseTrails: 'Horse trails',
-      drawing: 'Drawing',
-      plannedRoute: 'Found route',
-      track: 'GPX track',
+      contours: 'Curve di livello',
+      shading: 'Rilievi ombreggiati',
+      hikingTrails: 'Percorsi escursionistici',
+      bicycleTrails: 'Percorsi ciclistici',
+      skiTrails: 'Percorsi sciistici',
+      horseTrails: 'Percorsi a cavallo',
+      drawing: 'Disegno',
+      plannedRoute: 'Trova percorso',
+      track: 'Traccia GPX',
     },
-    mapScale: 'Map resolution:',
+    mapScale: 'Risoluzione mappa:',
     alert: () => (
       <>
-        Notes:
+        Note:
         <ul>
           <li>
-            Exported will be <i>{outdoorMap}</i> map.
+            Sarà esportata la mappa <i>{outdoorMap}</i> .
           </li>
-          <li>Export of the map may last tens of seconds.</li>
+          <li>L'esportazione della mappa potrebbe durare diversi secondi.</li>
           <li>
-            Before sharing exported map accompain it with the following
-            attribution:
+            Prima di condividere la mappa esportata, aggiungi la seguente 
+            attribuzione:
             <br />
             <em>
               map ©{' '}
@@ -1379,61 +1379,61 @@ const en: Messages = {
   },
 
   maps: {
-    noMapFound: 'No map found',
-    save: 'Save',
-    delete: 'Delete',
-    disconnect: 'Disconnect',
-    deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
-    fetchError: ({ err }) => `Error loading map: ${err}`,
-    fetchListError: ({ err }) => `Error loading maps: ${err}`,
-    deleteError: ({ err }) => `Error deleting map: ${err}`,
-    renameError: ({ err }) => `Error renaming map: ${err}`,
-    createError: ({ err }) => `Error saving map: ${err}`,
-    saveError: ({ err }) => `Error saving map: ${err}`,
-    loadToEmpty: 'Load to empty map',
+    noMapFound: 'Nessuna mappa trovata',
+    save: 'Salva',
+    delete: 'Elimina',
+    disconnect: 'Disconnetti',
+    deleteConfirm: (name) => `Sicuro di cancellare la mappa ${name}?`,
+    fetchError: ({ err }) => `Errore caricando la mappa: ${err}`,
+    fetchListError: ({ err }) => `Errore caricando le mappe: ${err}`,
+    deleteError: ({ err }) => `Errore eliminando la mappa: ${err}`,
+    renameError: ({ err }) => `Errore rinominando la mappa: ${err}`,
+    createError: ({ err }) => `Errore salvando la mappa: ${err}`,
+    saveError: ({ err }) => `Errore salvando la mappa: ${err}`,
+    loadToEmpty: 'Carica su mappa vuota',
     loadInclMapAndPosition:
-      'Load including saved background map and its position',
-    savedMaps: 'Saved maps',
-    newMap: 'New map',
+      'Carica inclusa la mappa di sfondo salvata e la sua posizione',
+    savedMaps: 'Mappe salvate',
+    newMap: 'Nuova mappa',
     SomeMap: ({ name }) => (
       <>
-        Map <i>{name}</i>
+        Mappa <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Please log-in to access My maps functionality.',
-    writers: 'Editors',
-    conflictError: 'The map has been modified in the meantime.',
+    unauthenticatedError: 'Per favore effettua il login per accedere alla funzione Le Mie Mappe.',
+    writers: 'Editori',
+    conflictError: 'La mappa è stata modificata nel frattempo.',
   },
 
   mapCtxMenu: {
-    centerMap: 'Center a map here',
-    measurePosition: 'Find coordinates and elevation',
-    addPoint: 'Add here a point',
-    startLine: 'Start here drawing a line or measurement',
-    queryFeatures: 'Query nearby features',
-    startRoute: 'Plan a route from here',
-    finishRoute: 'Plan a route to here',
-    showPhotos: 'Show nearby photos',
+    centerMap: 'Centra la mappa qui',
+    measurePosition: 'Trova coordinate e altitudine',
+    addPoint: 'Aggiungi un punto qui',
+    startLine: 'Inizia qui a disegnare una linea o misurazione',
+    queryFeatures: 'Interroga le funzioni vicine',
+    startRoute: 'Pianifica una rotta da qui',
+    finishRoute: 'Pianifica una rotta fino qui',
+    showPhotos: 'Mostra le foto vicine',
   },
 
   legend: {
     body: () => (
       <>
-        Map legend for <i>{outdoorMap}</i>:
+        Legenda mappa per <i>{outdoorMap}</i>:
       </>
     ),
   },
 
   contacts: {
-    ngo: 'Voluntary association',
-    registered: 'Registered at MV/VVS/1-900/90-34343 on 2009-10-02',
-    bankAccount: 'Bank account',
-    generalContact: 'General contacts',
-    board: 'Board',
-    boardMemebers: 'Board members',
-    president: 'President',
-    vicepresident: 'Vice-President',
-    secretary: 'Secretary',
+    ngo: 'Associazione di volontari',
+    registered: 'Registrata a MV/VVS/1-900/90-34343 on 2009-10-02',
+    bankAccount: 'Conto bancario',
+    generalContact: 'Contatti generali',
+    board: 'Consiglio direttivo',
+    boardMemebers: 'Membri del consiglio',
+    president: 'Presidente',
+    vicepresident: 'Vice Presidente',
+    secretary: 'Segretario',
   },
 
   removeAds: {
@@ -1441,23 +1441,22 @@ const en: Messages = {
     info: (
       <>
         <p>
-          <strong>Support the volunteers who create this map!</strong>
+          <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
-          <b>remove ads</b> from freemap for a year.
+          Per <b>5 ore</b> del tuo lavoro di volontariato o <b>5 €</b>, noi{' '}
+          <b>rimuoveremo gli annunci pubblicitari</b> da freemap per un anno.
         </p>
         <p>
-          You can prove your volunteer work by creating work reports in the{' '}
-          <a href="https://rovas.app/">Rovas</a> application. If you are a
-          volunteer in the OSM project and are using the JOSM application, we
-          recommend enabling the{' '}
+          Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro con{' '}
+          l'applicazione <a href="https://rovas.app/">Rovas</a>. Se sei un volontario 
+          nel progetto OSM e stai utilizzando JOSM, ti raccomandiamo di abilitare il {' '}
           <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-            Rovas Connector plugin
+            plugin Rovas Connector
           </a>
-          , which can create reports for you. After a report is verified by two
-          users, you will receive community currency <i>Chron</i>, which you can
-          use to remove ads from www.freemap.sk.
+          , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato 
+          verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>, 
+          che potrai usare per rimuovere gli annunci da www.freemap.sk.
         </p>
       </>
     ),
