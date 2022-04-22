@@ -112,7 +112,8 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         eventKey="language"
         onSelect={handleSubmenuSelect}
       >
-        <FaLanguage /> Language / Jazyk / Nyelv <FaChevronRight />
+        <FaLanguage /> Language / Jazyk / Nyelv / Lingua
+        <FaChevronRight />
       </Dropdown.Item>
 
       {user ? (

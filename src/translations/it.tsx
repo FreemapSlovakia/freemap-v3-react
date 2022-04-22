@@ -15,7 +15,7 @@ import { FaKey } from 'react-icons/fa';
 import shared from './en-shared.json';
 import { Messages } from './messagesInterface';
 
-const nf33 = new Intl.NumberFormat('en', {
+const nf33 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
 });
@@ -39,7 +39,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
-const en: Messages = {
+const it: Messages = {
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -58,7 +58,7 @@ const en: Messages = {
     copyCode: 'Copia codice',
     loading: 'Caricamento…',
     ok: 'OK',
-    preventShowingAgain: "Non mostrare più",
+    preventShowingAgain: 'Non mostrare più',
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
     back: 'Indietro',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
@@ -84,7 +84,7 @@ const en: Messages = {
     saved: 'Salvato.',
     visual: 'Visualizza',
     copyOk: 'Copiato negli appunti.',
-    noCookies: 'Questa funzionalità richiede l''accettazione dei cookies.',
+    noCookies: "Questa funzionalità richiede l'accettazione dei cookies.",
     name: 'Nome',
     load: 'Carica',
     unnamed: 'Nessun nome',
@@ -94,7 +94,9 @@ const en: Messages = {
     offline: 'Non sei connesso a internet.',
     connectionError: 'Errore di collegamento al server.',
     experimentalFunction: 'Funzione sperimentale',
-    attribution: () => <Attribution unknown="Licenza della mappa non specificata." />,
+    attribution: () => (
+      <Attribution unknown="Licenza della mappa non specificata." />
+    ),
   },
 
   selections: {
@@ -204,7 +206,8 @@ const en: Messages = {
       msg: 'Devi prima impostare la tua posizione di casa nelle Opzioni.',
       setHome: 'Imposta',
     },
-    showMidpointHint: 'Per aggiungere un punto intermedio, trascina un punto della linea.',
+    showMidpointHint:
+      'Per aggiungere un punto intermedio, trascina un punto della linea.',
     gpsError: 'Errore nel determinare la tua posizione corrente.',
     routeNotFound:
       'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
@@ -231,10 +234,10 @@ const en: Messages = {
         rotary: 'enter nella rotonda',
         'roundabout turn': 'alla rotatoria, gira',
         // 'notification':
-        'esci dalla rotatoria': 'esci dalla rotonda', // undocumented
-        'esci dalla rotatoria': 'esci dalla rotatoria', // undocumented
+        'exit rotary': 'esci dalla rotonda', // undocumented
+        'exit roundabout': 'esci dalla rotatoria', // undocumented
         notification: 'notifica',
-        'utilizza la corsia': 'utilizza la corsia',
+        'use lane': 'utilizza la corsia',
       },
 
       modifiers: {
@@ -251,7 +254,7 @@ const en: Messages = {
     imhd: {
       total: {
         // eslint-disable-next-line
-        short: ({ arrivo, prezzo, numeri }) => (
+        short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
             {numbers?.map((n, i) => (
@@ -391,8 +394,8 @@ const en: Messages = {
     zoomOut: 'Zoom indietro',
     devInfo: () => (
       <div>
-        Questa è una versione di test di Freemap Slovakia. Per la versione effettiva
-        vai a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+        Questa è una versione di test di Freemap Slovakia. Per la versione
+        effettiva vai a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
     copyright: 'Copyright',
@@ -407,7 +410,8 @@ const en: Messages = {
       ua: () => (
         <>
           🇺🇦 La Comunità Slovacca di OpenStreetMap esprime il proprio supporto
-          per gli abitanti dell'Ucraina nella loro difesa contro l'aggressione militare russa. 🇺🇦
+          per gli abitanti dell'Ucraina nella loro difesa contro l'aggressione
+          militare russa. 🇺🇦
         </>
       ),
     },
@@ -425,11 +429,11 @@ const en: Messages = {
       lastCaptured: 'dai più recenti',
       leastRated: 'dai meno valutati',
       mostRated: 'dai più valutati',
-      lastComment: 'dall''ultimo commento',
+      lastComment: "dall'ultimo commento",
     },
     colorizeBy: 'Colora in base',
     c: {
-      disable: "non colorare",
+      disable: 'non colorare',
       mine: 'diversi dai miei',
       author: 'autore',
       rating: 'valutazioni',
@@ -486,7 +490,7 @@ const en: Messages = {
       showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
     },
     locationPicking: {
-      title: 'Selezione l''ubicazione della foto',
+      title: "Selezione l'ubicazione della foto",
     },
     deletingError: ({ err }) => `Error deleting photo: ${err}`,
     tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
@@ -495,7 +499,8 @@ const en: Messages = {
     savingError: ({ err }) => `Error saving photo: ${err}`,
     commentAddingError: ({ err }) => `Error adding comment: ${err}`,
     ratingError: ({ err }) => `Error rating photo: ${err}`,
-    unauthenticatedError: 'Per favore effettua il log-in per caricare foto nella galleria.',
+    unauthenticatedError:
+      'Per favore effettua il log-in per caricare foto nella galleria.',
     missingPositionError: 'Luogo mancante.',
     invalidPositionError: 'Formato coordinate di posizione non valide.',
     invalidTakenAt: 'Data e orario di scatto non valide.',
@@ -574,11 +579,12 @@ const en: Messages = {
       drop: 'Trascina qui il tuo file GPX oppure clicca per selezionarlo.',
     },
     shareToast:
-      'La traccia è stata salvata sul server e può essere condivisa copiando l''URL della pagina.',
-    fetchingError: ({ err }) => `Errore durante il recupero dei dati della traccia: ${err}`,
+      "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",
+    fetchingError: ({ err }) =>
+      `Errore durante il recupero dei dati della traccia: ${err}`,
     savingError: ({ err }) => `Errore nel salvataggio della traccia: ${err}`,
     loadingError: 'Errore nel caricamento del file.',
-    onlyOne: 'E'' atteso un singolo file GPX.',
+    onlyOne: "E' atteso un singolo file GPX.",
     wrongFormat: 'Il file deve avere estensione .GPX.',
     info: () => <TrackViewerDetails />,
     tooBigError: 'Il file è troppo grande.',
@@ -590,7 +596,7 @@ const en: Messages = {
       title: 'Proprietà',
       color: 'Colore:',
       label: 'Etichetta:',
-      hint: 'Per rimuovere l''etichetta lascia il campo vuoto.',
+      hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
     },
     continue: 'Continua',
     join: 'Unisci',
@@ -614,7 +620,7 @@ const en: Messages = {
       sendGalleryEmails: 'Notifica i commenti alle foto via email',
       DeleteInfo: () => (
         <>
-          Se vuoi eliminare il tuo account, per favore contattaci a {' '}
+          Se vuoi eliminare il tuo account, per favore contattaci a{' '}
           <Alert.Link href="mailto:freemap@freemap.sk">
             freemap@freemap.sk
           </Alert.Link>
@@ -623,16 +629,18 @@ const en: Messages = {
       ),
     },
     general: {
-      tips: 'Mostra i consigli all''apertura della pagina (solo se è selezionata la lingua ceca o slovacca)',
+      tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
     },
     layer: 'Livello',
     overlayOpacity: 'Opacità',
     showInMenu: 'Mostra nel menu',
     showInToolbar: 'Mostra nella barra degli strumenti',
     saveSuccess: 'Impostazioni salvate.',
-    savingError: ({ err }) => `Errore nel salvataggio delle impostazioni: ${err}`,
+    savingError: ({ err }) =>
+      `Errore nel salvataggio delle impostazioni: ${err}`,
     customLayersDef: 'Definizione di livelli mappa personalizzati',
-    customLayersDefError: 'Definizione di livelli mappa personalizzati non valida.',
+    customLayersDefError:
+      'Definizione di livelli mappa personalizzati non valida.',
   },
 
   changesets: {
@@ -659,7 +667,8 @@ const en: Messages = {
 
   mapDetails: {
     notFound: 'Nessuna strada trovata.',
-    fetchingError: ({ err }) => `Errore nel recupero dei dettagli della strada: ${err}`,
+    fetchingError: ({ err }) =>
+      `Errore nel recupero dei dettagli della strada: ${err}`,
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -678,7 +687,8 @@ const en: Messages = {
       zoom: 'Zoom-in',
     },
     tooManyPoints: ({ limit }) => `Risultato limitato a ${limit} oggetti.`,
-    fetchingError: ({ err }) => `Errore nel recupero degli oggetti (POI): ${err}`,
+    fetchingError: ({ err }) =>
+      `Errore nel recupero degli oggetti (POI): ${err}`,
     // categorie: {
     //   1: 'Natura',
     //   2: 'Servizi',
@@ -1055,6 +1065,7 @@ const en: Messages = {
     showAll: 'Mostra tutti i livelli',
     settings: 'Impostazioni livelli mappa',
     layers: 'Livelli mappa',
+    switch: 'Livelli mappa',
     photoFilterWarning: 'Il filtro foto è attivo',
     interactiveLayerWarning: 'Il livello interattivo è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
@@ -1146,7 +1157,7 @@ const en: Messages = {
         </>
       ),
       storageWarning:
-        'Tieni presente che l''elenco dei dispositivi si riflette solo nell''URL della pagina. Se vuoi salvarlo, usa la funzione ''Le mie mappe''.',
+        "Tieni presente che l'elenco dei dispositivi si riflette solo nell'URL della pagina. Se vuoi salvarlo, usa la funzione 'Le mie mappe'.",
     },
     accessToken: {
       token: 'Watch Token',
@@ -1164,8 +1175,8 @@ const en: Messages = {
       ),
       desc: (deviceName) => (
         <>
-          Definisci gli watch token per condividere la posizione del tuo dispositivo{' '}
-          <i>{deviceName}</i> con i tuoi amici.
+          Definisci gli watch token per condividere la posizione del tuo
+          dispositivo <i>{deviceName}</i> con i tuoi amici.
         </>
       ),
       createTitle: (deviceName) => (
@@ -1206,8 +1217,8 @@ const en: Messages = {
       desc: () => (
         <>
           <p>
-            Gestisci i tuoi dispositivi in modo che gli altri possano vedere 
-            la tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
+            Gestisci i tuoi dispositivi in modo che gli altri possano vedere la
+            tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
           </p>
           <hr />
           <p>
@@ -1222,7 +1233,7 @@ const en: Messages = {
             dove <i>token</i> è elencato nella tabella sotto.
           </p>
           <p>
-            L'endpoint supporta HTTP<code>GET</code> o <code>POST</code> 
+            L'endpoint supporta HTTP<code>GET</code> o <code>POST</code>
             con i parametri codificati URL:
           </p>
           <ul>
@@ -1233,8 +1244,8 @@ const en: Messages = {
               <code>lon</code> - longitudine in gradi (obbligatoria)
             </li>
             <li>
-              <code>time</code>, <code>timestamp</code> - datetime parsabile in JavaScript
-              o time Unix in s o ms
+              <code>time</code>, <code>timestamp</code> - datetime parsabile in
+              JavaScript o time Unix in s o ms
             </li>
             <li>
               <code>alt</code>, <code>altitude</code> - altitudine in metri
@@ -1343,7 +1354,7 @@ const en: Messages = {
           </li>
           <li>L'esportazione della mappa potrebbe durare diversi secondi.</li>
           <li>
-            Prima di condividere la mappa esportata, aggiungi la seguente 
+            Prima di condividere la mappa esportata, aggiungi la seguente
             attribuzione:
             <br />
             <em>
@@ -1379,6 +1390,8 @@ const en: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?', // TODO by google translate
     noMapFound: 'Nessuna mappa trovata',
     save: 'Salva',
     delete: 'Elimina',
@@ -1400,7 +1413,8 @@ const en: Messages = {
         Mappa <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Per favore effettua il login per accedere alla funzione Le Mie Mappe.',
+    unauthenticatedError:
+      'Per favore effettua il login per accedere alla funzione Le Mie Mappe.',
     writers: 'Editori',
     conflictError: 'La mappa è stata modificata nel frattempo.',
   },
@@ -1417,7 +1431,7 @@ const en: Messages = {
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Legenda mappa per <i>{outdoorMap}</i>:
       </>
@@ -1448,15 +1462,17 @@ const en: Messages = {
           <b>rimuoveremo gli annunci pubblicitari</b> da freemap per un anno.
         </p>
         <p>
-          Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro con{' '}
-          l'applicazione <a href="https://rovas.app/">Rovas</a>. Se sei un volontario 
-          nel progetto OSM e stai utilizzando JOSM, ti raccomandiamo di abilitare il {' '}
+          Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro
+          con l'applicazione <a href="https://rovas.app/">Rovas</a>. Se sei un
+          volontario nel progetto OSM e stai utilizzando JOSM, ti raccomandiamo
+          di abilitare il{' '}
           <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
             plugin Rovas Connector
           </a>
-          , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato 
-          verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>, 
-          che potrai usare per rimuovere gli annunci da www.freemap.sk.
+          , che può creare rapporti di lavoro per te. Dopo che un rapporto è
+          stato verificato da due utenti, riceverai la valuta comunitaria{' '}
+          <i>Chron</i>, che potrai usare per rimuovere gli annunci da
+          www.freemap.sk.
         </p>
       </>
     ),
@@ -1480,4 +1496,4 @@ function numberize(n: number, words: [string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
 }
 
-export default en;
+export default it;

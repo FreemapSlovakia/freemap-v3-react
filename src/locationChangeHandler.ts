@@ -251,7 +251,7 @@ export const handleLocationChange = (
 
   if (
     typeof lang === 'string' &&
-    ['en', 'sk', 'cs', 'hu'].includes(lang as string)
+    ['en', 'sk', 'cs', 'hu', 'it'].includes(lang as string)
   ) {
     dispatch(l10nSetChosenLanguage({ language: lang }));
   }

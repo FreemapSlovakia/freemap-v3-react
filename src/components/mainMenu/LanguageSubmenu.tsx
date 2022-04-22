@@ -27,7 +27,10 @@ export function LanguageSubmenu(): JSX.Element {
 
   return (
     <>
-      <SubmenuHeader icon={<FaLanguage />} title="Language / Jazyk / Nyelv" />
+      <SubmenuHeader
+        icon={<FaLanguage />}
+        title="Language / Jazyk / Nyelv / Lingua"
+      />
 
       <Dropdown.Item
         as="button"
@@ -71,6 +74,15 @@ export function LanguageSubmenu(): JSX.Element {
         active={chosenLanguage === 'hu'}
       >
         Magyar
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        onSelect={handleLanguageClick}
+        eventKey="it"
+        active={chosenLanguage === 'it'}
+      >
+        Italiano
       </Dropdown.Item>
     </>
   );

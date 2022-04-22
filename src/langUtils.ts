@@ -5,7 +5,7 @@ export function getEffectiveChosenLanguage(
     chosenLanguage ||
     [...(navigator.languages || []), navigator.language]
       .map((lang) => simplify(lang))
-      .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
+      .find((lang) => lang && ['en', 'sk', 'cs', 'hu', 'it'].includes(lang)) ||
     'en'
   );
 }
