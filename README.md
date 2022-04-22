@@ -1,16 +1,10 @@
 # Freemap v3
 
-Next version of web portal maintained by [Slovak OpenStreetMap community](https://groups.google.com/forum/#!forum/osm_sk).
-
-Features:
-
-- maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country ski map)
-- picture gallery
-- various tools (searching, measurement, route planning, changesets, ...)
+Current version of [web portal](https://www.freemap.sk) maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
 
 ## Requirements
 
-- Node 12
+- Node 14
 - [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
 
 ## Compiling and running in development mode
@@ -50,9 +44,9 @@ You'll then find all static web resources in `dist` directory.
 
 ## Other env varialbes
 
-- FM_MAPSERVER_URL - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
+- `FM_MAPSERVER_URL` - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
 
-## Translation
+## Translation (i18n)
 
 Files:
 
