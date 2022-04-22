@@ -639,7 +639,7 @@ const hu: Messages = {
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
     },
-    layer: 'Layer', // TODO translate
+    layer: 'Térkép',
     overlayOpacity: 'Opacity', // TODO translate
     showInMenu: 'Show in menu', // TODO translate
     showInToolbar: 'Show in toolbar', // TODO translate
@@ -1070,9 +1070,10 @@ const hu: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Show all layers', // TODO translate
-    settings: 'Map layers settings',
+    showAll: 'Show all maps', // TODO translate
+    settings: 'Map settings', // TODO translate
     layers: 'Térképrétegek',
+    switch: 'Térképrétegek', // TODO translate
     photoFilterWarning: 'A fényképszűrés aktív',
     interactiveLayerWarning: 'Interactive layer is hidden', // TODO translate
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,

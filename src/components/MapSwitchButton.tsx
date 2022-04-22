@@ -205,7 +205,9 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <ButtonGroup className="dropup d-none d-sm-inline-flex">
+      <div className="mr-1">{m?.mapLayers.switch}</div>
+
+      <ButtonGroup className="dropup d-none d-sm-inline-flex mr-2">
         {bases
           .filter(
             (l) =>

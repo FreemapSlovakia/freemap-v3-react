@@ -625,7 +625,7 @@ const en: Messages = {
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
     },
-    layer: 'Layer',
+    layer: 'Map',
     overlayOpacity: 'Opacity',
     showInMenu: 'Show in menu',
     showInToolbar: 'Show in toolbar',
@@ -1052,9 +1052,10 @@ const en: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Show all layers',
-    settings: 'Map layers settings',
-    layers: 'Map layers',
+    showAll: 'Show all maps',
+    settings: 'Map settings',
+    layers: 'Maps',
+    switch: 'Maps',
     photoFilterWarning: 'Photo filtering is active',
     interactiveLayerWarning: 'Interactive layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,

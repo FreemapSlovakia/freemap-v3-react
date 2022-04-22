@@ -669,7 +669,7 @@ const sk: Messages = {
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',
     },
-    layer: 'Vrstva',
+    layer: 'Mapa',
     overlayOpacity: 'Viditeľnosť',
     showInMenu: 'Zobraziť v menu',
     showInToolbar: 'Zobraziť v lište',
@@ -1100,9 +1100,10 @@ const sk: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Ukázať všetky vrstvy',
-    settings: 'Nastavenia mapových vrstiev',
-    layers: 'Vrstvy',
+    showAll: 'Ukázať všetky mapy',
+    settings: 'Nastavenia máp',
+    layers: 'Mapy',
+    switch: 'Mapy',
     photoFilterWarning: 'Filter fotografií je aktívny',
     interactiveLayerWarning: 'Interaktívna vrstva je skrytá',
     minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,

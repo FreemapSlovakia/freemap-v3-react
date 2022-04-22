@@ -17,7 +17,7 @@ import {
   FaTree,
   FaWikipediaW,
 } from 'react-icons/fa';
-import { GiHills, GiPathDistance } from 'react-icons/gi';
+import { GiHills, GiPathDistance, GiTreasureMap } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
@@ -176,7 +176,7 @@ function legacyFreemap(
 export const baseLayers: BaseLayerDef[] = [
   {
     type: 'X',
-    icon: <FaTree />,
+    icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
     extraScales: [2, 3],
     attribution: [

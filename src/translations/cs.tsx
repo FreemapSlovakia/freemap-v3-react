@@ -639,7 +639,7 @@ const cs: Messages = {
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
     },
-    layer: 'Vrstva',
+    layer: 'Mapa',
     overlayOpacity: 'Viditelnost',
     showInMenu: 'Zobraziť v menu', // TODO translate
     showInToolbar: 'Zobraziť v lište', // TODO translate
@@ -1070,9 +1070,10 @@ const cs: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Ukázať všetky vrstvy', // TODO translate
-    settings: 'Nastavenia mapových vrstiev', // TODO translate
-    layers: 'Vrstvy',
+    showAll: 'Ukázať všetky mapy', // TODO translate
+    settings: 'Nastavenia máp', // TODO translate
+    layers: 'Mapy',
+    switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     interactiveLayerWarning: 'Interaktívna vrstva je skrytá', // TODO translate
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,

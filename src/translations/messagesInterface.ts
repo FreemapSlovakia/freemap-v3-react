@@ -613,6 +613,7 @@ export type Messages = {
     showAll: string;
     settings: string;
     layers: string;
+    switch: string;
     photoFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
