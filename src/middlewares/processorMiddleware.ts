@@ -34,6 +34,7 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
   stateChangePredicate?: (state: RootState) => unknown;
   errorKey?: MessagePaths;
   id?: string; // toast collapse key
+  predicatesOperation?: 'AND' | 'OR';
 }
 
 type MW = Middleware<unknown, RootState, Dispatch<RootAction>> & {
@@ -90,19 +91,30 @@ export function createProcessorMiddleware(): MW {
             statePredicate,
             stateChangePredicate,
             actionPredicate,
+            predicatesOperation,
           } = processor;
 
           if (
             handle &&
-            (!actionType ||
-              (Array.isArray(actionType) &&
-                actionType.some((ac) => isActionOf(ac, a))) ||
-              isActionOf(actionType, a)) &&
-            (!statePredicate || statePredicate(getState())) &&
-            (!stateChangePredicate ||
-              stateChangePredicate(getState()) !==
-                stateChangePredicate(prevState)) &&
-            (!actionPredicate || actionPredicate(action))
+            (predicatesOperation === 'OR'
+              ? (actionType &&
+                  ((Array.isArray(actionType) &&
+                    actionType.some((ac) => isActionOf(ac, a))) ||
+                    isActionOf(actionType, a))) ||
+                statePredicate?.(getState()) ||
+                (stateChangePredicate &&
+                  stateChangePredicate(getState()) !==
+                    stateChangePredicate(prevState)) ||
+                actionPredicate?.(action)
+              : (!actionType ||
+                  (Array.isArray(actionType) &&
+                    actionType.some((ac) => isActionOf(ac, a))) ||
+                  isActionOf(actionType, a)) &&
+                (!statePredicate || statePredicate(getState())) &&
+                (!stateChangePredicate ||
+                  stateChangePredicate(getState()) !==
+                    stateChangePredicate(prevState)) &&
+                (!actionPredicate || actionPredicate(action)))
           ) {
             const handleError = (err: unknown) => {
               if (err instanceof DOMException && err.name === 'AbortError') {

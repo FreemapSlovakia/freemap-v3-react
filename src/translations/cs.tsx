@@ -1399,6 +1399,8 @@ const cs: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'Zobrazená mapa je zastaralá. Prepnúť na modernú outdoorovú mapu?', // TODO translate
     noMapFound: 'Žádná mapa nenalezena',
     save: 'Uložit',
     delete: 'Smazat',

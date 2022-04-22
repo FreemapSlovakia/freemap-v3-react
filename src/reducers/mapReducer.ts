@@ -8,6 +8,7 @@ import {
   mapSetLayersSettings,
   mapSetOverlayPaneOpacity,
   MapStateBase,
+  mapSuppressLegacyMapWarning,
 } from 'fm3/actions/mapActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { createReducer } from 'typesafe-actions';
@@ -16,6 +17,8 @@ export interface MapState extends MapStateBase {
   selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
+  legacyMapWarningSuppressions: string[];
+  tempLegacyMapWarningSuppressions: string[];
 }
 
 export const mapInitialState: MapState = {
@@ -30,9 +33,21 @@ export const mapInitialState: MapState = {
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
   customLayers: [],
+  legacyMapWarningSuppressions: [],
+  tempLegacyMapWarningSuppressions: [],
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
+  .handleAction(mapSuppressLegacyMapWarning, (state, action) => {
+    const key = action.payload.forever
+      ? 'legacyMapWarningSuppressions'
+      : 'tempLegacyMapWarningSuppressions';
+
+    return {
+      ...state,
+      [key]: [...state[key], state.mapType],
+    };
+  })
   .handleAction(mapSetLayersSettings, (state, action) => ({
     ...state,
     layersSettings: action.payload,

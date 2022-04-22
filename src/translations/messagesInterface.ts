@@ -740,6 +740,7 @@ export type Messages = {
     styles: string;
   };
   maps: {
+    legacyMapWarning: string;
     noMapFound: string;
     save: string;
     delete: string;

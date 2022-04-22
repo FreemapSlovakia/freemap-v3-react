@@ -43,6 +43,10 @@ export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >();
 
+export const mapSuppressLegacyMapWarning = createAction(
+  'MAP_SUPPRESS_LEGACY_MAP_WARING',
+)<{ forever: boolean }>();
+
 export const mapSetLayersSettings = createAction('MAP_SET_LAYERS_SETTINGS')<
   Record<string, LayerSettings>
 >();

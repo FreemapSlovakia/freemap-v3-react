@@ -24,6 +24,7 @@ import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProc
 import { galleryUploadModalProcessor } from './processors/galleryUploadModalProcessor';
 import { gpxExportProcessor } from './processors/gpxExportProcessor';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
+import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor';
 import { legendProcessor } from './processors/legendProcessor';
 import { locateProcessor } from './processors/locateProcessor';
 import { mapDetailsProcessor } from './processors/mapDetailsProcessor';
@@ -136,6 +137,7 @@ export const processors = [
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   legendProcessor,
+  legacyMapWarningProcessor,
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   gpxExportProcessor,

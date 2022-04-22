@@ -1404,6 +1404,8 @@ const hu: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'Displayed map is a legacy one. Switch to modern outdoor map?', // TODO translate
     noMapFound: 'Nincs térkép', // TODO No map found
     save: 'Mentés',
     delete: 'Törlés',

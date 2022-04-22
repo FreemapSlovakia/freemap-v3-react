@@ -1432,6 +1432,8 @@ const sk: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'Zobrazená mapa je zastaralá. Prepnúť na modernú outdoorovú mapu?',
     noMapFound: 'Žiadna mapa nenájdená',
     save: 'Uložiť',
     delete: 'Zmazať',

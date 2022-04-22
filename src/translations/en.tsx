@@ -1380,6 +1380,8 @@ const en: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'Displayed map is a legacy one. Switch to modern outdoor map?',
     noMapFound: 'No map found',
     save: 'Save',
     delete: 'Delete',
