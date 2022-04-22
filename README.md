@@ -1,6 +1,6 @@
 # Freemap Slovakia Web Application
 
-Current version of https://www.freemap.sk maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
+Current version of [www.freemap.sk](https://www.freemap.sk) maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
 
 ## Requirements
 
