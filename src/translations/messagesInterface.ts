@@ -60,6 +60,7 @@ export type Messages = {
     connectionError: string;
     experimentalFunction: string;
     attribution: () => JSX.Element;
+    unauthenticatedError: string;
   };
   selections: {
     objects: string;
@@ -387,7 +388,6 @@ export type Messages = {
     savingError: ({ err }: Err) => string;
     commentAddingError: ({ err }: Err) => string;
     ratingError: ({ err }: Err) => string;
-    unauthenticatedError: string;
     missingPositionError: string;
     invalidPositionError: string;
     invalidTakenAt: string;
@@ -474,7 +474,8 @@ export type Messages = {
       name: string;
       email: string;
       sendGalleryEmails: string;
-      DeleteInfo: () => JSX.Element;
+      delete: string;
+      deleteWarning: string;
     };
     general: {
       tips: string;
@@ -644,7 +645,6 @@ export type Messages = {
     fetchingError: ({ err }: Err) => string;
   };
   tracking: {
-    unauthenticatedError: string;
     trackedDevices: {
       button: string;
       modalTitle: string;
@@ -757,7 +757,6 @@ export type Messages = {
     savedMaps: string;
     newMap: string;
     SomeMap: (props: { name: string }) => JSX.Element;
-    unauthenticatedError: string;
     writers: string;
     conflictError: string;
   };

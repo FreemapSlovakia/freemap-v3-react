@@ -95,6 +95,7 @@ const en: Messages = {
     connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
+    unauthenticatedError: 'Please log-in to access this feature.',
   },
 
   selections: {
@@ -502,7 +503,6 @@ const en: Messages = {
     savingError: ({ err }) => `Error saving photo: ${err}`,
     commentAddingError: ({ err }) => `Error adding comment: ${err}`,
     ratingError: ({ err }) => `Error rating photo: ${err}`,
-    unauthenticatedError: 'Please log-in to upload the photos to the gallery.',
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
     invalidTakenAt: 'Invalid capture date and time.',
@@ -619,15 +619,9 @@ const en: Messages = {
       name: 'Name',
       email: 'Email',
       sendGalleryEmails: 'Notify photo comments via email',
-      DeleteInfo: () => (
-        <>
-          If you wish to delete your account, please contact us at{' '}
-          <Alert.Link href="mailto:freemap@freemap.sk">
-            freemap@freemap.sk
-          </Alert.Link>
-          .
-        </>
-      ),
+      delete: 'Delete account',
+      deleteWarning:
+        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
     },
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
@@ -1138,7 +1132,6 @@ const en: Messages = {
   },
 
   tracking: {
-    unauthenticatedError: 'Please log-in to manage your devices.',
     trackedDevices: {
       button: 'Watched',
       modalTitle: 'Watched Devices',
@@ -1410,7 +1403,6 @@ const en: Messages = {
         Map <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Please log-in to access My maps functionality.',
     writers: 'Editors',
     conflictError: 'The map has been modified in the meantime.',
   },

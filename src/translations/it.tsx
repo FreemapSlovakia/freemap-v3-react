@@ -97,6 +97,7 @@ const it: Messages = {
     attribution: () => (
       <Attribution unknown="Licenza della mappa non specificata." />
     ),
+    unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
   },
 
   selections: {
@@ -505,8 +506,6 @@ const it: Messages = {
     savingError: ({ err }) => `Error saving photo: ${err}`,
     commentAddingError: ({ err }) => `Error adding comment: ${err}`,
     ratingError: ({ err }) => `Error rating photo: ${err}`,
-    unauthenticatedError:
-      'Per favore effettua il log-in per caricare foto nella galleria.',
     missingPositionError: 'Luogo mancante.',
     invalidPositionError: 'Formato coordinate di posizione non valide.',
     invalidTakenAt: 'Data e orario di scatto non valide.',
@@ -624,15 +623,9 @@ const it: Messages = {
       name: 'Nome',
       email: 'Email',
       sendGalleryEmails: 'Notifica i commenti alle foto via email',
-      DeleteInfo: () => (
-        <>
-          Se vuoi eliminare il tuo account, per favore contattaci a{' '}
-          <Alert.Link href="mailto:freemap@freemap.sk">
-            freemap@freemap.sk
-          </Alert.Link>
-          .
-        </>
-      ),
+      delete: 'Delete account', // TODO translate
+      deleteWarning:
+        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
     },
     general: {
       tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
@@ -1147,7 +1140,6 @@ const it: Messages = {
   },
 
   tracking: {
-    unauthenticatedError: 'Per favore accedi per gestire i tuoi dispositivi.',
     trackedDevices: {
       button: 'Visto',
       modalTitle: 'Dispositivi visti',
@@ -1419,8 +1411,6 @@ const it: Messages = {
         Mappa <i>{name}</i>
       </>
     ),
-    unauthenticatedError:
-      'Per favore effettua il login per accedere alla funzione Le Mie Mappe.',
     writers: 'Editori',
     conflictError: 'La mappa è stata modificata nel frattempo.',
   },

@@ -1,13 +1,19 @@
-import { authStartLogout } from 'fm3/actions/authActions';
+import { authDeleteAccount, authStartLogout } from 'fm3/actions/authActions';
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useState } from 'react';
-import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { FaCheck, FaCog, FaSignOutAlt, FaTimes } from 'react-icons/fa';
+import {
+  FaCheck,
+  FaCog,
+  FaEraser,
+  FaSignOutAlt,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -39,7 +45,28 @@ export function AccountModal({ show }: Props): ReactElement | null {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const DeleteInfo = m?.settings.account.DeleteInfo;
+  const handleDeleteClick = () => {
+    dispatch(setActiveModal(null));
+
+    dispatch(
+      toastsAdd({
+        id: 'account.delete',
+        messageKey: 'settings.account.deleteWarning',
+        style: 'danger',
+        actions: [
+          {
+            nameKey: 'general.delete',
+            style: 'danger',
+            action: authDeleteAccount(),
+          },
+          {
+            nameKey: 'general.cancel',
+            style: 'dark',
+          },
+        ],
+      }),
+    );
+  };
 
   if (!user) {
     return null;
@@ -71,12 +98,6 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body>
-          {DeleteInfo && (
-            <Alert variant="warning">
-              <DeleteInfo />
-            </Alert>
-          )}
-
           <Form.Group>
             <Form.Label>{m?.settings.account.name}</Form.Label>
 
@@ -115,6 +136,10 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Body>
 
         <Modal.Footer>
+          <Button variant="primary" type="submit" disabled={!userMadeChanges}>
+            <FaCheck /> {m?.general.save}
+          </Button>
+
           <Button
             variant="secondary"
             type="button"
@@ -127,8 +152,8 @@ export function AccountModal({ show }: Props): ReactElement | null {
             <FaSignOutAlt /> {m?.mainMenu.logOut}
           </Button>
 
-          <Button variant="primary" type="submit" disabled={!userMadeChanges}>
-            <FaCheck /> {m?.general.save}
+          <Button variant="danger" type="button" onClick={handleDeleteClick}>
+            <FaEraser /> {m?.settings.account.delete}
           </Button>
 
           <Button variant="dark" type="button" onClick={close}>

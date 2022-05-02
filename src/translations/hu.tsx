@@ -97,6 +97,7 @@ const hu: Messages = {
     connectionError: 'Error connecting the server.', // TODO translate
     experimentalFunction: 'Experimental function', // TODO translate
     attribution: () => <Attribution unknown="Map licence is not specified" />, // TODO translate
+    unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
   },
 
   selections: {
@@ -513,8 +514,6 @@ const hu: Messages = {
     commentAddingError: ({ err }) =>
       `Hiba történt a hozzászólás hozzáadásánál: ${err}`,
     ratingError: ({ err }) => `Hiba történt a fénykép értékelésénél: ${err}`,
-    unauthenticatedError:
-      'Fényképek galériába történő feltöltéséhez kérjük, jelentkezzék be.',
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
@@ -632,16 +631,9 @@ const hu: Messages = {
       name: 'Név',
       email: 'E-mail',
       sendGalleryEmails: 'Notify photo comments via email', // TODO translate
-      DeleteInfo: () => (
-        // TODO translate
-        <>
-          If you wish to delete your account, please contact us at{' '}
-          <Alert.Link href="mailto:freemap@freemap.sk">
-            freemap@freemap.sk
-          </Alert.Link>
-          .
-        </>
-      ),
+      delete: 'Delete account', // TODO translate
+      deleteWarning:
+        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
     },
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
@@ -1158,7 +1150,6 @@ const hu: Messages = {
   },
 
   tracking: {
-    unauthenticatedError: 'Eszközei kezeléséhez kérjük, jelentkezzék be.',
     trackedDevices: {
       button: 'Figyelt',
       modalTitle: 'Figyelt eszközök',
@@ -1434,7 +1425,6 @@ const hu: Messages = {
         Map <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Please log-in to access My maps functionality.', // TODO translate
     writers: 'Editors', // TODO translate
     conflictError: 'The map has been modified in the meantime.', // TODO translate
   },

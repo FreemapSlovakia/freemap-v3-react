@@ -7,14 +7,13 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
   transform: ({ getState, action }) => {
     const anonymous = !getState().auth.user;
 
-    return action.payload === 'maps' && anonymous
+    return action.payload &&
+      ['maps', 'gallery-upload', 'account', 'tracking-my'].includes(
+        action.payload,
+      ) &&
+      anonymous
       ? toastsAdd({
-          messageKey: 'maps.unauthenticatedError',
-          style: 'danger',
-        })
-      : action.payload === 'gallery-upload' && anonymous
-      ? toastsAdd({
-          messageKey: 'gallery.unauthenticatedError',
+          messageKey: 'general.unauthenticatedError',
           style: 'danger',
         })
       : action;

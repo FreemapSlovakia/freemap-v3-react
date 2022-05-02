@@ -1,3 +1,4 @@
+import { authDeleteAccountProcessor } from './processors/authDeleteAccountProcessor';
 import { authInitProcessor } from './processors/authInitProcessor';
 import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
 import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
@@ -81,6 +82,7 @@ export const processors = [
   setToolProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
+  authDeleteAccountProcessor,
   mapRefocusProcessor,
   searchProcessor,
   searchHighlightTrafo,

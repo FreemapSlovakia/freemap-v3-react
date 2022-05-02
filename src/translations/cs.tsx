@@ -99,6 +99,8 @@ const cs: Messages = {
     attribution: () => (
       <Attribution unknown="Licencia mapy nie je špecifikovaná" /> // TODO translate
     ),
+    unauthenticatedError:
+      'Pro prístup k této funkci se nejprve prosím přihláste.',
   },
 
   selections: {
@@ -513,8 +515,6 @@ const cs: Messages = {
     commentAddingError: ({ err }) =>
       `Nastala chyba při přidávání komentáře: ${err}`,
     ratingError: ({ err }) => `Nastala chyba při hodnocení ${err}`,
-    unauthenticatedError:
-      'Pro nahrávání fotek do galerie musíte být přihlášen.',
     missingPositionError: 'Chyba pozice.',
     invalidPositionError: 'Nesprávný formát souřadnic.',
     invalidTakenAt: 'Nevalidní datum a čas focení.',
@@ -633,15 +633,9 @@ const cs: Messages = {
       name: 'Jméno',
       email: 'E-Mail',
       sendGalleryEmails: 'Upozornit emailem na komentáře k fotce',
-      DeleteInfo: () => (
-        <>
-          Pokud si přejete smazat svůj účet, kontaktujte nás prosím na{' '}
-          <Alert.Link href="mailto:freemap@freemap.sk">
-            freemap@freemap.sk
-          </Alert.Link>
-          .
-        </>
-      ),
+      delete: 'Smazat účet',
+      deleteWarning:
+        'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.', // TODO translate
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
@@ -1156,7 +1150,6 @@ const cs: Messages = {
   },
 
   tracking: {
-    unauthenticatedError: 'Pro správu zařízení se musíte přihlásit.',
     trackedDevices: {
       button: 'Sledované',
       modalTitle: 'Sledovaná zařízení',
@@ -1429,7 +1422,6 @@ const cs: Messages = {
         Mapa <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
     writers: 'Editori',
     conflictError: 'Mapa bola medzičasom modifikovaná.', // TODO translate
   },

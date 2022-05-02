@@ -1,5 +1,4 @@
 import { RootAction } from 'fm3/actions';
-import { setActiveModal } from 'fm3/actions/mainActions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
@@ -19,19 +18,6 @@ export function createTrackingMiddleware(): Middleware<
   return ({ dispatch, getState }) =>
     (next: Dispatch) =>
     (action: RootAction): unknown => {
-      if (
-        isActionOf(setActiveModal, action) &&
-        action.payload === 'tracking-my' &&
-        !getState().auth.user
-      ) {
-        return next(
-          toastsAdd({
-            messageKey: 'tracking.unauthenticatedError',
-            style: 'danger',
-          }),
-        );
-      }
-
       if (isActionOf(rpcResponse, action)) {
         const { payload } = action;
 
