@@ -1,5 +1,3 @@
-/* eslint-disable react/display-name */
-
 import {
   galleryClear,
   galleryDeletePicture,
@@ -47,6 +45,7 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
+import ReactPannellum from 'react-pannellum';
 import { useDispatch } from 'react-redux';
 import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
@@ -154,15 +153,31 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
+  const {
+    title = '...',
+    description = undefined,
+    createdAt = undefined,
+    takenAt = undefined,
+    tags = undefined,
+    comments = undefined,
+    rating = undefined,
+    myStars = undefined,
+    lat,
+    lon,
+    pano,
+  } = image || {};
+
   const handleFullscreen = useCallback(() => {
-    if (!document.exitFullscreen || !fullscreenElement.current) {
+    if (pano) {
+      ReactPannellum.toggleFullscreen();
+    } else if (!document.exitFullscreen || !fullscreenElement.current) {
       // unsupported
     } else if (document.fullscreenElement === fullscreenElement.current) {
       document.exitFullscreen();
     } else {
       fullscreenElement.current.requestFullscreen();
     }
-  }, []);
+  }, [pano]);
 
   const handleSave = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
@@ -176,19 +191,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const index = imageIds
     ? imageIds.findIndex((id) => id === activeImageId)
     : -1;
-
-  const {
-    title = '...',
-    description = undefined,
-    createdAt = undefined,
-    takenAt = undefined,
-    tags = undefined,
-    comments = undefined,
-    rating = undefined,
-    myStars = undefined,
-    lat,
-    lon,
-  } = image || {};
 
   const nextImageId = imageIds && imageIds[index + 1];
 
@@ -254,6 +256,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           {title && `- ${title}`}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <div
           ref={setFullscreenElement}
@@ -262,7 +265,28 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           <div className="carousel">
             <div className="carousel-inner">
               <div className="carousel-item active">
-                {!!activeImageId && (
+                {activeImageId === null ? null : pano ? (
+                  <ReactPannellum
+                    id={String(activeImageId)}
+                    sceneId={String(activeImageId)}
+                    imageSource={getImageUrl(activeImageId)}
+                    config={{
+                      autoLoad: true,
+                      showControls: false,
+                      // compass: true,
+                      title: 'panorama',
+                    }}
+                    style={{
+                      height: Math.max(window.innerHeight - 400, 300) + 'px',
+                      width:
+                        (window.matchMedia('(min-width: 1200px)').matches
+                          ? 1110
+                          : window.matchMedia('(min-width: 992px)').matches
+                          ? 770
+                          : 470) + 'px',
+                    }}
+                  />
+                ) : (
                   <img
                     key={imgKey}
                     ref={setImageElement}
@@ -271,6 +295,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     alt={title ?? undefined}
                   />
                 )}
+
                 {!!nextImageId && !loading && (
                   <img
                     key={`next-${imgKey}`}
@@ -279,6 +304,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     alt="next"
                   />
                 )}
+
                 {!!prevImageId && !loading && (
                   <img
                     key={`prev-${imgKey}`}
@@ -289,11 +315,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 )}
               </div>
             </div>
+
             {imageIds && (
-              <a
+              <button
                 className={`carousel-control-prev ${
                   index < 1 ? 'carousel-control-disabled' : ''
-                }`}
+                } ${pano ? 'carousel-control-short' : ''}`}
                 onClick={(e) => {
                   e?.preventDefault();
 
@@ -304,11 +331,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   className="carousel-control-prev-icon"
                   aria-hidden="true"
                 />
+
                 <span className="sr-only">Previous</span>
-              </a>
+              </button>
             )}
+
             {imageIds && (
-              <a
+              <button
                 className={`carousel-control-next ${
                   index >= imageIds.length - 1
                     ? 'carousel-control-disabled'
@@ -324,17 +353,22 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   className="carousel-control-next-icon"
                   aria-hidden="true"
                 />
+
                 <span className="sr-only">Next</span>
-              </a>
+              </button>
             )}
           </div>
+
           <br />
+
           {image && (
             <div className="footer">
               {isFullscreen && imageIds && (
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
+
               {isFullscreen && title && <>{title} ｜ </>}
+
               {m?.gallery.viewer.uploaded({
                 username: <b key={image.user.name}>{image.user.name}</b>,
                 createdAt: createdAt ? (
@@ -345,6 +379,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   '-'
                 ),
               })}
+
               {takenAt && (
                 <>
                   {' ｜ '}
@@ -353,15 +388,20 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
                 </>
               )}
+
               {' ｜ '}
+
               <ReactStars
                 className="stars"
                 size={22}
                 value={rating}
                 edit={false}
               />
+
               {description && ` ｜ ${description}`}
+
               {tags && tags.length > 0 && ' ｜ '}
+
               {tags &&
                 tags.map((tag) => (
                   <Fragment key={tag}>
@@ -369,9 +409,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     <Badge variant="secondary">{tag}</Badge>
                   </Fragment>
                 ))}
+
               {!isFullscreen && editModel && (
                 <form onSubmit={handleSave}>
                   <hr />
+
                   <h5>{m?.gallery.viewer.modify}</h5>
 
                   <GalleryEditForm
@@ -382,15 +424,19 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     onPositionPick={handlePositionPick}
                     onModelChange={handleEditModelChange}
                   />
+
                   <Button variant="primary" type="submit">
                     <FaSave /> {m?.general.save}
                   </Button>
                 </form>
               )}
+
               {!isFullscreen && (
                 <>
                   <hr />
+
                   <h5>{m?.gallery.viewer.comments}</h5>
+
                   {comments &&
                     comments.map((c) => (
                       <p key={c.id}>
@@ -398,6 +444,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                         {c.comment}
                       </p>
                     ))}
+
                   {user && (
                     <form onSubmit={handleCommentFormSubmit}>
                       <FormGroup>
@@ -413,6 +460,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                             }}
                             maxLength={4096}
                           />
+
                           <InputGroup.Append>
                             <Button
                               variant="secondary"
@@ -426,6 +474,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                       </FormGroup>
                     </form>
                   )}
+
                   {user && (
                     <div>
                       {m?.gallery.viewer.yourRating}{' '}
@@ -444,6 +493,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           )}
         </div>
       </Modal.Body>
+
       <Modal.Footer>
         {image && user && (user.isAdmin || user.id === image.user.id) && (
           <>
@@ -455,11 +505,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               active={!!editModel}
             >
               <FaPencilAlt />
+
               <span className="d-none d-sm-inline">
                 {' '}
                 {m?.general.modify} <kbd>M</kbd>
               </span>
             </Button>
+
             <Button
               onClick={() => {
                 dispatch(
@@ -485,10 +537,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               variant="danger"
             >
               <FaTrash />
+
               <span className="d-none d-sm-inline"> {m?.general.delete}</span>
             </Button>
           </>
         )}
+
         <Button
           variant="secondary"
           onClick={() => {
@@ -496,17 +550,21 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           }}
         >
           <FaRegDotCircle />
+
           <span className="d-none d-md-inline">
             {' '}
             {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
           </span>
         </Button>
+
         {'exitFullscreen' in document && (
           <Button variant="secondary" onClick={handleFullscreen}>
             <RiFullscreenLine />
+
             <span className="d-none d-md-inline"> {m?.general.fullscreen}</span>
           </Button>
         )}
+
         {lat !== undefined && lon !== undefined && (
           <OpenInExternalAppMenuButton
             lat={lat}
@@ -518,14 +576,17 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
           >
             <FaExternalLinkAlt />
+
             <span className="d-none d-md-inline">
               {' '}
               {m?.gallery.viewer.openInNewWindow}
             </span>
           </OpenInExternalAppMenuButton>
         )}
+
         <Button variant="dark" onClick={close}>
           <FaTimes />
+
           <span className="d-none d-md-inline">
             {' '}
             {m?.general.close} <kbd>Esc</kbd>

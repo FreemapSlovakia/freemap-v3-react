@@ -44,6 +44,12 @@
   }
 }
 
+.carousel-control-prev,
+.carousel-control-next {
+  border: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   background-color: hsla(0, 0%, 0%, 0.2);
