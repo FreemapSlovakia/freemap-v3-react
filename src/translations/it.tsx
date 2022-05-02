@@ -409,9 +409,15 @@ const it: Messages = {
     infoBars: {
       ua: () => (
         <>
-          🇺🇦 La Comunità Slovacca di OpenStreetMap esprime il proprio supporto
-          per gli abitanti dell'Ucraina nella loro difesa contro l'aggressione
-          militare russa. 🇺🇦
+          🇺🇦 Siamo con l'Ucraina.{' '}
+          <a
+            href="https://bank.gov.ua/en/about/support-the-armed-forces"
+            target="_blank"
+            rel="noopener"
+          >
+            Fai una donazione all'esercito ucraino ›
+          </a>{' '}
+          🇺🇦
         </>
       ),
     },

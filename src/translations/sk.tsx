@@ -413,8 +413,15 @@ const sk: Messages = {
       ua: () => {
         return (
           <>
-            🇺🇦 Slovenská komunita OpenStreetMap vyjadruje podporu obyvateľom
-            Ukrajiny v ich obrane pred vojenskou agresiou Ruska. 🇺🇦
+            🇺🇦 Stojíme pri Ukrajine.{' '}
+            <a
+              href="https://bank.gov.ua/en/about/support-the-armed-forces"
+              target="_blank"
+              rel="noopener"
+            >
+              Prispejte ukrajinskej armáde ›
+            </a>{' '}
+            🇺🇦{' '}
           </>
         );
       },

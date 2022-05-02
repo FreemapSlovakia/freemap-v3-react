@@ -412,8 +412,15 @@ const hu: Messages = {
     infoBars: {
       ua: () => (
         <>
-          🇺🇦 Slovak OpenStreetMap community expresses support for the Ukraine
-          inhabitants in their defense against Russia's military aggression. 🇺🇦
+          🇺🇦 Ukrajnával állunk.{' '}
+          <a
+            href="https://bank.gov.ua/en/about/support-the-armed-forces"
+            target="_blank"
+            rel="noopener"
+          >
+            Adományozás az ukrán hadseregnek ›
+          </a>{' '}
+          🇺🇦
         </>
       ),
     },
