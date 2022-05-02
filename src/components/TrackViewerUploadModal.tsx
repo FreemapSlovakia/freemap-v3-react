@@ -59,7 +59,10 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleGpxDrop,
-    accept: 'application/gpx+xml,application/octet-stream,.gpx',
+    accept: {
+      'application/gpx+xml': ['.gpx'],
+      'application/octet-stream': ['.gpx'],
+    },
     multiple: false,
   });
 
@@ -69,15 +72,18 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>{m?.trackViewer.uploadModal.title}</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <div
           {...getRootProps()}
           className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
         >
           <input {...getInputProps()} />
+
           {m?.trackViewer.uploadModal.drop}
         </div>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
