@@ -137,7 +137,7 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "start": "webpack serve --hot --no-client-overlay --https-key ssl/freemap.sk.key --https-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
+    "start": "webpack serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
     "lint": "node node_modules/eslint/bin/eslint.js src",
     "lint:fix": "node node_modules/eslint/bin/eslint.js src --fix"
   }
