@@ -98,7 +98,8 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleFileDrop,
-    accept: { 'image/jpeg': ['.jpg', '.jpeg'] },
+    accept: 'image/jpeg,.jpg,.jpeg',
+    // accept: { 'image/jpeg': ['.jpg', '.jpeg'] },
   });
 
   const handlePositionPick = useCallback(
