@@ -121,7 +121,11 @@ export function getInitialState() {
     };
   }
 
-  if (is<{ colorizeBy: GalleryColorizeBy | null }>(persisted.gallery)) {
+  if (
+    is<{ colorizeBy?: GalleryColorizeBy | null; recentTags?: string[] }>(
+      persisted.gallery,
+    )
+  ) {
     initial.gallery = {
       ...galleryInitialState,
       ...persisted.gallery,

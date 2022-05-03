@@ -59,6 +59,7 @@ function persistSelectedState(state: RootState) {
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,
+        recentTags: state.gallery.recentTags,
       },
     } as Partial<RootState>),
   );
