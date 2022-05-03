@@ -23,6 +23,24 @@ type Props = {
   pointA: LatLng;
 };
 
+type SortMarble = {
+  sort: number;
+  value: Marble;
+};
+
+function compare(a: SortMarble, b: SortMarble) {
+  const v = a.sort - b.sort;
+
+  return v === 0 ? (a.value.pano ? 1 : 0) - (b.value.pano ? 1 : 0) : v;
+}
+
+function sort(data: Marble[], toSort: (m: Marble) => number) {
+  return data
+    .map((a) => ({ sort: toSort(a), value: a }))
+    .sort(compare)
+    .map((a) => a.value);
+}
+
 export function renderGalleryTile({
   tile,
   zoom,
@@ -54,34 +72,16 @@ export function renderGalleryTile({
 
   const s = new Set();
 
-  let items: Marble[];
-
-  // TODO add pano to sort
-  if (colorizeBy === 'userId') {
-    items = data
-      .map((a) => ({ sort: Math.random(), value: a }))
-      .sort((a, b) => a.sort - b.sort)
-      .map((a) => a.value);
-  } else if (
-    colorizeBy === 'takenAt' ||
-    colorizeBy === 'createdAt' ||
-    colorizeBy === 'rating'
-  ) {
-    items = data
-      .map((a) => ({ sort: Number(a[colorizeBy]), value: a }))
-      .sort((a, b) => a.sort - b.sort)
-      .map((a) => a.value);
-  } else if (colorizeBy === 'mine') {
-    items = data
-      .map((a) => ({
-        sort: a.userId === myUserId ? 1 : 0,
-        value: a,
-      }))
-      .sort((a, b) => a.sort - b.sort)
-      .map((a) => a.value);
-  } else {
-    items = data;
-  }
+  const items: Marble[] =
+    colorizeBy === 'userId'
+      ? sort(data, () => Math.random())
+      : colorizeBy === 'takenAt' ||
+        colorizeBy === 'createdAt' ||
+        colorizeBy === 'rating'
+      ? sort(data, (a) => Number(a[colorizeBy]))
+      : colorizeBy === 'mine'
+      ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
+      : sort(data, () => 0);
 
   // remove "dense" pictures
   const marbles: Marble[] = items
