@@ -514,6 +514,7 @@ const en: Messages = {
       author: 'Author',
       rating: 'Rating',
       noTags: 'no tags',
+      pano: 'Panorama',
     },
     noPicturesFound: 'There were no photos found on this place.',
     linkToWww: 'photo at www.freemap.sk',

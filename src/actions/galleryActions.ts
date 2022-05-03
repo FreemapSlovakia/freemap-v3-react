@@ -61,7 +61,7 @@ export interface Picture extends LatLon {
   user: Pick<User, 'id' | 'name'>;
   createdAt: Date;
   takenAt: Date | null;
-  pano: boolean;
+  pano?: true;
 }
 
 export interface GalleryFilter {
@@ -73,6 +73,7 @@ export interface GalleryFilter {
   createdAtTo?: Date;
   ratingFrom?: number;
   ratingTo?: number;
+  pano?: boolean;
 }
 
 export const galleryRequestImages = createAction(

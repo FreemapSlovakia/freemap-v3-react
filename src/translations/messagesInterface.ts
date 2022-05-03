@@ -399,6 +399,7 @@ export type Messages = {
       author: string;
       rating: string;
       noTags: string;
+      pano: string;
     };
     noPicturesFound: string;
     linkToWww: string;

@@ -8,6 +8,7 @@ type Marble = LatLon & {
   userId: number;
   createdAt: number;
   takenAt?: number | null;
+  pano?: true;
 };
 
 type Props = {
@@ -55,6 +56,7 @@ export function renderGalleryTile({
 
   let items: Marble[];
 
+  // TODO add pano to sort
   if (colorizeBy === 'userId') {
     items = data
       .map((a) => ({ sort: Math.random(), value: a }))
@@ -109,7 +111,7 @@ export function renderGalleryTile({
     }))
     .reverse();
 
-  for (const { lat, lon } of marbles) {
+  for (const { lat, lon, pano } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
@@ -117,7 +119,11 @@ export function renderGalleryTile({
 
     ctx.beginPath();
 
-    ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
+    if (pano) {
+      ctx.rect(x - 4 * zk, y - 4 * zk, 8 * zk, 8 * zk);
+    } else {
+      ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
+    }
 
     ctx.stroke();
   }
@@ -126,7 +132,15 @@ export function renderGalleryTile({
 
   const now = Date.now() / 1000;
 
-  for (const { lat, lon, rating, createdAt, takenAt, userId } of marbles) {
+  for (const {
+    lat,
+    lon,
+    rating,
+    createdAt,
+    takenAt,
+    userId,
+    pano,
+  } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
@@ -134,7 +148,11 @@ export function renderGalleryTile({
 
     ctx.beginPath();
 
-    ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
+    if (pano) {
+      ctx.rect(x - 3.5 * zk, y - 3.5 * zk, 7 * zk, 7 * zk);
+    } else {
+      ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
+    }
 
     switch (colorizeBy) {
       case 'userId':

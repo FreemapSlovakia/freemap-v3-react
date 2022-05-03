@@ -179,6 +179,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, [pano]);
 
+  // fullscreen of pano fails when traversing from non-pano picture
+  useEffect(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  }, [pano]);
+
   const handleSave = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -273,8 +280,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     config={{
                       autoLoad: true,
                       showControls: false,
+                      autoRotate: 15,
+                      autoRotateInactivityDelay: 60000,
                       // compass: true,
-                      title: 'panorama',
+                      // title: 'panorama',
                     }}
                     style={{
                       height: Math.max(window.innerHeight - 400, 300) + 'px',

@@ -525,6 +525,7 @@ const hu: Messages = {
       author: 'Szerző',
       rating: 'Értékelés',
       noTags: 'nincs címke',
+      pano: 'Panoráma', // TODO translate
     },
     noPicturesFound: 'There were no photos found on this place.', // TODO translate
     linkToWww: 'photo at www.freemap.sk', // TODO translate

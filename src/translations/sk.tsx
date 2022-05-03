@@ -554,6 +554,7 @@ const sk: Messages = {
       author: 'Autor',
       rating: 'Hodnotenie',
       noTags: 'bez tagov',
+      pano: 'Panoráma',
     },
     noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
     linkToWww: 'fotografia na www.freemap.sk',

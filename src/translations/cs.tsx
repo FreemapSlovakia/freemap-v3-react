@@ -526,6 +526,7 @@ const cs: Messages = {
       author: 'Autor',
       rating: 'Hodnocení',
       noTags: 'bez tagů',
+      pano: 'Panoráma',
     },
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
     linkToWww: 'fotografia na www.freemap.sk', // TODO translate

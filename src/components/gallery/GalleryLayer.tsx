@@ -31,6 +31,7 @@ function createWorker() {
 
   w.onmessage = (evt) => {
     // console.log('OK', evt.data.id, resMap.has(evt.data.id));
+
     const job = jobMap.get(evt.data.id);
 
     if (job) {
@@ -169,6 +170,18 @@ class LGalleryLayer extends LGridLayer {
 
     const { signal } = controller;
 
+    const fields = ['pano'];
+
+    if (colorizeBy) {
+      fields.push(
+        colorizeBy === 'mine'
+          ? 'userId'
+          : colorizeBy === 'season'
+          ? 'takenAt'
+          : colorizeBy,
+      );
+    }
+
     // https://backend.freemap.sk/gallery/pictures
     fetch(
       `${process.env['API_URL']}/gallery/pictures?` +
@@ -176,12 +189,7 @@ class LGalleryLayer extends LGridLayer {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
-          fields:
-            colorizeBy === 'mine'
-              ? 'userId'
-              : colorizeBy === 'season'
-              ? 'takenAt'
-              : colorizeBy,
+          fields,
         }).toString(),
       {
         signal,

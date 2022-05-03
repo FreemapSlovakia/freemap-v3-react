@@ -517,6 +517,7 @@ const it: Messages = {
       author: 'Autore',
       rating: 'Valutazione',
       noTags: 'no tag',
+      pano: 'Panorama', // TODO translate
     },
     noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
     linkToWww: 'foto su www.freemap.sk',

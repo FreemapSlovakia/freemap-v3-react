@@ -10,6 +10,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
@@ -50,6 +51,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const [ratingTo, setRatingTo] = useState('');
 
+  const [pano, setPano] = useState<boolean>();
+
   useEffect(() => {
     setTag(filter.tag === '' ? '⌘' : filter.tag ?? '');
 
@@ -88,6 +91,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     setRatingTo(
       typeof filter.ratingTo === 'number' ? filter.ratingTo.toString() : '',
     );
+
+    setPano(filter.pano);
   }, [filter]);
 
   const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -143,6 +148,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     [],
   );
 
+  const handlePanoChange = useCallback(() => {
+    setPano((value) => (value ? false : value === false ? undefined : true));
+  }, []);
+
   const handleFormSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -159,6 +168,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           createdAtTo: nt(createdAtTo ? new Date(createdAtTo) : undefined),
           ratingFrom: nn(ratingFrom ? parseFloat(ratingFrom) : undefined),
           ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
+          pano,
         }),
       );
 
@@ -174,6 +184,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
       createdAtTo,
       ratingFrom,
       ratingTo,
+      pano,
     ],
   );
 
@@ -193,23 +204,36 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     setRatingFrom('');
 
     setRatingTo('');
+
+    setPano(undefined);
   };
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
+  const [panoCheck, setPanoCheck] = useState<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (panoCheck) {
+      panoCheck.indeterminate = pano === undefined;
+    }
+  }, [panoCheck, pano]);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
       </Modal.Header>
+
       <form onSubmit={handleFormSubmit}>
         <Modal.Body>
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.tag}</FormLabel>
+
             <FormControl as="select" value={tag} onChange={handleTagChange}>
               <option value="" />
+
               <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
               {tags.map(({ name, count }) => (
                 <option key={name} value={name}>
@@ -218,14 +242,17 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
               ))}
             </FormControl>
           </FormGroup>
+
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.author}</FormLabel>
+
             <FormControl
               as="select"
               value={userId}
               onChange={handleUserIdChange}
             >
               <option value="" />
+
               {users.map(({ id, name, count }) => (
                 <option key={id} value={id}>
                   {name} ({count})
@@ -233,17 +260,21 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
               ))}
             </FormControl>
           </FormGroup>
+
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.createdAt}</FormLabel>
+
             <InputGroup>
               <FormControl
                 type="date"
                 value={createdAtFrom}
                 onChange={handleCreatedAtFromChange}
               />
+
               <InputGroup.Append>
                 <InputGroup.Text> - </InputGroup.Text>
               </InputGroup.Append>
+
               <FormControl
                 type="date"
                 value={createdAtTo}
@@ -251,17 +282,21 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
               />
             </InputGroup>
           </FormGroup>
+
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.takenAt}</FormLabel>
+
             <InputGroup>
               <FormControl
                 type="date"
                 value={takenAtFrom}
                 onChange={handleTakenAtFromChange}
               />
+
               <InputGroup.Append>
                 <InputGroup.Text> - </InputGroup.Text>
               </InputGroup.Append>
+
               <FormControl
                 type="date"
                 value={takenAtTo}
@@ -269,8 +304,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
               />
             </InputGroup>
           </FormGroup>
+
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.rating}</FormLabel>
+
             <InputGroup>
               <FormControl
                 type="number"
@@ -280,9 +317,11 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 value={ratingFrom}
                 onChange={handleRatingFromChange}
               />
+
               <InputGroup.Append>
                 <InputGroup.Text> - </InputGroup.Text>
               </InputGroup.Append>
+
               <FormControl
                 type="number"
                 min={ratingFrom || 1}
@@ -293,14 +332,25 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
               />
             </InputGroup>
           </FormGroup>
+
+          <Form.Check
+            id="filt-pano"
+            checked={!!pano}
+            onChange={handlePanoChange}
+            label={m?.gallery.filterModal.pano}
+            ref={setPanoCheck}
+          />
         </Modal.Body>
+
         <Modal.Footer>
           <Button type="submit">
             <FaCheck /> {m?.general.apply}
           </Button>
+
           <Button variant="warning" type="button" onClick={handleEraseClick}>
             <FaEraser /> {m?.general.clear}
           </Button>
+
           <Button variant="dark" type="button" onClick={close}>
             <FaTimes /> {m?.general.cancel}
           </Button>
