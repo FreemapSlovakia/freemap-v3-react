@@ -8,7 +8,7 @@ type Marble = LatLon & {
   userId: number;
   createdAt: number;
   takenAt?: number | null;
-  pano?: true;
+  pano?: 1;
 };
 
 type Props = {
