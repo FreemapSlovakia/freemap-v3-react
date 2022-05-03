@@ -179,6 +179,24 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, [pano]);
 
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if (
+        e.code === 'KeyF' &&
+        !e.shiftKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.metaKey
+      ) {
+        handleFullscreen();
+      }
+    }
+
+    window.addEventListener('keypress', handler);
+
+    return () => window.removeEventListener('keypress', handler);
+  }, [handleFullscreen, show]);
+
   // fullscreen of pano fails when traversing from non-pano picture
   useEffect(() => {
     if (document.exitFullscreen && document.fullscreenElement) {
