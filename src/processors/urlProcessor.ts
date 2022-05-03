@@ -279,6 +279,10 @@ export const urlProcessor: Processor = {
       ]);
     }
 
+    if (galleryFilter.pano !== undefined) {
+      historyParts.push(['gallery-pano', galleryFilter.pano]);
+    }
+
     if (objects.active.length) {
       historyParts.push(['objects', objects.active.join(';')]);
     }

@@ -676,6 +676,10 @@ function handleGallery(
 
   const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
 
+  a = query['gallery-pano'];
+
+  const qPano = typeof a !== 'string' ? undefined : a === 'true';
+
   if (
     qUserId ||
     qGalleryTag != null ||
@@ -684,7 +688,8 @@ function handleGallery(
     qTakenAtFrom ||
     qTakenAtTo ||
     qCreatedAtFrom ||
-    qCreatedAtTo
+    qCreatedAtTo ||
+    qPano !== undefined
   ) {
     const { filter } = getState().gallery;
 
@@ -736,6 +741,10 @@ function handleGallery(
         qCreatedAtTo.getTime()
     ) {
       newFilter.createdAtTo = qCreatedAtTo;
+    }
+
+    if (qPano !== filter.pano) {
+      newFilter.pano = qPano;
     }
 
     if (Object.keys(newFilter).length !== 0) {
