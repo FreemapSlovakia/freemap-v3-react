@@ -179,23 +179,46 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, [pano]);
 
+  const handleDelete = useCallback(() => {
+    dispatch(
+      toastsAdd({
+        id: 'gallery.deletePicture',
+        messageKey: 'gallery.viewer.deletePrompt',
+        style: 'warning',
+        cancelType: [getType(galleryClear), getType(galleryRequestImage)],
+        actions: [
+          {
+            nameKey: 'general.yes',
+            action: galleryDeletePicture(),
+            style: 'danger',
+          },
+          { nameKey: 'general.no' },
+        ],
+      }),
+    );
+  }, [dispatch]);
+
   useEffect(() => {
     function handler(e: KeyboardEvent) {
       if (
-        e.code === 'KeyF' &&
-        !e.shiftKey &&
-        !e.ctrlKey &&
-        !e.altKey &&
-        !e.metaKey
+        e.target instanceof HTMLInputElement ||
+        e.shiftKey ||
+        e.ctrlKey ||
+        e.altKey ||
+        e.metaKey
       ) {
+        // nothing
+      } else if (e.code === 'KeyF') {
         handleFullscreen();
+      } else if (e.code === 'Delete') {
+        handleDelete();
       }
     }
 
     window.addEventListener('keypress', handler);
 
     return () => window.removeEventListener('keypress', handler);
-  }, [handleFullscreen, show]);
+  }, [handleDelete, handleFullscreen, show]);
 
   // fullscreen of pano fails when traversing from non-pano picture
   useEffect(() => {
@@ -540,33 +563,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               </span>
             </Button>
 
-            <Button
-              onClick={() => {
-                dispatch(
-                  toastsAdd({
-                    id: 'gallery.deletePicture',
-                    messageKey: 'gallery.viewer.deletePrompt',
-                    style: 'warning',
-                    cancelType: [
-                      getType(galleryClear),
-                      getType(galleryRequestImage),
-                    ],
-                    actions: [
-                      {
-                        nameKey: 'general.yes',
-                        action: galleryDeletePicture(),
-                        style: 'danger',
-                      },
-                      { nameKey: 'general.no' },
-                    ],
-                  }),
-                );
-              }}
-              variant="danger"
-            >
+            <Button onClick={handleDelete} variant="danger">
               <FaTrash />
 
-              <span className="d-none d-sm-inline"> {m?.general.delete}</span>
+              <span className="d-none d-sm-inline">
+                {' '}
+                {m?.general.delete} <kbd>Del</kbd>
+              </span>
             </Button>
           </>
         )}
@@ -620,7 +623,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
           <span className="d-none d-md-inline">
             {' '}
-            {m?.general.close} <kbd>Esc</kbd>
+            {m?.general.close} {editModel ? null : <kbd>Esc</kbd>}
           </span>
         </Button>
       </Modal.Footer>
