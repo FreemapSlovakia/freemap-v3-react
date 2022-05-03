@@ -274,6 +274,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               <div className="carousel-item active">
                 {activeImageId === null ? null : pano ? (
                   <ReactPannellum
+                    key={'pano-' + activeImageId}
                     id={String(activeImageId)}
                     sceneId={String(activeImageId)}
                     imageSource={getImageUrl(activeImageId)}
