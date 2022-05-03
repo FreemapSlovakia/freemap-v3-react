@@ -536,7 +536,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
               <span className="d-none d-sm-inline">
                 {' '}
-                {m?.general.modify} <kbd>M</kbd>
+                {m?.general.modify} <kbd>m</kbd>
               </span>
             </Button>
 
@@ -581,7 +581,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
           <span className="d-none d-md-inline">
             {' '}
-            {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
+            {m?.gallery.viewer.showOnTheMap} <kbd>s</kbd>
           </span>
         </Button>
 
@@ -589,7 +589,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           <Button variant="secondary" onClick={handleFullscreen}>
             <RiFullscreenLine />
 
-            <span className="d-none d-md-inline"> {m?.general.fullscreen}</span>
+            <span className="d-none d-md-inline">
+              {' '}
+              {m?.general.fullscreen} <kbd>f</kbd>
+            </span>
           </Button>
         )}
 
