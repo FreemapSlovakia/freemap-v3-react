@@ -1,6 +1,7 @@
 import { RootAction } from 'fm3/actions';
 import {
   galleryAddItem,
+  galleryAddTag,
   galleryCancelShowOnTheMap,
   galleryClear,
   galleryColorizeBy,
@@ -62,6 +63,7 @@ export interface GalleryState {
   language: string;
   saveErrors: string[];
   colorizeBy: GalleryColorizeBy | null;
+  recentTags: string[];
 }
 
 export const galleryInitialState: GalleryState = {
@@ -97,6 +99,7 @@ export const galleryInitialState: GalleryState = {
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
   colorizeBy: null,
+  recentTags: [],
 };
 
 export const galleryReducer = createReducer<GalleryState, RootAction>(
@@ -339,6 +342,22 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     colorizeBy: action.payload,
   }))
+  .handleAction(galleryAddTag, (state, { payload }) => {
+    const recentTags = [...state.recentTags];
+
+    const i = recentTags.indexOf(payload);
+
+    if (i > -1) {
+      recentTags.splice(i, 1);
+    }
+
+    recentTags.unshift(payload);
+
+    return {
+      ...state,
+      recentTags: recentTags.slice(0, 8),
+    };
+  })
   .handleAction(mapsLoaded, (state, action) => {
     return {
       ...state,

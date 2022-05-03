@@ -431,6 +431,7 @@ const cs: Messages = {
   },
 
   gallery: {
+    recentTags: 'Nedávne tagy na priradenie:', // TODO translate
     filter: 'Filtr',
     showPhotosFrom: 'Prohlížet fotky',
     showLayer: 'Zobrazit vrstvu',

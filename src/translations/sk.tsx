@@ -458,6 +458,7 @@ const sk: Messages = {
   },
 
   gallery: {
+    recentTags: 'Nedávne tagy na priradenie:',
     filter: 'Filter',
     showPhotosFrom: 'Prezerať fotky',
     showLayer: 'Zobraziť vrstvu',

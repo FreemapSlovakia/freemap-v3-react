@@ -76,6 +76,8 @@ export interface GalleryFilter {
   pano?: boolean;
 }
 
+export const galleryAddTag = createAction('GALLERY_ADD_TAG')<string>();
+
 export const galleryRequestImages = createAction(
   'GALLERY_REQUEST_IMAGES',
 )<LatLon>();
@@ -162,3 +164,7 @@ export const galleryColorizeBy = createAction(
 export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',
 )();
+
+export const galleryQuickAddTag = createAction(
+  'GALLERY_QUICK_ADD_TAG',
+)<string>();

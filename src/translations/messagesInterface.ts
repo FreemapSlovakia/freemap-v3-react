@@ -316,6 +316,7 @@ export type Messages = {
     cookieConsent: () => JSX.Element;
   };
   gallery: {
+    recentTags: string;
     filter: string;
     showPhotosFrom: string;
     showLayer: string;

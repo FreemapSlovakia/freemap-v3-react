@@ -2,6 +2,7 @@ import {
   galleryClear,
   galleryDeletePicture,
   galleryEditPicture,
+  galleryQuickAddTag,
   galleryRequestImage,
   gallerySavePicture,
   gallerySetComment,
@@ -50,6 +51,7 @@ import { useDispatch } from 'react-redux';
 import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
+import { RecentTags } from './RecentTags';
 
 type Props = { show: boolean };
 
@@ -64,7 +66,9 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const image = useAppSelector((state) => state.gallery.image);
 
-  const activeImageId2 = useAppSelector((state) => state.gallery.activeImageId);
+  const reduxActiveImageId = useAppSelector(
+    (state) => state.gallery.activeImageId,
+  );
 
   const comment = useAppSelector((state) => state.gallery.comment);
 
@@ -88,10 +92,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const fullscreenElement = useRef<HTMLDivElement>();
 
-  if (activeImageId2 !== activeImageId) {
+  if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
 
-    setActiveImageId(activeImageId2);
+    setActiveImageId(reduxActiveImageId);
   }
 
   useEffect(() => {
@@ -242,7 +246,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const nextImageId = imageIds && imageIds[index + 1];
 
-  const prevImageId = index > 0 && imageIds && imageIds[index - 1];
+  const prevImageId = index > 0 ? imageIds && imageIds[index - 1] : null;
 
   // TODO const loadingMeta = !image || image.id !== activeImageId;
 
@@ -280,6 +284,16 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(galleryClear());
   }, [dispatch]);
+
+  const canEdit = !!(
+    image &&
+    user &&
+    (user.isAdmin || user.id === image.user.id)
+  );
+
+  const handleTagAdd = (tag: string) => {
+    dispatch(galleryQuickAddTag(tag));
+  };
 
   return (
     <Modal show={show} onHide={close} size="xl" keyboard={false}>
@@ -347,7 +361,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   />
                 )}
 
-                {!!nextImageId && !loading && (
+                {nextImageId != null && !loading && (
                   <img
                     key={`next-${imgKey}`}
                     className="d-none"
@@ -356,7 +370,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   />
                 )}
 
-                {!!prevImageId && !loading && (
+                {prevImageId != null && !loading && (
                   <img
                     key={`prev-${imgKey}`}
                     className="d-none"
@@ -468,7 +482,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   <h5>{m?.gallery.viewer.modify}</h5>
 
                   <GalleryEditForm
-                    m={m}
                     model={editModel}
                     allTags={allTags}
                     errors={saveErrors}
@@ -527,15 +540,24 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
 
                   {user && (
-                    <div>
-                      {m?.gallery.viewer.yourRating}{' '}
+                    <div className="d-flex f-gap-1 align-items-center">
+                      {m?.gallery.viewer.yourRating}
+
                       <ReactStars
-                        className="stars"
+                        className="stars ml-1"
                         size={22}
                         half={false}
                         value={myStars ?? 0}
                         onChange={handleStarsChange}
                       />
+
+                      {editModel === null && tags && canEdit && (
+                        <RecentTags
+                          existingTags={tags}
+                          onAdd={handleTagAdd}
+                          prefix={<div>｜</div>}
+                        />
+                      )}
                     </div>
                   )}
                 </>
@@ -546,7 +568,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        {image && user && (user.isAdmin || user.id === image.user.id) && (
+        {canEdit && (
           <>
             <Button
               variant="secondary"

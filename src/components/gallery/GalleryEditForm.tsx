@@ -1,7 +1,6 @@
-import { GalleryTag } from 'fm3/actions/galleryActions';
-import { getMessageByKey } from 'fm3/l10nInjector';
+import { galleryAddTag, GalleryTag } from 'fm3/actions/galleryActions';
+import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/react-tag-autocomplete.css';
-import { Messages } from 'fm3/translations/messagesInterface';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -9,8 +8,10 @@ import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaRegDotCircle } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { DateTime } from '../DateTime';
+import { RecentTags } from './RecentTags';
 
 export interface PictureModel {
   title: string;
@@ -26,7 +27,6 @@ interface Props {
   errors: string[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: PictureModel) => void;
-  m?: Messages;
 }
 
 export function GalleryEditForm({
@@ -34,9 +34,10 @@ export function GalleryEditForm({
   allTags,
   errors,
   onPositionPick,
-  m,
   onModelChange,
 }: Props): ReactElement {
+  const m = useMessages();
+
   const changeModel = useCallback(
     (key: keyof PictureModel, value: any) => {
       onModelChange({ ...model, [key]: value });
@@ -72,15 +73,19 @@ export function GalleryEditForm({
     [changeModel],
   );
 
+  const dispatch = useDispatch();
+
   const handleTagAddition = useCallback(
     ({ name }: Tag) => {
       const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
+
+      dispatch(galleryAddTag(fixed));
 
       if (!model.tags.includes(fixed)) {
         changeModel('tags', [...model.tags, fixed]);
       }
     },
-    [changeModel, model.tags],
+    [changeModel, dispatch, model.tags],
   );
 
   const handleTagDelete = useCallback(
@@ -167,6 +172,12 @@ export function GalleryEditForm({
           onAddition={handleTagAddition}
           onDelete={handleTagDelete}
           allowNew
+        />
+
+        <RecentTags
+          className="mt-1"
+          existingTags={model.tags}
+          onAdd={(tag) => handleTagAddition({ id: tag, name: tag })}
         />
       </FormGroup>
     </div>

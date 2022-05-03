@@ -425,6 +425,7 @@ const it: Messages = {
   },
 
   gallery: {
+    recentTags: 'Recent tags to assign:', // TODO translate
     filter: 'Filtro',
     showPhotosFrom: 'Vedi le foto',
     showLayer: 'Mostra il livello',

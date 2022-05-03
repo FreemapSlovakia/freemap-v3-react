@@ -13,6 +13,7 @@ import { errorProcessor } from './processors/errorProcessor';
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
 import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor';
 import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor';
+import { galleryQuickAddTagProcessor } from './processors/galleryQuickAddTagProcessor';
 import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor';
 import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor';
 import { galleryRequestImagesByRadiusProcessor } from './processors/galleryRequestImagesByRadiusProcessor';
@@ -124,6 +125,7 @@ export const processors = [
   gallerySubmitCommentProcessor,
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
+  galleryQuickAddTagProcessor,
   galleryItemUploadProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
