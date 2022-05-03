@@ -181,7 +181,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   // fullscreen of pano fails when traversing from non-pano picture
   useEffect(() => {
-    if (document.fullscreenElement) {
+    if (document.exitFullscreen && document.fullscreenElement) {
       document.exitFullscreen();
     }
   }, [pano]);
