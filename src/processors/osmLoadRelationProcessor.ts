@@ -109,6 +109,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           detailed: true,
         },
         showToast: window.isRobot,
+        zoomTo: !window.fmHeadless,
       }),
     );
   },

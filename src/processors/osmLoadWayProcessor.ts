@@ -49,6 +49,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
               detailed: true,
             },
             showToast: window.isRobot,
+            zoomTo: !window.fmHeadless,
           }),
         );
       }

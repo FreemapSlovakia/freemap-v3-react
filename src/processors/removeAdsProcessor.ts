@@ -60,7 +60,7 @@ export const removeAdsProcessor: Processor = {
           if (
             e.origin === window.location.origin &&
             typeof e.data === 'object' &&
-            typeof e.data.freemap === 'object' &&
+            typeof e.data?.freemap === 'object' &&
             e.data.freemap.action === 'rovasPayment'
           ) {
             const sp = new URLSearchParams(e.data.freemap.payload);

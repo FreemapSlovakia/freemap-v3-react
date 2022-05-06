@@ -47,7 +47,7 @@ export async function upload(
           if (
             e.origin === window.location.origin &&
             typeof e.data === 'object' &&
-            typeof e.data.freemap === 'object' &&
+            typeof e.data?.freemap === 'object' &&
             e.data.freemap.action === 'dropboxAuth'
           ) {
             const { access_token: accessToken, error } = qs.parse(

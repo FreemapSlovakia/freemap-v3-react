@@ -55,8 +55,6 @@ document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 
 const store = createReduxStore();
 
-(window as any).__fm_redux_store = store;
-
 setErrorHandlerStore(store);
 
 store.dispatch(

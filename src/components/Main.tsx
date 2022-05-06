@@ -426,146 +426,154 @@ export function Main(): ReactElement {
         {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
       </style>
 
-      {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
-      <img
-        id="freemap-logo-print"
-        src={fmLogo}
-        width="150"
-        height="54"
-        alt="freemap logo"
-        className="d-none"
-      />
+      {!window.fmHeadless && (
+        <>
+          {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
+          <img
+            id="freemap-logo-print"
+            src={fmLogo}
+            width="150"
+            height="54"
+            alt="freemap logo"
+            className="d-none"
+          />
 
-      <Toasts />
+          <Toasts />
 
-      <div className="header">
-        <InfoBar />
+          <div className="header">
+            <InfoBar />
 
-        <div className="menus">
-          <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
-            <div />
+            <div className="menus">
+              <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
+                <div />
 
-            <Card className="fm-toolbar mx-2 mt-2">
-              <Button
-                id="freemap-logo"
-                className={progress ? 'in-progress' : 'idle'}
-                onClick={handleLogoClick}
-              />
+                <Card className="fm-toolbar mx-2 mt-2">
+                  <Button
+                    id="freemap-logo"
+                    className={progress ? 'in-progress' : 'idle'}
+                    onClick={handleLogoClick}
+                  />
 
-              {!window.fmEmbedded && showMenu && <MainMenuButton />}
+                  {!window.fmEmbedded && showMenu && <MainMenuButton />}
 
-              {(!window.fmEmbedded || embedFeatures.includes('search')) && (
-                <SearchMenu
-                  hidden={!showMenu}
-                  preventShortcut={!!activeModal || !!documentKey}
-                />
+                  {(!window.fmEmbedded || embedFeatures.includes('search')) && (
+                    <SearchMenu
+                      hidden={!showMenu}
+                      preventShortcut={!!activeModal || !!documentKey}
+                    />
+                  )}
+                </Card>
+              </div>
+
+              {window.fmEmbedded && (trackFound || routeFound) && (
+                <Card className="fm-toolbar mx-2 mt-2">
+                  <ButtonToolbar>
+                    {trackFound && (
+                      <Button
+                        variant="secondary"
+                        active={elevationChartActive}
+                        onClick={() =>
+                          dispatch(trackViewerToggleElevationChart())
+                        }
+                      >
+                        <FaChartArea />
+
+                        <span className="d-none d-sm-inline">
+                          {' '}
+                          {m?.general.elevationProfile}
+                        </span>
+                      </Button>
+                    )}
+
+                    {routeFound && (
+                      <Button
+                        className={trackFound ? 'ml-1' : ''}
+                        variant="secondary"
+                        onClick={() =>
+                          dispatch(routePlannerToggleElevationChart())
+                        }
+                        active={elevationChartActive}
+                        title={m?.general.elevationProfile ?? '…'}
+                      >
+                        <FaChartArea />
+
+                        <span className="d-none d-sm-inline">
+                          {' '}
+                          {m?.general.elevationProfile ?? '…'}
+                        </span>
+                      </Button>
+                    )}
+                  </ButtonToolbar>
+                </Card>
               )}
-            </Card>
+
+              {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
+
+              {showMenu &&
+                (!tool ? null : tool === 'objects' ? (
+                  <AsyncComponent factory={objectsMenuFactory} />
+                ) : tool === 'route-planner' ? (
+                  <AsyncComponent factory={routePlannerMenuFactory} />
+                ) : tool === 'track-viewer' ? (
+                  <AsyncComponent factory={trackViewerMenuFactory} />
+                ) : tool === 'changesets' ? (
+                  <AsyncComponent factory={changesetsMenuFactory} />
+                ) : tool === 'map-details' ? (
+                  <MapDetailsMenu />
+                ) : (
+                  <ToolMenu />
+                ))}
+
+              {showMenu && showMapsMenu && <MapsMenu />}
+
+              {selectionMenu === 'draw-line-poly' ? (
+                <AsyncComponent factory={drawingLineSelectionFactory} />
+              ) : selectionMenu === 'line-point' ? (
+                <AsyncComponent factory={drawingLinePointSelectionFactory} />
+              ) : selectionMenu === 'draw-points' ? (
+                <AsyncComponent factory={drawingPointSelectionFactory} />
+              ) : selectionMenu === 'objects' ? (
+                <AsyncComponent factory={objectSelectionFactory} />
+              ) : selectionMenu === 'tracking' ? (
+                <TrackingSelection />
+              ) : null}
+
+              {pickingPosition && (
+                <AsyncComponent factory={galleryPositionPickingMenuFactory} />
+              )}
+
+              {showPosition && (
+                <AsyncComponent factory={galleryShowPositionMenuFactory} />
+              )}
+
+              {selectingHomeLocation !== false && (
+                <AsyncComponent factory={homeLocationPickingMenuFactory} />
+              )}
+
+              {showAds && <AsyncComponent factory={adFactory} />}
+            </div>
+
+            {showElevationChart && (
+              <AsyncComponent factory={elevationChartFactory} />
+            )}
           </div>
 
-          {window.fmEmbedded && (trackFound || routeFound) && (
-            <Card className="fm-toolbar mx-2 mt-2">
-              <ButtonToolbar>
-                {trackFound && (
-                  <Button
-                    variant="secondary"
-                    active={elevationChartActive}
-                    onClick={() => dispatch(trackViewerToggleElevationChart())}
-                  >
-                    <FaChartArea />
+          <div className="fm-type-zoom-control">
+            <div>
+              <div
+                className="fm-ib-scroller fm-ib-scroller-bottom"
+                ref={scMapControls}
+              >
+                <div />
 
-                    <span className="d-none d-sm-inline">
-                      {' '}
-                      {m?.general.elevationProfile}
-                    </span>
-                  </Button>
-                )}
+                <MapControls />
+              </div>
+            </div>
 
-                {routeFound && (
-                  <Button
-                    className={trackFound ? 'ml-1' : ''}
-                    variant="secondary"
-                    onClick={() => dispatch(routePlannerToggleElevationChart())}
-                    active={elevationChartActive}
-                    title={m?.general.elevationProfile ?? '…'}
-                  >
-                    <FaChartArea />
-
-                    <span className="d-none d-sm-inline">
-                      {' '}
-                      {m?.general.elevationProfile ?? '…'}
-                    </span>
-                  </Button>
-                )}
-              </ButtonToolbar>
-            </Card>
-          )}
-
-          {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
-
-          {showMenu &&
-            (!tool ? null : tool === 'objects' ? (
-              <AsyncComponent factory={objectsMenuFactory} />
-            ) : tool === 'route-planner' ? (
-              <AsyncComponent factory={routePlannerMenuFactory} />
-            ) : tool === 'track-viewer' ? (
-              <AsyncComponent factory={trackViewerMenuFactory} />
-            ) : tool === 'changesets' ? (
-              <AsyncComponent factory={changesetsMenuFactory} />
-            ) : tool === 'map-details' ? (
-              <MapDetailsMenu />
-            ) : (
-              <ToolMenu />
-            ))}
-
-          {showMenu && showMapsMenu && <MapsMenu />}
-
-          {selectionMenu === 'draw-line-poly' ? (
-            <AsyncComponent factory={drawingLineSelectionFactory} />
-          ) : selectionMenu === 'line-point' ? (
-            <AsyncComponent factory={drawingLinePointSelectionFactory} />
-          ) : selectionMenu === 'draw-points' ? (
-            <AsyncComponent factory={drawingPointSelectionFactory} />
-          ) : selectionMenu === 'objects' ? (
-            <AsyncComponent factory={objectSelectionFactory} />
-          ) : selectionMenu === 'tracking' ? (
-            <TrackingSelection />
-          ) : null}
-
-          {pickingPosition && (
-            <AsyncComponent factory={galleryPositionPickingMenuFactory} />
-          )}
-
-          {showPosition && (
-            <AsyncComponent factory={galleryShowPositionMenuFactory} />
-          )}
-
-          {selectingHomeLocation !== false && (
-            <AsyncComponent factory={homeLocationPickingMenuFactory} />
-          )}
-
-          {showAds && <AsyncComponent factory={adFactory} />}
-        </div>
-
-        {showElevationChart && (
-          <AsyncComponent factory={elevationChartFactory} />
-        )}
-      </div>
-
-      <div className="fm-type-zoom-control">
-        <div>
-          <div
-            className="fm-ib-scroller fm-ib-scroller-bottom"
-            ref={scMapControls}
-          >
-            <div />
-
-            <MapControls />
+            <CopyrightButton />
           </div>
-        </div>
-
-        <CopyrightButton />
-      </div>
+        </>
+      )}
 
       <div {...getRootProps()}>
         {isDragActive && <div className="fm-drag-to-map" />}

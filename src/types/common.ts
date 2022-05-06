@@ -31,6 +31,7 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
+    fmHeadless?: boolean;
   }
 
   interface ServiceWorkerGlobalScope {
