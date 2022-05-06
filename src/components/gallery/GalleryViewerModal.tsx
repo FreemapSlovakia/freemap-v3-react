@@ -332,7 +332,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     key={'pano-' + activeImageId}
                     id={String(activeImageId)}
                     sceneId={String(activeImageId)}
-                    imageSource={getImageUrl(activeImageId)}
+                    imageSource={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
                     config={{
                       autoLoad: true,
                       showControls: false,
