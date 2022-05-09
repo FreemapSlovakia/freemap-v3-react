@@ -12,7 +12,7 @@ import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
-import shared from './en-shared.json';
+import shared from './it-shared.json';
 import { Messages } from './messagesInterface';
 
 const nf33 = new Intl.NumberFormat('it', {

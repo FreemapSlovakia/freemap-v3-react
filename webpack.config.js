@@ -17,6 +17,7 @@ const skMessages = require('./src/translations/sk-shared.json');
 const csMessages = require('./src/translations/cs-shared.json');
 const enMessages = require('./src/translations/en-shared.json');
 const huMessages = require('./src/translations/hu-shared.json');
+const itMessages = require('./src/translations/it-shared.json');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -271,6 +272,21 @@ module.exports = {
         nojsMessage:
           'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
         loadingMessage: 'Loading…', // TODO translate
+      },
+    }),
+    new HtmlWebpackPlugin({
+      ...htmlPluginProps,
+      filename: 'index-it.html',
+      templateParameters: {
+        lang: 'it',
+        title: itMessages.title,
+        description: itMessages.description,
+        errorHtml:
+          "<h1>Problema nell'avvio dell'applicazione</h1>" +
+          '<p>Per favore assicurati di utilizzare una versione recente di un browser moderno (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+        nojsMessage:
+          "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
+        loadingMessage: 'Caricamento…',
       },
     }),
     new WebpackPwaManifest({

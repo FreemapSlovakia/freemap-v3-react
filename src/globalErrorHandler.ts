@@ -116,6 +116,10 @@ function handle(id?: string) {
         A jegyazonosítót és a hiba újbóli megjelenéséhez vezető lépések leírását a következő e-mail címre küldheti:
         <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
       </p>
+
+      <h1>Errore dell'applicazione</h1>
+      <p>Ticket Nr.: ${id}.</p>
+      <p>Puoi inviare il tuo numero di ticket e i passaggi per riprodurre l'errore a <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>
     `;
   }
 }
