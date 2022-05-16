@@ -385,6 +385,7 @@ export const urlProcessor: Processor = {
           {
             freemap: {
               action: 'urlUpdated',
+              payload: window.location.href, // for SAV
             },
           },
           '*',
