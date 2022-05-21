@@ -32,23 +32,27 @@ export function RecentTags({
   const tags = recentTags.filter((tag) => !existingTags.includes(tag));
 
   return tags.length === 0 ? null : (
-    <div className={`d-flex f-gap-1 align-items-center ${className}`}>
-      {prefix}
+    <div
+      className={`d-flex f-gap-1 align-items-center overflow-auto ${className}`}
+    >
+      <div>{prefix}</div>
 
-      <div>{m?.gallery.recentTags}</div>
+      <div className="flex-shrink-0">{m?.gallery.recentTags}</div>
 
-      {tags.map((tag) => (
-        <Button
-          key={tag}
-          type="button"
-          onClick={() => onAdd(tag)}
-          variant="secondary"
-          size="sm"
-          className="py-0"
-        >
-          {tag}
-        </Button>
-      ))}
+      <div className="d-flex overflow-auto">
+        {tags.map((tag) => (
+          <Button
+            key={tag}
+            type="button"
+            onClick={() => onAdd(tag)}
+            variant="secondary"
+            size="sm"
+            className="py-0 ml-1"
+          >
+            {tag}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }

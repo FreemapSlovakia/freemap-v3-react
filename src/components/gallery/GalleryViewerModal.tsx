@@ -541,10 +541,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
                   {user && (
                     <div className="d-flex f-gap-1 align-items-center">
-                      {m?.gallery.viewer.yourRating}
+                      <div className="flex-shrink-0">
+                        {m?.gallery.viewer.yourRating}
+                      </div>
 
                       <ReactStars
-                        className="stars ml-1"
+                        className="stars ml-1  flex-shrink-0"
                         size={22}
                         half={false}
                         value={myStars ?? 0}
