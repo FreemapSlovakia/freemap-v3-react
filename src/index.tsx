@@ -140,18 +140,6 @@ window.addEventListener('message', (e: MessageEvent) => {
     if (data.freemap.action === 'setEmbedFeatures') {
       store.dispatch(setEmbedFeatures(data.freemap.payload));
     }
-
-    if (data.freemap.action === 'getUrl' && window.fmEmbedded) {
-      window.parent.postMessage(
-        {
-          freemap: {
-            action: 'urlUpdated',
-            payload: window.location.href, // for SAV
-          },
-        },
-        '*',
-      );
-    }
   }
 });
 
