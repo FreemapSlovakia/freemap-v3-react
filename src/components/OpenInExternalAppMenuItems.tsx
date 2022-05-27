@@ -96,7 +96,7 @@ export function OpenInExternalAppDropdownItems({
 
   const hasShare = 'share' in navigator;
 
-  const hasClipboard = navigator.clipboard?.writeText;
+  const hasClipboard = !!navigator.clipboard?.writeText;
 
   return (
     <>
@@ -140,7 +140,7 @@ export function OpenInExternalAppDropdownItems({
         </Dropdown.Item>
       )}
 
-      {!url && ((!!hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
+      {!url && ((hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
 
       <Dropdown.Item as="button" eventKey="facebook" onSelect={handleSelect}>
         <FaFacebook /> Facebook
