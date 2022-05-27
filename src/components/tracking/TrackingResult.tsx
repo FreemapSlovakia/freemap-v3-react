@@ -143,7 +143,9 @@ export function TrackingResult(): ReactElement {
               track.trackPoints.length > 1 &&
               segments.map((segment, i) => (
                 <Polyline
-                  key={`seg-${i}-${interactive ? 'a' : 'b'}`}
+                  key={`seg-${i}-${activeTrackId === track.token}-${
+                    interactive ? 'a' : 'b'
+                  }`}
                   positions={toLatLngArr(segment)}
                   weight={width}
                   color={color}
@@ -152,6 +154,7 @@ export function TrackingResult(): ReactElement {
                     click: handleClick,
                   }}
                   interactive={interactive}
+                  opacity={track.token === activeTrackId ? 1 : 0.75}
                 />
               ))}
 
@@ -161,7 +164,9 @@ export function TrackingResult(): ReactElement {
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
-                  key={`rm-${tp.id}-${interactive ? 'a' : 'b'}`}
+                  key={`rm-${tp.id}-${activeTrackId === track.token}-${
+                    interactive ? 'a' : 'b'
+                  }`}
                   interactive={interactive}
                   position={toLatLon(
                     track.trackPoints[track.trackPoints.length - 1],
@@ -184,7 +189,9 @@ export function TrackingResult(): ReactElement {
                 </RichMarker>
               ) : (
                 <TrackingPoint
-                  key={`tp-${tp.id}-${interactive ? 'a' : 'b'}`}
+                  key={`tp-${tp.id}-${activeTrackId}-${
+                    interactive ? 'a' : 'b'
+                  }`}
                   interactive={interactive}
                   tp={tp}
                   width={width}
@@ -192,6 +199,7 @@ export function TrackingResult(): ReactElement {
                   language={language}
                   onActivePointSet={setActivePoint}
                   onClick={handleClick}
+                  opacity={track.token === activeTrackId ? 1 : 0.75}
                 />
               ),
             )}

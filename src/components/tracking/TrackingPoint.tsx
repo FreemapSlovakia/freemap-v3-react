@@ -23,11 +23,21 @@ interface TrackingPointProps {
   onActivePointSet: (tp: TrackPoint | null) => void;
   onClick: () => void;
   interactive?: boolean;
+  opacity: number;
 }
 
 // TODO to separate file
 export const TrackingPoint = memo<TrackingPointProps>(
-  ({ tp, width, color, language, onActivePointSet, onClick, interactive }) => {
+  ({
+    tp,
+    width,
+    color,
+    language,
+    onActivePointSet,
+    onClick,
+    interactive,
+    opacity,
+  }) => {
     const df = new Intl.DateTimeFormat(language, {
       month: 'short',
       day: 'numeric',
@@ -60,7 +70,8 @@ export const TrackingPoint = memo<TrackingPointProps>(
         center={toLatLng(tp)}
         radius={width}
         color={color}
-        fillOpacity={1}
+        fillOpacity={opacity ?? 1}
+        opacity={opacity ?? 1}
         bubblingMouseEvents={false}
         eventHandlers={{
           mouseover: handleMouseOver,

@@ -159,7 +159,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
   .handleAction(rpcEvent, (state, { payload: { method, params } }) => {
     if (
       method === 'tracking.addPoint' &&
-      is<TrackPoint & { token: string }>(params)
+      is<StringDates<TrackPoint> & { token: string }>(params)
     ) {
       const { token, ts, ...rest } = params;
 
