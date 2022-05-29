@@ -34,7 +34,7 @@ export const mapsLoadProcessor: Processor = {
       maps: { loadMeta },
     } = getState();
 
-    if (!loadMeta || (auth && !auth.validated)) {
+    if (!loadMeta || (auth.user && !auth.validated)) {
       return;
     }
 
