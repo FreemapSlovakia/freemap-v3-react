@@ -29,9 +29,12 @@ export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
   errorKey: 'maps.fetchError',
   handle: async ({ getState, dispatch }) => {
-    const { loadMeta } = getState().maps;
+    const {
+      auth,
+      maps: { loadMeta },
+    } = getState();
 
-    if (!loadMeta || !getState().auth.validated) {
+    if (!loadMeta || (auth && !auth.validated)) {
       return;
     }
 
