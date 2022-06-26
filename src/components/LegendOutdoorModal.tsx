@@ -78,14 +78,17 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
           <FaRegMap /> {m?.mainMenu.mapLegend}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <p>{m?.legend.body}</p>
+
         <Accordion>
           {[...legend].map((c: Item, i: number) => (
             <Card key={c.name}>
               <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
                 {c.name}
               </Accordion.Toggle>
+
               <Accordion.Collapse eventKey={String(i)}>
                 <Card.Body>
                   {c.items.map(({ id, name }) => (
@@ -103,6 +106,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
                             .join(', ')}
                         />
                       </div>
+
                       <div>{name}</div>
                     </div>
                   ))}
@@ -112,6 +116,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
           ))}
         </Accordion>
       </Modal.Body>
+
       <Modal.Footer>
         <FormGroup>
           <Button variant="dark" onClick={close}>
