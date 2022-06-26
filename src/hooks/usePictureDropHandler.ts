@@ -96,11 +96,11 @@ export function usePictureDropHandler(
 
         nextId += 1;
 
-        const description = tags['description']
-          ? tags['description'].description
-          : tags['ImageDescription']
-          ? tags['ImageDescription'].description
-          : '';
+        const description = (
+          tags['description']?.description ||
+          tags['ImageDescription']?.description ||
+          ''
+        ).trim();
 
         const takenAtRaw = tags['DateTimeOriginal'] || tags['DateTime'];
 
@@ -139,11 +139,11 @@ export function usePictureDropHandler(
             Number.isNaN(lat) || Number.isNaN(lon)
               ? ''
               : latLonToString({ lat, lon }, language),
-          title: tags['title']
-            ? tags['title'].description
-            : tags['DocumentName']
-            ? tags['DocumentName'].description
-            : '',
+          title: (
+            tags['title']?.description ||
+            tags['DocumentName']?.description ||
+            ''
+          ).trim,
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
           takenAt: takenAtRaw && parseExifDateTime(takenAtRaw.description),
           tags: keywords,
