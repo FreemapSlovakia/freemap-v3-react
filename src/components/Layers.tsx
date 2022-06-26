@@ -53,16 +53,18 @@ export function Layers(): ReactElement | null {
     | 'cors'
     | 'scaleWithDpi'
   > & { type: BaseLayerLetters | OverlayLetters }) => {
+    const opacity = layersSettings[type]?.opacity ?? 1;
+
     if (type === 'I') {
       return (
         <GalleryLayer
-          key={`I-${galleryDirtySeq}-${JSON.stringify({
+          key={`I-${galleryDirtySeq}-${opacity}-${JSON.stringify({
             galleryFilter,
             galleryColorizeBy,
           })}`}
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
-          opacity={layersSettings[type]?.opacity ?? 1}
+          opacity={opacity}
           zIndex={zIndex}
           myUserId={userId}
         />
@@ -78,7 +80,7 @@ export function Layers(): ReactElement | null {
     return (
       !!url && (
         <ScaledTileLayer
-          key={type}
+          key={type + '-' + opacity}
           url={url}
           minZoom={minZoom}
           maxZoom={20}
@@ -89,7 +91,7 @@ export function Layers(): ReactElement | null {
               ? maxNativeZoom - 1
               : maxNativeZoom
           }
-          opacity={layersSettings[type]?.opacity ?? 1}
+          opacity={opacity}
           zIndex={zIndex}
           subdomains={subdomains}
           errorTileUrl={errorTileUrl}
