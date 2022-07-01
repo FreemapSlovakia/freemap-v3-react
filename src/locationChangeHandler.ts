@@ -365,7 +365,7 @@ export const handleLocationChange = (
   if (transformed) {
     const { lat, lon } = transformed;
 
-    dispatch(drawingPointAdd({ lat, lon, label: '', color: '' }));
+    dispatch(drawingPointAdd({ lat, lon }));
   }
 
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
@@ -373,7 +373,7 @@ export const handleLocationChange = (
   if (f2) {
     const { lat, lon, label } = f2;
 
-    dispatch(drawingPointAdd({ lat, lon, label, color: '' }));
+    dispatch(drawingPointAdd({ lat, lon, label }));
   }
 
   const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */
@@ -770,9 +770,11 @@ function handleGallery(
 }
 
 function parseColorAndLabel(m: string) {
-  let label = '';
+  let label: string | undefined;
 
-  let color = '';
+  let color: string | undefined;
+
+  let width: number | undefined;
 
   // compatibility
   if (m.startsWith(',') || m.startsWith(';')) {
@@ -789,11 +791,13 @@ function parseColorAndLabel(m: string) {
         label = field.slice(1);
       } else if (field[0] === 'C') {
         color = field.slice(1);
+      } else if (field[0] === 'W') {
+        width = Number(field.slice(1)) || undefined;
       }
     }
   }
 
-  return { label, color };
+  return { label, color, width };
 }
 
 function handleInfoPoint(

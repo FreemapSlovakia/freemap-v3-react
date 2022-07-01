@@ -603,6 +603,7 @@ const it: Messages = {
       title: 'Proprietà',
       color: 'Colore:',
       label: 'Etichetta:',
+      width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
     },
     continue: 'Continua',

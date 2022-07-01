@@ -18,8 +18,6 @@ export function DrawingPointsTool(): null {
           drawingPointAdd({
             lat: latlng.lat,
             lon: latlng.lng,
-            label: '',
-            color: '',
           }),
         );
 

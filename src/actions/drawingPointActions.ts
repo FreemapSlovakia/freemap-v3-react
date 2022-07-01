@@ -3,8 +3,8 @@ import { createAction } from 'typesafe-actions';
 export interface DrawingPoint {
   lat: number;
   lon: number;
-  label: string;
-  color: string;
+  label?: string;
+  color?: string;
 }
 
 export const drawingPointAdd =
@@ -19,6 +19,7 @@ export const drawingChangeProperties = createAction(
 )<{
   label: string | undefined;
   color: string | undefined;
+  width: number | undefined;
 }>();
 
 export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<

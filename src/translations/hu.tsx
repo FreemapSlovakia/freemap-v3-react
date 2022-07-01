@@ -611,6 +611,7 @@ const hu: Messages = {
       title: 'Properties', // TODO translate
       color: 'Color', // TODO translate
       label: 'Felirat:',
+      width: 'Szélesség', // TODO
       hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
     },
     continue: 'Continue', // TODO translate

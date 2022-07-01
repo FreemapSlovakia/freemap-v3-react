@@ -8,9 +8,10 @@ export interface Point {
 
 export interface Line {
   type: 'polygon' | 'line';
-  label: string;
-  color: string;
   points: Point[];
+  label?: string;
+  color?: string;
+  width?: number;
 }
 
 export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{

@@ -70,6 +70,8 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   const color = line.color || colors.normal;
 
+  const width = line.width || 4;
+
   const joinWith = useAppSelector((state) => state.drawingLines.joinWith);
 
   const interactive = useAppSelector(selectingModeSelector);
@@ -231,12 +233,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     ];
 
   return (
-    <>
+    <Fragment key={[line.type, line.width, index].join(',')}>
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
             key={`line-${interactiveLine ? 'a' : 'b'}`}
-            weight={12}
+            weight={width + 8}
             opacity={0}
             interactive={interactiveLine}
             bubblingMouseEvents={false}
@@ -249,7 +251,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           />
 
           <Polyline
-            weight={4}
+            weight={width}
             pathOptions={{
               color: selected ? Color(color).lighten(0.75).hex() : color,
             }}
@@ -270,7 +272,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
-          weight={4}
+          weight={width}
           pathOptions={{
             color: selected ? Color(color).lighten(0.75).hex() : color,
           }}
@@ -299,7 +301,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {futureLinePositions && (
         <Polyline
           color={Color(color).lighten(0.75).hex()}
-          weight={4}
+          weight={width}
           dashArray="6,8"
           interactive={false}
           positions={futureLinePositions}
@@ -408,7 +410,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         })}
 
       <ElevationChartActivePoint />
-    </>
+    </Fragment>
   );
 }
 

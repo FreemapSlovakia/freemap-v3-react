@@ -641,6 +641,7 @@ const sk: Messages = {
       title: 'Vlastnosti',
       color: 'Farba',
       label: 'Popis:',
+      width: 'Šírka',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
     },
     continue: 'Pokračovať',

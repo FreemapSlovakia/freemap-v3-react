@@ -230,8 +230,10 @@ export const urlProcessor: Processor = {
       historyParts.push([
         line.type,
         `${line.points.map((point) => serializePoint(point)).join(',')}${
-          line.color ? `\x1eC${line.color}` : ''
-        }${line.label ? `\x1eL${line.label}` : ''}`,
+          line.width ? `\x1eW${line.width}` : ''
+        }${line.color ? `\x1eC${line.color}` : ''}${
+          line.label ? `\x1eL${line.label}` : ''
+        }`,
       ]);
     }
 

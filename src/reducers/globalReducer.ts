@@ -61,8 +61,6 @@ export function preGlobalReducer(
 
         draft.drawingLines.lines.push({
           type: 'line',
-          label: '',
-          color: '',
           points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
@@ -88,7 +86,6 @@ export function preGlobalReducer(
             lat: object.lat,
             lon: object.lon,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
-            color: '',
           });
 
           draft.drawingPoints.change++;
@@ -121,7 +118,6 @@ export function preGlobalReducer(
               label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
-              color: '',
             });
           } else if (geometry?.type === 'LineString') {
             let id = 0;
@@ -139,7 +135,6 @@ export function preGlobalReducer(
             draft.drawingLines.lines.push({
               type: 'line',
               label: feature.properties?.['name'],
-              color: '',
               points,
             });
           }
@@ -179,7 +174,6 @@ export function preGlobalReducer(
               label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
-              color: '',
             });
           } else if (geometry?.type === 'LineString') {
             let id = 0;
@@ -197,8 +191,6 @@ export function preGlobalReducer(
             lines.push({
               type: 'line',
               // label: feature.properties?.['name'], // ignore street names
-              label: '',
-              color: '',
               points,
             });
           } else if (geometry?.type === 'Polygon') {
@@ -218,8 +210,7 @@ export function preGlobalReducer(
 
             lines.push({
               type: 'line',
-              label: feature.properties?.['name'] ?? '',
-              color: '',
+              label: feature.properties?.['name'],
               points,
             });
           }

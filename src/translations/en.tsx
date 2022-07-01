@@ -599,6 +599,7 @@ const en: Messages = {
       title: 'Properties',
       color: 'Color:',
       label: 'Label:',
+      width: 'Width:',
       hint: 'To remove label leave its field empty.',
     },
     continue: 'Continue',

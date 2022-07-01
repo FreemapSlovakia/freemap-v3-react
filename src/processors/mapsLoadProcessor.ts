@@ -118,8 +118,6 @@ export const mapsLoadProcessor: Processor = {
           // get rid of OldLines
           lines: mapData.lines?.map((line) => ({
             ...line,
-            color: line.color ?? '',
-            label: line.label ?? '',
             type:
               line.type === 'area'
                 ? 'polygon'
@@ -129,8 +127,6 @@ export const mapsLoadProcessor: Processor = {
           })),
           points: mapData.points?.map((point) => ({
             ...point,
-            label: point.label ?? '',
-            color: point.color ?? '',
           })),
           tracking: mapData.tracking && {
             ...mapData.tracking,

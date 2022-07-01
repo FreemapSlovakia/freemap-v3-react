@@ -455,6 +455,7 @@ export type Messages = {
       title: string;
       color: string;
       label: string;
+      width: string;
       hint: string;
     };
     split: string;

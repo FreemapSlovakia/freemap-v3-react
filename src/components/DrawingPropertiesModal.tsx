@@ -44,9 +44,19 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       : '???';
   });
 
+  const width = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? state.drawingLines.lines[selection.id]?.width
+      : '???';
+  });
+
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedWidth, setEditedWidth] = useState(String(width || 4));
 
   const dispatch = useDispatch();
 
@@ -59,12 +69,16 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       e.preventDefault();
 
       dispatch(
-        drawingChangeProperties({ label: editedLabel, color: editedColor }),
+        drawingChangeProperties({
+          label: editedLabel,
+          color: editedColor,
+          width: Number(editedWidth) || undefined,
+        }),
       );
 
       close();
     },
-    [dispatch, editedLabel, editedColor, close],
+    [dispatch, editedLabel, editedColor, editedWidth, close],
   );
 
   const handleLocalLabelChange = useCallback(
@@ -77,6 +91,13 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
   const handleLocalColorChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setEditedColor(e.currentTarget.value);
+    },
+    [],
+  );
+
+  const handleLocalWidthChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setEditedWidth(e.currentTarget.value);
     },
     [],
   );
@@ -109,6 +130,18 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               type="color"
               value={editedColor || colors.normal}
               onChange={handleLocalColorChange}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <FormLabel>{m?.drawing.edit.width}</FormLabel>
+
+            <FormControl
+              type="number"
+              value={editedWidth || '4'}
+              min={0}
+              max={12}
+              onChange={handleLocalWidthChange}
             />
           </FormGroup>
         </Modal.Body>

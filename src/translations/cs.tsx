@@ -613,6 +613,7 @@ const cs: Messages = {
       title: 'Vlastnosti',
       color: 'Barva',
       label: 'Popis:',
+      width: 'Šířka:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
     },
     continue: 'Continue', // TODO translate
