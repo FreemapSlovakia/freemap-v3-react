@@ -105,24 +105,26 @@ async function serveFromCache(event: FetchEvent) {
 }
 
 async function serveFromNetwork(event: FetchEvent) {
+  const { request } = event;
+
   try {
     const [response, cachingActive] = await Promise.all([
-      fetch(event.request),
+      fetch(request),
       get('cachingActive'),
     ]);
 
     if (
       cachingActive &&
       response.ok &&
-      event.request.method === 'GET' &&
-      /^https?:/.test(event.request.url)
+      request.method === 'GET' &&
+      /^https?:/.test(request.url)
     ) {
       const clonedResponse = response.clone();
 
       (async () => {
         const cache = await caches.open(OFFLINE_CACHE_NAME);
 
-        await cache.put(event.request, clonedResponse);
+        await cache.put(request, clonedResponse);
       })(); // todo handle async error
     }
 
@@ -132,7 +134,7 @@ async function serveFromNetwork(event: FetchEvent) {
 
     const cache = await caches.open(FALLBACK_CACHE_NAME);
 
-    const url = new URL(event.request.url);
+    const url = new URL(request.url);
 
     const path =
       url.pathname === '/'
