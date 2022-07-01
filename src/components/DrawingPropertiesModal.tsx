@@ -139,8 +139,9 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
             <FormControl
               type="number"
               value={editedWidth || '4'}
-              min={0}
+              min={1}
               max={12}
+              step={0.1}
               onChange={handleLocalWidthChange}
             />
           </FormGroup>
