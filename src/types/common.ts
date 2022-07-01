@@ -1,5 +1,6 @@
 import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { PathOptions } from 'leaflet';
 
 export interface LatLon {
   lat: number;
@@ -31,7 +32,9 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
-    fmHeadless?: boolean;
+    fmHeadless?: {
+      searchResultStyle?: PathOptions;
+    };
   }
 
   interface ServiceWorkerGlobalScope {

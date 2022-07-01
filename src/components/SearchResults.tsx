@@ -20,7 +20,13 @@ function pointToLayer(feature: Feature, latLng: LatLng) {
   return marker(latLng, {
     icon: new MarkerLeafletIcon({
       ...markerIconOptions,
-      icon: <MarkerIcon color="#3388ff" image={img[0]} />,
+      icon: (
+        <MarkerIcon
+          color={window.fmHeadless?.searchResultStyle?.color ?? '#3388ff'}
+          imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
+          image={img[0]}
+        />
+      ),
     }),
   });
 }
@@ -119,7 +125,7 @@ export function SearchResults(): ReactElement | null {
       <GeoJSON
         interactive
         data={selectedResult.geojson}
-        style={{ weight: 5 }}
+        style={window.fmHeadless?.searchResultStyle ?? { weight: 5 }}
         pointToLayer={pointToLayer}
         onEachFeature={cachedAnnotateFeature}
         filter={(feature) => feature.geometry.type !== 'LineString'}

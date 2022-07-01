@@ -116,6 +116,12 @@
     <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
 
+    <script>
+      if (typeof fmHeadless === 'boolean') {
+        fmHeadless = fmHeadless ? {} : undefined;
+      }
+    </script>
+
     <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
