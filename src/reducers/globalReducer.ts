@@ -155,8 +155,16 @@ export function preGlobalReducer(
           return;
         }
 
+        const gjs = draft.search.selectedResult.geojson as AllGeoJSON;
+
         const { features } = turfFlatten(
-          draft.search.selectedResult.geojson as AllGeoJSON,
+          payload.tolerance
+            ? simplify(gjs, {
+                mutate: false,
+                highQuality: true,
+                tolerance: payload.tolerance,
+              })
+            : gjs,
         );
 
         const lines: Line[] = [];

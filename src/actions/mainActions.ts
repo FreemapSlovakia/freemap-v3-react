@@ -140,7 +140,7 @@ export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
   | ObjectsSelection
   | { type: 'planned-route'; tolerance: number }
   | { type: 'track'; tolerance: number }
-  | { type: 'search-result' }
+  | { type: 'search-result'; tolerance: number }
 >();
 
 export type ExternalTargets =

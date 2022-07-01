@@ -333,9 +333,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             className="ml-1"
             title={m?.general.convertToDrawing}
             variant="secondary"
-            onClick={() =>
-              dispatch(convertToDrawing({ type: 'search-result' }))
-            }
+            onClick={() => {
+              const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+
+              if (tolerance !== null) {
+                dispatch(
+                  convertToDrawing({
+                    type: 'search-result',
+                    tolerance: Number(tolerance || '0') / 100000,
+                  }),
+                );
+              }
+            }}
           >
             <FaPencilAlt />
           </Button>
