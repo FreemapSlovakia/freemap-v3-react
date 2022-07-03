@@ -10,8 +10,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
   location: Location,
 ): undefined | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>) {
   const isFromOldFreemapUrlFormat1 =
-    location.hash &&
-    (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
+    location.hash.startsWith('#p=') || location.hash.startsWith('#m='); // #m=T,p=48.21836|17.4166|16|T
 
   const isFromOldFreemapUrlFormat2 =
     location.search && /[?&]m=/.test(location.search); // "?m=A&p=48.1855|17.4029|14"

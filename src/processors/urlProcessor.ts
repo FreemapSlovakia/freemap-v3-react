@@ -365,7 +365,7 @@ export const urlProcessor: Processor = {
 
     if (
       (mapId && sq !== (history.location.state as any)?.sq) ||
-      urlSearch !== window.location.search
+      urlSearch !== window.location.hash.slice(1)
     ) {
       const method =
         lastActionType &&
@@ -376,8 +376,8 @@ export const urlProcessor: Processor = {
       history[method](
         {
           pathname: '/',
-          search: urlSearch,
-          hash: '',
+          // search: urlSearch,
+          hash: urlSearch,
         },
         { sq },
       );
@@ -408,12 +408,12 @@ function dateToString(d: Date) {
 }
 
 function serializeQuery(parts: [string, string | number | boolean][]) {
-  return `?${parts
+  return parts
     .map(
       (qp) =>
         `${encodeURIComponent(qp[0])}=${encodeURIComponent(qp[1])
           // FIXME replacing is nonstandard
           .replace(/%2F/g, '/')}`,
     )
-    .join('&')}`;
+    .join('&');
 }

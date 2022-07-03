@@ -76,7 +76,7 @@ export const handleLocationChange = (
 ): void => {
   const { getState, dispatch } = store;
 
-  const search = document.location.search;
+  const search = (document.location.hash || document.location.search).slice(1);
 
   const { sq } = (history.location.state as any) ?? {
     sq: undefined,

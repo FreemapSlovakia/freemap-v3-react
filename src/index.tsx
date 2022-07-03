@@ -33,7 +33,10 @@ setDefaultGetErrorObject(() => null);
 // filter out old browsers
 [].flatMap(() => null);
 
-if (window.location.search === '?reset-local-storage') {
+if (
+  window.location.search === '?reset-local-storage' ||
+  window.location.hash === '#reset-local-storage'
+) {
   storage.clear();
 }
 
