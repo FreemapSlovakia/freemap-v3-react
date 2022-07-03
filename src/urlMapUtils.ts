@@ -28,7 +28,7 @@ export function getMapStateFromUrl(
     }
   }
 
-  const query = queryString.parse(location.hash.slice(1));
+  const query = queryString.parse((location.hash || location.search).slice(1));
 
   const [zoomFrag, latFrag, lonFrag] = (
     typeof query['map'] === 'string' ? query['map'] : ''
