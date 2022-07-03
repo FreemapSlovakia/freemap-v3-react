@@ -411,9 +411,10 @@ function serializeQuery(parts: [string, string | number | boolean][]) {
   return parts
     .map(
       (qp) =>
-        `${encodeURIComponent(qp[0])}=${encodeURIComponent(qp[1])
-          // FIXME replacing is nonstandard
-          .replace(/%2F/g, '/')}`,
+        encodeURIComponent(qp[0]) +
+        '=' +
+        // FIXME replacing is nonstandard
+        encodeURIComponent(qp[1]).replace(/%2F/g, '/'),
     )
     .join('&');
 }
