@@ -143,7 +143,7 @@ export function usePictureDropHandler(
             tags['title']?.description ||
             tags['DocumentName']?.description ||
             ''
-          ).trim,
+          ).trim(),
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
           takenAt: takenAtRaw && parseExifDateTime(takenAtRaw.description),
           tags: keywords,
