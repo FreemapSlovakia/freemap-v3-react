@@ -90,7 +90,12 @@ export type OsmTagToNameMapping = {
         changing_rooms: string;
         field_shelter: string;
         lean_to: string;
-        picnic_shelter: string;
+        picnic_shelter: {
+          '*': string;
+          fireplace: {
+            yes: string;
+          };
+        };
         public_transport: string;
         rock_shelter: string;
         sun_shelter: string;
@@ -351,7 +356,12 @@ export type OsmTagToNameMapping = {
     horse_riding: string;
     nature_reserve: string;
     park: string;
-    picnic_table: string;
+    picnic_table: {
+      '*': string;
+      covered: {
+        yes: string;
+      };
+    };
     pitch: {
       '*': string;
       sport: {

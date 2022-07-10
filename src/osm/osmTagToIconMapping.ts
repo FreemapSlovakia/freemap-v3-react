@@ -413,13 +413,7 @@ export const osmTagToIconMapping: Node = {
     golf_course: golf,
     miniature_golf,
     outdoor_seating,
-    picnic_table: {
-      '*': picnic_table,
-      covered: {
-        '*': picnic_table,
-        yes: 'picnic_shelter',
-      },
-    },
+    picnic_table,
     playground,
     sauna,
     swimming_pool: water_park,

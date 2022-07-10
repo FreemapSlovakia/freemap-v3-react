@@ -92,7 +92,10 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
         changing_rooms: 'Changing rooms',
         field_shelter: 'Field shelter',
         lean_to: 'Lean to',
-        picnic_shelter: 'Picnic shelter',
+        picnic_shelter: {
+          '*': 'Picnic shelter',
+          fireplace: { yes: 'Picnic shelter with fireplace' },
+        },
         public_transport: 'Public transport shelter',
         rock_shelter: 'Rock shelter',
         sun_shelter: 'Sun shelter',
@@ -354,7 +357,10 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     horse_riding: 'Horse riding',
     nature_reserve: 'Nature reserve',
     park: 'Park',
-    picnic_table: 'Picnic table',
+    picnic_table: {
+      '*': 'Picnic table',
+      covered: { yes: 'Coverec picnic table' },
+    },
     pitch: {
       '*': 'Pitch',
       sport: {

@@ -92,7 +92,10 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
         changing_rooms: 'Spogliatoi',
         field_shelter: 'Rifugio da campo',
         lean_to: 'Appoggiato a',
-        picnic_shelter: 'Tettoia per picnic',
+        picnic_shelter: {
+          '*': 'Tettoia per picnic',
+          fireplace: { yes: 'Tettoia per picnic with fireplace' }, // TODO translate
+        },
         public_transport: 'Ricovero mezzi pubblici',
         rock_shelter: 'Riparo roccioso',
         sun_shelter: 'Riparo dal sole',
@@ -354,7 +357,10 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     horse_riding: 'Maneggio',
     nature_reserve: 'Riserva Naturale',
     park: 'Parco',
-    picnic_table: 'Tavolo da Picnic',
+    picnic_table: {
+      '*': 'Tavolo da Picnic',
+      covered: { yes: 'covered Tavolo da Picnic' }, // TODO translate
+    },
     pitch: {
       '*': 'Campo sportivo',
       sport: {
