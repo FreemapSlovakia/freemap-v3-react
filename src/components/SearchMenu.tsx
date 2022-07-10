@@ -227,6 +227,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           <Dropdown.Toggle as={HideArrow}>
             <InputGroup className="flex-nowrap">
               <FormControl
+                type="search"
                 className="fm-search-input"
                 onChange={handleChange}
                 value={value}

@@ -194,7 +194,7 @@ export function ObjectsMenu(): ReactElement {
       >
         <Dropdown.Toggle as={HideArrow}>
           <FormControl
-            type="text"
+            type="search"
             placeholder={m?.objects.type}
             onChange={handleFilterSet}
             value={filter}
