@@ -74,7 +74,15 @@ export const objectsFetchProcessor: Processor = {
         .map(
           (ent) =>
             'nwr' +
-            ent.map(([key, value]) => `["${key}"="${value}"]`).join('') +
+            ent
+              .map(([key, value]) =>
+                key.startsWith('!')
+                  ? `[!"${key.slice(1)}"]`
+                  : value
+                  ? `["${key}"="${value}"]`
+                  : `["${key}"]`,
+              )
+              .join('') +
             bb +
             ';',
         )
