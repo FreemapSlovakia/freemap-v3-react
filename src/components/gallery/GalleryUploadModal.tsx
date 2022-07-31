@@ -117,7 +117,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>

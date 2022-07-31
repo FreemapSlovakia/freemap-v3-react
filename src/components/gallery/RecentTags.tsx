@@ -33,7 +33,7 @@ export function RecentTags({
 
   return tags.length === 0 ? null : (
     <div
-      className={`d-flex f-gap-1 align-items-center overflow-auto ${className}`}
+      className={`d-flex flex-wrap f-gap-1 align-items-center overflow-auto ${className}`}
     >
       <div>{prefix}</div>
 
