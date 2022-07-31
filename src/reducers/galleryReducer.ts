@@ -11,6 +11,7 @@ import {
   GalleryFilter,
   GalleryItem,
   galleryMergeItem,
+  galleryQuickAddTag,
   galleryRemoveItem,
   galleryRequestImage,
   gallerySavePicture,
@@ -342,7 +343,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     colorizeBy: action.payload,
   }))
-  .handleAction(galleryAddTag, (state, { payload }) => {
+  .handleAction([galleryAddTag, galleryQuickAddTag], (state, { payload }) => {
     const recentTags = [...state.recentTags];
 
     const i = recentTags.indexOf(payload);
