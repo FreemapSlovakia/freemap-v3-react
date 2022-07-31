@@ -90,7 +90,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const imageElement = useRef<HTMLImageElement>();
 
-  const fullscreenElement = useRef<HTMLDivElement>();
+  const fullscreenElement = useRef<HTMLDivElement | null>(null);
 
   if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
@@ -120,10 +120,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         setLoading(false);
       });
     }
-  };
-
-  const setFullscreenElement = (element: HTMLDivElement) => {
-    fullscreenElement.current = element;
   };
 
   const handleEditModelChange = useCallback(
@@ -172,16 +168,14 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   } = image || {};
 
   const handleFullscreen = useCallback(() => {
-    if (pano) {
-      ReactPannellum.toggleFullscreen();
-    } else if (!document.exitFullscreen || !fullscreenElement.current) {
+    if (!document.exitFullscreen || !fullscreenElement.current) {
       // unsupported
     } else if (document.fullscreenElement === fullscreenElement.current) {
       document.exitFullscreen();
     } else {
       fullscreenElement.current.requestFullscreen();
     }
-  }, [pano]);
+  }, []);
 
   const handleDelete = useCallback(() => {
     dispatch(
@@ -321,7 +315,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
       <Modal.Body>
         <div
-          ref={setFullscreenElement}
+          ref={fullscreenElement}
           className={isFullscreen ? 'fullscreen' : ''}
         >
           <div className="carousel">
@@ -342,15 +336,21 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                       // title: 'panorama',
                       friction: 0.1,
                     }}
-                    style={{
-                      height: Math.max(window.innerHeight - 400, 300) + 'px',
-                      width:
-                        (window.matchMedia('(min-width: 1200px)').matches
-                          ? 1110
-                          : window.matchMedia('(min-width: 992px)').matches
-                          ? 770
-                          : 470) + 'px',
-                    }}
+                    style={
+                      isFullscreen
+                        ? { width: '100vw', height: '100vh' }
+                        : {
+                            height:
+                              Math.max(window.innerHeight - 400, 300) + 'px',
+                            width:
+                              (window.matchMedia('(min-width: 1200px)').matches
+                                ? 1110
+                                : window.matchMedia('(min-width: 992px)')
+                                    .matches
+                                ? 770
+                                : 470) + 'px',
+                          }
+                    }
                   />
                 ) : (
                   <img
