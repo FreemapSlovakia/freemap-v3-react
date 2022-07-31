@@ -334,7 +334,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                       autoRotateInactivityDelay: 60000,
                       // compass: true,
                       // title: 'panorama',
-                      friction: 0.1,
                     }}
                     style={
                       isFullscreen
