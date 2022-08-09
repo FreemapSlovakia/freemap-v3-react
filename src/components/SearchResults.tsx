@@ -115,7 +115,7 @@ export function SearchResults(): ReactElement | null {
               searchSelectResult({
                 result: selectedResult,
                 showToast: true,
-                zoomTo: false,
+                focus: false,
               }),
             );
           },
@@ -135,7 +135,7 @@ export function SearchResults(): ReactElement | null {
               searchSelectResult({
                 result: selectedResult,
                 showToast: true,
-                zoomTo: false,
+                focus: false,
               }),
             );
           },

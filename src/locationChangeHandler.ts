@@ -382,13 +382,17 @@ export const handleLocationChange = (
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
 
+  const focus = !/[?&#]map=/.test(
+    window.location.search || window.location.hash,
+  );
+
   const osmNode = query['osm-node'];
 
   const osmNodeId = typeof osmNode === 'string' && parseInt(osmNode, 10);
 
   if (osmNodeId) {
     if (osmNodeId !== getState().search.osmNodeId) {
-      dispatch(osmLoadNode(osmNodeId));
+      dispatch(osmLoadNode({ id: osmNodeId, focus }));
     }
   } else if (getState().search.osmNodeId) {
     dispatch(osmClear());
@@ -400,7 +404,7 @@ export const handleLocationChange = (
 
   if (osmWayId) {
     if (osmWayId !== getState().search.osmWayId) {
-      dispatch(osmLoadWay(osmWayId));
+      dispatch(osmLoadWay({ id: osmWayId, focus }));
     }
   } else if (getState().search.osmWayId) {
     dispatch(osmClear());
@@ -413,7 +417,7 @@ export const handleLocationChange = (
 
   if (osmRelationId) {
     if (osmRelationId !== getState().search.osmRelationId) {
-      dispatch(osmLoadRelation(osmRelationId));
+      dispatch(osmLoadRelation({ id: osmRelationId, focus }));
     }
   } else if (getState().search.osmRelationId) {
     dispatch(osmClear());

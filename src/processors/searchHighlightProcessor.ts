@@ -51,23 +51,23 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     if (!detailed) {
       switch (osmType) {
         case 'node':
-          dispatch(osmLoadNode(id));
+          dispatch(osmLoadNode({ id, focus: true }));
 
           break;
 
         case 'way':
-          dispatch(osmLoadWay(id));
+          dispatch(osmLoadWay({ id, focus: true }));
 
           break;
 
         case 'relation':
-          dispatch(osmLoadRelation(id));
+          dispatch(osmLoadRelation({ id, focus: true }));
 
           break;
       }
     }
 
-    if (action.payload.zoomTo !== false && geojson) {
+    if (action.payload.focus !== false && geojson) {
       const { mapType } = getState().map;
 
       (await mapPromise).fitBounds(geoJSON(geojson).getBounds(), {

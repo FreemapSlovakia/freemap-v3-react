@@ -84,7 +84,7 @@ export function ObjectsResult(): ReactElement | null {
                   searchSelectResult({
                     result: { id, tags, osmType: type, detailed: true },
                     showToast: true,
-                    zoomTo: false,
+                    focus: false,
                     storeResult: false,
                   }),
                 );

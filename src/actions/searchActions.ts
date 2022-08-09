@@ -28,7 +28,7 @@ export const searchSetResults =
 export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<{
   result: SearchResult;
   showToast?: boolean;
-  zoomTo?: boolean;
+  focus?: boolean;
   storeResult?: boolean;
-  // TODO refactor to: actions?: ('showToast' | 'zoomTo' | 'storeResult')[];
+  // TODO refactor to: actions?: ('showToast' | 'focus' | 'storeResult')[];
 } | null>();

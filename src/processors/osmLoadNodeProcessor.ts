@@ -11,7 +11,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,
   errorKey: 'osm.fetchingError',
   handle: async ({ dispatch, action, getState }) => {
-    const id = action.payload;
+    const { id, focus } = action.payload;
 
     const res = await httpRequest({
       getState,
@@ -38,7 +38,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
           detailed: true,
         },
         showToast: window.isRobot,
-        zoomTo: !window.fmHeadless,
+        focus,
       }),
     );
   },
