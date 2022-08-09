@@ -50,6 +50,7 @@ export const urlProcessor: Processor = {
       main.urlUpdatingEnabled,
       map.lat,
       map.lon,
+      map.zoom,
       map.mapType,
       map.overlays,
       map.customLayers,
