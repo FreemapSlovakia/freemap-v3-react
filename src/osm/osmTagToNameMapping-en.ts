@@ -359,7 +359,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     park: 'Park',
     picnic_table: {
       '*': 'Picnic table',
-      covered: { yes: 'Coverec picnic table' },
+      covered: { yes: 'Covered picnic table' },
     },
     pitch: {
       '*': 'Pitch',
