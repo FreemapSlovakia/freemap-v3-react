@@ -1,5 +1,6 @@
 import { ExternalTargets, openInExternalApp } from 'fm3/actions/mainActions';
 import {
+  getGeocachingUrl,
   getF4mapUrl,
   getGoogleUrl,
   getHikingSkUrl,
@@ -209,6 +210,14 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>g</kbd>
           </>
         )}
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        href={getGeocachingUrl(lat, lon, zoom)}
+        target="_blank"
+        onSelect={handleSelect}
+      >
+        Geocaching
       </Dropdown.Item>
 
       <Dropdown.Item
