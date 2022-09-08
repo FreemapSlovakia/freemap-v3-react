@@ -9,6 +9,7 @@ import {
 } from '@turf/helpers';
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { colors } from 'fm3/constants';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
@@ -107,7 +108,11 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
         line.type === 'line'
           ? lineString(
               line.points.map((point) => [point.lon, point.lat]),
-              { name: line.label || '' },
+              {
+                name: line.label || '',
+                color: line.color ?? colors.normal,
+                width: line.width ?? 4,
+              },
             )
           : polygon(
               [
@@ -116,13 +121,22 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
                   [line.points[0].lon, line.points[0].lat],
                 ],
               ],
-              { name: line.label || '' },
+              {
+                name: line.label || '',
+                color: line.color ?? colors.normal,
+                width: line.width ?? 4,
+              },
             ),
       );
     }
 
     for (const p of getState().drawingPoints.points) {
-      features.push(point([p.lon, p.lat], { name: p.label || '' }));
+      features.push(
+        point([p.lon, p.lat], {
+          name: p.label || '',
+          color: p.color ?? colors.normal,
+        }),
+      );
     }
   }
 
@@ -201,7 +215,9 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
         skiTrails,
         horseTrails,
       },
-      custom: layers.length ? { layers, styles: JSON.parse(style) } : undefined,
+      custom: layers.length
+        ? { layers, styles: [{ Style: { '@name': '_new_' }, style }] } // TODO ugly hacked to support XML styles
+        : undefined,
     },
     expectedStatus: 200,
   });

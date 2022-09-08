@@ -1,5 +1,4 @@
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
-import { colors } from 'fm3/constants';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
@@ -60,112 +59,94 @@ export function ExportPdfModal({ show }: Props): ReactElement {
 
   const [track, setTrack] = useState(true);
 
-  const [style, setStyle] = useState(`[
-  {
-    "Style": {
-      "@name": "custom-polygons",
-      "Rule": [
-        {
-          "PolygonSymbolizer": {
-            "@fill": "${colors.normal}",
-            "@fill-opacity": 0.2,
-            "@stroke-linecap": "round",
-            "@stroke-linejoin": "round"
-          }
-        },
-        {
-          "LineSymbolizer": {
-            "@stroke": "${colors.normal}",
-            "@stroke-width": 4,
-            "@stroke-opacity": 0.8,
-            "@stroke-linecap": "round",
-            "@stroke-linejoin": "round",
-            "@stroke-dasharray": "5,10"
-          }
-        },
-        {
-          "TextSymbolizer": {
-            "@fontset-name": "regular",
-            "@fill": "${colors.normal}",
-            "@halo-fill": "white",
-            "@halo-radius": "1.5",
-            "@halo-opacity": "0.75",
-            "@size": 16,
-            "@line-spacing": -2,
-            "@wrap-width": 100,
-            "@wrap-before": true,
-            "@placement": "interior",
-            "#text": "[name]"
-          }
-        }
-      ]
-    }
-  },
-  {
-    "Style": {
-      "@name": "custom-polylines",
-      "Rule": [
-        {
-          "LineSymbolizer": {
-            "@stroke": "${colors.normal}",
-            "@stroke-width": 4,
-            "@stroke-opacity": 0.8,
-            "@stroke-linecap": "round",
-            "@stroke-linejoin": "round",
-            "@stroke-dasharray": "5,10"
-          }
-        },
-        {
-          "TextSymbolizer": {
-            "@fontset-name": "regular",
-            "@fill": "${colors.normal}",
-            "@halo-fill": "white",
-            "@halo-radius": "1.5",
-            "@halo-opacity": "0.75",
-            "@size": 16,
-            "@line-spacing": -2,
-            "@placement": "line",
-            "@spacing": "200",
-            "@dy": "8",
-            "#text": "[name]"
-          }
-        }
-      ]
-    }
-  },
-  {
-    "Style": {
-      "@name": "custom-points",
-      "Rule": [
-        {
-          "MarkersSymbolizer": {
-            "@fill": "${colors.normal}",
-            "@width": 10,
-            "@height": 10,
-            "@stroke-width": 1.5,
-            "@stroke-opacity": 0.75,
-            "@stroke": "white"
-          }
-        },
-        {
-          "TextSymbolizer": {
-            "@fontset-name": "regular",
-            "@fill": "${colors.normal}",
-            "@halo-fill": "white",
-            "@halo-radius": "1.5",
-            "@halo-opacity": "0.75",
-            "@size": 16,
-            "@line-spacing": -2,
-            "@wrap-width": 100,
-            "@wrap-before": true,
-            "@dy": -10,
-            "#text": "[name]"
-          }
-        }
-      ]
-    }
-  }
-]
+  const [style, setStyle] = useState(`<Style name="custom-polygons">
+  <Rule>
+    <PolygonSymbolizer
+      fill="[color]"
+      fill-opacity="0.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <LineSymbolizer
+      stroke="[color]"
+      stroke-width="[width]"
+      stroke-opacity="0.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <TextSymbolizer
+      fontset-name="regular"
+      fill="[color]"
+      halo-fill="white"
+      halo-radius="1.5"
+      halo-opacity="0.75"
+      size="16"
+      line-spacing="-2"
+      wrap-width="100"
+      wrap-before="true"
+      placement="interior"
+    >
+      [name]
+    </TextSymbolizer>
+  </Rule>
+</Style>
+
+<Style name="custom-polylines">
+  <Rule>
+    <LineSymbolizer
+      stroke="[color]"
+      stroke-width="[width]"
+      stroke-opacity="0.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <TextSymbolizer
+      fontset-name="regular"
+      fill="[color]"
+      halo-fill="white"
+      halo-radius="1.5"
+      halo-opacity="0.75"
+      size="16"
+      line-spacing="-2"
+      placement="line"
+      spacing="200"
+      dy="8"
+    >
+      [name]
+    </TextSymbolizer>
+  </Rule>
+</Style>
+
+<Style name="custom-points">
+  <Rule>
+    <MarkersSymbolizer
+      fill="[color]"
+      width="10"
+      height="10"
+      stroke-width="1.5"
+      stroke-opacity="0.75"
+      stroke="white"
+    />
+
+    <TextSymbolizer
+      fontset-name="regular"
+      fill="[color]"
+      halo-fill="white"
+      halo-radius="1.5"
+      halo-opacity="0.75"
+      size="16"
+      line-spacing="-2"
+      wrap-width="100"
+      wrap-before="true"
+      dy="-10"
+    >
+      [name]
+    </TextSymbolizer>
+  </Rule>
+</Style>
 `);
 
   const handleStyleChange = useCallback(
