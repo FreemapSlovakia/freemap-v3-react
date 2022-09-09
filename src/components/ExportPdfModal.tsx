@@ -124,8 +124,10 @@ export function ExportPdfModal({ show }: Props): ReactElement {
   <Rule>
     <MarkersSymbolizer
       fill="[color]"
-      width="10"
-      height="10"
+      width="24"
+      file="images/marker.svg"
+      allow-overlap="true"
+      ignore-placement="true"
       stroke-width="1.5"
       stroke-opacity="0.75"
       stroke="white"
@@ -141,7 +143,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
       line-spacing="-2"
       wrap-width="100"
       wrap-before="true"
-      dy="-10"
+      dy="-40"
     >
       [name]
     </TextSymbolizer>
