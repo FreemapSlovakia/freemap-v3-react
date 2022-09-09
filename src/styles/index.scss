@@ -406,6 +406,7 @@ button#freemap-logo {
   bottom: 0;
   left: 0;
   z-index: 20000;
+  pointer-events: none;
 }
 
 .dropzone {

@@ -342,7 +342,7 @@ export function Main(): ReactElement {
         handleGpxDrop(gpxFiles);
       }
     },
-    [handlePicturesDrop, handleGpxDrop, dispatch, authenticated],
+    [handlePicturesDrop, handleGpxDrop, dispatch, authenticated, activeModal],
   );
 
   useShareFile(onDrop);
@@ -350,6 +350,7 @@ export function Main(): ReactElement {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
+    disabled: activeModal !== null,
   });
 
   const isSelecting = useAppSelector(selectingModeSelector);
