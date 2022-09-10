@@ -59,11 +59,10 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleGpxDrop,
-    accept: 'application/gpx+xml,application/octet-stream,.gpx',
-    // {
-    //   'application/gpx+xml': ['.gpx'],
-    //   'application/octet-stream': ['.gpx'],
-    // },
+    accept: {
+      'application/gpx+xml': ['.gpx'],
+      'application/octet-stream': ['.gpx'],
+    },
     multiple: false,
   });
 

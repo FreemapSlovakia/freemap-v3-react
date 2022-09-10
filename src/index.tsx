@@ -24,6 +24,23 @@ import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
 
+const showOpenFilePicker = (window as any).showOpenFilePicker;
+
+// workaround until this is merged: https://github.com/react-dropzone/react-dropzone/pull/1233
+if (showOpenFilePicker) {
+  (window as any).showOpenFilePicker = (options: any) => {
+    for (const type of options.types) {
+      type.description = type.accept['application/gpx+xml']
+        ? 'GPX files'
+        : (type.description = type.accept['image/jpeg']
+            ? 'JPEG Images'
+            : 'Files');
+    }
+
+    return showOpenFilePicker.call(window, options);
+  };
+}
+
 if (process.env['GA_MEASUREMENT_ID']) {
   window.gtag('config', process.env['GA_MEASUREMENT_ID']);
 }

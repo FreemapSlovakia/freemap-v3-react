@@ -342,7 +342,7 @@ export function Main(): ReactElement {
         handleGpxDrop(gpxFiles);
       }
     },
-    [handlePicturesDrop, handleGpxDrop, dispatch, authenticated, activeModal],
+    [handlePicturesDrop, handleGpxDrop, dispatch, authenticated],
   );
 
   useShareFile(onDrop);

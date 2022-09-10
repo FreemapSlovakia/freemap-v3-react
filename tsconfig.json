@@ -5,9 +5,9 @@
     "strictNullChecks": true, // enable strict null checks as a best practice
     "module": "esnext", // specify module code generation
     "jsx": "react-jsx", // use typescript to transpile jsx to js
-    "target": "es2017", // specify ECMAScript target version
+    "target": "ES2018", // specify ECMAScript target version
     "moduleResolution": "node",
-    "lib": ["es2019", "dom", "WebWorker"],
+    "lib": ["ES2020", "dom", "WebWorker"],
     "allowSyntheticDefaultImports": true,
     // "noUncheckedIndexedAccess": true, // TODO one day
     "noPropertyAccessFromIndexSignature": true,
