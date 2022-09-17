@@ -1,3 +1,5 @@
+import area from '@turf/area';
+import bboxPolygon from '@turf/bbox-polygon';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { cancelRegister } from 'fm3/cancelRegister';
@@ -5,7 +7,6 @@ import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { OverpassElement, OverpassResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse {
@@ -17,6 +18,15 @@ interface WikiResponse {
     };
   };
 }
+
+type WikiPoi = [
+  wikipedia: string | null,
+  wikidata: string | null,
+  lon: number,
+  lat: number,
+  id: string,
+  name: string | null,
+];
 
 let initial = true;
 
@@ -32,11 +42,11 @@ export const wikiLayerProcessor: Processor = {
 
     const ok0 = overlays.includes('w');
 
-    const ok = ok0 && zoom >= 12;
+    const ok = ok0 && zoom >= 8;
 
     const prevOk0 = prevMap.overlays.includes('w');
 
-    const prevOk = prevOk0 && prevMap.zoom >= 12;
+    const prevOk = prevOk0 && prevMap.zoom >= 8;
 
     if (
       !initial &&
@@ -88,47 +98,40 @@ export const wikiLayerProcessor: Processor = {
 
     const bb = (await mapPromise).getBounds();
 
+    const areaSize = area(
+      bboxPolygon([bb.getWest(), bb.getSouth(), bb.getEast(), bb.getNorth()]),
+    );
+
+    const scale = areaSize / (window.innerHeight * window.innerWidth);
+
     const res = await httpRequest({
       getState,
-      method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
-      body:
-        `[out:json][bbox:${bb.getSouth()},${bb.getWest()},${bb.getNorth()},${bb.getEast()}];(` +
-        `node[~"^wikipedia$|^wikidata$"~"."];` +
-        `way[~"^wikipedia$|^wikidata$"~"."];` +
-        `relation[~"^wikipedia$|^wikidata$"~"."];` +
-        ');out tags center;',
+      method: 'GET',
+      // url: `http://localhost:8040?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
+      url: `https://backend.freemap.sk/wiki-pois?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
       expectedStatus: 200,
       cancelActions: [mapRefocus],
     });
 
-    const m = new Map<string, OverpassElement>();
+    const wikipedia2item = new Map<string, WikiPoi>();
 
     const wikidatas: string[] = [];
 
-    const data = assertType<OverpassResult>(await res.json());
+    const data = assertType<WikiPoi[]>(await res.json());
 
-    for (const e of data.elements) {
-      if (e.tags['wikipedia']) {
-        e.tags['wikipedia'] = decodeURIComponent(
-          e.tags['wikipedia'].replace(/_/g, ' '),
-        );
-      }
+    for (const item of data) {
+      let wikipedia = item[0];
 
-      const { wikipedia } = e.tags;
+      const wikidata = item[1];
 
       if (wikipedia) {
-        const e1 = m.get(wikipedia);
+        wikipedia = decodeURIComponent(wikipedia.replace(/_/g, ' '));
+      }
 
-        if (
-          !e1 ||
-          e1.type === 'relation' ||
-          (e1.type === 'way' && e.type === 'relation')
-        ) {
-          m.set(wikipedia, e);
-        }
-      } else {
-        wikidatas.push(e.tags['wikidata']);
+      if (wikipedia) {
+        wikipedia2item.set(wikipedia, item);
+      } else if (wikidata) {
+        wikidatas.push(wikidata);
       }
     }
 
@@ -165,49 +168,42 @@ export const wikiLayerProcessor: Processor = {
 
     const data1 = assertType<WikiResponse>(await res1.json());
 
-    for (const e of data.elements) {
-      if (e.tags['wikipedia']) {
+    for (const item of data) {
+      if (item[0]) {
         continue;
       }
 
-      const sitelinks = data1.entities?.[e.tags['wikidata']]?.sitelinks;
+      const sitelinks = data1.entities?.[item[1] ?? '']?.sitelinks;
 
       if (!sitelinks) {
         continue;
       }
 
-      const title = (sitelinks[`${language}wiki`] || sitelinks['enwiki'])
+      const title = (sitelinks[language + 'wiki'] || sitelinks['enwiki'])
         ?.title;
 
       if (title == null) {
         continue;
       }
 
-      const wikipedia = `${
-        `${language}wiki` in sitelinks ? language : 'en'
-      }:${title}`;
+      const wikipedia =
+        (language + 'wiki' in sitelinks ? language : 'en') + ':' + title;
 
-      const e1 = m.get(wikipedia);
+      if (!wikipedia2item.has(wikipedia)) {
+        item[0] = wikipedia;
 
-      if (
-        !e1 ||
-        e1.type === 'relation' ||
-        (e1.type === 'way' && e.type === 'relation')
-      ) {
-        e.tags['wikipedia'] = wikipedia;
-
-        m.set(wikipedia, e);
+        wikipedia2item.set(wikipedia, item);
       }
     }
 
     dispatch(
       wikiSetPoints(
-        [...m.values()].map((e: OverpassElement) => ({
-          id: e.id,
-          lat: e.type === 'node' ? e.lat : e.center.lat,
-          lon: e.type === 'node' ? e.lon : e.center.lon,
-          name: e.tags['name'],
-          wikipedia: e.tags['wikipedia'],
+        [...wikipedia2item.values()].map((e) => ({
+          id: e[4],
+          lat: e[3],
+          lon: e[2],
+          name: e[5] ?? e[0] ?? '???',
+          wikipedia: e[0] ?? '',
         })),
       ),
     );
