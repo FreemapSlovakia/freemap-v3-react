@@ -146,16 +146,16 @@ export function WikiLayer(): ReactElement {
           }}
           // onclick={onSelects[i]}
         >
-          {name && (
+          {(wikipedia || name) && (
             <Tooltip className="compact" direction="top" permanent>
               <div
                 style={{
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  maxWidth: 200,
+                  maxWidth: 150,
                 }}
               >
-                {name}
+                {wikipedia.replace(/^[a-z]+:/, '') || name}
               </div>
             </Tooltip>
           )}
