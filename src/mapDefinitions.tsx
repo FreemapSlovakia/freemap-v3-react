@@ -363,7 +363,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'w',
     icon: <FaWikipediaW />,
-    minZoom: 12,
+    minZoom: 8,
     key: ['KeyW', true],
     zIndex: 4,
     attribution: [],
