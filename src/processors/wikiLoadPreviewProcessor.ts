@@ -1,7 +1,7 @@
+import { setActiveModal } from 'fm3/actions/mainActions';
 import {
   wikiLoadPreview,
   WikiPreview,
-  wikiSetPoints,
   wikiSetPreview,
 } from 'fm3/actions/wikiActions';
 import { httpRequest } from 'fm3/httpRequest';
@@ -58,7 +58,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
               ...cont,
             }),
           expectedStatus: 200,
-          cancelActions: [wikiLoadPreview, wikiSetPoints],
+          cancelActions: [setActiveModal],
         });
 
         const okData: WikiResponse1 = assertType<WikiResponse1>(
@@ -98,7 +98,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
       //   action.payload,
       // )}&origin=*`,
       expectedStatus: 200,
-      cancelActions: [wikiLoadPreview, wikiSetPoints],
+      cancelActions: [setActiveModal],
     });
 
     const data = assertType<WikiResponse2>(await res.json());
