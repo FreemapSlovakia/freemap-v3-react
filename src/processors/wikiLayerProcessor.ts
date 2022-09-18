@@ -1,12 +1,14 @@
 import area from '@turf/area';
 import bboxPolygon from '@turf/bbox-polygon';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { wikiSetPoints } from 'fm3/actions/wikiActions';
+import { WikiPoint, wikiSetPoints } from 'fm3/actions/wikiActions';
 import { cancelRegister } from 'fm3/cancelRegister';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
+import { CRS, Point } from 'leaflet';
+import RBush, { BBox } from 'rbush';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse {
@@ -196,16 +198,76 @@ export const wikiLayerProcessor: Processor = {
       }
     }
 
-    dispatch(
-      wikiSetPoints(
-        [...wikipedia2item.values()].map((e) => ({
-          id: e[4],
-          lat: e[3],
-          lon: e[2],
-          name: e[5] ?? e[0] ?? '???',
-          wikipedia: e[0] ?? '',
-        })),
-      ),
-    );
+    const MIN_DISTANCE = 40;
+
+    const PLACEMENTS = [-1, 0, 3, 1, 4, 2, 5, 0, 3, 1, 4, 2, 5];
+
+    type IndexType = BBox & { wikiPoint: WikiPoint; mapPoint: Point };
+
+    const tree = new RBush<IndexType>();
+
+    const items = [...wikipedia2item.values()]
+      .map((e) => ({
+        id: e[4],
+        lat: e[3],
+        lon: e[2],
+        name: e[5] ?? e[0] ?? '???',
+        wikipedia: e[0] ?? '',
+      }))
+      .map((wikiPoint) => ({
+        wikiPoint,
+        mapPoint: CRS.EPSG3857.latLngToPoint(
+          { lat: wikiPoint.lat, lng: wikiPoint.lon },
+          zoom,
+        ),
+      }));
+
+    const sparsePoints: WikiPoint[] = [];
+
+    for (const item of items) {
+      const { mapPoint, wikiPoint } = item;
+
+      attempts: for (let i = -1; i < 12; i++) {
+        const r = i < 6 ? MIN_DISTANCE + 0.1 : 2 * MIN_DISTANCE + 0.2;
+
+        const x =
+          mapPoint.x +
+          (i < 0 ? 0 : r * Math.sin((PLACEMENTS[i] * Math.PI) / 3));
+
+        const y =
+          mapPoint.y +
+          (i < 0 ? 0 : r * Math.cos((PLACEMENTS[i] * Math.PI) / 3));
+
+        const offsetPoint = new Point(x, y);
+
+        const bbox: IndexType = {
+          minX: x - MIN_DISTANCE,
+          minY: y - MIN_DISTANCE,
+          maxX: x + MIN_DISTANCE,
+          maxY: y + MIN_DISTANCE,
+          wikiPoint,
+          mapPoint: offsetPoint,
+        };
+
+        for (const a of tree.search(bbox)) {
+          if (
+            Math.sqrt((x - a.mapPoint.x) ** 2 + (y - a.mapPoint.y) ** 2) <
+            MIN_DISTANCE
+          ) {
+            continue attempts;
+          }
+        }
+
+        const latLng = CRS.EPSG3857.pointToLatLng(offsetPoint, zoom);
+
+        sparsePoints.push({ ...wikiPoint, lat: latLng.lat, lon: latLng.lng });
+
+        tree.insert(bbox);
+
+        break;
+      }
+    }
+
+    dispatch(wikiSetPoints(sparsePoints));
   },
 };
