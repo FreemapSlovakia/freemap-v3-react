@@ -66,6 +66,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     motorcycle_parking: 'Parkování motocyklů',
     motorcycle_rental: 'Půjčovna motocyklů',
     nightclub: 'Noční klub',
+    parcel_locker: 'Box na výdej zásilek',
     parking_entrance: 'Vjezd/výjezd parkoviště',
     parking_space: 'Parkovací místo',
     parking: 'Parkování',

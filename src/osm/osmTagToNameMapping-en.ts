@@ -67,6 +67,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     motorcycle_parking: 'Motorcycle parking',
     motorcycle_rental: 'Motorcycle rental',
     nightclub: 'Nightclub',
+    parcel_locker: 'Parcel locker',
     parking: 'Parking',
     parking_entrance: 'Parking entrance',
     parking_space: 'Parking space',

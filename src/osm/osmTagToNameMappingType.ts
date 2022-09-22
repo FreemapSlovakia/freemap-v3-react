@@ -65,6 +65,7 @@ export type OsmTagToNameMapping = {
     motorcycle_parking: string;
     motorcycle_rental: string;
     nightclub: string;
+    parcel_locker: string;
     parking: string;
     parking_entrance: string;
     parking_space: string;
