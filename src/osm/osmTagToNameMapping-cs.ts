@@ -487,7 +487,18 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       },
     },
     stone: 'Balvan',
-    tree: 'Strom',
+    tree: {
+      // TODO translate
+      '*': 'Strom',
+      protected: { yes: 'Chránený strom' },
+      denotation: {
+        natural_monument: 'Monumentálny strom',
+        landmark: 'Prominentný strom',
+        avenue: 'Strom v aleji',
+        urban: 'Mestský strom',
+        agricultural: 'Hospodársky strom',
+      },
+    },
     tree_row: 'Stromořadí / větrolam',
     valley: 'Údolí',
     water: 'Vodní plocha',

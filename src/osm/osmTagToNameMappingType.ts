@@ -491,7 +491,19 @@ export type OsmTagToNameMapping = {
       };
     };
     stone: string;
-    tree: string;
+    tree: {
+      '*': string;
+      protected: {
+        yes: string;
+      };
+      denotation: {
+        natural_monument: string;
+        landmark: string;
+        avenue: string;
+        urban: string;
+        agricultural: string;
+      };
+    };
     tree_row: string;
     valley: string;
     water: string;

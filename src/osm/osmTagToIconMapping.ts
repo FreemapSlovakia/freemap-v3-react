@@ -243,6 +243,7 @@ import townhall from 'fm3/images/poiIcons/townhall.svg';
 import traffic_signals from 'fm3/images/poiIcons/traffic_signals.svg';
 import tree from 'fm3/images/poiIcons/tree.svg';
 import tree2 from 'fm3/images/poiIcons/tree2.svg';
+import tree_protected from 'fm3/images/poiIcons/tree_protected.svg';
 import university from 'fm3/images/poiIcons/university.svg';
 import vehicle_inspection from 'fm3/images/poiIcons/vehicle_inspection.svg';
 import veterinary from 'fm3/images/poiIcons/veterinary.svg';
@@ -476,8 +477,11 @@ export const osmTagToIconMapping: Node = {
     stone,
     tree: {
       '*': tree2,
+      denotation: {
+        natural_monument: tree,
+      },
       protected: {
-        '*': tree,
+        yes: tree_protected,
       },
     },
     viewpoint,

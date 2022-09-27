@@ -490,7 +490,20 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       },
     },
     stone: 'Pietra',
-    tree: 'Albero',
+    tree: {
+      '*': 'Albero',
+      // TODO translate
+      protected: { yes: 'Protected tree' },
+      // TODO translate
+      denotation: {
+        natural_monument: 'Natural monument tree',
+        landmark: 'Landmark tree',
+        avenue: 'Avenue tree',
+        urban: 'Urban tree',
+        agricultural: 'Agricultural tree',
+      },
+    },
+
     tree_row: 'Filare alberi',
     valley: 'Valle',
     water: 'Acqua',
