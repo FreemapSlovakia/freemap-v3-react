@@ -73,18 +73,6 @@ module.exports = {
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
-      // see https://github.com/Leaflet/Leaflet/issues/7403
-      {
-        enforce: 'pre',
-        test: /\bnode_modules\/leaflet\/dist\/leaflet-src\.js/,
-        loader: 'string-replace-loader',
-        options: {
-          search:
-            '(Browser.win && Browser.chrome) ? 2 * window.devicePixelRatio :',
-          replace: 'true ? 2 * window.devicePixelRatio :',
-          strict: true,
-        },
-      },
       {
         // babelify some too modern libraries
         test: /\bnode_modules\/.*\/?(exifreader|strict-uri-encode|query-string|split-on-first|leaflet|@?react-leaflet)\/.*\.js$/,
