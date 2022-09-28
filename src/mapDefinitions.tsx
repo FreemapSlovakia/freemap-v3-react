@@ -343,7 +343,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VO',
-    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=lmYA16sOOOz9r6DH7iA9',
+    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=0iOk4fgsz9fOXyDYCirE',
     key: ['KeyV', false],
     icon: <FaMap />,
     attribution: [
@@ -356,7 +356,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VS',
-    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=lmYA16sOOOz9r6DH7iA9',
+    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=0iOk4fgsz9fOXyDYCirE',
     key: ['KeyE', false],
     icon: <FaMap />,
     attribution: [
