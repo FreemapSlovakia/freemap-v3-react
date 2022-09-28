@@ -64,8 +64,8 @@
     "vhtml": "2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "7.19.1",
-    "@babel/preset-env": "7.19.1",
+    "@babel/core": "7.19.3",
+    "@babel/preset-env": "7.19.3",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
     "@types/color": "3.0.3",
     "@types/facebook-js-sdk": "3.3.5",
