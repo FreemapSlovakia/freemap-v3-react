@@ -32,7 +32,7 @@ export function Layers(): ReactElement | null {
 
   const userId = useAppSelector((state) => state.auth.user?.id);
 
-  const language = useAppSelector((state) => state.l10n.chosenLanguage);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const getTileLayer = ({
     type,

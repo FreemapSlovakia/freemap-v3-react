@@ -15,7 +15,7 @@ export function MaptilerAttribution({
 }: Props) {
   const map = useAppSelector((state) => state.map);
 
-  const lang = useAppSelector((state) => state.l10n.chosenLanguage);
+  const lang = useAppSelector((state) => state.l10n.language);
 
   return (
     <>
