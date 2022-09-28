@@ -86,7 +86,7 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
-          key={type + '_' + language} // TODO hacky; dynamic language changing doesn't work
+          key={type}
           style={url}
           maxZoom={20}
           minZoom={minZoom}

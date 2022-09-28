@@ -20,6 +20,7 @@ export function CookieConsent({
   return (
     <>
       <p>{prompt}</p>
+
       <FormCheck
         id="chkCookieSocialLogin"
         type="checkbox"
@@ -27,6 +28,7 @@ export function CookieConsent({
         checked
         disabled
       />
+
       <FormCheck
         id="chkCookieAnalytics"
         type="checkbox"
