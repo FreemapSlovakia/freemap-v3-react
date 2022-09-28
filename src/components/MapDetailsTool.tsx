@@ -1,4 +1,5 @@
 import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
+import { isEventOnMap } from 'fm3/mapUtils';
 import { LatLon } from 'fm3/types/common';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback, useState } from 'react';
@@ -28,16 +29,11 @@ export function MapDetailsTool(): ReactElement | null {
   useMapEvent(
     'mousemove',
     useCallback(({ latlng, originalEvent }: LeafletMouseEvent) => {
-      if (
-        originalEvent.target &&
-        (originalEvent.target as HTMLElement).classList.contains(
-          'leaflet-container',
-        )
-      ) {
-        setLatLon({ lat: latlng.lat, lon: latlng.lng });
-      } else {
-        setLatLon(undefined);
-      }
+      setLatLon(
+        isEventOnMap(originalEvent)
+          ? { lat: latlng.lat, lon: latlng.lng }
+          : undefined,
+      );
     }, []),
   );
 

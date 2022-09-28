@@ -283,3 +283,5 @@ export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
     }
   },
 );
+
+export default GalleryLayer;

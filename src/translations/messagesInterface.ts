@@ -1,8 +1,9 @@
 import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
 import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
-import { NoncustomLayerLetters } from 'fm3/mapDefinitions';
+import { AttributionDef, NoncustomLayerLetters } from 'fm3/mapDefinitions';
 import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { ReactNode } from 'react';
+import { NonUndefined } from 'utility-types';
 
 type Err = { err: string };
 
@@ -629,12 +630,7 @@ export type Messages = {
       data: string;
       photos: string;
     };
-    attr: {
-      freemap: string;
-      osmData: string;
-      srtm: string;
-      hot: string;
-    };
+    attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
   };
   elevationChart: {
     distance: string;

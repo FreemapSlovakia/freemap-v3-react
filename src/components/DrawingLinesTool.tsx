@@ -1,6 +1,7 @@
 import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
 import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { isEventOnMap } from 'fm3/mapUtils';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
@@ -26,10 +27,7 @@ export function DrawingLinesTool(): null {
       if (
         // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
         window.preventMapClick ||
-        !(
-          originalEvent.target instanceof HTMLDivElement &&
-          originalEvent.target.classList.contains('leaflet-container')
-        )
+        !isEventOnMap(originalEvent)
       ) {
         return;
       }

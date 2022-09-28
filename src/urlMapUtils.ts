@@ -44,13 +44,15 @@ export function getMapStateFromUrl(
 
   let base = layers.charAt(0);
 
-  if (base === '.') {
+  const isTwoChar = base === '.' || base === 'V';
+
+  if (isTwoChar) {
     base += layers.charAt(1);
   }
 
   const mapType = is<BaseLayerLetters>(base) ? base : undefined;
 
-  const ovl = layers.slice(1);
+  const ovl = layers.slice(isTwoChar ? 2 : 1);
 
   const overlays = overlayLetters.filter((x) => ovl.includes(x));
 

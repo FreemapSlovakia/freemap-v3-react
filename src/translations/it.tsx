@@ -4,6 +4,7 @@ import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
 import { ElevationInfo } from 'fm3/components/ElevationInfo';
+import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
@@ -1103,6 +1104,8 @@ const it: Messages = {
       w: 'Wikipedia',
       '4': 'Ombreggiatura leggera DMR 5.0',
       '5': 'Ombreggiatura grigia DMR 5.0',
+      VO: 'OpenStreetMap Vector', // TODO translate
+      VS: 'Streets Vector', // TODO translate
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',
@@ -1115,7 +1118,15 @@ const it: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
-      hot: '©\xa0Humanitarian OpenStreetMap Team',
+      maptiler: (
+        // TODO translate
+        <MaptilerAttribution
+          tilesFrom="Vector tiles from"
+          hostedBy="hosted by"
+          see="See"
+          _3Dterrain="3D terrain"
+        />
+      ),
     },
   },
 

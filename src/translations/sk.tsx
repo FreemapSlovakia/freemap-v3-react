@@ -4,6 +4,7 @@ import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
 import { ElevationInfo } from 'fm3/components/ElevationInfo';
+import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
@@ -1141,6 +1142,8 @@ const sk: Messages = {
       w: 'Wikipedia',
       '4': 'Svetlé tieňovanie DMR 5.0',
       '5': 'Sivé tieňovanie DMR 5.0',
+      VO: 'OpenStreetMap Vektorová',
+      VS: 'Streets Vektorová',
     },
     customBase: 'Vlastná mapa',
     customOverlay: 'Vlastné prekrytie mapy',
@@ -1153,7 +1156,14 @@ const sk: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0prispievatelia OpenStreetMap',
       srtm: '©\xa0SRTM',
-      hot: '©\xa0Humanitárny tím OpenStreetMap',
+      maptiler: (
+        <MaptilerAttribution
+          tilesFrom="Vektorové dlaždice z"
+          hostedBy="hostované na"
+          see="Pozri"
+          _3Dterrain="3D terén"
+        />
+      ),
     },
   },
 

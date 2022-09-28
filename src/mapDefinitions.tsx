@@ -8,6 +8,7 @@ import {
   FaCar,
   FaFont,
   FaHiking,
+  FaMap,
   FaPencilAlt,
   FaPlane,
   FaSkiingNordic,
@@ -26,7 +27,7 @@ import white1x1 from './images/1x1-white.png';
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
   name?: string;
-  nameKey?: 'osmData' | 'freemap' | 'srtm';
+  nameKey?: 'osmData' | 'freemap' | 'srtm' | 'maptiler';
   url?: string;
 }
 
@@ -98,6 +99,8 @@ export const baseLayerLetters = [
   'X',
   '4',
   '5',
+  'VO',
+  'VS',
 ] as const;
 
 export const overlayLetters = [
@@ -337,6 +340,32 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+  },
+  {
+    type: 'VO',
+    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=lmYA16sOOOz9r6DH7iA9',
+    key: ['KeyV', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'VS',
+    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=lmYA16sOOOz9r6DH7iA9',
+    key: ['KeyE', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
   },
 ];
 

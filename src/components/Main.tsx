@@ -581,6 +581,15 @@ export function Main(): ReactElement {
 
         <input {...getInputProps()} />
 
+        {mapType[0] === 'V' && (
+          <a href="https://www.maptiler.com" className="watermark">
+            <img
+              src="https://api.maptiler.com/resources/logo.svg"
+              alt="MapTiler logo"
+            />
+          </a>
+        )}
+
         <div onClickCapture={handleMapWrapperClick}>
           <MapContainer
             zoomControl={false}

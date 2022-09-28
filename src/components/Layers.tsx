@@ -1,4 +1,3 @@
-import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
@@ -10,6 +9,11 @@ import {
 } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
 import missingTile from '../images/missing-tile-256x256.png';
+import { AsyncComponent } from './AsyncComponent';
+
+const galleryLayerFactory = () => import('fm3/components/gallery/GalleryLayer');
+
+const maplibreLayerFactory = () => import('./MaplibreLayer');
 
 export function Layers(): ReactElement | null {
   const overlays = useAppSelector((state) => state.map.overlays);
@@ -27,6 +31,8 @@ export function Layers(): ReactElement | null {
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
   const userId = useAppSelector((state) => state.auth.user?.id);
+
+  const language = useAppSelector((state) => state.l10n.chosenLanguage);
 
   const getTileLayer = ({
     type,
@@ -57,7 +63,8 @@ export function Layers(): ReactElement | null {
 
     if (type === 'I') {
       return (
-        <GalleryLayer
+        <AsyncComponent
+          factory={galleryLayerFactory}
           key={`I-${galleryDirtySeq}-${opacity}-${JSON.stringify({
             galleryFilter,
             galleryColorizeBy,
@@ -73,6 +80,19 @@ export function Layers(): ReactElement | null {
 
     if (type === 'w') {
       return;
+    }
+
+    if (type[0] === 'V') {
+      return (
+        <AsyncComponent
+          factory={maplibreLayerFactory}
+          key={type + '_' + language} // TODO hacky; dynamic language changing doesn't work
+          style={url}
+          maxZoom={20}
+          minZoom={minZoom}
+          language={language}
+        />
+      );
     }
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;

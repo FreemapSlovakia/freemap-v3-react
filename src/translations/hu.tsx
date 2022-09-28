@@ -4,6 +4,7 @@ import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
 import { ElevationInfo } from 'fm3/components/ElevationInfo';
+import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
@@ -1111,6 +1112,8 @@ const hu: Messages = {
       w: 'Wikipedia',
       '4': 'Light Hillshading DMR 5.0', // TODO translate
       '5': 'Gray Hillshading DMR 5.0', // TODO translate
+      VO: 'OpenStreetMap Vector', // TODO translate
+      VS: 'Streets Vector', // TODO translate
     },
     customBase: 'Custom map', // TODO translate
     customOverlay: 'Custom map overlay', // TODO translate
@@ -1123,7 +1126,15 @@ const hu: Messages = {
       freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
       srtm: '©\xa0SRTM',
-      hot: '©\xa0Humanitárius OpenStreetMap Team',
+      maptiler: (
+        // TODO translate
+        <MaptilerAttribution
+          tilesFrom="Vector tiles from"
+          hostedBy="hosted by"
+          see="See"
+          _3Dterrain="3D terrain"
+        />
+      ),
     },
   },
 

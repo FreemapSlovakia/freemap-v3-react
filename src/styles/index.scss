@@ -421,3 +421,10 @@ button#freemap-logo {
     background-color: #d9edf7;
   }
 }
+
+.watermark {
+  position: absolute;
+  left: 5px;
+  bottom: 28px;
+  z-index: 999;
+}

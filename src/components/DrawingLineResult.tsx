@@ -11,6 +11,7 @@ import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePo
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { isEventOnMap } from 'fm3/mapUtils';
 import {
   drawingLinePolys,
   selectingModeSelector,
@@ -97,9 +98,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   useMapEvent('mousemove', ({ latlng, originalEvent }: LeafletMouseEvent) => {
     if (!touching && (selected || joinWith?.lineIndex === index)) {
       setCoords(
-        joinWith ||
-          (originalEvent.target instanceof HTMLElement &&
-            originalEvent.target.classList.contains('leaflet-container'))
+        joinWith || isEventOnMap(originalEvent)
           ? { lat: latlng.lat, lon: latlng.lng }
           : undefined,
       );
