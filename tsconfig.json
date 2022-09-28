@@ -20,6 +20,7 @@
     "strict": true,
     "downlevelIteration": true,
     "resolveJsonModule": true,
+    "allowJs": true, // because of maplibre-language.js; TODO rewrite to TS
     "plugins": [
       {
         "transform": "typescript-is/lib/transform-inline/transformer"
