@@ -357,7 +357,7 @@ export const baseLayers: BaseLayerDef[] = [
   {
     type: 'VS',
     url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=0iOk4fgsz9fOXyDYCirE',
-    key: ['KeyE', false],
+    key: ['KeyR', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
