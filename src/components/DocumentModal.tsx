@@ -95,7 +95,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   const [, title, icon, hidden] = tip;
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
           {!hidden && (
