@@ -47,7 +47,7 @@ export const MaplibreLayer = createTileLayerComponent<
 
   (instance, props, prevProps) => {
     if (props.language !== prevProps.language) {
-      instance.setLanguage(props.language ?? 'mul');
+      instance.setLanguage(props.language ?? 'native');
     }
   },
 );
