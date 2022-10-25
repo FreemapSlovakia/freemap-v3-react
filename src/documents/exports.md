@@ -87,7 +87,7 @@ Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
 
 Táto turisticko-cyklistická mapa je vytvorená z dát projektu OpenStreetMap. Mapu môžete používať buď v programe Garmin BaseCamp ako podkladovú mapu, alebo si ju nainštalovať do Garmin GPS prístroja. Vrstevnice sú vygenerované z [SRTM](http://www2.jpl.nasa.gov/srtm/).
 
-_freemapSKtopo_ - obsahuje mapu Slovenska s turistickými a cyklo trasami (aktualizovaná každý pondelok a štvrtok)
+_freemapSKtopo_ - obsahuje mapu Slovenska s turistickými a cyklistickými trasami (aktualizovaná každý pondelok a štvrtok)
 
 - inštalátor pre MS Windows MapSource/BaseCamp:
   - [UTF8 mapa](https://download.freemap.sk/garmin/freemapSKtopo.exe)
@@ -95,18 +95,23 @@ _freemapSKtopo_ - obsahuje mapu Slovenska s turistickými a cyklo trasami (aktua
 - inštalátor mapy pre MacOS X BaseCamp:
   - [UTF8 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapi.zip)
   - [Latin1 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapi.latin1.zip)
-- iba gmapsupp.img súbor:
+- iba `gmapsupp.img` súbor:
   - [UTF8 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.zip)
   - [Latin1 mapa](https://download.freemap.sk/garmin/freemapSKtopo.gmapsupp.latin1.zip)
 
-_freemapCZtopo_ - obsahuje mapu Českej republiky s turistickými a cyklo trasami (aktualizovaná každý pondelok a štvrtok)
+_freemapCZtopo_ - obsahuje mapu Českej republiky s turistickými a cyklistickými trasami (aktualizovaná každý pondelok a štvrtok)
 
 - inštalátor pre MS Windows MapSource/BaseCamp:
   - [Latin1 mapa](https://download.freemap.sk/garmin/freemapCZtopo.latin1.exe)
 - inštalátor mapy pre MacOS X BaseCamp:
   - [Latin1 mapa](https://download.freemap.sk/garmin/freemapCZtopo.gmapi.latin1.zip)
-- iba gmapsupp.img súbor:
+- iba `gmapsupp.img` súbor:
   - [Latin1 mapa](https://download.freemap.sk/garmin//freemapCZtopo.gmapsupp.latin1.zip)
+
+_freemapITtopo_ - obsahuje mapu Talianska s turistickými a cyklistickými trasami (pravidelne aktualizovaná)
+
+- iba `gmapsupp.img` súbor:
+  - [Mappa Latin1](https://www.empirical.it/freemapit/freemap_IT.zip)
 
 **Poznámka:** zariadenie Edge 1000 a GPSMap 64 (prípadne ďalšie) nezobrazujú mapu. Mapa používa unicode pre ukladanie znakov a tieto zariadenia s tím majú problém. Pokiaľ Vám zariadenie píše, že je "mapa zamknutá" [stiahnite si](https://download.freemap.sk/garmin) súbor, ktorý má v názve "latin1" a postupujte podľa návodu nižšie.
 Viac o probléme zamknutej mapy na anglickom [Garmin fóre](https://forums.garmin.com/showthread.php?94680-Edge-1000-cannot-read-mkgmap-%28OSM%29-created-Unicode-maps).

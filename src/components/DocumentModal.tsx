@@ -20,6 +20,8 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
   const documentKey = useAppSelector((state) => state.main.documentKey);
 
+  const language = useAppSelector((state) => state.l10n.language);
+
   const [loading, setLoading] = useState(false);
 
   const [content, setContent] = useState<string | null>(null);
@@ -27,7 +29,8 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   useEffect(() => {
     setLoading(true);
 
-    import(`fm3/documents/${documentKey}.md`)
+    import(`fm3/documents/${documentKey}.${language}.md`)
+      .catch(() => import(`fm3/documents/${documentKey}.md`))
       .then(({ default: content }) => {
         setContent(content);
       })
@@ -37,7 +40,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
       .then(() => {
         setLoading(false);
       });
-  }, [documentKey, m]);
+  }, [documentKey, m, language]);
 
   const tip = useMemo(
     () => documents.find(([key]) => key === documentKey),
