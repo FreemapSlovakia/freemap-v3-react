@@ -1,5 +1,7 @@
+import { polygon } from '@turf/helpers';
 import { drawingChangeProperties } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { colors } from 'fm3/constants';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
@@ -52,6 +54,14 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       : '???';
   });
 
+  const polyPoints = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly'
+      ? state.drawingLines.lines[selection.id]?.points
+      : undefined;
+  });
+
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
@@ -68,6 +78,69 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
+      if (polyPoints && editedLabel === 'cry me a river') {
+        const threshold = window.prompt('Stream threshold?', '20000');
+
+        if (!threshold) {
+          return;
+        }
+
+        const minLen = window.prompt('Minimum stream length?', '50');
+
+        if (!minLen) {
+          return;
+        }
+
+        const inJosm = window.confirm('Open in JSOM?');
+
+        const toOsm =
+          inJosm || window.confirm('Write as OSM? (otherwise ad GeoJSON)');
+
+        const q = new URLSearchParams({
+          threshold,
+          'min-len': minLen,
+          mask: JSON.stringify(
+            polygon([
+              [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
+            ]),
+          ),
+          'to-osm': toOsm ? '1' : '',
+        });
+
+        if (inJosm) {
+          fetch(
+            'http://localhost:8111/import?url=' +
+              encodeURIComponent('http://fm3.freemap.sk:8080?' + q.toString()),
+          )
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error(
+                  'Error response from localhost:8111: ' + res.status,
+                );
+              }
+            })
+            .catch((err) => {
+              dispatch?.(
+                toastsAdd({
+                  messageKey: 'general.operationError',
+                  messageParams: { err },
+                  style: 'danger',
+                }),
+              );
+            });
+        } else {
+          const aElem = document.createElement('a');
+
+          aElem.href = 'http://fm3.freemap.sk:8080?' + q.toString();
+
+          aElem.target = '_blak';
+
+          aElem.click();
+        }
+
+        return;
+      }
+
       dispatch(
         drawingChangeProperties({
           label: editedLabel,
@@ -78,7 +151,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
       close();
     },
-    [dispatch, editedLabel, editedColor, editedWidth, close],
+    [dispatch, editedLabel, editedColor, editedWidth, close, polyPoints],
   );
 
   const handleLocalLabelChange = useCallback(
