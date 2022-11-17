@@ -136,20 +136,22 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const { destination } = action.payload;
 
-  await upload(
-    'gpx',
-    new Blob([new XMLSerializer().serializeToString(doc)], {
-      type:
-        destination === 'dropbox'
-          ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-          : 'application/gpx+xml',
-    }),
-    destination,
-    getState,
-    dispatch,
-  );
-
-  dispatch(setActiveModal(null));
+  if (
+    await upload(
+      'gpx',
+      new Blob([new XMLSerializer().serializeToString(doc)], {
+        type:
+          destination === 'dropbox'
+            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+            : 'application/gpx+xml',
+      }),
+      destination,
+      getState,
+      dispatch,
+    )
+  ) {
+    dispatch(setActiveModal(null));
+  }
 };
 
 export default handle;

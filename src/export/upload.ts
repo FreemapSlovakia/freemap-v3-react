@@ -4,6 +4,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
 import { RootState } from 'fm3/reducers';
+import { hasProperty } from 'fm3/typeUtils';
 import qs from 'query-string';
 import { Dispatch } from 'redux';
 
@@ -16,7 +17,7 @@ export async function upload(
   destination: Destination,
   getState: () => RootState,
   dispatch: Dispatch,
-): Promise<void> {
+): Promise<boolean> {
   switch (destination) {
     case 'dropbox': {
       const redirUri = encodeURIComponent(
@@ -39,7 +40,7 @@ export async function upload(
           }),
         );
 
-        return;
+        return false;
       }
 
       const p = new Promise<string | void>((resolve, reject) => {
@@ -84,7 +85,7 @@ export async function upload(
       const authToken = await p; // TODO handle error (https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/)
 
       if (authToken === undefined) {
-        return;
+        return false;
       }
 
       await httpRequest({
@@ -134,9 +135,24 @@ export async function upload(
 
         const auth2 = gapi.auth2.getAuthInstance();
 
-        const result = await auth2.signIn({
-          scope: 'https://www.googleapis.com/auth/drive.file',
-        });
+        let result: gapi.auth2.GoogleUser;
+
+        try {
+          result = await auth2.signIn({
+            scope: 'https://www.googleapis.com/auth/drive.file',
+          });
+        } catch (err) {
+          if (
+            hasProperty(err, 'error') &&
+            ['popup_closed_by_user', 'access_denied'].includes(
+              String(err['error']),
+            )
+          ) {
+            return false;
+          }
+
+          throw err;
+        }
 
         const ar = result.getAuthResponse();
 
@@ -170,7 +186,7 @@ export async function upload(
         });
 
         if (!folder) {
-          return; // don't close export dialog
+          return false;
         }
 
         const formData = new FormData();
@@ -223,4 +239,6 @@ export async function upload(
 
       break;
   }
+
+  return true;
 }

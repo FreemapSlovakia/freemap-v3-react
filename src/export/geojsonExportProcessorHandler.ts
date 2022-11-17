@@ -100,20 +100,22 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const { destination } = action.payload;
 
-  await upload(
-    'geojson',
-    new Blob([JSON.stringify(fc)], {
-      type:
-        destination === 'dropbox'
-          ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-          : 'application/geo+json',
-    }),
-    destination,
-    getState,
-    dispatch,
-  );
-
-  dispatch(setActiveModal(null));
+  if (
+    await upload(
+      'geojson',
+      new Blob([JSON.stringify(fc)], {
+        type:
+          destination === 'dropbox'
+            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+            : 'application/geo+json',
+      }),
+      destination,
+      getState,
+      dispatch,
+    )
+  ) {
+    dispatch(setActiveModal(null));
+  }
 };
 
 export default handle;
