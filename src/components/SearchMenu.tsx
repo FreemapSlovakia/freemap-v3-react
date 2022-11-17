@@ -40,7 +40,6 @@ import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { useDebouncedCallback } from 'use-debounce';
 
 type Props = {
   hidden?: boolean;
@@ -84,31 +83,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const callback = useDebouncedCallback(
-    useCallback(
-      (query: string) => {
-        if (query.length < 3) {
-          if (results.length > 0) {
-            dispatch(searchSetResults([]));
-          }
-        } else {
-          dispatch(searchSetQuery({ query }));
-        }
-      },
-      [dispatch, results.length],
-    ),
-    1000,
-  );
-
-  const flush = callback.flush;
-
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      flush();
+      if (value.length > 2) {
+        dispatch(searchSetQuery({ query: value }));
+      }
     },
-    [flush],
+    [dispatch, value],
   );
 
   const handleChange = useCallback(
@@ -117,9 +100,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       setValue(value);
 
-      callback(value);
+      if (results.length > 0) {
+        dispatch(searchSetResults([]));
+      }
     },
-    [callback],
+    [dispatch, results.length],
   );
 
   const handleSelect = useCallback(
@@ -197,15 +182,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     setOpen(results.length > 0);
   }, [results]);
 
-  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+  const handleToggle: DropdownProps['onToggle'] = (isOpen) => {
     if (document.activeElement !== inputRef.current && !isOpen) {
       setOpen(false);
-
-      if (e) {
-        e.preventDefault();
-
-        e.stopPropagation();
-      }
     }
   };
 
@@ -235,6 +214,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 ref={inputRef}
                 onFocus={handleInputFocus}
               />
+
               <InputGroup.Append className="w-auto">
                 {!!selectedResult && (
                   <Button
@@ -266,6 +246,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           >
             <div className="dropdown-long" ref={sc}>
               <div />
+
               {results.map((result) => (
                 <Dropdown.Item
                   key={result.id}
