@@ -91,6 +91,12 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
           return;
         }
 
+        const simplifyTolerance = window.prompt('Simplify tolerance?', '1.5');
+
+        if (!simplifyTolerance) {
+          return;
+        }
+
         const inJosm = window.confirm('Open in JSOM?');
 
         const toOsm =
@@ -99,6 +105,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
         const q = new URLSearchParams({
           threshold,
           'min-len': minLen,
+          'simplify-tolerance': simplifyTolerance,
           mask: JSON.stringify(
             polygon([
               [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
@@ -109,7 +116,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
         if (inJosm) {
           fetch(
-            'http://localhost:8111/import?url=' +
+            'http://localhost:8111/import?new_layer=true&url=' +
               encodeURIComponent('http://fm3.freemap.sk:8080?' + q.toString()),
           )
             .then((res) => {
