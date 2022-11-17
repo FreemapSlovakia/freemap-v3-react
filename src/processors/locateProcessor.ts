@@ -48,6 +48,8 @@ export const locateProcessor: Processor = {
           }
         },
         () => {
+          dispatch(toggleLocate(false));
+
           dispatch(
             toastsAdd({
               id: 'main.locationError',

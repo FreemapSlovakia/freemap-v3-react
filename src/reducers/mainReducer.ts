@@ -150,9 +150,9 @@ export const mainReducer = createReducer<MainState, RootAction>(
       accuracy: action.payload.accuracy,
     },
   }))
-  .handleAction(toggleLocate, (state) => ({
+  .handleAction(toggleLocate, (state, action) => ({
     ...state,
-    locate: !state.locate,
+    locate: action.payload ?? !state.locate,
     location: null,
   }))
   .handleAction(setSelectingHomeLocation, (state, action) => ({

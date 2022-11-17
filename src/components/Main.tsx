@@ -230,14 +230,14 @@ export function Main(): ReactElement {
 
         const newZoom = m.getZoom();
 
+        const delta = 5 / Math.pow(2, zoom);
+
         if (
-          (
-            [
-              [lat, newLat],
-              [lon, newLon],
-              [zoom, newZoom],
-            ] as const
-          ).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
+          zoom !== newZoom ||
+          newLat - delta > lat ||
+          newLat + delta < lat ||
+          newLon - delta > lon ||
+          newLon + delta < lon
         ) {
           dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
         }

@@ -69,7 +69,7 @@ export const exportPdf = createAction('EXPORT_PDF')<PdfExportOptions>();
 
 export const clearMap = createAction('CLEAR_MAP')();
 
-export const toggleLocate = createAction('LOCATE')();
+export const toggleLocate = createAction('LOCATE')<boolean | undefined>();
 
 export const setSelectingHomeLocation = createAction(
   'SET_SELECTING_HOME_LOCATION',

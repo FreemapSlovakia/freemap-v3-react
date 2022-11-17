@@ -98,7 +98,7 @@ export function MapControls(): ReactElement | null {
         <Button
           className="ml-1"
           onClick={() => {
-            dispatch(toggleLocate());
+            dispatch(toggleLocate(undefined));
           }}
           title={m?.main.locateMe}
           active={locate}
