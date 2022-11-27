@@ -2,7 +2,7 @@ import { basicModals, tools } from 'fm3/constants';
 import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
-import { LayerSettings } from './mapActions';
+import { CustomLayer, LayerSettings } from './mapActions';
 
 export type Tool = typeof tools[number];
 
@@ -80,13 +80,16 @@ export const saveHomeLocation = createAction('SAVE_HOME_LOCATION')();
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
-  layersSettings?: Record<string, LayerSettings>;
-  overlayPaneOpacity?: number;
+  settings?: {
+    layersSettings: Record<string, LayerSettings>;
+    overlayPaneOpacity: number;
+    customLayers: CustomLayer[];
+  };
   user?: {
     name: string;
     email: string | null;
     sendGalleryEmails: boolean;
-  } | null;
+  };
 }>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<

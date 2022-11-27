@@ -49,7 +49,6 @@ import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocu
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
 import * as rpcProcessors from './processors/rpcProcessors';
-import { saveCustomLayersProcessor } from './processors/saveCustomLayersProcessor';
 import { saveHomeLocationProcessor } from './processors/saveHomeLocationProcessor';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
 import {
@@ -91,7 +90,6 @@ export const processors = [
   saveHomeLocationProcessor,
   locateProcessor,
   saveSettingsProcessor,
-  saveCustomLayersProcessor,
   measurementProcessor,
   mapDetailsProcessor,
   changesetsProcessor,

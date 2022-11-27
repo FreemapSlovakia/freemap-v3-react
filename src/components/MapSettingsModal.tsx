@@ -1,5 +1,5 @@
 import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
-import { CustomLayer, mapSetCustomLayers } from 'fm3/actions/mapActions';
+import { CustomLayer } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
@@ -170,11 +170,11 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
+    let customLayers: CustomLayer[];
+
     try {
-      dispatch(
-        mapSetCustomLayers(
-          assertType<CustomLayer[]>(JSON.parse(customLayersDef || '[]')),
-        ),
+      customLayers = assertType<CustomLayer[]>(
+        JSON.parse(customLayersDef || '[]'),
       );
     } catch {
       dispatch(
@@ -191,8 +191,11 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
     dispatch(
       saveSettings({
-        layersSettings,
-        overlayPaneOpacity,
+        settings: {
+          layersSettings,
+          overlayPaneOpacity,
+          customLayers,
+        },
       }),
     );
   };

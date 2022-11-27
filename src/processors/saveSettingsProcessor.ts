@@ -12,11 +12,11 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
   errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
-    const { layersSettings, overlayPaneOpacity, user } = action.payload;
+    const { settings, user } = action.payload;
 
     // TODO don't save user if not changed
 
-    if (user && getState().auth.user) {
+    if (getState().auth.user) {
       await httpRequest({
         getState,
         method: 'PATCH',
@@ -24,26 +24,20 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
         expectedStatus: 204,
         cancelActions: [setActiveModal, saveSettings],
         data: {
-          name: user.name,
-          email: user.email,
-          sendGalleryEmails: user.sendGalleryEmails,
-          settings: {
-            layersSettings,
-            overlayPaneOpacity,
-            customLayers: getState().map.customLayers,
-          },
+          ...user,
+          settings,
         },
       });
 
       dispatch(authSetUser(Object.assign({}, getState().auth.user, user)));
     }
 
-    if (layersSettings !== undefined) {
-      dispatch(mapSetLayersSettings(layersSettings));
+    if (settings?.layersSettings !== undefined) {
+      dispatch(mapSetLayersSettings(settings.layersSettings));
     }
 
-    if (overlayPaneOpacity !== undefined) {
-      dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));
+    if (settings?.overlayPaneOpacity !== undefined) {
+      dispatch(mapSetOverlayPaneOpacity(settings.overlayPaneOpacity));
     }
 
     dispatch(

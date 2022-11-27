@@ -80,13 +80,11 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
           dispatch(
             saveSettings({
-              user: user
-                ? {
-                    name: name.trim(),
-                    email: email.trim() || null,
-                    sendGalleryEmails,
-                  }
-                : undefined,
+              user: {
+                name: name.trim(),
+                email: email.trim() || null,
+                sendGalleryEmails,
+              },
             }),
           );
         }}
