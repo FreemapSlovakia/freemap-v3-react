@@ -98,7 +98,7 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
-    const bb = (await mapPromise).getBounds();
+    let bb = (await mapPromise).getBounds();
 
     const areaSize = area(
       bboxPolygon([bb.getWest(), bb.getSouth(), bb.getEast(), bb.getNorth()]),
@@ -268,6 +268,24 @@ export const wikiLayerProcessor: Processor = {
       }
     }
 
-    dispatch(wikiSetPoints(sparsePoints));
+    bb = (await mapPromise).getBounds();
+
+    const pointMap = new Map(
+      getState()
+        .wiki.points.filter(
+          (point) =>
+            point.lat > bb.getSouth() &&
+            point.lat < bb.getNorth() &&
+            point.lon > bb.getWest() &&
+            point.lon < bb.getEast(),
+        )
+        .map((point) => [point.id, point]),
+    );
+
+    dispatch(
+      wikiSetPoints(
+        sparsePoints.map((point) => pointMap.get(point.id) ?? point),
+      ),
+    );
   },
 };
