@@ -421,6 +421,12 @@ export function Main(): ReactElement {
     (state) => state.objects.objects.length > 0,
   );
 
+  const askingCookieConsent = useAppSelector((state) =>
+    state.toasts.toasts.some(
+      (toast) => toast.messageKey === 'main.cookieConsent',
+    ),
+  );
+
   return (
     <>
       <style>
@@ -442,7 +448,7 @@ export function Main(): ReactElement {
           <Toasts />
 
           <div className="header">
-            <InfoBar />
+            {!askingCookieConsent && <InfoBar />}
 
             <div className="menus">
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
@@ -551,7 +557,9 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
 
-              {showAds && <AsyncComponent factory={adFactory} />}
+              {showAds && !askingCookieConsent && (
+                <AsyncComponent factory={adFactory} />
+              )}
             </div>
 
             {showElevationChart && (
