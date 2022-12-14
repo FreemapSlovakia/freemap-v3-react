@@ -101,7 +101,7 @@ const sk: Messages = {
       <Attribution unknown="Licencia mapy nie je špecifikovaná" />
     ),
     unauthenticatedError:
-      'Pro přístup k této funkci se nejprve prosím přihlašte.',
+      'Pre prístup k tejto funkcii sa najprv prosím prihláste.',
   },
 
   selections: {

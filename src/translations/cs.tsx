@@ -93,15 +93,15 @@ const cs: Messages = {
     unnamed: 'Bez názvu',
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
     componentLoadingError:
-      'Komponent sa nepodarilo načítať. Skontrolujte svoje priponenie na internet.', // TODO translate
-    offline: 'Nie ste pripojený na internet.', // TODO translate
-    connectionError: 'Chyba spojenia so serverom.', // TODO translate
-    experimentalFunction: 'Experimentálna funkcia', // TODO translate
+      'Komponent se nepodařilo načíst. Zkontrolujte své připonění na internet.',
+    offline: 'Nejste připojen k internetu.',
+    connectionError: 'Chyba spojení se serverem.',
+    experimentalFunction: 'Experimentální funkce',
     attribution: () => (
-      <Attribution unknown="Licencia mapy nie je špecifikovaná" /> // TODO translate
+      <Attribution unknown="Licence mapy není specifikována" />
     ),
     unauthenticatedError:
-      'Pro prístup k této funkci se nejprve prosím přihláste.',
+      'Pro přístup k této funkci se nejprve prosím přihlašte.',
   },
 
   selections: {
@@ -110,8 +110,8 @@ const cs: Messages = {
     drawLines: 'Čára',
     drawPolygons: 'Polygón',
     tracking: 'Sledování',
-    linePoint: 'Line point', // TODO translate
-    polygonPoint: 'Polygon point', // TODO translate
+    linePoint: 'Bod čáry',
+    polygonPoint: 'Bod polygonu',
   },
 
   tools: {
@@ -132,15 +132,14 @@ const cs: Messages = {
   },
 
   routePlanner: {
-    // TODO translate
     ghParams: {
-      tripParameters: 'Parametre výletu',
+      tripParameters: 'Parametry výletu',
       seed: 'Random seed',
-      distance: 'Orientačná vzdialenosť',
-      isochroneParameters: 'Parametre izochrónov',
-      buckets: 'Počet delení',
+      distance: 'Orientační vzdálenost',
+      isochroneParameters: 'Parametry izochronů',
+      buckets: 'Počet dělení',
       timeLimit: 'Časový limit',
-      distanceLimit: 'Limit vzdialenosti',
+      distanceLimit: 'Limit vzdálenosti',
     },
     milestones: 'Kilometrovník',
     start: 'Start',
@@ -432,7 +431,7 @@ const cs: Messages = {
   },
 
   gallery: {
-    recentTags: 'Nedávne tagy na priradenie:', // TODO translate
+    recentTags: 'Nedávné tagy pro přiřazení:',
     filter: 'Filtr',
     showPhotosFrom: 'Prohlížet fotky',
     showLayer: 'Zobrazit vrstvu',
@@ -444,16 +443,16 @@ const cs: Messages = {
       lastCaptured: 'od nejnovější vyfocené',
       leastRated: 'od nejmenšího hodnocení',
       mostRated: 'od největšího hodnocení',
-      lastComment: 'od posledného komentára', // TODO translate
+      lastComment: 'od posledního komentáře',
     },
-    colorizeBy: 'Vyfarbiť podľa', // TODO translate
+    colorizeBy: 'Vybarvit podle',
     c: {
-      disable: 'nevyfarbiť', // TODO translate
-      mine: 'odlíšiť moje', // TODO translate
-      author: 'autora', // TODO translate
-      rating: 'hodnotenia', // TODO translate
-      takenAt: 'dátumu odfotenia', // TODO translate
-      createdAt: 'dátumu nahrania', // TODO translate
+      disable: 'nevybarvit',
+      mine: 'odlišit moje',
+      author: 'autora',
+      rating: 'hodnocení',
+      takenAt: 'data vyfocení',
+      createdAt: 'data nahrání',
       season: 'ročního období',
     },
     viewer: {
@@ -531,8 +530,8 @@ const cs: Messages = {
       pano: 'Panoráma',
     },
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
-    linkToWww: 'fotografia na www.freemap.sk', // TODO translate
-    linkToImage: 'súbor fotografie', // TODO translate
+    linkToWww: 'fotografie na www.freemap.sk',
+    linkToImage: 'soubor fotografie',
   },
 
   measurement: {
@@ -617,11 +616,11 @@ const cs: Messages = {
       width: 'Šířka:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
     },
-    continue: 'Continue', // TODO translate
-    join: 'Join', // TODO translate
-    split: 'Split', // TODO translate
-    stopDrawing: 'Stop drawing', // TODO translate
-    selectPointToJoin: 'Select point to join lines', // TODO translate
+    continue: 'Pokračovat',
+    join: 'Spojit',
+    split: 'Rozdělit',
+    stopDrawing: 'Ukončit kreslení',
+    selectPointToJoin: 'Zvolte bod pro spojení čar',
   },
 
   settings: {
@@ -639,25 +638,25 @@ const cs: Messages = {
       sendGalleryEmails: 'Upozornit emailem na komentáře k fotce',
       delete: 'Smazat účet',
       deleteWarning:
-        'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.', // TODO translate
+        'Opravdu si přejete smazat svůj účet? Spolu s ním se odstraní všechny vaše fotografie, komentáře a hodnocení fotografií, vlastní mapy a sledovaná zařízení.',
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
     },
     layer: 'Mapa',
     overlayOpacity: 'Viditelnost',
-    showInMenu: 'Zobraziť v menu', // TODO translate
-    showInToolbar: 'Zobraziť v lište', // TODO translate
+    showInMenu: 'Zobrazit v menu',
+    showInToolbar: 'Zobrazit v liště',
     saveSuccess: 'Změny byly uloženy.',
     savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
-    customLayersDef: 'Definícia vlastných mapových vrstiev', // TODO translate
-    customLayersDefError: 'Chybný formát definície vlasyných mapových vrstiev.', // TODO translate
+    customLayersDef: 'Definice vlastních mapových vrstev',
+    customLayersDefError: 'Chybný formát definice vlasových mapových vrstev.',
   },
 
   changesets: {
     allAuthors: 'Všichni autoři',
     tooBig:
-      'Požiadavka na získanie zmien môže vrátiť veľa záznamov. Skúste priblížiť mapu, zvoliť menej dní, alebo zadať konkrétneho autora.', // TODO translate
+      'Požadavek na získání změn může vrátit spoustu záznamů. Zkuste přiblížit mapu, zvolit méně dní, nebo zadat konkrétního autora.',
     olderThan: ({ days }) => `${days} dn ${days === 3 ? 'i' : 'í'}`,
     olderThanFull: ({ days }) =>
       `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
@@ -698,8 +697,7 @@ const cs: Messages = {
         `Vyhledávání míst je možné až od přiblížení úrovně ${minZoom}.`,
       zoom: 'Přiblíž',
     },
-    tooManyPoints: ({ limit }) =>
-      `Výsledok bol obmedzený na ${limit} objektov.`, // TODO translate
+    tooManyPoints: ({ limit }) => `Výsledek byl omezen na ${limit} objektů.`,
     fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
     // categories: {
     //   1: 'Příroda',
@@ -1075,12 +1073,12 @@ const cs: Messages = {
   },
 
   mapLayers: {
-    showAll: 'Ukázať všetky mapy', // TODO translate
-    settings: 'Nastavenia máp', // TODO translate
+    showAll: 'Zobrazit všechny mapy',
+    settings: 'Nastavení map',
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
-    interactiveLayerWarning: 'Interaktívna vrstva je skrytá', // TODO translate
+    interactiveLayerWarning: 'Interaktivní vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
       A: 'Automapa',
@@ -1117,8 +1115,8 @@ const cs: Messages = {
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
     },
-    customBase: 'Vlastná mapa', // TODO translate
-    customOverlay: 'Vlastné prekrytie mapy', // TODO translate
+    customBase: 'Vlastní mapa',
+    customOverlay: 'Vlastní překrytí mapy',
     type: {
       map: 'mapa',
       data: 'data',
@@ -1336,8 +1334,8 @@ const cs: Messages = {
     ),
   },
   pdfExport: {
-    advancedSettings: 'Advanced options', // TODO translate
-    styles: 'Interactive layer styles', // TODO translate
+    advancedSettings: 'Rozšířená nastavení',
+    styles: 'Styly interaktivní vrstvy',
     export: 'Exportovat',
     exportError: ({ err }) => `Chyba exportu mapy: ${err}`,
     exporting: 'Prosím počkejte, mapa se exportuje…',
@@ -1413,7 +1411,7 @@ const cs: Messages = {
 
   maps: {
     legacyMapWarning:
-      'Zobrazená mapa je zastaralá. Prepnúť na modernú outdoorovú mapu?', // TODO translate
+      'Zobrazená mapa je zastaralá. Přepnout na moderní outdoorovou mapu?',
     noMapFound: 'Žádná mapa nenalezena',
     save: 'Uložit',
     delete: 'Smazat',
@@ -1436,7 +1434,7 @@ const cs: Messages = {
       </>
     ),
     writers: 'Editori',
-    conflictError: 'Mapa bola medzičasom modifikovaná.', // TODO translate
+    conflictError: 'Mapa byla mezitím modifikována.',
   },
 
   // check/improve translation
@@ -1500,10 +1498,9 @@ const cs: Messages = {
     success: 'Gratulujeme, stali jste se prémiovým členem!',
   },
 
-  // TODO translate
   offline: {
     offlineMode: 'Režim offline',
-    cachingActive: 'Nahrávanie do cache aktívne',
+    cachingActive: 'Nahrávání do cache aktivní',
     clearCache: 'Smazat cache',
     dataSource: 'Zdroj dát',
     networkOnly: 'Pouze internet',
