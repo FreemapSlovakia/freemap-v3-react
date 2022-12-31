@@ -20,6 +20,7 @@ export const drawingChangeProperties = createAction(
   label: string | undefined;
   color: string | undefined;
   width: number | undefined;
+  type: 'line' | 'polygon';
 }>();
 
 export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<

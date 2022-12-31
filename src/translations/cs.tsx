@@ -615,6 +615,7 @@ const cs: Messages = {
       label: 'Popis:',
       width: 'Šířka:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
+      type: 'Typ geometrie',
     },
     continue: 'Pokračovat',
     join: 'Spojit',

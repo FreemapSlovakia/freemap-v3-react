@@ -644,6 +644,7 @@ const sk: Messages = {
       label: 'Popis:',
       width: 'Šírka',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
+      type: 'Typ geometrie',
     },
     continue: 'Pokračovať',
     join: 'Spojiť',

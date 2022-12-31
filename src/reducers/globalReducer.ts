@@ -209,7 +209,7 @@ export function preGlobalReducer(
             }
 
             lines.push({
-              type: 'line',
+              type: 'polygon',
               label: feature.properties?.['name'],
               points,
             });

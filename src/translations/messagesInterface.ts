@@ -458,6 +458,7 @@ export type Messages = {
       label: string;
       width: string;
       hint: string;
+      type: string;
     };
     split: string;
     join: string;

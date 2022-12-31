@@ -602,6 +602,7 @@ const en: Messages = {
       label: 'Label:',
       width: 'Width:',
       hint: 'To remove label leave its field empty.',
+      type: 'Geometry type',
     },
     continue: 'Continue',
     join: 'Join',

@@ -54,6 +54,14 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       : '???';
   });
 
+  const type = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly'
+      ? state.drawingLines.lines[selection.id]?.type
+      : undefined;
+  });
+
   const polyPoints = useAppSelector((state) => {
     const { selection } = state.main;
 
@@ -68,13 +76,17 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   const [editedWidth, setEditedWidth] = useState(String(width || 4));
 
+  const [editedType, setEditedType] = useState<'polygon' | 'line'>(
+    type ?? 'line',
+  );
+
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const saveLabel = useCallback(
+  const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
@@ -150,15 +162,24 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
       dispatch(
         drawingChangeProperties({
-          label: editedLabel,
+          label: editedLabel || undefined,
           color: editedColor,
           width: Number(editedWidth) || undefined,
+          type: editedType,
         }),
       );
 
       close();
     },
-    [dispatch, editedLabel, editedColor, editedWidth, close, polyPoints],
+    [
+      polyPoints,
+      editedLabel,
+      dispatch,
+      editedColor,
+      editedWidth,
+      editedType,
+      close,
+    ],
   );
 
   const handleLocalLabelChange = useCallback(
@@ -184,7 +205,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   return (
     <Modal show={show} onHide={close}>
-      <form onSubmit={saveLabel}>
+      <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
         </Modal.Header>
@@ -224,6 +245,19 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               step={0.1}
               onChange={handleLocalWidthChange}
             />
+          </FormGroup>
+
+          <FormGroup>
+            <FormLabel>{m?.drawing.edit.type}:</FormLabel>
+
+            <FormControl
+              as="select"
+              value={editedType}
+              onChange={(e) => setEditedType(e.currentTarget.value as any)}
+            >
+              <option value="line">{m?.selections.drawLines}</option>
+              <option value="polygon">{m?.selections.drawPolygons}</option>
+            </FormControl>
           </FormGroup>
         </Modal.Body>
 

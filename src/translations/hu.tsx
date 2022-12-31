@@ -614,6 +614,7 @@ const hu: Messages = {
       label: 'Felirat:',
       width: 'Szélesség', // TODO
       hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
+      type: 'Geometry type', // TODO translate
     },
     continue: 'Continue', // TODO translate
     join: 'Join', // TODO translate

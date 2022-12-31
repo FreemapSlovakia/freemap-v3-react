@@ -606,6 +606,7 @@ const it: Messages = {
       label: 'Etichetta:',
       width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
+      type: 'Geometry type', // TODO translate
     },
     continue: 'Continua',
     join: 'Unisci',
