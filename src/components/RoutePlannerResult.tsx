@@ -86,7 +86,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const timestamp = useAppSelector((state) => state.routePlanner.timestamp);
 
-  const showMilestones = useAppSelector(
+  const milestonesMode = useAppSelector(
     (state) => state.routePlanner.milestones,
   );
 
@@ -200,21 +200,6 @@ export function RoutePlannerResult(): ReactElement {
     [language, m],
   );
 
-  const step =
-    zoom > 13
-      ? 1
-      : zoom > 12
-      ? 2
-      : zoom > 10
-      ? 5
-      : zoom > 9
-      ? 10
-      : zoom > 8
-      ? 20
-      : zoom > 7
-      ? 25
-      : 50;
-
   const ensureTool = useCallback(() => {
     if (tool !== 'route-planner') {
       dispatch(setTool('route-planner'));
@@ -222,7 +207,7 @@ export function RoutePlannerResult(): ReactElement {
   }, [dispatch, tool]);
 
   const milestones = useMemo(() => {
-    if (!showMilestones || !alternatives[activeAlternativeIndex]) {
+    if (!milestonesMode || !alternatives[activeAlternativeIndex]) {
       return [];
     }
 
@@ -237,12 +222,60 @@ export function RoutePlannerResult(): ReactElement {
 
     const milestones: Feature<Point, Properties>[] = [];
 
-    for (let i = step; i < len; i += step) {
-      milestones.push(along(line, i));
+    if (milestonesMode === 'abs') {
+      const step =
+        zoom > 13
+          ? 1
+          : zoom > 12
+          ? 2
+          : zoom > 10
+          ? 5
+          : zoom > 9
+          ? 10
+          : zoom > 8
+          ? 20
+          : zoom > 7
+          ? 25
+          : 50;
+
+      for (let d = step; d < len; d += step) {
+        const milestone = along(line, d);
+
+        milestone.properties = { label: d };
+
+        milestones.push(milestone);
+      }
+    } else {
+      const pxLen = (len * Math.pow(2, zoom)) / 1000;
+
+      console.log({ pxLen });
+
+      const q = 50;
+
+      const steps =
+        pxLen < q
+          ? pctSeq(50)
+          : pxLen < q * 2
+          ? pctSeq(25)
+          : pxLen < q * 5
+          ? pctSeq(10)
+          : pxLen < q * 10
+          ? pctSeq(5)
+          : pxLen < q * 25
+          ? pctSeq(2)
+          : pctSeq(1);
+
+      for (const pct of steps) {
+        const milestone = along(line, (len / 100) * pct);
+
+        milestone.properties = { label: pct };
+
+        milestones.push(milestone);
+      }
     }
 
     return milestones;
-  }, [activeAlternativeIndex, alternatives, step, showMilestones]);
+  }, [activeAlternativeIndex, alternatives, zoom, milestonesMode]);
 
   const getPointDetails = useCallback(
     (i: number, showDiff = true, summary = false) => {
@@ -844,15 +877,15 @@ export function RoutePlannerResult(): ReactElement {
 
       {paths}
 
-      {milestones.map((ms, i) => (
+      {milestones.map((milestone, i) => (
         <CircleMarker
           radius={0}
           key={i}
-          center={reverse(ms.geometry.coordinates as [number, number])}
+          center={reverse(milestone.geometry.coordinates as [number, number])}
         >
           {!dragging && (
             <Tooltip className="compact" direction="right" permanent>
-              <div>{(i + 1) * step}</div>
+              <div>{milestone.properties?.['label']}</div>
             </Tooltip>
           )}
         </CircleMarker>
@@ -1021,3 +1054,13 @@ function imhdSummary(
 //     duration: duration === undefined ? undefined : Math.round(duration / 60),
 //   });
 // }
+
+function pctSeq(step: number) {
+  const arr: number[] = [];
+
+  for (let n = step; n < 100; n += step) {
+    arr.push(n);
+  }
+
+  return arr;
+}

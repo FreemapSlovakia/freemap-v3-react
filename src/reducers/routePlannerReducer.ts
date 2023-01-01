@@ -87,7 +87,7 @@ export interface RoutePlannerState extends RoutePlannerCleanState {
   transportType: TransportType;
   mode: RoutingMode;
   weighting: Weighting;
-  milestones: boolean;
+  milestones: 'abs' | 'rel' | false;
   preventHint: boolean;
 }
 
@@ -113,7 +113,9 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     return {
       ...state,
       milestones:
-        action.payload === undefined ? !state.milestones : action.payload,
+        action.payload.toggle && state.milestones === action.payload.type
+          ? false
+          : action.payload.type,
     };
   })
   .handleAction(selectFeature, (state) => ({
@@ -170,7 +172,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
         payload.mode === 'isochrone'
       ? 'route'
       : payload.mode || 'route',
-    milestones: !!payload.milestones,
+    milestones: payload.milestones ?? false,
     weighting:
       state.transportType === 'foot-stroller' &&
       (payload.weighting ?? 'fastest') === 'fastest'

@@ -142,7 +142,7 @@ export const urlProcessor: Processor = {
       }
 
       if (routePlanner.milestones) {
-        historyParts.push(['milestones', 1]);
+        historyParts.push(['milestones', routePlanner.milestones]);
       }
 
       if (

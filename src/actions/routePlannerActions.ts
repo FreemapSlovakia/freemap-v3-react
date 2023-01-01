@@ -194,7 +194,7 @@ export const routePlannerSetParams = createAction('ROUTE_PLANNER_SET_PARAMS')<{
   transportType: TransportType;
   mode?: RoutingMode | null;
   weighting?: Weighting | null;
-  milestones?: boolean;
+  milestones?: 'abs' | 'rel' | false;
   roundtripParams?: Partial<RoundtripParams>;
   isochroneParams?: Partial<IsochroneParams>;
 }>();
@@ -215,7 +215,7 @@ export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS')();
 
 export const routePlannerToggleMilestones = createAction(
   'ROUTE_PLANNER_TOGGLE_MILESTONES',
-)<boolean | undefined>();
+)<{ type: 'abs' | 'rel'; toggle?: boolean }>();
 
 export const routePlannerSetRoundtripParams = createAction(
   'ROUTE_PLANNER_SET_ROUNDTRIP_PARAMS',

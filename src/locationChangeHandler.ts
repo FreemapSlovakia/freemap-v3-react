@@ -151,6 +151,15 @@ export const handleLocationChange = (
               !Number.isNaN(point[1]))),
       );
 
+    const qMilestones = query['milestones'];
+
+    const reqMilestones =
+      qMilestones === '1' || qMilestones === 'abs'
+        ? 'abs'
+        : qMilestones === 'rel'
+        ? 'rel'
+        : false;
+
     if (
       transportTypeDefs[query['transport'] as TransportType] && // for dev
       is<TransportType>(query['transport']) && // for prod
@@ -192,7 +201,7 @@ export const handleLocationChange = (
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         (weighting === 'fastest' ? undefined : weighting) !==
           query['route-weighting'] ||
-        (milestones && !query['milestones']) ||
+        milestones !== reqMilestones ||
         String(roundtripParams.seed) !== (query['trip-seed'] ?? '0') ||
         String(roundtripParams.distance) !==
           (query['trip-distance'] ?? '5000') ||
@@ -218,7 +227,7 @@ export const handleLocationChange = (
                 ? routeMode
                 : 'route',
             weighting: is<Weighting>(weighting) ? weighting : undefined,
-            milestones: !!query['milestones'],
+            milestones: reqMilestones,
             roundtripParams: {
               seed: Number(query['trip-seed']) || 0,
               distance: Number(query['trip-distance']) || 5000,
@@ -241,7 +250,7 @@ export const handleLocationChange = (
           finish: null,
           midpoints: [],
           transportType: getState().routePlanner.transportType,
-          milestones: !!query['milestones'],
+          milestones: reqMilestones,
         }),
       );
     }

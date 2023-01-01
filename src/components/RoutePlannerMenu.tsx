@@ -39,17 +39,19 @@ import { FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
-import FormCheck from 'react-bootstrap/FormCheck';
 import {
   FaBullseye,
   FaChartArea,
   FaCrosshairs,
   FaDiceThree,
+  FaEllipsisV,
   FaHome,
   FaMapMarkerAlt,
   FaMoneyBill,
   FaPencilAlt,
   FaPlay,
+  FaRegCheckSquare,
+  FaRegSquare,
   FaStop,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -636,7 +638,8 @@ export function RoutePlannerMenu(): ReactElement {
 
           <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
             <Dropdown.Item>
-              <FaMapMarkerAlt /> {m?.routePlanner.point.pick ?? '…'}
+              <FaMapMarkerAlt />
+              &nbsp;{m?.routePlanner.point.pick ?? '…'}
             </Dropdown.Item>
 
             <Dropdown.Item
@@ -644,7 +647,8 @@ export function RoutePlannerMenu(): ReactElement {
                 dispatch(routePlannerSetFromCurrentPosition('start'));
               }}
             >
-              <FaBullseye /> {m?.routePlanner.point.current ?? '…'}
+              <FaBullseye />
+              &nbsp;{m?.routePlanner.point.current ?? '…'}
             </Dropdown.Item>
 
             <Dropdown.Item
@@ -652,14 +656,12 @@ export function RoutePlannerMenu(): ReactElement {
               eventKey="start"
               onSelect={setFromHomeLocation}
             >
-              <div>
-                <FaHome /> {m?.routePlanner.point.home ?? '…'}
-              </div>
-
+              <FaHome />
+              &nbsp;{m?.routePlanner.point.home ?? '…'}
               <Button
                 size="sm"
                 variant="secondary"
-                className="m-n1"
+                className="my-n1 ml-2"
                 title={m?.settings.map.homeLocation.select}
               >
                 <FaCrosshairs className="pe-none" />
@@ -701,6 +703,7 @@ export function RoutePlannerMenu(): ReactElement {
               <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
                 <Dropdown.Item>
                   <FaMapMarkerAlt />
+                  &nbsp;
                   {m?.routePlanner.point.pick ?? '…'}
                 </Dropdown.Item>
 
@@ -710,6 +713,7 @@ export function RoutePlannerMenu(): ReactElement {
                   }
                 >
                   <FaBullseye />
+                  &nbsp;
                   {m?.routePlanner.point.current ?? '…'}
                 </Dropdown.Item>
 
@@ -718,14 +722,12 @@ export function RoutePlannerMenu(): ReactElement {
                   eventKey="finish"
                   onSelect={setFromHomeLocation}
                 >
-                  <div>
-                    <FaHome /> {m?.routePlanner.point.home ?? '…'}
-                  </div>
-
+                  <FaHome />
+                  &nbsp;{m?.routePlanner.point.home ?? '…'}
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="m-n1"
+                    className="my-n1 ml-2"
                     title={m?.settings.map.homeLocation.select}
                   >
                     <FaCrosshairs className="pe-none" />
@@ -738,46 +740,50 @@ export function RoutePlannerMenu(): ReactElement {
       </ButtonGroup>
 
       {routeFound && (
-        <>
-          <Button
-            className="ml-1"
-            variant="secondary"
-            onClick={() => dispatch(routePlannerToggleElevationChart())}
-            active={elevationProfileIsVisible}
-            title={m?.general.elevationProfile ?? '…'}
-          >
-            <FaChartArea />
+        <Dropdown className="ml-1" id="more">
+          <Dropdown.Toggle variant="secondary">
+            <FaEllipsisV />
+          </Dropdown.Toggle>
 
-            <span className="d-none d-md-inline">
-              {' '}
-              {m?.general.elevationProfile ?? '…'}
-            </span>
-          </Button>
+          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+            <Dropdown.Item
+              active={elevationProfileIsVisible}
+              onSelect={() => dispatch(routePlannerToggleElevationChart())}
+            >
+              <FaChartArea />
+              &nbsp;{m?.general.elevationProfile ?? '…'}
+            </Dropdown.Item>
 
-          <Button
-            className="ml-1"
-            variant="secondary"
-            onClick={handleConvertToDrawing}
-            title={m?.general.convertToDrawing ?? '…'}
-          >
-            <FaPencilAlt />
+            <Dropdown.Item onSelect={handleConvertToDrawing}>
+              <FaPencilAlt />
+              &nbsp;{m?.general.convertToDrawing ?? '…'}
+            </Dropdown.Item>
 
-            <span className="d-none d-md-inline">
-              {' '}
-              {m?.general.convertToDrawing ?? '…'}
-            </span>
-          </Button>
+            <Dropdown.Divider />
 
-          <FormCheck
-            id="chk-milestones"
-            className="ml-1"
-            type="checkbox"
-            inline
-            onChange={() => dispatch(routePlannerToggleMilestones(undefined))}
-            checked={milestones}
-            label={m?.routePlanner.milestones ?? '…'}
-          />
-        </>
+            <Dropdown.Item
+              onSelect={() =>
+                dispatch(
+                  routePlannerToggleMilestones({ type: 'abs', toggle: true }),
+                )
+              }
+            >
+              {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
+              &nbsp;{m?.routePlanner.milestones ?? '…'} (km)
+            </Dropdown.Item>
+
+            <Dropdown.Item
+              onSelect={() =>
+                dispatch(
+                  routePlannerToggleMilestones({ type: 'rel', toggle: true }),
+                )
+              }
+            >
+              {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
+              &nbsp;{m?.routePlanner.milestones ?? '…'} (%)
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       )}
 
       {(routeFound || isochronesFound || canDelete) && <DeleteButton />}
