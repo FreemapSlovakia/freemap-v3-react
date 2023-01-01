@@ -12,7 +12,11 @@ import {
   drawingChangeProperties,
   drawingPointAdd,
 } from 'fm3/actions/drawingPointActions';
-import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
+import {
+  applySettings,
+  convertToDrawing,
+  deleteFeature,
+} from 'fm3/actions/mainActions';
 import { mergeLines } from 'fm3/geoutils';
 import { RootState } from 'fm3/reducers';
 import produce from 'immer';
@@ -61,6 +65,8 @@ export function preGlobalReducer(
 
         draft.drawingLines.lines.push({
           type: 'line',
+          color: draft.main.drawingColor,
+          width: draft.main.drawingWidth,
           points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
@@ -86,6 +92,7 @@ export function preGlobalReducer(
             lat: object.lat,
             lon: object.lon,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
+            color: draft.main.drawingColor,
           });
 
           draft.drawingPoints.change++;
@@ -116,6 +123,7 @@ export function preGlobalReducer(
           if (geometry?.type === 'Point') {
             draft.drawingPoints.points.push({
               label: feature.properties?.['name'],
+              color: draft.main.drawingColor,
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
@@ -135,6 +143,8 @@ export function preGlobalReducer(
             draft.drawingLines.lines.push({
               type: 'line',
               label: feature.properties?.['name'],
+              color: draft.main.drawingColor,
+              width: draft.main.drawingWidth,
               points,
             });
           }
@@ -172,6 +182,7 @@ export function preGlobalReducer(
           if (geometry?.type === 'Point') {
             draft.drawingPoints.points.push({
               label: feature.properties?.['name'],
+              color: draft.main.drawingColor,
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
@@ -191,6 +202,8 @@ export function preGlobalReducer(
             lines.push({
               type: 'line',
               // label: feature.properties?.['name'], // ignore street names
+              color: draft.main.drawingColor,
+              width: draft.main.drawingWidth,
               points,
             });
           } else if (geometry?.type === 'Polygon') {
@@ -211,6 +224,8 @@ export function preGlobalReducer(
             lines.push({
               type: 'polygon',
               label: feature.properties?.['name'],
+              color: draft.main.drawingColor,
+              width: draft.main.drawingWidth,
               points,
             });
           }
@@ -321,9 +336,31 @@ export function preGlobalReducer(
         },
       };
     }
+  } else if (isActionOf(applySettings, action)) {
+    const { drawingColor } = action.payload;
+
+    return drawingColor
+      ? updateRecentDrawingColors(state, drawingColor)
+      : state;
+  } else if (isActionOf(drawingChangeProperties, action)) {
+    const { color } = action.payload;
+
+    return color ? updateRecentDrawingColors(state, color) : state;
   }
 
   return state;
+}
+
+function updateRecentDrawingColors(state: RootState, drawingColor: string) {
+  return produce(state, (draft) => {
+    draft.main.drawingRecentColors = draft.main.drawingRecentColors.filter(
+      (color) => color !== drawingColor,
+    );
+
+    draft.main.drawingRecentColors.unshift(drawingColor);
+
+    draft.main.drawingRecentColors.splice(12, Infinity);
+  });
 }
 
 export function postGlobalReducer(

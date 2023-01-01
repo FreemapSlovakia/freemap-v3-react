@@ -465,6 +465,11 @@ export type Messages = {
     continue: string;
     stopDrawing: string;
     selectPointToJoin: string;
+    defProps: {
+      menuItem: string;
+      title: string;
+      applyToAll: string;
+    };
   };
   settings: {
     map: {

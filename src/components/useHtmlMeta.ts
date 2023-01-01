@@ -23,6 +23,7 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   'remove-ads': 'removeAds.title',
   'gallery-filter': 'gallery.filterModal.title',
   'gallery-upload': 'gallery.uploadModal.title',
+  'drawing-properties': 'drawing.defProps.menuItem',
 };
 
 export function useHtmlMeta(): void {

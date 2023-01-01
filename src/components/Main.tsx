@@ -148,6 +148,9 @@ const removeAdsModalFactory = () => import('./RemoveAdsModal');
 const galleryFilterModalFactory = () =>
   import('fm3/components/gallery/GalleryFilterModal');
 
+const currentDrawingPropertiesModalFactory = () =>
+  import('fm3/components/CurrentDrawingPropertiesModal');
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -744,6 +747,11 @@ export function Main(): ReactElement {
         <AsyncModal
           show={activeModal === 'gallery-filter'}
           factory={galleryFilterModalFactory}
+        />
+
+        <AsyncModal
+          show={activeModal === 'drawing-properties'}
+          factory={currentDrawingPropertiesModalFactory}
         />
 
         <GalleryModals />

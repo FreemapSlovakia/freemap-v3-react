@@ -651,6 +651,11 @@ const sk: Messages = {
     split: 'Rozdeliť',
     stopDrawing: 'Ukončiť kreslenie',
     selectPointToJoin: 'Zvoľte bod pre spojenie čiar',
+    defProps: {
+      menuItem: 'Nastaviť štýl',
+      title: 'Nastavenie štýlu kreslenia',
+      applyToAll: 'Uložiť a aplikovať na všetko',
+    },
   },
 
   settings: {

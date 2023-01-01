@@ -17,6 +17,8 @@ export interface Line {
 export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{
   type?: 'polygon' | 'line';
   index?: number;
+  color?: string;
+  width?: number;
   point: Point;
   position?: number;
 }>();

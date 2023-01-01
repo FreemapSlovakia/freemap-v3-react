@@ -20,6 +20,7 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { DrawingRecentColors } from './DrawingRecentColors';
 
 type Props = { show: boolean };
 
@@ -232,6 +233,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               value={editedColor || colors.normal}
               onChange={handleLocalColorChange}
             />
+
+            <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
           </FormGroup>
 
           <FormGroup>

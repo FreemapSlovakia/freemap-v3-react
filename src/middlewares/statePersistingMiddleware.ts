@@ -37,6 +37,9 @@ function persistSelectedState(state: RootState) {
         cookieConsentResult: state.main.cookieConsentResult,
         homeLocation: state.main.homeLocation,
         hiddenInfoBars: state.main.hiddenInfoBars,
+        drawingColor: state.main.drawingColor,
+        drawingWidth: state.main.drawingWidth,
+        drawingRecentColors: state.main.drawingRecentColors,
       },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,

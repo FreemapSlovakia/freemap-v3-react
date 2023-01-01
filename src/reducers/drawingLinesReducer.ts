@@ -12,7 +12,12 @@ import {
   Line,
   Point,
 } from 'fm3/actions/drawingLineActions';
-import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
+import {
+  applySettings,
+  clearMap,
+  selectFeature,
+  setTool,
+} from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
@@ -44,6 +49,22 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     drawing: false,
     joinWith: undefined,
   }))
+  .handleAction(applySettings, (state, { payload }) =>
+    produce(state, (draft) => {
+      if (payload.drawingApplyAll) {
+        for (const line of draft.lines) {
+          if (payload.drawingColor) {
+            line.color = payload.drawingColor;
+          }
+
+          if (payload.drawingWidth) {
+            line.width = payload.drawingWidth;
+          }
+        }
+      }
+    }),
+  )
+
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, (draft) => {
       let line: Line;
@@ -53,7 +74,12 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
           throw new Error();
         }
 
-        line = { type: action.payload.type, points: [] };
+        line = {
+          type: action.payload.type,
+          color: action.payload.color,
+          width: action.payload.width,
+          points: [],
+        };
 
         draft.lines.push(line);
       } else {
@@ -127,6 +153,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
       }),
   )
   .handleAction(mapsLoaded, (state, { payload }) => ({
+    ...state,
     joinWith: undefined,
     drawing: false,
     lines: [

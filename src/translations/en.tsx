@@ -609,6 +609,11 @@ const en: Messages = {
     split: 'Split',
     stopDrawing: 'Stop drawing',
     selectPointToJoin: 'Select point to join lines',
+    defProps: {
+      menuItem: 'Style settings',
+      title: 'Default drawing style settings',
+      applyToAll: 'Save and apply to all',
+    },
   },
 
   settings: {

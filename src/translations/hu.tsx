@@ -621,6 +621,12 @@ const hu: Messages = {
     split: 'Split', // TODO translate
     stopDrawing: 'Stop drawing', // TODO translate
     selectPointToJoin: 'Select point to join lines', // TODO translate
+    // TODO translate
+    defProps: {
+      menuItem: 'Style settings',
+      title: 'Drawing style settings',
+      applyToAll: 'Save and apply to all',
+    },
   },
 
   settings: {

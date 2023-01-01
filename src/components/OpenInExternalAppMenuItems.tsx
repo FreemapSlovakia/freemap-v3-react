@@ -1,7 +1,7 @@
 import { ExternalTargets, openInExternalApp } from 'fm3/actions/mainActions';
 import {
-  getGeocachingUrl,
   getF4mapUrl,
+  getGeocachingUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIdUrl,

@@ -622,6 +622,11 @@ const cs: Messages = {
     split: 'Rozdělit',
     stopDrawing: 'Ukončit kreslení',
     selectPointToJoin: 'Zvolte bod pro spojení čar',
+    defProps: {
+      menuItem: 'Nastavit styl',
+      title: 'Nastavení stylu kreslení',
+      applyToAll: 'Uložit a aplikovat na všechno',
+    },
   },
 
   settings: {

@@ -283,75 +283,65 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     if (initCode === 'KeyJ') {
-      if (event.code === 'KeyC') {
-        return openInExternalApp({ where: 'copy' });
-      }
+      switch (event.code) {
+        case 'KeyC':
+          return openInExternalApp({ where: 'copy' });
 
-      if (event.code === 'KeyG') {
-        return openInExternalApp({ where: 'google' });
-      }
+        case 'KeyG':
+          return openInExternalApp({ where: 'google' });
 
-      if (event.code === 'KeyJ') {
-        return openInExternalApp({ where: 'josm' });
-      }
+        case 'KeyJ':
+          return openInExternalApp({ where: 'josm' });
 
-      if (event.code === 'KeyO') {
-        return openInExternalApp({ where: 'osm.org' });
-      }
+        case 'KeyO':
+          return openInExternalApp({ where: 'osm.org' });
 
-      if (event.code === 'KeyI') {
-        return openInExternalApp({ where: 'osm.org/id' });
-      }
+        case 'KeyI':
+          return openInExternalApp({ where: 'osm.org/id' });
 
-      if (event.code === 'KeyM') {
-        return openInExternalApp({ where: 'mapy.cz' });
-      }
+        case 'KeyM':
+          return openInExternalApp({ where: 'mapy.cz' });
 
-      if (event.code === 'KeyF') {
-        return openInExternalApp({ where: 'facebook' });
-      }
+        case 'KeyF':
+          return openInExternalApp({ where: 'facebook' });
 
-      if (event.code === 'KeyT') {
-        return openInExternalApp({ where: 'twitter' });
-      }
+        case 'KeyT':
+          return openInExternalApp({ where: 'twitter' });
 
-      if (event.code === 'KeyH') {
-        return openInExternalApp({ where: 'hiking.sk' });
-      }
+        case 'KeyH':
+          return openInExternalApp({ where: 'hiking.sk' });
 
-      if (event.code === 'KeyZ') {
-        return openInExternalApp({ where: 'zbgis' });
-      }
+        case 'KeyZ':
+          return openInExternalApp({ where: 'zbgis' });
 
-      if (event.code === 'KeyP') {
-        return openInExternalApp({ where: 'peakfinder' });
-      }
+        case 'KeyP':
+          return openInExternalApp({ where: 'peakfinder' });
 
-      if (event.code === 'KeyL') {
-        return openInExternalApp({ where: 'mapillary' });
-      }
+        case 'KeyL':
+          return openInExternalApp({ where: 'mapillary' });
 
-      if (event.code === 'Digit4') {
-        return openInExternalApp({ where: 'f4map' });
-      }
+        case 'Digit4':
+          return openInExternalApp({ where: 'f4map' });
 
-      return undefined;
+        default:
+          return undefined;
+      }
     }
 
     if (initCode === 'KeyP') {
-      if (event.code === 'KeyL') {
-        return galleryList('-createdAt');
-      }
+      switch (event.code) {
+        case 'KeyL':
+          return galleryList('-createdAt');
 
-      if (event.code === 'KeyU') {
-        return setActiveModal('gallery-upload');
-      }
+        case 'KeyU':
+          return setActiveModal('gallery-upload');
 
-      if (event.code === 'KeyF') {
-        return setActiveModal('gallery-filter');
-      }
+        case 'KeyF':
+          return setActiveModal('gallery-filter');
 
-      return undefined;
+        default:
+          return undefined;
+      }
     }
 
     if (initCode === 'KeyE') {
@@ -367,6 +357,9 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
         case 'KeyE':
           return setActiveModal('embed');
+
+        case 'KeyD':
+          return setActiveModal('drawing-properties');
       }
 
       return undefined;

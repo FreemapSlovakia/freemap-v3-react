@@ -22,6 +22,10 @@ export function DrawingLinesTool(): null {
 
   const dispatch = useDispatch();
 
+  const color = useAppSelector((state) => state.main.drawingColor);
+
+  const width = useAppSelector((state) => state.main.drawingWidth);
+
   const handleMapClick = useCallback(
     ({ latlng, originalEvent }: LeafletMouseEvent) => {
       if (
@@ -48,6 +52,8 @@ export function DrawingLinesTool(): null {
         drawingLineAddPoint({
           index:
             selection?.type === 'draw-line-poly' ? selection.id : undefined,
+          color,
+          width,
           point: { lat: latlng.lat, lon: latlng.lng, id },
           position: pos,
           type: tool === 'draw-lines' ? 'line' : 'polygon',
@@ -56,7 +62,7 @@ export function DrawingLinesTool(): null {
 
       dispatch(drawingMeasure({}));
     },
-    [linePoints, dispatch, selection, tool],
+    [linePoints, dispatch, selection, tool, color, width],
   );
 
   useMapEvent('click', handleMapClick);

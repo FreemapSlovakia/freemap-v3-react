@@ -1,9 +1,9 @@
 import { authSetUser } from 'fm3/actions/authActions';
-import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
 import {
-  mapSetLayersSettings,
-  mapSetOverlayPaneOpacity,
-} from 'fm3/actions/mapActions';
+  applySettings,
+  saveSettings,
+  setActiveModal,
+} from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -13,8 +13,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const { settings, user } = action.payload;
-
-    // TODO don't save user if not changed
 
     if (getState().auth.user) {
       await httpRequest({
@@ -32,12 +30,8 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       dispatch(authSetUser(Object.assign({}, getState().auth.user, user)));
     }
 
-    if (settings?.layersSettings !== undefined) {
-      dispatch(mapSetLayersSettings(settings.layersSettings));
-    }
-
-    if (settings?.overlayPaneOpacity !== undefined) {
-      dispatch(mapSetOverlayPaneOpacity(settings.overlayPaneOpacity));
+    if (settings) {
+      dispatch(applySettings(settings));
     }
 
     dispatch(

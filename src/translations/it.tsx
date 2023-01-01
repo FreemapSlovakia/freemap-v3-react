@@ -613,6 +613,12 @@ const it: Messages = {
     split: 'Separa',
     stopDrawing: 'Ferma il disegno',
     selectPointToJoin: 'Seleziona un punto per unire le linee',
+    // TODO translate
+    defProps: {
+      menuItem: 'Style settings',
+      title: 'Drawing style settings',
+      applyToAll: 'Save and apply to all',
+    },
   },
 
   settings: {

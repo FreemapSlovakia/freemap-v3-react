@@ -20,6 +20,7 @@ export const basicModals = [
   'remove-ads',
   'gallery-filter',
   'gallery-upload',
+  'drawing-properties',
 ] as const;
 
 export const tools = [

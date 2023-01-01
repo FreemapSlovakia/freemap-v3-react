@@ -1,12 +1,9 @@
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { Selection } from 'fm3/actions/mainActions';
+import { applySettings, Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
-  mapSetCustomLayers,
-  mapSetLayersSettings,
-  mapSetOverlayPaneOpacity,
   MapStateBase,
   mapSuppressLegacyMapWarning,
 } from 'fm3/actions/mapActions';
@@ -48,18 +45,19 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
       [key]: [...state[key], state.mapType],
     };
   })
-  .handleAction(mapSetLayersSettings, (state, action) => ({
-    ...state,
-    layersSettings: action.payload,
-  }))
-  .handleAction(mapSetCustomLayers, (state, action) => ({
-    ...state,
-    customLayers: action.payload,
-  }))
-  .handleAction(mapSetOverlayPaneOpacity, (state, action) => ({
-    ...state,
-    overlayPaneOpacity: action.payload,
-  }))
+  .handleAction(applySettings, (state, action) => {
+    const newState = { ...state };
+
+    if (action.payload.layersSettings) {
+      newState.layersSettings = action.payload.layersSettings;
+    }
+
+    if (action.payload.overlayPaneOpacity) {
+      newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
+    }
+
+    return newState;
+  })
   .handleAction(gallerySetFilter, (state) => {
     return {
       ...state,

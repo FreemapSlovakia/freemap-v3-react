@@ -13,6 +13,7 @@ import {
 } from 'fm3/actions/drawingLineActions';
 import {
   applyCookieConsent,
+  applySettings,
   clearMap,
   convertToDrawing,
   deleteFeature,
@@ -61,6 +62,9 @@ export interface MainState {
   removeAdsOnLogin: boolean;
   documentKey: DocumentKey | null;
   hiddenInfoBars: Record<string, number>;
+  drawingColor: string;
+  drawingWidth: number;
+  drawingRecentColors: string[];
 }
 
 export const mainInitialState: MainState = {
@@ -80,6 +84,9 @@ export const mainInitialState: MainState = {
   removeAdsOnLogin: false,
   documentKey: null,
   hiddenInfoBars: {},
+  drawingColor: '#ff00ff',
+  drawingWidth: 4,
+  drawingRecentColors: [],
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -246,4 +253,17 @@ export const mainReducer = createReducer<MainState, RootAction>(
         [action.payload.key]: action.payload.ts,
       },
     };
+  })
+  .handleAction(applySettings, (state, action) => {
+    const newState = { ...state };
+
+    if (action.payload.drawingColor) {
+      newState.drawingColor = action.payload.drawingColor;
+    }
+
+    if (action.payload.drawingWidth) {
+      newState.drawingWidth = action.payload.drawingWidth;
+    }
+
+    return newState;
   });

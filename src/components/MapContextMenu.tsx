@@ -114,6 +114,10 @@ export function MapContextMenu(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
+  const color = useAppSelector((state) => state.main.drawingColor);
+
+  const width = useAppSelector((state) => state.main.drawingWidth);
+
   return (
     <>
       <div
@@ -186,6 +190,7 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
                 </Dropdown.Item>
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -203,6 +208,7 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaRuler /> {m?.mapCtxMenu.measurePosition}
                 </Dropdown.Item>
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -218,6 +224,7 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaInfo /> {m?.mapCtxMenu.queryFeatures}
                 </Dropdown.Item>
+
                 {/* TODO only if photo layer is not active */}
                 <Dropdown.Item
                   as="button"
@@ -234,6 +241,7 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaCamera /> {m?.mapCtxMenu.showPhotos}
                 </Dropdown.Item>
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -243,7 +251,9 @@ export function MapContextMenu(): ReactElement {
                   <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
                   <FaChevronRight />
                 </Dropdown.Item>
+
                 <Dropdown.Divider />
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -253,8 +263,7 @@ export function MapContextMenu(): ReactElement {
                       drawingPointAdd({
                         lat: contextMenu.lat,
                         lon: contextMenu.lon,
-                        label: '',
-                        color: '',
+                        color,
                       }),
                     );
 
@@ -263,6 +272,7 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
                 </Dropdown.Item>
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -273,6 +283,8 @@ export function MapContextMenu(): ReactElement {
                     dispatch(
                       drawingLineAddPoint({
                         type: 'line',
+                        color,
+                        width,
                         point: {
                           id: 0,
                           lat: contextMenu.lat,
@@ -284,7 +296,9 @@ export function MapContextMenu(): ReactElement {
                 >
                   <MdTimeline /> {m?.mapCtxMenu.startLine}
                 </Dropdown.Item>
+
                 <Dropdown.Divider />
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {
@@ -304,6 +318,7 @@ export function MapContextMenu(): ReactElement {
                 >
                   <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
                 </Dropdown.Item>
+
                 <Dropdown.Item
                   as="button"
                   onSelect={() => {

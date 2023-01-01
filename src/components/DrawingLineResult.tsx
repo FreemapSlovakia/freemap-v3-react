@@ -153,7 +153,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     }
 
     dispatch(
-      drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
+      drawingLineAddPoint({
+        index,
+        point: { lat, lon, id },
+        position: pos,
+      }),
     );
 
     dispatch(drawingMeasure({}));

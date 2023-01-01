@@ -47,14 +47,6 @@ export const mapSuppressLegacyMapWarning = createAction(
   'MAP_SUPPRESS_LEGACY_MAP_WARING',
 )<{ forever: boolean }>();
 
-export const mapSetLayersSettings = createAction('MAP_SET_LAYERS_SETTINGS')<
-  Record<string, LayerSettings>
->();
-
-export const mapSetOverlayPaneOpacity = createAction(
-  'MAP_SET_OVERLAY_PANE_OPACITY',
-)<number>();
-
 export const mapSetCustomLayers = createAction('MAP_SET_CUSTOM_LAYERS')<
   CustomLayer[]
 >();

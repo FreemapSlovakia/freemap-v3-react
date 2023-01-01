@@ -57,8 +57,6 @@ export type Exportable =
 
 export type Destination = 'download' | 'gdrive' | 'dropbox';
 
-export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
-
 export const exportGpx = createAction('EXPORT_GPX')<{
   exportables: Exportable[];
   type: 'gpx' | 'geojson';
@@ -81,15 +79,25 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
   settings?: {
-    layersSettings: Record<string, LayerSettings>;
-    overlayPaneOpacity: number;
-    customLayers: CustomLayer[];
+    layersSettings?: Record<string, LayerSettings>;
+    overlayPaneOpacity?: number;
+    customLayers?: CustomLayer[];
+    drawingColor?: string;
+    drawingWidth?: number;
   };
   user?: {
     name: string;
     email: string | null;
     sendGalleryEmails: boolean;
   };
+}>();
+
+export const applySettings = createAction('APPLY_SETTINGS')<{
+  layersSettings?: Record<string, LayerSettings>;
+  overlayPaneOpacity?: number;
+  drawingColor?: string;
+  drawingWidth?: number;
+  drawingApplyAll?: boolean;
 }>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
