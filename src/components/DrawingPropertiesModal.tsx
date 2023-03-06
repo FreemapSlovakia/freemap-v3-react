@@ -153,7 +153,63 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
           aElem.href = 'http://fm3.freemap.sk:8080?' + q.toString();
 
-          aElem.target = '_blak';
+          aElem.target = '_blank';
+
+          aElem.click();
+        }
+
+        return;
+      }
+
+      if (polyPoints && editedLabel === 'run forest run') {
+        const classifications = window.prompt('Classifications?', '4,5');
+
+        if (!classifications) {
+          return;
+        }
+
+        const inJosm = window.confirm('Open in JSOM?');
+
+        const toOsm =
+          inJosm || window.confirm('Write as OSM? (otherwise ad GeoJSON)');
+
+        const q = new URLSearchParams({
+          classifications,
+          mask: JSON.stringify(
+            polygon([
+              [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
+            ]),
+          ),
+          'to-osm': toOsm ? '1' : '',
+        });
+
+        if (inJosm) {
+          fetch(
+            'http://localhost:8111/import?new_layer=true&url=' +
+              encodeURIComponent('http://fm3.freemap.sk:8085?' + q.toString()),
+          )
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error(
+                  'Error response from localhost:8111: ' + res.status,
+                );
+              }
+            })
+            .catch((err) => {
+              dispatch?.(
+                toastsAdd({
+                  messageKey: 'general.operationError',
+                  messageParams: { err },
+                  style: 'danger',
+                }),
+              );
+            });
+        } else {
+          const aElem = document.createElement('a');
+
+          aElem.href = 'http://fm3.freemap.sk:8085?' + q.toString();
+
+          aElem.target = '_blank';
 
           aElem.click();
         }
