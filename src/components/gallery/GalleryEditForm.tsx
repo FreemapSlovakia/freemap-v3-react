@@ -1,7 +1,13 @@
 import { galleryAddTag, GalleryTag } from 'fm3/actions/galleryActions';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/react-tag-autocomplete.css';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import {
+  ChangeEvent,
+  ReactElement,
+  useCallback,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
@@ -99,6 +105,13 @@ export function GalleryEditForm({
     [changeModel, model.tags],
   );
 
+  // hack to resize tags properly on modal re-appear
+  const [key, setKey] = useState(0);
+
+  useLayoutEffect(() => {
+    setKey(1);
+  }, []);
+
   return (
     <div>
       {errors?.map((error) => (
@@ -164,7 +177,7 @@ export function GalleryEditForm({
         </InputGroup>
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup key={key}>
         <ReactTags
           placeholderText={m?.gallery.editForm.tags}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
