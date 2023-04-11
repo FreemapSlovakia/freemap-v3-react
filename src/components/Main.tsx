@@ -451,7 +451,7 @@ export function Main(): ReactElement {
           <Toasts />
 
           <div className="header">
-            {!askingCookieConsent && <InfoBar />}
+            {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
             <div className="menus">
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
@@ -534,7 +534,7 @@ export function Main(): ReactElement {
                   <ToolMenu />
                 ))}
 
-              {showMenu && showMapsMenu && <MapsMenu />}
+              {showMenu && showMapsMenu && !window.fmEmbedded && <MapsMenu />}
 
               {selectionMenu === 'draw-line-poly' ? (
                 <AsyncComponent factory={drawingLineSelectionFactory} />
