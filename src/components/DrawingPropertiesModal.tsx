@@ -71,6 +71,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       : undefined;
   });
 
+  const drawType = useAppSelector((state) => state.main.selection?.type);
+
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
@@ -293,31 +295,35 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
             <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
           </FormGroup>
 
-          <FormGroup>
-            <FormLabel>{m?.drawing.edit.width}</FormLabel>
+          {drawType === 'draw-line-poly' && (
+            <>
+              <FormGroup>
+                <FormLabel>{m?.drawing.edit.width}</FormLabel>
 
-            <FormControl
-              type="number"
-              value={editedWidth || '4'}
-              min={1}
-              max={12}
-              step={0.1}
-              onChange={handleLocalWidthChange}
-            />
-          </FormGroup>
+                <FormControl
+                  type="number"
+                  value={editedWidth || '4'}
+                  min={1}
+                  max={12}
+                  step={0.1}
+                  onChange={handleLocalWidthChange}
+                />
+              </FormGroup>
 
-          <FormGroup>
-            <FormLabel>{m?.drawing.edit.type}:</FormLabel>
+              <FormGroup>
+                <FormLabel>{m?.drawing.edit.type}:</FormLabel>
 
-            <FormControl
-              as="select"
-              value={editedType}
-              onChange={(e) => setEditedType(e.currentTarget.value as any)}
-            >
-              <option value="line">{m?.selections.drawLines}</option>
-              <option value="polygon">{m?.selections.drawPolygons}</option>
-            </FormControl>
-          </FormGroup>
+                <FormControl
+                  as="select"
+                  value={editedType}
+                  onChange={(e) => setEditedType(e.currentTarget.value as any)}
+                >
+                  <option value="line">{m?.selections.drawLines}</option>
+                  <option value="polygon">{m?.selections.drawPolygons}</option>
+                </FormControl>
+              </FormGroup>
+            </>
+          )}
         </Modal.Body>
 
         <Modal.Footer>
