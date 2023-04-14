@@ -15,7 +15,7 @@ import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { setDefaultGetErrorObject } from 'typescript-is';
@@ -33,8 +33,25 @@ setDefaultGetErrorObject(() => null);
 // filter out old browsers
 [].flatMap(() => null);
 
-if (window.location.search === '?reset-local-storage') {
+if (
+  window.location.search === '?reset-local-storage' ||
+  window.location.hash === '#reset-local-storage'
+) {
   storage.clear();
+}
+
+// workaround to fix blurring menus on hidpi desktop chrome
+if (
+  window.devicePixelRatio > 1 &&
+  navigator.userAgent.includes('Chrome/') &&
+  !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(
+    navigator.userAgent,
+  )
+) {
+  document.documentElement.style.setProperty(
+    '--scroller-mix-blend-mode',
+    'none',
+  );
 }
 
 document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
@@ -43,7 +60,12 @@ const store = createReduxStore();
 
 setErrorHandlerStore(store);
 
-store.dispatch(l10nSetChosenLanguage(store.getState().l10n.chosenLanguage));
+store.dispatch(
+  l10nSetChosenLanguage({
+    language: store.getState().l10n.chosenLanguage,
+    noSave: true,
+  }),
+);
 
 store.dispatch(authInit());
 
@@ -70,11 +92,7 @@ setVh();
 
 const cookieConsentResult = store.getState().main.cookieConsentResult;
 
-if (window.fmEmbedded || window.isRobot) {
-  // nothing for embed or robot
-} else if (cookieConsentResult !== null) {
-  store.dispatch(applyCookieConsent());
-} else {
+if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
   store.dispatch(
     toastsAdd({
       messageKey: 'main.cookieConsent',
@@ -90,9 +108,16 @@ if (window.fmEmbedded || window.isRobot) {
   );
 }
 
-render(
+const rootElement = document.getElementById('app');
+
+if (!rootElement) {
+  throw new Error('root element not found');
+}
+
+createRoot(rootElement).render(
   <Provider store={store}>
     <IconContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
       }}
@@ -104,12 +129,11 @@ render(
       </MessagesProvider>
     </IconContext.Provider>
   </Provider>,
-
-  document.getElementById('app'),
 );
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register(new URL('./sw/sw', import.meta.url));
+  // navigator.serviceWorker.register(new URL('./sw/sw', import.meta.url));
+  navigator.serviceWorker.register('/sw.js');
 }
 
 window.addEventListener('message', (e: MessageEvent) => {

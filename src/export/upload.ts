@@ -1,22 +1,23 @@
 import FileSaver from 'file-saver';
 import { Destination } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
+import { httpRequest } from 'fm3/httpRequest';
+import { RootState } from 'fm3/reducers';
+import { hasProperty } from 'fm3/typeUtils';
 import qs from 'query-string';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 
 export const licenseNotice =
-  'Various licenses may apply - like OpenStreetMap (http://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
+  'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
 
 export async function upload(
   type: 'gpx' | 'geojson',
   data: Blob,
   destination: Destination,
-  getState: () => DefaultRootState,
+  getState: () => RootState,
   dispatch: Dispatch,
-): Promise<void> {
+): Promise<boolean> {
   switch (destination) {
     case 'dropbox': {
       const redirUri = encodeURIComponent(
@@ -39,7 +40,7 @@ export async function upload(
           }),
         );
 
-        return;
+        return false;
       }
 
       const p = new Promise<string | void>((resolve, reject) => {
@@ -47,17 +48,19 @@ export async function upload(
           if (
             e.origin === window.location.origin &&
             typeof e.data === 'object' &&
-            typeof e.data.freemap === 'object' &&
+            typeof e.data?.freemap === 'object' &&
             e.data.freemap.action === 'dropboxAuth'
           ) {
             const { access_token: accessToken, error } = qs.parse(
               e.data.freemap.payload.slice(1),
             );
 
-            if (accessToken) {
-              resolve(
-                Array.isArray(accessToken) ? accessToken[0] : accessToken,
-              );
+            const at = Array.isArray(accessToken)
+              ? accessToken[0]
+              : accessToken;
+
+            if (at) {
+              resolve(at);
             } else {
               reject(new Error(`OAuth: ${error}`));
             }
@@ -82,7 +85,7 @@ export async function upload(
       const authToken = await p; // TODO handle error (https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/)
 
       if (authToken === undefined) {
-        return;
+        return false;
       }
 
       await httpRequest({
@@ -111,6 +114,7 @@ export async function upload(
 
       break;
     }
+
     case 'gdrive':
       {
         await loadGapi();
@@ -131,9 +135,24 @@ export async function upload(
 
         const auth2 = gapi.auth2.getAuthInstance();
 
-        const result = await auth2.signIn({
-          scope: 'https://www.googleapis.com/auth/drive.file',
-        });
+        let result: gapi.auth2.GoogleUser;
+
+        try {
+          result = await auth2.signIn({
+            scope: 'https://www.googleapis.com/auth/drive.file',
+          });
+        } catch (err) {
+          if (
+            hasProperty(err, 'error') &&
+            ['popup_closed_by_user', 'access_denied'].includes(
+              String(err['error']),
+            )
+          ) {
+            return false;
+          }
+
+          throw err;
+        }
 
         const ar = result.getAuthResponse();
 
@@ -155,16 +174,19 @@ export async function upload(
             switch (data[pkr.Response.ACTION]) {
               case pkr.Action.PICKED:
                 resolve(data[pkr.Response.DOCUMENTS][0]);
+
                 break;
+
               case pkr.Action.CANCEL:
                 resolve(undefined);
+
                 break;
             }
           }
         });
 
         if (!folder) {
-          return; // don't close export dialog
+          return false;
         }
 
         const formData = new FormData();
@@ -193,7 +215,7 @@ export async function upload(
           method: 'POST',
           url: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
           headers: { Authorization: `Bearer ${ar.access_token}` },
-          data: formData,
+          body: formData,
           expectedStatus: 200,
         });
       }
@@ -208,6 +230,7 @@ export async function upload(
       );
 
       break;
+
     case 'download':
       FileSaver.saveAs(
         data,
@@ -216,4 +239,6 @@ export async function upload(
 
       break;
   }
+
+  return true;
 }

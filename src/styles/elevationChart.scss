@@ -15,4 +15,9 @@
   & > p {
     margin: 0 0.5rem;
   }
+
+  & svg {
+    cursor: move;
+    user-select: none;
+  }
 }

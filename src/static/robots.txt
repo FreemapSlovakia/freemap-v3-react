@@ -1,1 +1,4 @@
+User-agent: *
+Allow: /
+
 Sitemap: https://www.freemap.sk/sitemap.txt

@@ -1,16 +1,10 @@
-# Freemap v3
+# Freemap Slovakia Web Application
 
-Next version of web portal maintained by [Slovak OpenStreetMap community](https://groups.google.com/forum/#!forum/osm_sk).
-
-Features:
-
-- maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country ski map)
-- picture gallery
-- various tools (searching, measurement, route planning, changesets, ...)
+Current version of [www.freemap.sk](https://www.freemap.sk) maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
 
 ## Requirements
 
-- Node 8
+- Node 14
 - [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
 
 ## Compiling and running in development mode
@@ -43,11 +37,23 @@ Set `DEPLOYMENT` to:
 
 ```bash
 npm i
-DEPLOYMENT=next ./node_modules/.bin/webpack
+DEPLOYMENT=www ./node_modules/.bin/webpack
 ```
 
 You'll then find all static web resources in `dist` directory.
 
 ## Other env varialbes
 
-- FM_MAPSERVER_URL - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
+- `FM_MAPSERVER_URL` - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
+
+## Translation (i18n)
+
+Files:
+
+- [webpack.config.js](webpack.config.js) - texts in `htmlPluginProps`
+- [src/translations/en-shared.json](src/translations/en-shared.json)
+- [src/translations/en.tsx](src/translations/en.tsx)
+- [src/components/supportUsModal/translations/en.tsx](src/components/supportUsModal/translations/en.tsx)
+- [src/globalErrorHandler.ts](src/globalErrorHandler.ts) - bottom error message
+- [src/osm/osmTagToNameMapping-en.ts](src/osm/osmTagToNameMapping-en.ts)
+- https://github.com/FreemapSlovakia/freemap-mapnik/blob/develop/legend.js

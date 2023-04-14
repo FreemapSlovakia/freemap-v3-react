@@ -5,12 +5,15 @@ import {
   TrackingPoint,
 } from 'fm3/components/tracking/TrackingPoint';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 // TODO functional component with hooks was causing massive re-rendering
 export function TrackingResult(): ReactElement {
@@ -18,15 +21,17 @@ export function TrackingResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const showLine = useSelector((state) => state.tracking.showLine);
+  const showLine = useAppSelector((state) => state.tracking.showLine);
 
-  const showPoints = useSelector((state) => state.tracking.showPoints);
+  const showPoints = useAppSelector((state) => state.tracking.showPoints);
 
-  const trackedDevices = useSelector((state) => state.tracking.trackedDevices);
+  const trackedDevices = useAppSelector(
+    (state) => state.tracking.trackedDevices,
+  );
 
-  const tracks = useSelector((state) => state.tracking.tracks);
+  const tracks = useAppSelector((state) => state.tracking.tracks);
 
   const tracks1 = useMemo(() => {
     const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
@@ -37,7 +42,7 @@ export function TrackingResult(): ReactElement {
     }));
   }, [trackedDevices, tracks]);
 
-  const activeTrackId = useSelector((state) =>
+  const activeTrackId = useAppSelector((state) =>
     state.main.selection?.type === 'tracking'
       ? state.main.selection?.id
       : undefined,
@@ -45,29 +50,26 @@ export function TrackingResult(): ReactElement {
 
   const [activePoint, setActivePoint] = useState<TrackPoint | null>(null);
 
-  const df = useMemo(
-    () =>
-      new Intl.DateTimeFormat(language, {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      }),
-    [language],
-  );
+  const df = useDateTimeFormat({
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
-  const nf = Intl.NumberFormat(language, {
+  const nf = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
-  const interactive = useSelector(selectingModeSelector);
+  const interactive = useAppSelector(selectingModeSelector);
 
   return (
     <>
       {tracks1.map((track) => {
         const color = track.color || '#7239a8';
+
         const width = track.width || 4;
 
         let handleClick = clickHandlerMemo.current[track.token];
@@ -101,10 +103,12 @@ export function TrackingResult(): ReactElement {
 
           if (!curSegment) {
             curSegment = [];
+
             segments.push(curSegment);
           }
 
           curSegment.push(tp);
+
           prevTp = tp;
         }
 
@@ -139,7 +143,9 @@ export function TrackingResult(): ReactElement {
               track.trackPoints.length > 1 &&
               segments.map((segment, i) => (
                 <Polyline
-                  key={`seg-${i}-${interactive ? 'a' : 'b'}`}
+                  key={`seg-${i}-${activeTrackId === track.token}-${
+                    interactive ? 'a' : 'b'
+                  }`}
                   positions={toLatLngArr(segment)}
                   weight={width}
                   color={color}
@@ -148,6 +154,7 @@ export function TrackingResult(): ReactElement {
                     click: handleClick,
                   }}
                   interactive={interactive}
+                  opacity={track.token === activeTrackId ? 1 : 0.75}
                 />
               ))}
 
@@ -157,7 +164,9 @@ export function TrackingResult(): ReactElement {
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
-                  key={`rm-${tp.id}-${interactive ? 'a' : 'b'}`}
+                  key={`rm-${tp.id}-${activeTrackId === track.token}-${
+                    interactive ? 'a' : 'b'
+                  }`}
                   interactive={interactive}
                   position={toLatLon(
                     track.trackPoints[track.trackPoints.length - 1],
@@ -180,7 +189,9 @@ export function TrackingResult(): ReactElement {
                 </RichMarker>
               ) : (
                 <TrackingPoint
-                  key={`tp-${tp.id}-${interactive ? 'a' : 'b'}`}
+                  key={`tp-${tp.id}-${activeTrackId}-${
+                    interactive ? 'a' : 'b'
+                  }`}
                   interactive={interactive}
                   tp={tp}
                   width={width}
@@ -188,6 +199,7 @@ export function TrackingResult(): ReactElement {
                   language={language}
                   onActivePointSet={setActivePoint}
                   onClick={handleClick}
+                  opacity={track.token === activeTrackId ? 1 : 0.75}
                 />
               ),
             )}

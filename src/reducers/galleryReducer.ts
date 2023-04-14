@@ -1,6 +1,7 @@
 import { RootAction } from 'fm3/actions';
 import {
   galleryAddItem,
+  galleryAddTag,
   galleryCancelShowOnTheMap,
   galleryClear,
   galleryColorizeBy,
@@ -8,10 +9,9 @@ import {
   galleryConfirmPickedPosition,
   galleryEditPicture,
   GalleryFilter,
-  galleryHideFilter,
-  galleryHideUploadModal,
   GalleryItem,
   galleryMergeItem,
+  galleryQuickAddTag,
   galleryRemoveItem,
   galleryRequestImage,
   gallerySavePicture,
@@ -26,9 +26,7 @@ import {
   gallerySetPickingPosition,
   gallerySetTags,
   gallerySetUsers,
-  galleryShowFilter,
   galleryShowOnTheMap,
-  galleryShowUploadModal,
   GalleryTag,
   galleryToggleShowPreview,
   galleryUpload,
@@ -36,9 +34,9 @@ import {
   Picture,
 } from 'fm3/actions/galleryActions';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 import { toDatetimeLocal } from 'fm3/dateUtils';
@@ -51,7 +49,6 @@ export interface GalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
   image: Picture | null;
-  showUploadModal: boolean;
   items: GalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
@@ -61,13 +58,13 @@ export interface GalleryState {
   users: GalleryUser[];
   dirtySeq: number;
   comment: string;
-  showFilter: boolean;
   filter: GalleryFilter;
   editModel: PictureModel | null;
   showPosition: boolean;
   language: string;
   saveErrors: string[];
   colorizeBy: GalleryColorizeBy | null;
+  recentTags: string[];
 }
 
 export const galleryInitialState: GalleryState = {
@@ -75,7 +72,6 @@ export const galleryInitialState: GalleryState = {
   activeImageId: null,
   image: null,
 
-  showUploadModal: false,
   items: [],
   pickingPositionForId: null,
   pickingPosition: null,
@@ -88,7 +84,6 @@ export const galleryInitialState: GalleryState = {
 
   dirtySeq: 0,
   comment: '',
-  showFilter: false,
   filter: {
     tag: undefined,
     userId: undefined,
@@ -105,6 +100,7 @@ export const galleryInitialState: GalleryState = {
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
   colorizeBy: null,
+  recentTags: [],
 };
 
 export const galleryReducer = createReducer<GalleryState, RootAction>(
@@ -120,6 +116,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
   .handleAction(clearMap, (state) => ({
     ...galleryInitialState,
     dirtySeq: state.dirtySeq,
+    colorizeBy: state.colorizeBy,
   }))
   .handleAction(gallerySetImageIds, (state, action) => ({
     ...state,
@@ -149,16 +146,20 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
 
       if (action.payload === 'next') {
         const { imageIds, activeImageId } = draft;
+
         if (imageIds) {
           const index = imageIds.findIndex((id) => id === activeImageId);
+
           if (index + 1 < imageIds.length) {
             set(imageIds[index + 1]);
           }
         }
       } else if (action.payload === 'prev') {
         const { imageIds, activeImageId } = draft;
+
         if (imageIds) {
           const index = imageIds.findIndex((id) => id === activeImageId);
+
           if (index > 0) {
             set(imageIds[index - 1]);
           }
@@ -205,6 +206,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       if (!state.editModel) {
         throw new Error('editModel is null');
       }
+
       s.editModel = {
         ...state.editModel,
         dirtyPosition: state.pickingPosition
@@ -224,10 +226,12 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
           : item,
       );
     }
+
     return s;
   })
   .handleAction(gallerySetItemForPositionPicking, (state, action) => {
     let x: GalleryItem | undefined;
+
     return {
       ...state,
       pickingPositionForId: action.payload,
@@ -273,28 +277,18 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     comment: action.payload,
   }))
-  .handleAction(galleryShowFilter, (state) => ({
-    ...state,
-    showFilter: true,
-  }))
-  .handleAction(galleryHideFilter, (state) => ({
-    ...state,
-    showFilter: false,
-  }))
   .handleAction(gallerySetFilter, (state, action) => ({
     ...state,
     filter: action.payload,
-    showFilter: false,
   }))
-  .handleAction(galleryShowUploadModal, (state) => ({
+  .handleAction(setActiveModal, (state, action) => ({
     ...state,
-    showUploadModal: true,
-  }))
-  .handleAction(galleryHideUploadModal, (state) => ({
-    ...state,
-    showUploadModal: false,
-    items: [],
-    pickingPositionForId: null,
+    ...(action.payload === null
+      ? {
+          items: [],
+          pickingPositionForId: null,
+        }
+      : {}),
   }))
   .handleAction(galleryEditPicture, (state) => {
     const position = state.image
@@ -349,10 +343,26 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     colorizeBy: action.payload,
   }))
-  .handleAction(mapsDataLoaded, (state, action) => {
+  .handleAction([galleryAddTag, galleryQuickAddTag], (state, { payload }) => {
+    const recentTags = [...state.recentTags];
+
+    const i = recentTags.indexOf(payload);
+
+    if (i > -1) {
+      recentTags.splice(i, 1);
+    }
+
+    recentTags.unshift(payload);
+
     return {
       ...state,
-      filter: action.payload.galleryFilter ?? galleryInitialState.filter,
+      recentTags: recentTags.slice(0, 8),
+    };
+  })
+  .handleAction(mapsLoaded, (state, action) => {
+    return {
+      ...state,
+      filter: action.payload.data.galleryFilter ?? galleryInitialState.filter,
     };
   });
 

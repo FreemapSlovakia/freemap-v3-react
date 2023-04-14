@@ -23,11 +23,21 @@ interface TrackingPointProps {
   onActivePointSet: (tp: TrackPoint | null) => void;
   onClick: () => void;
   interactive?: boolean;
+  opacity: number;
 }
 
 // TODO to separate file
 export const TrackingPoint = memo<TrackingPointProps>(
-  ({ tp, width, color, language, onActivePointSet, onClick, interactive }) => {
+  ({
+    tp,
+    width,
+    color,
+    language,
+    onActivePointSet,
+    onClick,
+    interactive,
+    opacity,
+  }) => {
     const df = new Intl.DateTimeFormat(language, {
       month: 'short',
       day: 'numeric',
@@ -36,7 +46,7 @@ export const TrackingPoint = memo<TrackingPointProps>(
       second: '2-digit',
     });
 
-    const nf = Intl.NumberFormat(language, {
+    const nf = new Intl.NumberFormat(language, {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     });
@@ -60,7 +70,8 @@ export const TrackingPoint = memo<TrackingPointProps>(
         center={toLatLng(tp)}
         radius={width}
         color={color}
-        fillOpacity={1}
+        fillOpacity={opacity ?? 1}
+        opacity={opacity ?? 1}
         bubblingMouseEvents={false}
         eventHandlers={{
           mouseover: handleMouseOver,
@@ -75,6 +86,8 @@ export const TrackingPoint = memo<TrackingPointProps>(
     );
   },
 );
+
+TrackingPoint.displayName = 'TrackingPoint';
 
 export function tooltipText(
   df: Intl.DateTimeFormat,

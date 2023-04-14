@@ -1,7 +1,4 @@
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
-import { createFilter } from 'fm3/galleryUtils';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
@@ -9,20 +6,11 @@ import { ObjectsState } from 'fm3/reducers/objectsReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
+import { escapeHtml } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
-import qs from 'query-string';
-import { assertType } from 'typescript-is';
+import { fetchPictures, Picture } from './fetchPictures';
 import { addAttribute, createElement, GPX_NS } from './gpxExporter';
-import { licenseNotice, upload } from './upload';
-
-type Picture = {
-  lat: number;
-  lon: number;
-  id: number;
-  takenAt: string | null;
-  title: string | null;
-  description: string | null;
-};
+import { upload } from './upload';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
@@ -32,6 +20,12 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   dispatch,
 }) => {
   const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
+
+  doc.documentElement.setAttributeNS(
+    'http://www.w3.org/2001/XMLSchema-instance',
+    'schemaLocation',
+    'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd',
+  );
 
   addAttribute(doc.documentElement, 'version', '1.1');
 
@@ -58,9 +52,17 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   createElement(link, 'type', 'text/html');
 
-  const copyright = createElement(meta, 'copyright');
+  // TODO add other licences depending on exported items
 
-  createElement(copyright, 'license', licenseNotice);
+  const copyright = createElement(meta, 'copyright', undefined, {
+    author: 'OpenStreetMap contributors',
+  });
+
+  createElement(
+    copyright,
+    'license',
+    'https://www.openstreetmap.org/copyright',
+  );
 
   createElement(meta, 'time', new Date().toISOString());
 
@@ -73,30 +75,13 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     routePlanner,
     tracking,
     trackViewer,
+    l10n: { language },
   } = getState();
 
   const set = new Set(action.payload.exportables);
 
-  const le = getMapLeafletElement();
-
-  if (le && set.has('pictures')) {
-    const b = le.getBounds();
-
-    const { data } = await httpRequest({
-      getState,
-      method: 'GET',
-      url: '/gallery/pictures',
-      params: {
-        by: 'bbox',
-        bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-        ...createFilter(getState().gallery.filter),
-        fields: ['id', 'title', 'description', 'takenAt'],
-      },
-      paramsSerializer: qs.stringify,
-      expectedStatus: 200,
-    });
-
-    addPictures(doc, assertType<Picture[]>(data));
+  if (set.has('pictures')) {
+    addPictures(doc, await fetchPictures(getState), language);
   }
 
   if (set.has('drawingLines')) {
@@ -151,51 +136,119 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const { destination } = action.payload;
 
-  await upload(
-    'gpx',
-    new Blob([new XMLSerializer().serializeToString(doc)], {
-      type:
-        destination === 'dropbox'
-          ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-          : 'application/gpx+xml',
-    }),
-    destination,
-    getState,
-    dispatch,
-  );
-
-  dispatch(setActiveModal(null));
+  if (
+    await upload(
+      'gpx',
+      new Blob([new XMLSerializer().serializeToString(doc)], {
+        type:
+          destination === 'dropbox'
+            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+            : 'application/gpx+xml',
+      }),
+      destination,
+      getState,
+      dispatch,
+    )
+  ) {
+    dispatch(setActiveModal(null));
+  }
 };
 
 export default handle;
 
-function addPictures(doc: Document, pictures: Picture[]) {
-  pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
+function addPictures(doc: Document, pictures: Picture[], lang: string) {
+  for (const {
+    lat,
+    lon,
+    id,
+    takenAt,
+    createdAt,
+    title,
+    description,
+    tags,
+    rating,
+    user,
+  } of pictures) {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
       lon: String(lon),
     });
 
     if (takenAt) {
-      createElement(wptEle, 'time', takenAt);
+      createElement(wptEle, 'time', new Date(takenAt * 1000).toISOString());
     }
 
     if (title) {
       createElement(wptEle, 'name', title);
     }
 
+    const gm = window.translations?.gallery;
+
+    const lines: [string, string][] = [];
+
+    lines.push([gm?.filterModal.author ?? 'Author', user]);
+
     if (description) {
-      createElement(wptEle, 'description', description);
+      lines.push([gm?.filterModal.takenAt ?? 'Capture date', description]);
     }
 
-    const link = createElement(wptEle, 'link', undefined, {
-      href: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+    if (createdAt) {
+      lines.push([
+        gm?.filterModal.createdAt ?? 'Upload date',
+        new Date(createdAt * 1000).toLocaleString(lang),
+      ]);
+    }
+
+    if (takenAt) {
+      lines.push([
+        gm?.filterModal.takenAt ?? 'Taken at',
+        new Date(takenAt * 1000).toLocaleString(lang),
+      ]);
+    }
+
+    lines.push([gm?.editForm.tags ?? 'Tags', tags.join(', ') || '-']);
+
+    // 3.5: ★★★⯪☆
+    const ratingFract = rating - Math.floor(rating);
+
+    lines.push([
+      gm?.filterModal.rating ?? 'Rating',
+      '★'.repeat(Math.floor(rating)) +
+        (ratingFract < 0.25 ? '☆' : ratingFract < 0.75 ? '⯪' : '★') +
+        '☆'.repeat(4 - Math.floor(rating)),
+    ]);
+
+    const imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+
+    createElement(wptEle, 'desc', {
+      cdata:
+        `<img src="${escapeHtml(imageUrl)}" width="100%"><p>` +
+        lines
+          .map(
+            ([key, value]) => `<b>${escapeHtml(key)}</b>: ` + escapeHtml(value),
+          )
+          .join('｜') +
+        '</p>',
     });
 
-    createElement(link, 'type', 'image/jpeg');
+    const link1 = createElement(wptEle, 'link', undefined, {
+      href: `${process.env['BASE_URL']}?image=${id}`,
+    });
 
-    // TODO add tags and author to cmt
-  });
+    createElement(link1, 'text', gm?.linkToWww ?? 'photo at www.freemap.sk');
+
+    createElement(link1, 'type', 'text/html');
+
+    const link2 = createElement(wptEle, 'link', undefined, {
+      href: imageUrl,
+    });
+
+    createElement(link2, 'text', gm?.linkToImage ?? 'photo image file');
+
+    createElement(link2, 'type', 'image/jpeg');
+
+    // TODO add comments to cmt?
+  }
 }
 
 function addADMeasurement(
@@ -222,7 +275,7 @@ function addADMeasurement(
 }
 
 function addInfoPoint(doc: Document, { points }: DrawingPointsState) {
-  points.forEach(({ lat, lon, label }) => {
+  for (const { lat, lon, label } of points) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -236,11 +289,11 @@ function addInfoPoint(doc: Document, { points }: DrawingPointsState) {
     if (label) {
       createElement(wptEle, 'name', label);
     }
-  });
+  }
 }
 
 function addObjects(doc: Document, { objects }: ObjectsState) {
-  objects.forEach(({ lat, lon, tags }) => {
+  for (const { lat, lon, tags } of objects) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -258,7 +311,7 @@ function addObjects(doc: Document, { objects }: ObjectsState) {
     if (tags['name']) {
       createElement(wptEle, 'name', tags['name']);
     }
-  });
+  }
 }
 
 function addPlannedRoute(
@@ -365,6 +418,7 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
         undefined,
         toLatLon({ lat, lon }),
       );
+
       if (typeof altitude === 'number') {
         createElement(ptEle, 'ele', altitude.toString());
       }
@@ -392,19 +446,25 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
 
         if (typeof speed === 'number') {
           const elem = document.createElementNS(FM_NS, 'speed');
+
           elem.textContent = speed.toString();
+
           extEl.appendChild(elem);
         }
 
         if (typeof battery === 'number') {
           const elem = document.createElementNS(FM_NS, 'battery');
+
           elem.textContent = battery.toString();
+
           extEl.appendChild(elem);
         }
 
         if (typeof gsmSignal === 'number') {
           const elem = document.createElementNS(FM_NS, 'gsm_signal');
+
           elem.textContent = gsmSignal.toString();
+
           extEl.appendChild(elem);
         }
       }
@@ -457,7 +517,9 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 createElement(wptEle, 'name', feature.properties['name']);
               }
             }
+
             break;
+
           case 'MultiPoint': {
             if (pass === 'wpt') {
               for (const pt of g.coordinates) {
@@ -483,6 +545,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
 
             break;
           }
+
           case 'LineString': {
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
@@ -505,7 +568,9 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
 
             break;
           }
+
           case 'Polygon':
+
           case 'MultiLineString':
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
@@ -529,6 +594,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
             }
 
             break;
+
           case 'MultiPolygon':
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');

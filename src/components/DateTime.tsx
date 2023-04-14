@@ -5,9 +5,11 @@ import { FaCalendar, FaClock } from 'react-icons/fa';
 
 function checkDatetimeLocalInput(): boolean {
   const input = document.createElement('input');
+
   input.setAttribute('type', 'datetime-local');
 
   const notADateValue = 'not-a-date';
+
   input.setAttribute('value', notADateValue);
 
   return input.value !== notADateValue;
@@ -33,7 +35,7 @@ export function DateTime({
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value ?? '') || ['', '', ''];
 
   const propagateChange = useCallback(
-    (date, time) => {
+    (date: string, time: string) => {
       onChange(date ? `${date}T${time || '00:00:00'}` : '');
     },
     [onChange],
@@ -74,6 +76,7 @@ export function DateTime({
           <FaCalendar />
         </InputGroup.Text>
       </InputGroup.Append>
+
       <FormControl
         type="date"
         placeholder={placeholders?.date ?? 'YYY-MM-DD'}
@@ -82,11 +85,13 @@ export function DateTime({
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
         required={!!timePart}
       />
+
       <InputGroup.Append>
         <InputGroup.Text>
           <FaClock />
         </InputGroup.Text>
       </InputGroup.Append>
+
       <FormControl
         type="time"
         placeholder={placeholders?.time ?? 'HH:MM[:SS]'}

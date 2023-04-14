@@ -3,12 +3,14 @@ import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
+import { getEffectiveChosenLanguage } from 'fm3/langUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 
 export const l10nSetLanguageProcessor: Processor = {
   actionCreator: [l10nSetChosenLanguage, authSetUser],
+  errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const { chosenLanguage } = getState().l10n;
 
@@ -22,7 +24,11 @@ export const l10nSetLanguageProcessor: Processor = {
 
     document.documentElement.lang = language;
 
-    if (!isActionOf(authSetUser, action) && getState().auth.user) {
+    if (
+      isActionOf(l10nSetChosenLanguage, action) &&
+      getState().auth.user &&
+      !action.payload.noSave
+    ) {
       await httpRequest({
         getState,
         method: 'PATCH',
@@ -35,20 +41,3 @@ export const l10nSetLanguageProcessor: Processor = {
     }
   },
 };
-
-// TOD move to some util
-export function getEffectiveChosenLanguage(
-  chosenLanguage: string | null,
-): string {
-  return (
-    chosenLanguage ||
-    [...(navigator.languages || []), navigator.language]
-      .map((lang) => simplify(lang))
-      .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
-    'en'
-  );
-}
-
-function simplify(lang: string | null | undefined) {
-  return lang?.replace(/-.*/, '');
-}

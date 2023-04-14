@@ -3,18 +3,21 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const cssnano = require('cssnano');
+const { InjectManifest } = require('workbox-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const skMessages = require('./src/translations/sk-shared.json');
 const csMessages = require('./src/translations/cs-shared.json');
 const enMessages = require('./src/translations/en-shared.json');
 const huMessages = require('./src/translations/hu-shared.json');
+const itMessages = require('./src/translations/it-shared.json');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -47,6 +50,7 @@ module.exports = {
   context: path.resolve(__dirname, 'src'),
   entry: './index.tsx',
   output: {
+    clean: true,
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist'),
@@ -63,23 +67,12 @@ module.exports = {
   },
   optimization: {
     // moduleIds: 'deterministic',
+    minimizer: ['...', new CssMinimizerPlugin()],
   },
   // more info: https://webpack.js.org/configuration/devtool/
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
-      // see https://github.com/Leaflet/Leaflet/issues/7403
-      {
-        enforce: 'pre',
-        test: /\bnode_modules\/leaflet\/dist\/leaflet-src\.js/,
-        loader: 'string-replace-loader',
-        options: {
-          search: '(win && chrome) ? 2 * window.devicePixelRatio :',
-          replace:
-            "(win && chrome) ? 2 * window.devicePixelRatio : (navigator.platform.indexOf('Linux') === 0 && chrome) ? window.devicePixelRatio :",
-          strict: true,
-        },
-      },
       {
         // babelify some too modern libraries
         test: /\bnode_modules\/.*\/?(exifreader|strict-uri-encode|query-string|split-on-first|leaflet|@?react-leaflet)\/.*\.js$/,
@@ -95,6 +88,7 @@ module.exports = {
               },
             ],
           ],
+          plugins: [!prod && require('react-refresh/babel')].filter(Boolean),
         },
       },
       {
@@ -108,8 +102,6 @@ module.exports = {
           },
         },
       },
-      // addition - add source-map support
-      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         type: 'asset/resource',
@@ -177,18 +169,19 @@ module.exports = {
     ],
   },
   plugins: [
+    !prod && new ReactRefreshWebpackPlugin(),
+    new InjectManifest({
+      swSrc: './sw/sw.ts',
+      maximumFileSizeToCacheInBytes: 100000000,
+    }),
     new ForkTsCheckerWebpackPlugin({
-      eslint: {
-        enabled: !fastDev,
-        files: './**/*.{ts,tsx,js,jsx}',
-      },
       typescript: {
         configFile: path.resolve(__dirname, './tsconfig.json'),
       },
       async: fastDev,
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: prod ? 'production' : null, // for react
+      ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: true,
       DEPLOYMENT: process.env.DEPLOYMENT ?? null,
       FM_MAPSERVER_URL:
@@ -219,7 +212,6 @@ module.exports = {
         }[process.env.DEPLOYMENT] ||
         'https://dev.merit.world/rewpro?paytype=project&recipient=24130',
     }),
-    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
     new HtmlWebpackPlugin({
       ...htmlPluginProps,
@@ -270,6 +262,21 @@ module.exports = {
         loadingMessage: 'Loading…', // TODO translate
       },
     }),
+    new HtmlWebpackPlugin({
+      ...htmlPluginProps,
+      filename: 'index-it.html',
+      templateParameters: {
+        lang: 'it',
+        title: itMessages.title,
+        description: itMessages.description,
+        errorHtml:
+          "<h1>Problema nell'avvio dell'applicazione</h1>" +
+          '<p>Per favore assicurati di utilizzare una versione recente di un browser moderno (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+        nojsMessage:
+          "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
+        loadingMessage: 'Caricamento…',
+      },
+    }),
     new WebpackPwaManifest({
       inject: true,
       ios: true,
@@ -281,8 +288,7 @@ module.exports = {
       background_color: '#ffffff',
       theme_color: '#ffffff',
       'theme-color': '#ffffff',
-      display: 'fullscreen',
-      lang: 'en-US',
+      display: 'standalone',
       dir: 'auto',
       icons: [
         {
@@ -290,7 +296,7 @@ module.exports = {
           sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
         },
       ],
-      orientation: 'any',
+      // orientation: 'any', // any doesn't respect orientation lock
       share_target: {
         action: '/',
         method: 'POST',
@@ -324,19 +330,14 @@ module.exports = {
         filename: '[name].[chunkhash].css',
         chunkFilename: '[name].[chunkhash].css',
       }),
-    prod &&
-      new OptimizeCssAssetsPlugin({
-        cssProcessor: cssnano(),
-        cssProcessorPluginOptions: {
-          preset: ['default', { discardComments: { removeAll: true } }],
-        },
-      }),
     new webpack.ContextReplacementPlugin(
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-  ].filter((x) => x),
-  devServer: {
-    disableHostCheck: true,
-  },
+    prod &&
+      new ESLintPlugin({
+        extensions: ['js', 'jsx', 'ts', 'tsx'],
+        threads: 4,
+      }),
+  ].filter(Boolean),
 };

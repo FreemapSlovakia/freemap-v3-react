@@ -1,24 +1,20 @@
 import { RootAction } from 'fm3/actions';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 import { Dispatch, Middleware } from 'redux';
 
 export const loggerMiddleware: Middleware<
   RootAction,
-  DefaultRootState,
+  RootState,
   Dispatch<RootAction>
 > =
   ({ getState }) =>
   (next: Dispatch) =>
   (action: RootAction): RootAction => {
-    if (process.env['NODE_ENV'] !== 'production') {
-      console.debug('Action', action);
-    }
+    console.debug('Action', action);
 
     const result = next(action);
 
-    if (process.env['NODE_ENV'] !== 'production') {
-      console.debug('State', getState());
-    }
+    console.debug('State', getState());
 
     return result;
   };

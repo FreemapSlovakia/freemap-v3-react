@@ -1,7 +1,15 @@
 // import turfLineSlice from '@turf/line-slice';
 // import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
-import { Feature, LineString, Point, Properties } from '@turf/helpers';
+import {
+  Feature,
+  FeatureCollection,
+  Geometries,
+  GeometryCollection,
+  LineString,
+  Point,
+  Properties,
+} from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 import { setTool } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
@@ -9,37 +17,40 @@ import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
-import { useStartFinishPoints } from 'fm3/hooks/startFinishPointsHook';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
+import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
+import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString, Properties>[];
   (type: 'Point'): Feature<Point, Properties>[];
 }
 
-export function TrackViewerResult(): ReactElement | null {
-  const trackGeojson = useSelector((state) => state.trackViewer.trackGeojson);
+export default TrackViewerResult;
 
+export function TrackViewerResult({
+  trackGeojson,
+}: {
+  trackGeojson: FeatureCollection<Geometries | GeometryCollection, Properties>;
+}): ReactElement | null {
   const [startPoints, finishPoints] = useStartFinishPoints();
 
-  const displayingElevationChart = useSelector(
-    (state) => state.elevationChart.trackGeojson !== null,
+  const displayingElevationChart = useAppSelector(
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const colorizeTrackBy = useSelector(
+  const colorizeTrackBy = useAppSelector(
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const eleSmoothingFactor = useSelector(
-    (state) => state.main.eleSmoothingFactor,
-  );
-
-  const language = useSelector((state) => state.l10n.language);
+  const eleSmoothingFactor = 5;
 
   const [infoLat] = useState<number>();
 
@@ -57,11 +68,14 @@ export function TrackViewerResult(): ReactElement | null {
       const smoothed = smoothElevations(getCoords(feature), eleSmoothingFactor);
 
       const eles = smoothed.map((coord) => coord[2]);
+
       const maxEle = Math.max(...eles);
+
       const minEle = Math.min(...eles);
 
       return smoothed.map((coord) => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
+
         return [coord[1], coord[0], color || 0] as const;
       });
     });
@@ -74,13 +88,19 @@ export function TrackViewerResult(): ReactElement | null {
 
       return smoothed.map((coord) => {
         const [lon, lat, ele] = coord;
+
         const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
+
         let angle = 0;
+
         if (d > 0) {
           angle = (ele - prevCoord[2]) / d;
         }
+
         prevCoord = coord;
+
         const color = angle / 0.5 + 0.5;
+
         return [lat, lon, color || 0] as const;
       });
     });
@@ -139,17 +159,13 @@ export function TrackViewerResult(): ReactElement | null {
   //   return turfLength(turfLineSlice(p1, p2, geojsonLineString));
   // };
 
-  const interactive = useSelector(selectingModeSelector);
+  const interactive = useAppSelector(selectingModeSelector);
 
   const dispatch = useDispatch();
 
   const setThisTool = () => {
     dispatch(setTool('track-viewer'));
   };
-
-  if (!trackGeojson) {
-    return null;
-  }
 
   // TODO rather compute some hash or better - detect real change
   const keyToAssureProperRefresh = `OOXlDWrtVn-${
@@ -164,12 +180,12 @@ export function TrackViewerResult(): ReactElement | null {
     })),
   }));
 
-  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, {
+  const oneDecimalDigitNumberFormat = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
-  const timeFormat = new Intl.DateTimeFormat(language, {
+  const timeFormat = useDateTimeFormat({
     hour: 'numeric',
     minute: '2-digit',
   });
@@ -265,7 +281,7 @@ export function TrackViewerResult(): ReactElement | null {
             click: setThisTool,
           }}
         >
-          {p.startTime && (
+          {p.startTime && !isNaN(new Date(p.startTime).getTime()) && (
             <Tooltip
               className="compact"
               offset={new LPoint(10, -25)}
@@ -296,8 +312,14 @@ export function TrackViewerResult(): ReactElement | null {
             permanent
           >
             <span>
-              {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
-              {p.finishTime ? ', ' : ''}
+              {p.finishTime && !isNaN(new Date(p.finishTime).getTime()) && (
+                <>
+                  {p.finishTime
+                    ? timeFormat.format(new Date(p.finishTime))
+                    : null}
+                  {p.finishTime ? ', ' : ''}
+                </>
+              )}
               {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km
             </span>
           </Tooltip>

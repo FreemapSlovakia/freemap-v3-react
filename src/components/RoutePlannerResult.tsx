@@ -12,16 +12,16 @@ import {
   routePlannerSetMidpoint,
   routePlannerSetPickMode,
   routePlannerSetStart,
-  RouteStepExtra,
   Step,
 } from 'fm3/actions/routePlannerActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Messages } from 'fm3/translations/messagesInterface';
-import { isSpecial } from 'fm3/transportTypeDefs';
+import { isSpecial, transportTypeDefs } from 'fm3/transportTypeDefs';
 import {
   divIcon,
   DragEndEvent,
@@ -41,12 +41,13 @@ import {
 import { FaPlay, FaStop } from 'react-icons/fa';
 import {
   CircleMarker,
+  GeoJSON,
   Marker,
   Polyline,
   Tooltip,
   useMapEvent,
 } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
@@ -59,33 +60,39 @@ export function RoutePlannerResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const start = useSelector((state) => state.routePlanner.start);
+  const start = useAppSelector((state) => state.routePlanner.start);
 
-  const finish = useSelector((state) => state.routePlanner.finish);
+  const finish = useAppSelector((state) => state.routePlanner.finish);
 
-  const midpoints = useSelector((state) => state.routePlanner.midpoints);
+  const midpoints = useAppSelector((state) => state.routePlanner.midpoints);
 
-  const alternatives = useSelector((state) => state.routePlanner.alternatives);
+  const alternatives = useAppSelector(
+    (state) => state.routePlanner.alternatives,
+  );
 
-  const waypoints = useSelector((state) => state.routePlanner.waypoints);
+  const waypoints = useAppSelector((state) => state.routePlanner.waypoints);
 
-  const activeAlternativeIndex = useSelector(
+  const isochrones = useAppSelector((state) => state.routePlanner.isochrones);
+
+  const activeAlternativeIndex = useAppSelector(
     (state) => state.routePlanner.activeAlternativeIndex,
   );
 
-  const transportType = useSelector(
+  const transportType = useAppSelector(
     (state) => state.routePlanner.transportType,
   );
 
-  const mode = useSelector((state) => state.routePlanner.mode);
+  const mode = useAppSelector((state) => state.routePlanner.mode);
 
-  const timestamp = useSelector((state) => state.routePlanner.timestamp);
+  const timestamp = useAppSelector((state) => state.routePlanner.timestamp);
 
-  const showMilestones = useSelector((state) => state.routePlanner.milestones);
+  const milestonesMode = useAppSelector(
+    (state) => state.routePlanner.milestones,
+  );
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   const tRef = useRef<number>();
 
@@ -99,38 +106,44 @@ export function RoutePlannerResult(): ReactElement {
 
   const [dragAlt, setDragAlt] = useState<number>();
 
-  const pickMode = useSelector((state) => state.routePlanner.pickMode);
+  const pickMode = useAppSelector((state) => state.routePlanner.pickMode);
 
-  const tool = useSelector((state) => state.main.tool);
+  const tool = useAppSelector((state) => state.main.tool);
 
   const interactive0 = tool === 'route-planner'; // draggable
 
-  const interactive1 = useSelector(selectingModeSelector) || interactive0; // markers, lines
+  const interactive1 = useAppSelector(selectingModeSelector) || interactive0; // markers, lines
 
   const [dragging, setDragging] = useState(false);
 
-  const handlePoiAdd = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      if (window.fmEmbedded || dragging) {
-        // nothing
-      } else if (tool !== 'route-planner') {
-        // nothing
-      } else if (pickMode === 'start') {
-        dispatch(
-          routePlannerSetStart({ start: { lat: latlng.lat, lon: latlng.lng } }),
-        );
-      } else if (pickMode === 'finish') {
-        dispatch(
-          routePlannerSetFinish({
-            finish: { lat: latlng.lat, lon: latlng.lng },
-          }),
-        );
-      }
-    },
-    [pickMode, dispatch, tool, dragging],
-  );
+  const onlyStart =
+    transportTypeDefs[transportType]?.api === 'gh' && mode !== 'route';
 
-  useMapEvent('click', handlePoiAdd);
+  useMapEvent(
+    'click',
+    useCallback(
+      ({ latlng }: LeafletMouseEvent) => {
+        if (window.fmEmbedded || dragging) {
+          // nothing
+        } else if (tool !== 'route-planner') {
+          // nothing
+        } else if (pickMode === 'start' || onlyStart) {
+          dispatch(
+            routePlannerSetStart({
+              start: { lat: latlng.lat, lon: latlng.lng },
+            }),
+          );
+        } else if (pickMode === 'finish') {
+          dispatch(
+            routePlannerSetFinish({
+              finish: { lat: latlng.lat, lon: latlng.lng },
+            }),
+          );
+        }
+      },
+      [pickMode, dispatch, tool, dragging, onlyStart],
+    ),
+  );
 
   useEffect(
     () => () => {
@@ -150,7 +163,7 @@ export function RoutePlannerResult(): ReactElement {
       distanceDiff?: number,
       durationDiff?: number,
     ) => {
-      const nf = Intl.NumberFormat(language, {
+      const nf = new Intl.NumberFormat(language, {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1,
       });
@@ -187,29 +200,21 @@ export function RoutePlannerResult(): ReactElement {
     [language, m],
   );
 
-  const step =
-    zoom > 13
-      ? 1
-      : zoom > 12
-      ? 2
-      : zoom > 10
-      ? 5
-      : zoom > 9
-      ? 10
-      : zoom > 8
-      ? 20
-      : zoom > 7
-      ? 25
-      : 50;
+  const ensureTool = useCallback(() => {
+    if (tool !== 'route-planner') {
+      dispatch(setTool('route-planner'));
+    }
+  }, [dispatch, tool]);
 
   const milestones = useMemo(() => {
-    if (!showMilestones || !alternatives[activeAlternativeIndex]) {
+    if (!milestonesMode || !alternatives[activeAlternativeIndex]) {
       return [];
     }
 
     const line = lineString(
       alternatives[activeAlternativeIndex].legs
         .flatMap((leg) => leg.steps)
+        .filter((step) => step.geometry.coordinates.length > 1)
         .flatMap((step) => step.geometry.coordinates),
     );
 
@@ -217,16 +222,65 @@ export function RoutePlannerResult(): ReactElement {
 
     const milestones: Feature<Point, Properties>[] = [];
 
-    for (let i = step; i < len; i += step) {
-      milestones.push(along(line, i));
+    if (milestonesMode === 'abs') {
+      const step =
+        zoom > 13
+          ? 1
+          : zoom > 12
+          ? 2
+          : zoom > 10
+          ? 5
+          : zoom > 9
+          ? 10
+          : zoom > 8
+          ? 20
+          : zoom > 7
+          ? 25
+          : 50;
+
+      for (let d = step; d < len; d += step) {
+        const milestone = along(line, d);
+
+        milestone.properties = { label: d };
+
+        milestones.push(milestone);
+      }
+    } else {
+      const pxLen = (len * Math.pow(2, zoom)) / 1000;
+
+      console.log({ pxLen });
+
+      const q = 50;
+
+      const steps =
+        pxLen < q
+          ? pctSeq(50)
+          : pxLen < q * 2
+          ? pctSeq(25)
+          : pxLen < q * 5
+          ? pctSeq(10)
+          : pxLen < q * 10
+          ? pctSeq(5)
+          : pxLen < q * 25
+          ? pctSeq(2)
+          : pctSeq(1);
+
+      for (const pct of steps) {
+        const milestone = along(line, (len / 100) * pct);
+
+        milestone.properties = { label: pct };
+
+        milestones.push(milestone);
+      }
     }
 
     return milestones;
-  }, [activeAlternativeIndex, alternatives, step, showMilestones]);
+  }, [activeAlternativeIndex, alternatives, zoom, milestonesMode]);
 
   const getPointDetails = useCallback(
     (i: number, showDiff = true, summary = false) => {
       let distanceSum = 0;
+
       let durationSum = 0;
 
       const offset = summary ? 0 : 1;
@@ -241,6 +295,7 @@ export function RoutePlannerResult(): ReactElement {
 
         if (leg) {
           distanceSum += leg.distance;
+
           durationSum += leg.duration;
         }
       }
@@ -305,23 +360,24 @@ export function RoutePlannerResult(): ReactElement {
   }, []);
 
   const maneuverToText = useCallback(
-    (
-      name: string,
-      { type, modifier }: Step['maneuver'],
-      extra?: RouteStepExtra,
-    ) =>
-      transportType === 'imhd'
+    (name: string, { type, modifier }: Step['maneuver']) =>
+      // extra?: RouteStepExtra,
+      /* transportType === 'imhd'
         ? extra && imhdStep(m, language, extra)
         : transportType === 'bikesharing'
         ? extra && bikesharingStep(m, extra)
-        : m?.routePlanner[name ? 'maneuverWithName' : 'maneuverWithoutName']({
-            type: m?.routePlanner.maneuver.types[type],
-            modifier: modifier
-              ? ' ' + m?.routePlanner.maneuver.modifiers[modifier]
-              : '',
-            name,
-          }),
-    [m, transportType, language],
+        :*/ m?.routePlanner[name ? 'maneuverWithName' : 'maneuverWithoutName']({
+        type: m?.routePlanner.maneuver.types[type],
+        modifier: modifier
+          ? ' ' + m?.routePlanner.maneuver.modifiers[modifier]
+          : '',
+        name,
+      }),
+    [
+      m,
+      // transportType,
+      // language
+    ],
   );
 
   const handleStartPointClick = useCallback(() => {
@@ -380,12 +436,16 @@ export function RoutePlannerResult(): ReactElement {
 
       if (tRef.current) {
         clearTimeout(tRef.current);
+
         tRef.current = undefined;
       }
 
       setDragLat(e.latlng.lat);
+
       setDragLon(e.latlng.lng);
+
       setDragSegment(segment);
+
       setDragAlt(alt);
     },
     [interactive0],
@@ -398,6 +458,7 @@ export function RoutePlannerResult(): ReactElement {
 
     tRef.current = window.setTimeout(() => {
       setDragLat(undefined);
+
       setDragLon(undefined);
     }, 200);
   }, []);
@@ -411,6 +472,7 @@ export function RoutePlannerResult(): ReactElement {
   const handleFutureMouseOver = useCallback(() => {
     if (!draggingRef.current && tRef.current) {
       clearTimeout(tRef.current);
+
       tRef.current = undefined;
     }
   }, []);
@@ -424,10 +486,12 @@ export function RoutePlannerResult(): ReactElement {
   const handleDragStart = useCallback(() => {
     if (tRef.current) {
       clearTimeout(tRef.current);
+
       tRef.current = undefined;
     }
 
     draggingRef.current = true;
+
     setDragging(true);
   }, []);
 
@@ -453,18 +517,20 @@ export function RoutePlannerResult(): ReactElement {
             position: dragSegment,
           }),
         );
-        dispatch(setTool('route-planner'));
+
+        ensureTool();
       }
     },
-    [dispatch, dragSegment],
+    [dispatch, dragSegment, ensureTool],
   );
 
   const changeAlternative = useCallback(
     (index: number) => {
       dispatch(routePlannerSetActiveAlternativeIndex(index));
-      dispatch(setTool('route-planner'));
+
+      ensureTool();
     },
-    [dispatch],
+    [dispatch, ensureTool],
   );
 
   const handleFutureClick = useCallback(() => {
@@ -490,26 +556,34 @@ export function RoutePlannerResult(): ReactElement {
       switch (movedPointType) {
         case 'start':
           dispatch(routePlannerSetStart({ start: { lat, lon }, move: true }));
-          dispatch(setTool('route-planner'));
-          break;
-        case 'finish':
-          dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
-          dispatch(setTool('route-planner'));
+
+          ensureTool();
 
           break;
+
+        case 'finish':
+          dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
+
+          ensureTool();
+
+          break;
+
         case 'midpoint':
           if (position !== null) {
             dispatch(
               routePlannerSetMidpoint({ position, midpoint: { lat, lon } }),
             );
-            dispatch(setTool('route-planner'));
+
+            ensureTool();
           }
+
           break;
+
         default:
           throw new Error('unknown pointType');
       }
     },
-    [dispatch],
+    [dispatch, ensureTool],
   );
 
   const special = !!transportType && isSpecial(transportType);
@@ -570,7 +644,7 @@ export function RoutePlannerResult(): ReactElement {
               ? waypoints[waypoints.length - 1]?.waypoint_index
               : undefined
           }
-          color={mode !== 'roundtrip' ? '#d9534f' : undefined}
+          color={mode === 'roundtrip' ? undefined : '#d9534f'}
           zIndexOffset={10}
           draggable={interactive0 && !window.fmEmbedded}
           position={{ lat: finish.lat, lng: finish.lon }}
@@ -586,7 +660,7 @@ export function RoutePlannerResult(): ReactElement {
         >
           {!dragging && mode !== 'roundtrip' && getSummary(endPointHovering)}
 
-          {!dragging && mode == 'roundtrip' && (
+          {!dragging && mode === 'roundtrip' && (
             <Tooltip direction="top" offset={[0, -36]}>
               {getPointDetails(midpoints.length)}
             </Tooltip>
@@ -614,7 +688,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const paths = useMemo(
     () =>
-      (!special ? alternatives : alternatives.map(addMissingSegments))
+      (special ? alternatives.map(addMissingSegments) : alternatives)
         .map((x, index) => ({
           ...x,
           alt: index,
@@ -627,7 +701,7 @@ export function RoutePlannerResult(): ReactElement {
               special &&
               legs
                 .flatMap((leg) => leg.steps)
-                .map(({ geometry, name, maneuver, extra }, i: number) => (
+                .map(({ geometry, name, maneuver /*, extra*/ }, i: number) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -635,7 +709,7 @@ export function RoutePlannerResult(): ReactElement {
                   >
                     {!dragging && (
                       <Tooltip direction="right" permanent>
-                        <div>{maneuverToText(name, maneuver, extra)}</div>
+                        <div>{maneuverToText(name, maneuver /*, extra*/)}</div>
                       </Tooltip>
                     )}
                   </Marker>
@@ -645,63 +719,71 @@ export function RoutePlannerResult(): ReactElement {
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
-              .map((routeSlice, i: number) => (
-                <Polyline
-                  key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
-                  interactive={interactive1}
-                  ref={bringToFront}
-                  positions={routeSlice.geometry.coordinates.map(reverse)}
-                  weight={10}
-                  color="#fff"
-                  bubblingMouseEvents={false}
-                  eventHandlers={{
-                    click() {
-                      changeAlternative(alt);
-                    },
-                    mousemove: special
-                      ? undefined
-                      : (e: LeafletMouseEvent) =>
-                          handlePolyMouseMove(e, routeSlice.legIndex, alt),
+              .map((routeSlice, i: number) =>
+                routeSlice.geometry.coordinates.length < 2 ? null : (
+                  <Polyline
+                    key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
+                    interactive={interactive1}
+                    ref={bringToFront}
+                    positions={routeSlice.geometry.coordinates.map(reverse)}
+                    weight={10}
+                    color="#fff"
+                    bubblingMouseEvents={false}
+                    eventHandlers={{
+                      click() {
+                        changeAlternative(alt);
+                      },
+                      mousemove:
+                        special || onlyStart
+                          ? () => undefined
+                          : (e: LeafletMouseEvent) =>
+                              handlePolyMouseMove(e, routeSlice.legIndex, alt),
 
-                    mouseout: handlePolyMouseOut,
-                  }}
-                />
-              ))}
+                      mouseout: handlePolyMouseOut,
+                    }}
+                  />
+                ),
+              )}
 
             {legs
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
-              .map((routeSlice, i: number) => (
-                <Polyline
-                  key={`slice-${timestamp}-${alt}-${i}-${
-                    interactive1 ? 'a' : 'b'
-                  }`}
-                  ref={bringToFront}
-                  positions={routeSlice.geometry.coordinates.map(reverse)}
-                  weight={6}
-                  pathOptions={{
-                    color:
-                      alt !== activeAlternativeIndex
-                        ? '#868e96'
-                        : !special && routeSlice.legIndex % 2
-                        ? 'hsl(211, 100%, 66%)'
-                        : 'hsl(211, 100%, 50%)',
-                  }}
-                  opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                  dashArray={
-                    ['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode)
-                      ? '0, 10'
-                      : undefined
-                  }
-                  interactive={false}
-                  bubblingMouseEvents={false}
-                />
-              ))}
+              .map((routeSlice, i: number) =>
+                routeSlice.geometry.coordinates.length < 2 ? null : (
+                  <Polyline
+                    key={`slice-${timestamp}-${alt}-${i}-${
+                      interactive1 ? 'a' : 'b'
+                    }`}
+                    ref={bringToFront}
+                    positions={routeSlice.geometry.coordinates.map(reverse)}
+                    weight={6}
+                    pathOptions={{
+                      color:
+                        alt !== activeAlternativeIndex
+                          ? '#868e96'
+                          : !special && routeSlice.legIndex % 2
+                          ? 'hsl(211, 100%, 66%)'
+                          : 'hsl(211, 100%, 50%)',
+                    }}
+                    opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                    dashArray={
+                      ['foot', 'pushing bike', 'ferry'].includes(
+                        routeSlice.mode,
+                      )
+                        ? '0, 10'
+                        : undefined
+                    }
+                    interactive={false}
+                    bubblingMouseEvents={false}
+                  />
+                ),
+              )}
           </Fragment>
         )),
     [
       special,
+      onlyStart,
       alternatives,
       activeAlternativeIndex,
       timestamp,
@@ -795,18 +877,41 @@ export function RoutePlannerResult(): ReactElement {
 
       {paths}
 
-      {milestones.map((ms, i) => (
+      {milestones.map((milestone, i) => (
         <CircleMarker
           radius={0}
           key={i}
-          center={reverse(ms.geometry.coordinates as [number, number])}
+          center={reverse(milestone.geometry.coordinates as [number, number])}
         >
           {!dragging && (
             <Tooltip className="compact" direction="right" permanent>
-              <div>{(i + 1) * step}</div>
+              <div>{milestone.properties?.['label']}</div>
             </Tooltip>
           )}
         </CircleMarker>
+      ))}
+
+      {isochrones?.map((isochrone) => (
+        <GeoJSON
+          key={'iso_' + timestamp + '_' + isochrone.properties?.['bucket']}
+          interactive={false}
+          style={(f) =>
+            f?.properties['bucket'] === isochrones.length - 1
+              ? { weight: 5, color: '#3388ff', fillOpacity: 0.15 }
+              : {
+                  weight: 5,
+                  fill: false,
+                  color: [
+                    '#3388ff',
+                    '#5f6fc8',
+                    '#8b5692',
+                    '#b73d5b',
+                    '#e32525',
+                  ][isochrones.length - f?.properties['bucket'] - 1],
+                }
+          }
+          data={isochrone}
+        />
       ))}
 
       <ElevationChartActivePoint />
@@ -829,7 +934,9 @@ function addMissingSegments(alt: Alternative) {
 
   for (let i = 0; i < steps.length; i += 1) {
     const slice = steps[i];
+
     const prevSlice = steps[i - 1];
+
     const nextSlice = steps[i + 1];
 
     const prevSliceLastShapePoint = prevSlice
@@ -837,10 +944,12 @@ function addMissingSegments(alt: Alternative) {
           prevSlice.geometry.coordinates.length - 1
         ]
       : null;
+
     const firstShapePoint = slice.geometry.coordinates[0];
 
     const lastShapePoint =
       slice.geometry.coordinates[slice.geometry.coordinates.length - 1];
+
     const nextSliceFirstShapePoint = nextSlice
       ? nextSlice.geometry.coordinates[0]
       : null;
@@ -916,32 +1025,42 @@ function imhdSummary(
   });
 }
 
-function imhdStep(
-  m: Messages | undefined,
-  language: string,
-  { type, destination, departure, duration, number }: RouteStepExtra,
-) {
-  const dateFormat = new Intl.DateTimeFormat(language, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+// function imhdStep(
+//   m: Messages | undefined,
+//   language: string,
+//   { type, destination, departure, duration, number }: RouteStepExtra,
+// ) {
+//   const dateFormat = new Intl.DateTimeFormat(language, {
+//     hour: '2-digit',
+//     minute: '2-digit',
+//   });
 
-  return m?.routePlanner.imhd.step[type === 'foot' ? 'foot' : 'bus']({
-    type: (m?.routePlanner.imhd.type as any)[type], // TODO
-    destination,
-    departure:
-      departure === undefined ? undefined : dateFormat.format(departure * 1000),
-    duration: duration === undefined ? undefined : Math.round(duration / 60),
-    number,
-  });
-}
+//   return m?.routePlanner.imhd.step[type === 'foot' ? 'foot' : 'bus']({
+//     type: (m?.routePlanner.imhd.type as any)[type], // TODO
+//     destination,
+//     departure:
+//       departure === undefined ? undefined : dateFormat.format(departure * 1000),
+//     duration: duration === undefined ? undefined : Math.round(duration / 60),
+//     number,
+//   });
+// }
 
-function bikesharingStep(
-  m: Messages | undefined,
-  { type, destination, duration }: RouteStepExtra,
-) {
-  return m?.routePlanner.bikesharing.step[type]({
-    destination,
-    duration: duration === undefined ? undefined : Math.round(duration / 60),
-  });
+// function bikesharingStep(
+//   m: Messages | undefined,
+//   { type, destination, duration }: RouteStepExtra,
+// ) {
+//   return m?.routePlanner.bikesharing.step[type]({
+//     destination,
+//     duration: duration === undefined ? undefined : Math.round(duration / 60),
+//   });
+// }
+
+function pctSeq(step: number) {
+  const arr: number[] = [];
+
+  for (let n = step; n < 100; n += step) {
+    arr.push(n);
+  }
+
+  return arr;
 }

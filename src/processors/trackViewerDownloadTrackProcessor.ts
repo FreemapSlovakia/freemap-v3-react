@@ -2,7 +2,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerSetData,
 } from 'fm3/actions/trackViewerActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
@@ -12,16 +12,15 @@ export const trackViewerDownloadTrackProcessor: Processor = {
   handle: async ({ dispatch, getState }) => {
     const { trackUID } = getState().trackViewer;
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: `/tracklogs/${trackUID}`,
     });
 
     dispatch(
       trackViewerSetData({
         trackGpx: decodeURIComponent(
-          escape(atob(assertType<{ data: string }>(data).data)),
+          escape(atob(assertType<{ data: string }>(await res.json()).data)),
         ),
       }),
     );

@@ -1,0 +1,12 @@
+<svg viewBox="0 0 512 512" height="22" width="22" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter style="color-interpolation-filters:sRGB" id="a" x="-.185" y="-.171" width="1.373" height="1.373">
+      <feFlood flood-opacity=".5" flood-color="#000" result="flood" />
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1" />
+      <feGaussianBlur in="composite1" stdDeviation="20" result="blur" />
+      <feOffset dx="8" dy="8" result="offset" />
+      <feComposite in="SourceGraphic" in2="offset" result="composite2" />
+    </filter>
+  </defs>
+  <path d="m498.532 176.162-41.321 41.322a10.766 10.766 0 0 1-15.238 0l-99.496-99.496a10.766 10.766 0 0 1 0-15.238L383.8 61.428c16.762-16.761 44.011-16.761 60.863 0l53.87 53.871c16.852 16.762 16.852 44.011 0 60.863Zm-191.55-37.916L71.599 373.628 50.117 509.417l136.305-21.055 235.383-235.383a10.766 10.766 0 0 0 0-15.238l-99.496-99.495c-4.302-4.213-11.115-4.213-15.327 0ZM163.475 353.46a12.497 12.497 0 0 1 0-17.748l138.039-138.039a12.497 12.497 0 0 1 17.748 0 12.497 12.497 0 0 1 0 17.748L181.223 353.461a12.497 12.497 0 0 1-17.748 0Zm-32.358 75.383h43.025v32.538l-57.815 10.128-27.877-27.876 10.13-57.815h32.537Z" stroke="#172B4D" fill="#172b4d" style="stroke:#fff;stroke-width:61.8245;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;filter:url(#a)" transform="matrix(.80889 0 0 .8086 28.34 24.16)" />
+</svg>

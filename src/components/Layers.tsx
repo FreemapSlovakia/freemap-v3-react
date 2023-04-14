@@ -1,31 +1,38 @@
-import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
-  BaseLayerDef,
+  BaseLayerLetters,
   baseLayers,
-  OverlayLayerDef,
+  LayerDef,
   overlayLayers,
+  OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import missingTile from '../images/missing-tile-256x256.png';
+import { AsyncComponent } from './AsyncComponent';
 
-export function Layers(): ReactElement {
-  const overlays = useSelector((state) => state.map.overlays);
+const galleryLayerFactory = () => import('fm3/components/gallery/GalleryLayer');
 
-  const mapType = useSelector((state) => state.map.mapType);
+const maplibreLayerFactory = () => import('./MaplibreLayer');
 
-  const overlayOpacity = useSelector((state) => state.map.overlayOpacity);
+export function Layers(): ReactElement | null {
+  const overlays = useAppSelector((state) => state.map.overlays);
 
-  const galleryFilter = useSelector((state) => state.gallery.filter);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const galleryColorizeBy = useSelector((state) => state.gallery.colorizeBy);
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const galleryDirtySeq = useSelector((state) => state.gallery.dirtySeq);
+  const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
-  const isAdmin = useSelector((state) => !!state.auth.user?.isAdmin);
+  const galleryColorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
-  const userId = useSelector((state) => state.auth.user?.id);
+  const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);
+
+  const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
+
+  const userId = useAppSelector((state) => state.auth.user?.id);
+
+  const language = useAppSelector((state) => state.l10n.language);
 
   const getTileLayer = ({
     type,
@@ -37,31 +44,34 @@ export function Layers(): ReactElement {
     extraScales,
     tms,
     errorTileUrl = missingTile,
-    tileSize = 256,
-    zoomOffset = 0,
-  }: BaseLayerDef | OverlayLayerDef) => {
-    // if (type === 'S') {
-    //   return (
-    //     <BingLayer
-    //       key="S"
-    //       bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-    //       maxNativeZoom={maxNativeZoom}
-    //       maxZoom={20}
-    //       zIndex={zIndex}
-    //     />
-    //   );
-    // }
+    scaleWithDpi = false,
+    cors = true,
+  }: Pick<
+    LayerDef,
+    | 'url'
+    | 'minZoom'
+    | 'maxNativeZoom'
+    | 'zIndex'
+    | 'subdomains'
+    | 'extraScales'
+    | 'tms'
+    | 'errorTileUrl'
+    | 'cors'
+    | 'scaleWithDpi'
+  > & { type: BaseLayerLetters | OverlayLetters }) => {
+    const opacity = layersSettings[type]?.opacity ?? 1;
 
     if (type === 'I') {
       return (
-        <GalleryLayer
-          key={`I-${galleryDirtySeq}-${JSON.stringify({
+        <AsyncComponent
+          factory={galleryLayerFactory}
+          key={`I-${galleryDirtySeq}-${opacity}-${JSON.stringify({
             galleryFilter,
             galleryColorizeBy,
           })}`}
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
-          opacity={overlayOpacity[type] || 1}
+          opacity={opacity}
           zIndex={zIndex}
           myUserId={userId}
         />
@@ -72,41 +82,68 @@ export function Layers(): ReactElement {
       return;
     }
 
+    if (type[0] === 'V') {
+      return (
+        <AsyncComponent
+          factory={maplibreLayerFactory}
+          key={type}
+          style={url}
+          maxZoom={20}
+          minZoom={minZoom}
+          language={language}
+        />
+      );
+    }
+
+    const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
+
     return (
       !!url && (
         <ScaledTileLayer
-          key={type}
+          key={type + '-' + opacity}
           url={url}
           minZoom={minZoom}
           maxZoom={20}
-          maxNativeZoom={maxNativeZoom}
-          opacity={overlayOpacity[type] || 1}
+          maxNativeZoom={
+            maxNativeZoom === undefined
+              ? undefined
+              : isHdpi
+              ? maxNativeZoom - 1
+              : maxNativeZoom
+          }
+          opacity={opacity}
           zIndex={zIndex}
           subdomains={subdomains}
           errorTileUrl={errorTileUrl}
           extraScales={extraScales}
           tms={tms}
-          tileSize={tileSize}
-          zoomOffset={zoomOffset}
+          tileSize={isHdpi ? 128 : 256}
+          zoomOffset={isHdpi ? 1 : 0}
+          cors={cors}
         />
       )
     );
   };
 
-  return (
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
+  return window.isRobot ? null : (
     <>
-      {window.isRobot
-        ? []
-        : [
-            ...baseLayers
-              .filter(({ type }) => type === mapType)
-              .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map((item) => getTileLayer(item)),
-            ...overlayLayers
-              .filter(({ type }) => overlays.includes(type))
-              .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map((item) => getTileLayer(item)),
-          ]}
+      {baseLayers
+        .filter(({ type }) => type === mapType)
+        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .map((item) => getTileLayer(item))}
+      {customLayers
+        .filter(({ type }) => type === mapType)
+        .map((cm) => getTileLayer(cm))}
+      {overlayLayers
+        .filter(({ type }) => overlays.includes(type))
+        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .map((item) => getTileLayer(item))}
+      {customLayers
+        .filter(({ type }) => overlays.includes(type as any))
+        .map((cm) => getTileLayer(cm))}
+      ]
     </>
   );
 }

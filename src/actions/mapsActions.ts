@@ -6,20 +6,21 @@ import { createAction } from 'typesafe-actions';
 import { Line } from './drawingLineActions';
 import { DrawingPoint } from './drawingPointActions';
 import { GalleryFilter } from './galleryActions';
-import { ObjectsResult } from './objectsActions';
 
 export interface MapMeta {
   id: string;
   name: string;
   public: boolean;
+  canWrite: boolean;
   createdAt: Date;
   modifiedAt: Date;
+  userId: number;
+  writers?: number[];
 }
 
-export interface MapData<LT = Line> {
+export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];
-  points?: DrawingPoint[];
-  objects?: ObjectsResult[];
+  points?: PT[];
   tracking?: Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>;
   routePlanner?: Pick<
     RoutePlannerState,
@@ -34,29 +35,41 @@ export interface MapData<LT = Line> {
   galleryFilter?: GalleryFilter;
   trackViewer?: TrackViewerState;
   map?: Partial<
-    Pick<MapState, 'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays'>
+    Pick<
+      MapState,
+      'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays' | 'customLayers'
+    >
   >;
+  objectsV2?: {
+    active: string[];
+  };
 }
 
-export const mapsLoad = createAction('MAPS_LOAD')<{
-  id?: string | undefined;
+export type MapLoadMeta = {
+  id: string;
   ignoreMap?: boolean;
   ignoreLayers?: boolean;
   merge?: boolean;
-}>();
+};
+
+export const mapsLoad = createAction('MAPS_LOAD')<MapLoadMeta>();
+
+export const mapsDisconnect = createAction('MAPS_DISCONNECT')();
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();
 
 export const mapsSetList = createAction('MAPS_SET_LIST')<MapMeta[]>();
 
 export const mapsSave = createAction('MAPS_SAVE')<
-  { name: string; asCopy?: boolean } | undefined
+  { name?: string; writers?: number[]; asCopy?: boolean } | undefined
 >();
 
-export const mapsDelete = createAction('MAPS_DELETE')<string | undefined>();
+export const mapsDelete = createAction('MAPS_DELETE')<string>();
 
-export const mapsRename = createAction('MAPS_RENAME')();
+export const mapsLoaded = createAction('MAPS_LOADED')<{
+  meta: MapMeta;
+  data: MapData;
+  merge?: boolean;
+}>();
 
-export const mapsDataLoaded = createAction('MAPS_DATA_LOADED')<
-  MapData & { merge?: boolean; name: string }
->();
+export const mapsSetMeta = createAction('MAPS_SET_META')<MapMeta>();

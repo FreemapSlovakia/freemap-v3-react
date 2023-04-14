@@ -1,4 +1,9 @@
-import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
+import {
+  BaseLayerLetters,
+  LayerDef,
+  Num1digit,
+  OverlayLetters,
+} from 'fm3/mapDefinitions';
 import { createAction } from 'typesafe-actions';
 
 export interface MapViewState {
@@ -9,21 +14,39 @@ export interface MapViewState {
   overlays: OverlayLetters[];
 }
 
+export type LayerSettings = {
+  opacity?: number;
+  showInMenu?: boolean;
+  showInToolbar?: boolean;
+};
+
+export type CustomLayer = Pick<
+  LayerDef,
+  | 'url'
+  | 'minZoom'
+  | 'maxNativeZoom'
+  | 'zIndex'
+  | 'subdomains'
+  | 'tms'
+  | 'extraScales'
+  | 'scaleWithDpi'
+  | 'cors'
+> & { type: `.${Num1digit}` | `:${Num1digit}`; url: string };
+
 export interface MapStateBase extends MapViewState {
-  overlayOpacity: { [type: string]: number };
+  layersSettings: Record<string, LayerSettings>;
   overlayPaneOpacity: number;
+  customLayers: CustomLayer[]; // URL is mandatory here
 }
 
 export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >();
 
-export const mapSetOverlayOpacity = createAction('MAP_SET_OVERLAY_OPACITY')<{
-  [key: string]: number;
-}>();
+export const mapSuppressLegacyMapWarning = createAction(
+  'MAP_SUPPRESS_LEGACY_MAP_WARING',
+)<{ forever: boolean }>();
 
-export const mapSetOverlayPaneOpacity = createAction(
-  'MAP_SET_OVERLAY_PANE_OPACITY',
-)<number>();
-
-export const mapSetLeafletReady = createAction('MAP_LEAFLET_READY')<boolean>();
+export const mapSetCustomLayers = createAction('MAP_SET_CUSTOM_LAYERS')<
+  CustomLayer[]
+>();

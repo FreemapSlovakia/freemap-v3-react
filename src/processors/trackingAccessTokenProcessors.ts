@@ -1,6 +1,6 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
 import { AccessToken } from 'fm3/types/trackingTypes';
@@ -52,24 +52,23 @@ export const loadAccessTokensProcessor: Processor<
   actionCreator: trackingActions.loadAccessTokens,
   errorKey: 'general.loadError',
   handle: async ({ dispatch, getState }) => {
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
       url: `/tracking/devices/${
         getState().tracking.accessTokensDeviceId
       }/access-tokens`,
     });
 
-    const okData = assertType<StringDates<AccessToken[]>>(data);
-
     dispatch(
       trackingActions.setAccessTokens(
-        okData.map((item) => ({
-          ...item,
-          createdAt: new Date(item.createdAt),
-          timeFrom: item.timeFrom === null ? null : new Date(item.timeFrom),
-          timeTo: item.timeTo === null ? null : new Date(item.timeTo),
-        })),
+        assertType<StringDates<AccessToken[]>>(await res.json()).map(
+          (item) => ({
+            ...item,
+            createdAt: new Date(item.createdAt),
+            timeFrom: item.timeFrom === null ? null : new Date(item.timeFrom),
+            timeTo: item.timeTo === null ? null : new Date(item.timeTo),
+          }),
+        ),
       ),
     );
   },

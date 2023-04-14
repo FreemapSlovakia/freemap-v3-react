@@ -1,25 +1,31 @@
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 
-export function Attribution(): ReactElement {
-  const mapType = useSelector((state) => state.map.mapType);
+type Props = { unknown: string };
 
-  const overlays = useSelector((state) => state.map.overlays);
+export function Attribution({ unknown }: Props): ReactElement {
+  const mapType = useAppSelector((state) => state.map.mapType);
+
+  const overlays = useAppSelector((state) => state.map.overlays);
 
   const m = useMessages();
 
-  return (
-    <ul className="pl-4 pt-3">
-      {categorize(
-        [
-          ...baseLayers.filter(({ type }) => mapType === type),
-          ...overlayLayers.filter(({ type }) =>
-            (overlays as string[]).includes(type),
-          ),
-        ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
-      ).map(({ type, attributions }) => (
+  const categorized = categorize(
+    [
+      ...baseLayers.filter(({ type }) => mapType === type),
+      ...overlayLayers.filter(({ type }) =>
+        (overlays as string[]).includes(type),
+      ),
+    ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+  );
+
+  return categorized.length === 0 ? (
+    <div>{unknown}</div>
+  ) : (
+    <ul className="m-0 ml-n4 mr-n4">
+      {categorized.map(({ type, attributions }) => (
         <li key={type}>
           {m?.mapLayers.type[type]}{' '}
           {attributions.map((a, j) => [
@@ -60,10 +66,13 @@ function categorize(
 
   for (const attribution of attributions) {
     let x = res[attribution.type];
+
     if (!x) {
       x = [];
+
       res[attribution.type] = x;
     }
+
     if (!x.includes(attribution)) {
       x.push(attribution);
     }

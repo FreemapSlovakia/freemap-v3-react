@@ -2,9 +2,11 @@ import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
 import { ShowModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { basicModals } from 'fm3/constants';
+import { documents as allTips } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
+import { OverlayLetters } from 'fm3/mapDefinitions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { tips as allTips } from 'fm3/tips';
+import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
@@ -25,10 +27,10 @@ export const urlProcessor: Processor = {
       drawingLines,
       gallery: { filter: galleryFilter },
       main,
-      tips,
       tracking,
       maps,
       search,
+      objects,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -41,8 +43,6 @@ export const urlProcessor: Processor = {
       drawingLines.lines,
       gallery.activeImageId,
       gallery.filter,
-      gallery.showFilter,
-      gallery.showUploadModal,
       drawingPoints.points,
       main.activeModal,
       main.embedFeatures,
@@ -50,16 +50,20 @@ export const urlProcessor: Processor = {
       main.urlUpdatingEnabled,
       map.lat,
       map.lon,
+      map.zoom,
       map.mapType,
       map.overlays,
+      map.customLayers,
       routePlanner,
       routePlanner.finish,
       routePlanner.midpoints,
       routePlanner.milestones,
       routePlanner.mode,
+      routePlanner.weighting,
       routePlanner.start,
       routePlanner.transportType,
-      tips.tip,
+      routePlanner.roundtripParams,
+      main.documentKey,
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
       trackViewer.gpxUrl,
@@ -67,8 +71,9 @@ export const urlProcessor: Processor = {
       search.osmRelationId,
       search.osmWayId,
       trackViewer.trackUID,
-      maps.id,
+      maps.activeMap,
       main.tool,
+      objects.active,
     ];
 
     if (
@@ -84,7 +89,7 @@ export const urlProcessor: Processor = {
       ['map', `${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`],
       [
         'layers',
-        `${map.mapType}${map.overlays.filter((l) => l != 'i').join('')}`,
+        `${map.mapType}${map.overlays.filter((l) => l !== 'i').join('')}`,
       ],
     ];
 
@@ -92,15 +97,27 @@ export const urlProcessor: Processor = {
       queryParts.push(['tool', main.tool]);
     }
 
-    const isMap = maps.id !== undefined;
+    const mapId = maps.loadMeta?.id || maps.activeMap?.id;
 
-    if (maps.id !== undefined) {
-      queryParts.push(['id', maps.id]);
+    if (mapId) {
+      queryParts.push(['id', mapId]);
     }
 
-    const historyParts: [string, string | number | boolean][] = isMap
+    const historyParts: [string, string | number | boolean][] = mapId
       ? []
       : queryParts;
+
+    const filteredCustomLayers = map.customLayers?.filter(
+      ({ type }) =>
+        type === map.mapType || map.overlays.includes(type as OverlayLetters),
+    );
+
+    if (filteredCustomLayers.length) {
+      historyParts.push([
+        'custom-layers',
+        JSON.stringify(filteredCustomLayers),
+      ]);
+    }
 
     if (
       routePlanner.start ||
@@ -109,9 +126,9 @@ export const urlProcessor: Processor = {
     ) {
       historyParts.push([
         'points',
-        `${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
+        [routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
           .map((point) => serializePoint(point))
-          .join(',')}`,
+          .join(','),
       ]);
 
       historyParts.push(['transport', routePlanner.transportType]);
@@ -120,8 +137,46 @@ export const urlProcessor: Processor = {
         historyParts.push(['route-mode', routePlanner.mode]);
       }
 
+      if (routePlanner.weighting !== 'fastest') {
+        historyParts.push(['route-weighting', routePlanner.weighting]);
+      }
+
       if (routePlanner.milestones) {
-        historyParts.push(['milestones', 1]);
+        historyParts.push(['milestones', routePlanner.milestones]);
+      }
+
+      if (
+        transportTypeDefs[routePlanner.transportType].api === 'gh' &&
+        routePlanner.mode === 'roundtrip'
+      ) {
+        historyParts.push([
+          'trip-distance',
+          routePlanner.roundtripParams.distance,
+        ]);
+
+        historyParts.push(['trip-seed', routePlanner.roundtripParams.seed]);
+      }
+
+      if (
+        transportTypeDefs[routePlanner.transportType].api === 'gh' &&
+        routePlanner.mode === 'isochrone'
+      ) {
+        historyParts.push([
+          'iso-buckets',
+          routePlanner.isochroneParams.buckets,
+        ]);
+
+        if (routePlanner.isochroneParams.distanceLimit) {
+          historyParts.push([
+            'iso-distance-limit',
+            routePlanner.isochroneParams.distanceLimit,
+          ]);
+        } else {
+          historyParts.push([
+            'iso-time-limit',
+            routePlanner.isochroneParams.timeLimit,
+          ]);
+        }
       }
     }
 
@@ -165,7 +220,9 @@ export const urlProcessor: Processor = {
       for (const point of drawingPoints.points) {
         historyParts.push([
           'point',
-          `${serializePoint(point)}${point.label ? `;${point.label}` : ''}`,
+          `${serializePoint(point)}${point.color ? `\x1eC${point.color}` : ''}${
+            point.label ? `\x1eL${point.label}` : ''
+          }`,
         ]);
       }
     }
@@ -174,7 +231,9 @@ export const urlProcessor: Processor = {
       historyParts.push([
         line.type,
         `${line.points.map((point) => serializePoint(point)).join(',')}${
-          line.label ? `;${line.label}` : ''
+          line.width ? `\x1eW${line.width}` : ''
+        }${line.color ? `\x1eC${line.color}` : ''}${
+          line.label ? `\x1eL${line.label}` : ''
         }`,
       ]);
     }
@@ -223,23 +282,23 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (gallery.showFilter) {
-      queryParts.push(['show', 'gallery-filter']);
-    } else if (gallery.showUploadModal) {
-      queryParts.push(['show', 'gallery-upload']);
-    } else if (
+    if (galleryFilter.pano !== undefined) {
+      historyParts.push(['gallery-pano', galleryFilter.pano]);
+    }
+
+    if (objects.active.length) {
+      historyParts.push(['objects', objects.active.join(';')]);
+    }
+
+    if (
       is<ShowModal>(main.activeModal) &&
       basicModals.includes(main.activeModal)
     ) {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (
-      main.activeModal === 'tips' &&
-      tips.tip &&
-      is<typeof allTips[number][0]>(tips.tip)
-    ) {
-      queryParts.push(['tip', tips.tip]);
+    if (main.documentKey && is<typeof allTips[number][0]>(main.documentKey)) {
+      queryParts.push(['tip', main.documentKey]);
     }
 
     if (main.embedFeatures.length) {
@@ -301,13 +360,13 @@ export const urlProcessor: Processor = {
       queryParts.push(['follow', main.selection?.id]);
     }
 
-    const sq = isMap ? serializeQuery(historyParts) : undefined;
+    const sq = mapId ? serializeQuery(historyParts) : undefined;
 
     const urlSearch = serializeQuery(queryParts);
 
     if (
-      (isMap && sq !== history.location.state?.sq) ||
-      urlSearch !== window.location.search
+      (mapId && sq !== (history.location.state as any)?.sq) ||
+      urlSearch !== window.location.hash.slice(1)
     ) {
       const method =
         lastActionType &&
@@ -318,8 +377,8 @@ export const urlProcessor: Processor = {
       history[method](
         {
           pathname: '/',
-          search: urlSearch,
-          hash: '',
+          // search: urlSearch,
+          hash: urlSearch,
         },
         { sq },
       );
@@ -329,6 +388,7 @@ export const urlProcessor: Processor = {
           {
             freemap: {
               action: 'urlUpdated',
+              payload: window.location.href, // for SAV
             },
           },
           '*',
@@ -349,12 +409,13 @@ function dateToString(d: Date) {
 }
 
 function serializeQuery(parts: [string, string | number | boolean][]) {
-  return `?${parts
+  return parts
     .map(
       (qp) =>
-        `${encodeURIComponent(qp[0])}=${encodeURIComponent(qp[1])
-          // FIXME replacing is nonstandard
-          .replace(/%2F/g, '/')}`,
+        encodeURIComponent(qp[0]) +
+        '=' +
+        // FIXME replacing is nonstandard
+        encodeURIComponent(qp[1]).replace(/%2F/g, '/'),
     )
-    .join('&')}`;
+    .join('&');
 }

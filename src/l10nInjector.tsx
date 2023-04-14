@@ -1,9 +1,23 @@
-import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
+import { useAppSelector } from './hooks/reduxSelectHook';
+import { useLazy } from './hooks/useLazy';
 import { Messages } from './translations/messagesInterface';
+
+export function useLocalMessages<T>(
+  factory: (language: string) => Promise<{ default: T }>,
+): T | undefined {
+  const language = useAppSelector((state) => state.l10n.language);
+
+  // NOTE factory dependenct is disabled for simpler parent code
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const f = useMemo(() => factory.bind(undefined, language), [language]);
+
+  return useLazy(f);
+}
 
 export function useMessages(): Messages | undefined {
   // force applying english language on load
-  useSelector((state) => state.l10n.counter);
+  useAppSelector((state) => state.l10n.counter);
 
   return window.translations;
 }

@@ -1,12 +1,18 @@
 import { authLogout, authStartLogout } from 'fm3/actions/authActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const authLogoutProcessor: Processor = {
   actionCreator: authStartLogout,
   errorKey: 'logIn.logOutError',
   async handle({ dispatch, getState }) {
+    try {
+      FB.logout();
+    } catch {
+      // ignore
+    }
+
     await httpRequest({
       getState,
       method: 'post',

@@ -1,5 +1,6 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect } from 'react';
 import Alert from 'react-bootstrap/Alert';
@@ -7,16 +8,16 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
 import { FaBullseye } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const accessTokens = useSelector((state) => state.tracking.accessTokens);
+  const accessTokens = useAppSelector((state) => state.tracking.accessTokens);
 
-  const deviceName = useSelector(
+  const deviceName = useAppSelector(
     (state) =>
       (
         state.tracking.devices.find(

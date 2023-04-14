@@ -1,4 +1,5 @@
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   Fragment,
@@ -13,26 +14,26 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems';
 import { DrawingSubmenu } from './DrawingSubmenu';
 import { GallerySubmenu } from './GallerySubmenu';
 import { HelpSubmenu } from './HelpSubmenu';
 import { LanguageSubmenu } from './LanguageSubmenu';
 import { MainMenu } from './MainMenu';
+import { OfflineSubmenu } from './OfflineSubmenu';
 import { SocialButtons } from './SocialButtons';
 import { Submenu } from './submenu';
 import { MenuProvier, SubmenuHeader } from './SubmenuHeader';
 import { TrackingSubmenu } from './TrackingSubmenu';
 
 export function MainMenuButton(): ReactElement {
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const lat = useSelector((state) => state.map.lat);
+  const lat = useAppSelector((state) => state.map.lat);
 
-  const lon = useSelector((state) => state.map.lon);
+  const lon = useAppSelector((state) => state.map.lon);
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   const [show, setShow] = useState(false);
 
@@ -63,7 +64,7 @@ export function MainMenuButton(): ReactElement {
   }, []);
 
   return (
-    <MenuProvier onBack={handleBack} onClose={closeMenu}>
+    <MenuProvier handleBack={handleBack} onClose={closeMenu}>
       <Button
         ref={button}
         onClick={handleButtonClick}
@@ -73,6 +74,7 @@ export function MainMenuButton(): ReactElement {
       >
         <FaBars />
       </Button>
+
       <Overlay
         rootClose
         placement="bottom"
@@ -86,6 +88,8 @@ export function MainMenuButton(): ReactElement {
 
             {submenu === null ? (
               <MainMenu onSubmenu={setSubmenu} />
+            ) : submenu === 'offline' ? (
+              <OfflineSubmenu />
             ) : submenu === 'help' ? (
               <HelpSubmenu />
             ) : submenu === 'openExternally' ? (

@@ -52,22 +52,28 @@ export const searchReducer = createReducer<SearchState, RootAction>(
   .handleAction(osmLoadNode, (state, action) => ({
     ...state,
     ...searchInitialState0,
-    osmNodeId: action.payload,
+    osmNodeId: action.payload.id,
   }))
   .handleAction(osmLoadWay, (state, action) => ({
     ...state,
     ...searchInitialState0,
-    osmWayId: action.payload,
+    osmWayId: action.payload.id,
   }))
   .handleAction(osmLoadRelation, (state, action) => ({
     ...state,
     ...searchInitialState0,
-    osmRelationId: action.payload,
+    osmRelationId: action.payload.id,
   }))
   .handleAction(searchSelectResult, (state, action) =>
     produce(state, (draft) => {
+      if (action.payload?.storeResult === false) {
+        return;
+      }
+
       draft.osmNodeId = null;
+
       draft.osmWayId = null;
+
       draft.osmRelationId = null;
 
       const { payload } = action;
@@ -82,12 +88,17 @@ export const searchReducer = createReducer<SearchState, RootAction>(
         switch (result.osmType) {
           case 'node':
             draft.osmNodeId = result.id;
+
             break;
+
           case 'way':
             draft.osmWayId = result.id;
+
             break;
+
           case 'relation':
             draft.osmRelationId = result.id;
+
             break;
         }
       }

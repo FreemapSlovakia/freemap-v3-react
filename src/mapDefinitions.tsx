@@ -8,6 +8,7 @@ import {
   FaCar,
   FaFont,
   FaHiking,
+  FaMap,
   FaPencilAlt,
   FaPlane,
   FaSkiingNordic,
@@ -17,7 +18,7 @@ import {
   FaTree,
   FaWikipediaW,
 } from 'react-icons/fa';
-import { GiHills, GiPathDistance } from 'react-icons/gi';
+import { GiHills, GiPathDistance, GiTreasureMap } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
@@ -26,7 +27,7 @@ import white1x1 from './images/1x1-white.png';
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
   name?: string;
-  nameKey?: 'osmData' | 'freemap' | 'srtm';
+  nameKey?: 'osmData' | 'freemap' | 'srtm' | 'maptiler';
   url?: string;
 }
 
@@ -64,6 +65,25 @@ const NLC_ATTR: AttributionDef = {
   url: 'http://www.nlcsk.org/',
 };
 
+export const defaultMenuLayerLetters = [
+  'T',
+  'C',
+  'S',
+  'Z',
+  'O',
+  'X',
+  'I',
+  'l',
+  's0',
+  's1',
+  's2',
+  's3',
+  's4',
+  'w',
+];
+
+export const defaultToolbarLayerLetters = ['X', 'O', 'Z', 'I'];
+
 export const baseLayerLetters = [
   'A',
   'T',
@@ -79,6 +99,8 @@ export const baseLayerLetters = [
   'X',
   '4',
   '5',
+  'VO',
+  'VS',
 ] as const;
 
 export const overlayLetters = [
@@ -101,28 +123,32 @@ export const overlayLetters = [
   'w',
 ] as const;
 
-export type BaseLayerLetters = typeof baseLayerLetters[number];
+export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
-export type OverlayLetters = typeof overlayLetters[number];
+export type NoncustomLayerLetters =
+  | typeof baseLayerLetters[number]
+  | typeof overlayLetters[number];
+
+export type BaseLayerLetters =
+  | typeof baseLayerLetters[number]
+  | `.${Num1digit}`;
+
+export type OverlayLetters = typeof overlayLetters[number] | `:${Num1digit}`;
 
 export interface LayerDef {
   icon: ReactElement;
   url?: string;
   attribution: AttributionDef[];
   minZoom?: number;
-  minNativeZoom?: number;
   maxNativeZoom?: number;
-  showOnlyInExpertMode?: boolean;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
   subdomains?: string | string[];
-  strava?: boolean;
   tms?: boolean;
   extraScales?: number[];
-  primary?: true | string;
   errorTileUrl?: string;
-  tileSize?: number;
-  zoomOffset?: number;
+  scaleWithDpi?: boolean;
+  cors?: boolean;
 }
 
 export interface BaseLayerDef extends LayerDef {
@@ -135,12 +161,9 @@ export interface OverlayLayerDef extends LayerDef {
   key?: [code: string, shift: boolean];
 }
 
-const isHdpi = (window.devicePixelRatio || 1) > 1.4;
-
 function legacyFreemap(
   type: BaseLayerLetters,
   icon: ReactElement,
-  showOnlyInExpertMode: boolean,
 ): BaseLayerDef {
   return {
     type,
@@ -150,14 +173,13 @@ function legacyFreemap(
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['Key' + type, false],
-    showOnlyInExpertMode,
   };
 }
 
 export const baseLayers: BaseLayerDef[] = [
   {
     type: 'X',
-    icon: <FaTree />,
+    icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
     extraScales: [2, 3],
     attribution: [
@@ -173,12 +195,11 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 6,
     maxNativeZoom: 19,
     key: ['KeyX', false],
-    primary: true,
   },
-  legacyFreemap('A', <FaCar />, true),
-  legacyFreemap('T', <FaHiking />, false),
-  legacyFreemap('C', <FaBicycle />, false),
-  legacyFreemap('K', <FaSkiingNordic />, true),
+  legacyFreemap('A', <FaCar />),
+  legacyFreemap('T', <FaHiking />),
+  legacyFreemap('C', <FaBicycle />),
+  legacyFreemap('K', <FaSkiingNordic />),
   {
     type: 'O',
     icon: <SiOpenstreetmap />,
@@ -187,7 +208,6 @@ export const baseLayers: BaseLayerDef[] = [
     maxNativeZoom: 19,
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     key: ['KeyO', false],
-    primary: true,
   },
   {
     type: 'S',
@@ -195,9 +215,8 @@ export const baseLayers: BaseLayerDef[] = [
     subdomains: ['server', 'services'],
     icon: <FaPlane />,
     minZoom: 0,
-    maxNativeZoom: isHdpi ? 18 : 19,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
     key: ['KeyS', false],
     attribution: [
       {
@@ -206,13 +225,13 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.esri.com/',
       },
     ],
-    primary: '!sk',
   },
   {
     type: 'Z',
     url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minNativeZoom: 0,
-    maxNativeZoom: isHdpi ? 18 : 19,
+    minZoom: 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
     icon: <FaPlane />,
     attribution: [
       {
@@ -222,18 +241,15 @@ export const baseLayers: BaseLayerDef[] = [
       },
     ],
     key: ['KeyZ', false],
-    primary: 'sk',
     errorTileUrl: white1x1,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
   },
   {
     type: 'M',
-    url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+    url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
     minZoom: 3,
     maxNativeZoom: 18,
     icon: <FaBicycle />,
-    showOnlyInExpertMode: true,
+
     attribution: [
       {
         type: 'map',
@@ -243,7 +259,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['Digit1', true],
+    key: ['KeyQ', false],
   },
   {
     type: 'p',
@@ -251,7 +267,7 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 3,
     maxNativeZoom: 17,
     icon: <FaTree />,
-    showOnlyInExpertMode: true,
+
     attribution: [
       {
         type: 'map',
@@ -261,7 +277,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['Digit2', true],
+    key: ['KeyN', false],
   },
   {
     type: 'd',
@@ -269,7 +285,8 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <FaBus />,
-    showOnlyInExpertMode: true,
+    cors: false,
+
     attribution: [
       {
         type: 'map',
@@ -278,23 +295,23 @@ export const baseLayers: BaseLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: ['Digit3', true],
+    key: ['KeyQ', false],
   },
   {
     type: 'h',
     url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
-    minNativeZoom: 8,
+    minZoom: 8,
     maxNativeZoom: 12,
     icon: <AiFillBank />,
-    showOnlyInExpertMode: true,
+
     attribution: [],
-    key: ['Digit9', true],
+    key: ['KeyH', false],
   },
   {
     type: '4',
     url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minNativeZoom: 0,
-    maxNativeZoom: isHdpi ? 17 : 18,
+    minZoom: 0,
+    maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
       {
@@ -303,17 +320,15 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
-    key: ['Digit4', false],
+    key: ['KeyD', true],
     errorTileUrl: white1x1,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
-    showOnlyInExpertMode: true,
+    scaleWithDpi: true,
   },
   {
     type: '5',
     url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minNativeZoom: 0,
-    maxNativeZoom: isHdpi ? 16 : 17,
+    minZoom: 0,
+    maxNativeZoom: 17,
     icon: <GiHills />,
     attribution: [
       {
@@ -322,11 +337,35 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
-    key: ['Digit5', false],
+    key: ['KeyD', false],
     errorTileUrl: black1x1,
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
-    showOnlyInExpertMode: true,
+    scaleWithDpi: true,
+  },
+  {
+    type: 'VO',
+    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=0iOk4fgsz9fOXyDYCirE',
+    key: ['KeyV', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'VS',
+    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=0iOk4fgsz9fOXyDYCirE',
+    key: ['KeyR', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
   },
 ];
 
@@ -336,7 +375,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     icon: <FaPencilAlt />,
     key: ['KeyI', true],
     attribution: [],
-    showOnlyInExpertMode: true,
   },
   {
     type: 'I',
@@ -350,12 +388,11 @@ export const overlayLayers: OverlayLayerDef[] = [
         name: 'CC-BY-SA',
       },
     ],
-    primary: true,
   },
   {
     type: 'w',
     icon: <FaWikipediaW />,
-    minZoom: 12,
+    minZoom: 8,
     key: ['KeyW', true],
     zIndex: 4,
     attribution: [],
@@ -374,7 +411,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   ...(
     [
-      ['s0', 'both'],
+      ['s0', 'all'],
       ['s1', 'ride'],
       ['s2', 'run'],
       ['s3', 'water'],
@@ -383,18 +420,14 @@ export const overlayLayers: OverlayLayerDef[] = [
   ).map(([type, stravaType]) => ({
     type,
     icon: <FaStrava />,
-    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/bluered/{z}/{x}/{y}.png?px=${
-      isHdpi ? 512 : 256
-    }`,
+    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
     attribution: [STRAVA_ATTR],
     minZoom: 0,
-    maxNativeZoom: isHdpi ? 15 : 16,
-    key: (stravaType === 'both' ? ['KeyH', true] : undefined) as
+    maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
+    key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
       | [string, boolean]
       | undefined,
-    showOnlyInExpertMode: stravaType !== 'both',
     zIndex: 3,
-    strava: true,
     errorTileUrl: transparent1x1,
   })),
   {
@@ -405,7 +438,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 20,
     key: ['KeyG', true],
-    showOnlyInExpertMode: true,
+
     zIndex: 3,
   },
   {
@@ -416,7 +449,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['KeyT', true],
-    showOnlyInExpertMode: true,
+
     zIndex: 3,
   },
   {
@@ -427,7 +460,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['KeyC', true],
-    showOnlyInExpertMode: true,
+
     zIndex: 3,
   },
   {
@@ -444,24 +477,22 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 18,
     key: ['KeyS', true],
-    showOnlyInExpertMode: true,
+
     zIndex: 3,
   },
   ...(
     [
-      ['n1', ['Digit1', false], ''],
-      ['n2', ['Digit2', false], 'h'],
-      ['n3', ['Digit3', false], 'c'],
+      ['n1', ''],
+      ['n2', 'h'],
+      ['n3', 'c'],
     ] as const
-  ).map(([type, key, suffix]) => ({
+  ).map(([type, suffix]) => ({
     type,
     icon: <FaFont />,
     url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: key as [string, boolean] | undefined,
-    showOnlyInExpertMode: true,
     zIndex: 3,
   })),
   {
@@ -471,7 +502,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 12,
     key: ['KeyR', true],
-    showOnlyInExpertMode: true,
     zIndex: 5,
     attribution: [FM_ATTR],
   },

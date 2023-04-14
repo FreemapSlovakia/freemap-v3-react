@@ -9,7 +9,7 @@ export const galleryShowImageGaProcessor: Processor = {
     } = getState();
 
     if (image) {
-      window.gtag('event', 'showPhoto' as any, {
+      window.gtag('event', 'showPhoto', {
         event_category: 'Gallery',
         value: image.id,
       });

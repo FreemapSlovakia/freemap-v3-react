@@ -8,21 +8,23 @@ import {
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-import { selectFeature } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
+import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { containsElevations, distance } from 'fm3/geoutils';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
+import { RootState } from 'fm3/reducers';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch } from 'redux';
 import { assertType } from 'typescript-is';
 
-const handle: ProcessorHandler = async ({ dispatch, getState }) => {
-  const { trackGeojson } = getState().elevationChart;
+const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
+  dispatch,
+  getState,
+  action,
+}) => {
+  const trackGeojson = action.payload;
 
-  if (!trackGeojson) {
-    // should not happen
-  } else if (containsElevations(trackGeojson)) {
+  if (containsElevations(trackGeojson)) {
     resolveElevationProfilePointsLocally(trackGeojson, dispatch);
   } else {
     await resolveElevationProfilePointsViaApi(getState, trackGeojson, dispatch);
@@ -62,12 +64,14 @@ function resolveElevationProfilePointsLocally(
 }
 
 async function resolveElevationProfilePointsViaApi(
-  getState: () => DefaultRootState,
+  getState: () => RootState,
   trackGeojson: Feature<LineString>,
   dispatch: Dispatch<RootAction>,
 ) {
   const totalDistanceInKm = turfLength(trackGeojson);
+
   const delta = Math.min(0.1, totalDistanceInKm / (window.innerWidth / 2));
+
   const elevationProfilePoints: {
     lat: number;
     lon: number;
@@ -77,6 +81,7 @@ async function resolveElevationProfilePointsViaApi(
 
   for (let dist = 0; dist <= totalDistanceInKm; dist += delta) {
     const [lon, lat] = getCoord(turfAlong(trackGeojson, dist));
+
     elevationProfilePoints.push({
       lat,
       lon,
@@ -85,7 +90,7 @@ async function resolveElevationProfilePointsViaApi(
     });
   }
 
-  const { data } = await httpRequest({
+  const res = await httpRequest({
     getState,
     method: 'POST',
     url: '/geotools/elevation',
@@ -95,6 +100,7 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartSetTrackGeojson,
       selectFeature,
       elevationChartClose,
+      clearMap,
     ],
   });
 
@@ -104,9 +110,10 @@ async function resolveElevationProfilePointsViaApi(
 
   let prevEle: number | undefined;
 
-  assertType<number[]>(data).forEach((ele: number, i: number) => {
+  assertType<number[]>(await res.json()).forEach((ele: number, i: number) => {
     if (prevEle !== undefined) {
       const d = ele - prevEle;
+
       if (d > 0) {
         climbUp += d;
       } else {

@@ -5,6 +5,7 @@ import {
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -15,30 +16,32 @@ import {
   FaTag,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Selection } from './Selection';
+
+export default DrawingLineSelection;
 
 export function DrawingLineSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
 
-  const drawing = useSelector((state) => state.drawingLines.drawing);
+  const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
-  const line = useSelector((state) =>
+  const line = useAppSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'
       ? state.drawingLines.lines[state.main.selection.id]
       : undefined,
   );
 
-  const elevationChartTrackGeojson = useSelector(
-    (state) => state.elevationChart.trackGeojson,
+  const showElevationChart = useAppSelector(
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const toggleElevationChart = useCallback(() => {
     // TODO to processor
 
-    if (elevationChartTrackGeojson) {
+    if (showElevationChart) {
       dispatch(elevationChartClose());
     } else if (line) {
       dispatch(
@@ -47,9 +50,13 @@ export function DrawingLineSelection(): ReactElement | null {
         ),
       );
     }
-  }, [line, elevationChartTrackGeojson, dispatch]);
+  }, [line, showElevationChart, dispatch]);
 
-  return !line ? null : (
+  if (!line) {
+    return null;
+  }
+
+  return (
     <Selection
       icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
       title={
@@ -86,7 +93,7 @@ export function DrawingLineSelection(): ReactElement | null {
         <Button
           className="ml-1"
           variant="secondary"
-          active={elevationChartTrackGeojson !== null}
+          active={showElevationChart}
           onClick={toggleElevationChart}
         >
           <FaChartArea />

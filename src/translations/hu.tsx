@@ -1,25 +1,22 @@
 /* eslint-disable */
 
+import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import { ElevationInfo } from 'fm3/components/ElevationInfo';
+import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
 } from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
 import { Messages } from './messagesInterface';
 
-const nf01 = Intl.NumberFormat('hu', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 1,
-});
-
-const nf33 = Intl.NumberFormat('hu', {
+const nf33 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
 });
@@ -95,6 +92,13 @@ const hu: Messages = {
     unnamed: 'No name', // TODO translate
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
+    componentLoadingError:
+      'Component loading error. Please check your internet connection.', // TODO translate
+    offline: 'You are not connected to the internet.', // TODO translate
+    connectionError: 'Error connecting the server.', // TODO translate
+    experimentalFunction: 'Experimental function', // TODO translate
+    attribution: () => <Attribution unknown="Map licence is not specified" />, // TODO translate
+    unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
   },
 
   selections: {
@@ -125,6 +129,16 @@ const hu: Messages = {
   },
 
   routePlanner: {
+    // TODO translate
+    ghParams: {
+      tripParameters: 'Trip parameters',
+      seed: 'Random seed',
+      distance: 'Approximate distance',
+      isochroneParameters: 'Isochrone parameters',
+      buckets: 'Buckets',
+      timeLimit: 'Time limit',
+      distanceLimit: 'Distance limit',
+    },
     milestones: 'Távolságszelvények',
     start: 'Kiindulás',
     finish: 'Úti cél',
@@ -136,22 +150,33 @@ const hu: Messages = {
     },
     transportType: {
       car: 'Gépkocsi',
-      'car-free': 'Gépkocsi (útdíj nélkül)',
-      bikesharing: 'Kerékpármegosztás',
-      imhd: 'Tömegközlekedés (Pozsony)',
-      'bike-osm': 'Kerékpár (OSM)',
-      bike: 'Kerékpártúrázás',
+      // 'car-free': 'Gépkocsi (útdíj nélkül)',
+      // bikesharing: 'Kerékpármegosztás',
+      // imhd: 'Tömegközlekedés (Pozsony)',
+      bike: 'Bicycle', // TODO translate
+      bicycle_touring: 'Kerékpártúrázás',
       'foot-stroller': 'Babakocsi / kerekesszék',
       nordic: 'Sífutás',
-      ski: 'Alpesi sí',
+      // ski: 'Alpesi sí',
       foot: 'Gyaloglás',
-      'foot-osm': 'Gyaloglás (OSM)',
+      hiking: 'Turisztika', // TODO translate
+      mtb: 'Mountain bike', // TODO translate
+      racingbike: 'Racing bike', // TODO translate
+      motorcycle: 'Motorcycle', // TODO translate
     },
     development: 'fejlesztés alatt',
     mode: {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',
       roundtrip: 'Legrövidebb úton (körutazás)',
+      'routndtrip-gh': 'Roundtrip', // TODO translate
+      isochrone: 'Isochrones', // TODO translate
+    },
+    // TODO translate
+    weighting: {
+      fastest: 'Fastest',
+      short_fastest: 'Fast, short',
+      shortest: 'Shortest',
     },
     alternative: 'Alternatíva',
     // eslint-disable-next-line
@@ -338,9 +363,9 @@ const hu: Messages = {
 
   mainMenu: {
     title: 'Main menu', // TODO translate
-    logOut: (name) => `Kijelentkezés: ${name}`,
+    logOut: 'Kijelentkezés',
     logIn: 'Bejelentkezés',
-    settings: 'Beállítások',
+    account: 'Fiók',
     gpxExport: 'Exportálás GPX / GeoJSON-be',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
@@ -385,9 +410,26 @@ const hu: Messages = {
         analytics="Analytics cookies"
       />
     ),
+    // TODO translate
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Ukrajnával állunk.{' '}
+          <a
+            href="https://bank.gov.ua/en/about/support-the-armed-forces"
+            target="_blank"
+            rel="noopener"
+          >
+            Adományozás az ukrán hadseregnek ›
+          </a>{' '}
+          🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {
+    recentTags: 'Recent tags to assign:', // TODO translate
     filter: 'Szűrő',
     showPhotosFrom: 'Fényképek megtekintése',
     showLayer: 'Réteg megjelenítése',
@@ -409,6 +451,7 @@ const hu: Messages = {
       rating: 'rating', // TODO translate
       takenAt: 'taken date', // TODO translate
       createdAt: 'upload date', // TODO translate
+      season: 'season', // TODO translate
     },
     viewer: {
       title: 'Fénykép',
@@ -449,7 +492,7 @@ const hu: Messages = {
           <li>Ne töltsön fel túl kicsi fényképeket (bélyegképek/thumbnails). A fénykép legnagyobb mérete nincs korlátozva. A legnagyobb fájlméret 10MB, a nagyobb fájlok elutasíttatnak.</li>
           <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>
           <li>Kérjük, csak a saját fényképeit töltse fel.</li>
-          <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC-BY-SA 2.0 licenc alapján terjesszék.</li>
+          <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC-BY-SA 4.0 licenc alapján terjesszék.</li>
           <li>Az üzemeltető (Freemap.sk) minden kötelezettséget elhárít, és nem vállal felelősséget a fénykép galériában történő közzétételéből eredő közvetlen vagy közvetett károkért. A fényképért teljes mértékben az azt a kiszolgálóra feltöltő személy felel.</li>
           <li>Az üzemeltető fenntartja a jogot, hogy a fénykép leírását, nevét, pozíciójáőt és címkéit szerkesszt, illetve hogy a fényképet törölje, ha annak tartalma nem megfelelő (megszegi ezeket a szabályokat).</li>
           <li>Az üzemeltető fenntartja a jogot, hogy törölje azt a fiókot, amelynek felhasználója nem megfelelő tartalom közzétételével ismételten megsérti a galéria szabályzatát.</li>
@@ -473,8 +516,6 @@ const hu: Messages = {
     commentAddingError: ({ err }) =>
       `Hiba történt a hozzászólás hozzáadásánál: ${err}`,
     ratingError: ({ err }) => `Hiba történt a fénykép értékelésénél: ${err}`,
-    unauthenticatedError:
-      'Fényképek galériába történő feltöltéséhez kérjük, jelentkezzék be.',
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
@@ -486,8 +527,11 @@ const hu: Messages = {
       author: 'Szerző',
       rating: 'Értékelés',
       noTags: 'nincs címke',
+      pano: 'Panoráma', // TODO translate
     },
     noPicturesFound: 'There were no photos found on this place.', // TODO translate
+    linkToWww: 'photo at www.freemap.sk', // TODO translate
+    linkToImage: 'photo image file', // TODO translate
   },
 
   measurement: {
@@ -496,17 +540,13 @@ const hu: Messages = {
     area: 'Terület',
     elevationFetchError: ({ err }) =>
       `Hiba történt a pont magasságának beolvasásakor: ${err}`,
-    elevationInfo: ({ elevation, point }) => (
-      <>
-        {(['D', 'DM', 'DMS'] as const).map((format) => (
-          <div key={format}>{latLonToString(point, 'hu', format)}</div>
-        ))}
-        {elevation != null && (
-          <div>
-            Magasság: {nf01.format(elevation)}&nbsp;{masl}
-          </div>
-        )}
-      </>
+    elevationInfo: (params) => (
+      <ElevationInfo
+        {...params}
+        lang="hu"
+        tileMessage="Tile" // TODO translate
+        maslMessage="Magasság"
+      />
     ),
     areaInfo: ({ area }) => (
       <>
@@ -567,26 +607,29 @@ const hu: Messages = {
   },
 
   drawing: {
-    modify: 'Felirat módosítása',
+    modify: 'Properties', // TODO translate
     edit: {
-      title: 'Felirat módosítása',
+      title: 'Properties', // TODO translate
+      color: 'Color', // TODO translate
       label: 'Felirat:',
+      width: 'Szélesség', // TODO
       hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
+      type: 'Geometry type', // TODO translate
     },
     continue: 'Continue', // TODO translate
     join: 'Join', // TODO translate
     split: 'Split', // TODO translate
     stopDrawing: 'Stop drawing', // TODO translate
     selectPointToJoin: 'Select point to join lines', // TODO translate
+    // TODO translate
+    defProps: {
+      menuItem: 'Style settings',
+      title: 'Drawing style settings',
+      applyToAll: 'Save and apply to all',
+    },
   },
 
   settings: {
-    tab: {
-      map: 'Térkép',
-      account: 'Fiók',
-      general: 'Általános',
-      expert: 'Szakértő',
-    },
     map: {
       overlayPaneOpacity: 'Saját vonalak átlátszatlansága:',
       homeLocation: {
@@ -598,48 +641,28 @@ const hu: Messages = {
     account: {
       name: 'Név',
       email: 'E-mail',
-      noAuthInfo: 'Csak bejelentkezett felhasználóknak.',
       sendGalleryEmails: 'Notify photo comments via email', // TODO translate
-      DeleteInfo: () => (
-        // TODO translate
-        <>
-          If you wish to delete your account, please contact us at{' '}
-          <Alert.Link href="mailto:freemap@freemap.sk">
-            freemap@freemap.sk
-          </Alert.Link>
-          .
-        </>
-      ),
+      delete: 'Delete account', // TODO translate
+      deleteWarning:
+        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
     },
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
     },
-    expertInfo: `
-      <div style="text-align: left">
-        A szakértői mód haladó felhasználóknak kínál funkciókat, például:
-        <ul>
-          <li>kibővített beállítások</li>
-          <li>további térképrétegek</li>
-          <li>további útvonaltervezési profilok</li>
-        </ul>
-      </div>
-    `,
-    expert: {
-      switch: 'Szakértői mód',
-      overlayOpacity: 'Réteg átlátszatlansága:',
-      trackViewerEleSmoothing: {
-        label: (value) =>
-          `A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: ${value}`,
-        info: '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
-      },
-    },
+    layer: 'Térkép',
+    overlayOpacity: 'Opacity', // TODO translate
+    showInMenu: 'Show in menu', // TODO translate
+    showInToolbar: 'Show in toolbar', // TODO translate
     saveSuccess: 'A beállítások el lettek mentve.',
     savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
+    customLayersDef: 'Custom map layers definition', // TODO translate
+    customLayersDefError: 'Invalid definition of custom map layers.', // TODO translate
   },
 
   changesets: {
     allAuthors: 'Minden szerző',
-    download: 'Változások letöltése',
+    tooBig:
+      'Changesets request may return too many items. Please try zoom in, choose fewer days or enter the specific author.', // TODO translate
     olderThan: ({ days }) => `${days} nap`,
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
@@ -676,298 +699,299 @@ const hu: Messages = {
   objects: {
     type: 'Típus',
     lowZoomAlert: {
-      message:
-        'Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a 12. szintre kell nagyítani.',
+      message: ({ minZoom }) =>
+        `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,
       zoom: 'Nagyítás',
     },
+    tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`, // TODO translate
     fetchingError: ({ err }) =>
       `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
-    categories: {
-      1: 'Természet',
-      2: 'Szolgáltatások',
-      3: 'Közlekedés',
-      4: 'Történelmi objektumok',
-      5: 'Egészségügy',
-      6: 'Üzletek',
-      7: 'Energia',
-      8: 'Szállás & étkezés',
-      9: 'Turizmus',
-      10: 'Közigazgatási beosztás',
-      11: 'Egyéb',
-      12: 'Szabadidő',
-      13: 'Sport',
-      14: 'Oktatás',
-      15: 'Kerékpározás',
-    },
-    subcategories: {
-      1: 'Barlangbejárat',
-      2: 'Hegycsúcs',
-      3: 'Benzinkút',
-      4: 'Étterem',
-      5: 'Szálloda',
-      6: 'Parkoló',
-      7: 'Repülőtér',
-      8: 'Vasútállomás',
-      9: 'Buszállomás',
-      10: 'Buszmegálló',
-      11: 'Vár',
-      12: 'Kastély',
-      13: 'Rom',
-      14: 'Múzeum',
-      15: 'Monumentális, épületszerű emlékmű',
-      16: 'Emlékmű',
-      17: 'Gyógyszertár',
-      18: 'Kórház',
-      19: 'Orvosi rendelő',
-      20: 'Rendőrség',
-      21: 'Rendelőintézet',
-      22: 'Határátkelő',
-      23: 'Kórház sürgősségi osztállyal',
-      24: 'Szupermarket',
-      26: 'Atomerőmű',
-      27: 'Hőerőmű',
-      28: 'Vízerőmű',
-      29: 'Szélerőmű',
-      30: 'Kis élelmiszerbolt',
-      31: 'Tűzoltóság',
-      32: 'Templom',
-      33: 'Kocsma',
-      34: 'Bank ATM nélkül',
-      35: 'Bankautomata (ATM)',
-      36: 'Büfé, gyorsétterem',
-      39: 'Bank ATM-mel',
-      40: 'Kilátóhely',
-      41: 'Kemping',
-      42: 'Védett fa',
-      43: 'Forrás',
-      44: 'Útirányjelző tábla (gyalogos)',
-      45: 'Tájékoztató térkép (gyalogos)',
-      46: 'Menedékház (személyzet nélkül)',
-      47: 'Esőbeálló',
-      48: 'Posta',
-      49: 'Történelmi csatatér',
-      50: 'Magasles',
-      51: 'Távközlési torony',
-      52: 'Kilátótorony',
-      53: 'Motel',
-      54: 'Vendégház',
-      55: 'Turistaszálló',
-      56: 'Kerületszékhely (Szlovákia)',
-      57: 'Járásszékhely (Szlovákia)',
-      58: 'Nagyváros',
-      59: 'Kisváros',
-      60: 'Község',
-      61: 'Falucska',
-      62: 'Városrész',
-      63: 'Vadőrház',
-      64: 'Fogorvos',
-      65: 'Kerékpárbolt',
-      66: 'Kerékpártároló',
-      67: 'Kerékpárkölcsönző',
-      68: 'Alkoholbolt',
-      69: 'Műalkotásbolt',
-      70: 'Pékség',
-      71: 'Szépségszalon',
-      72: 'Ágy, hálószoba-felszerelés',
-      73: 'Italt árusító bolt',
-      74: 'Könyvesbolt',
-      75: 'Butik',
-      76: 'Hentes',
-      77: 'Autókereskedés',
-      78: 'Autószerelő',
-      79: 'Jótékonysági bolt',
-      80: 'Drogéria',
-      81: 'Ruházati bolt',
-      82: 'Számítógépüzlet',
-      83: 'Édességbolt',
-      84: 'Fénymásoló',
-      85: 'Függönybolt',
-      86: 'Csemegés',
-      87: 'Nagyáruház',
-      89: 'Vegytisztító',
-      90: 'Barkácsbolt',
-      91: 'Szórakoztató elektronikai bolt',
-      92: 'Erotikus bolt',
-      93: 'Méteráru',
-      94: 'Termelői bolt',
-      95: 'Virágüzlet',
-      96: 'Képkeretbolt',
-      98: 'Temetkezési iroda',
-      99: 'Bútorbolt',
-      100: 'Kertészet',
-      101: 'Vegyesbolt',
-      102: 'Ajándékbolt, souvenir',
-      103: 'Üveges',
-      104: 'Zöldség-gyümölcs',
-      105: 'Fodrász',
-      106: 'Vas-műszaki kereskedés',
-      107: 'Hallókészülékbolt',
-      108: 'Hi-Fi üzlet',
-      109: 'Fagylaltozó',
-      110: 'Lakberendezési bolt',
-      111: 'Ékszerüzlet',
-      112: 'Trafik',
-      113: 'Konyhafelszerelés',
-      114: 'Mosoda',
-      115: 'Bevásárlóközpont',
-      116: 'Masszázsszalon',
-      117: 'Mobiltelefon-üzlet',
-      118: 'Pénzkölcsönző',
-      119: 'Motorkerékpár-kereskedés',
-      120: 'Hangszerüzlet',
-      121: 'Újságárus',
-      122: 'Optika',
-      124: 'Túrafelszerelés-bolt',
-      125: 'Festékbolt',
-      126: 'Zálogház',
-      127: 'Kisállat-kereskedés',
-      128: 'Tengerihalbolt',
-      129: 'Használtáru-kereskedés',
-      130: 'Cipőbolt',
-      131: 'Sportfelszerelés-bolt',
-      132: 'Papírbolt',
-      133: 'Tetoválás',
-      134: 'Játékbolt',
-      135: 'Építőanyag-áruház',
-      136: 'Üres üzlethelyiség',
-      137: 'Porszívóüzlet',
-      138: '100 forintos bolt',
-      139: 'Videófilmbolt vagy -kölcsönző',
-      140: 'Állatkert',
-      141: 'Menedékház (személyzettel)',
-      142: 'Látványosság',
-      143: 'WC',
-      144: 'Telefon',
-      145: 'Városháza, községháza',
-      146: 'Börtön',
-      147: 'Piac',
-      148: 'Bár',
-      149: 'Kávézó',
-      150: 'Grillezőhely',
-      151: 'Ivóvíz',
-      152: 'Taxi',
-      153: 'Könyvtár',
-      154: 'Autómosó',
-      155: 'Állatorvos',
-      156: 'Jelzőlámpa',
-      157: 'Vasúti megállóhely',
-      158: 'Vasúti átjáró',
-      159: 'Villamosmegálló',
-      160: 'Helikopter-leszállóhely',
-      161: 'Víztorony',
-      162: 'Szélmalom',
-      163: 'Szauna',
-      164: 'Benzinkút (LPG)',
-      166: 'Kutyafuttató',
-      167: 'Sportközpont',
-      168: 'Golfpálya',
-      169: 'Stadion',
-      170: 'Sportpálya',
-      171: 'Strand, élményfürdő',
-      172: 'Sólya',
-      173: 'Horgászat',
-      174: 'Park',
-      175: 'Játszótér',
-      176: 'Kert',
-      177: 'Szabadidős tevékenységre használható közös föld (UK)',
-      178: 'Műjégpálya',
-      179: 'Minigolf',
-      180: 'Tánctér',
-      181: 'Iskola',
-      182: 'Teke',
-      183: 'Bowling',
-      184: 'Amerikai futball',
-      185: 'Íjászat',
-      186: 'Atlétika',
-      187: 'Ausztrál futball',
-      188: 'Baseball',
-      189: 'Kosárlabda',
-      190: 'Strandröplabda',
-      191: 'BMX-kerékpár',
-      192: 'Pétanque',
-      193: 'Gyepteke',
-      194: 'Kanadai futball',
-      195: 'Kenu',
-      196: 'Sakk',
-      197: 'Hegymászás',
-      198: 'Krikett',
-      199: 'Krikettháló',
-      200: 'Krokett',
-      201: 'Kerékpározás',
-      202: 'Búvárkodás',
-      203: 'Kutyaverseny',
-      204: 'Lovaglás',
-      205: 'Valamilyen futball',
-      206: 'Kelta futball',
-      207: 'Golf',
-      208: 'Torna',
-      209: 'Hoki',
-      210: 'Patkódobás',
-      211: 'Lóverseny',
-      212: 'Bajor curling',
-      213: 'Korfball',
-      214: 'Motorverseny',
-      215: 'Több sport',
-      216: 'Tájékozódási futás',
-      217: 'Kispályás tenisz',
-      218: 'Siklóernyőzés',
-      219: 'Pelota',
-      220: 'Raketball',
-      221: 'Evezés',
-      222: 'Ligarögbi',
-      223: 'Uniós rögbe',
-      224: 'Lövészet',
-      225: 'Jégkorcsolya',
-      226: 'Gördeszka',
-      227: 'Síelés',
-      228: 'Labdarúgás',
-      229: 'Úszás',
-      230: 'Asztalitenisz',
-      231: 'Kézilabda',
-      232: 'Tenisz',
-      233: 'Szánkó',
-      234: 'Röplabda',
-      235: 'Vízisí',
-      236: 'Egyetem',
-      237: 'Óvoda',
-      238: 'Főiskola',
-      239: 'Autósiskola',
-      240: 'Kápolna',
-      241: 'Piknikezőhely',
-      242: 'Beltéri tűzrakóhely',
-      243: 'Lakatlan hely, dűlő',
-      244: 'Vízesés',
-      245: 'Tó',
-      246: 'Víztározó',
-      248: 'Természetvédelmi terület (fokozottan védett)',
-      249: 'Természetvédelmi terület (természeti emlék)',
-      250: 'Természetvédelmi terület (védett)',
-      251: 'Természetvédelmi terület (tájvédelmi körzet)',
-      252: 'Természetvédelmi terület (nemzeti park)',
-      253: 'Tejautomata („vastehén”)',
-      254: 'Természetvédelmi terület (RAMSAR vizes élőhely)',
-      255: 'Házszám',
-      256: 'Bányaakna (függőlege)',
-      257: 'Bányatárna (vízszintes)',
-      258: 'Kút',
-      259: 'Út menti kereszt',
-      260: 'Út menti kegyhely',
-      261: 'Fitness',
-      262: 'Gázturbina',
-      263: 'Udvarház, kúria',
-      264: 'Felszínalaktani (geomorfológiai) egység, táj határa',
-      265: 'Katonai bunker',
-      266: 'Autópályacsomópont',
-      267: 'Szobor',
-      268: 'Kémény',
-      269: 'Siklóernyőzés',
-      270: 'Sárkányrepülés',
-      271: 'Állatetető',
-      272: 'Tűzrakó hely',
-      273: 'Tollaslabda, fallabda',
-      274: 'Útirányjelző tábla (kerékpáros)',
-      275: 'Kerékpártöltő állomás',
-    },
+    // categories: {
+    //   1: 'Természet',
+    //   2: 'Szolgáltatások',
+    //   3: 'Közlekedés',
+    //   4: 'Történelmi objektumok',
+    //   5: 'Egészségügy',
+    //   6: 'Üzletek',
+    //   7: 'Energia',
+    //   8: 'Szállás & étkezés',
+    //   9: 'Turizmus',
+    //   10: 'Közigazgatási beosztás',
+    //   11: 'Egyéb',
+    //   12: 'Szabadidő',
+    //   13: 'Sport',
+    //   14: 'Oktatás',
+    //   15: 'Kerékpározás',
+    // },
+    // subcategories: {
+    //   1: 'Barlangbejárat',
+    //   2: 'Hegycsúcs',
+    //   3: 'Benzinkút',
+    //   4: 'Étterem',
+    //   5: 'Szálloda',
+    //   6: 'Parkoló',
+    //   7: 'Repülőtér',
+    //   8: 'Vasútállomás',
+    //   9: 'Buszállomás',
+    //   10: 'Buszmegálló',
+    //   11: 'Vár',
+    //   12: 'Kastély',
+    //   13: 'Rom',
+    //   14: 'Múzeum',
+    //   15: 'Monumentális, épületszerű emlékmű',
+    //   16: 'Emlékmű',
+    //   17: 'Gyógyszertár',
+    //   18: 'Kórház',
+    //   19: 'Orvosi rendelő',
+    //   20: 'Rendőrség',
+    //   21: 'Rendelőintézet',
+    //   22: 'Határátkelő',
+    //   23: 'Kórház sürgősségi osztállyal',
+    //   24: 'Szupermarket',
+    //   26: 'Atomerőmű',
+    //   27: 'Hőerőmű',
+    //   28: 'Vízerőmű',
+    //   29: 'Szélerőmű',
+    //   30: 'Kis élelmiszerbolt',
+    //   31: 'Tűzoltóság',
+    //   32: 'Templom',
+    //   33: 'Kocsma',
+    //   34: 'Bank ATM nélkül',
+    //   35: 'Bankautomata (ATM)',
+    //   36: 'Büfé, gyorsétterem',
+    //   39: 'Bank ATM-mel',
+    //   40: 'Kilátóhely',
+    //   41: 'Kemping',
+    //   42: 'Védett fa',
+    //   43: 'Forrás',
+    //   44: 'Útirányjelző tábla (gyalogos)',
+    //   45: 'Tájékoztató térkép (gyalogos)',
+    //   46: 'Menedékház (személyzet nélkül)',
+    //   47: 'Esőbeálló',
+    //   48: 'Posta',
+    //   49: 'Történelmi csatatér',
+    //   50: 'Magasles',
+    //   51: 'Távközlési torony',
+    //   52: 'Kilátótorony',
+    //   53: 'Motel',
+    //   54: 'Vendégház',
+    //   55: 'Turistaszálló',
+    //   56: 'Kerületszékhely (Szlovákia)',
+    //   57: 'Járásszékhely (Szlovákia)',
+    //   58: 'Nagyváros',
+    //   59: 'Kisváros',
+    //   60: 'Község',
+    //   61: 'Falucska',
+    //   62: 'Városrész',
+    //   63: 'Vadőrház',
+    //   64: 'Fogorvos',
+    //   65: 'Kerékpárbolt',
+    //   66: 'Kerékpártároló',
+    //   67: 'Kerékpárkölcsönző',
+    //   68: 'Alkoholbolt',
+    //   69: 'Műalkotásbolt',
+    //   70: 'Pékség',
+    //   71: 'Szépségszalon',
+    //   72: 'Ágy, hálószoba-felszerelés',
+    //   73: 'Italt árusító bolt',
+    //   74: 'Könyvesbolt',
+    //   75: 'Butik',
+    //   76: 'Hentes',
+    //   77: 'Autókereskedés',
+    //   78: 'Autószerelő',
+    //   79: 'Jótékonysági bolt',
+    //   80: 'Drogéria',
+    //   81: 'Ruházati bolt',
+    //   82: 'Számítógépüzlet',
+    //   83: 'Édességbolt',
+    //   84: 'Fénymásoló',
+    //   85: 'Függönybolt',
+    //   86: 'Csemegés',
+    //   87: 'Nagyáruház',
+    //   89: 'Vegytisztító',
+    //   90: 'Barkácsbolt',
+    //   91: 'Szórakoztató elektronikai bolt',
+    //   92: 'Erotikus bolt',
+    //   93: 'Méteráru',
+    //   94: 'Termelői bolt',
+    //   95: 'Virágüzlet',
+    //   96: 'Képkeretbolt',
+    //   98: 'Temetkezési iroda',
+    //   99: 'Bútorbolt',
+    //   100: 'Kertészet',
+    //   101: 'Vegyesbolt',
+    //   102: 'Ajándékbolt, souvenir',
+    //   103: 'Üveges',
+    //   104: 'Zöldség-gyümölcs',
+    //   105: 'Fodrász',
+    //   106: 'Vas-műszaki kereskedés',
+    //   107: 'Hallókészülékbolt',
+    //   108: 'Hi-Fi üzlet',
+    //   109: 'Fagylaltozó',
+    //   110: 'Lakberendezési bolt',
+    //   111: 'Ékszerüzlet',
+    //   112: 'Trafik',
+    //   113: 'Konyhafelszerelés',
+    //   114: 'Mosoda',
+    //   115: 'Bevásárlóközpont',
+    //   116: 'Masszázsszalon',
+    //   117: 'Mobiltelefon-üzlet',
+    //   118: 'Pénzkölcsönző',
+    //   119: 'Motorkerékpár-kereskedés',
+    //   120: 'Hangszerüzlet',
+    //   121: 'Újságárus',
+    //   122: 'Optika',
+    //   124: 'Túrafelszerelés-bolt',
+    //   125: 'Festékbolt',
+    //   126: 'Zálogház',
+    //   127: 'Kisállat-kereskedés',
+    //   128: 'Tengerihalbolt',
+    //   129: 'Használtáru-kereskedés',
+    //   130: 'Cipőbolt',
+    //   131: 'Sportfelszerelés-bolt',
+    //   132: 'Papírbolt',
+    //   133: 'Tetoválás',
+    //   134: 'Játékbolt',
+    //   135: 'Építőanyag-áruház',
+    //   136: 'Üres üzlethelyiség',
+    //   137: 'Porszívóüzlet',
+    //   138: '100 forintos bolt',
+    //   139: 'Videófilmbolt vagy -kölcsönző',
+    //   140: 'Állatkert',
+    //   141: 'Menedékház (személyzettel)',
+    //   142: 'Látványosság',
+    //   143: 'WC',
+    //   144: 'Telefon',
+    //   145: 'Városháza, községháza',
+    //   146: 'Börtön',
+    //   147: 'Piac',
+    //   148: 'Bár',
+    //   149: 'Kávézó',
+    //   150: 'Grillezőhely',
+    //   151: 'Ivóvíz',
+    //   152: 'Taxi',
+    //   153: 'Könyvtár',
+    //   154: 'Autómosó',
+    //   155: 'Állatorvos',
+    //   156: 'Jelzőlámpa',
+    //   157: 'Vasúti megállóhely',
+    //   158: 'Vasúti átjáró',
+    //   159: 'Villamosmegálló',
+    //   160: 'Helikopter-leszállóhely',
+    //   161: 'Víztorony',
+    //   162: 'Szélmalom',
+    //   163: 'Szauna',
+    //   164: 'Benzinkút (LPG)',
+    //   166: 'Kutyafuttató',
+    //   167: 'Sportközpont',
+    //   168: 'Golfpálya',
+    //   169: 'Stadion',
+    //   170: 'Sportpálya',
+    //   171: 'Strand, élményfürdő',
+    //   172: 'Sólya',
+    //   173: 'Horgászat',
+    //   174: 'Park',
+    //   175: 'Játszótér',
+    //   176: 'Kert',
+    //   177: 'Szabadidős tevékenységre használható közös föld (UK)',
+    //   178: 'Műjégpálya',
+    //   179: 'Minigolf',
+    //   180: 'Tánctér',
+    //   181: 'Iskola',
+    //   182: 'Teke',
+    //   183: 'Bowling',
+    //   184: 'Amerikai futball',
+    //   185: 'Íjászat',
+    //   186: 'Atlétika',
+    //   187: 'Ausztrál futball',
+    //   188: 'Baseball',
+    //   189: 'Kosárlabda',
+    //   190: 'Strandröplabda',
+    //   191: 'BMX-kerékpár',
+    //   192: 'Pétanque',
+    //   193: 'Gyepteke',
+    //   194: 'Kanadai futball',
+    //   195: 'Kenu',
+    //   196: 'Sakk',
+    //   197: 'Hegymászás',
+    //   198: 'Krikett',
+    //   199: 'Krikettháló',
+    //   200: 'Krokett',
+    //   201: 'Kerékpározás',
+    //   202: 'Búvárkodás',
+    //   203: 'Kutyaverseny',
+    //   204: 'Lovaglás',
+    //   205: 'Valamilyen futball',
+    //   206: 'Kelta futball',
+    //   207: 'Golf',
+    //   208: 'Torna',
+    //   209: 'Hoki',
+    //   210: 'Patkódobás',
+    //   211: 'Lóverseny',
+    //   212: 'Bajor curling',
+    //   213: 'Korfball',
+    //   214: 'Motorverseny',
+    //   215: 'Több sport',
+    //   216: 'Tájékozódási futás',
+    //   217: 'Kispályás tenisz',
+    //   218: 'Siklóernyőzés',
+    //   219: 'Pelota',
+    //   220: 'Raketball',
+    //   221: 'Evezés',
+    //   222: 'Ligarögbi',
+    //   223: 'Uniós rögbe',
+    //   224: 'Lövészet',
+    //   225: 'Jégkorcsolya',
+    //   226: 'Gördeszka',
+    //   227: 'Síelés',
+    //   228: 'Labdarúgás',
+    //   229: 'Úszás',
+    //   230: 'Asztalitenisz',
+    //   231: 'Kézilabda',
+    //   232: 'Tenisz',
+    //   233: 'Szánkó',
+    //   234: 'Röplabda',
+    //   235: 'Vízisí',
+    //   236: 'Egyetem',
+    //   237: 'Óvoda',
+    //   238: 'Főiskola',
+    //   239: 'Autósiskola',
+    //   240: 'Kápolna',
+    //   241: 'Piknikezőhely',
+    //   242: 'Beltéri tűzrakóhely',
+    //   243: 'Lakatlan hely, dűlő',
+    //   244: 'Vízesés',
+    //   245: 'Tó',
+    //   246: 'Víztározó',
+    //   248: 'Természetvédelmi terület (fokozottan védett)',
+    //   249: 'Természetvédelmi terület (természeti emlék)',
+    //   250: 'Természetvédelmi terület (védett)',
+    //   251: 'Természetvédelmi terület (tájvédelmi körzet)',
+    //   252: 'Természetvédelmi terület (nemzeti park)',
+    //   253: 'Tejautomata („vastehén”)',
+    //   254: 'Természetvédelmi terület (RAMSAR vizes élőhely)',
+    //   255: 'Házszám',
+    //   256: 'Bányaakna (függőlege)',
+    //   257: 'Bányatárna (vízszintes)',
+    //   258: 'Kút',
+    //   259: 'Út menti kereszt',
+    //   260: 'Út menti kegyhely',
+    //   261: 'Fitness',
+    //   262: 'Gázturbina',
+    //   263: 'Udvarház, kúria',
+    //   264: 'Felszínalaktani (geomorfológiai) egység, táj határa',
+    //   265: 'Katonai bunker',
+    //   266: 'Autópályacsomópont',
+    //   267: 'Szobor',
+    //   268: 'Kémény',
+    //   269: 'Siklóernyőzés',
+    //   270: 'Sárkányrepülés',
+    //   271: 'Állatetető',
+    //   272: 'Tűzrakó hely',
+    //   273: 'Tollaslabda, fallabda',
+    //   274: 'Útirányjelző tábla (kerékpáros)',
+    //   275: 'Kerékpártöltő állomás',
+    // },
   },
 
   external: {
@@ -1009,19 +1033,7 @@ const hu: Messages = {
   },
 
   tips: {
-    previous: 'Előző tipp',
-    next: 'Következő tipp',
-    prevent: 'Következő alkalommal ne jelenjék meg',
     errorLoading: 'Hiba történt a tipp betöltésekor.',
-  },
-
-  supportUs: {
-    explanation:
-      'A Freemap térképportált önkéntesek szerkesztik szabad idejükben. A működéshez azonban szükség van hardverre és kereskedelmi vállalatok szolgáltatásaira, ami bizony pénzbe kerül.',
-    account: 'Bankszámlaszám:',
-    paypal: 'Adományozás PayPallal',
-    thanks: 'Minden adományért hálásak vagyunk. Köszönjük!',
-    registration: 'Bejegyzés: 2009. október 2. (MV/VVS/1-900/90-34343)',
   },
 
   gpxExport: {
@@ -1068,8 +1080,12 @@ const hu: Messages = {
   },
 
   mapLayers: {
+    showAll: 'Show all maps', // TODO translate
+    settings: 'Map settings', // TODO translate
     layers: 'Térképrétegek',
+    switch: 'Térképrétegek', // TODO translate
     photoFilterWarning: 'A fényképszűrés aktív',
+    interactiveLayerWarning: 'Interactive layer is hidden', // TODO translate
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     letters: {
       A: 'Autó',
@@ -1103,7 +1119,11 @@ const hu: Messages = {
       w: 'Wikipedia',
       '4': 'Light Hillshading DMR 5.0', // TODO translate
       '5': 'Gray Hillshading DMR 5.0', // TODO translate
+      VO: 'OpenStreetMap Vector', // TODO translate
+      VS: 'Streets Vector', // TODO translate
     },
+    customBase: 'Custom map', // TODO translate
+    customOverlay: 'Custom map overlay', // TODO translate
     type: {
       map: 'térkép',
       data: 'adatok',
@@ -1113,7 +1133,15 @@ const hu: Messages = {
       freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
       srtm: '©\xa0SRTM',
-      hot: '©\xa0Humanitárius OpenStreetMap Team',
+      maptiler: (
+        // TODO translate
+        <MaptilerAttribution
+          tilesFrom="Vector tiles from"
+          hostedBy="hosted by"
+          see="See"
+          _3Dterrain="3D terrain"
+        />
+      ),
     },
   },
 
@@ -1142,61 +1170,7 @@ const hu: Messages = {
       `Hiba történt az OSM-adatok lekérésénél: ${err}`,
   },
 
-  roadDetails: {
-    roadType: 'Úttípus:',
-    surface: 'Burkolat:',
-    suitableBikeType: 'Ajánlott kerékpártípus:',
-    lastChange: 'Utolsó módosítás:',
-    showDetails: 'Részletek megjelenítése az osm.org-on',
-    surfaces: {
-      asphalt: 'aszfalt',
-      gravel: 'zúzott kő',
-      fine_gravel: 'murva',
-      dirt: 'por',
-      ground: 'föld',
-      cobblestone: 'nagy kavics (görgeteg)',
-      compacted: 'tömörített',
-      paved: 'burkolt',
-      unknown: 'ismeretlen',
-      unpaved: 'buroklatlan',
-      'concrete:plates': 'betonlapok',
-      concrete: 'beton',
-      grass: 'fű',
-    },
-    trackClasses: {
-      motorway: 'autópálya',
-      trunk: 'autóút',
-      primary: 'első- vagy másodrendű főút',
-      secondary: 'összekötő út',
-      tertiary: 'bekötőút',
-      service: 'szervizút',
-      unclassified: 'egyéb közút',
-      residential: 'lakóút',
-      grade1: 'burkolt vagy erősen tömörített, szilárd felületű (1. osztály)',
-      grade2:
-        'burkolatlan út, felszíne zúzott kő, változó mennyiségű homokkal, kőzetliszttel és agyaggal keverve (2. osztály)',
-      grade3: 'szinte mindig burkolatlan út (3. osztály)',
-      grade4:
-        'szinte mindig burkolatlan út, elsődlegesen föld/homok/fű (4. osztály)',
-      grade5: 'szinte mindig burkolatlan út szilárd anyag nélkül (5. osztály)',
-      path: 'ösvény',
-      footway: 'gyalogút',
-      pedestrian: 'sétálóutca',
-      unknown: 'ismeretlen',
-      living_street: 'lakó-pihenő övezet',
-      construction: 'építés alatt',
-    },
-    bicycleTypes: {
-      'road-bike': 'országúti kerékpár',
-      'trekking-bike': 'túrakerékpár',
-      'mtb-bike': 'hegyi kerékpár (MTB)',
-      'no-bike': 'kerékpárral tilos',
-      unknown: 'ismeretlen',
-    },
-  },
-
   tracking: {
-    unauthenticatedError: 'Eszközei kezeléséhez kérjük, jelentkezzék be.',
     trackedDevices: {
       button: 'Figyelt',
       modalTitle: 'Figyelt eszközök',
@@ -1372,6 +1346,8 @@ const hu: Messages = {
     ),
   },
   pdfExport: {
+    advancedSettings: 'Advanced options', // TODO translate
+    styles: 'Interactive layer styles', // TODO translate
     export: 'Exportálás',
     exportError: ({ err }) => `Hiba történt a térkép exportálásakor: ${err}`,
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
@@ -1447,6 +1423,8 @@ const hu: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'Displayed map is a legacy one. Switch to modern outdoor map?', // TODO translate
     noMapFound: 'Nincs térkép', // TODO No map found
     save: 'Mentés',
     delete: 'Törlés',
@@ -1468,23 +1446,24 @@ const hu: Messages = {
         Map <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Please log-in to access My maps functionality.', // TODO translate
+    writers: 'Editors', // TODO translate
+    conflictError: 'The map has been modified in the meantime.', // TODO translate
   },
 
   // TODO translate
   mapCtxMenu: {
-    centerMap: 'Center map',
-    measurePosition: 'Measure position',
-    addPoint: 'Add point',
-    startLine: 'Start line',
-    queryFeatures: 'Query features',
-    startRoute: 'Start route',
-    finishRoute: 'Finish route',
-    showPhotos: 'Show photos',
+    centerMap: 'Center a map here',
+    measurePosition: 'Find coordinates and elevation',
+    addPoint: 'Add here a point',
+    startLine: 'Start here drawing a line or measurement',
+    queryFeatures: 'Query nearby features',
+    startRoute: 'Plan a route from here',
+    finishRoute: 'Plan a route to here',
+    showPhotos: 'Show nearby photos',
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Jelmagyarázat: <i>{outdoorMap}</i>:
       </>
@@ -1520,7 +1499,7 @@ const hu: Messages = {
           You can prove your volunteer work by creating work reports in the{' '}
           <a href="https://rovas.app/">Rovas</a> application. If you are a
           volunteer in the OSM project and are using the JOSM application, we
-          recommend enabling the
+          recommend enabling the{' '}
           <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
             Rovas Connector plugin
           </a>
@@ -1532,6 +1511,18 @@ const hu: Messages = {
     ), // TODO translate
     continue: 'Continue', // TODO translate
     success: 'Congratulations, you have become a premium member!', // TODO translate
+  },
+
+  // TODO translate
+  offline: {
+    offlineMode: 'Offline mode',
+    cachingActive: 'Caching active',
+    clearCache: 'Clear cache',
+    dataSource: 'Data source',
+    networkOnly: 'Network only',
+    networkFirst: 'Network first',
+    cacheFirst: 'Cache first',
+    cacheOnly: 'Cache only',
   },
 };
 

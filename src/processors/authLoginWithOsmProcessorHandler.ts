@@ -1,5 +1,5 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
@@ -31,7 +31,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   }
 
   try {
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
       method: 'POST',
       url: '/auth/login',
@@ -42,7 +42,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       },
     });
 
-    w.location.href = assertType<LoginResponse>(data).redirect;
+    w.location.href = assertType<LoginResponse>(await res.json()).redirect;
   } catch (e) {
     w.close();
 

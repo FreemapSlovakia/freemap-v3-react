@@ -1,37 +1,44 @@
 import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
-import { ObjectsResult, objectsSetResult } from 'fm3/actions/objectsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
+import {
+  ObjectsResult,
+  objectsSetFilter,
+  objectsSetResult,
+} from 'fm3/actions/objectsActions';
 import { createReducer } from 'typesafe-actions';
 
 export interface ObjectsState {
   objects: ObjectsResult[];
+  active: string[];
 }
 
 const initialState: ObjectsState = {
   objects: [],
+  active: [],
 };
 
 export const objectsReducer = createReducer<ObjectsState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
+  .handleAction(objectsSetFilter, (state, action) => ({
+    ...state,
+    active: action.payload,
+  }))
   .handleAction(objectsSetResult, (state, action) => {
-    const newIds = new Set(action.payload.map((obj) => obj.id));
     return {
       ...state,
-      objects: [
-        ...state.objects.filter((obj) => !newIds.has(obj.id)),
-        ...action.payload,
-      ],
+      objects: action.payload,
     };
   })
-  .handleAction(mapsDataLoaded, (state, { payload }) => {
+  .handleAction(mapsLoaded, (state, { payload: { merge, data } }) => {
     return {
       ...state,
-      objects: [
-        ...(payload.merge ? state.objects : []),
-        ...(payload.objects ?? initialState.objects),
-      ],
+      active: !merge
+        ? data.objectsV2?.active ?? []
+        : data.objectsV2
+        ? [...new Set([...state.active, ...data.objectsV2?.active])]
+        : state.active,
     };
   });

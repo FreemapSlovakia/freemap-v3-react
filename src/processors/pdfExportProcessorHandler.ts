@@ -9,8 +9,9 @@ import {
 } from '@turf/helpers';
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { colors } from 'fm3/constants';
+import { httpRequest } from 'fm3/httpRequest';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
@@ -31,12 +32,6 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   getState,
   action,
 }) => {
-  const le = getMapLeafletElement();
-
-  if (!le) {
-    return;
-  }
-
   const {
     scale,
     area,
@@ -59,29 +54,37 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   } = getState();
 
   let w: number | undefined = undefined;
+
   let n: number | undefined = undefined;
+
   let e: number | undefined = undefined;
+
   let s: number | undefined = undefined;
 
   if (area === 'visible') {
-    const bounds = le.getBounds();
-    w = bounds.getWest();
-    n = bounds.getNorth();
-    e = bounds.getEast();
-    s = bounds.getSouth();
-  } else {
-    if (
-      selection?.type === 'draw-line-poly' &&
-      lines[selection.id]?.type === 'polygon'
-    ) {
-      // selected polygon
+    const bounds = (await mapPromise).getBounds();
 
-      for (const { lat, lon } of lines[selection.id].points) {
-        w = Math.min(w === undefined ? 1000 : w, lon);
-        n = Math.max(n === undefined ? -1000 : n, lat);
-        e = Math.max(e === undefined ? -1000 : e, lon);
-        s = Math.min(s === undefined ? 1000 : s, lat);
-      }
+    w = bounds.getWest();
+
+    n = bounds.getNorth();
+
+    e = bounds.getEast();
+
+    s = bounds.getSouth();
+  } else if (
+    selection?.type === 'draw-line-poly' &&
+    lines[selection.id]?.type === 'polygon'
+  ) {
+    // selected polygon
+
+    for (const { lat, lon } of lines[selection.id].points) {
+      w = Math.min(w === undefined ? 1000 : w, lon);
+
+      n = Math.max(n === undefined ? -1000 : n, lat);
+
+      e = Math.max(e === undefined ? -1000 : e, lon);
+
+      s = Math.min(s === undefined ? 1000 : s, lat);
     }
   }
 
@@ -105,7 +108,11 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
         line.type === 'line'
           ? lineString(
               line.points.map((point) => [point.lon, point.lat]),
-              { name: line.label || '' },
+              {
+                name: line.label || '',
+                color: line.color ?? colors.normal,
+                width: line.width ?? 4,
+              },
             )
           : polygon(
               [
@@ -114,13 +121,22 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
                   [line.points[0].lon, line.points[0].lat],
                 ],
               ],
-              { name: line.label || '' },
+              {
+                name: line.label || '',
+                color: line.color ?? colors.normal,
+                width: line.width ?? 4,
+              },
             ),
       );
     }
 
     for (const p of getState().drawingPoints.points) {
-      features.push(point([p.lon, p.lat], { name: p.label || '' }));
+      features.push(
+        point([p.lon, p.lat], {
+          name: p.label || '',
+          color: p.color ?? colors.normal,
+        }),
+      );
     }
   }
 
@@ -182,7 +198,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     }
   }
 
-  const { data } = await httpRequest({
+  const res = await httpRequest({
     getState,
     method: 'POST',
     url: `${fmMapserverUrl}/export`,
@@ -199,12 +215,14 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
         skiTrails,
         horseTrails,
       },
-      custom: layers.length ? { layers, styles: JSON.parse(style) } : undefined,
+      custom: layers.length
+        ? { layers, styles: [{ Style: { '@name': '_new_' }, style }] } // TODO ugly hacked to support XML styles
+        : undefined,
     },
     expectedStatus: 200,
   });
 
-  const okData = assertType<{ token: string }>(data);
+  const data = assertType<{ token: string }>(await res.json());
 
   dispatch(setActiveModal(null));
 
@@ -217,20 +235,18 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
   );
 
   for (let i = 0; ; i++) {
+    const t = Date.now();
+
     try {
       await httpRequest({
         getState,
         method: 'HEAD',
-        url: `${fmMapserverUrl}/export`,
-        params: {
-          token: okData.token,
-        },
-        expectedStatus: 200,
+        url: `${fmMapserverUrl}/export?token=${encodeURIComponent(data.token)}`,
       });
 
       break;
     } catch (err) {
-      if (err.response || i > 10) {
+      if (i > 10 || Date.now() - t < 15000) {
         throw err;
       }
     }
@@ -241,7 +257,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
       id: 'pdfExport.export',
       messageKey: 'pdfExport.exported',
       messageParams: {
-        url: `${fmMapserverUrl}/export?token=${okData.token}`,
+        url: `${fmMapserverUrl}/export?token=${data.token}`,
       },
       style: 'info',
     }),

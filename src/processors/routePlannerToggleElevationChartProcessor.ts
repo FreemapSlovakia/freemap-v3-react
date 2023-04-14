@@ -19,7 +19,7 @@ export const routePlannerToggleElevationChartProcessor: Processor<
     routePlannerSetActiveAlternativeIndex,
   ],
   handle: async ({ dispatch, getState, action }) => {
-    const shown = !!getState().elevationChart.trackGeojson;
+    const shown = !!getState().elevationChart.elevationProfilePoints;
 
     const toggling = isActionOf(routePlannerToggleElevationChart, action);
 

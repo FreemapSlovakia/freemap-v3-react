@@ -1,13 +1,13 @@
 import {
-  galleryHideUploadModal,
   galleryRemoveItem,
   gallerySetItemError,
   gallerySetLayerDirty,
   galleryUpload,
 } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
@@ -26,7 +26,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         }),
       );
 
-      dispatch(galleryHideUploadModal());
+      dispatch(setActiveModal(null));
     }
 
     return;
@@ -39,7 +39,9 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   }
 
   const formData = new FormData();
+
   formData.append('image', item.file);
+
   formData.append(
     'meta',
     JSON.stringify({
@@ -65,15 +67,22 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       getState,
       method: 'POST',
       url: '/gallery/pictures',
-      data: formData,
+      body: formData,
       expectedStatus: 200,
-      cancelActions: [galleryHideUploadModal],
+      cancelActions: [setActiveModal], // if upload modal is closed
     });
 
     dispatch(galleryRemoveItem(item.id));
+
     dispatch(galleryUpload());
   } catch (err) {
-    dispatch(gallerySetItemError({ id: item.id, error: `~${err.message}` }));
+    dispatch(
+      gallerySetItemError({
+        id: item.id,
+        error: `~${err instanceof Error ? err.message : String(err)}`,
+      }),
+    );
+
     dispatch(galleryUpload());
   }
 };

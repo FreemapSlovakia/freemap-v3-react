@@ -29,7 +29,8 @@ export type GalleryColorizeBy =
   | 'takenAt'
   | 'createdAt'
   | 'rating'
-  | 'mine';
+  | 'mine'
+  | 'season';
 
 export interface GalleryTag {
   name: string;
@@ -60,6 +61,7 @@ export interface Picture extends LatLon {
   user: Pick<User, 'id' | 'name'>;
   createdAt: Date;
   takenAt: Date | null;
+  pano?: 1;
 }
 
 export interface GalleryFilter {
@@ -71,7 +73,10 @@ export interface GalleryFilter {
   createdAtTo?: Date;
   ratingFrom?: number;
   ratingTo?: number;
+  pano?: boolean;
 }
+
+export const galleryAddTag = createAction('GALLERY_ADD_TAG')<string>();
 
 export const galleryRequestImages = createAction(
   'GALLERY_REQUEST_IMAGES',
@@ -145,18 +150,6 @@ export const gallerySetEditModel = createAction(
 
 export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE')();
 
-export const galleryShowFilter = createAction('GALLERY_SHOW_FILTER')();
-
-export const galleryHideFilter = createAction('GALLERY_HIDE_FILTER')();
-
-export const galleryShowUploadModal = createAction(
-  'GALLERY_SHOW_UPLOAD_MODAL',
-)();
-
-export const galleryHideUploadModal = createAction(
-  'GALLERY_HIDE_UPLOAD_MODAL',
-)();
-
 export const gallerySetFilter =
   createAction('GALLERY_SET_FILTER')<GalleryFilter>();
 
@@ -171,3 +164,7 @@ export const galleryColorizeBy = createAction(
 export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',
 )();
+
+export const galleryQuickAddTag = createAction(
+  'GALLERY_QUICK_ADD_TAG',
+)<string>();

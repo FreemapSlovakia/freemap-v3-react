@@ -1,6 +1,9 @@
-import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
-import { LatLon } from 'fm3/types/common';
+import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
+import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
+import { AttributionDef, NoncustomLayerLetters } from 'fm3/mapDefinitions';
+import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { ReactNode } from 'react';
+import { NonUndefined } from 'utility-types';
 
 type Err = { err: string };
 
@@ -53,6 +56,12 @@ export type Messages = {
     load: string;
     unnamed: string;
     enablePopup: string;
+    componentLoadingError: string;
+    offline: string;
+    connectionError: string;
+    experimentalFunction: string;
+    attribution: () => JSX.Element;
+    unauthenticatedError: string;
   };
   selections: {
     objects: string;
@@ -80,6 +89,15 @@ export type Messages = {
     maps: string;
   };
   routePlanner: {
+    ghParams: {
+      tripParameters: string;
+      seed: string;
+      distance: string;
+      isochroneParameters: string;
+      buckets: string;
+      timeLimit: string;
+      distanceLimit: string;
+    };
     milestones: string;
     start: string;
     finish: string;
@@ -89,25 +107,10 @@ export type Messages = {
       current: string;
       home: string;
     };
-    transportType: {
-      car: string;
-      'car-free': string;
-      bikesharing: string;
-      imhd: string;
-      'bike-osm': string;
-      bike: string;
-      'foot-stroller': string;
-      nordic: string;
-      ski: string;
-      'foot-osm': string;
-      foot: string;
-    };
+    transportType: Record<TransportTypeMsgKey, string>;
     development: string;
-    mode: {
-      route: string;
-      trip: string;
-      roundtrip: string;
-    };
+    mode: Record<RoutingMode | 'routndtrip-gh', string>;
+    weighting: Record<Weighting, string>;
     alternative: string;
     distance: ({
       value,
@@ -277,9 +280,9 @@ export type Messages = {
   };
   mainMenu: {
     title: string;
-    logOut: (name: string) => string;
+    logOut: string;
     logIn: string;
-    settings: string;
+    account: string;
     gpxExport: string;
     mapExports: string;
     embedMap: string;
@@ -310,10 +313,11 @@ export type Messages = {
     zoomOut: string;
     devInfo: () => JSX.Element;
     copyright: string;
-    YellowBar?: () => JSX.Element;
+    infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
   };
   gallery: {
+    recentTags: string;
     filter: string;
     showPhotosFrom: string;
     showLayer: string;
@@ -335,6 +339,7 @@ export type Messages = {
       rating: string;
       takenAt: string;
       createdAt: string;
+      season: string;
     };
     viewer: {
       title: string;
@@ -385,7 +390,6 @@ export type Messages = {
     savingError: ({ err }: Err) => string;
     commentAddingError: ({ err }: Err) => string;
     ratingError: ({ err }: Err) => string;
-    unauthenticatedError: string;
     missingPositionError: string;
     invalidPositionError: string;
     invalidTakenAt: string;
@@ -397,21 +401,18 @@ export type Messages = {
       author: string;
       rating: string;
       noTags: string;
+      pano: string;
     };
     noPicturesFound: string;
+    linkToWww: string;
+    linkToImage: string;
   };
   measurement: {
     distance: string;
     elevation: string;
     area: string;
     elevationFetchError: ({ err }: Err) => string;
-    elevationInfo: ({
-      elevation,
-      point,
-    }: {
-      elevation: number;
-      point: LatLon;
-    }) => JSX.Element;
+    elevationInfo: (params: ElevationInfoBaseProps) => JSX.Element;
     areaInfo: ({ area }: { area: number }) => JSX.Element;
     distanceInfo: ({ length }: { length: number }) => JSX.Element;
   };
@@ -453,22 +454,24 @@ export type Messages = {
     modify: string;
     edit: {
       title: string;
+      color: string;
       label: string;
+      width: string;
       hint: string;
+      type: string;
     };
     split: string;
     join: string;
     continue: string;
     stopDrawing: string;
     selectPointToJoin: string;
+    defProps: {
+      menuItem: string;
+      title: string;
+      applyToAll: string;
+    };
   };
   settings: {
-    tab: {
-      map: string;
-      account: string;
-      general: string;
-      expert: string;
-    };
     map: {
       overlayPaneOpacity: string;
       homeLocation: {
@@ -480,28 +483,25 @@ export type Messages = {
     account: {
       name: string;
       email: string;
-      noAuthInfo: string;
       sendGalleryEmails: string;
-      DeleteInfo: () => JSX.Element;
+      delete: string;
+      deleteWarning: string;
     };
     general: {
       tips: string;
     };
-    expertInfo: string;
-    expert: {
-      switch: string;
-      overlayOpacity: string;
-      trackViewerEleSmoothing: {
-        label: (value: number) => string;
-        info: string;
-      };
-    };
+    layer: string;
+    overlayOpacity: string;
+    showInMenu: string;
+    showInToolbar: string;
     saveSuccess: string;
     savingError: ({ err }: Err) => string;
+    customLayersDef: string;
+    customLayersDefError: string;
   };
   changesets: {
     allAuthors: string;
-    download: string;
+    tooBig: string;
     olderThan: ({ days }: { days: number }) => string;
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;
@@ -537,12 +537,13 @@ export type Messages = {
   objects: {
     type: string;
     lowZoomAlert: {
-      message: string;
+      message: ({ minZoom }: { minZoom: number }) => string;
       zoom: string;
     };
+    tooManyPoints: ({ limit }: { limit: number }) => string;
     fetchingError: ({ err }: Err) => string;
-    categories: Record<number, string>;
-    subcategories: Record<number, string>;
+    // categories: Record<number, string>;
+    // subcategories: Record<number, string>;
   };
   external: {
     openInExternal: string;
@@ -580,17 +581,7 @@ export type Messages = {
     enableLocateMe: string;
   };
   tips: {
-    previous: string;
-    next: string;
-    prevent: string;
     errorLoading: string;
-  };
-  supportUs: {
-    explanation: string;
-    account: string;
-    paypal: string;
-    thanks: string;
-    registration: string;
   };
   gpxExport: {
     export: string;
@@ -630,21 +621,22 @@ export type Messages = {
     success: string;
   };
   mapLayers: {
+    showAll: string;
+    settings: string;
     layers: string;
+    switch: string;
     photoFilterWarning: string;
+    interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
-    letters: Record<BaseLayerLetters | OverlayLetters, string>;
+    letters: Record<NoncustomLayerLetters, string>;
+    customBase: string;
+    customOverlay: string;
     type: {
       map: string;
       data: string;
       photos: string;
     };
-    attr: {
-      freemap: string;
-      osmData: string;
-      srtm: string;
-      hot: string;
-    };
+    attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
   };
   elevationChart: {
     distance: string;
@@ -657,24 +649,7 @@ export type Messages = {
   osm: {
     fetchingError: ({ err }: Err) => string;
   };
-  roadDetails: {
-    roadType: string;
-    surface: string;
-    suitableBikeType: string;
-    lastChange: string;
-    showDetails: string;
-    surfaces: Record<string, string>;
-    trackClasses: Record<string, string>;
-    bicycleTypes: {
-      'road-bike': string;
-      'trekking-bike': string;
-      'mtb-bike': string;
-      'no-bike': string;
-      unknown: string;
-    };
-  };
   tracking: {
-    unauthenticatedError: string;
     trackedDevices: {
       button: string;
       modalTitle: string;
@@ -766,8 +741,11 @@ export type Messages = {
     };
     mapScale: string;
     alert: () => JSX.Element;
+    advancedSettings: string;
+    styles: string;
   };
   maps: {
+    legacyMapWarning: string;
     noMapFound: string;
     save: string;
     delete: string;
@@ -783,11 +761,12 @@ export type Messages = {
     loadInclMapAndPosition: string;
     savedMaps: string;
     newMap: string;
-    SomeMap(props: { name: string }): JSX.Element;
-    unauthenticatedError: string;
+    SomeMap: (props: { name: string }) => JSX.Element;
+    writers: string;
+    conflictError: string;
   };
   legend: {
-    body: () => JSX.Element;
+    body: JSX.Element;
   };
   contacts: {
     ngo: string;
@@ -815,5 +794,15 @@ export type Messages = {
     info: ReactNode;
     continue: string;
     success: string;
+  };
+  offline: {
+    offlineMode: string;
+    cachingActive: string;
+    clearCache: string;
+    dataSource: string;
+    networkOnly: string;
+    networkFirst: string;
+    cacheFirst: string;
+    cacheOnly: string;
   };
 };

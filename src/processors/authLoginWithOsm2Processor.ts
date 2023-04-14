@@ -4,7 +4,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
   actionCreator: authLoginWithOsm2,
   errorKey: 'logIn.logInError',
-  async handle(...params) {
-    (await import('./authLoginWithOsm2ProcessorHandler')).default(...params);
-  },
+  handle: async (...params) =>
+    await (
+      await import('./authLoginWithOsm2ProcessorHandler')
+    ).default(...params),
 };

@@ -9,7 +9,8 @@ export const basicModals = [
   'about',
   'export-gpx',
   'export-pdf',
-  'settings',
+  'account',
+  'mapSettings',
   'embed',
   'supportUs',
   'tracking-watched',
@@ -17,6 +18,9 @@ export const basicModals = [
   'maps',
   'login',
   'remove-ads',
+  'gallery-filter',
+  'gallery-upload',
+  'drawing-properties',
 ] as const;
 
 export const tools = [

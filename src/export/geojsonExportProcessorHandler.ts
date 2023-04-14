@@ -9,26 +9,11 @@ import {
   polygon,
 } from '@turf/helpers';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/authAxios';
-import { createFilter } from 'fm3/galleryUtils';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
-import qs from 'query-string';
-import { assertType } from 'typescript-is';
+import { fetchPictures, Picture } from './fetchPictures';
 import { licenseNotice, upload } from './upload';
-
-type Picture = {
-  lat: number;
-  lon: number;
-  id: number;
-  takenAt: string | null;
-  createdAt: string | null;
-  title: string | null;
-  description: string | null;
-  author: string; // TODO
-};
 
 const handle: ProcessorHandler<typeof exportGpx> = async ({
   getState,
@@ -55,33 +40,8 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const set = new Set(action.payload.exportables);
 
-  const le = getMapLeafletElement();
-
-  if (le && set.has('pictures')) {
-    const b = le.getBounds();
-
-    const { data } = await httpRequest({
-      getState,
-      method: 'GET',
-      url: '/gallery/pictures',
-      params: {
-        by: 'bbox',
-        bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-        ...createFilter(getState().gallery.filter),
-        fields: [
-          'id',
-          'title',
-          'description',
-          'takenAt',
-          'createdAt',
-          'rating',
-        ], // TODO author
-      },
-      paramsSerializer: qs.stringify,
-      expectedStatus: 200,
-    });
-
-    addPictures(fc, assertType<Picture[]>(data));
+  if (set.has('pictures')) {
+    addPictures(fc, await fetchPictures(getState));
   }
 
   if (set.has('drawingLines')) {
@@ -91,7 +51,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       fc.features.push(
         lineString(
           line.points.map((p) => [p.lon, p.lat]),
-          { name: line.label },
+          { name: line.label, color: line.color },
         ),
       );
     }
@@ -102,21 +62,26 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       (line) => line.type === 'polygon',
     )) {
       fc.features.push(
-        polygon([line.points.map((p) => [p.lon, p.lat])], { name: line.label }),
+        polygon([[...line.points, line.points[0]].map((p) => [p.lon, p.lat])], {
+          name: line.label,
+          color: line.color,
+        }),
       );
     }
   }
 
   if (set.has('drawingPoints')) {
     for (const p of drawingPoints.points) {
-      fc.features.push(point([p.lon, p.lat], { name: p.label }));
+      fc.features.push(
+        point([p.lon, p.lat], { name: p.label, color: p.color }),
+      );
     }
   }
 
   if (set.has('objects')) {
-    objects.objects.forEach(({ lat, lon, tags }) => {
+    for (const { lat, lon, tags } of objects.objects) {
       fc.features.push(point([lon, lat], tags));
-    });
+    }
   }
 
   if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
@@ -135,40 +100,53 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   const { destination } = action.payload;
 
-  await upload(
-    'geojson',
-    new Blob([JSON.stringify(fc)], {
-      type:
-        destination === 'dropbox'
-          ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-          : 'application/geo+json',
-    }),
-    destination,
-    getState,
-    dispatch,
-  );
-
-  dispatch(setActiveModal(null));
+  if (
+    await upload(
+      'geojson',
+      new Blob([JSON.stringify(fc)], {
+        type:
+          destination === 'dropbox'
+            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+            : 'application/geo+json',
+      }),
+      destination,
+      getState,
+      dispatch,
+    )
+  ) {
+    dispatch(setActiveModal(null));
+  }
 };
 
 export default handle;
 
 function addPictures(fc: FeatureCollection, pictures: Picture[]) {
-  pictures.forEach(
-    ({ lat, lon, id, takenAt, title, description, createdAt }) => {
-      fc.features.push(
-        point([lon, lat], {
-          takenAt: takenAt,
-          publishedAt: createdAt,
-          name: title,
-          description,
-          link: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
-          // TODO author
-          // TODO tags
-        }),
-      );
-    },
-  );
+  for (const {
+    lat,
+    lon,
+    id,
+    takenAt,
+    title,
+    description,
+    createdAt,
+    user,
+    tags,
+  } of pictures) {
+    fc.features.push(
+      point([lon, lat], {
+        takenAt: takenAt ? new Date(takenAt * 1000).toISOString() : undefined,
+        publishedAt: createdAt
+          ? new Date(createdAt * 1000).toISOString()
+          : undefined,
+        name: title,
+        description,
+        imageUrl: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+        webUrl: `${process.env['BASE_URL']}?image=${id}`,
+        author: user,
+        tags,
+      }),
+    );
+  }
 }
 
 function addPlannedRoute(

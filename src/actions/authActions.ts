@@ -21,3 +21,5 @@ export const authSetUser = createAction('AUTH_SET_USER')<User | null>();
 export const authInit = createAction('AUTH_INIT')();
 
 export const authSetPremium = createAction('AUTH_SET_PREMIUM')();
+
+export const authDeleteAccount = createAction('AUTH_DELETE_ACCOUNT')();

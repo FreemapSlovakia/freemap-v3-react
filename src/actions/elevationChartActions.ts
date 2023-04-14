@@ -10,12 +10,8 @@ export const elevationChartClose = createAction('ELEVATION_CHART_CLOSE')();
 
 export const elevationChartSetActivePoint = createAction(
   'ELEVATION_CHART_SET_ACTIVE_POINT',
-)<ElevationProfilePoint>();
+)<ElevationProfilePoint | null>();
 
 export const elevationChartSetElevationProfile = createAction(
   'ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS',
 )<ElevationProfilePoint[]>();
-
-export const elevationChartRemoveActivePoint = createAction(
-  'ELEVATION_CHART_REMOVE_ACTIVE_POINT',
-)();

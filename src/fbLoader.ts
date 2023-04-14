@@ -19,7 +19,9 @@ export function loadFb(): Promise<void> {
     const js = document.createElement('script');
 
     js.async = true;
+
     js.defer = true;
+
     js.src = `//connect.facebook.net/${
       window.translations?.general.iso ?? 'en_US'
     }/sdk.js`;
@@ -33,6 +35,7 @@ export function loadFb(): Promise<void> {
     };
 
     const fjs = document.getElementsByTagName('script')[0];
+
     if (!fjs || !fjs.parentNode) {
       reject(new Error('no script'));
     } else {

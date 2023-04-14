@@ -1,8 +1,8 @@
 import { Modal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import { MessagePaths } from 'fm3/types/common';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 
 const modalTitleKeys: Record<Modal, MessagePaths> = {
   legend: 'mainMenu.mapLegend',
@@ -10,7 +10,8 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   about: 'mainMenu.contacts',
   'export-gpx': 'mainMenu.gpxExport',
   'export-pdf': 'mainMenu.pdfExport',
-  settings: 'mainMenu.settings',
+  account: 'mainMenu.account',
+  mapSettings: 'mapLayers.layers',
   embed: 'mainMenu.embedMap',
   supportUs: 'mainMenu.supportUs',
   'tracking-watched': 'tracking.trackedDevices.modalTitle',
@@ -20,12 +21,15 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   'edit-label': 'drawing.edit.title',
   login: 'mainMenu.logIn',
   'remove-ads': 'removeAds.title',
+  'gallery-filter': 'gallery.filterModal.title',
+  'gallery-upload': 'gallery.uploadModal.title',
+  'drawing-properties': 'drawing.defProps.menuItem',
 };
 
 export function useHtmlMeta(): void {
   const m = useMessages();
 
-  const activeModal = useSelector((state) => state.main.activeModal);
+  const activeModal = useAppSelector((state) => state.main.activeModal);
 
   useEffect(() => {
     if (!m) {

@@ -1,11 +1,12 @@
+import { setActiveModal } from 'fm3/actions/mainActions';
 import {
   wikiLoadPreview,
   WikiPreview,
-  wikiSetPoints,
   wikiSetPreview,
 } from 'fm3/actions/wikiActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse1 {
@@ -44,30 +45,33 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
       let cont: Record<string, unknown> | undefined = {};
 
       do {
-        const { data } = await httpRequest({
+        const res = await httpRequest({
           getState,
-          method: 'GET',
-          url: `https://${lang}.wikipedia.org/w/api.php`,
-          params: {
-            origin: '*',
-            action: 'query',
-            prop: 'langlinks',
-            format: 'json',
-            titles: title,
-            ...cont,
-          },
+          url:
+            `https://${lang}.wikipedia.org/w/api.php?` +
+            objectToURLSearchParams({
+              origin: '*',
+              action: 'query',
+              prop: 'langlinks',
+              format: 'json',
+              titles: title,
+              ...cont,
+            }),
           expectedStatus: 200,
-          cancelActions: [wikiLoadPreview, wikiSetPoints],
+          cancelActions: [setActiveModal],
         });
 
-        const okData: WikiResponse1 = assertType<WikiResponse1>(data);
+        const okData: WikiResponse1 = assertType<WikiResponse1>(
+          await res.json(),
+        );
 
         const item = Object.values(okData.query.pages)[0]?.langlinks?.find(
-          (ll) => ll.lang == language,
+          (ll) => ll.lang === language,
         );
 
         if (item) {
           lang = item.lang;
+
           title = item['*'];
 
           break;
@@ -77,32 +81,32 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
       } while (cont);
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
-      url: `https://${lang}.wikipedia.org/w/api.php`,
-      params: {
-        origin: '*',
-        action: 'query',
-        prop: 'extracts|pageimages',
-        format: 'json',
-        pithumbsize: 280,
-        titles: title,
-      },
+      url:
+        `https://${lang}.wikipedia.org/w/api.php?` +
+        objectToURLSearchParams({
+          origin: '*',
+          action: 'query',
+          prop: 'extracts|pageimages',
+          format: 'json',
+          pithumbsize: 280,
+          titles: title,
+        }),
 
       // url: `https://sk.wikipedia.org/w/api.php?action=parse&format=json&prop=text&section=0&page=${encodeURIComponent(
       //   action.payload,
       // )}&origin=*`,
       expectedStatus: 200,
-      cancelActions: [wikiLoadPreview, wikiSetPoints],
+      cancelActions: [setActiveModal],
     });
 
-    const okData = assertType<WikiResponse2>(data);
+    const data = assertType<WikiResponse2>(await res.json());
 
     // TODO validate
 
     const preview: WikiPreview = {
-      ...Object.values(okData.query.pages)[0],
+      ...Object.values(data.query.pages)[0],
       lang,
       langTitle: title,
     };

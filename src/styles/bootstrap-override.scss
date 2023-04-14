@@ -44,6 +44,12 @@
   }
 }
 
+.carousel-control-prev,
+.carousel-control-next {
+  border: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   background-color: hsla(0, 0%, 0%, 0.2);
@@ -86,4 +92,28 @@ kbd {
 
 .f-gap-1 {
   gap: 0.25rem;
+}
+
+.f-gap-2 {
+  gap: 0.5rem;
+}
+
+.dropdown-item {
+  @media (pointer: coarse) {
+    padding: 0.5rem 1.5rem;
+  }
+}
+
+.fm-map-layers-dropdown .dropdown-menu {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+legend {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.text-pre {
+  white-space: pre;
 }

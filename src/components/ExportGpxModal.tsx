@@ -4,6 +4,7 @@ import {
   exportGpx,
   setActiveModal,
 } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   ReactElement,
@@ -31,7 +32,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const exportableDefinitions: readonly {
   type: Exportable;
@@ -50,12 +51,14 @@ const exportableDefinitions: readonly {
 
 type Props = { show: boolean };
 
+export default ExportGpxModal;
+
 export function ExportGpxModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const initExportables = useSelector((state) => {
+  const initExportables = useAppSelector((state) => {
     const exportables: Exportable[] = [];
 
     // if (state.search.selectedResult) {
@@ -64,6 +67,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
     if (state.routePlanner.alternatives.length) {
       exportables.push('plannedRoute');
+
       exportables.push('plannedRouteWithStops');
     }
 
@@ -160,15 +164,15 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     }
 
     const set = new Set(exportables);
+
     if (exportables.includes(type)) {
       set.delete(type);
     } else {
       set.add(type);
     }
+
     setExportables([...set]);
   };
-
-  console.log('AAAAAAAAAA');
 
   return (
     <Modal show={show && !!exportables} onHide={close} size="lg">

@@ -1,18 +1,21 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton';
 import { Selection } from './Selection';
+
+export default DrawingPointSelection;
 
 export function DrawingPointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
 
-  const point = useSelector((state) =>
+  const point = useAppSelector((state) =>
     state.main.selection?.type === 'draw-points'
       ? state.drawingPoints.points[state.main.selection.id]
       : undefined,

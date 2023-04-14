@@ -1,4 +1,5 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -17,6 +18,8 @@ export function AboutModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
+  const language = useAppSelector((state) => state.l10n.language);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -24,6 +27,7 @@ export function AboutModal({ show }: Props): ReactElement {
           <FaRegAddressCard /> {m?.mainMenu.contacts}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <h3>{m?.contacts.ngo}</h3>
         <address>
@@ -88,7 +92,14 @@ export function AboutModal({ show }: Props): ReactElement {
           </li>
         </ul>
       </Modal.Body>
+
       <Modal.Footer>
+        {(language === 'sk' || language === 'cs') && (
+          <Button variant="link" href="https://oz.freemap.sk/">
+            Ako sa stať členom?
+          </Button>
+        )}
+
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close}
         </Button>
@@ -96,3 +107,5 @@ export function AboutModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+export default AboutModal;

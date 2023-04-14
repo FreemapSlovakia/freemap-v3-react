@@ -1,46 +1,72 @@
 import {
   Changeset,
   changesetsSet,
-  changesetsSetAuthorName,
+  changesetsSetParams,
 } from 'fm3/actions/changesetsActions';
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/httpRequest';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { getType } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
-
-// interface Changeset {
-//   userName: string | null;
-//   id: string | null;
-//   centerLat: number;
-//   centerLon: number;
-//   closedAt: Date;
-//   description: string | null | undefined;
-// }
 
 export const changesetsProcessor: Processor = {
-  actionCreator: changesetsSetAuthorName,
+  id: 'changeset.detail',
+  actionCreator: [changesetsSetParams, mapRefocus, setTool],
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
-    const le = getMapLeafletElement();
-
     const state = getState();
 
-    if (!le || state.changesets.days === null) {
+    if (state.main.tool !== 'changesets') {
       return;
     }
 
+    const { zoom } = state.map;
+
+    const { days, authorName } = state.changesets;
+
+    const days2 = days ?? 3;
+
+    if (
+      !authorName &&
+      ((days2 > 2 && zoom < 10) ||
+        (days2 > 6 && zoom < 11) ||
+        (days2 > 13 && zoom < 12) ||
+        (days2 > 29 && zoom < 13))
+    ) {
+      dispatch(changesetsSet([]));
+
+      dispatch(
+        toastsAdd({
+          id: 'changeset.detail',
+          messageKey: 'changesets.tooBig',
+          cancelType: [
+            getType(selectFeature),
+            getType(changesetsSetParams),
+            getType(setTool),
+            getType(clearMap),
+          ],
+          timeout: 5000,
+          style: 'warning',
+        }),
+      );
+
+      return;
+    }
+
+    dispatch(toastsRemove('changeset.detail'));
+
     const t = new Date();
 
-    t.setDate(t.getDate() - state.changesets.days);
+    t.setDate(t.getDate() - (state.changesets.days ?? 3));
 
     const fromTime = `${t.getFullYear()}/${
       t.getMonth() + 1
     }/${t.getDate()}T00:00:00+00:00`;
 
-    const bbox = le.getBounds().toBBoxString();
+    const bbox = (await mapPromise).getBounds().toBBoxString();
 
     await loadChangesets(null, []);
 
@@ -48,24 +74,27 @@ export const changesetsProcessor: Processor = {
       toTime0: string | null,
       changesetsFromPreviousRequest: Changeset[],
     ): Promise<void> {
-      const { data } = await httpRequest({
+      const res = await httpRequest({
         getState,
-        method: 'GET',
-        url: '//api.openstreetmap.org/api/0.6/changesets',
+        url:
+          '//api.openstreetmap.org/api/0.6/changesets?' +
+          objectToURLSearchParams({
+            bbox,
+            time: fromTime + (toTime0 ? `,${toTime0}` : ''),
+            // eslint-disable-next-line
+            display_name: state.changesets.authorName ?? undefined,
+          }),
         expectedStatus: [200, 404],
-        params: {
-          bbox,
-          time: fromTime + (toTime0 ? `,${toTime0}` : ''),
-          // eslint-disable-next-line
-          display_name: state.changesets.authorName,
-        },
-        cancelActions: [changesetsSetAuthorName, selectFeature, clearMap],
+        cancelActions: [
+          changesetsSetParams,
+          mapRefocus,
+          selectFeature,
+          clearMap,
+          setTool,
+        ],
       });
 
-      const xml = new DOMParser().parseFromString(
-        assertType<string>(data),
-        'text/xml',
-      );
+      const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
 
       const rawChangesets = xml.getElementsByTagName('changeset');
 
@@ -74,8 +103,11 @@ export const changesetsProcessor: Processor = {
       const changesetsFromThisRequest = arrayOfrawChangesets
         .map((rawChangeset) => {
           const minLat = parseFloat(rawChangeset.getAttribute('min_lat') ?? '');
+
           const maxLat = parseFloat(rawChangeset.getAttribute('max_lat') ?? '');
+
           const minLon = parseFloat(rawChangeset.getAttribute('min_lon') ?? '');
+
           const maxLon = parseFloat(rawChangeset.getAttribute('max_lon') ?? '');
 
           const descriptionTag = Array.from(
@@ -105,12 +137,12 @@ export const changesetsProcessor: Processor = {
 
       const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
 
-      changesetsFromThisRequest.forEach((ch) => {
+      for (const ch of changesetsFromThisRequest) {
         if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
           // occasionally the changeset may already be here from previous ajax request
           allChangesetsSoFar.push(ch);
         }
-      });
+      }
 
       dispatch(changesetsSet(allChangesetsSoFar));
 
@@ -120,7 +152,9 @@ export const changesetsProcessor: Processor = {
             'closed_at',
           );
 
-        return loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
+        await loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
+
+        return;
       }
 
       if (allChangesetsSoFar.length === 0) {
@@ -130,7 +164,10 @@ export const changesetsProcessor: Processor = {
             messageKey: 'changesets.notFound',
             cancelType: [
               getType(selectFeature),
-              getType(changesetsSetAuthorName),
+              getType(changesetsSetParams),
+              getType(setTool),
+              getType(clearMap),
+              getType(mapRefocus),
             ],
             timeout: 5000,
             style: 'info',

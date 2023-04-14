@@ -10,8 +10,15 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
+import {
+  getNameFromOsmElement,
+  resolveGenericName,
+} from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
 import 'fm3/styles/search.scss';
 import {
@@ -32,8 +39,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebouncedCallback } from 'use-debounce';
+import { useDispatch } from 'react-redux';
 
 type Props = {
   hidden?: boolean;
@@ -43,11 +49,11 @@ type Props = {
 const typeSymbol = {
   way: '─',
   node: '•',
-  relation: '▦',
+  relation: '⎔',
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
-  function HiddenInt({ children }, ref) {
+  ({ children }, ref) => {
     return (
       <span className="fm-no-after" ref={ref}>
         {children}
@@ -56,18 +62,20 @@ export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
   },
 );
 
+HideArrow.displayName = 'HideArrow';
+
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const results = useSelector((state) => state.search.results);
+  const results = useAppSelector((state) => state.search.results);
 
-  const selectedResult = useSelector((state) => state.search.selectedResult);
+  const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  const searchSeq = useSelector((state) => state.search.searchSeq);
+  const searchSeq = useAppSelector((state) => state.search.searchSeq);
 
-  // const inProgress = useSelector((state) => state.search.inProgress);
+  // const inProgress = useAppSelector((state) => state.search.inProgress);
 
   const [value, setValue] = useState('');
 
@@ -75,25 +83,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const callback = useDebouncedCallback((query: string) => {
-    if (query.length < 3) {
-      if (results.length > 0) {
-        dispatch(searchSetResults([]));
-      }
-    } else {
-      dispatch(searchSetQuery({ query }));
-    }
-  }, 1000);
-
-  const flush = callback.flush;
-
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      flush();
+      if (value.length > 2) {
+        dispatch(searchSetQuery({ query: value }));
+      }
     },
-    [flush],
+    [dispatch, value],
   );
 
   const handleChange = useCallback(
@@ -102,9 +100,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       setValue(value);
 
-      callback(value);
+      if (results.length > 0) {
+        dispatch(searchSetResults([]));
+      }
     },
-    [callback],
+    [dispatch, results.length],
   );
 
   const handleSelect = useCallback(
@@ -145,9 +145,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           ((e.ctrlKey || e.metaKey) && e.code === 'KeyF')
         ) {
           inputRef.current.focus();
+
           e.preventDefault();
-        } else if (e.code === 'Escape') {
+        } else if (
+          inputRef.current === document.activeElement &&
+          e.code === 'Escape'
+        ) {
           inputRef.current.blur();
+
           e.preventDefault();
         }
       }
@@ -177,14 +182,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     setOpen(results.length > 0);
   }, [results]);
 
-  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+  const handleToggle: DropdownProps['onToggle'] = (isOpen) => {
     if (document.activeElement !== inputRef.current && !isOpen) {
       setOpen(false);
-
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
     }
   };
 
@@ -206,6 +206,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           <Dropdown.Toggle as={HideArrow}>
             <InputGroup className="flex-nowrap">
               <FormControl
+                type="search"
                 className="fm-search-input"
                 onChange={handleChange}
                 value={value}
@@ -213,6 +214,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 ref={inputRef}
                 onFocus={handleInputFocus}
               />
+
               <InputGroup.Append className="w-auto">
                 {!!selectedResult && (
                   <Button
@@ -224,6 +226,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     <FaTimes />
                   </Button>
                 )}
+
                 <Button
                   variant="secondary"
                   type="submit"
@@ -235,15 +238,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </InputGroup.Append>
             </InputGroup>
           </Dropdown.Toggle>
+
           <Dropdown.Menu
             key={searchSeq}
             className="fm-search-dropdown"
-            popperConfig={{
-              strategy: 'fixed',
-            }}
+            popperConfig={{ strategy: 'fixed' }}
           >
             <div className="dropdown-long" ref={sc}>
               <div />
+
               {results.map((result) => (
                 <Dropdown.Item
                   key={result.id}
@@ -257,6 +260,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       </Form>
+
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
           <ButtonGroup className="ml-1">
@@ -282,6 +286,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             >
               <FaPlay color="#32CD32" />
             </Button>
+
             <Button
               variant="secondary"
               title={m?.search.routeTo}
@@ -310,9 +315,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             className="ml-1"
             title={m?.general.convertToDrawing}
             variant="secondary"
-            onClick={() =>
-              dispatch(convertToDrawing({ type: 'search-result' }))
-            }
+            onClick={() => {
+              const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+
+              if (tolerance !== null) {
+                dispatch(
+                  convertToDrawing({
+                    type: 'search-result',
+                    tolerance: Number(tolerance || '0') / 100000,
+                  }),
+                );
+              }
+            }}
           >
             <FaPencilAlt />
           </Button>
@@ -325,13 +339,48 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const subjectAndName = useOsmNameResolver(value.osmType, value.tags ?? {});
+  const tags = value.tags ?? {};
+
+  const gn = useOsmNameResolver(value.osmType, tags);
+
+  const language = useEffectiveChosenLanguage();
+
+  const name = getNameFromOsmElement(tags, language);
+
+  const img = resolveGenericName(osmTagToIconMapping, tags);
 
   return (
-    <span>
-      {typeSymbol[value.osmType]} {subjectAndName?.[1] || m?.general.unnamed}
-      <br />
-      <small>{subjectAndName?.[0]}</small>
-    </span>
+    <div className="d-flex flex-column mx-n2">
+      <div className="d-flex f-gap-2 align-items-center">
+        {img.length > 0 ? (
+          <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+        ) : (
+          <span
+            style={{
+              width: '1em',
+              height: '1em',
+              display: 'inline-block',
+              opacity: 0.25,
+              backgroundColor: 'gray',
+            }}
+            className="flex-shrink-0"
+          />
+        )}
+
+        <div className="flex-grow-1 text-truncate">
+          {gn || m?.general.unnamed}
+        </div>
+
+        <div
+          style={{
+            opacity: 0.25,
+          }}
+        >
+          {typeSymbol[value.osmType]}
+        </div>
+      </div>
+
+      {name && <small className="ml-4 text-truncate">{name}</small>}
+    </div>
   );
 }

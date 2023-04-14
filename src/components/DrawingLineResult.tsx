@@ -1,3 +1,4 @@
+import Color from 'color';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
@@ -9,6 +10,8 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { isEventOnMap } from 'fm3/mapUtils';
 import {
   drawingLinePolys,
   selectingModeSelector,
@@ -24,20 +27,20 @@ import {
   useMap,
   useMapEvent,
 } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-normal, ${colors.normal})"></div>`,
 });
 
 const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.selected}"></div>`,
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-selected, ${colors.selected})"></div>`,
 });
 
 type Props = {
@@ -47,28 +50,32 @@ type Props = {
 export function DrawingLineResult({ index }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const drawing = useSelector(drawingLinePolys);
+  const drawing = useAppSelector(drawingLinePolys);
 
-  const line = useSelector((state) => state.drawingLines.lines[index]);
+  const line = useAppSelector((state) => state.drawingLines.lines[index]);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const selected = useSelector(
+  const selected = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
       index === state.main.selection.id,
   );
 
-  const selectedPointId = useSelector((state) =>
+  const selectedPointId = useAppSelector((state) =>
     state.main.selection?.type === 'line-point' &&
     index === state.main.selection.lineIndex
       ? state.main.selection.pointId
       : undefined,
   );
 
-  const joinWith = useSelector((state) => state.drawingLines.joinWith);
+  const color = line.color || colors.normal;
 
-  const interactive = useSelector(selectingModeSelector);
+  const width = line.width || 4;
+
+  const joinWith = useAppSelector((state) => state.drawingLines.joinWith);
+
+  const interactive = useAppSelector(selectingModeSelector);
 
   const interactiveLine = interactive && joinWith === undefined;
 
@@ -91,8 +98,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   useMapEvent('mousemove', ({ latlng, originalEvent }: LeafletMouseEvent) => {
     if (!touching && (selected || joinWith?.lineIndex === index)) {
       setCoords(
-        joinWith ||
-          (originalEvent.target as any)?.classList.contains('leaflet-container')
+        joinWith || isEventOnMap(originalEvent)
           ? { lat: latlng.lat, lon: latlng.lng }
           : undefined,
       );
@@ -118,10 +124,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       };
 
       DomEvent.on(mapContainer, 'touchstart', handleTouchStart);
+
       DomEvent.on(mapContainer, 'touchend', handleTouchEnd);
 
       return () => {
         DomEvent.off(mapContainer, 'touchstart', handleTouchStart);
+
         DomEvent.off(mapContainer, 'touchend', handleTouchEnd);
       };
     }
@@ -129,6 +137,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   function addPoint(lat: number, lon: number, position: number, id0: number) {
     handleDragStart();
+
     const pos = position ? Math.ceil(position / 2) : points.length;
 
     let id: number | undefined;
@@ -144,7 +153,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     }
 
     dispatch(
-      drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
+      drawingLineAddPoint({
+        index,
+        point: { lat, lon, id },
+        position: pos,
+      }),
     );
 
     dispatch(drawingMeasure({}));
@@ -182,8 +195,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       if (i < points.length - 1 || line.type === 'polygon') {
         const p1 = points[i];
+
         const p2 = points[(i + 1) % points.length];
+
         const lat = (p1.lat + p2.lat) / 2;
+
         const lon = (p1.lon + p2.lon) / 2;
 
         ps.push({
@@ -220,12 +236,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     ];
 
   return (
-    <>
+    <Fragment key={[line.type, line.width, index].join(',')}>
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
             key={`line-${interactiveLine ? 'a' : 'b'}`}
-            weight={12}
+            weight={width + 8}
             opacity={0}
             interactive={interactiveLine}
             bubblingMouseEvents={false}
@@ -238,9 +254,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           />
 
           <Polyline
-            weight={4}
+            weight={width}
             pathOptions={{
-              color: selected ? colors.selected : colors.normal,
+              color: selected ? Color(color).lighten(0.75).hex() : color,
             }}
             interactive={false}
             positions={ps
@@ -259,9 +275,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
-          weight={4}
+          weight={width}
           pathOptions={{
-            color: selected ? colors.selected : colors.normal,
+            color: selected ? Color(color).lighten(0.75).hex() : color,
           }}
           interactive={interactiveLine}
           bubblingMouseEvents={false}
@@ -287,8 +303,8 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {futureLinePositions && (
         <Polyline
-          color={colors.selected}
-          weight={4}
+          color={Color(color).lighten(0.75).hex()}
+          weight={width}
           dashArray="6,8"
           interactive={false}
           positions={futureLinePositions}
@@ -338,7 +354,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                   dispatch(drawingMeasure({}));
                 },
                 click() {
-                  if (joinWith !== undefined) {
+                  if (joinWith) {
                     dispatch(
                       drawingLineJoinFinish({
                         lineIndex: index,
@@ -397,7 +413,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         })}
 
       <ElevationChartActivePoint />
-    </>
+    </Fragment>
   );
 }
 

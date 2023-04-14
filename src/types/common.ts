@@ -1,4 +1,6 @@
+import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { PathOptions } from 'leaflet';
 
 export interface LatLon {
   lat: number;
@@ -13,12 +15,10 @@ export interface User {
   authToken: string;
   isAdmin: boolean;
   settings?: {
-    expertMode?: boolean;
-    trackViewerEleSmoothingFactor?: number;
-    overlayOpacity?: { [type: string]: number };
+    layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
+    customLayers?: CustomLayer[];
   };
-  preventTips?: boolean;
   lat?: number | null;
   lon?: number | null;
   language?: string | null;
@@ -32,6 +32,13 @@ declare global {
     translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
+    fmHeadless?: {
+      searchResultStyle?: PathOptions;
+    };
+  }
+
+  interface ServiceWorkerGlobalScope {
+    __WB_MANIFEST: { revision: string; url: string }[];
   }
 }
 
@@ -117,7 +124,7 @@ type Prev = [
   18,
   19,
   20,
-  ...0[]
+  ...0[],
 ];
 
 type Join<K, P> = K extends string | number
@@ -133,3 +140,21 @@ type Leaves<T, D extends number = 10> = [D] extends [never]
   : '';
 
 export type MessagePaths = Leaves<Messages>;
+
+export interface OffscreenCanvas extends EventTarget {
+  getContext: (contextId: '2d') => CanvasRenderingContext2D;
+}
+
+export type CacheMode =
+  | 'networkOnly'
+  | 'networkFirst'
+  | 'cacheFirst'
+  | 'cacheOnly';
+
+export type SwCacheAction =
+  | {
+      type: 'setCacheMode';
+      payload: CacheMode;
+    }
+  | { type: 'clearCache' }
+  | { type: 'setCachingActive'; payload: boolean };

@@ -68,10 +68,10 @@ export function GalleryUploadItem({
       <fieldset disabled={disabled}>
         <GalleryEditForm
           {...{ model, allTags, errors }}
-          m={m}
           onPositionPick={disabled ? undefined : handlePositionPick}
           onModelChange={handleModelChange}
-        />{' '}
+        />
+
         <Button onClick={handleRemove} variant="danger">
           <FaTimes /> {m?.general.remove}
         </Button>

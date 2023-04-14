@@ -1,9 +1,8 @@
-/* eslint-disable react/display-name */
-
 import {
   galleryClear,
   galleryDeletePicture,
   galleryEditPicture,
+  galleryQuickAddTag,
   galleryRequestImage,
   gallerySavePicture,
   gallerySetComment,
@@ -18,6 +17,8 @@ import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/gallery.scss';
 import {
@@ -45,35 +46,39 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+import ReactPannellum from 'react-pannellum';
+import { useDispatch } from 'react-redux';
 import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
+import { RecentTags } from './RecentTags';
 
 type Props = { show: boolean };
+
+export default GalleryViewerModal;
 
 export function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const imageIds = useSelector((state) => state.gallery.imageIds);
+  const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
-  const image = useSelector((state) => state.gallery.image);
+  const image = useAppSelector((state) => state.gallery.image);
 
-  const activeImageId2 = useSelector((state) => state.gallery.activeImageId);
+  const reduxActiveImageId = useAppSelector(
+    (state) => state.gallery.activeImageId,
+  );
 
-  const comment = useSelector((state) => state.gallery.comment);
+  const comment = useAppSelector((state) => state.gallery.comment);
 
-  const editModel = useSelector((state) => state.gallery.editModel);
+  const editModel = useAppSelector((state) => state.gallery.editModel);
 
-  const saveErrors = useSelector((state) => state.gallery.saveErrors);
+  const saveErrors = useAppSelector((state) => state.gallery.saveErrors);
 
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
-  const allTags = useSelector((state) => state.gallery.tags);
-
-  const language = useSelector((state) => state.l10n.language);
+  const allTags = useAppSelector((state) => state.gallery.tags);
 
   const [loading, setLoading] = useState(true);
 
@@ -85,16 +90,18 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const imageElement = useRef<HTMLImageElement>();
 
-  const fullscreenElement = useRef<HTMLDivElement>();
+  const fullscreenElement = useRef<HTMLDivElement | null>(null);
 
-  if (activeImageId2 !== activeImageId) {
+  if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
-    setActiveImageId(activeImageId2);
+
+    setActiveImageId(reduxActiveImageId);
   }
 
   useEffect(() => {
     function handleFullscreenChange() {
       setIsFullscreen(document.fullscreenElement === fullscreenElement.current);
+
       setImgKey((imgKey) => imgKey + 1);
     }
 
@@ -113,10 +120,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         setLoading(false);
       });
     }
-  };
-
-  const setFullscreenElement = (element: HTMLDivElement) => {
-    fullscreenElement.current = element;
   };
 
   const handleEditModelChange = useCallback(
@@ -144,32 +147,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const handleCommentFormSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
+
       dispatch(gallerySubmitComment());
     },
     [dispatch],
   );
-
-  const handleFullscreen = useCallback(() => {
-    if (!document.exitFullscreen || !fullscreenElement.current) {
-      // unsupported
-    } else if (document.fullscreenElement === fullscreenElement.current) {
-      document.exitFullscreen();
-    } else {
-      fullscreenElement.current.requestFullscreen();
-    }
-  }, []);
-
-  const handleSave = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      dispatch(gallerySavePicture());
-    },
-    [dispatch],
-  );
-
-  const index = imageIds
-    ? imageIds.findIndex((id) => id === activeImageId)
-    : -1;
 
   const {
     title = '...',
@@ -182,15 +164,87 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     myStars = undefined,
     lat,
     lon,
+    pano,
   } = image || {};
+
+  const handleFullscreen = useCallback(() => {
+    if (!document.exitFullscreen || !fullscreenElement.current) {
+      // unsupported
+    } else if (document.fullscreenElement === fullscreenElement.current) {
+      document.exitFullscreen();
+    } else {
+      fullscreenElement.current.requestFullscreen();
+    }
+  }, []);
+
+  const handleDelete = useCallback(() => {
+    dispatch(
+      toastsAdd({
+        id: 'gallery.deletePicture',
+        messageKey: 'gallery.viewer.deletePrompt',
+        style: 'warning',
+        cancelType: [getType(galleryClear), getType(galleryRequestImage)],
+        actions: [
+          {
+            nameKey: 'general.yes',
+            action: galleryDeletePicture(),
+            style: 'danger',
+          },
+          { nameKey: 'general.no' },
+        ],
+      }),
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.shiftKey ||
+        e.ctrlKey ||
+        e.altKey ||
+        e.metaKey
+      ) {
+        // nothing
+      } else if (e.code === 'KeyF') {
+        handleFullscreen();
+      } else if (e.code === 'Delete') {
+        handleDelete();
+      }
+    }
+
+    window.addEventListener('keypress', handler);
+
+    return () => window.removeEventListener('keypress', handler);
+  }, [handleDelete, handleFullscreen, show]);
+
+  // fullscreen of pano fails when traversing from non-pano picture
+  useEffect(() => {
+    if (document.exitFullscreen && document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  }, [pano]);
+
+  const handleSave = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      dispatch(gallerySavePicture());
+    },
+    [dispatch],
+  );
+
+  const index = imageIds
+    ? imageIds.findIndex((id) => id === activeImageId)
+    : -1;
 
   const nextImageId = imageIds && imageIds[index + 1];
 
-  const prevImageId = index > 0 && imageIds && imageIds[index - 1];
+  const prevImageId = index > 0 ? imageIds && imageIds[index - 1] : null;
 
   // TODO const loadingMeta = !image || image.id !== activeImageId;
 
-  const dateFormat = new Intl.DateTimeFormat(language, {
+  const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -225,6 +279,16 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryClear());
   }, [dispatch]);
 
+  const canEdit = !!(
+    image &&
+    user &&
+    (user.isAdmin || user.id === image.user.id)
+  );
+
+  const handleTagAdd = (tag: string) => {
+    dispatch(galleryQuickAddTag(tag));
+  };
+
   return (
     <Modal show={show} onHide={close} size="xl" keyboard={false}>
       <Modal.Header closeButton>
@@ -248,15 +312,46 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           {title && `- ${title}`}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <div
-          ref={setFullscreenElement}
+          ref={fullscreenElement}
           className={isFullscreen ? 'fullscreen' : ''}
         >
           <div className="carousel">
             <div className="carousel-inner">
               <div className="carousel-item active">
-                {!!activeImageId && (
+                {activeImageId === null ? null : pano ? (
+                  <ReactPannellum
+                    key={'pano-' + activeImageId}
+                    id={String(activeImageId)}
+                    sceneId={String(activeImageId)}
+                    imageSource={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
+                    config={{
+                      autoLoad: true,
+                      showControls: false,
+                      autoRotate: 15,
+                      autoRotateInactivityDelay: 60000,
+                      // compass: true,
+                      // title: 'panorama',
+                    }}
+                    style={
+                      isFullscreen
+                        ? { width: '100vw', height: '100vh' }
+                        : {
+                            height:
+                              Math.max(window.innerHeight - 400, 300) + 'px',
+                            width:
+                              (window.matchMedia('(min-width: 1200px)').matches
+                                ? 1110
+                                : window.matchMedia('(min-width: 992px)')
+                                    .matches
+                                ? 770
+                                : 470) + 'px',
+                          }
+                    }
+                  />
+                ) : (
                   <img
                     key={imgKey}
                     ref={setImageElement}
@@ -265,7 +360,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     alt={title ?? undefined}
                   />
                 )}
-                {!!nextImageId && !loading && (
+
+                {nextImageId != null && !loading && (
                   <img
                     key={`next-${imgKey}`}
                     className="d-none"
@@ -273,7 +369,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     alt="next"
                   />
                 )}
-                {!!prevImageId && !loading && (
+
+                {prevImageId != null && !loading && (
                   <img
                     key={`prev-${imgKey}`}
                     className="d-none"
@@ -283,13 +380,15 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 )}
               </div>
             </div>
+
             {imageIds && (
-              <a
+              <button
                 className={`carousel-control-prev ${
                   index < 1 ? 'carousel-control-disabled' : ''
-                }`}
+                } ${pano ? 'carousel-control-short' : ''}`}
                 onClick={(e) => {
                   e?.preventDefault();
+
                   dispatch(galleryRequestImage('prev'));
                 }}
               >
@@ -297,11 +396,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   className="carousel-control-prev-icon"
                   aria-hidden="true"
                 />
+
                 <span className="sr-only">Previous</span>
-              </a>
+              </button>
             )}
+
             {imageIds && (
-              <a
+              <button
                 className={`carousel-control-next ${
                   index >= imageIds.length - 1
                     ? 'carousel-control-disabled'
@@ -309,6 +410,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
+
                   dispatch(galleryRequestImage('next'));
                 }}
               >
@@ -316,17 +418,22 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   className="carousel-control-next-icon"
                   aria-hidden="true"
                 />
+
                 <span className="sr-only">Next</span>
-              </a>
+              </button>
             )}
           </div>
+
           <br />
+
           {image && (
             <div className="footer">
               {isFullscreen && imageIds && (
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
+
               {isFullscreen && title && <>{title} ｜ </>}
+
               {m?.gallery.viewer.uploaded({
                 username: <b key={image.user.name}>{image.user.name}</b>,
                 createdAt: createdAt ? (
@@ -337,6 +444,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   '-'
                 ),
               })}
+
               {takenAt && (
                 <>
                   {' ｜ '}
@@ -345,15 +453,20 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
                 </>
               )}
+
               {' ｜ '}
+
               <ReactStars
                 className="stars"
                 size={22}
                 value={rating}
                 edit={false}
               />
+
               {description && ` ｜ ${description}`}
+
               {tags && tags.length > 0 && ' ｜ '}
+
               {tags &&
                 tags.map((tag) => (
                   <Fragment key={tag}>
@@ -361,28 +474,33 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     <Badge variant="secondary">{tag}</Badge>
                   </Fragment>
                 ))}
+
               {!isFullscreen && editModel && (
                 <form onSubmit={handleSave}>
                   <hr />
+
                   <h5>{m?.gallery.viewer.modify}</h5>
 
                   <GalleryEditForm
-                    m={m}
                     model={editModel}
                     allTags={allTags}
                     errors={saveErrors}
                     onPositionPick={handlePositionPick}
                     onModelChange={handleEditModelChange}
                   />
+
                   <Button variant="primary" type="submit">
                     <FaSave /> {m?.general.save}
                   </Button>
                 </form>
               )}
+
               {!isFullscreen && (
                 <>
                   <hr />
+
                   <h5>{m?.gallery.viewer.comments}</h5>
+
                   {comments &&
                     comments.map((c) => (
                       <p key={c.id}>
@@ -390,6 +508,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                         {c.comment}
                       </p>
                     ))}
+
                   {user && (
                     <form onSubmit={handleCommentFormSubmit}>
                       <FormGroup>
@@ -405,6 +524,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                             }}
                             maxLength={4096}
                           />
+
                           <InputGroup.Append>
                             <Button
                               variant="secondary"
@@ -418,16 +538,28 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                       </FormGroup>
                     </form>
                   )}
+
                   {user && (
-                    <div>
-                      {m?.gallery.viewer.yourRating}{' '}
+                    <div className="d-flex f-gap-1 align-items-center">
+                      <div className="flex-shrink-0">
+                        {m?.gallery.viewer.yourRating}
+                      </div>
+
                       <ReactStars
-                        className="stars"
+                        className="stars ml-1  flex-shrink-0"
                         size={22}
                         half={false}
                         value={myStars ?? 0}
                         onChange={handleStarsChange}
                       />
+
+                      {editModel === null && tags && canEdit && (
+                        <RecentTags
+                          existingTags={tags}
+                          onAdd={handleTagAdd}
+                          prefix={<div>｜</div>}
+                        />
+                      )}
                     </div>
                   )}
                 </>
@@ -436,8 +568,9 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           )}
         </div>
       </Modal.Body>
+
       <Modal.Footer>
-        {image && user && (user.isAdmin || user.id === image.user.id) && (
+        {canEdit && (
           <>
             <Button
               variant="secondary"
@@ -447,40 +580,24 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               active={!!editModel}
             >
               <FaPencilAlt />
+
               <span className="d-none d-sm-inline">
                 {' '}
-                {m?.general.modify} <kbd>M</kbd>
+                {m?.general.modify} <kbd>m</kbd>
               </span>
             </Button>
-            <Button
-              onClick={() => {
-                dispatch(
-                  toastsAdd({
-                    id: 'gallery.deletePicture',
-                    messageKey: 'gallery.viewer.deletePrompt',
-                    style: 'warning',
-                    cancelType: [
-                      getType(galleryClear),
-                      getType(galleryRequestImage),
-                    ],
-                    actions: [
-                      {
-                        nameKey: 'general.yes',
-                        action: galleryDeletePicture(),
-                        style: 'danger',
-                      },
-                      { nameKey: 'general.no' },
-                    ],
-                  }),
-                );
-              }}
-              variant="danger"
-            >
+
+            <Button onClick={handleDelete} variant="danger">
               <FaTrash />
-              <span className="d-none d-sm-inline"> {m?.general.delete}</span>
+
+              <span className="d-none d-sm-inline">
+                {' '}
+                {m?.general.delete} <kbd>Del</kbd>
+              </span>
             </Button>
           </>
         )}
+
         <Button
           variant="secondary"
           onClick={() => {
@@ -488,17 +605,24 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           }}
         >
           <FaRegDotCircle />
+
           <span className="d-none d-md-inline">
             {' '}
-            {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
+            {m?.gallery.viewer.showOnTheMap} <kbd>s</kbd>
           </span>
         </Button>
+
         {'exitFullscreen' in document && (
           <Button variant="secondary" onClick={handleFullscreen}>
             <RiFullscreenLine />
-            <span className="d-none d-md-inline"> {m?.general.fullscreen}</span>
+
+            <span className="d-none d-md-inline">
+              {' '}
+              {m?.general.fullscreen} <kbd>f</kbd>
+            </span>
           </Button>
         )}
+
         {lat !== undefined && lon !== undefined && (
           <OpenInExternalAppMenuButton
             lat={lat}
@@ -510,17 +634,20 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
           >
             <FaExternalLinkAlt />
+
             <span className="d-none d-md-inline">
               {' '}
               {m?.gallery.viewer.openInNewWindow}
             </span>
           </OpenInExternalAppMenuButton>
         )}
+
         <Button variant="dark" onClick={close}>
           <FaTimes />
+
           <span className="d-none d-md-inline">
             {' '}
-            {m?.general.close} <kbd>Esc</kbd>
+            {m?.general.close} {editModel ? null : <kbd>Esc</kbd>}
           </span>
         </Button>
       </Modal.Footer>

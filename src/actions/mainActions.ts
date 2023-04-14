@@ -1,6 +1,8 @@
 import { basicModals, tools } from 'fm3/constants';
+import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
+import { CustomLayer, LayerSettings } from './mapActions';
 
 export type Tool = typeof tools[number];
 
@@ -14,10 +16,7 @@ export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();
 
-export const setHomeLocation = createAction('SET_HOME_LOCATION')<{
-  lat: number;
-  lon: number;
-} | null>();
+export const documentShow = createAction('DOCUMENT_SHOW')<DocumentKey | null>();
 
 export const startProgress = createAction('START_PROGRESS')<string | number>();
 
@@ -58,8 +57,6 @@ export type Exportable =
 
 export type Destination = 'download' | 'gdrive' | 'dropbox';
 
-export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
-
 export const exportGpx = createAction('EXPORT_GPX')<{
   exportables: Exportable[];
   type: 'gpx' | 'geojson';
@@ -70,26 +67,37 @@ export const exportPdf = createAction('EXPORT_PDF')<PdfExportOptions>();
 
 export const clearMap = createAction('CLEAR_MAP')();
 
-export const toggleLocate = createAction('LOCATE')();
+export const toggleLocate = createAction('LOCATE')<boolean | undefined>();
 
 export const setSelectingHomeLocation = createAction(
   'SET_SELECTING_HOME_LOCATION',
-)<boolean>();
+)<LatLon | boolean>();
+
+export const saveHomeLocation = createAction('SAVE_HOME_LOCATION')();
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
-  homeLocation: LatLon | null;
-  overlayOpacity: { [type: string]: number };
-  overlayPaneOpacity: number;
-  expertMode: boolean;
-  trackViewerEleSmoothingFactor: number;
-  user: {
-    name: string | null;
+  settings?: {
+    layersSettings?: Record<string, LayerSettings>;
+    overlayPaneOpacity?: number;
+    customLayers?: CustomLayer[];
+    drawingColor?: string;
+    drawingWidth?: number;
+  };
+  user?: {
+    name: string;
     email: string | null;
     sendGalleryEmails: boolean;
-  } | null;
-  preventTips: boolean;
+  };
+}>();
+
+export const applySettings = createAction('APPLY_SETTINGS')<{
+  layersSettings?: Record<string, LayerSettings>;
+  overlayPaneOpacity?: number;
+  drawingColor?: string;
+  drawingWidth?: number;
+  drawingApplyAll?: boolean;
 }>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
@@ -143,27 +151,29 @@ export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
   | ObjectsSelection
   | { type: 'planned-route'; tolerance: number }
   | { type: 'track'; tolerance: number }
-  | { type: 'search-result' }
+  | { type: 'search-result'; tolerance: number }
 >();
 
 export type ExternalTargets =
-  | 'window'
-  | 'facebook'
-  | 'twitter'
   | 'copy'
-  | 'osm.org'
-  | 'osm.org/id'
-  | 'josm'
-  | 'zbgis'
-  | 'hiking.sk'
+  | 'f4map'
+  | 'facebook'
   | 'google'
+  | 'hiking.sk'
+  | 'image'
+  | 'josm'
+  | 'mapillary'
   | 'mapy.cz'
   | 'oma.sk'
   | 'openstreetcam'
-  | 'mapillary'
+  | 'osm.org'
+  | 'osm.org/id'
+  | 'peakfinder'
+  | 'twitter'
   | 'url'
-  | 'image'
-  | 'peakfinder';
+  | 'waze'
+  | 'window'
+  | 'zbgis';
 
 export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   where: ExternalTargets;
@@ -182,3 +192,8 @@ export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT')();
 export const setAnalyticCookiesAllowed = createAction(
   'SET_ANALYTICS_COOKIES_ALLOWED',
 )<boolean>();
+
+export const hideInfoBar = createAction('HIDE_INFO_BAR')<{
+  key: string;
+  ts: number;
+}>();

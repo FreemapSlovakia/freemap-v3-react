@@ -4,7 +4,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const authLoginWithGoogleProcessor: Processor = {
   actionCreator: authLoginWithGoogle,
   errorKey: 'logIn.logInError',
-  async handle(...params) {
-    (await import('./authLoginWithGoogleProcessorHandler')).default(...params);
-  },
+  handle: async (...params) =>
+    await (
+      await import('./authLoginWithGoogleProcessorHandler')
+    ).default(...params),
 };

@@ -1,17 +1,23 @@
-import { setTool, Tool } from 'fm3/actions/mainActions';
+import { setActiveModal, setTool, Tool } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, SyntheticEvent, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { FaDrawPolygon, FaMapMarkerAlt, FaPencilRuler } from 'react-icons/fa';
+import {
+  FaDrawPolygon,
+  FaMapMarkerAlt,
+  FaPalette,
+  FaPencilRuler,
+} from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typescript-is';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function DrawingSubmenu(): ReactElement {
   const m = useMessages();
 
-  const tool = useSelector((state) => state.main.tool);
+  const tool = useAppSelector((state) => state.main.tool);
 
   const closeMenu = useMenuClose();
 
@@ -59,6 +65,22 @@ export function DrawingSubmenu(): ReactElement {
         active={tool === 'draw-polygons'}
       >
         <FaDrawPolygon /> {m?.measurement.area} <kbd>g</kbd> <kbd>n</kbd>
+      </Dropdown.Item>
+
+      <Dropdown.Divider />
+
+      <Dropdown.Item
+        href="?show=drawing-properties"
+        eventKey="drawing-properties"
+        onSelect={(_, e) => {
+          e.preventDefault();
+
+          dispatch(setActiveModal('drawing-properties'));
+
+          closeMenu();
+        }}
+      >
+        <FaPalette /> {m?.drawing.defProps.menuItem} <kbd>e</kbd> <kbd>d</kbd>
       </Dropdown.Item>
     </>
   );

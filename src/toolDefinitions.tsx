@@ -16,7 +16,6 @@ export interface ToolDefinition {
   icon: ReactElement;
   msgKey: keyof Messages['tools'];
   kbd?: string;
-  expertOnly?: boolean;
   draw?: true;
 }
 
@@ -71,6 +70,5 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaPencilAlt />,
     msgKey: 'changesets',
     kbd: 'KeyX',
-    expertOnly: true,
   },
 ];

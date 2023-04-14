@@ -1,96 +1,161 @@
+import { authLogout, authSetUser } from 'fm3/actions/authActions';
 import { Line, Point } from 'fm3/actions/drawingLineActions';
-import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
-import { httpRequest } from 'fm3/authAxios';
+import {
+  MapData,
+  MapMeta,
+  mapsLoad,
+  mapsLoaded,
+} from 'fm3/actions/mapsActions';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
-interface OldLine {
-  type: 'area' | 'distance';
-  label?: string;
+interface CompatLine {
+  type: 'polygon' | 'line' | 'area' | 'distance';
   points: Point[];
+  label?: string;
+  color?: string;
 }
 
-export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
-  actionCreator: mapsLoad,
+interface CompatDrawingPoint {
+  lat: number;
+  lon: number;
+  label?: string;
+  color?: string;
+}
+
+export const mapsLoadProcessor: Processor = {
+  actionCreator: [mapsLoad, authSetUser, authLogout],
   errorKey: 'maps.fetchError',
-  handle: async ({ getState, dispatch, action: { payload } }) => {
-    if (payload.id === undefined) {
+  handle: async ({ getState, dispatch }) => {
+    const {
+      auth,
+      maps: { loadMeta },
+    } = getState();
+
+    if (!loadMeta || (auth.user && !auth.validated)) {
       return;
     }
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
-      url: `/maps/${payload.id}`,
+      url: `/maps/${loadMeta.id}`,
       expectedStatus: 200,
+      cancelActions: [mapsLoad, authSetUser, authLogout],
     });
 
-    const map =
-      assertType<{ name: string; data: StringDates<MapData<Line | OldLine>> }>(
-        data,
-      );
+    const data = await res.json();
+
+    try {
+      const features = data.data.trackViewer.trackGeojson.features;
+
+      // typescript-is fails if feature property contains array; TODO find out why
+
+      if (Array.isArray(features)) {
+        for (const feature of features) {
+          if (feature.properties) {
+            for (const k in feature.properties) {
+              if (typeof feature.properties[k] !== 'string') {
+                delete feature.properties[k];
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    // backward compat.
+    try {
+      const { routePlanner } = data.data;
+
+      if (routePlanner.transportType === 'bike') {
+        routePlanner.transportType = 'bicycle_touring';
+      } else if (routePlanner.transportType.startsWith('car-')) {
+        routePlanner.transportType = 'car';
+      }
+    } catch {
+      // ignore
+    }
+
+    const map = assertType<
+      StringDates<{
+        meta: MapMeta;
+        data: MapData<Line | CompatLine, CompatDrawingPoint>;
+      }>
+    >(data);
 
     const mapData = map.data;
 
     if (mapData.map) {
-      if (payload.ignoreMap) {
+      if (loadMeta.ignoreMap) {
         delete mapData.map.lat;
+
         delete mapData.map.lon;
+
         delete mapData.map.zoom;
       }
 
-      if (payload.ignoreLayers) {
+      if (loadMeta.ignoreLayers) {
         delete mapData.map.mapType;
+
         delete mapData.map.overlays;
       }
     }
 
     dispatch(
-      mapsDataLoaded({
-        name: map.name,
-        merge: payload.merge,
-        ...mapData,
-        // get rid of OldLines
-        lines: mapData.lines?.map(
-          (line) =>
-            ({
-              ...line,
-              type:
-                line.type === 'area'
-                  ? 'polyline'
-                  : line.type === 'distance'
-                  ? 'line'
-                  : line.type,
-            } as Line),
-        ),
-        tracking: mapData.tracking && {
-          ...mapData.tracking,
-          trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
-            ...device,
-            fromTime: device.fromTime ? new Date(device.fromTime) : null,
+      mapsLoaded({
+        merge: loadMeta.merge,
+        meta: {
+          ...map.meta,
+          createdAt: new Date(map.meta.createdAt),
+          modifiedAt: new Date(map.meta.modifiedAt),
+        },
+        data: {
+          ...mapData,
+          // get rid of OldLines
+          lines: mapData.lines?.map((line) => ({
+            ...line,
+            type:
+              line.type === 'area'
+                ? 'polygon'
+                : line.type === 'distance'
+                ? 'line'
+                : line.type,
           })),
+          points: mapData.points?.map((point) => ({
+            ...point,
+          })),
+          tracking: mapData.tracking && {
+            ...mapData.tracking,
+            trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
+              ...device,
+              fromTime: device.fromTime ? new Date(device.fromTime) : null,
+            })),
+          },
+          galleryFilter: mapData.galleryFilter && {
+            ...mapData.galleryFilter,
+            createdAtFrom:
+              mapData.galleryFilter.createdAtFrom === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.createdAtFrom),
+            createdAtTo:
+              mapData.galleryFilter.createdAtTo === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.createdAtTo),
+            takenAtFrom:
+              mapData.galleryFilter.takenAtFrom === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.takenAtFrom),
+            takenAtTo:
+              mapData.galleryFilter.takenAtTo === undefined
+                ? undefined
+                : new Date(mapData.galleryFilter.takenAtTo),
+          },
+          trackViewer: mapData.trackViewer,
         },
-        galleryFilter: mapData.galleryFilter && {
-          ...mapData.galleryFilter,
-          createdAtFrom:
-            mapData.galleryFilter.createdAtFrom === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.createdAtFrom),
-          createdAtTo:
-            mapData.galleryFilter.createdAtTo === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.createdAtTo),
-          takenAtFrom:
-            mapData.galleryFilter.takenAtFrom === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.takenAtFrom),
-          takenAtTo:
-            mapData.galleryFilter.takenAtTo === undefined
-              ? undefined
-              : new Date(mapData.galleryFilter.takenAtTo),
-        },
-        trackViewer: mapData.trackViewer,
       }),
     );
   },

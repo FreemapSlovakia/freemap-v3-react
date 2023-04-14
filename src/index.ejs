@@ -5,8 +5,6 @@
 
     <meta charset="UTF-8" />
 
-    <meta name="robots" content="index, noarchive, noimageindex, nofollow" />
-
     <meta
       name="copyright"
       content="OZ Freemap Slovakia, http://www.freemap.sk/"
@@ -118,10 +116,19 @@
     <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
 
+    <script>
+      if (typeof fmHeadless === 'boolean') {
+        fmHeadless = fmHeadless ? {} : undefined;
+      }
+    </script>
+
     <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
+    <!-- prettier-ignore -->
+    <% if (process.env['NODE_ENV'] === 'production') { %>
     <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+    <% } %>
 
     <script>
       fmEmbedded = window.self !== window.top;
@@ -133,6 +140,7 @@
       if (window.TrackJS && !fmEmbedded && !isRobot) {
         TrackJS.install({
           token: '47a813b67baf4f97bace2d8359f76833',
+          network: { error: false },
           onError: function (payload) {
             return !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker|flatMap is not a function/.test(
               payload.message,

@@ -1,24 +1,22 @@
-import {
-  Changeset,
-  changesetsSetAuthorName,
-} from 'fm3/actions/changesetsActions';
+import { Changeset, changesetsSetParams } from 'fm3/actions/changesetsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getType } from 'typesafe-actions';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
 export function ChangesetsResult(): ReactElement {
-  const changesets = useSelector((state) => state.changesets.changesets);
+  const changesets = useAppSelector((state) => state.changesets.changesets);
 
-  const days = useSelector((state) => state.changesets.days);
+  const days = useAppSelector((state) => state.changesets.days);
 
   const opacityOf = useCallback(
     (changeset: Changeset, now: Date) => {
@@ -50,7 +48,7 @@ export function ChangesetsResult(): ReactElement {
         messageParams: {
           changeset,
         },
-        cancelType: getType(changesetsSetAuthorName),
+        cancelType: getType(changesetsSetParams),
         style: 'info',
       }),
     );

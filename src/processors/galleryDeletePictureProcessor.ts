@@ -5,7 +5,7 @@ import {
   gallerySetImageIds,
   gallerySetLayerDirty,
 } from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const galleryDeletePictureProcessor: Processor = {
@@ -46,6 +46,7 @@ export const galleryDeletePictureProcessor: Processor = {
             newImageIds.length > idx
               ? newImageIds[idx]
               : newImageIds[newImageIds.length - 1];
+
           dispatch(galleryRequestImage(newActiveImageId));
         }
       }

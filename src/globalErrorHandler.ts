@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { setErrorTicketId } from 'fm3/actions/mainActions';
 import storage from 'local-storage-fallback';
+import { is } from 'typescript-is';
 import { MyStore } from './storeCreator';
 
 let store: MyStore;
@@ -9,7 +9,6 @@ export function setStore(s: MyStore): void {
   store = s;
 }
 
-// eslint-disable-next-line
 (Error.prototype as any).toJSON = function toJSON() {
   return {
     name: this.name,
@@ -51,6 +50,7 @@ export function sendError(errDetails: ErrorDetails): void {
   }
 
   console.error('Application error');
+
   console.error(errDetails);
 
   if (errDetails.error) {
@@ -64,39 +64,37 @@ export function sendError(errDetails: ErrorDetails): void {
     value: errDetails.kind,
   });
 
-  axios
-    .post(
-      `${process.env['API_URL']}/logger`,
-      {
-        level: 'error',
-        message: 'Webapp error.',
-        details: {
-          error: errDetails,
-          url: window.location.href,
-          userAgent: navigator.userAgent,
-          storage,
-          state,
-        },
+  fetch(`${process.env['API_URL']}/logger`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      level: 'error',
+      message: 'Webapp error.',
+      details: {
+        error: errDetails,
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        storage,
+        state,
       },
-      {
-        validateStatus: (status) => status === 200,
-      },
-    )
-    .then(
-      ({ data }) => {
-        if (
-          errDetails.message === 'Script error.' ||
-          errDetails.filename === ''
-        ) {
-          // don't show to user
-        } else {
-          handle(data.id);
-        }
-      },
-      () => {
-        handle();
-      },
-    );
+    }),
+  })
+    .then((response) => (response.status === 200 ? response.json() : undefined))
+    .then((data) => {
+      if (
+        errDetails.message === 'Script error.' ||
+        errDetails.filename === ''
+      ) {
+        // don't show to user
+      } else {
+        handle(is<{ id: string }>(data) ? data.id : undefined);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+
+      handle();
+    });
 }
 
 function handle(id?: string) {
@@ -118,6 +116,10 @@ function handle(id?: string) {
         A jegyazonosítót és a hiba újbóli megjelenéséhez vezető lépések leírását a következő e-mail címre küldheti:
         <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
       </p>
+
+      <h1>Errore dell'applicazione</h1>
+      <p>Ticket Nr.: ${id}.</p>
+      <p>Puoi inviare il tuo numero di ticket e i passaggi per riprodurre l'errore a <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>
     `;
   }
 }

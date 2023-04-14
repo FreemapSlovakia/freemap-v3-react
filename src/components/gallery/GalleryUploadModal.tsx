@@ -1,6 +1,5 @@
 import {
   galleryAddItem,
-  galleryHideUploadModal,
   GalleryItem,
   galleryMergeItem,
   galleryRemoveItem,
@@ -8,9 +7,11 @@ import {
   galleryToggleShowPreview,
   galleryUpload,
 } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -18,26 +19,28 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import Modal from 'react-bootstrap/Modal';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes, FaUpload } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { useDispatch } from 'react-redux';
+import { usePictureDropHandler } from '../../hooks/usePictureDropHandler';
 import { PictureModel } from './GalleryEditForm';
 
 type Props = { show: boolean };
+
+export default GalleryUploadModal;
 
 export function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const items = useSelector((state) => state.gallery.items);
+  const items = useAppSelector((state) => state.gallery.items);
 
-  const uploading = useSelector((state) => !!state.gallery.uploadingId);
+  const uploading = useAppSelector((state) => !!state.gallery.uploadingId);
 
-  const allTags = useSelector((state) => state.gallery.tags);
+  const allTags = useAppSelector((state) => state.gallery.tags);
 
-  const showPreview = useSelector((state) => state.gallery.showPreview);
+  const showPreview = useAppSelector((state) => state.gallery.showPreview);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const handleItemMerge = useCallback(
     (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
@@ -67,7 +70,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
           actions: [
             {
               nameKey: 'general.yes',
-              action: galleryHideUploadModal(),
+              action: setActiveModal(null),
               style: 'danger',
             },
             { nameKey: 'general.no' },
@@ -75,7 +78,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
         }),
       );
     } else {
-      dispatch(galleryHideUploadModal());
+      dispatch(setActiveModal(null));
     }
   }, [dispatch, items]);
 
@@ -95,7 +98,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleFileDrop,
-    accept: '.jpg,.jpeg',
+    accept: { 'image/jpeg': ['.jpg', '.jpeg'] },
   });
 
   const handlePositionPick = useCallback(
@@ -113,7 +116,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>

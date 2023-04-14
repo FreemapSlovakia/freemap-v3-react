@@ -1,11 +1,14 @@
-import { galleryShowFilter } from 'fm3/actions/galleryActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
   baseLayers,
-  LayerDef,
+  defaultMenuLayerLetters,
+  defaultToolbarLayerLetters,
+  NoncustomLayerLetters,
   overlayLayers,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
@@ -23,19 +26,21 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 import {
+  FaCog,
+  FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
   FaRegCheckCircle,
-  FaRegCheckSquare,
   FaRegCircle,
   FaRegMap,
-  FaRegSquare,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { MdDashboardCustomize } from 'react-icons/md';
+import { useDispatch } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 import { is } from 'typescript-is';
-import useMedia from 'use-media';
+import { Checkbox } from './Checkbox';
 
-function getKbdShortcut(key?: [string, boolean]) {
+function getKbdShortcut(key?: readonly [string, boolean]) {
   return (
     key && (
       <kbd className="ml-1">
@@ -49,27 +54,21 @@ function getKbdShortcut(key?: [string, boolean]) {
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
 
-  const zoom = useSelector((state) => state.map.zoom);
+  const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useSelector((state) => state.map.mapType);
+  const mapType = useAppSelector((state) => state.map.mapType);
 
-  const overlays = useSelector((state) => state.map.overlays);
+  const overlays = useAppSelector((state) => state.map.overlays);
 
-  const expertMode = useSelector((state) => state.main.expertMode);
-
-  const pictureFilterIsActive = useSelector(
-    (state) => Object.values(state.gallery.filter).filter((x) => x).length > 0,
+  const pictureFilterIsActive = useAppSelector((state) =>
+    Object.values(state.gallery.filter).some((x) => x),
   );
 
-  const isAdmin = useSelector(
-    (state) => !!(state.auth.user && state.auth.user.isAdmin),
-  );
-
-  const language = useSelector((state) => state.l10n.language);
+  const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState<boolean | 'all'>(false);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -106,7 +105,8 @@ export function MapSwitchButton(): ReactElement {
         }
 
         if (x instanceof SVGElement && x.dataset['filter']) {
-          dispatch(galleryShowFilter());
+          dispatch(setActiveModal('gallery-filter'));
+
           return true;
         }
 
@@ -119,9 +119,10 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay, e: SyntheticEvent<unknown>) => {
+    (overlay: string | null, e: SyntheticEvent<unknown>) => {
       if (handlePossibleFilterClick(e)) {
         setShow(false);
+
         return;
       }
 
@@ -170,59 +171,124 @@ export function MapSwitchButton(): ReactElement {
     dispatch(mapRefocus({ overlays: [...s] }));
   };
 
-  const isWide = useMedia({ minWidth: '576px' });
-
-  const isPrimary = (layer: LayerDef) =>
-    layer.primary === true ||
-    layer.primary === language ||
-    (typeof layer.primary === 'string' &&
-      layer.primary.startsWith('!') &&
-      layer.primary !== `!${language}`);
+  const isWide = useMediaQuery({ query: '(min-width: 576px)' });
 
   const sc = useScrollClasses('vertical');
 
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
+  const bases = [
+    ...baseLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith('.'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), false] as const,
+      })),
+  ];
+
+  const ovls = [
+    ...overlayLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith(':'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), true] as const,
+      })),
+  ];
+
   return (
     <>
-      <ButtonGroup className="dropup d-none d-sm-inline-flex">
-        {baseLayers.filter(isPrimary).map(({ type, icon }) => (
-          <Button
-            variant="secondary"
-            title={m?.mapLayers.letters[type]}
-            key={type}
-            data-type={type}
-            active={mapType === type}
-            onClick={handleBaseClick}
-          >
-            {icon}
-          </Button>
-        ))}
-        {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
-          <Button
-            variant="secondary"
-            title={m?.mapLayers.letters[type]}
-            key={type}
-            data-type={type}
-            active={overlays.includes(type)}
-            onClick={handleOverlayClick}
-          >
-            {icon}
-            {pictureFilterIsActive && type === 'I' && (
-              <FaFilter
-                data-filter="1"
-                title={m?.mapLayers.photoFilterWarning}
-                className="text-warning ml-2"
-              />
-            )}
-          </Button>
-        ))}
+      <div className="mr-1 d-none d-sm-block">{m?.mapLayers.switch}</div>
+
+      <ButtonGroup className="dropup d-none d-sm-inline-flex mr-2">
+        {bases
+          .filter(
+            (l) =>
+              layersSettings[l.type]?.showInToolbar ??
+              defaultToolbarLayerLetters.includes(l.type),
+          )
+          .map(({ type, icon }) => (
+            <Button
+              variant="secondary"
+              title={
+                type.startsWith('.')
+                  ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                  : m?.mapLayers.letters[type as NoncustomLayerLetters]
+              }
+              key={type}
+              data-type={type}
+              active={mapType === type}
+              onClick={handleBaseClick}
+            >
+              {icon}
+            </Button>
+          ))}
+
+        {ovls
+          .filter(
+            (l) =>
+              (l.type === 'i' && overlays.includes('i')) ||
+              (l.type === 'I' && pictureFilterIsActive) ||
+              (layersSettings[l.type]?.showInToolbar ??
+                defaultToolbarLayerLetters.includes(l.type)),
+          )
+          .map(({ type, icon }) => (
+            <Button
+              variant="secondary"
+              title={
+                type.startsWith(':')
+                  ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                  : m?.mapLayers.letters[type as NoncustomLayerLetters]
+              }
+              key={type}
+              data-type={type}
+              active={overlays.includes(type as OverlayLetters)}
+              onClick={handleOverlayClick}
+            >
+              {icon}
+
+              {pictureFilterIsActive && type === 'I' && (
+                <FaFilter
+                  data-filter="1"
+                  title={m?.mapLayers.photoFilterWarning}
+                  className="text-warning ml-2"
+                />
+              )}
+
+              {overlays.includes('i') && type === 'i' && (
+                <FaExclamationTriangle
+                  data-interactive="1"
+                  title={m?.mapLayers.interactiveLayerWarning}
+                  className="text-warning ml-2"
+                />
+              )}
+            </Button>
+          ))}
+
         <Button
           variant="secondary"
-          className="dropdown-toggle"
           ref={buttonRef}
           onClick={handleButtonClick}
           title={m?.mapLayers.layers}
-        />
+          active={[mapType, ...overlays.filter((o) => o !== 'i')].some(
+            (type) =>
+              !(
+                layersSettings[type]?.showInToolbar ??
+                defaultToolbarLayerLetters.includes(type)
+              ),
+          )}
+        >
+          <FaEllipsisV />
+        </Button>
       </ButtonGroup>
+
       <Button
         className="d-sm-none"
         ref={button2Ref}
@@ -232,10 +298,11 @@ export function MapSwitchButton(): ReactElement {
       >
         <FaRegMap />
       </Button>
+
       <Overlay
         rootClose
         placement="top"
-        show={show}
+        show={!!show}
         onHide={handleHide}
         target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
@@ -243,20 +310,46 @@ export function MapSwitchButton(): ReactElement {
           <Popover.Content className="fm-menu-scroller" ref={sc}>
             <div />
 
+            <Dropdown.Item
+              key="mapSettings"
+              as="button"
+              onSelect={() => {
+                setShow(false);
+
+                dispatch(setActiveModal('mapSettings'));
+              }}
+            >
+              <FaCog /> {m?.mapLayers.settings}
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
+
             {
               // TODO base and overlay layers have too much duplicate code
-              baseLayers
-                .filter(
-                  ({ showOnlyInExpertMode }) =>
-                    !showOnlyInExpertMode || expertMode,
-                )
+              bases
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
+                .filter(
+                  (l) =>
+                    mapType === l.type ||
+                    show === 'all' ||
+                    (layersSettings[l.type]?.showInMenu ??
+                      defaultMenuLayerLetters.includes(l.type)),
+                )
                 .map(({ type, icon, minZoom, key }) => (
                   <Dropdown.Item
                     href={`?layers=${type}`}
                     key={type}
                     eventKey={type}
                     onSelect={handleMapSelect}
+                    active={mapType === type}
+                    style={{
+                      opacity:
+                        show === 'all' ||
+                        (layersSettings[type]?.showInMenu ??
+                          defaultMenuLayerLetters.includes(type))
+                          ? 1
+                          : 0.5,
+                    }}
                   >
                     {mapType === type ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
                     {icon}{' '}
@@ -268,7 +361,9 @@ export function MapSwitchButton(): ReactElement {
                             : 'none',
                       }}
                     >
-                      {m?.mapLayers.letters[type]}
+                      {type.startsWith('.')
+                        ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                        : m?.mapLayers.letters[type as NoncustomLayerLetters]}
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
@@ -280,54 +375,84 @@ export function MapSwitchButton(): ReactElement {
                   </Dropdown.Item>
                 ))
             }
+
             <Dropdown.Divider />
+
             {overlayLayers
-              .filter(
-                ({ showOnlyInExpertMode }) =>
-                  !showOnlyInExpertMode || expertMode,
-              )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map(({ type, icon, minZoom, key }) => (
-                <Dropdown.Item
-                  key={type}
-                  as="button"
-                  eventKey={type}
-                  onSelect={handleOverlaySelect}
-                >
-                  {type === 'i' ? (
-                    !overlays.includes(type)
-                  ) : overlays.includes(type) ? (
-                    <FaRegCheckSquare />
-                  ) : (
-                    <FaRegSquare />
-                  )}{' '}
-                  {icon}{' '}
-                  <span
+              .filter(
+                (l) =>
+                  overlays.includes(l.type) ||
+                  show === 'all' ||
+                  (layersSettings[l.type]?.showInMenu ??
+                    defaultMenuLayerLetters.includes(l.type)),
+              )
+              .map(({ type, icon, minZoom, key }) => {
+                const active =
+                  type === 'i'
+                    ? !overlays.includes(type)
+                    : overlays.includes(type);
+
+                return (
+                  <Dropdown.Item
+                    key={type}
+                    as="button"
+                    eventKey={type}
+                    onSelect={handleOverlaySelect}
+                    active={active}
                     style={{
-                      textDecoration:
-                        minZoom !== undefined && zoom < minZoom
-                          ? 'line-through'
-                          : 'none',
+                      opacity:
+                        type === 'i' ||
+                        show === 'all' ||
+                        (layersSettings[type]?.showInMenu ??
+                          defaultMenuLayerLetters.includes(type))
+                          ? 1
+                          : 0.5,
                     }}
                   >
-                    {m?.mapLayers.letters[type]}
-                  </span>
-                  {getKbdShortcut(key)}
-                  {minZoom !== undefined && zoom < minZoom && (
-                    <FaExclamationTriangle
-                      title={m?.mapLayers.minZoomWarning(minZoom)}
-                      className="text-warning ml-1"
-                    />
-                  )}
-                  {type === 'I' && pictureFilterIsActive && (
-                    <FaFilter
-                      data-filter="1"
-                      title={m?.mapLayers.photoFilterWarning}
-                      className="text-warning ml-1"
-                    />
-                  )}
+                    <Checkbox value={active} /> {icon}{' '}
+                    <span
+                      style={{
+                        textDecoration:
+                          minZoom !== undefined && zoom < minZoom
+                            ? 'line-through'
+                            : 'none',
+                      }}
+                    >
+                      {type.startsWith(':')
+                        ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                        : m?.mapLayers.letters[type as NoncustomLayerLetters]}
+                    </span>
+                    {getKbdShortcut(key)}
+                    {minZoom !== undefined && zoom < minZoom && (
+                      <FaExclamationTriangle
+                        title={m?.mapLayers.minZoomWarning(minZoom)}
+                        className="text-warning ml-1"
+                      />
+                    )}
+                    {type === 'I' && pictureFilterIsActive && (
+                      <FaFilter
+                        data-filter="1"
+                        title={m?.mapLayers.photoFilterWarning}
+                        className="text-warning ml-1"
+                      />
+                    )}
+                  </Dropdown.Item>
+                );
+              })}
+
+            {show !== 'all' && (
+              <>
+                <Dropdown.Divider />
+                <Dropdown.Item
+                  onSelect={() => {
+                    setShow('all');
+                  }}
+                >
+                  {m?.mapLayers.showAll}
                 </Dropdown.Item>
-              ))}
+              </>
+            )}
           </Popover.Content>
         </Popover>
       </Overlay>

@@ -1,15 +1,17 @@
 import area from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import length from '@turf/length';
-import { drawingMeasure as drawingMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import {
   clearMap,
   deleteFeature,
   selectFeature,
   setTool,
 } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
@@ -20,48 +22,55 @@ const cancelType = [
   getType(selectFeature),
   getType(deleteFeature),
   getType(setTool),
+  getType(mapRefocus),
 ];
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
   actionCreator: drawingMeasure,
   errorKey: 'measurement.elevationFetchError',
   handle: async ({ getState, dispatch, action }) => {
-    const { selection } = getState().main;
+    const {
+      main: { selection },
+    } = getState();
 
     let id;
 
     async function measurePoint(point: LatLon) {
       let elevation;
 
+      const toastParams: ElevationInfoBaseProps = {
+        point,
+        elevation: null,
+      };
+
       if (action.payload.elevation !== false) {
         dispatch(
           toastsAdd({
             messageKey: 'measurement.elevationInfo',
-            messageParams: { point, elevation: null },
+            messageParams: toastParams,
             timeout: 500000,
             id: 'measurementInfo',
             cancelType,
           }),
         );
 
-        const { data } = await httpRequest({
+        const res = await httpRequest({
           getState,
-          method: 'GET',
-          url: '/geotools/elevation',
-          params: {
-            coordinates: `${point.lat},${point.lon}`,
-          },
+          url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
           cancelActions: [drawingMeasure, clearMap],
         });
 
-        elevation = assertType<[number]>(data)[0];
+        elevation = assertType<[number]>(await res.json())[0];
       }
 
       dispatch(
         toastsAdd({
           id: 'measurementInfo',
           messageKey: 'measurement.elevationInfo',
-          messageParams: { point, elevation },
+          messageParams: {
+            ...toastParams,
+            elevation,
+          },
           timeout: 500000,
           cancelType,
         }),

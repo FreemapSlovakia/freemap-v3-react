@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
@@ -8,7 +9,8 @@ import Card from 'react-bootstrap/Card';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { assertType } from 'typescript-is';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
@@ -16,18 +18,29 @@ const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
 type Props = { show: boolean };
 
+type Res = {
+  categories: { id: string; name: string }[];
+  items: { categoryId: string; name: string }[];
+};
+
+export default LegendOutdoorModal;
+
 export function LegendOutdoorModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const [legend, setLegend] = useState<Item[]>([]);
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useEffectiveChosenLanguage();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      .get(`${fmMapserverUrl}/legend?language=${language}`)
-      .then((response) => {
-        const { categories, items } = response.data;
+    fetch(`${fmMapserverUrl}/legend?language=${language}`)
+      .then((response) =>
+        response.status === 200 ? response.json() : undefined,
+      )
+      .then((data) => {
+        const { categories, items } = assertType<Res>(data);
 
         const catMap = new Map<string, Item>();
 
@@ -42,10 +55,17 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
         }
 
         setLegend([...catMap.values()]);
+      })
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.loadError',
+            messageParams: { err },
+          }),
+        );
       });
-  }, [language]);
-
-  const dispatch = useDispatch();
+  }, [dispatch, language]);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -58,14 +78,17 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
           <FaRegMap /> {m?.mainMenu.mapLegend}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <p>{m?.legend.body}</p>
+
         <Accordion>
           {[...legend].map((c: Item, i: number) => (
             <Card key={c.name}>
               <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
                 {c.name}
               </Accordion.Toggle>
+
               <Accordion.Collapse eventKey={String(i)}>
                 <Card.Body>
                   {c.items.map(({ id, name }) => (
@@ -83,6 +106,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
                             .join(', ')}
                         />
                       </div>
+
                       <div>{name}</div>
                     </div>
                   ))}
@@ -92,6 +116,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
           ))}
         </Accordion>
       </Modal.Body>
+
       <Modal.Footer>
         <FormGroup>
           <Button variant="dark" onClick={close}>

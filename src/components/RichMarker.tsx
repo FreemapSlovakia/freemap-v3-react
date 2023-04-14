@@ -1,7 +1,7 @@
 import { colors } from 'fm3/constants';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
 import { ReactElement, useEffect, useMemo, useRef } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 
 interface IconProps {
@@ -10,6 +10,7 @@ interface IconProps {
   image?: string;
   faIcon?: ReactElement;
   cacheKey?: string;
+  imageOpacity?: number;
 }
 
 interface Props extends MarkerProps, IconProps {
@@ -52,13 +53,19 @@ export class MarkerLeafletIcon extends Icon<
   BaseIconOptions & { icon: ReactElement }
 > {
   createIcon(oldIcon?: HTMLElement): HTMLElement {
-    const reuse = oldIcon && oldIcon.tagName === 'DIV';
+    const reuse = oldIcon?.tagName === 'DIV';
 
-    const div = oldIcon && reuse ? oldIcon : document.createElement('div');
+    const div = (reuse ? oldIcon : document.createElement('div')) as any;
 
-    (this as any)._setIconStyles(div, 'icon');
+    if (!div._fm_root) {
+      (this as any)._setIconStyles(div, 'icon');
 
-    render(this.options.icon, div);
+      div._fm_root = createRoot(div);
+
+      div._fm_root.render(this.options.icon);
+    }
+
+    div._fm_root.render(this.options.icon);
 
     return div;
   }
@@ -70,6 +77,7 @@ export class MarkerLeafletIcon extends Icon<
 
 export function MarkerIcon({
   image,
+  imageOpacity,
   faIcon,
   color = colors.normal,
   label,
@@ -141,13 +149,16 @@ export function MarkerIcon({
         )}
 
         {image && (
-          <image x={74} y={84} width={160} height={160} xlinkHref={image} />
+          <image
+            x={74}
+            y={84}
+            width={160}
+            height={160}
+            xlinkHref={image}
+            opacity={imageOpacity}
+          />
         )}
       </svg>
-
-      {/* {image && (
-        <img className="fa-icon-inside-leaflet-icon-holder" src={image} />
-      )} */}
 
       {faIcon && (
         <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>

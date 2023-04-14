@@ -10,6 +10,7 @@ export function createFilter({
   takenAtTo,
   createdAtFrom,
   createdAtTo,
+  pano,
 }: GalleryFilter): StringDates<GalleryFilter> {
   return {
     tag,
@@ -20,6 +21,7 @@ export function createFilter({
     takenAtTo: plusDay(takenAtTo)?.toISOString(),
     createdAtFrom: createdAtFrom?.toISOString(),
     createdAtTo: plusDay(createdAtTo)?.toISOString(),
+    pano,
   };
 }
 
@@ -29,6 +31,8 @@ function plusDay(d: Date | undefined | null): Date | undefined | null {
   }
 
   const r = new Date(d);
+
   r.setDate(r.getDate() + 1);
+
   return r;
 }

@@ -1,18 +1,32 @@
 import { Feature, GeometryObject } from '@turf/helpers';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { getNameFromOsmElement } from 'fm3/osm/osmNameResolver';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import {
+  getGenericNameFromOsmElement,
+  getNameFromOsmElement,
+  resolveGenericName,
+} from 'fm3/osm/osmNameResolver';
+import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
 import { escapeHtml } from 'fm3/stringUtils';
 import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
 
-function pointToLayer(_: Feature, latLng: LatLng) {
+function pointToLayer(feature: Feature, latLng: LatLng) {
+  const img = resolveGenericName(osmTagToIconMapping, feature.properties ?? {});
+
   return marker(latLng, {
     icon: new MarkerLeafletIcon({
       ...markerIconOptions,
-      icon: <MarkerIcon color="#3388ff" />,
+      icon: (
+        <MarkerIcon
+          color={window.fmHeadless?.searchResultStyle?.color ?? '#3388ff'}
+          imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
+          image={img[0]}
+        />
+      ),
     }),
   });
 }
@@ -23,13 +37,15 @@ function annotateFeature(
   language: string,
   isBg: boolean,
 ) {
-  getNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
-    (text) => {
+  getGenericNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
+    (genericName) => {
+      const name = getNameFromOsmElement(feature.properties ?? {}, language);
+
       const isPoi = !(layer instanceof Path || layer instanceof Polygon);
 
       layer.bindTooltip(
-        escapeHtml(text[0]) +
-          (text[1] ? ' <i>' + escapeHtml(text[1]) + '</i>' : ''),
+        escapeHtml(genericName) +
+          (name ? ' <i>' + escapeHtml(name) + '</i>' : ''),
         {
           direction: layer instanceof Polygon ? 'center' : 'top',
           offset: isPoi ? [0, -36] : [0, 0],
@@ -52,13 +68,13 @@ function annotateFeature(
 }
 
 export function SearchResults(): ReactElement | null {
-  const selectedResult = useSelector((state) => state.search.selectedResult);
+  const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  const selectedResultSeq = useSelector(
+  const selectedResultSeq = useAppSelector(
     (state) => state.search.searchResultSeq,
   );
 
-  const language = useSelector((state) => state.l10n.language);
+  const language = useAppSelector((state) => state.l10n.language);
 
   const dispatch = useDispatch();
 
@@ -74,7 +90,11 @@ export function SearchResults(): ReactElement | null {
     [language],
   );
 
-  return !selectedResult?.geojson ? null : (
+  if (!selectedResult?.geojson) {
+    return null;
+  }
+
+  return (
     <Fragment key={language + selectedResultSeq}>
       <GeoJSON
         interactive={false}
@@ -82,6 +102,7 @@ export function SearchResults(): ReactElement | null {
         style={{ weight: 5 }}
         filter={(feature) => feature.geometry.type === 'LineString'}
       />
+
       <GeoJSON
         interactive
         data={selectedResult.geojson}
@@ -94,16 +115,17 @@ export function SearchResults(): ReactElement | null {
               searchSelectResult({
                 result: selectedResult,
                 showToast: true,
-                zoomTo: false,
+                focus: false,
               }),
             );
           },
         }}
       />
+
       <GeoJSON
         interactive
         data={selectedResult.geojson}
-        style={{ weight: 5 }}
+        style={window.fmHeadless?.searchResultStyle ?? { weight: 5 }}
         pointToLayer={pointToLayer}
         onEachFeature={cachedAnnotateFeature}
         filter={(feature) => feature.geometry.type !== 'LineString'}
@@ -113,7 +135,7 @@ export function SearchResults(): ReactElement | null {
               searchSelectResult({
                 result: selectedResult,
                 showToast: true,
-                zoomTo: false,
+                focus: false,
               }),
             );
           },

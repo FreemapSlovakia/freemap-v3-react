@@ -1,7 +1,7 @@
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { divIcon } from 'leaflet';
 import { ReactElement } from 'react';
 import { Circle, Marker } from 'react-leaflet';
-import { useSelector } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [40, 40],
@@ -19,9 +19,13 @@ const circularIcon = divIcon({
 });
 
 export function LocationResult(): ReactElement | null {
-  const gpsLocation = useSelector((state) => state.main.location);
+  const gpsLocation = useAppSelector((state) => state.main.location);
 
-  return !gpsLocation ? null : (
+  if (!gpsLocation) {
+    return null;
+  }
+
+  return (
     <>
       <Circle
         center={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}
@@ -29,6 +33,7 @@ export function LocationResult(): ReactElement | null {
         weight={1}
         stroke={false}
       />
+
       <Marker
         icon={circularIcon}
         position={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}

@@ -1,10 +1,14 @@
+import area from '@turf/area';
+import bboxPolygon from '@turf/bbox-polygon';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { wikiSetPoints } from 'fm3/actions/wikiActions';
-import { httpRequest } from 'fm3/authAxios';
+import { WikiPoint, wikiSetPoints } from 'fm3/actions/wikiActions';
 import { cancelRegister } from 'fm3/cancelRegister';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { httpRequest } from 'fm3/httpRequest';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { OverpassElement, OverpassResult } from 'fm3/types/common';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
+import { CRS, Point } from 'leaflet';
+import RBush, { BBox } from 'rbush';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse {
@@ -17,33 +21,43 @@ interface WikiResponse {
   };
 }
 
+type WikiPoi = [
+  wikipedia: string | null,
+  wikidata: string | null,
+  lon: number,
+  lat: number,
+  id: string,
+  name: string | null,
+];
+
+let initial = true;
+
 export const wikiLayerProcessor: Processor = {
   errorKey: 'general.loadError',
   async handle({ getState, dispatch, prevState }) {
-    const le = getMapLeafletElement();
-
-    if (!le) {
-      return;
-    }
-
     const {
-      map: { overlays, lat, lon, zoom, mapLeafletReady },
+      map: { overlays, lat, lon, zoom },
       wiki: { points },
     } = getState();
 
     const prevMap = prevState.map;
 
-    const ok0 = mapLeafletReady && overlays.includes('w');
+    const ok0 = overlays.includes('w');
 
-    const ok = ok0 && zoom >= 12;
+    const ok = ok0 && zoom >= 8;
 
-    const prevOk0 = prevMap.mapLeafletReady && prevMap.overlays.includes('w');
+    const prevOk0 = prevMap.overlays.includes('w');
 
-    const prevOk = prevOk0 && prevMap.zoom >= 12;
+    const prevOk = prevOk0 && prevMap.zoom >= 8;
 
-    if (`${lat},${lon},${ok}` === `${prevMap.lat},${prevMap.lon},${prevOk}`) {
+    if (
+      !initial &&
+      `${lat},${lon},${ok}` === `${prevMap.lat},${prevMap.lon},${prevOk}`
+    ) {
       return;
     }
+
+    initial = false;
 
     if (!ok) {
       if (prevOk) {
@@ -54,8 +68,6 @@ export const wikiLayerProcessor: Processor = {
 
       return;
     }
-
-    const bounds = le.getBounds();
 
     // debouncing
     try {
@@ -73,7 +85,9 @@ export const wikiLayerProcessor: Processor = {
           cancelActions: [mapRefocus],
           cancel: () => {
             cancelRegister.delete(cancelItem);
+
             window.clearTimeout(to);
+
             reject();
           },
         };
@@ -84,47 +98,42 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
-    const { data } = await httpRequest({
+    let bb = (await mapPromise).getBounds();
+
+    const areaSize = area(
+      bboxPolygon([bb.getWest(), bb.getSouth(), bb.getEast(), bb.getNorth()]),
+    );
+
+    const scale = areaSize / (window.innerHeight * window.innerWidth);
+
+    const res = await httpRequest({
       getState,
-      method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
-      data:
-        `[out:json][bbox:${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}];(` +
-        `node[~"^wikipedia$|^wikidata$"~"."];` +
-        `way[~"^wikipedia$|^wikidata$"~"."];` +
-        `relation[~"^wikipedia$|^wikidata$"~"."];` +
-        ');out tags center;',
+      method: 'GET',
+      // url: `http://localhost:8040?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
+      url: `https://backend.freemap.sk/wiki-pois?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
       expectedStatus: 200,
       cancelActions: [mapRefocus],
     });
 
-    const okData = assertType<OverpassResult>(data);
-
-    const m = new Map<string, OverpassElement>();
+    const wikipedia2item = new Map<string, WikiPoi>();
 
     const wikidatas: string[] = [];
 
-    for (const e of okData.elements) {
-      if (e.tags['wikipedia']) {
-        e.tags['wikipedia'] = decodeURIComponent(
-          e.tags['wikipedia'].replace(/_/g, ' '),
-        );
-      }
+    const data = assertType<WikiPoi[]>(await res.json());
 
-      const { wikipedia } = e.tags;
+    for (const item of data) {
+      let wikipedia = item[0];
+
+      const wikidata = item[1];
 
       if (wikipedia) {
-        const e1 = m.get(wikipedia);
+        wikipedia = decodeURIComponent(wikipedia.replace(/_/g, ' '));
+      }
 
-        if (
-          !e1 ||
-          e1.type === 'relation' ||
-          (e1.type === 'way' && e.type === 'relation')
-        ) {
-          m.set(wikipedia, e);
-        }
-      } else {
-        wikidatas.push(e.tags['wikidata']);
+      if (wikipedia) {
+        wikipedia2item.set(wikipedia, item);
+      } else if (wikidata) {
+        wikidatas.push(wikidata);
       }
     }
 
@@ -143,68 +152,139 @@ export const wikiLayerProcessor: Processor = {
 
     const { language } = getState().l10n;
 
-    const { data: data1 } = await httpRequest({
+    const res1 = await httpRequest({
       getState,
-      method: 'GET',
-      url: 'https://www.wikidata.org/w/api.php',
-      params: {
-        origin: '*',
-        action: 'wbgetentities',
-        props: 'sitelinks',
-        format: 'json',
-        ids: wikidatas.slice(0, 50).join('|'), // API limit is 50
-        sitefilter: `${language}wiki|enwiki`,
-      },
+      url:
+        'https://www.wikidata.org/w/api.php?' +
+        objectToURLSearchParams({
+          origin: '*',
+          action: 'wbgetentities',
+          props: 'sitelinks',
+          format: 'json',
+          ids: wikidatas.slice(0, 50).join('|'), // API limit is 50
+          sitefilter: `${language}wiki|enwiki`,
+        }),
       expectedStatus: 200,
       cancelActions: [mapRefocus],
     });
 
-    const okData1 = assertType<WikiResponse>(data1);
+    const data1 = assertType<WikiResponse>(await res1.json());
 
-    for (const e of okData.elements) {
-      if (e.tags['wikipedia']) {
+    for (const item of data) {
+      if (item[0]) {
         continue;
       }
 
-      const sitelinks = okData1.entities?.[e.tags['wikidata']]?.sitelinks;
+      const sitelinks = data1.entities?.[item[1] ?? '']?.sitelinks;
 
       if (!sitelinks) {
         continue;
       }
 
-      const title = (sitelinks[`${language}wiki`] || sitelinks['enwiki'])
+      const title = (sitelinks[language + 'wiki'] || sitelinks['enwiki'])
         ?.title;
 
       if (title == null) {
         continue;
       }
 
-      const wikipedia = `${
-        `${language}wiki` in sitelinks ? language : 'en'
-      }:${title}`;
+      const wikipedia =
+        (language + 'wiki' in sitelinks ? language : 'en') + ':' + title;
 
-      const e1 = m.get(wikipedia);
+      if (!wikipedia2item.has(wikipedia)) {
+        item[0] = wikipedia;
 
-      if (
-        !e1 ||
-        e1.type === 'relation' ||
-        (e1.type === 'way' && e.type === 'relation')
-      ) {
-        e.tags['wikipedia'] = wikipedia;
-
-        m.set(wikipedia, e);
+        wikipedia2item.set(wikipedia, item);
       }
     }
 
+    const MIN_DISTANCE = 40;
+
+    const PLACEMENTS = [-1, 0, 3, 1, 4, 2, 5, 0, 3, 1, 4, 2, 5];
+
+    type IndexType = BBox & { wikiPoint: WikiPoint; mapPoint: Point };
+
+    const tree = new RBush<IndexType>();
+
+    const items = [...wikipedia2item.values()]
+      .map((e) => ({
+        id: e[4],
+        lat: e[3],
+        lon: e[2],
+        name: e[5] ?? e[0] ?? '???',
+        wikipedia: e[0] ?? '',
+      }))
+      .map((wikiPoint) => ({
+        wikiPoint,
+        mapPoint: CRS.EPSG3857.latLngToPoint(
+          { lat: wikiPoint.lat, lng: wikiPoint.lon },
+          zoom,
+        ),
+      }));
+
+    const sparsePoints: WikiPoint[] = [];
+
+    for (const item of items) {
+      const { mapPoint, wikiPoint } = item;
+
+      attempts: for (let i = -1; i < 12; i++) {
+        const r = i < 6 ? MIN_DISTANCE + 0.1 : 2 * MIN_DISTANCE + 0.2;
+
+        const x =
+          mapPoint.x +
+          (i < 0 ? 0 : r * Math.sin((PLACEMENTS[i] * Math.PI) / 3));
+
+        const y =
+          mapPoint.y +
+          (i < 0 ? 0 : r * Math.cos((PLACEMENTS[i] * Math.PI) / 3));
+
+        const offsetPoint = new Point(x, y);
+
+        const bbox: IndexType = {
+          minX: x - MIN_DISTANCE,
+          minY: y - MIN_DISTANCE,
+          maxX: x + MIN_DISTANCE,
+          maxY: y + MIN_DISTANCE,
+          wikiPoint,
+          mapPoint: offsetPoint,
+        };
+
+        for (const a of tree.search(bbox)) {
+          if (
+            Math.sqrt((x - a.mapPoint.x) ** 2 + (y - a.mapPoint.y) ** 2) <
+            MIN_DISTANCE
+          ) {
+            continue attempts;
+          }
+        }
+
+        const latLng = CRS.EPSG3857.pointToLatLng(offsetPoint, zoom);
+
+        sparsePoints.push({ ...wikiPoint, lat: latLng.lat, lon: latLng.lng });
+
+        tree.insert(bbox);
+
+        break;
+      }
+    }
+
+    bb = (await mapPromise).getBounds();
+
+    const pointMap = new Map(
+      getState()
+        .wiki.points.filter(
+          (point) =>
+            point.lat > bb.getSouth() &&
+            point.lat < bb.getNorth() &&
+            point.lon > bb.getWest() &&
+            point.lon < bb.getEast(),
+        )
+        .map((point) => [point.id, point]),
+    );
+
     dispatch(
       wikiSetPoints(
-        [...m.values()].map((e: OverpassElement) => ({
-          id: e.id,
-          lat: e.type === 'node' ? e.lat : e.center.lat,
-          lon: e.type === 'node' ? e.lon : e.center.lon,
-          name: e.tags['name'],
-          wikipedia: e.tags['wikipedia'],
-        })),
+        sparsePoints.map((point) => pointMap.get(point.id) ?? point),
       ),
     );
   },

@@ -1,7 +1,7 @@
 import { createAction } from 'typesafe-actions';
 
 export interface WikiPoint {
-  id: number;
+  id: string;
   lat: number;
   lon: number;
   name: string;
@@ -18,6 +18,8 @@ export interface WikiPreview {
 
 export const wikiSetPoints = createAction('WIKI_SET_POINTS')<WikiPoint[]>();
 
-export const wikiSetPreview = createAction('WIKI_SET_PREVIEW')<WikiPreview>();
+export const wikiSetPreview = createAction(
+  'WIKI_SET_PREVIEW',
+)<WikiPreview | null>();
 
 export const wikiLoadPreview = createAction('WIKI_LOAD_PREVIEW')<string>();

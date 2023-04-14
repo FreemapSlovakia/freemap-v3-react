@@ -1,16 +1,23 @@
-import { GalleryTag } from 'fm3/actions/galleryActions';
-import { getMessageByKey } from 'fm3/l10nInjector';
+import { galleryAddTag, GalleryTag } from 'fm3/actions/galleryActions';
+import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/react-tag-autocomplete.css';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import {
+  ChangeEvent,
+  ReactElement,
+  useCallback,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaRegDotCircle } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { DateTime } from '../DateTime';
+import { RecentTags } from './RecentTags';
 
 export interface PictureModel {
   title: string;
@@ -26,7 +33,6 @@ interface Props {
   errors: string[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: PictureModel) => void;
-  m?: Messages;
 }
 
 export function GalleryEditForm({
@@ -34,9 +40,10 @@ export function GalleryEditForm({
   allTags,
   errors,
   onPositionPick,
-  m,
   onModelChange,
 }: Props): ReactElement {
+  const m = useMessages();
+
   const changeModel = useCallback(
     (key: keyof PictureModel, value: any) => {
       onModelChange({ ...model, [key]: value });
@@ -72,27 +79,38 @@ export function GalleryEditForm({
     [changeModel],
   );
 
+  const dispatch = useDispatch();
+
   const handleTagAddition = useCallback(
     ({ name }: Tag) => {
       const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
+
+      dispatch(galleryAddTag(fixed));
 
       if (!model.tags.includes(fixed)) {
         changeModel('tags', [...model.tags, fixed]);
       }
     },
-    [changeModel, model.tags],
+    [changeModel, dispatch, model.tags],
   );
 
   const handleTagDelete = useCallback(
     (i: number) => {
       const tags = [...model.tags];
+
       tags.splice(i, 1);
+
       changeModel('tags', tags);
     },
     [changeModel, model.tags],
   );
 
-  const RT = ReactTags as any; // TODO temporary until ts definitions are updated
+  // hack to resize tags properly on modal re-appear
+  const [key, setKey] = useState(0);
+
+  useLayoutEffect(() => {
+    setKey(1);
+  }, []);
 
   return (
     <div>
@@ -102,10 +120,12 @@ export function GalleryEditForm({
             ? error.slice(1)
             : (() => {
                 const v = getMessageByKey(m, error);
+
                 return typeof v === 'string' ? v : error;
               })()}
         </Alert>
       ))}
+
       <FormGroup>
         <FormControl
           placeholder={m?.gallery.editForm.name}
@@ -115,6 +135,7 @@ export function GalleryEditForm({
           maxLength={255}
         />
       </FormGroup>
+
       <FormGroup>
         <FormControl
           placeholder={m?.gallery.editForm.description}
@@ -124,6 +145,7 @@ export function GalleryEditForm({
           maxLength={4096}
         />
       </FormGroup>
+
       {m && (
         <FormGroup>
           <DateTime
@@ -137,6 +159,7 @@ export function GalleryEditForm({
           />
         </FormGroup>
       )}
+
       <FormGroup>
         <InputGroup>
           <FormControl
@@ -145,6 +168,7 @@ export function GalleryEditForm({
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
+
           <InputGroup.Append>
             <Button onClick={onPositionPick}>
               <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
@@ -152,14 +176,21 @@ export function GalleryEditForm({
           </InputGroup.Append>
         </InputGroup>
       </FormGroup>
-      <FormGroup>
-        <RT
+
+      <FormGroup key={key}>
+        <ReactTags
           placeholderText={m?.gallery.editForm.tags}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}
           onAddition={handleTagAddition}
           onDelete={handleTagDelete}
           allowNew
+        />
+
+        <RecentTags
+          className="mt-1"
+          existingTags={model.tags}
+          onAdd={(tag) => handleTagAddition({ id: tag, name: tag })}
         />
       </FormGroup>
     </div>

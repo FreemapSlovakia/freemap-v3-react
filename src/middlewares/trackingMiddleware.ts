@@ -1,17 +1,16 @@
 import { RootAction } from 'fm3/actions';
-import { setActiveModal } from 'fm3/actions/mainActions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
+import { RootState } from 'fm3/reducers';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
 
 export function createTrackingMiddleware(): Middleware<
   unknown,
-  DefaultRootState,
+  RootState,
   Dispatch
 > {
   let reopenTs: number | undefined;
@@ -19,19 +18,6 @@ export function createTrackingMiddleware(): Middleware<
   return ({ dispatch, getState }) =>
     (next: Dispatch) =>
     (action: RootAction): unknown => {
-      if (
-        isActionOf(setActiveModal, action) &&
-        action.payload === 'tracking-my' &&
-        !getState().auth.user
-      ) {
-        return next(
-          toastsAdd({
-            messageKey: 'tracking.unauthenticatedError',
-            style: 'danger',
-          }),
-        );
-      }
-
       if (isActionOf(rpcResponse, action)) {
         const { payload } = action;
 
@@ -72,6 +58,7 @@ export function createTrackingMiddleware(): Middleware<
 
       if (trackedDevices.length === 0 && reopenTs) {
         clearTimeout(reopenTs);
+
         reopenTs = undefined;
       }
 
@@ -100,6 +87,7 @@ export function createTrackingMiddleware(): Middleware<
         for (const td of prevTrackedDevices) {
           if (!trackedDevices.includes(td)) {
             const { token, deviceId } = mangle(td);
+
             dispatch(
               rpcCall({
                 method: 'tracking.unsubscribe',
@@ -108,6 +96,7 @@ export function createTrackingMiddleware(): Middleware<
             );
           }
         }
+
         for (const td of trackedDevices) {
           if (!prevTrackedDevices.includes(td)) {
             dispatch(

@@ -1,10 +1,9 @@
-import axios from 'axios';
 import { RootAction } from 'fm3/actions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
+import { RootState } from 'fm3/reducers';
 import { MessagePaths } from 'fm3/types/common';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 import {
   Action,
@@ -15,29 +14,30 @@ import {
 
 export type ProcessorHandler<T extends ActionCreator = ActionCreator> =
   (params: {
-    prevState: DefaultRootState;
-    getState: () => DefaultRootState;
+    prevState: RootState;
+    getState: () => RootState;
     dispatch: Dispatch;
     action: ActionType<T>;
   }) => void | Promise<void>;
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
-    prevState: DefaultRootState;
-    getState: () => DefaultRootState;
+    prevState: RootState;
+    getState: () => RootState;
     dispatch: Dispatch;
     action: ActionType<T>;
   }) => Action | null | undefined | void;
   handle?: ProcessorHandler<T>;
   actionCreator?: T | T[];
-  actionPredicate?(action: ActionType<T>): boolean;
-  statePredicate?(state: DefaultRootState): boolean;
-  stateChangePredicate?(state: DefaultRootState): unknown;
+  actionPredicate?: (action: ActionType<T>) => boolean;
+  statePredicate?: (state: RootState) => boolean;
+  stateChangePredicate?: (state: RootState) => unknown;
   errorKey?: MessagePaths;
   id?: string; // toast collapse key
+  predicatesOperation?: 'AND' | 'OR';
 }
 
-type MW = Middleware<unknown, DefaultRootState, Dispatch<RootAction>> & {
+type MW = Middleware<unknown, RootState, Dispatch<RootAction>> & {
   processors: Processor[];
 };
 
@@ -91,22 +91,33 @@ export function createProcessorMiddleware(): MW {
             statePredicate,
             stateChangePredicate,
             actionPredicate,
+            predicatesOperation,
           } = processor;
 
           if (
             handle &&
-            (!actionType ||
-              (Array.isArray(actionType) &&
-                actionType.some((ac) => isActionOf(ac, a))) ||
-              isActionOf(actionType, a)) &&
-            (!statePredicate || statePredicate(getState())) &&
-            (!stateChangePredicate ||
-              stateChangePredicate(getState()) !==
-                stateChangePredicate(prevState)) &&
-            (!actionPredicate || actionPredicate(action))
+            (predicatesOperation === 'OR'
+              ? (actionType &&
+                  ((Array.isArray(actionType) &&
+                    actionType.some((ac) => isActionOf(ac, a))) ||
+                    isActionOf(actionType, a))) ||
+                statePredicate?.(getState()) ||
+                (stateChangePredicate &&
+                  stateChangePredicate(getState()) !==
+                    stateChangePredicate(prevState)) ||
+                actionPredicate?.(action)
+              : (!actionType ||
+                  (Array.isArray(actionType) &&
+                    actionType.some((ac) => isActionOf(ac, a))) ||
+                  isActionOf(actionType, a)) &&
+                (!statePredicate || statePredicate(getState())) &&
+                (!stateChangePredicate ||
+                  stateChangePredicate(getState()) !==
+                    stateChangePredicate(prevState)) &&
+                (!actionPredicate || actionPredicate(action)))
           ) {
             const handleError = (err: unknown) => {
-              if (axios.isCancel(err)) {
+              if (err instanceof DOMException && err.name === 'AbortError') {
                 console.log('Canceled: ' + errorKey);
               } else {
                 console.log('Error key: ' + errorKey);
@@ -117,9 +128,19 @@ export function createProcessorMiddleware(): MW {
                   toastsAdd({
                     id: id ?? Math.random().toString(36).slice(2),
                     messageKey: errorKey,
-                    messageParams:
-                      err instanceof Error ? { err: err.message } : {},
-
+                    messageParams: !(err instanceof Error)
+                      ? { err: String(err) }
+                      : (err as any)._fm_fetchError
+                      ? {
+                          err:
+                            (navigator.onLine === false
+                              ? window.translations?.general.offline
+                              : window.translations?.general.connectionError) ??
+                            err.message,
+                        }
+                      : {
+                          err: err.message,
+                        },
                     style: 'danger',
                   }),
                 );

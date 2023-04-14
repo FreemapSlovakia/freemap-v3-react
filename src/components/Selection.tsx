@@ -1,5 +1,5 @@
 import { selectFeature } from 'fm3/actions/mainActions';
-import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
+import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { ReactElement, ReactNode } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
@@ -34,7 +34,7 @@ export function Selection({
             <span className="d-none d-sm-inline"> {title}</span> {children}
             {deletable && <DeleteButton />}{' '}
             <Button
-              variant="light"
+              variant="secondary"
               // size="sm"
               onClick={() => dispatch(selectFeature(null))}
               title={

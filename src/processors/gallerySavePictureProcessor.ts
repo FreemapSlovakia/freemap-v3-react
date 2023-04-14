@@ -3,8 +3,9 @@ import {
   gallerySavePicture,
   gallerySetLayerDirty,
 } from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/authAxios';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const gallerySavePictureProcessor: Processor = {
@@ -32,6 +33,14 @@ export const gallerySavePictureProcessor: Processor = {
       },
       expectedStatus: 204,
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved',
+      }),
+    );
 
     dispatch(gallerySetLayerDirty());
 

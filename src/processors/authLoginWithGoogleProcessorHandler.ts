@@ -1,10 +1,11 @@
 import { authSetUser } from 'fm3/actions/authActions';
 import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
 import { getAuth2 } from 'fm3/gapiLoader';
+import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
+import { hasProperty } from 'fm3/typeUtils';
 import { assertType } from 'typescript-is';
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
@@ -17,7 +18,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
 
     const idToken = googleUser.getAuthResponse().id_token;
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
       method: 'POST',
       url: `/auth/login-google`,
@@ -26,12 +27,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       data: {
         idToken,
         language: getState().l10n.chosenLanguage,
-        preventTips: getState().tips.preventTips,
         // homeLocation: getState().main.homeLocation,
       },
     });
 
-    const user = assertType<User>(data);
+    const user = assertType<User>(await res.json());
 
     dispatch(
       toastsAdd({
@@ -48,7 +48,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       dispatch(removeAds());
     }
   } catch (err) {
-    if (!['popup_closed_by_user', 'access_denied'].includes(err.error)) {
+    if (
+      !hasProperty(err, 'error') ||
+      !['popup_closed_by_user', 'access_denied'].includes(String(err['error']))
+    ) {
       throw err;
     }
   }

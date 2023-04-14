@@ -11,6 +11,7 @@ import {
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { trackGeojsonIsSuitableForElevationChart } from 'fm3/selectors/mainSelectors';
 import 'fm3/styles/trackViewer.scss';
@@ -25,29 +26,32 @@ import {
   FaPencilAlt,
   FaUpload,
 } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { DeleteButton } from './DeleteButton';
+import { ToolMenu } from './ToolMenu';
+
+export default TrackViewerMenu;
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const hasTrack = useSelector((state) => !!state.trackViewer.trackGeojson);
+  const hasTrack = useAppSelector((state) => !!state.trackViewer.trackGeojson);
 
-  const canUpload = useSelector((state) => !state.trackViewer.trackUID);
+  const canUpload = useAppSelector((state) => !state.trackViewer.trackUID);
 
-  const elevationChartActive = useSelector(
-    (state) => !!state.elevationChart.trackGeojson,
+  const elevationChartActive = useAppSelector(
+    (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
-  const colorizeTrackBy = useSelector(
+  const colorizeTrackBy = useAppSelector(
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const enableElevationChart = useSelector(
+  const enableElevationChart = useAppSelector(
     trackGeojsonIsSuitableForElevationChart,
   );
 
@@ -65,7 +69,7 @@ export function TrackViewerMenu(): ReactElement {
   }, [dispatch, m]);
 
   return (
-    <>
+    <ToolMenu>
       <Button
         className="ml-1"
         variant="secondary"
@@ -76,6 +80,7 @@ export function TrackViewerMenu(): ReactElement {
         <FaUpload />
         <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
       </Button>
+
       {enableElevationChart && (
         <Button
           className="ml-1"
@@ -92,6 +97,7 @@ export function TrackViewerMenu(): ReactElement {
           </span>
         </Button>
       )}
+
       {enableElevationChart && (
         <Dropdown
           className="ml-1"
@@ -107,11 +113,8 @@ export function TrackViewerMenu(): ReactElement {
             <FaPaintBrush />{' '}
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </Dropdown.Toggle>
-          <Dropdown.Menu
-            popperConfig={{
-              strategy: 'fixed',
-            }}
-          >
+
+          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
             {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
               <Dropdown.Item
                 eventKey={mode}
@@ -124,6 +127,7 @@ export function TrackViewerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       )}
+
       {enableElevationChart && (
         <Button
           className="ml-1"
@@ -143,6 +147,7 @@ export function TrackViewerMenu(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
         </Button>
       )}
+
       {canUpload && (
         <Button
           className="ml-1"
@@ -155,6 +160,7 @@ export function TrackViewerMenu(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
         </Button>
       )}
+
       {hasTrack && (
         <Button
           className="ml-1"
@@ -163,6 +169,7 @@ export function TrackViewerMenu(): ReactElement {
           title={m?.general.convertToDrawing}
         >
           <FaPencilAlt />
+
           <span className="d-none d-sm-inline">
             {' '}
             {m?.general.convertToDrawing}
@@ -170,6 +177,6 @@ export function TrackViewerMenu(): ReactElement {
         </Button>
       )}
       {hasTrack && <DeleteButton />}
-    </>
+    </ToolMenu>
   );
 }

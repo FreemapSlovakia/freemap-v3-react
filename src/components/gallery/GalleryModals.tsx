@@ -1,38 +1,47 @@
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-import {
-  AsyncGalleryFilterModal,
-  AsyncGalleryUploadModal,
-  AsyncGalleryViewerModal,
-} from 'fm3/components/AsyncComponents';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
 import 'fm3/styles/gallery.scss';
-import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { LeafletMouseEvent, Map } from 'leaflet';
+import {
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useDispatch } from 'react-redux';
+import { AsyncModal } from '../AsyncModal';
+
+const galleryViewerModalFactory = () =>
+  import('fm3/components/gallery/GalleryViewerModal');
+
+const galleryUploadModalFactory = () =>
+  import('fm3/components/gallery/GalleryUploadModal');
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
 
-  const isPickingPosition = useSelector(
+  const isPickingPosition = useAppSelector(
     (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const showFilter = useSelector((state) => state.gallery.showFilter);
+  const showGalleryViewer = useAppSelector(showGalleryViewerSelector);
 
-  const showGalleryViewer = useSelector(showGalleryViewerSelector);
-
-  const showUploadModal = useSelector(
+  const showUploadModal = useAppSelector(
     (state) =>
-      state.gallery.showUploadModal &&
-      !!state.auth.user &&
-      state.auth.validated &&
+      state.main.activeModal === 'gallery-upload' &&
       state.gallery.pickingPositionForId === null,
   );
 
-  useEffect(() => {
-    const map = getMapLeafletElement();
+  const [map, setMap] = useState<Map>();
 
+  useEffect(() => {
+    mapPromise.then(setMap);
+  }, []);
+
+  useEffect(() => {
     if (!map) {
       return;
     }
@@ -50,13 +59,45 @@ export function GalleryModals(): ReactElement {
     return () => {
       map.off('click', handleMapClick);
     };
-  }, [dispatch, isPickingPosition]);
+  }, [dispatch, isPickingPosition, map]);
+
+  const scrollTop = useRef(-1);
+
+  const prevPickingPosition = useRef(false);
+
+  // preserving upload modal scroll
+  useLayoutEffect(() => {
+    if (!isPickingPosition && prevPickingPosition.current) {
+      const el = document.querySelector('.modal');
+
+      if (el) {
+        el.scrollTop = scrollTop.current;
+      }
+    }
+
+    prevPickingPosition.current = isPickingPosition;
+
+    if (showUploadModal) {
+      const to = setInterval(() => {
+        const el = document.querySelector('.modal');
+
+        if (el instanceof HTMLElement) {
+          scrollTop.current = el.scrollTop;
+        }
+      }, 500);
+
+      return () => clearInterval(to);
+    }
+  }, [isPickingPosition, showUploadModal]);
 
   return (
     <>
-      {<AsyncGalleryViewerModal show={showGalleryViewer} />}
-      {<AsyncGalleryFilterModal show={showFilter} />}
-      {<AsyncGalleryUploadModal show={showUploadModal} />}
+      <AsyncModal
+        show={showGalleryViewer}
+        factory={galleryViewerModalFactory}
+      />
+
+      <AsyncModal show={showUploadModal} factory={galleryUploadModalFactory} />
     </>
   );
 }

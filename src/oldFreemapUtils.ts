@@ -10,8 +10,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
   location: Location,
 ): undefined | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>) {
   const isFromOldFreemapUrlFormat1 =
-    location.hash &&
-    (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
+    location.hash.startsWith('#p=') || location.hash.startsWith('#m='); // #m=T,p=48.21836|17.4166|16|T
 
   const isFromOldFreemapUrlFormat2 =
     location.search && /[?&]m=/.test(location.search); // "?m=A&p=48.1855|17.4029|14"
@@ -39,11 +38,11 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
           overlays: [],
         }
       : undefined;
-  } else if (is<BaseLayerLetters>(oldFreemapUrlParams['m'])) {
-    return { mapType: oldFreemapUrlParams['m'], overlays: [] };
-  } else {
-    return { mapType: 'X', overlays: [] };
   }
+
+  return is<BaseLayerLetters>(oldFreemapUrlParams['m'])
+    ? { mapType: oldFreemapUrlParams['m'], overlays: [] }
+    : { mapType: 'X', overlays: [] };
 }
 
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
@@ -97,10 +96,11 @@ function rawUrlParamsToHash(
 
   const oldFreemapUrlParams: { [key: string]: string } = {};
 
-  oldFreemapRawUrlParams.forEach((s) => {
+  for (const s of oldFreemapRawUrlParams) {
     const [key, value] = s.split('=');
+
     oldFreemapUrlParams[key] = value;
-  });
+  }
 
   return oldFreemapUrlParams;
 }

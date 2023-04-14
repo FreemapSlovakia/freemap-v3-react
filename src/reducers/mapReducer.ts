@@ -1,22 +1,21 @@
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { Selection } from 'fm3/actions/mainActions';
+import { applySettings, Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
-  mapSetLeafletReady,
-  mapSetOverlayOpacity,
-  mapSetOverlayPaneOpacity,
   MapStateBase,
+  mapSuppressLegacyMapWarning,
 } from 'fm3/actions/mapActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { createReducer } from 'typesafe-actions';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
-  mapLeafletReady: boolean;
+  legacyMapWarningSuppressions: string[];
+  tempLegacyMapWarningSuppressions: string[];
 }
 
 export const mapInitialState: MapState = {
@@ -25,23 +24,40 @@ export const mapInitialState: MapState = {
   lon: 19.4995,
   zoom: 8,
   overlays: [],
-  overlayOpacity: {},
+  layersSettings: {},
   overlayPaneOpacity: 0.75,
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
-  mapLeafletReady: false,
+  customLayers: [],
+  legacyMapWarningSuppressions: [],
+  tempLegacyMapWarningSuppressions: [],
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
-  .handleAction(mapSetOverlayOpacity, (state, action) => ({
-    ...state,
-    overlayOpacity: action.payload,
-  }))
-  .handleAction(mapSetOverlayPaneOpacity, (state, action) => ({
-    ...state,
-    overlayPaneOpacity: action.payload,
-  }))
+  .handleAction(mapSuppressLegacyMapWarning, (state, action) => {
+    const key = action.payload.forever
+      ? 'legacyMapWarningSuppressions'
+      : 'tempLegacyMapWarningSuppressions';
+
+    return {
+      ...state,
+      [key]: [...state[key], state.mapType],
+    };
+  })
+  .handleAction(applySettings, (state, action) => {
+    const newState = { ...state };
+
+    if (action.payload.layersSettings) {
+      newState.layersSettings = action.payload.layersSettings;
+    }
+
+    if (action.payload.overlayPaneOpacity) {
+      newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
+    }
+
+    return newState;
+  })
   .handleAction(gallerySetFilter, (state) => {
     return {
       ...state,
@@ -85,31 +101,36 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
     return newState;
   })
   .handleAction(authSetUser, (state, action) => {
-    const settings = action.payload && action.payload.settings;
+    const settings = action.payload?.settings;
 
     return settings
       ? {
           ...state,
-          overlayOpacity:
-            settings.overlayOpacity === undefined
-              ? state.overlayOpacity
-              : settings.overlayOpacity,
+          layersSettings: settings.layersSettings ?? state.layersSettings,
           overlayPaneOpacity:
-            typeof settings.overlayPaneOpacity === 'number'
-              ? settings.overlayPaneOpacity
-              : state.overlayPaneOpacity,
+            settings.overlayPaneOpacity ?? state.overlayPaneOpacity,
+          customLayers: settings.customLayers?.length
+            ? settings.customLayers
+            : state.customLayers,
         }
       : state;
   })
-  .handleAction(mapSetLeafletReady, (state, { payload }) => ({
-    ...state,
-    mapLeafletReady: payload,
-  }))
-  .handleAction(mapsDataLoaded, (state, { payload: { map } }) => ({
-    ...state,
-    lat: map?.lat ?? state.lat,
-    lon: map?.lon ?? state.lon,
-    zoom: map?.zoom ?? state.zoom,
-    mapType: map?.mapType ?? state.mapType,
-    overlays: map?.overlays ?? state.overlays,
-  }));
+  .handleAction(
+    mapsLoaded,
+    (
+      state,
+      {
+        payload: {
+          data: { map },
+        },
+      },
+    ) => ({
+      ...state,
+      lat: map?.lat ?? state.lat,
+      lon: map?.lon ?? state.lon,
+      zoom: map?.zoom ?? state.zoom,
+      mapType: map?.mapType ?? state.mapType,
+      overlays: map?.overlays ?? state.overlays,
+      customLayers: map?.customLayers ?? state.customLayers,
+    }),
+  );

@@ -1,12 +1,9 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { getTip, tipsShow } from 'fm3/actions/tipsActions';
-import { httpRequest } from 'fm3/authAxios';
-import { history } from 'fm3/historyHolder';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { TipKey } from 'fm3/tips';
 import { User } from 'fm3/types/common';
-import { assertType, is } from 'typescript-is';
-import { getEffectiveChosenLanguage } from './l10nSetLanguageProcessor';
+import { get } from 'idb-keyval';
+import { assertType } from 'typescript-is';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
@@ -15,39 +12,33 @@ export const authInitProcessor: Processor = {
     const { user } = getState().auth;
 
     if (user) {
-      const res = await httpRequest({
-        getState,
-        url: '/auth/validate',
-        method: 'POST',
-        expectedStatus: [200, 401],
-        cancelActions: [],
-      });
+      try {
+        const res = await httpRequest({
+          getState,
+          url: '/auth/validate',
+          method: 'POST',
+          expectedStatus: [200, 401],
+          cancelActions: [],
+        });
 
-      dispatch(
-        authSetUser(res.status === 200 ? assertType<User>(res.data) : null),
-      );
-    }
-
-    // show tips only if not robot, not embedded and there are no other query parameters except 'map' or 'layers'
-    if (
-      !window.isRobot &&
-      !window.fmEmbedded &&
-      !getState().tips.preventTips &&
-      history.location.search
-        .substring(1)
-        .split('&')
-        .every((x: string) => /^(map|layers)=|^$/.test(x)) &&
-      ['sk', 'cs'].includes(
-        getEffectiveChosenLanguage(getState().l10n.chosenLanguage),
-      )
-    ) {
-      const tip = getState().tips.lastTip;
-
-      setTimeout(() => {
         dispatch(
-          tipsShow(tip && is<TipKey>(tip) ? getTip(tip, 'next') : 'freemap'),
+          authSetUser(
+            res.status === 200 ? assertType<User>(await res.json()) : null,
+          ),
         );
-      });
+      } catch (err) {
+        if (typeof err !== 'object' || !err || 'status' in err) {
+          throw err;
+        }
+
+        const cm = await get('cacheMode');
+
+        if (!cm || cm === 'networkOnly') {
+          throw err;
+        }
+
+        dispatch(authSetUser(user));
+      }
     }
   },
 };

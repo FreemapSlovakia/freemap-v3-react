@@ -1,4 +1,8 @@
-import { clearMap, convertToDrawing } from 'fm3/actions/mainActions';
+import {
+  clearMap,
+  convertToDrawing,
+  selectFeature,
+} from 'fm3/actions/mainActions';
 import {
   osmLoadNode,
   osmLoadRelation,
@@ -9,7 +13,7 @@ import {
   searchSetResults,
 } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { baseLayers } from 'fm3/mapDefinitions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { geoJSON } from 'leaflet';
@@ -38,9 +42,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
 
   handle: async ({ action, dispatch, getState }) => {
-    const le = getMapLeafletElement();
-
-    if (!le || !action.payload) {
+    if (!action.payload) {
       return;
     }
 
@@ -49,21 +51,26 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     if (!detailed) {
       switch (osmType) {
         case 'node':
-          dispatch(osmLoadNode(id));
+          dispatch(osmLoadNode({ id, focus: true }));
+
           break;
+
         case 'way':
-          dispatch(osmLoadWay(id));
+          dispatch(osmLoadWay({ id, focus: true }));
+
           break;
+
         case 'relation':
-          dispatch(osmLoadRelation(id));
+          dispatch(osmLoadRelation({ id, focus: true }));
+
           break;
       }
     }
 
-    if (action.payload.zoomTo !== false && geojson) {
+    if (action.payload.focus !== false && geojson) {
       const { mapType } = getState().map;
 
-      le.fitBounds(geoJSON(geojson).getBounds(), {
+      (await mapPromise).fitBounds(geoJSON(geojson).getBounds(), {
         maxZoom: Math.min(
           18,
           baseLayers.find((layer) => layer.type === mapType)?.maxNativeZoom ??
@@ -89,6 +96,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             getType(osmLoadWay),
             getType(osmLoadRelation),
             getType(convertToDrawing),
+            getType(selectFeature),
           ],
           style: 'info',
         }),

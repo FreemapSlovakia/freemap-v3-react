@@ -5,6 +5,7 @@ import { openInExternalApp } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { copyToClipboard } from 'fm3/clipboardUtils';
 import {
+  getF4mapUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIdUrl,
@@ -15,10 +16,11 @@ import {
   getOsmUrl,
   getPeakfinderUrl,
   getTwitterUrl,
+  getWazeUrl,
   getZbgisUrl,
 } from 'fm3/externalUrlUtils';
 import { loadFb } from 'fm3/fbLoader';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import popupCentered from 'popup-centered';
 
@@ -48,6 +50,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
     switch (where) {
       case 'window':
         window.open(url);
+
         break;
 
       case 'facebook':
@@ -63,6 +66,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'twitter':
         popupCentered(getTwitterUrl(), 'twitter', 575, 280);
+
         break;
 
       case 'copy':
@@ -81,77 +85,86 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'josm': {
-        const leaflet = getMapLeafletElement();
+        let left: number;
 
-        if (leaflet) {
-          let left: number;
-          let right: number;
-          let top: number;
-          let bottom: number;
+        let right: number;
 
-          if (includePoint) {
-            [left, bottom, right, top] = bbox(
-              buffer(point([lon, lat]), 100, { units: 'meters', steps: 10 }),
-            );
-          } else {
-            const bounds = leaflet.getBounds();
+        let top: number;
 
-            left = bounds.getWest();
-            right = bounds.getEast();
-            top = bounds.getNorth();
-            bottom = bounds.getSouth();
-          }
+        let bottom: number;
 
-          const url = new URL('http://localhost:8111/load_and_zoom');
+        if (includePoint) {
+          [left, bottom, right, top] = bbox(
+            buffer(point([lon, lat]), 100, { units: 'meters', steps: 10 }),
+          );
+        } else {
+          const bounds = (await mapPromise).getBounds();
 
-          url.search = new URLSearchParams({
-            left: String(left),
-            right: String(right),
-            top: String(top),
-            bottom: String(bottom),
-          }).toString();
+          left = bounds.getWest();
 
-          function assertOk(res: Response) {
-            if (!res.ok) {
-              throw new Error(
-                'Error response from localhost:8111: ' + res.status,
-              );
-            }
-          }
+          right = bounds.getEast();
 
-          fetch(url.toString())
-            .then((res) => {
-              assertOk(res);
+          top = bounds.getNorth();
 
-              if (includePoint) {
-                const url = new URL('http://localhost:8111/add_node');
-
-                url.search = new URLSearchParams({
-                  lat: String(lat),
-                  lon: String(lon),
-                  addtags: `name=${pointTitle}`,
-                }).toString();
-
-                return fetch(url.toString()).then((res) => {
-                  assertOk(res);
-                });
-              }
-            })
-            .catch((err) => {
-              dispatch(
-                toastsAdd({
-                  messageKey: 'general.operationError',
-                  messageParams: { err },
-                  style: 'danger',
-                }),
-              );
-            });
+          bottom = bounds.getSouth();
         }
+
+        const url = new URL('http://localhost:8111/load_and_zoom');
+
+        url.search = new URLSearchParams({
+          left: String(left),
+          right: String(right),
+          top: String(top),
+          bottom: String(bottom),
+        }).toString();
+
+        function assertOk(res: Response) {
+          if (!res.ok) {
+            throw new Error(
+              'Error response from localhost:8111: ' + res.status,
+            );
+          }
+        }
+
+        fetch(url.toString())
+          .then((res) => {
+            assertOk(res);
+
+            if (includePoint) {
+              const url = new URL('http://localhost:8111/add_node');
+
+              const usp = new URLSearchParams({
+                lat: String(lat),
+                lon: String(lon),
+              });
+
+              if (pointTitle) {
+                usp.set('addtags', `name=${pointTitle}`);
+              }
+
+              url.search = usp.toString();
+
+              return fetch(url.toString()).then((res) => {
+                assertOk(res);
+              });
+            }
+          })
+          .catch((err) => {
+            dispatch(
+              toastsAdd({
+                messageKey: 'general.operationError',
+                messageParams: { err },
+                style: 'danger',
+              }),
+            );
+          });
+
         break;
       }
 
       case 'zbgis':
         window.open(getZbgisUrl(lat, lon, zoom));
+
         break;
 
       case 'hiking.sk': {
@@ -189,6 +202,14 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         window.open(getMapillaryUrl(lat, lon, zoom));
 
         break;
+
+      case 'waze':
+        window.open(getWazeUrl(lat, lon, zoom));
+
+        break;
+
+      case 'f4map':
+        window.open(getF4mapUrl(lat, lon, zoom));
 
       case 'url':
         (navigator as any)

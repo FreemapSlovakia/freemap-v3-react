@@ -1,5 +1,5 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const mapRefocusProcessor: Processor = {
@@ -12,21 +12,24 @@ export const mapRefocusProcessor: Processor = {
       return;
     }
 
-    const map = getMapLeafletElement();
+    const map = await mapPromise;
 
-    let fixedLon = lon % 360;
+    let fixedLon = lon;
 
-    if (fixedLon < 0) {
+    while (fixedLon < -180) {
       fixedLon += 360;
     }
 
+    while (fixedLon > 180) {
+      fixedLon -= 360;
+    }
+
     if (
-      map &&
-      (map.getZoom() !== zoom ||
-        map.getCenter().lat !== lat ||
-        map.getCenter().lng !== fixedLon)
+      map.getZoom() !== zoom ||
+      map.getCenter().lat !== lat ||
+      map.getCenter().lng !== fixedLon
     ) {
-      const fixing = map.getCenter().lng !== fixedLon;
+      const fixing = lon !== fixedLon;
 
       map.setView([lat, fixedLon], zoom, {
         animate: !fixing,

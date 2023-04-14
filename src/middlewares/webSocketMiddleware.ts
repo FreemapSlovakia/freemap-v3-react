@@ -7,13 +7,13 @@ import {
   wsSend,
   wsStateChanged,
 } from 'fm3/actions/websocketActions';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 
 export function createWebsocketMiddleware(): Middleware<
   unknown,
-  DefaultRootState,
+  RootState,
   Dispatch
 > {
   let ws: WebSocket | null = null;
@@ -39,7 +39,7 @@ export function createWebsocketMiddleware(): Middleware<
         if (ws && ws.readyState !== WebSocket.CLOSED) {
           dispatch(wsInvalidState(action.payload));
 
-          return;
+          return undefined;
         }
 
         const { user } = getState().auth;
@@ -102,14 +102,16 @@ export function createWebsocketMiddleware(): Middleware<
           ws.send(JSON.stringify(action.payload.message));
         } else {
           dispatch(wsInvalidState(action.payload.tag));
-          return;
+
+          return undefined;
         }
       } else if (isActionOf(wsClose, action)) {
         if (ws && ws.readyState !== WebSocket.CLOSED) {
           ws.close();
         } else {
           dispatch(wsInvalidState(action.payload));
-          return;
+
+          return undefined;
         }
       }
 

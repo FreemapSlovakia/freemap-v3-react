@@ -12,8 +12,13 @@ import {
   Line,
   Point,
 } from 'fm3/actions/drawingLineActions';
-import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import {
+  applySettings,
+  clearMap,
+  selectFeature,
+  setTool,
+} from 'fm3/actions/mainActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 
@@ -44,6 +49,22 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     drawing: false,
     joinWith: undefined,
   }))
+  .handleAction(applySettings, (state, { payload }) =>
+    produce(state, (draft) => {
+      if (payload.drawingApplyAll) {
+        for (const line of draft.lines) {
+          if (payload.drawingColor) {
+            line.color = payload.drawingColor;
+          }
+
+          if (payload.drawingWidth) {
+            line.width = payload.drawingWidth;
+          }
+        }
+      }
+    }),
+  )
+
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, (draft) => {
       let line: Line;
@@ -53,7 +74,13 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
           throw new Error();
         }
 
-        line = { type: action.payload.type, points: [], label: '' };
+        line = {
+          type: action.payload.type,
+          color: action.payload.color,
+          width: action.payload.width,
+          points: [],
+        };
+
         draft.lines.push(line);
       } else {
         line = draft.lines[action.payload.index];
@@ -125,12 +152,13 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         }
       }),
   )
-  .handleAction(mapsDataLoaded, (state, { payload }) => ({
+  .handleAction(mapsLoaded, (state, { payload }) => ({
+    ...state,
     joinWith: undefined,
     drawing: false,
     lines: [
       ...(payload.merge ? state.lines : []),
-      ...(payload.lines ?? initialState.lines).map((line) => ({
+      ...(payload.data.lines ?? initialState.lines).map((line) => ({
         ...line,
         type:
           // compatibility

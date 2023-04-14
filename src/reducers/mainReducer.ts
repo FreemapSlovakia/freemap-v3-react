@@ -13,20 +13,22 @@ import {
 } from 'fm3/actions/drawingLineActions';
 import {
   applyCookieConsent,
+  applySettings,
   clearMap,
   convertToDrawing,
   deleteFeature,
+  documentShow,
   enableUpdatingUrl,
+  hideInfoBar,
   Modal,
   removeAdsOnLogin,
+  saveHomeLocation,
   selectFeature,
   Selection,
   setActiveModal,
   setAnalyticCookiesAllowed,
   setEmbedFeatures,
   setErrorTicketId,
-  setExpertMode,
-  setHomeLocation,
   setLocation,
   setSelectingHomeLocation,
   setTool,
@@ -35,8 +37,7 @@ import {
   toggleLocate,
   Tool,
 } from 'fm3/actions/mainActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
-import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
+import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
@@ -50,17 +51,20 @@ export interface MainState {
   homeLocation: LatLon | null;
   progress: Array<string | number>;
   location: Location | null;
-  expertMode: boolean;
   locate: boolean;
-  selectingHomeLocation: boolean;
+  selectingHomeLocation: LatLon | null | false;
   urlUpdatingEnabled: boolean;
   errorTicketId: string | undefined;
-  eleSmoothingFactor: number;
   embedFeatures: string[];
   selection: Selection | null;
-  cookieConsentResult: boolean | null;
-  analyticCookiesAllowed: boolean;
+  cookieConsentResult: boolean | null; // true if analyticCookiesAllowed; false if not; null if no cookies accepted
+  analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
   removeAdsOnLogin: boolean;
+  documentKey: DocumentKey | null;
+  hiddenInfoBars: Record<string, number>;
+  drawingColor: string;
+  drawingWidth: number;
+  drawingRecentColors: string[];
 }
 
 export const mainInitialState: MainState = {
@@ -69,17 +73,20 @@ export const mainInitialState: MainState = {
   homeLocation: null,
   progress: [],
   location: null,
-  expertMode: false,
   locate: false,
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
   errorTicketId: undefined,
-  eleSmoothingFactor: 5,
   embedFeatures: [],
   selection: null,
   cookieConsentResult: null,
-  analyticCookiesAllowed: true,
+  analyticCookiesAllowed: true, // NOTE this is a local "thing" used only for applyCookieConsent action
   removeAdsOnLogin: false,
+  documentKey: null,
+  hiddenInfoBars: {},
+  drawingColor: '#ff00ff',
+  drawingWidth: 4,
+  drawingRecentColors: [],
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -119,14 +126,6 @@ export const mainReducer = createReducer<MainState, RootAction>(
         : p.lat && p.lon
         ? { lat: p.lat, lon: p.lon }
         : null,
-      expertMode:
-        p?.settings?.expertMode !== undefined
-          ? p.settings.expertMode
-          : state.expertMode,
-      eleSmoothingFactor:
-        p?.settings?.trackViewerEleSmoothingFactor !== undefined
-          ? p.settings.trackViewerEleSmoothingFactor
-          : state.eleSmoothingFactor,
     };
   })
   .handleAction(authLogout, (state) => ({ ...state, homeLocation: null }))
@@ -135,9 +134,12 @@ export const mainReducer = createReducer<MainState, RootAction>(
     activeModal: action.payload,
     removeAdsOnLogin: action.payload ? state.removeAdsOnLogin : false,
   }))
-  .handleAction(setHomeLocation, (state, action) => ({
+  .handleAction(authSetUser, (state, action) => ({
     ...state,
-    homeLocation: action.payload ? { ...action.payload } : null,
+    homeLocation:
+      action.payload?.lat != null && action.payload?.lon != null
+        ? { lat: action.payload?.lat, lon: action.payload?.lon }
+        : state.homeLocation,
   }))
   .handleAction(startProgress, (state, action) => ({
     ...state,
@@ -155,20 +157,22 @@ export const mainReducer = createReducer<MainState, RootAction>(
       accuracy: action.payload.accuracy,
     },
   }))
-  .handleAction(toggleLocate, (state) => ({
+  .handleAction(toggleLocate, (state, action) => ({
     ...state,
-    locate: !state.locate,
+    locate: action.payload ?? !state.locate,
     location: null,
-  }))
-  .handleAction(setExpertMode, (state, action) => ({
-    ...state,
-    expertMode: action.payload,
   }))
   .handleAction(setSelectingHomeLocation, (state, action) => ({
     ...state,
-    selectingHomeLocation: action.payload,
+    selectingHomeLocation:
+      action.payload === true ? state.homeLocation : action.payload,
   }))
-  .handleAction(tipsShow, (state) => ({
+  .handleAction(saveHomeLocation, (state) => ({
+    ...state,
+    selectingHomeLocation: false,
+    homeLocation: state.selectingHomeLocation || null,
+  }))
+  .handleAction(documentShow, (state) => ({
     ...state,
     activeModal: 'tips',
   }))
@@ -179,10 +183,6 @@ export const mainReducer = createReducer<MainState, RootAction>(
   .handleAction(setErrorTicketId, (state, action) => ({
     ...state,
     errorTicketId: action.payload,
-  }))
-  .handleAction(trackViewerSetEleSmoothingFactor, (state, action) => ({
-    ...state,
-    eleSmoothingFactor: action.payload,
   }))
   .handleAction(setEmbedFeatures, (state, action) => ({
     ...state,
@@ -199,10 +199,12 @@ export const mainReducer = createReducer<MainState, RootAction>(
           ...state,
           selection: action.payload,
           tool:
-            action.payload === null &&
-            state.tool !==
-              'route-planner' /* && state.tool !== 'track-viewer' */
-              ? state.tool
+            state.tool === 'objects' ||
+            state.tool === 'changesets' ||
+            state.tool === 'track-viewer' ||
+            (action.payload === null && state.tool !== 'route-planner')
+              ? /* && state.tool !== 'track-viewer' */
+                state.tool
               : null,
         },
   )
@@ -235,4 +237,33 @@ export const mainReducer = createReducer<MainState, RootAction>(
       ...state,
       activeModal: null,
     }),
-  );
+  )
+  .handleAction(documentShow, (state, action) => {
+    return {
+      ...state,
+      documentKey: action.payload === null ? null : action.payload,
+      activeModal: action.payload === null ? state.activeModal : null,
+    };
+  })
+  .handleAction(hideInfoBar, (state, action) => {
+    return {
+      ...state,
+      hiddenInfoBars: {
+        ...state.hiddenInfoBars,
+        [action.payload.key]: action.payload.ts,
+      },
+    };
+  })
+  .handleAction(applySettings, (state, action) => {
+    const newState = { ...state };
+
+    if (action.payload.drawingColor) {
+      newState.drawingColor = action.payload.drawingColor;
+    }
+
+    if (action.payload.drawingWidth) {
+      newState.drawingWidth = action.payload.drawingWidth;
+    }
+
+    return newState;
+  });

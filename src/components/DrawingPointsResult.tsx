@@ -1,31 +1,35 @@
+import Color from 'color';
 import {
   drawingMeasure,
   drawingPointChangePosition,
 } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { DragEndEvent, Point } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { RichMarker } from './RichMarker';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
 
-  const interactive0 = useSelector(selectingModeSelector);
+  const interactive0 = useAppSelector(selectingModeSelector);
 
-  const activeIndex = useSelector((state) =>
+  const activeIndex = useAppSelector((state) =>
     state.main.selection?.type === 'draw-points'
       ? state.main.selection.id ?? null
       : null,
   );
 
-  const handleDrag = useCallback(
-    ({ latlng: { lat, lng: lon } }) => {
+  const handleMove = useCallback(
+    // see https://github.com/PaulLeCam/react-leaflet/issues/981
+    ({ latlng: { lat, lng: lon } }: any) => {
       if (activeIndex !== null) {
         dispatch(drawingPointChangePosition({ index: activeIndex, lat, lon }));
+
         dispatch(drawingMeasure({ elevation: false }));
       }
     },
@@ -36,6 +40,7 @@ export function DrawingPointsResult(): ReactElement {
     (e: DragEndEvent) => {
       if (activeIndex !== null) {
         const coords = e.target.getLatLng();
+
         dispatch(
           drawingPointChangePosition({
             index: activeIndex,
@@ -43,30 +48,32 @@ export function DrawingPointsResult(): ReactElement {
             lon: coords.lng,
           }),
         );
+
         dispatch(drawingMeasure({}));
       }
     },
     [activeIndex, dispatch],
   );
 
-  const points = useSelector((state) => state.drawingPoints.points);
+  const points = useAppSelector((state) => state.drawingPoints.points);
 
   const onSelects = useMemo(
     () =>
       new Array(points.length).fill(0).map((_, id) => () => {
         if (id !== activeIndex) {
           dispatch(selectFeature({ type: 'draw-points', id }));
+
           dispatch(drawingMeasure({}));
         }
       }),
     [points.length, activeIndex, dispatch],
   );
 
-  const change = useSelector((state) => state.drawingPoints.change);
+  const change = useAppSelector((state) => state.drawingPoints.change);
 
   return (
     <>
-      {points.map(({ lat, lon, label }, i) => {
+      {points.map(({ lat, lon, label, color }, i) => {
         const interactive = interactive0 || activeIndex === i;
 
         return (
@@ -75,11 +82,17 @@ export function DrawingPointsResult(): ReactElement {
             eventHandlers={{
               dragstart: onSelects[i],
               dragend: handleDragEnd,
-              drag: handleDrag,
+              move: handleMove,
               click: onSelects[i],
             }}
             position={{ lat, lng: lon }}
-            color={activeIndex === i ? colors.selected : undefined}
+            color={
+              activeIndex === i
+                ? Color(color || colors.normal)
+                    .lighten(0.75)
+                    .hex()
+                : color || colors.normal
+            }
             draggable={!window.fmEmbedded && activeIndex === i}
             interactive={interactive}
           >

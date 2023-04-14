@@ -1,11 +1,11 @@
 import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/reducers';
 import storage from 'local-storage-fallback';
-import { DefaultRootState } from 'react-redux';
 import { Dispatch, Middleware } from 'redux';
 
 export const statePersistingMiddleware: Middleware<
   RootAction | null,
-  DefaultRootState,
+  RootState,
   Dispatch<RootAction>
 > =
   ({ getState }) =>
@@ -22,7 +22,7 @@ export const statePersistingMiddleware: Middleware<
     return result;
   };
 
-function persistSelectedState(state: DefaultRootState) {
+function persistSelectedState(state: RootState) {
   if (window.fmEmbedded) {
     return;
   }
@@ -36,34 +36,34 @@ function persistSelectedState(state: DefaultRootState) {
       main: {
         cookieConsentResult: state.main.cookieConsentResult,
         homeLocation: state.main.homeLocation,
-        expertMode: state.main.expertMode,
-      },
-      tips: {
-        lastTip: state.tips.lastTip,
-        preventTips: state.tips.preventTips,
+        hiddenInfoBars: state.main.hiddenInfoBars,
+        drawingColor: state.main.drawingColor,
+        drawingWidth: state.main.drawingWidth,
+        drawingRecentColors: state.main.drawingRecentColors,
       },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,
         transportType: state.routePlanner.transportType,
+        milestones: state.routePlanner.milestones,
       },
       auth: {
         user: state.auth.user,
       },
-      trackViewer: {
-        eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
-      },
       map: {
-        overlayOpacity: state.map.overlayOpacity,
+        layersSettings: state.map.layersSettings,
         overlayPaneOpacity: state.map.overlayPaneOpacity,
         mapType: state.map.mapType,
         lat: state.map.lat,
         lon: state.map.lon,
         zoom: state.map.zoom,
         overlays: state.map.overlays,
+        customLayers: state.map.customLayers,
+        legacyMapWarningSuppressions: state.map.legacyMapWarningSuppressions,
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,
+        recentTags: state.gallery.recentTags,
       },
-    } as Partial<DefaultRootState>),
+    } as Partial<RootState>),
   );
 }

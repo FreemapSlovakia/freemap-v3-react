@@ -1,5 +1,6 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Alert from 'react-bootstrap/Alert';
@@ -7,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
 import { FaBullseye } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { TrackedDevice } from './TrackedDevice';
 
 export function TrackedDevices(): ReactElement {
@@ -15,7 +16,7 @@ export function TrackedDevices(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const devices = useSelector((state) => state.tracking.trackedDevices);
+  const devices = useAppSelector((state) => state.tracking.trackedDevices);
 
   return (
     <>

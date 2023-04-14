@@ -1,25 +1,22 @@
 /* eslint-disable */
 
+import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
+import { ElevationInfo } from 'fm3/components/ElevationInfo';
+import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
 } from 'fm3/components/ObjectDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './cs-shared.json';
 import { Messages } from './messagesInterface';
 
-const nf01 = Intl.NumberFormat('cs', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 1,
-});
-
-const nf33 = Intl.NumberFormat('cs', {
+const nf33 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
 });
@@ -95,6 +92,16 @@ const cs: Messages = {
     load: 'Načíst',
     unnamed: 'Bez názvu',
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
+    componentLoadingError:
+      'Komponent se nepodařilo načíst. Zkontrolujte své připonění na internet.',
+    offline: 'Nejste připojen k internetu.',
+    connectionError: 'Chyba spojení se serverem.',
+    experimentalFunction: 'Experimentální funkce',
+    attribution: () => (
+      <Attribution unknown="Licence mapy není specifikována" />
+    ),
+    unauthenticatedError:
+      'Pro přístup k této funkci se nejprve prosím přihlašte.',
   },
 
   selections: {
@@ -103,8 +110,8 @@ const cs: Messages = {
     drawLines: 'Čára',
     drawPolygons: 'Polygón',
     tracking: 'Sledování',
-    linePoint: 'Line point', // TODO translate
-    polygonPoint: 'Polygon point', // TODO translate
+    linePoint: 'Bod čáry',
+    polygonPoint: 'Bod polygonu',
   },
 
   tools: {
@@ -125,6 +132,15 @@ const cs: Messages = {
   },
 
   routePlanner: {
+    ghParams: {
+      tripParameters: 'Parametry výletu',
+      seed: 'Random seed',
+      distance: 'Orientační vzdálenost',
+      isochroneParameters: 'Parametry izochronů',
+      buckets: 'Počet dělení',
+      timeLimit: 'Časový limit',
+      distanceLimit: 'Limit vzdálenosti',
+    },
     milestones: 'Kilometrovník',
     start: 'Start',
     finish: 'Cíl',
@@ -135,23 +151,34 @@ const cs: Messages = {
       home: 'Domů',
     },
     transportType: {
-      car: 'Auto, včetně zpoplatněných silnic',
-      'car-free': 'Auto, mimo zpoplatněných silnic',
-      bikesharing: 'Sdílené kolo',
-      imhd: 'MHD v Bratislavě',
-      'bike-osm': 'Kolo',
-      bike: 'Cyklouristika',
+      car: 'Auto',
+      // 'car-toll': 'Auto, včetně zpoplatněných silnic',
+      // 'car-free': 'Auto, mimo zpoplatněných silnic',
+      // bikesharing: 'Sdílené kolo',
+      // imhd: 'MHD v Bratislavě',
+      bike: 'Kolo',
+      bicycle_touring: 'Cykloturistika',
       'foot-stroller': 'S kočárkem / Inv. vozík',
       nordic: 'Běžky',
-      ski: 'Sjezdové lyžování',
-      'foot-osm': 'Pěšky',
-      foot: 'Turistika',
+      // ski: 'Sjezdové lyžování',
+      foot: 'Pěšky',
+      hiking: 'Turistika',
+      mtb: 'Horské kolo',
+      racingbike: 'Silniční kolo',
+      motorcycle: 'Motocykl',
+    },
+    weighting: {
+      fastest: 'Nejrychlejší',
+      short_fastest: 'Rychlá, krátká',
+      shortest: 'Nejkratší',
     },
     development: 've vývoji',
     mode: {
       route: 'Po pořadí',
       trip: 'Návštěva míst',
       roundtrip: 'Návštěva míst (okruh)',
+      'routndtrip-gh': 'Výlet',
+      isochrone: 'Izochróny',
     },
     alternative: 'Alternativa',
     // eslint-disable-next-line
@@ -340,9 +367,9 @@ const cs: Messages = {
 
   mainMenu: {
     title: 'Hlavní menu',
-    logOut: (name) => `Odhlásit ${name}`,
+    logOut: 'Odhlásit',
     logIn: 'Přihlášení',
-    settings: 'Nastavení',
+    account: 'Účet',
     gpxExport: 'Exportovat do GPX / GeoJSON',
     mapExports: 'Mapa pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
@@ -386,9 +413,25 @@ const cs: Messages = {
         analytics="Analytické cookies"
       />
     ),
+    infoBars: {
+      ua: () => (
+        <>
+          🇺🇦 Stojíme za Ukrajinou.{' '}
+          <a
+            href="https://bank.gov.ua/en/about/support-the-armed-forces"
+            target="_blank"
+            rel="noopener"
+          >
+            Přispějte ukrajinské armádě ›
+          </a>{' '}
+          🇺🇦
+        </>
+      ),
+    },
   },
 
   gallery: {
+    recentTags: 'Nedávné tagy pro přiřazení:',
     filter: 'Filtr',
     showPhotosFrom: 'Prohlížet fotky',
     showLayer: 'Zobrazit vrstvu',
@@ -400,16 +443,17 @@ const cs: Messages = {
       lastCaptured: 'od nejnovější vyfocené',
       leastRated: 'od nejmenšího hodnocení',
       mostRated: 'od největšího hodnocení',
-      lastComment: 'od posledného komentára', // TODO translate
+      lastComment: 'od posledního komentáře',
     },
-    colorizeBy: 'Vyfarbiť podľa', // TODO translate
+    colorizeBy: 'Vybarvit podle',
     c: {
-      disable: 'nevyfarbiť', // TODO translate
-      mine: 'odlíšiť moje', // TODO translate
-      author: 'autora', // TODO translate
-      rating: 'hodnotenia', // TODO translate
-      takenAt: 'dátumu odfotenia', // TODO translate
-      createdAt: 'dátumu nahrania', // TODO translate
+      disable: 'nevybarvit',
+      mine: 'odlišit moje',
+      author: 'autora',
+      rating: 'hodnocení',
+      takenAt: 'data vyfocení',
+      createdAt: 'data nahrání',
+      season: 'ročního období',
     },
     viewer: {
       title: 'Fotografie',
@@ -450,7 +494,7 @@ const cs: Messages = {
           <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je ale omezena velikost souboru na 10MB. Větší soubory server odmítne.</li>
           <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>
           <li>Zvýšenou pozornost věnujte tomu, abyste nahrávali výlučně vlastní tvorbu.</li>
-          <li>Fotografie jsou dále šířeny pod licencí CC-BY-SA 2.0.</li>
+          <li>Fotografie jsou dále šířeny pod licencí CC-BY-SA 4.0.</li>
           <li>Provozovatel Freemap.sk se tímto zbavuje jakékoli odpovědnosti a neodpovídá za přímé ani nepřímé škody vzniklé zveřejněním fotografie v galerii. Za fotografii nese plnou odpovědnost osoba, která fotografii na server uložila.</li>
           <li>Provozovatel si vyhrazuje právo upravit popis, název, pozici a tagy fotografie nebo fotografii vymazat, pokud je její obsah nevhodný (porušuje tato pravidla).</li>
           <li>Provozovatel si vyhrazuje právo zrušit účet v případě, že uživatel opakovaně porušuje pravidla galerie zveřejňováním nevhodného obsahu.</li>
@@ -472,8 +516,6 @@ const cs: Messages = {
     commentAddingError: ({ err }) =>
       `Nastala chyba při přidávání komentáře: ${err}`,
     ratingError: ({ err }) => `Nastala chyba při hodnocení ${err}`,
-    unauthenticatedError:
-      'Pro nahrávání fotek do galerie musíte být přihlášen.',
     missingPositionError: 'Chyba pozice.',
     invalidPositionError: 'Nesprávný formát souřadnic.',
     invalidTakenAt: 'Nevalidní datum a čas focení.',
@@ -485,8 +527,11 @@ const cs: Messages = {
       author: 'Autor',
       rating: 'Hodnocení',
       noTags: 'bez tagů',
+      pano: 'Panoráma',
     },
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
+    linkToWww: 'fotografie na www.freemap.sk',
+    linkToImage: 'soubor fotografie',
   },
 
   measurement: {
@@ -495,17 +540,13 @@ const cs: Messages = {
     area: 'Polygon',
     elevationFetchError: ({ err }) =>
       `Nastala chyba při získávání výšky bodu: ${err}`,
-    elevationInfo: ({ elevation, point }) => (
-      <>
-        {(['D', 'DM', 'DMS'] as const).map((format) => (
-          <div key={format}>{latLonToString(point, 'cs', format)}</div>
-        ))}
-        {elevation != null && (
-          <div>
-            Nadmořská výška: {nf01.format(elevation)}&nbsp;{masl}
-          </div>
-        )}
-      </>
+    elevationInfo: (params) => (
+      <ElevationInfo
+        {...params}
+        lang="cs"
+        tileMessage="Dlaždice"
+        maslMessage="Nadmořská výška"
+      />
     ),
     areaInfo: ({ area }) => (
       <>
@@ -567,26 +608,28 @@ const cs: Messages = {
   },
 
   drawing: {
-    modify: 'Změnit popis',
+    modify: 'Vlastnosti',
     edit: {
-      title: 'Změnit popis',
+      title: 'Vlastnosti',
+      color: 'Barva',
       label: 'Popis:',
+      width: 'Šířka:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
+      type: 'Typ geometrie',
     },
-    continue: 'Continue', // TODO translate
-    join: 'Join', // TODO translate
-    split: 'Split', // TODO translate
-    stopDrawing: 'Stop drawing', // TODO translate
-    selectPointToJoin: 'Select point to join lines', // TODO translate
+    continue: 'Pokračovat',
+    join: 'Spojit',
+    split: 'Rozdělit',
+    stopDrawing: 'Ukončit kreslení',
+    selectPointToJoin: 'Zvolte bod pro spojení čar',
+    defProps: {
+      menuItem: 'Nastavit styl',
+      title: 'Nastavení stylu kreslení',
+      applyToAll: 'Uložit a aplikovat na všechno',
+    },
   },
 
   settings: {
-    tab: {
-      map: 'Mapa',
-      account: 'Účet',
-      general: 'Všeobecné',
-      expert: 'Expert',
-    },
     map: {
       overlayPaneOpacity: 'Viditelnost čar na mapě:',
       homeLocation: {
@@ -598,47 +641,28 @@ const cs: Messages = {
     account: {
       name: 'Jméno',
       email: 'E-Mail',
-      noAuthInfo: 'Dostupné pouze pro přihlášené uživatele.',
-      sendGalleryEmails: 'Upozorni emailem na komentáře k fotce',
-      DeleteInfo: () => (
-        <>
-          Pokud si přejete smazat svůj účet, kontaktujte nás prosím na{' '}
-          <Alert.Link href="mailto:freemap@freemap.sk">
-            freemap@freemap.sk
-          </Alert.Link>
-          .
-        </>
-      ),
+      sendGalleryEmails: 'Upozornit emailem na komentáře k fotce',
+      delete: 'Smazat účet',
+      deleteWarning:
+        'Opravdu si přejete smazat svůj účet? Spolu s ním se odstraní všechny vaše fotografie, komentáře a hodnocení fotografií, vlastní mapy a sledovaná zařízení.',
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
     },
-    expertInfo: `
-      <div style="text-align: left">
-        V expertním módu jsou dostupné nástroje pro pokročilé uživatele, kupříkladu:
-        <ul>
-          <li>pokročilá nastavení</li>
-          <li>extra mapové vrstvy</li>
-          <li>extra profily vyhledávače tras</li>
-        </ul>
-      </div>
-    `,
-    expert: {
-      switch: 'Expertní mód',
-      overlayOpacity: 'Viditelnost vrstvy:',
-      trackViewerEleSmoothing: {
-        label: (value) =>
-          `Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných metrů v prohlížeči tras: ${value}`,
-        info: 'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
-      },
-    },
+    layer: 'Mapa',
+    overlayOpacity: 'Viditelnost',
+    showInMenu: 'Zobrazit v menu',
+    showInToolbar: 'Zobrazit v liště',
     saveSuccess: 'Změny byly uloženy.',
     savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
+    customLayersDef: 'Definice vlastních mapových vrstev',
+    customLayersDefError: 'Chybný formát definice vlasových mapových vrstev.',
   },
 
   changesets: {
     allAuthors: 'Všichni autoři',
-    download: 'Stáhnout změny',
+    tooBig:
+      'Požadavek na získání změn může vrátit spoustu záznamů. Zkuste přiblížit mapu, zvolit méně dní, nebo zadat konkrétního autora.',
     olderThan: ({ days }) => `${days} dn ${days === 3 ? 'i' : 'í'}`,
     olderThanFull: ({ days }) =>
       `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
@@ -675,296 +699,298 @@ const cs: Messages = {
   objects: {
     type: 'Typ',
     lowZoomAlert: {
-      message: 'Vyhledávání míst je možné až od přiblížení úrovně 12.',
+      message: ({ minZoom }) =>
+        `Vyhledávání míst je možné až od přiblížení úrovně ${minZoom}.`,
       zoom: 'Přiblíž',
     },
+    tooManyPoints: ({ limit }) => `Výsledek byl omezen na ${limit} objektů.`,
     fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
-    categories: {
-      1: 'Příroda',
-      2: 'Služby',
-      3: 'Doprava',
-      4: 'Památky',
-      5: 'Zdravotnictví',
-      6: 'Obchody',
-      7: 'Energetika',
-      8: 'Ubytování a Stravování',
-      9: 'Turismus, turistika',
-      10: 'Územní členění',
-      11: 'Ostatní',
-      12: 'Volný čas',
-      13: 'Sport',
-      14: 'Vzdělávání',
-      15: 'Na kole',
-    },
-    subcategories: {
-      1: 'Jeskyně',
-      2: 'Vrch',
-      3: 'Čerpací stanice',
-      4: 'Restaurace',
-      5: 'Hotel',
-      6: 'Parkoviště',
-      7: 'Letiště',
-      8: 'Nádraží',
-      9: 'Autobusové nádraží',
-      10: 'Autobusová zastávka',
-      11: 'Hrad',
-      12: 'Zámek',
-      13: 'Zřícenina',
-      14: 'Muzeum',
-      15: 'Pomník',
-      16: 'Památník',
-      17: 'Lékárna',
-      18: 'Nemocnice',
-      19: 'Ordinace',
-      20: 'Policie',
-      21: 'Poliklinika',
-      22: 'Hraniční přechod',
-      23: 'Nemocnice s pohotovostí',
-      24: 'Supermarket',
-      26: 'Jaderná elektrárna',
-      27: 'Tepelná elektrárna (uhlí)',
-      28: 'Vodní elektrárna',
-      29: 'Větrná elektrárna',
-      30: 'Potraviny',
-      31: 'Hasičská stanice',
-      32: 'Kostel',
-      33: 'Pohostinství',
-      34: 'Banka',
-      35: 'Bankomat',
-      36: 'Rychlé občerstvení',
-      39: 'Banka',
-      40: 'Výhled',
-      41: 'Kemping',
-      42: 'Chráněné stromy',
-      43: 'Pramen',
-      44: 'Rozcestník',
-      45: 'Orientační mapa',
-      46: 'Útulný',
-      47: 'Přístřešek, altán',
-      48: 'Poštovní úřad',
-      49: 'Památník, bojiště',
-      50: 'Myslivecký posed',
-      51: 'Vysílač',
-      52: 'Rozhledna',
-      53: 'Motel',
-      54: 'Penzion',
-      55: 'Privát',
-      56: 'Regionální město',
-      57: 'Okresní město',
-      58: 'Velké město',
-      59: 'Město',
-      60: 'Obec',
-      61: 'Osada',
-      62: 'Městský obvod',
-      63: 'Horáreň',
-      64: 'Zubař',
-      65: 'Prodejna kol',
-      66: 'Stojan na kola',
-      67: 'Půjčovna kol',
-      68: 'Prodej alkoholu',
-      69: 'Umění',
-      70: 'Pekárna',
-      71: 'Péče o krásu',
-      72: 'Postele',
-      73: 'Nápoje',
-      74: 'Knihkupectví',
-      75: 'Butik',
-      76: 'Řeznictví',
-      77: 'Prodej aut',
-      78: 'Autoservis',
-      79: 'Charita',
-      80: 'Drogerie',
-      81: 'Oblečení',
-      82: 'Počítače',
-      83: 'Cukrovinky',
-      84: 'Kopírování',
-      85: 'Záclony a závěsy',
-      86: 'Delikatesy',
-      87: 'Obchodní dům',
-      89: 'Čistírna',
-      90: 'Domácí výrobky',
-      91: 'Elektronika',
-      92: 'Erotika',
-      93: 'Firemní prodejna',
-      94: 'Farmářské produkty',
-      95: 'Květinářství',
-      96: 'Obrazy',
-      98: 'funeral_directors',
-      99: 'Nábytek',
-      100: 'Zahradní centrum',
-      101: 'Různé zboží',
-      102: 'Dárková prodejna',
-      103: 'Glazier',
-      104: 'Ovoce, zelenina',
-      105: 'Kadeřnictví',
-      106: 'Železářství',
-      107: 'Naslouchácí pomůcky',
-      108: 'HI-FI',
-      109: 'Zmrzlina',
-      110: 'interior_decoration',
-      111: 'Zlatnictví',
-      112: 'Kiosk',
-      113: 'Kuchyňské potřeby',
-      114: 'Prádelna',
-      115: 'Nákupní centrum',
-      116: 'Masáže',
-      117: 'Mobilní telefony',
-      118: 'Zastavárna',
-      119: 'Motocykly',
-      120: 'Hudební nástroje',
-      121: 'Noviny',
-      122: 'Optika',
-      124: 'Outdoor',
-      125: 'Barvy',
-      126: 'pawnbroker',
-      127: 'Zvířata',
-      128: 'Mořské plody',
-      129: 'Second hand',
-      130: 'Obuv',
-      131: 'Sportovní potřeby',
-      132: 'Papírnictví',
-      133: 'Tetování',
-      134: 'Hračkářství',
-      135: 'Stavebniny',
-      136: 'vacant',
-      137: 'Vysavače',
-      138: 'variety_store',
-      139: 'Video / DVD',
-      140: 'ZOO',
-      141: 'Horská chata',
-      142: 'Atrakce',
-      143: 'Toalety',
-      144: 'Telefon',
-      145: 'Místní úřad',
-      146: 'Věznice',
-      147: 'Tržiště',
-      148: 'Bar',
-      149: 'Kavárna',
-      150: 'Veřejný gril',
-      151: 'Pitná voda',
-      152: 'Taxi',
-      153: 'Knihovna',
-      154: 'Myčka aut',
-      155: 'Veterinář',
-      156: 'Semafor',
-      157: 'Železniční zastávka',
-      158: 'Železniční přejezd',
-      159: 'Praporek tramvaje',
-      160: 'Heliport',
-      161: 'Vodárenská věž',
-      162: 'Větrný mlýn',
-      163: 'Sauna',
-      164: 'Čerpací stanice LPG',
-      166: 'Park pro psy',
-      167: 'Sportovní centrum',
-      168: 'Kurzy golfu',
-      169: 'Stadion',
-      170: 'Hřiště',
-      171: 'Vodní park',
-      172: 'Vypouštění lodí',
-      173: 'Rybolov',
-      174: 'Park',
-      175: 'Dětské hřiště',
-      176: 'Zahrada',
-      177: 'Veřejná plocha',
-      178: 'Kluziště',
-      179: 'Mini-golf',
-      180: 'Tanec',
-      181: 'Základní škola',
-      182: '9pin',
-      183: 'Bowling',
-      184: 'Americký fotbal',
-      185: 'Lukostřelba',
-      186: 'Atletika',
-      187: 'Australský fotbal',
-      188: 'Baseball',
-      189: 'Basketball',
-      190: 'Plážový volejbal',
-      191: 'Bmx',
-      192: 'Boules',
-      193: 'Bowls',
-      194: 'Canadian football',
-      195: 'Kanoe',
-      196: 'Šachy',
-      197: 'Lezení',
-      198: 'Kriket',
-      199: 'cricket_nets',
-      200: 'croquet',
-      201: 'Kolo',
-      202: 'Potápění',
-      203: 'Závody psů',
-      204: 'Jízda na koni',
-      205: 'Fotbal',
-      206: 'Galský fotbal',
-      207: 'Golf',
-      208: 'Gymnastika',
-      209: 'Hokej',
-      210: 'horseshoes',
-      211: 'Dostihy',
-      212: 'Metaná',
-      213: 'korfball',
-      214: 'Motorky',
-      215: 'Multi',
-      216: 'Orientační běh',
-      217: 'paddle_tennis',
-      218: 'Paragliding',
-      219: 'pelota',
-      220: 'racquet',
-      221: 'rowing',
-      222: 'rugby_league',
-      223: 'rugby_union',
-      224: 'Střelba',
-      225: 'Bruslení',
-      226: 'Skateboard',
-      227: 'Lyžování',
-      228: 'Fotbal',
-      229: 'Plavání',
-      230: 'Stolní tenis',
-      231: 'Házená',
-      232: 'Tenis',
-      233: 'Tobogan',
-      234: 'Volejbal',
-      235: 'Vodní lyžování',
-      236: 'Univerzita',
-      237: 'Mateřská škola',
-      238: 'Střední škola',
-      239: 'Autoškola',
-      240: 'Kaple',
-      241: 'Místo na piknik',
-      242: 'Místo s ohništěm',
-      243: 'Lokalita',
-      244: 'Vodopád',
-      245: 'Jezero',
-      246: 'Přehrada',
-      248: 'Přírodní rezervace',
-      249: 'Přírodní památka',
-      250: 'Chráněný areál',
-      251: 'Chráněná krajinná oblast',
-      252: 'Národní park',
-      253: 'Automat na mléko',
-      254: 'Významné mokřiny (Ramsar)',
-      255: 'Adresní body',
-      256: 'Hornická šachta',
-      257: 'Štola',
-      258: 'Studna',
-      259: 'Kříž',
-      260: 'Svatyně',
-      261: 'Posilovna',
-      262: 'Paroplynová elektrárna',
-      263: 'Kaštěl',
-      264: 'Geomorfologické členění',
-      265: 'Vojenský bunkr',
-      266: 'Dálniční nájezd / sjezd',
-      267: 'Sochy',
-      268: 'Komín',
-      269: 'Paragliding',
-      270: 'Závěsné létání',
-      271: 'Krmelec',
-      272: 'Ohniště',
-      273: 'Bedminton / Squash',
-      274: 'Rozcestník',
-      275: 'Nabíjecí stanice pro kola',
-    },
+    // categories: {
+    //   1: 'Příroda',
+    //   2: 'Služby',
+    //   3: 'Doprava',
+    //   4: 'Památky',
+    //   5: 'Zdravotnictví',
+    //   6: 'Obchody',
+    //   7: 'Energetika',
+    //   8: 'Ubytování a Stravování',
+    //   9: 'Turismus, turistika',
+    //   10: 'Územní členění',
+    //   11: 'Ostatní',
+    //   12: 'Volný čas',
+    //   13: 'Sport',
+    //   14: 'Vzdělávání',
+    //   15: 'Na kole',
+    // },
+    // subcategories: {
+    //   1: 'Jeskyně',
+    //   2: 'Vrch',
+    //   3: 'Čerpací stanice',
+    //   4: 'Restaurace',
+    //   5: 'Hotel',
+    //   6: 'Parkoviště',
+    //   7: 'Letiště',
+    //   8: 'Nádraží',
+    //   9: 'Autobusové nádraží',
+    //   10: 'Autobusová zastávka',
+    //   11: 'Hrad',
+    //   12: 'Zámek',
+    //   13: 'Zřícenina',
+    //   14: 'Muzeum',
+    //   15: 'Pomník',
+    //   16: 'Památník',
+    //   17: 'Lékárna',
+    //   18: 'Nemocnice',
+    //   19: 'Ordinace',
+    //   20: 'Policie',
+    //   21: 'Poliklinika',
+    //   22: 'Hraniční přechod',
+    //   23: 'Nemocnice s pohotovostí',
+    //   24: 'Supermarket',
+    //   26: 'Jaderná elektrárna',
+    //   27: 'Tepelná elektrárna (uhlí)',
+    //   28: 'Vodní elektrárna',
+    //   29: 'Větrná elektrárna',
+    //   30: 'Potraviny',
+    //   31: 'Hasičská stanice',
+    //   32: 'Kostel',
+    //   33: 'Pohostinství',
+    //   34: 'Banka',
+    //   35: 'Bankomat',
+    //   36: 'Rychlé občerstvení',
+    //   39: 'Banka',
+    //   40: 'Výhled',
+    //   41: 'Kemping',
+    //   42: 'Chráněné stromy',
+    //   43: 'Pramen',
+    //   44: 'Rozcestník',
+    //   45: 'Orientační mapa',
+    //   46: 'Útulný',
+    //   47: 'Přístřešek, altán',
+    //   48: 'Poštovní úřad',
+    //   49: 'Památník, bojiště',
+    //   50: 'Myslivecký posed',
+    //   51: 'Vysílač',
+    //   52: 'Rozhledna',
+    //   53: 'Motel',
+    //   54: 'Penzion',
+    //   55: 'Privát',
+    //   56: 'Regionální město',
+    //   57: 'Okresní město',
+    //   58: 'Velké město',
+    //   59: 'Město',
+    //   60: 'Obec',
+    //   61: 'Osada',
+    //   62: 'Městský obvod',
+    //   63: 'Horáreň',
+    //   64: 'Zubař',
+    //   65: 'Prodejna kol',
+    //   66: 'Stojan na kola',
+    //   67: 'Půjčovna kol',
+    //   68: 'Prodej alkoholu',
+    //   69: 'Umění',
+    //   70: 'Pekárna',
+    //   71: 'Péče o krásu',
+    //   72: 'Postele',
+    //   73: 'Nápoje',
+    //   74: 'Knihkupectví',
+    //   75: 'Butik',
+    //   76: 'Řeznictví',
+    //   77: 'Prodej aut',
+    //   78: 'Autoservis',
+    //   79: 'Charita',
+    //   80: 'Drogerie',
+    //   81: 'Oblečení',
+    //   82: 'Počítače',
+    //   83: 'Cukrovinky',
+    //   84: 'Kopírování',
+    //   85: 'Záclony a závěsy',
+    //   86: 'Delikatesy',
+    //   87: 'Obchodní dům',
+    //   89: 'Čistírna',
+    //   90: 'Domácí výrobky',
+    //   91: 'Elektronika',
+    //   92: 'Erotika',
+    //   93: 'Firemní prodejna',
+    //   94: 'Farmářské produkty',
+    //   95: 'Květinářství',
+    //   96: 'Obrazy',
+    //   98: 'funeral_directors',
+    //   99: 'Nábytek',
+    //   100: 'Zahradní centrum',
+    //   101: 'Různé zboží',
+    //   102: 'Dárková prodejna',
+    //   103: 'Glazier',
+    //   104: 'Ovoce, zelenina',
+    //   105: 'Kadeřnictví',
+    //   106: 'Železářství',
+    //   107: 'Naslouchácí pomůcky',
+    //   108: 'HI-FI',
+    //   109: 'Zmrzlina',
+    //   110: 'interior_decoration',
+    //   111: 'Zlatnictví',
+    //   112: 'Kiosk',
+    //   113: 'Kuchyňské potřeby',
+    //   114: 'Prádelna',
+    //   115: 'Nákupní centrum',
+    //   116: 'Masáže',
+    //   117: 'Mobilní telefony',
+    //   118: 'Zastavárna',
+    //   119: 'Motocykly',
+    //   120: 'Hudební nástroje',
+    //   121: 'Noviny',
+    //   122: 'Optika',
+    //   124: 'Outdoor',
+    //   125: 'Barvy',
+    //   126: 'pawnbroker',
+    //   127: 'Zvířata',
+    //   128: 'Mořské plody',
+    //   129: 'Second hand',
+    //   130: 'Obuv',
+    //   131: 'Sportovní potřeby',
+    //   132: 'Papírnictví',
+    //   133: 'Tetování',
+    //   134: 'Hračkářství',
+    //   135: 'Stavebniny',
+    //   136: 'vacant',
+    //   137: 'Vysavače',
+    //   138: 'variety_store',
+    //   139: 'Video / DVD',
+    //   140: 'ZOO',
+    //   141: 'Horská chata',
+    //   142: 'Atrakce',
+    //   143: 'Toalety',
+    //   144: 'Telefon',
+    //   145: 'Místní úřad',
+    //   146: 'Věznice',
+    //   147: 'Tržiště',
+    //   148: 'Bar',
+    //   149: 'Kavárna',
+    //   150: 'Veřejný gril',
+    //   151: 'Pitná voda',
+    //   152: 'Taxi',
+    //   153: 'Knihovna',
+    //   154: 'Myčka aut',
+    //   155: 'Veterinář',
+    //   156: 'Semafor',
+    //   157: 'Železniční zastávka',
+    //   158: 'Železniční přejezd',
+    //   159: 'Praporek tramvaje',
+    //   160: 'Heliport',
+    //   161: 'Vodárenská věž',
+    //   162: 'Větrný mlýn',
+    //   163: 'Sauna',
+    //   164: 'Čerpací stanice LPG',
+    //   166: 'Park pro psy',
+    //   167: 'Sportovní centrum',
+    //   168: 'Kurzy golfu',
+    //   169: 'Stadion',
+    //   170: 'Hřiště',
+    //   171: 'Vodní park',
+    //   172: 'Vypouštění lodí',
+    //   173: 'Rybolov',
+    //   174: 'Park',
+    //   175: 'Dětské hřiště',
+    //   176: 'Zahrada',
+    //   177: 'Veřejná plocha',
+    //   178: 'Kluziště',
+    //   179: 'Mini-golf',
+    //   180: 'Tanec',
+    //   181: 'Základní škola',
+    //   182: '9pin',
+    //   183: 'Bowling',
+    //   184: 'Americký fotbal',
+    //   185: 'Lukostřelba',
+    //   186: 'Atletika',
+    //   187: 'Australský fotbal',
+    //   188: 'Baseball',
+    //   189: 'Basketball',
+    //   190: 'Plážový volejbal',
+    //   191: 'Bmx',
+    //   192: 'Boules',
+    //   193: 'Bowls',
+    //   194: 'Canadian football',
+    //   195: 'Kanoe',
+    //   196: 'Šachy',
+    //   197: 'Lezení',
+    //   198: 'Kriket',
+    //   199: 'cricket_nets',
+    //   200: 'croquet',
+    //   201: 'Kolo',
+    //   202: 'Potápění',
+    //   203: 'Závody psů',
+    //   204: 'Jízda na koni',
+    //   205: 'Fotbal',
+    //   206: 'Galský fotbal',
+    //   207: 'Golf',
+    //   208: 'Gymnastika',
+    //   209: 'Hokej',
+    //   210: 'horseshoes',
+    //   211: 'Dostihy',
+    //   212: 'Metaná',
+    //   213: 'korfball',
+    //   214: 'Motorky',
+    //   215: 'Multi',
+    //   216: 'Orientační běh',
+    //   217: 'paddle_tennis',
+    //   218: 'Paragliding',
+    //   219: 'pelota',
+    //   220: 'racquet',
+    //   221: 'rowing',
+    //   222: 'rugby_league',
+    //   223: 'rugby_union',
+    //   224: 'Střelba',
+    //   225: 'Bruslení',
+    //   226: 'Skateboard',
+    //   227: 'Lyžování',
+    //   228: 'Fotbal',
+    //   229: 'Plavání',
+    //   230: 'Stolní tenis',
+    //   231: 'Házená',
+    //   232: 'Tenis',
+    //   233: 'Tobogan',
+    //   234: 'Volejbal',
+    //   235: 'Vodní lyžování',
+    //   236: 'Univerzita',
+    //   237: 'Mateřská škola',
+    //   238: 'Střední škola',
+    //   239: 'Autoškola',
+    //   240: 'Kaple',
+    //   241: 'Místo na piknik',
+    //   242: 'Místo s ohništěm',
+    //   243: 'Lokalita',
+    //   244: 'Vodopád',
+    //   245: 'Jezero',
+    //   246: 'Přehrada',
+    //   248: 'Přírodní rezervace',
+    //   249: 'Přírodní památka',
+    //   250: 'Chráněný areál',
+    //   251: 'Chráněná krajinná oblast',
+    //   252: 'Národní park',
+    //   253: 'Automat na mléko',
+    //   254: 'Významné mokřiny (Ramsar)',
+    //   255: 'Adresní body',
+    //   256: 'Hornická šachta',
+    //   257: 'Štola',
+    //   258: 'Studna',
+    //   259: 'Kříž',
+    //   260: 'Svatyně',
+    //   261: 'Posilovna',
+    //   262: 'Paroplynová elektrárna',
+    //   263: 'Kaštěl',
+    //   264: 'Geomorfologické členění',
+    //   265: 'Vojenský bunkr',
+    //   266: 'Dálniční nájezd / sjezd',
+    //   267: 'Sochy',
+    //   268: 'Komín',
+    //   269: 'Paragliding',
+    //   270: 'Závěsné létání',
+    //   271: 'Krmelec',
+    //   272: 'Ohniště',
+    //   273: 'Bedminton / Squash',
+    //   274: 'Rozcestník',
+    //   275: 'Nabíjecí stanice pro kola',
+    // },
   },
 
   external: {
@@ -1007,19 +1033,7 @@ const cs: Messages = {
   },
 
   tips: {
-    previous: 'Předešlý tip',
-    next: 'Další tip',
-    prevent: 'Příště nezobrazovat',
     errorLoading: 'Tip se nepodařilo načíst.',
-  },
-
-  supportUs: {
-    explanation:
-      'Mapový portál Freemap tvoří lidé bezplatně ve svém volném čase. Na fungování a provoz je však potřebný hardware a služby komerčních společností. ',
-    account: 'Bankovní spojení:',
-    paypal: 'Přispět přes PayPal',
-    thanks: 'Za každý příspěvek vám budeme velmi vděční.',
-    registration: 'Registrované na MV / VVS / 1-900 / 90-34343 dne 2.10.2009',
   },
 
   gpxExport: {
@@ -1065,8 +1079,12 @@ const cs: Messages = {
   },
 
   mapLayers: {
-    layers: 'Vrstvy',
+    showAll: 'Zobrazit všechny mapy',
+    settings: 'Nastavení map',
+    layers: 'Mapy',
+    switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
+    interactiveLayerWarning: 'Interaktivní vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
       A: 'Automapa',
@@ -1100,7 +1118,11 @@ const cs: Messages = {
       w: 'Wikipedia',
       '4': 'Světlé stínování DMR 5.0',
       '5': 'Šedé stínování DMR 5.0',
+      VO: 'OpenStreetMap Vektorová',
+      VS: 'Streets Vektorová',
     },
+    customBase: 'Vlastní mapa',
+    customOverlay: 'Vlastní překrytí mapy',
     type: {
       map: 'mapa',
       data: 'data',
@@ -1110,7 +1132,14 @@ const cs: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0přispěvatelé OpenStreetMap',
       srtm: '©\xa0SRTM',
-      hot: '©\xa0Humanitární tým OpenStreetMap',
+      maptiler: (
+        <MaptilerAttribution
+          tilesFrom="Vektorové dlaždice z"
+          hostedBy="hostované na"
+          see="Viz"
+          _3Dterrain="3D terén"
+        />
+      ),
     },
   },
 
@@ -1137,59 +1166,7 @@ const cs: Messages = {
     fetchingError: ({ err }) => `Nastala chyba při získávání OSM dat: ${err}`,
   },
 
-  roadDetails: {
-    roadType: 'Typ cesty:',
-    surface: 'Povrch:',
-    suitableBikeType: 'Vhodný typ kola:',
-    lastChange: 'Poslední změna:',
-    showDetails: 'Zobrazit detaily na osm.org',
-    surfaces: {
-      asphalt: 'asfalt',
-      gravel: 'štěrk',
-      fine_gravel: 'jemný štěrk',
-      dirt: 'hlína',
-      ground: 'hlína',
-      cobblestone: 'dlažba',
-      compacted: 'zpevněný',
-      paved: 'zpevněný',
-      unknown: 'neznámý',
-      unpaved: 'nezpevněný',
-      'concrete:plates': 'betonové desky',
-      concrete: 'beton',
-      grass: 'travnatý',
-    },
-    trackClasses: {
-      trunk: 'rychlostní silnice',
-      primary: 'silnice I. třídy',
-      secondary: 'silnice II. třídy ',
-      tertiary: 'silnice III. třídy ',
-      motorway: 'dálnice',
-      service: 'přístupová',
-      unclassified: 'přístupová',
-      residential: 'přístupová',
-      grade1: 'kvalitní zpevněná cesta (1. stupeň)',
-      grade2: 'udržována zpevněná cesta (2. stupeň)',
-      grade3: 'zpevněná cesta (3. stupeň)',
-      grade4: 'polní cesta / zvážnice (4. stupeň)',
-      grade5: 'těžko průchozí / zarostlá cesta (5. stupeň)',
-      path: 'chodník',
-      footway: 'chodník',
-      pedestrian: 'pěší zóna',
-      unknown: 'neznámý',
-      living_street: 'Obytná zóna',
-      construction: 'Ve výstavbě',
-    },
-    bicycleTypes: {
-      'road-bike': 'silniční',
-      'trekking-bike': 'trekové',
-      'mtb-bike': 'horský',
-      'no-bike': 'vjezd na kole zakázán',
-      unknown: 'neznámý',
-    },
-  },
-
   tracking: {
-    unauthenticatedError: 'Pro správu zařízení se musíte přihlásit.',
     trackedDevices: {
       button: 'Sledované',
       modalTitle: 'Sledovaná zařízení',
@@ -1363,6 +1340,8 @@ const cs: Messages = {
     ),
   },
   pdfExport: {
+    advancedSettings: 'Rozšířená nastavení',
+    styles: 'Styly interaktivní vrstvy',
     export: 'Exportovat',
     exportError: ({ err }) => `Chyba exportu mapy: ${err}`,
     exporting: 'Prosím počkejte, mapa se exportuje…',
@@ -1437,6 +1416,8 @@ const cs: Messages = {
   },
 
   maps: {
+    legacyMapWarning:
+      'Zobrazená mapa je zastaralá. Přepnout na moderní outdoorovou mapu?',
     noMapFound: 'Žádná mapa nenalezena',
     save: 'Uložit',
     delete: 'Smazat',
@@ -1450,7 +1431,7 @@ const cs: Messages = {
     saveError: ({ err }) => `Nastala chyba při ukládání mapy: ${err}`,
     loadToEmpty: 'Načíst do čisté mapy',
     loadInclMapAndPosition:
-      'Načíst včetně uložené podkladových mapy a jej pozice',
+      'Načíst včetně uložené podkladové mapy a její pozice',
     savedMaps: 'Uložené mapy',
     newMap: 'Nová mapa',
     SomeMap: ({ name }) => (
@@ -1458,22 +1439,24 @@ const cs: Messages = {
         Mapa <i>{name}</i>
       </>
     ),
-    unauthenticatedError: 'Pro funkci Moje mapy musíte být přihlášen.',
+    writers: 'Editori',
+    conflictError: 'Mapa byla mezitím modifikována.',
   },
 
+  // check/improve translation
   mapCtxMenu: {
-    centerMap: 'Vycentrovat mapu',
-    measurePosition: 'Měřit pozici',
-    addPoint: 'Přidat bod',
-    startLine: 'Začít čáru',
-    queryFeatures: 'Zjistit detaily',
-    startRoute: 'Začít trasu',
-    finishRoute: 'Ukončit trasu',
-    showPhotos: 'Ukázat fotky',
+    centerMap: 'Zde centrovat mapu',
+    measurePosition: 'Zjistit souřadnice a výšku bodu',
+    addPoint: 'Zde přidat bod',
+    startLine: 'Zde začít křeslit/měřit vzdálenost',
+    queryFeatures: 'Zjistit detaily v okolí',
+    startRoute: 'Zde začít trasu',
+    finishRoute: 'Zde ukončit trasu',
+    showPhotos: 'Zobrazit fotky v okolí',
   },
 
   legend: {
-    body: () => (
+    body: (
       <>
         Legenda k mapě <i>{outdoorMap}</i>:
       </>
@@ -1512,13 +1495,24 @@ const cs: Messages = {
             doplněk Rovas Connector
           </a>
           , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli
-          získáte odměnu v komunitní měňe <i>chron</i> a tu můžete použít k
+          získáte odměnu v komunitní měně <i>chron</i> a tu můžete použít k
           odstranění reklam na www.freemap.sk.
         </p>
       </>
     ),
     continue: 'Pokračovat',
     success: 'Gratulujeme, stali jste se prémiovým členem!',
+  },
+
+  offline: {
+    offlineMode: 'Režim offline',
+    cachingActive: 'Nahrávání do cache aktivní',
+    clearCache: 'Smazat cache',
+    dataSource: 'Zdroj dát',
+    networkOnly: 'Pouze internet',
+    networkFirst: 'Nejdřív internet',
+    cacheFirst: 'Nejdřív cache',
+    cacheOnly: 'Pouze cache',
   },
 };
 

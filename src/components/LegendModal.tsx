@@ -18,6 +18,8 @@ interface LegendItem {
 
 type Props = { show: boolean };
 
+export default LegendModal;
+
 export function LegendModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 

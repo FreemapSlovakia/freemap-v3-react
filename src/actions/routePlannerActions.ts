@@ -1,11 +1,13 @@
-import { RouteMode } from 'fm3/reducers/routePlannerReducer';
+import { Feature, Polygon } from '@turf/helpers';
 import { TransportType } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 
 export type PickMode = 'start' | 'finish';
 
-export type RoutingMode = 'trip' | 'roundtrip' | 'route';
+export type RoutingMode = 'route' | 'trip' | 'roundtrip' | 'isochrone';
+
+export type Weighting = 'shortest' | 'short_fastest' | 'fastest';
 
 export type SliceMode =
   | 'foot'
@@ -65,7 +67,7 @@ export interface Leg {
 
 export interface Step {
   maneuver: {
-    location: [number, number];
+    // location: [number, number];
     type:
       | 'turn'
       | 'new name'
@@ -113,6 +115,17 @@ export interface Waypoint {
   trips_index?: number;
 }
 
+export type RoundtripParams = {
+  distance: number;
+  seed: number;
+};
+
+export type IsochroneParams = {
+  buckets: number;
+  distanceLimit: number;
+  timeLimit: number;
+};
+
 export const routePlannerSetStart = createAction('ROUTE_PLANNER_SET_START')<{
   start: LatLon | null;
   move?: boolean;
@@ -144,8 +157,16 @@ export const routePlannerSetTransportType = createAction(
 )<TransportType>();
 
 export const routePlannerSetMode = createAction(
-  'ROUTE_PLANNER_SET_MODE',
+  'ROUTE_PLANNER_SET_OSRM_MODE',
 )<RoutingMode>();
+
+export const routePlannerSetGhMode = createAction(
+  'ROUTE_PLANNER_SET_GH_MODE',
+)<RoutingMode>();
+
+export const routePlannerSetWeighting = createAction(
+  'ROUTE_PLANNER_SET_WEIGHTING',
+)<Weighting>();
 
 export const routePlannerSetPickMode = createAction(
   'ROUTE_PLANNER_SET_PICK_MODE',
@@ -158,6 +179,10 @@ export const routePlannerSetResult = createAction('ROUTE_PLANNER_SET_RESULT')<{
   waypoints: Waypoint[];
 }>();
 
+export const routePlannerSetIsochrones = createAction(
+  'ROUTE_PLANNER_SET_ISOCHRONES',
+)<{ isochrones: Feature<Polygon>[]; timestamp: number }>();
+
 export const routePlannerToggleItineraryVisibility = createAction(
   'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY',
 )();
@@ -167,8 +192,11 @@ export const routePlannerSetParams = createAction('ROUTE_PLANNER_SET_PARAMS')<{
   finish: LatLon | null;
   midpoints: LatLon[];
   transportType: TransportType;
-  mode?: RouteMode | null;
-  milestones?: boolean;
+  mode?: RoutingMode | null;
+  weighting?: Weighting | null;
+  milestones?: 'abs' | 'rel' | false;
+  roundtripParams?: Partial<RoundtripParams>;
+  isochroneParams?: Partial<IsochroneParams>;
 }>();
 
 export const routePlannerPreventHint = createAction(
@@ -187,4 +215,12 @@ export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS')();
 
 export const routePlannerToggleMilestones = createAction(
   'ROUTE_PLANNER_TOGGLE_MILESTONES',
-)<boolean | undefined>();
+)<{ type: 'abs' | 'rel'; toggle?: boolean }>();
+
+export const routePlannerSetRoundtripParams = createAction(
+  'ROUTE_PLANNER_SET_ROUNDTRIP_PARAMS',
+)<Partial<RoundtripParams>>();
+
+export const routePlannerSetIsochroneParams = createAction(
+  'ROUTE_PLANNER_SET_ISOCHRONE_PARAMS',
+)<Partial<IsochroneParams>>();

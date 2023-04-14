@@ -1,38 +1,50 @@
+import { Feature, Polygon } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
+  IsochroneParams,
   PickMode,
+  RoundtripParams,
   routePlannerAddMidpoint,
   routePlannerPreventHint,
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
+  routePlannerSetIsochroneParams,
+  routePlannerSetIsochrones,
   routePlannerSetMidpoint,
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetPickMode,
   routePlannerSetResult,
+  routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
+  routePlannerSetWeighting,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
+  RoutingMode,
   Waypoint,
+  Weighting,
 } from 'fm3/actions/routePlannerActions';
-import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
+import {
+  isSpecial,
+  TransportType,
+  transportTypeDefs,
+} from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
-
-export type RouteMode = 'trip' | 'roundtrip' | 'route';
 
 export interface RoutePlannerCleanResultState {
   alternatives: Alternative[];
   waypoints: Waypoint[];
   activeAlternativeIndex: number;
   timestamp: number | null;
+  isochrones: Feature<Polygon>[] | null;
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
@@ -41,6 +53,8 @@ export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   finish: LatLon | null;
   pickMode: PickMode | null;
   itineraryIsVisible: boolean;
+  roundtripParams: RoundtripParams;
+  isochroneParams: IsochroneParams;
 }
 
 const clearResult: RoutePlannerCleanResultState = {
@@ -48,6 +62,7 @@ const clearResult: RoutePlannerCleanResultState = {
   waypoints: [],
   activeAlternativeIndex: 0,
   timestamp: null,
+  isochrones: null,
 };
 
 export const cleanState: RoutePlannerCleanState = {
@@ -56,19 +71,30 @@ export const cleanState: RoutePlannerCleanState = {
   finish: null,
   pickMode: null,
   itineraryIsVisible: false,
+  roundtripParams: {
+    distance: 5000,
+    seed: 0,
+  },
+  isochroneParams: {
+    distanceLimit: 0,
+    timeLimit: 600,
+    buckets: 1,
+  },
   ...clearResult,
 };
 
 export interface RoutePlannerState extends RoutePlannerCleanState {
   transportType: TransportType;
-  mode: RouteMode;
-  milestones: boolean;
+  mode: RoutingMode;
+  weighting: Weighting;
+  milestones: 'abs' | 'rel' | false;
   preventHint: boolean;
 }
 
 export const routePlannerInitialState: RoutePlannerState = {
-  transportType: 'foot-osm',
+  transportType: 'hiking',
   mode: 'route',
+  weighting: 'fastest',
   milestones: false,
   preventHint: false,
   ...cleanState,
@@ -87,7 +113,9 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     return {
       ...state,
       milestones:
-        action.payload === undefined ? !state.milestones : action.payload,
+        action.payload.toggle && state.milestones === action.payload.type
+          ? false
+          : action.payload.type,
     };
   })
   .handleAction(selectFeature, (state) => ({
@@ -107,39 +135,75 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     preventHint: state.preventHint,
     transportType: state.transportType,
     mode: state.mode,
+    milestones: state.milestones,
+    pickMode: 'start',
   }))
-  .handleAction(routePlannerSetParams, (state, action) => ({
+  .handleAction(routePlannerSetParams, (state, { payload }) => ({
     ...state,
-    ...(action.payload.start === null || action.payload.finish === null
+    ...(payload.start === null || payload.finish === null
       ? {
           ...routePlannerInitialState,
           preventHint: state.preventHint,
           transportType: state.transportType,
           mode: state.mode,
+          weighting:
+            state.transportType === 'foot-stroller' &&
+            state.weighting === 'fastest'
+              ? 'short_fastest'
+              : state.weighting,
         }
       : {}),
-    start: action.payload.start,
-    finish: action.payload.finish,
-    midpoints: isSpecial(action.payload.transportType)
-      ? []
-      : action.payload.midpoints,
-    transportType: action.payload.transportType,
-    mode: isSpecial(action.payload.transportType)
-      ? 'route'
-      : action.payload.mode || 'route',
-    milestones: !!action.payload.milestones,
-  }))
-  .handleAction(routePlannerSetStart, (state, action) => ({
-    ...state,
-    start: action.payload.start,
+    start: payload.start,
+    finish:
+      transportTypeDefs[payload.transportType].api === 'gh' &&
+      (payload.mode ?? state.mode) !== 'route'
+        ? null
+        : payload.finish,
     midpoints:
-      !isSpecial(state.transportType) && !action.payload.move && state.start
+      (transportTypeDefs[payload.transportType].api === 'gh' &&
+        (payload.mode ?? state.mode) !== 'route') ||
+      isSpecial(payload.transportType)
+        ? []
+        : payload.midpoints,
+    transportType: payload.transportType,
+    mode: isSpecial(payload.transportType)
+      ? 'route'
+      : transportTypeDefs[payload.transportType].api !== 'gh' &&
+        payload.mode === 'isochrone'
+      ? 'route'
+      : payload.mode || 'route',
+    milestones: payload.milestones ?? false,
+    weighting:
+      state.transportType === 'foot-stroller' &&
+      (payload.weighting ?? 'fastest') === 'fastest'
+        ? 'short_fastest'
+        : payload.weighting ?? 'fastest',
+    roundtripParams: {
+      ...state.roundtripParams,
+      ...payload.roundtripParams,
+    },
+    isochroneParams: {
+      ...state.isochroneParams,
+      ...payload.isochroneParams,
+    },
+  }))
+  .handleAction(routePlannerSetStart, (state, { payload }) => ({
+    ...state,
+    start: payload.start,
+    midpoints:
+      !(
+        transportTypeDefs[state.transportType].api === 'gh' &&
+        state.mode !== 'route'
+      ) &&
+      !isSpecial(state.transportType) &&
+      !payload.move &&
+      state.start
         ? [state.start, ...state.midpoints]
         : state.midpoints,
     pickMode: state.finish ? state.pickMode : 'finish',
   }))
-  .handleAction(routePlannerSetFinish, (state, action) =>
-    action.payload.finish === null
+  .handleAction(routePlannerSetFinish, (state, { payload }) =>
+    payload.finish === null
       ? {
           // only possible in (round)trip mode
           ...state,
@@ -153,11 +217,9 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
         }
       : {
           ...state,
-          finish: action.payload.finish,
+          finish: payload.finish,
           midpoints:
-            !isSpecial(state.transportType) &&
-            !action.payload.move &&
-            state.finish
+            !isSpecial(state.transportType) && !payload.move && state.finish
               ? [...state.midpoints, state.finish]
               : state.midpoints,
           pickMode: state.start ? 'finish' : 'start',
@@ -169,14 +231,12 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     finish: state.start,
     midpoints: [...state.midpoints].reverse(),
   }))
-  .handleAction(routePlannerAddMidpoint, (state, action) =>
-    produce(state, (draft) => {
-      draft.midpoints.splice(
-        action.payload.position,
-        0,
-        action.payload.midpoint,
-      );
-    }),
+  .handleAction(
+    routePlannerAddMidpoint,
+    (state, { payload: { position, midpoint } }) =>
+      produce(state, (draft) => {
+        draft.midpoints.splice(position, 0, midpoint);
+      }),
   )
   .handleAction(routePlannerSetMidpoint, (state, action) =>
     produce(state, (draft) => {
@@ -188,16 +248,44 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       draft.midpoints.splice(action.payload, 1);
     }),
   )
-  .handleAction(routePlannerSetTransportType, (state, action) => ({
+  .handleAction(
+    routePlannerSetTransportType,
+    (state, { payload: transportType }) => ({
+      ...state,
+      ...clearResult,
+      transportType,
+      mode:
+        isSpecial(transportType) ||
+        (transportTypeDefs[transportType].api !== 'gh' &&
+          state.mode === 'isochrone')
+          ? 'route'
+          : state.mode,
+      weighting:
+        transportType === 'foot-stroller' ? 'short_fastest' : 'fastest',
+    }),
+  )
+  .handleAction(routePlannerSetMode, (state, { payload: mode }) => ({
     ...state,
     ...clearResult,
-    transportType: action.payload,
-    mode: isSpecial(action.payload) ? 'route' : state.mode,
+    midpoints:
+      transportTypeDefs[state.transportType].api === 'gh' && mode !== 'route'
+        ? []
+        : state.midpoints,
+    finish:
+      transportTypeDefs[state.transportType].api === 'gh' && mode !== 'route'
+        ? null
+        : state.finish,
+    mode:
+      isSpecial(state.transportType) ||
+      (transportTypeDefs[state.transportType].api !== 'gh' &&
+        mode === 'isochrone')
+        ? 'route'
+        : mode,
   }))
-  .handleAction(routePlannerSetMode, (state, action) => ({
+  .handleAction(routePlannerSetWeighting, (state, action) => ({
     ...state,
     ...clearResult,
-    mode: isSpecial(state.transportType) ? 'route' : action.payload,
+    weighting: action.payload,
   }))
   .handleAction(routePlannerSetPickMode, (state, action) => ({
     ...state,
@@ -207,20 +295,64 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     itineraryIsVisible: !state.itineraryIsVisible,
   }))
-  .handleAction(routePlannerSetResult, (state, action) => ({
-    ...state,
-    alternatives: action.payload.alternatives,
-    waypoints: action.payload.waypoints,
-    timestamp: action.payload.timestamp,
-    activeAlternativeIndex: 0,
-    midpoints: isSpecial(action.payload.transportType) ? [] : state.midpoints,
-  }))
+  .handleAction(
+    routePlannerSetResult,
+    (
+      state,
+      { payload: { alternatives, waypoints, timestamp, transportType } },
+    ) => ({
+      ...state,
+      ...clearResult,
+      alternatives,
+      waypoints,
+      timestamp,
+      activeAlternativeIndex: 0,
+      midpoints:
+        (transportTypeDefs[state.transportType].api === 'gh' &&
+          state.mode !== 'route') ||
+        isSpecial(transportType)
+          ? []
+          : state.midpoints,
+    }),
+  )
+  .handleAction(
+    routePlannerSetIsochrones,
+    (state, { payload: { isochrones, timestamp } }) => ({
+      ...state,
+      ...clearResult,
+      isochrones,
+      timestamp,
+      midpoints: [],
+    }),
+  )
   .handleAction(routePlannerSetActiveAlternativeIndex, (state, action) => ({
     ...state,
     activeAlternativeIndex: action.payload,
   }))
-  .handleAction(mapsDataLoaded, (state, { payload: { routePlanner } }) => {
-    return {
+  .handleAction(routePlannerSetRoundtripParams, (state, { payload }) => ({
+    ...state,
+    roundtripParams: {
+      ...state.roundtripParams,
+      ...payload,
+    },
+  }))
+  .handleAction(routePlannerSetIsochroneParams, (state, { payload }) => ({
+    ...state,
+    isochroneParams: {
+      ...state.isochroneParams,
+      ...payload,
+    },
+  }))
+  .handleAction(
+    mapsLoaded,
+    (
+      state,
+      {
+        payload: {
+          data: { routePlanner },
+        },
+      },
+    ) => ({
       ...routePlannerInitialState,
       preventHint: state.preventHint,
       transportType:
@@ -232,5 +364,5 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       mode: routePlanner?.mode ?? routePlannerInitialState.mode,
       milestones:
         routePlanner?.milestones ?? routePlannerInitialState.milestones,
-    };
-  });
+    }),
+  );

@@ -1,16 +1,14 @@
 import { RootAction } from 'fm3/actions';
 import { sendError } from 'fm3/globalErrorHandler';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 import { Dispatch, Middleware } from 'redux';
 
 export const errorHandlingMiddleware: Middleware<
   RootAction | null,
-  DefaultRootState,
+  RootState,
   Dispatch<RootAction>
-> =
-  () =>
-  (next: Dispatch) =>
-  (action: RootAction): RootAction | null => {
+> = () => (next: Dispatch) =>
+  function (action: RootAction): RootAction | null {
     try {
       return next(action);
     } catch (error) {

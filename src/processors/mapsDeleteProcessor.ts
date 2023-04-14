@@ -1,6 +1,10 @@
-import { mapsDelete, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import {
+  mapsDelete,
+  mapsDisconnect,
+  mapsLoadList,
+} from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
@@ -10,12 +14,12 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
     await httpRequest({
       getState,
       method: 'DELETE',
-      url: `/maps/${id ?? getState().maps.id}`,
+      url: `/maps/${id}`,
       expectedStatus: 204,
     });
 
-    if (!id || getState().maps.id === id) {
-      dispatch(mapsLoad({})); // detach
+    if (getState().maps.activeMap?.id === id) {
+      dispatch(mapsDisconnect());
     }
 
     dispatch(mapsLoadList());

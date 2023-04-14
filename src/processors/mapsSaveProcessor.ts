@@ -1,13 +1,15 @@
 import {
   MapData,
-  mapsLoad,
+  MapMeta,
   mapsLoadList,
   mapsSave,
+  mapsSetMeta,
 } from 'fm3/actions/mapsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { DefaultRootState } from 'react-redux';
+import { RootState } from 'fm3/reducers';
+import { StringDates } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
 
@@ -26,19 +28,37 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       return;
     }
 
-    const { id } = getState().maps;
+    const { activeMap } = getState().maps;
 
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: id ? 'PATCH' : 'POST',
-      url: `/maps/${id ?? ''}`,
-      expectedStatus: [200, 204],
+      method: activeMap ? 'PATCH' : 'POST',
+      url: `/maps/${activeMap?.id ?? ''}`,
+      expectedStatus: [200, 412],
+      headers: activeMap
+        ? {
+            'If-Unmodified-Since': activeMap.modifiedAt.toUTCString(),
+          }
+        : {},
       data: {
         name: action.payload?.name,
-        data: getMapDataFromState(getState()),
         public: true, // TODO
+        writers: action.payload?.writers,
+        data: getMapDataFromState(getState()),
       },
     });
+
+    if (res.status === 412) {
+      dispatch(
+        toastsAdd({
+          id: 'maps.conflictError',
+          style: 'danger',
+          messageKey: 'maps.conflictError',
+        }),
+      );
+
+      return;
+    }
 
     dispatch(
       toastsAdd({
@@ -50,13 +70,19 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     dispatch(mapsLoadList());
 
-    if (!id) {
-      dispatch(mapsLoad({ id: assertType<{ id: string }>(data).id })); // TODO skip loading in this case
-    }
+    const data = assertType<StringDates<MapMeta>>(await res.json());
+
+    dispatch(
+      mapsSetMeta({
+        ...data,
+        createdAt: new Date(data.createdAt),
+        modifiedAt: new Date(data.modifiedAt),
+      }),
+    );
   },
 };
 
-function getMapDataFromState(state: DefaultRootState): MapData {
+function getMapDataFromState(state: RootState): MapData {
   const {
     tracking,
     drawingLines,
@@ -85,7 +111,9 @@ function getMapDataFromState(state: DefaultRootState): MapData {
       mode: routePlanner.mode,
       milestones: routePlanner.milestones,
     },
-    objects: objects.objects,
+    objectsV2: {
+      active: objects.active,
+    },
     galleryFilter: gallery.filter,
     trackViewer,
     map: {
@@ -94,6 +122,7 @@ function getMapDataFromState(state: DefaultRootState): MapData {
       lon: map.lon,
       zoom: map.zoom,
       overlays: map.overlays,
+      customLayers: map.customLayers,
     },
   };
 }

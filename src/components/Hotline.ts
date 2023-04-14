@@ -1,8 +1,7 @@
 import { createPathComponent, PathProps } from '@react-leaflet/core';
-import { PropsWithChildren } from '@react-leaflet/core/types/component';
 import 'leaflet-hotline';
 
-interface Props extends PathProps, PropsWithChildren {
+interface Props extends PathProps {
   positions: (readonly [number, number, number])[];
   outlineWidth: number;
   outlineColor?: string;

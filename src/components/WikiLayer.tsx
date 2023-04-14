@@ -1,11 +1,17 @@
-import { wikiLoadPreview } from 'fm3/actions/wikiActions';
+import {
+  wikiLoadPreview,
+  WikiPreview,
+  wikiSetPreview,
+} from 'fm3/actions/wikiActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { Icon } from 'leaflet';
-import { ReactElement } from 'react';
-import { render } from 'react-dom';
-import { FaExternalLinkAlt, FaWikipediaW } from 'react-icons/fa';
-import { Marker, Popup, Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { createRoot } from 'react-dom/client';
+import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
+import { Marker, Tooltip } from 'react-leaflet';
+import { useDispatch } from 'react-redux';
 
 class WikiIcon extends Icon {
   static template: ChildNode | undefined;
@@ -20,7 +26,9 @@ class WikiIcon extends Icon {
     if (WikiIcon.template) {
       div.appendChild(WikiIcon.template.cloneNode());
     } else {
-      render(<FaWikipediaW />, div);
+      const root = createRoot(div);
+
+      root.render(<FaWikipediaW />);
 
       WikiIcon.template = div.childNodes.item(0);
     }
@@ -45,66 +53,112 @@ const wikiIcon = new WikiIcon({
 export function WikiLayer(): ReactElement {
   const m = useMessages();
 
-  const points = useSelector((state) => state.wiki.points);
+  const points = useAppSelector((state) => state.wiki.points);
 
-  const preview = useSelector((state) => state.wiki.preview);
+  const preview = useAppSelector((state) => state.wiki.preview);
+
+  const loading = useAppSelector((state) => state.wiki.loading);
 
   const dispatch = useDispatch();
 
+  const [memPreview, setMemPreview] = useState<WikiPreview>();
+
+  useEffect(() => {
+    if (preview) {
+      setMemPreview(preview);
+    } else {
+      const ref = window.setTimeout(() => {
+        setMemPreview(undefined);
+      }, 500);
+
+      return () => {
+        window.clearTimeout(ref);
+      };
+    }
+  }, [preview]);
+
+  const effPreview = preview ?? memPreview;
+
+  const close = useCallback(() => {
+    dispatch(wikiSetPreview(null));
+  }, [dispatch]);
+
   return (
     <>
+      <Modal
+        show={loading !== null || preview !== null}
+        onHide={close}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaWikipediaW />{' '}
+            <a
+              href={
+                effPreview
+                  ? `https://${effPreview.lang}.wikipedia.org/wiki/${effPreview.langTitle}`
+                  : loading?.replace(
+                      /(.*):(.*)/,
+                      'https://$1.wikipedia.org/wiki/$2',
+                    )
+              }
+              target="wikipedia"
+            >
+              {effPreview ? effPreview.title : loading?.replace(/.*:/, '')}{' '}
+              <FaExternalLinkAlt />
+            </a>
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          {effPreview ? (
+            <>
+              {effPreview.thumbnail && (
+                <img
+                  src={effPreview.thumbnail.source}
+                  width={effPreview.thumbnail.width}
+                  height={effPreview.thumbnail.height}
+                />
+              )}
+              <div dangerouslySetInnerHTML={{ __html: effPreview.extract }} />
+            </>
+          ) : (
+            m?.general.loading
+          )}
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="dark" onClick={close}>
+            <FaTimes /> {m?.general.close}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {points.map(({ id, lat, lon, name, wikipedia }) => (
         <Marker
           key={id}
           position={{ lat, lng: lon }}
           icon={wikiIcon}
+          eventHandlers={{
+            click() {
+              dispatch(wikiLoadPreview(wikipedia));
+            },
+          }}
           // onclick={onSelects[i]}
         >
-          {name && (
+          {(wikipedia || name) && (
             <Tooltip className="compact" direction="top" permanent>
               <div
                 style={{
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  maxWidth: 200,
+                  maxWidth: 150,
                 }}
               >
-                {name}
+                {wikipedia.replace(/^[a-z]+:/, '') || name}
               </div>
             </Tooltip>
           )}
-          <Popup onOpen={() => dispatch(wikiLoadPreview(wikipedia))}>
-            <h4>
-              <a
-                href={
-                  preview
-                    ? `https://${preview.lang}.wikipedia.org/wiki/${preview.langTitle}`
-                    : wikipedia.replace(
-                        /(.*):(.*)/,
-                        'https://$1.wikipedia.org/wiki/$2',
-                      )
-                }
-                target="wikipedia"
-              >
-                {preview ? preview.title : wikipedia.replace(/.*:/, '')}{' '}
-                <FaExternalLinkAlt />
-              </a>
-            </h4>
-            {preview ? (
-              <div style={{ maxHeight: '50vh', overflow: 'auto' }}>
-                {preview.thumbnail && (
-                  <img
-                    src={preview.thumbnail.source}
-                    width={preview.thumbnail.width}
-                    height={preview.thumbnail.height}
-                  />
-                )}
-                <div dangerouslySetInnerHTML={{ __html: preview.extract }} />
-              </div>
-            ) : (
-              m?.general.loading
-            )}
-          </Popup>
         </Marker>
       ))}
     </>

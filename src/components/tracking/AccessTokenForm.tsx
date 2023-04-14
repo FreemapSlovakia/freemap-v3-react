@@ -1,7 +1,8 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
-import { useTextInputState } from 'fm3/hooks/inputHooks';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -10,14 +11,14 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
 import { FaBullseye } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const accessToken = useSelector((state) =>
+  const accessToken = useAppSelector((state) =>
     state.tracking.modifiedAccessTokenId
       ? state.tracking.accessTokens.find(
           (accessToken) =>
@@ -26,7 +27,7 @@ export function AccessTokenForm(): ReactElement {
       : undefined,
   );
 
-  const deviceName = useSelector(
+  const deviceName = useAppSelector(
     (state) =>
       (
         state.tracking.devices.find(

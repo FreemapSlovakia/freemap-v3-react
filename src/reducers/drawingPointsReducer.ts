@@ -5,8 +5,8 @@ import {
   drawingPointChangePosition,
   drawingPointSetAll,
 } from 'fm3/actions/drawingPointActions';
-import { clearMap } from 'fm3/actions/mainActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { applySettings, clearMap } from 'fm3/actions/mainActions';
+import { mapsLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 
@@ -25,6 +25,17 @@ export const drawingPointsReducer = createReducer<
   RootAction
 >(initialState)
   .handleAction(clearMap, () => initialState)
+  .handleAction(applySettings, (state, { payload }) =>
+    produce(state, (draft) => {
+      if (payload.drawingApplyAll) {
+        for (const point of draft.points) {
+          if (payload.drawingColor) {
+            point.color = payload.drawingColor;
+          }
+        }
+      }
+    }),
+  )
   .handleAction(drawingPointAdd, (state, { payload }) => ({
     ...state,
     points: [...state.points, payload],
@@ -33,7 +44,9 @@ export const drawingPointsReducer = createReducer<
   .handleAction(drawingPointChangePosition, (state, { payload }) =>
     produce(state, (draft) => {
       const point = draft.points[payload.index];
+
       point.lat = payload.lat;
+
       point.lon = payload.lon;
     }),
   )
@@ -41,12 +54,12 @@ export const drawingPointsReducer = createReducer<
     ...state,
     points: payload,
   }))
-  .handleAction(mapsDataLoaded, (state, { payload }) => {
+  .handleAction(mapsLoaded, (state, { payload }) => {
     return {
       ...initialState,
       points: [
         ...(payload.merge ? state.points : []),
-        ...(payload.points ?? initialState.points),
+        ...(payload.data.points ?? initialState.points),
       ],
     };
   });

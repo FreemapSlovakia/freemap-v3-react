@@ -3,31 +3,35 @@ import {
   galleryRequestImage,
   gallerySetImageIds,
 } from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
+import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { assertType } from 'typescript-is';
 
 export const galleryRequestImagesByOrderProcessor: Processor<
   typeof galleryList
 > = {
   actionCreator: galleryList,
+  id: 'gallery.picturesFetchingError',
   errorKey: 'gallery.picturesFetchingError',
   async handle({ getState, dispatch, action }) {
-    const { data } = await httpRequest({
+    const res = await httpRequest({
       getState,
-      method: 'GET',
-      url: '/gallery/pictures',
-      params: {
-        by: 'order',
-        orderBy: action.payload.substring(1),
-        direction: action.payload[0] === '+' ? 'asc' : 'desc',
-        ...createFilter(getState().gallery.filter),
-      },
+      url:
+        '/gallery/pictures?' +
+        objectToURLSearchParams({
+          by: 'order',
+          orderBy: action.payload.substring(1),
+          direction: action.payload[0] === '+' ? 'asc' : 'desc',
+          ...createFilter(getState().gallery.filter),
+        }),
       expectedStatus: 200,
     });
 
-    const ids = assertType<{ id: number }[]>(data).map((item) => item.id);
+    const ids = assertType<{ id: number }[]>(await res.json()).map(
+      (item) => item.id,
+    );
 
     dispatch(gallerySetImageIds(ids));
 

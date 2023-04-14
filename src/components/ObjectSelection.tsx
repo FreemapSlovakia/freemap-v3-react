@@ -1,30 +1,30 @@
 import { convertToDrawing } from 'fm3/actions/mainActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Selection } from './Selection';
+
+export default ObjectSelection;
 
 export function ObjectSelection(): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
 
-  const selection = useSelector((state) => state.main.selection);
+  const selection = useAppSelector((state) => state.main.selection);
 
   return (
-    <Selection
-      icon={<FaMapMarkerAlt />}
-      title={m?.selections.objects}
-      deletable
-    >
+    <Selection icon={<FaMapMarkerAlt />} title={m?.selections.objects}>
       <Button
         className="ml-1"
         variant="secondary"
         onClick={() => {
-          selection?.type === 'objects' &&
+          if (selection?.type === 'objects') {
             dispatch(convertToDrawing(selection));
+          }
         }}
         title={m?.general.convertToDrawing}
       >

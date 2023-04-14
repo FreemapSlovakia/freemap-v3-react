@@ -9,7 +9,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
   handle: async ({ dispatch, getState }) => {
-    if (getState().elevationChart.trackGeojson) {
+    if (getState().elevationChart.elevationProfilePoints) {
       dispatch(elevationChartClose());
     } else {
       const { trackGeojson } = getState().trackViewer;
