@@ -1,4 +1,4 @@
-import toGeoJSON from '@mapbox/togeojson';
+import * as toGeoJSON from '@tmcw/togeojson';
 import { FeatureCollection, Geometries } from '@turf/helpers';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { mapPromise } from 'fm3/leafletElementHolder';
