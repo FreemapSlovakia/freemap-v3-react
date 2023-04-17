@@ -114,6 +114,12 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
+  const allow = ['fullscreen'];
+
+  if (enableLocateMe) {
+    allow.push('geolocation');
+  }
+
   return (
     <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
@@ -189,7 +195,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
         <FormControl
           ref={setFormControl}
           as="textarea"
-          value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen></iframe>`}
+          value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen allow="${allow.join(
+            ';',
+          )}"></iframe>`}
           readOnly
           rows={3}
         />
@@ -207,6 +215,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
             }}
             src={iframeUrl}
             allowFullScreen
+            allow={allow.join(';')}
             ref={iframe}
           />
         </div>
