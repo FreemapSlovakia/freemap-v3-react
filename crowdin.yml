@@ -1,3 +1,0 @@
-files:
-  - source: osmTagToNameMapping
-    translation: /src/osmTagToNameMapping-%two_letters_code%.ts
