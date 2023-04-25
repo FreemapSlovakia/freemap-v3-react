@@ -20,4 +20,4 @@ declare module '*.overpass' {
 
 declare module '@mapbox/togeojson';
 
-declare module 'react-pannellum';
+declare module 'pannellum';

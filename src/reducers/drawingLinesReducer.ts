@@ -19,7 +19,7 @@ import {
   setTool,
 } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
-import produce from 'immer';
+import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
 
 export interface DrawingLinesState {

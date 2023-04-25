@@ -10,7 +10,6 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useOnline } from 'fm3/hooks/useOnline';
 import { useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/react-tag-autocomplete.css';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -31,7 +30,8 @@ import {
   FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import ReactTags, { Tag } from 'react-tag-autocomplete';
+import { ReactTags, Tag } from 'react-tag-autocomplete';
+import 'react-tag-autocomplete/example/src/styles.css';
 import { assertType } from 'typescript-is';
 
 type Props = { show: boolean };
@@ -141,7 +141,7 @@ export function MapsModal({ show }: Props): ReactElement {
   }, [users]);
 
   const handleWriterAddition = (tag: Tag) => {
-    setWriters((writers) => writers && [...writers, Number(tag.id)]);
+    setWriters((writers) => writers && [...writers, Number(tag.value)]);
   };
 
   const handleWriterDelete = (index: number) => {
@@ -189,15 +189,22 @@ export function MapsModal({ show }: Props): ReactElement {
                   <FormLabel>{m?.maps.writers}</FormLabel>
 
                   <ReactTags
-                    tags={writers?.map((id) => ({
-                      id,
-                      name: userMap.get(id) ?? '???',
+                    selected={writers?.map((id) => ({
+                      value: id,
+                      label: userMap.get(id) ?? '???',
                     }))}
-                    suggestions={users?.filter(
-                      (user) =>
-                        user.id !== myUserId && !writers?.includes(user.id),
-                    )}
-                    onAddition={handleWriterAddition}
+                    suggestions={
+                      users
+                        ?.filter(
+                          (user) =>
+                            user.id !== myUserId && !writers?.includes(user.id),
+                        )
+                        .map((user) => ({
+                          label: user.name,
+                          value: user.id,
+                        })) ?? []
+                    }
+                    onAdd={handleWriterAddition}
                     onDelete={handleWriterDelete}
                   />
                 </FormGroup>

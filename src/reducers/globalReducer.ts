@@ -19,7 +19,7 @@ import {
 } from 'fm3/actions/mainActions';
 import { mergeLines } from 'fm3/geoutils';
 import { RootState } from 'fm3/reducers';
-import produce from 'immer';
+import { produce } from 'immer';
 import { isActionOf } from 'typesafe-actions';
 import {
   cleanState as routePlannerCleanState,

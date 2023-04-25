@@ -36,7 +36,7 @@ import {
   transportTypeDefs,
 } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
-import produce from 'immer';
+import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
 
 export interface RoutePlannerCleanResultState {

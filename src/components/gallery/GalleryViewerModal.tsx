@@ -21,6 +21,8 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useMessages } from 'fm3/l10nInjector';
 import 'fm3/styles/gallery.scss';
+import 'pannellum';
+import 'pannellum/build/pannellum.css';
 import {
   ChangeEvent,
   FormEvent,
@@ -46,7 +48,6 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
-import ReactPannellum from 'react-pannellum';
 import { useDispatch } from 'react-redux';
 import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
@@ -166,6 +167,29 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     lon,
     pano,
   } = image || {};
+
+  const p = activeImageId !== null && pano;
+
+  const panoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (p) {
+      const v = window.pannellum.viewer(panoRef.current, {
+        panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
+        type: 'equirectangular',
+        autoLoad: true,
+        showControls: false,
+        autoRotate: 15,
+        autoRotateInactivityDelay: 60000,
+        // compass: true,
+        // title: 'panorama',
+      });
+
+      return () => {
+        v.destroy();
+      };
+    }
+  }, [p, activeImageId]);
 
   const handleFullscreen = useCallback(() => {
     if (!document.exitFullscreen || !fullscreenElement.current) {
@@ -322,19 +346,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             <div className="carousel-inner">
               <div className="carousel-item active">
                 {activeImageId === null ? null : pano ? (
-                  <ReactPannellum
+                  <div
+                    ref={panoRef}
                     key={'pano-' + activeImageId}
                     id={String(activeImageId)}
-                    sceneId={String(activeImageId)}
-                    imageSource={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
-                    config={{
-                      autoLoad: true,
-                      showControls: false,
-                      autoRotate: 15,
-                      autoRotateInactivityDelay: 60000,
-                      // compass: true,
-                      // title: 'panorama',
-                    }}
                     style={
                       isFullscreen
                         ? { width: '100vw', height: '100vh' }

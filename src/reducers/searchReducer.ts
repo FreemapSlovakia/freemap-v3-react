@@ -10,7 +10,7 @@ import {
   searchSelectResult,
   searchSetResults,
 } from 'fm3/actions/searchActions';
-import produce from 'immer';
+import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
 
 export interface SearchState {

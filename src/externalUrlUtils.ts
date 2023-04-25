@@ -80,8 +80,12 @@ export function getF4mapUrl(lat: number, lon: number, zoom: number): string {
   )}`;
 }
 
-export function getGeocachingUrl(lat: number, lon: number, zoom: number): string {
-	return `https://www.geocaching.com/map/#?ll=${lat},${lon}&z=${Math.max(
+export function getGeocachingUrl(
+  lat: number,
+  lon: number,
+  zoom: number,
+): string {
+  return `https://www.geocaching.com/map/#?ll=${lat},${lon}&z=${Math.max(
     18,
     zoom,
   )}`;

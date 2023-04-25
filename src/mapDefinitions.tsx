@@ -126,14 +126,14 @@ export const overlayLetters = [
 export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export type NoncustomLayerLetters =
-  | typeof baseLayerLetters[number]
-  | typeof overlayLetters[number];
+  | (typeof baseLayerLetters)[number]
+  | (typeof overlayLetters)[number];
 
 export type BaseLayerLetters =
-  | typeof baseLayerLetters[number]
+  | (typeof baseLayerLetters)[number]
   | `.${Num1digit}`;
 
-export type OverlayLetters = typeof overlayLetters[number] | `:${Num1digit}`;
+export type OverlayLetters = (typeof overlayLetters)[number] | `:${Num1digit}`;
 
 export interface LayerDef {
   icon: ReactElement;
@@ -343,7 +343,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VO',
-    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=0iOk4fgsz9fOXyDYCirE',
+    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=hpnL3lUOTtPNnue7UkOt',
     key: ['KeyV', false],
     icon: <FaMap />,
     attribution: [
@@ -356,7 +356,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VS',
-    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=0iOk4fgsz9fOXyDYCirE',
+    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=hpnL3lUOTtPNnue7UkOt',
     key: ['KeyR', false],
     icon: <FaMap />,
     attribution: [

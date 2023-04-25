@@ -1,6 +1,5 @@
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/react-tag-autocomplete.css';
 import { ReactElement, ReactNode } from 'react';
 import Button from 'react-bootstrap/Button';
 

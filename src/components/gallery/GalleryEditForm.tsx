@@ -1,6 +1,5 @@
 import { galleryAddTag, GalleryTag } from 'fm3/actions/galleryActions';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/react-tag-autocomplete.css';
 import {
   ChangeEvent,
   ReactElement,
@@ -15,7 +14,8 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import ReactTags, { Tag } from 'react-tag-autocomplete';
+import { ReactTags, Tag } from 'react-tag-autocomplete';
+import 'react-tag-autocomplete/example/src/styles.css';
 import { DateTime } from '../DateTime';
 import { RecentTags } from './RecentTags';
 
@@ -82,8 +82,8 @@ export function GalleryEditForm({
   const dispatch = useDispatch();
 
   const handleTagAddition = useCallback(
-    ({ name }: Tag) => {
-      const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
+    ({ value }: Tag) => {
+      const fixed = String(value).toLowerCase().trim().replace(/ {2,}/g, ' ');
 
       dispatch(galleryAddTag(fixed));
 
@@ -180,9 +180,12 @@ export function GalleryEditForm({
       <FormGroup key={key}>
         <ReactTags
           placeholderText={m?.gallery.editForm.tags}
-          tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
-          suggestions={allTags.map(({ name }) => ({ id: name, name }))}
-          onAddition={handleTagAddition}
+          selected={model.tags.map((tag) => ({ label: tag, value: tag }))}
+          suggestions={allTags.map(({ name }) => ({
+            label: name,
+            value: name,
+          }))}
+          onAdd={handleTagAddition}
           onDelete={handleTagDelete}
           allowNew
         />
@@ -190,7 +193,7 @@ export function GalleryEditForm({
         <RecentTags
           className="mt-1"
           existingTags={model.tags}
-          onAdd={(tag) => handleTagAddition({ id: tag, name: tag })}
+          onAdd={(tag) => handleTagAddition({ label: tag, value: tag })}
         />
       </FormGroup>
     </div>

@@ -4,13 +4,15 @@ import { LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 import { CustomLayer, LayerSettings } from './mapActions';
 
-export type Tool = typeof tools[number];
+export type Tool = (typeof tools)[number];
 
 const specialModals = ['tips', 'edit-label'] as const;
 
-export type Modal = typeof basicModals[number] | typeof specialModals[number];
+export type Modal =
+  | (typeof basicModals)[number]
+  | (typeof specialModals)[number];
 
-export type ShowModal = typeof basicModals[number];
+export type ShowModal = (typeof basicModals)[number];
 
 export const setTool = createAction('SET_TOOL')<Tool | null>();
 

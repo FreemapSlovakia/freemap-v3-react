@@ -42,7 +42,7 @@ import { parseCoordinates } from 'fm3/coordinatesParser';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { latLonToString } from 'fm3/geoutils';
 import { LatLon } from 'fm3/types/common';
-import produce from 'immer';
+import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
 
 export interface GalleryState {

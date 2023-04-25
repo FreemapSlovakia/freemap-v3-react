@@ -35,6 +35,7 @@ declare global {
     fmHeadless?: {
       searchResultStyle?: PathOptions;
     };
+    pannellum: any;
   }
 
   interface ServiceWorkerGlobalScope {

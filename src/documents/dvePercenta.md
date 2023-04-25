@@ -8,17 +8,18 @@ Vaše 2% z dane nám pomôžu udržať v prevádzke hardvér, nami poskytované 
 
 **Údaje potrebné k poukázaniu podielu zaplatenej dane:**
 
-| Pole                          | Hodnota             |
-| ----------------------------- | ------------------- |
-| 15 - IČO                      | 42173639            |
-| 16 - Obchodné meno (názov)    | Freemap Slovakia    |
+| Pole                       | Hodnota          |
+| -------------------------- | ---------------- |
+| 15 - IČO                   | 42173639         |
+| 16 - Obchodné meno (názov) | Freemap Slovakia |
 
 Ak vypisujete vyhlásenie sami, zarovnajte IČO doprava.
 
 Pokiaľ ste zamestnanec, môžete si stiahnuť tlačivá potrebné k poukázaniu 2% z dane:
-* [predvyplnené vyhlásenie o poukázani podielu zaplatenej dane z príjmov fyzickej osoby](https://download.freemap.sk/OZ/2percenta/Vyhlasenie-2percenta-2022-FreemapSlovakia.pdf)
-* [prázdne vyhlásenie o poukázani podielu zaplatenej dane z príjmov fyzickej osoby](https://download.freemap.sk/OZ/2percenta/Vyhlasenie-2percenta-prazdne.pdf)
-* [potvrdenie o zaplatení dane z príjmov zo závislej činnosti](https://download.freemap.sk/OZ/2percenta/Potvrdenie-2percenta-prazdne.pdf).
+
+- [predvyplnené vyhlásenie o poukázani podielu zaplatenej dane z príjmov fyzickej osoby](https://download.freemap.sk/OZ/2percenta/Vyhlasenie-2percenta-2022-FreemapSlovakia.pdf)
+- [prázdne vyhlásenie o poukázani podielu zaplatenej dane z príjmov fyzickej osoby](https://download.freemap.sk/OZ/2percenta/Vyhlasenie-2percenta-prazdne.pdf)
+- [potvrdenie o zaplatení dane z príjmov zo závislej činnosti](https://download.freemap.sk/OZ/2percenta/Potvrdenie-2percenta-prazdne.pdf).
 
 Dostupné je aj online tlačivo na stránke [Finančnej správy](https://pfseform.financnasprava.sk/Formulare/eFormVzor/DP/form.527.html).
 

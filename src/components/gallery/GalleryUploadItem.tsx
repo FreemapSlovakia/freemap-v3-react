@@ -4,7 +4,6 @@ import {
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
 import spinnerbar from 'fm3/images/spinnerbar.gif';
-import 'fm3/styles/react-tag-autocomplete.css';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { Fragment, ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';

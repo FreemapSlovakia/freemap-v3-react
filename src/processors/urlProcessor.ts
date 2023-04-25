@@ -297,7 +297,7 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (main.documentKey && is<typeof allTips[number][0]>(main.documentKey)) {
+    if (main.documentKey && is<(typeof allTips)[number][0]>(main.documentKey)) {
       queryParts.push(['tip', main.documentKey]);
     }
 

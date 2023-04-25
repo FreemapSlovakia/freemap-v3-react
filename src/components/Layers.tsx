@@ -13,7 +13,7 @@ import { AsyncComponent } from './AsyncComponent';
 
 const galleryLayerFactory = () => import('fm3/components/gallery/GalleryLayer');
 
-const maplibreLayerFactory = () => import('./MaplibreLayer');
+const maplibreLayerFactory = () => import('./MaplibreLayer') as any;
 
 export function Layers(): ReactElement | null {
   const overlays = useAppSelector((state) => state.map.overlays);
