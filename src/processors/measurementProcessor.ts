@@ -15,7 +15,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const cancelType = [
   getType(clearMap),
@@ -60,7 +60,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           cancelActions: [drawingMeasure, clearMap],
         });
 
-        elevation = assertType<[number]>(await res.json())[0];
+        elevation = assert<[number]>(await res.json())[0];
       }
 
       dispatch(

@@ -3,7 +3,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const galleryFetchUsersProcessor: Processor = {
   actionCreator: setActiveModal,
@@ -22,6 +22,6 @@ export const galleryFetchUsersProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetUsers(assertType<GalleryUser[]>(await res.json())));
+    dispatch(gallerySetUsers(assert<GalleryUser[]>(await res.json())));
   },
 };

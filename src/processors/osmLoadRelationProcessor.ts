@@ -14,7 +14,7 @@ import { mergeLines } from 'fm3/geoutils';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmNode, OsmRelation, OsmResult, OsmWay } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
@@ -29,7 +29,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       cancelActions: [clearMap, searchSelectResult],
     });
 
-    const data = assertType<OsmResult>(await res.json());
+    const data = assert<OsmResult>(await res.json());
 
     const nodes: Record<number, OsmNode> = {};
 

@@ -12,7 +12,7 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function HelpSubmenu(): JSX.Element {

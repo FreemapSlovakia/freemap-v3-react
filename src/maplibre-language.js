@@ -189,10 +189,10 @@ try {
 
     Map.prototype.autodetectLanguage = function (opt_fallback) {
       this.setLanguage(
-        navigator.language.split('-')[0] || opt_fallback || 'native',
+        window.navigator.language.split('-')[0] || opt_fallback || 'native',
       );
     };
   })();
 } catch (e) {
-  console.log('EEEEEEEEE', e);
+  console.log('maplibre-language', e);
 }

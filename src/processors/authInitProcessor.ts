@@ -3,7 +3,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { get } from 'idb-keyval';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
@@ -23,7 +23,7 @@ export const authInitProcessor: Processor = {
 
         dispatch(
           authSetUser(
-            res.status === 200 ? assertType<User>(await res.json()) : null,
+            res.status === 200 ? assert<User>(await res.json()) : null,
           ),
         );
       } catch (err) {

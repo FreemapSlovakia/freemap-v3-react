@@ -4,7 +4,7 @@ import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { geoJSON } from 'leaflet';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData
@@ -21,7 +21,7 @@ export const trackViewerSetTrackDataProcessor: Processor<
       'text/xml',
     );
 
-    const trackGeojson = assertType<FeatureCollection<Geometries>>(
+    const trackGeojson = assert<FeatureCollection<Geometries>>(
       toGeoJSON.gpx(gpxAsXml),
     );
 

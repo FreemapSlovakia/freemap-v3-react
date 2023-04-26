@@ -212,11 +212,11 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         window.open(getF4mapUrl(lat, lon, zoom));
 
       case 'url':
-        (navigator as any)
+        window.navigator
           .share({
             title: pointTitle,
             text: pointDescription,
-            url: url || window.location,
+            url: url || window.location.href,
           })
           .catch((err: unknown) => {
             dispatch(
@@ -232,8 +232,6 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'image':
         {
-          const nav = navigator as any;
-
           const share = async () => {
             if (!url) {
               throw new Error('missong url');
@@ -247,11 +245,11 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               }),
             ];
 
-            if (!nav.canShare({ files: filesArray })) {
+            if (!window.navigator.canShare({ files: filesArray })) {
               throw new Error("can't share");
             }
 
-            await nav.share({
+            await window.navigator.share({
               files: filesArray,
               title: pointTitle,
               text: pointDescription,

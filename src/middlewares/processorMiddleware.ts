@@ -133,7 +133,7 @@ export function createProcessorMiddleware(): MW {
                       : (err as any)._fm_fetchError
                       ? {
                           err:
-                            (navigator.onLine === false
+                            (window.navigator.onLine === false
                               ? window.translations?.general.offline
                               : window.translations?.general.connectionError) ??
                             err.message,

@@ -16,7 +16,7 @@ export function OfflineSubmenu(): JSX.Element {
   const [cachingActive, setCachingActive] = useState<boolean>(false);
 
   const handleCacheActiveSelect = () => {
-    navigator.serviceWorker.ready.then((registration) => {
+    window.navigator.serviceWorker.ready.then((registration) => {
       registration.active?.postMessage({
         type: 'setCachingActive',
         payload: !cachingActive,
@@ -29,7 +29,7 @@ export function OfflineSubmenu(): JSX.Element {
   };
 
   const handleCacheClear = () => {
-    navigator.serviceWorker.ready.then((registration) => {
+    window.navigator.serviceWorker.ready.then((registration) => {
       registration.active?.postMessage({ type: 'clearCache' });
 
       setCacheExists(false); // TODO use events from sw
@@ -39,7 +39,7 @@ export function OfflineSubmenu(): JSX.Element {
   const [cacheMode, setCacheMode] = useState<CacheMode>('networkOnly');
 
   const handleModeSelect = (mode: string | null) => {
-    navigator.serviceWorker.ready.then((registration) => {
+    window.navigator.serviceWorker.ready.then((registration) => {
       registration.active?.postMessage({
         type: 'setCacheMode',
         payload: mode,

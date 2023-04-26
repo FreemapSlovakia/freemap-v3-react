@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
 
 export function DrawingSubmenu(): ReactElement {

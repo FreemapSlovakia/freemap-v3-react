@@ -1,7 +1,7 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 interface LoginResponse {
   redirect: string;
@@ -42,7 +42,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       },
     });
 
-    w.location.href = assertType<LoginResponse>(await res.json()).redirect;
+    w.location.href = assert<LoginResponse>(await res.json()).redirect;
   } catch (e) {
     w.close();
 

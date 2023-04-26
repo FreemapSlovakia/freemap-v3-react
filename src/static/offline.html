@@ -51,7 +51,7 @@
       let language;
 
       try {
-        language = navigator.language.replace(/-.*/, '');
+        language = window.navigator.language.replace(/-.*/, '');
 
         language = JSON.parse(localStorage.getItem('store')).l10n
           .chosenLanguage;

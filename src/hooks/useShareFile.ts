@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 export function useShareFile(handleShare: (files: File[]) => void): void {
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in window.navigator) {
       const handler = (e: MessageEvent) => {
         const { data } = e;
 
@@ -17,10 +17,10 @@ export function useShareFile(handleShare: (files: File[]) => void): void {
         }
       };
 
-      navigator.serviceWorker.addEventListener('message', handler);
+      window.navigator.serviceWorker.addEventListener('message', handler);
 
       return () => {
-        navigator.serviceWorker.removeEventListener('message', handler);
+        window.navigator.serviceWorker.removeEventListener('message', handler);
       };
     }
   }, [handleShare]);

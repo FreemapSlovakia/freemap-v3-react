@@ -15,10 +15,10 @@ export const locateProcessor: Processor = {
 
       const map = await mapPromise;
 
-      watch = navigator.geolocation?.watchPosition(
+      watch = window.navigator.geolocation?.watchPosition(
         ({ coords: { latitude, longitude, accuracy } }) => {
           if (watch) {
-            navigator.geolocation.clearWatch(watch);
+            window.navigator.geolocation.clearWatch(watch);
           }
 
           dispatch(
@@ -61,10 +61,10 @@ export const locateProcessor: Processor = {
         },
         { enableHighAccuracy: true, maximumAge: 0 },
       );
-    } else if (navigator.geolocation && typeof watch === 'number') {
+    } else if (window.navigator.geolocation && typeof watch === 'number') {
       dispatch(mapRefocus({ gpsTracked: false }));
 
-      navigator.geolocation.clearWatch(watch);
+      window.navigator.geolocation.clearWatch(watch);
 
       watch = undefined;
     }

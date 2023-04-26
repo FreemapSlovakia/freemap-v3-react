@@ -1,6 +1,6 @@
 import { setErrorTicketId } from 'fm3/actions/mainActions';
 import storage from 'local-storage-fallback';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { MyStore } from './storeCreator';
 
 let store: MyStore;
@@ -73,7 +73,7 @@ export function sendError(errDetails: ErrorDetails): void {
       details: {
         error: errDetails,
         url: window.location.href,
-        userAgent: navigator.userAgent,
+        userAgent: window.navigator.userAgent,
         storage,
         state,
       },

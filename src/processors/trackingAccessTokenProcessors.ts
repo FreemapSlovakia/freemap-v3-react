@@ -4,7 +4,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
 import { AccessToken } from 'fm3/types/trackingTypes';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const saveAccessTokenProcessor: Processor<
   typeof trackingActions.saveAccessToken
@@ -61,14 +61,12 @@ export const loadAccessTokensProcessor: Processor<
 
     dispatch(
       trackingActions.setAccessTokens(
-        assertType<StringDates<AccessToken[]>>(await res.json()).map(
-          (item) => ({
-            ...item,
-            createdAt: new Date(item.createdAt),
-            timeFrom: item.timeFrom === null ? null : new Date(item.timeFrom),
-            timeTo: item.timeTo === null ? null : new Date(item.timeTo),
-          }),
-        ),
+        assert<StringDates<AccessToken[]>>(await res.json()).map((item) => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+          timeFrom: item.timeFrom === null ? null : new Date(item.timeFrom),
+          timeTo: item.timeTo === null ? null : new Date(item.timeTo),
+        })),
       ),
     );
   },

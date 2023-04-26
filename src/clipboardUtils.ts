@@ -5,7 +5,7 @@ export function copyToClipboard(
   dispatch: Dispatch,
   text: string,
 ): Promise<void> {
-  return navigator.clipboard.writeText(text).then(
+  return window.navigator.clipboard.writeText(text).then(
     () => {
       dispatch(
         toastsAdd({

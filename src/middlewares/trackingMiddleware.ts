@@ -6,7 +6,7 @@ import { RootState } from 'fm3/reducers';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 
 export function createTrackingMiddleware(): Middleware<
   unknown,

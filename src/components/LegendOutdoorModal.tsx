@@ -10,7 +10,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
@@ -40,7 +40,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
         response.status === 200 ? response.json() : undefined,
       )
       .then((data) => {
-        const { categories, items } = assertType<Res>(data);
+        const { categories, items } = assert<Res>(data);
 
         const catMap = new Map<string, Item>();
 

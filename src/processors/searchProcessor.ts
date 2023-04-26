@@ -12,7 +12,7 @@ import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 interface NominatimResult {
   osm_id?: number;
@@ -88,7 +88,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       cancelActions: [clearMap, searchSetQuery],
     });
 
-    const results = assertType<NominatimResult[]>(await res.json())
+    const results = assert<NominatimResult[]>(await res.json())
       .filter(
         (item) =>
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,

@@ -10,7 +10,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/reducers';
 import { StringDates } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
@@ -70,7 +70,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     dispatch(mapsLoadList());
 
-    const data = assertType<StringDates<MapMeta>>(await res.json());
+    const data = assert<StringDates<MapMeta>>(await res.json());
 
     dispatch(
       mapsSetMeta({

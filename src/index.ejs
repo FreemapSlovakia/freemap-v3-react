@@ -133,7 +133,7 @@
     <script>
       fmEmbedded = window.self !== window.top;
 
-      isRobot = navigator.userAgent.match(
+      isRobot = window.navigator.userAgent.match(
         /\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b/,
       );
 
@@ -231,7 +231,7 @@
     </style>
 
     <script>
-      var langs = navigator.languages || [navigator.language];
+      var langs = window.navigator.languages || [window.navigator.language];
 
       var lang = langs
         .map((lang) => lang.replace(/-.*/, ''))
@@ -298,6 +298,7 @@
         var app = document.getElementById('app');
 
         if (
+          !app ||
           !app.children ||
           !app.children[0] ||
           app.children[0].id === 'init-loader'

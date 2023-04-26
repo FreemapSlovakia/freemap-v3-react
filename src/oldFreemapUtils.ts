@@ -1,5 +1,5 @@
 import { Location } from 'history';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { MapViewState } from './actions/mapActions';
 import { BaseLayerLetters } from './mapDefinitions';
 

@@ -28,7 +28,7 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { getType } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';
 
@@ -104,7 +104,7 @@ export function TrackViewerMenu(): ReactElement {
           onSelect={(approach) => {
             dispatch(
               trackViewerColorizeTrackBy(
-                assertType<ColorizingMode | null>(approach),
+                assert<ColorizingMode | null>(approach),
               ),
             );
           }}

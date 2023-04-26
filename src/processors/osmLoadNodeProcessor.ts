@@ -5,7 +5,7 @@ import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmNode, OsmResult } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,
@@ -20,7 +20,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       cancelActions: [clearMap, searchSelectResult],
     });
 
-    const { elements } = assertType<OsmResult>(await res.json());
+    const { elements } = assert<OsmResult>(await res.json());
 
     const tags: Record<string, string> = elements[0].tags ?? {};
 

@@ -80,7 +80,9 @@ function runNextJob() {
       job.started = true;
 
       job.run(w);
-    } else if (workerPool.length < Math.min(navigator.hardwareConcurrency, 8)) {
+    } else if (
+      workerPool.length < Math.min(window.navigator.hardwareConcurrency, 8)
+    ) {
       const w1 = createWorker();
 
       job.started = true;

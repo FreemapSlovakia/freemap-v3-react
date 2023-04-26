@@ -7,7 +7,7 @@ import { createFilter } from 'fm3/galleryUtils';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const galleryRequestImagesByOrderProcessor: Processor<
   typeof galleryList
@@ -29,7 +29,7 @@ export const galleryRequestImagesByOrderProcessor: Processor<
       expectedStatus: 200,
     });
 
-    const ids = assertType<{ id: number }[]>(await res.json()).map(
+    const ids = assert<{ id: number }[]>(await res.json()).map(
       (item) => item.id,
     );
 

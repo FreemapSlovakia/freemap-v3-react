@@ -1,7 +1,7 @@
 import turfLength from '@turf/length';
 import { TrackPoint } from 'fm3/actions/trackViewerActions';
 import { useMemo } from 'react';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 import { useAppSelector } from './reduxSelectHook';
 
 export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
@@ -32,7 +32,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
 
         let finishTime: Date | undefined;
 
-        const times = assertType<string[] | undefined>(
+        const times = assert<string[] | undefined>(
           feature.properties && feature.properties['coordTimes'],
         );
 

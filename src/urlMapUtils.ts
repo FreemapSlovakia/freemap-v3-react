@@ -5,7 +5,7 @@ import {
 } from 'fm3/oldFreemapUtils';
 import { Location } from 'history';
 import queryString from 'query-string';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { MapViewState } from './actions/mapActions';
 
 export function getMapStateFromUrl(

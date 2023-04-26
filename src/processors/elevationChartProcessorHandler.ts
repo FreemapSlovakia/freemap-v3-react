@@ -15,7 +15,7 @@ import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/reducers';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import { Dispatch } from 'redux';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch,
@@ -110,7 +110,7 @@ async function resolveElevationProfilePointsViaApi(
 
   let prevEle: number | undefined;
 
-  assertType<number[]>(await res.json()).forEach((ele: number, i: number) => {
+  assert<number[]>(await res.json()).forEach((ele: number, i: number) => {
     if (prevEle !== undefined) {
       const d = ele - prevEle;
 

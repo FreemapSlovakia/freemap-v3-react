@@ -56,7 +56,7 @@ import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
 import { Dispatch } from 'redux';
-import { assertType, is } from 'typescript-is';
+import { assert, is } from 'typia';
 import { RootAction } from './actions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { mapsLoad } from './actions/mapsActions';
@@ -445,7 +445,7 @@ export const handleLocationChange = (
     );
 
     try {
-      const newCls = assertType<CustomLayer[]>(JSON.parse(customLayers)).filter(
+      const newCls = assert<CustomLayer[]>(JSON.parse(customLayers)).filter(
         (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
       );
 

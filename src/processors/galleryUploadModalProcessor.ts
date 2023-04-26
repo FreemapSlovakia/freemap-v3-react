@@ -7,7 +7,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],
@@ -30,6 +30,6 @@ export const galleryUploadModalProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetTags(assertType<GalleryTag[]>(await res.json())));
+    dispatch(gallerySetTags(assert<GalleryTag[]>(await res.json())));
   },
 };

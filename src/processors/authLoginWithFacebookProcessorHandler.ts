@@ -5,7 +5,7 @@ import { loadFb } from 'fm3/fbLoader';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   await loadFb();
@@ -44,7 +44,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     },
   });
 
-  const user = assertType<User>(await res.json());
+  const user = assert<User>(await res.json());
 
   dispatch(
     toastsAdd({

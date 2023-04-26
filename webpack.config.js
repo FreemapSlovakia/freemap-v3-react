@@ -7,7 +7,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const cssnano = require('cssnano');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
@@ -20,8 +19,6 @@ const huMessages = require('./src/translations/hu-shared.json');
 const itMessages = require('./src/translations/it-shared.json');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
-
-const fastDev = !prod && !process.env.DISABLE_FAST_DEV;
 
 const renderer = new marked.Renderer();
 
@@ -62,7 +59,7 @@ module.exports = {
       pica: 'pica/dist/pica.js',
     },
     fallback: {
-      util: require.resolve('util/'), // for typescript-is avter upgrading webpack from 4 to 5
+      util: require.resolve('util/'), // for typescript-is after upgrading webpack from 4 to 5
     },
   },
   optimization: {
@@ -94,13 +91,7 @@ module.exports = {
       {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            compiler: 'ttypescript', // this is for typescript-is
-            transpileOnly: fastDev,
-          },
-        },
+        loader: 'ts-loader',
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
@@ -173,12 +164,6 @@ module.exports = {
     new InjectManifest({
       swSrc: './sw/sw.ts',
       maximumFileSizeToCacheInBytes: 100000000,
-    }),
-    new ForkTsCheckerWebpackPlugin({
-      typescript: {
-        configFile: path.resolve(__dirname, './tsconfig.json'),
-      },
-      async: fastDev,
     }),
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react

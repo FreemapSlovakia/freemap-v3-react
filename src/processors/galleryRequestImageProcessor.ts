@@ -6,7 +6,7 @@ import {
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 // TODO react only on getState().gallery.activeImageId change
 export const galleryRequestImageProcessor: Processor = {
@@ -19,7 +19,7 @@ export const galleryRequestImageProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const data = assertType<StringDates<Picture>>(await res.json());
+    const data = assert<StringDates<Picture>>(await res.json());
 
     dispatch(
       gallerySetImage({

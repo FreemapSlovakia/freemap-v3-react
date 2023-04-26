@@ -1,4 +1,4 @@
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 import { LatLon } from './types/common';
 
 // TODO publish as npm package
@@ -34,7 +34,7 @@ export function parseCoordinates(coord: string): LatLon {
   const mXml = P_XML.exec(coord);
 
   if (mXml) {
-    return assertType<LatLon>({
+    return assert<LatLon>({
       ...toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
       ...toLatLon1(parseFloat(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
     });
@@ -227,7 +227,7 @@ function toLatLon(
     ...toLatLon1(coord2deg, coord2min, coord2sec, card2),
   };
 
-  return assertType<LatLon>(latLon);
+  return assert<LatLon>(latLon);
 }
 
 function toLatLon1(

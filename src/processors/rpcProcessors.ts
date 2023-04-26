@@ -1,7 +1,7 @@
 import { rpcCall, rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
 import { wsReceived, wsSend } from 'fm3/actions/websocketActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 
 // TODO implement call timeout
 

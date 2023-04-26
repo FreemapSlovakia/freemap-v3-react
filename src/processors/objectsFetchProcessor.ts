@@ -7,7 +7,7 @@ import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassResult } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;
@@ -98,7 +98,7 @@ export const objectsFetchProcessor: Processor = {
       cancelActions: [objectsSetFilter, clearMap, selectFeature, mapRefocus],
     });
 
-    const result = assertType<OverpassResult>(await res.json()).elements.map(
+    const result = assert<OverpassResult>(await res.json()).elements.map(
       (e) => ({
         id: e.id,
         lat: e.type === 'node' ? e.lat : e.center.lat,

@@ -110,7 +110,7 @@ export function getCurrentPosition(): Promise<LatLon> {
       reject(error);
     };
 
-    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+    window.navigator.geolocation.getCurrentPosition(onSuccess, onError, {
       enableHighAccuracy: true,
       timeout: 10000,
       maximumAge: 0,

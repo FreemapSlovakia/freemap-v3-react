@@ -3,7 +3,7 @@ import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 type Response = {
   rovasToken: string;
@@ -26,7 +26,7 @@ export const removeAdsProcessor: Processor = {
       cancelActions: [],
     });
 
-    const { rovasToken } = assertType<Response>(await res.json());
+    const { rovasToken } = assert<Response>(await res.json());
 
     const w = window.open(
       process.env['ROVAS_URL_PREFIX'] +

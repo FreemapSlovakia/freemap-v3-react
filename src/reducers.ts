@@ -2,7 +2,7 @@ import storage from 'local-storage-fallback';
 import reduceReducers from 'reduce-reducers';
 import { combineReducers } from 'redux';
 import { StateType } from 'typesafe-actions';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { GalleryColorizeBy } from './actions/galleryActions';
 import {
   authInitialState,

@@ -55,7 +55,7 @@ import {
   FaStop,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';

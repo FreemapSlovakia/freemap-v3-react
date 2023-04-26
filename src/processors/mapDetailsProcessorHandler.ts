@@ -12,7 +12,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const cancelType = [
   getType(clearMap),
@@ -65,7 +65,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     }),
   ]);
 
-  const oRes = assertType<{
+  const oRes = assert<{
     elements: OverpassElement[];
   }>(await res0.json());
 
@@ -88,7 +88,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     );
   });
 
-  const oRes1 = assertType<{ elements: SimpleOverpassElement[] }>(
+  const oRes1 = assert<{ elements: SimpleOverpassElement[] }>(
     await res1.json(),
   );
 

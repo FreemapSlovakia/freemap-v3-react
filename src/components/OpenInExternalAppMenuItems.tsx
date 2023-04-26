@@ -28,7 +28,7 @@ import {
   FaWindowMaximize,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 
 interface Props extends LatLon {
   lat: number;
@@ -95,9 +95,9 @@ export function OpenInExternalAppDropdownItems({
     ],
   );
 
-  const hasShare = 'share' in navigator;
+  const hasShare = 'share' in window.navigator;
 
-  const hasClipboard = !!navigator.clipboard?.writeText;
+  const hasClipboard = !!window.navigator.clipboard?.writeText;
 
   return (
     <>
@@ -113,7 +113,7 @@ export function OpenInExternalAppDropdownItems({
             </Dropdown.Item>
           )}
 
-          {(navigator as any).canShare && (
+          {'canShare' in window.navigator && (
             <Dropdown.Item as="button" eventKey="image" onSelect={handleSelect}>
               <FaShareAlt /> {m?.external.image}
             </Dropdown.Item>

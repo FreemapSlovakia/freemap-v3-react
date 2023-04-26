@@ -3,7 +3,7 @@ export function getEffectiveChosenLanguage(
 ): string {
   return (
     chosenLanguage ||
-    [...(navigator.languages || []), navigator.language]
+    [...(window.navigator.languages || []), window.navigator.language]
       .map((lang) => simplify(lang))
       .find((lang) => lang && ['en', 'sk', 'cs', 'hu', 'it'].includes(lang)) ||
     'en'

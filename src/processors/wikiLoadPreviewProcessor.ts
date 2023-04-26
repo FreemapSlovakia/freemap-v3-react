@@ -7,7 +7,7 @@ import {
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 interface WikiResponse1 {
   query: {
@@ -61,9 +61,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
           cancelActions: [setActiveModal],
         });
 
-        const okData: WikiResponse1 = assertType<WikiResponse1>(
-          await res.json(),
-        );
+        const okData: WikiResponse1 = assert<WikiResponse1>(await res.json());
 
         const item = Object.values(okData.query.pages)[0]?.langlinks?.find(
           (ll) => ll.lang === language,
@@ -101,7 +99,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
       cancelActions: [setActiveModal],
     });
 
-    const data = assertType<WikiResponse2>(await res.json());
+    const data = assert<WikiResponse2>(await res.json());
 
     // TODO validate
 

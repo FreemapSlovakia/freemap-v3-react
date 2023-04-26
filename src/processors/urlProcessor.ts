@@ -9,7 +9,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 
 let lastActionType: string | undefined;
 

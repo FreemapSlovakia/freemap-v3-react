@@ -4,7 +4,7 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const trackViewerDownloadTrackProcessor: Processor = {
   actionCreator: trackViewerDownloadTrack,
@@ -20,7 +20,7 @@ export const trackViewerDownloadTrackProcessor: Processor = {
     dispatch(
       trackViewerSetData({
         trackGpx: decodeURIComponent(
-          escape(atob(assertType<{ data: string }>(await res.json()).data)),
+          escape(atob(assert<{ data: string }>(await res.json()).data)),
         ),
       }),
     );

@@ -7,7 +7,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/reducers';
 import { Dispatch } from 'redux';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export async function handleTrackUpload({
   dispatch,
@@ -54,7 +54,7 @@ export async function handleTrackUpload({
     });
 
     dispatch(
-      trackViewerSetTrackUID(assertType<{ uid: string }>(await res.json()).uid),
+      trackViewerSetTrackUID(assert<{ uid: string }>(await res.json()).uid),
     );
   }
 

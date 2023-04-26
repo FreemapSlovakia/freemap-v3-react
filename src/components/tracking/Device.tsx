@@ -99,7 +99,9 @@ export function Device({ device }: Props): ReactElement {
               }
             >
               <span>
-                {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? (
+                {/iPhone|iPad|iPod|Android/i.test(
+                  window.navigator.userAgent,
+                ) ? (
                   <Button
                     variant="secondary"
                     onClick={handleCopyClick}

@@ -3,7 +3,7 @@ import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/reducers';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export type Picture = {
   lat: number;
@@ -43,5 +43,5 @@ export async function fetchPictures(getState: () => RootState) {
     expectedStatus: 200,
   });
 
-  return assertType<Picture[]>(await res.json());
+  return assert<Picture[]>(await res.json());
 }

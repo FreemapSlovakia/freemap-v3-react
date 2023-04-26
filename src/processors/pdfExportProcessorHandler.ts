@@ -13,7 +13,7 @@ import { colors } from 'fm3/constants';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
@@ -222,7 +222,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     expectedStatus: 200,
   });
 
-  const data = assertType<{ token: string }>(await res.json());
+  const data = assert<{ token: string }>(await res.json());
 
   dispatch(setActiveModal(null));
 

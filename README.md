@@ -15,6 +15,7 @@ Current version of [www.freemap.sk](https://www.freemap.sk) maintained by [OZ Fr
 
    ```bash
    npm i
+   npm run prepare
    ```
 
 1. Run webserver which also compiles the source files on change:

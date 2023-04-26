@@ -18,7 +18,6 @@ import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
-import { setDefaultGetErrorObject } from 'typescript-is';
 import { authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
@@ -27,8 +26,6 @@ import { MessagesProvider } from './components/TranslationProvider';
 if (process.env['GA_MEASUREMENT_ID']) {
   window.gtag('config', process.env['GA_MEASUREMENT_ID']);
 }
-
-setDefaultGetErrorObject(() => null);
 
 // filter out old browsers
 [].flatMap(() => null);
@@ -43,9 +40,9 @@ if (
 // workaround to fix blurring menus on hidpi desktop chrome
 if (
   window.devicePixelRatio > 1 &&
-  navigator.userAgent.includes('Chrome/') &&
+  window.navigator.userAgent.includes('Chrome/') &&
   !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(
-    navigator.userAgent,
+    window.navigator.userAgent,
   )
 ) {
   document.documentElement.style.setProperty(
@@ -131,9 +128,8 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
-if ('serviceWorker' in navigator) {
-  // navigator.serviceWorker.register(new URL('./sw/sw', import.meta.url));
-  navigator.serviceWorker.register('/sw.js');
+if ('serviceWorker' in window.navigator) {
+  window.navigator.serviceWorker.register('/sw.js'); // TODO explicit casting - otherwise it fails on HMR recompiling
 }
 
 window.addEventListener('message', (e: MessageEvent) => {

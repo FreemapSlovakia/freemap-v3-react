@@ -4,7 +4,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
   getState,
@@ -23,7 +23,7 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
     expectedStatus: 200,
   });
 
-  const user = assertType<User>(await res.json());
+  const user = assert<User>(await res.json());
 
   dispatch(
     toastsAdd({

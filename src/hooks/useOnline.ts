@@ -2,7 +2,7 @@ import { get } from 'idb-keyval';
 import { useEffect, useState } from 'react';
 
 export function useOnline() {
-  const [online, setOnline] = useState(navigator.onLine);
+  const [online, setOnline] = useState(window.navigator.onLine);
 
   function offlineHandler() {
     setOnline(false);
@@ -22,7 +22,7 @@ export function useOnline() {
   }, []);
 
   useEffect(() => {
-    setOnline(navigator.onLine);
+    setOnline(window.navigator.onLine);
 
     window.addEventListener('online', onlineHandler);
 

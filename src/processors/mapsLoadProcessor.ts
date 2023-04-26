@@ -9,7 +9,7 @@ import {
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 interface CompatLine {
   type: 'polygon' | 'line' | 'area' | 'distance';
@@ -80,7 +80,7 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
-    const map = assertType<
+    const map = assert<
       StringDates<{
         meta: MapMeta;
         data: MapData<Line | CompatLine, CompatDrawingPoint>;

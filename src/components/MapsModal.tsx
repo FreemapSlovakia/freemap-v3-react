@@ -32,7 +32,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 type Props = { show: boolean };
 
@@ -117,7 +117,7 @@ export function MapsModal({ show }: Props): ReactElement {
         throw new Error();
       })
       .then((data) => {
-        setUsers(assertType<User[]>(data));
+        setUsers(assert<User[]>(data));
       })
       .catch((err) => {
         dispatch(

@@ -6,7 +6,7 @@ import { positionsEqual, shouldBeArea } from 'fm3/geoutils';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
@@ -23,7 +23,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
     const nodes: Record<string, [number, number]> = {};
 
-    const { elements } = assertType<OsmResult>(await res.json());
+    const { elements } = assert<OsmResult>(await res.json());
 
     for (const item of elements) {
       if (item.type === 'node') {

@@ -37,7 +37,7 @@ import {
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 import { Checkbox } from './Checkbox';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {

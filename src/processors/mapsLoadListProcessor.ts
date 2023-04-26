@@ -4,7 +4,7 @@ import { MapMeta, mapsLoadList, mapsSetList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],
@@ -20,7 +20,7 @@ export const mapsLoadListProcessor: Processor = {
 
       dispatch(
         mapsSetList(
-          assertType<StringDates<MapMeta[]>>(await res.json()).map((map) => ({
+          assert<StringDates<MapMeta[]>>(await res.json()).map((map) => ({
             ...map,
             createdAt: new Date(map.createdAt),
             modifiedAt: new Date(map.modifiedAt),

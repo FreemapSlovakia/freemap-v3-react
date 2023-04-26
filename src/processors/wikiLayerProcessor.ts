@@ -9,7 +9,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { CRS, Point } from 'leaflet';
 import RBush, { BBox } from 'rbush';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 interface WikiResponse {
   entities?: {
@@ -119,7 +119,7 @@ export const wikiLayerProcessor: Processor = {
 
     const wikidatas: string[] = [];
 
-    const data = assertType<WikiPoi[]>(await res.json());
+    const data = assert<WikiPoi[]>(await res.json());
 
     for (const item of data) {
       let wikipedia = item[0];
@@ -168,7 +168,7 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus],
     });
 
-    const data1 = assertType<WikiResponse>(await res1.json());
+    const data1 = assert<WikiResponse>(await res1.json());
 
     for (const item of data) {
       if (item[0]) {

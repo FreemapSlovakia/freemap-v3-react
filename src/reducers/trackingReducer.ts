@@ -14,7 +14,7 @@ import {
 } from 'fm3/types/trackingTypes';
 import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
-import { is } from 'typescript-is';
+import { is } from 'typia';
 
 export interface TrackingState {
   devices: Device[];

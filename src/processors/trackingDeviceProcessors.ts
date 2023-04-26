@@ -3,7 +3,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { Device } from 'fm3/types/trackingTypes';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
   {
@@ -63,7 +63,7 @@ export const loadDevicesProcessor: Processor<
       }
     }
 
-    dispatch(trackingActions.setDevices(assertType<Device[]>(data)));
+    dispatch(trackingActions.setDevices(assert<Device[]>(data)));
   },
 };
 

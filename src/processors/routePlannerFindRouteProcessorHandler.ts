@@ -18,7 +18,7 @@ import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { hasProperty } from 'fm3/typeUtils';
 import { isActionOf } from 'typesafe-actions';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor';
 
 const cancelTypes = [...updateRouteTypes, clearMap, setTool];
@@ -157,8 +157,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
       dispatch(
         routePlannerSetIsochrones({
-          isochrones: assertType<IsochroneResponse>(await response.json())
-            .polygons,
+          isochrones: assert<IsochroneResponse>(await response.json()).polygons,
           timestamp: Date.now(),
         }),
       );
@@ -299,7 +298,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   }
 
   if (ttDef.api === 'gh') {
-    const g = assertType<GraphhopperResult>(data);
+    const g = assert<GraphhopperResult>(data);
 
     dispatch(
       routePlannerSetResult({
@@ -373,7 +372,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }),
     );
   } else {
-    const { code, trips, routes, waypoints } = assertType<OsrmResult>(data);
+    const { code, trips, routes, waypoints } = assert<OsrmResult>(data);
 
     if (code !== 'Ok') {
       dispatch(clearResultAction);

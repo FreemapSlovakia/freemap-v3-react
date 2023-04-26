@@ -45,7 +45,7 @@ import {
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { assertType } from 'typescript-is';
+import { assert } from 'typia';
 
 type Props = { show: boolean };
 
@@ -97,7 +97,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   let localCustomLayers: CustomLayer[];
 
   try {
-    localCustomLayers = assertType<CustomLayer[]>(
+    localCustomLayers = assert<CustomLayer[]>(
       JSON.parse(customLayersDef || '[]'),
     );
   } catch {
@@ -173,9 +173,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     let customLayers: CustomLayer[];
 
     try {
-      customLayers = assertType<CustomLayer[]>(
-        JSON.parse(customLayersDef || '[]'),
-      );
+      customLayers = assert<CustomLayer[]>(JSON.parse(customLayersDef || '[]'));
     } catch {
       dispatch(
         toastsAdd({

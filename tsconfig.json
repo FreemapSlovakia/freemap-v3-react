@@ -7,7 +7,7 @@
     "jsx": "react-jsx", // use typescript to transpile jsx to js
     "target": "ES2018", // specify ECMAScript target version
     "moduleResolution": "node",
-    "lib": ["ES2020", "dom", "WebWorker"],
+    "lib": ["ES2020", "dom"],
     "allowSyntheticDefaultImports": true,
     // "noUncheckedIndexedAccess": true, // TODO one day
     "noPropertyAccessFromIndexSignature": true,
@@ -23,7 +23,7 @@
     "allowJs": true, // because of maplibre-language.js; TODO rewrite to TS
     "plugins": [
       {
-        "transform": "typescript-is/lib/transform-inline/transformer"
+        "transform": "typia/lib/transform"
       }
     ],
     "types": [
