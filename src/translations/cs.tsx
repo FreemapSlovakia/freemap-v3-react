@@ -1094,6 +1094,7 @@ const cs: Messages = {
       K: 'Běžkárska',
       S: 'Z letadla',
       Z: 'Ortofotomozaika SR (Z letadla, SK)',
+      J: 'Stará Ortofotomozaika SR (Z letadla, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       p: 'OpenTopoMap',

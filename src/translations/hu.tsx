@@ -1095,6 +1095,7 @@ const hu: Messages = {
       K: 'Síelés',
       S: 'Légifelvétel',
       Z: 'Ortofotó (Szlovákia)',
+      J: 'Régi Ortofotó (Szlovákia)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       p: 'OpenTopoMap',

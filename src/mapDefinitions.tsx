@@ -91,6 +91,7 @@ export const baseLayerLetters = [
   'K',
   'S',
   'Z',
+  'J',
   'O',
   'M',
   'p',
@@ -241,6 +242,23 @@ export const baseLayers: BaseLayerDef[] = [
       },
     ],
     key: ['KeyZ', false],
+    errorTileUrl: white1x1,
+  },
+  {
+    type: 'J',
+    url: 'https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minZoom: 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
+    icon: <FaPlane />,
+    attribution: [
+      {
+        type: 'map',
+        name: '©\xa0GKÚ, NLC',
+        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+      },
+    ],
+    key: ['KeyZ', true],
     errorTileUrl: white1x1,
   },
   {

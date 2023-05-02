@@ -1078,6 +1078,7 @@ const en: Messages = {
       K: 'Crosscountry Ski',
       S: 'Aerial',
       Z: 'Ortofotomozaika SR (Aerial, SK)',
+      J: 'Old Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       p: 'OpenTopoMap',
