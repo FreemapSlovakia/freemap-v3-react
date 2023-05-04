@@ -1,18 +1,15 @@
 import { createAction } from 'typesafe-actions';
 
-export const osmLoadNode = createAction('OSM_LOAD_NODE')<{
+type Detail = {
   id: number;
   focus: boolean;
-}>();
+  showToast?: boolean;
+};
 
-export const osmLoadWay = createAction('OSM_LOAD_WAY')<{
-  id: number;
-  focus: boolean;
-}>();
+export const osmLoadNode = createAction('OSM_LOAD_NODE')<Detail>();
 
-export const osmLoadRelation = createAction('OSM_LOAD_RELATION')<{
-  id: number;
-  focus: boolean;
-}>();
+export const osmLoadWay = createAction('OSM_LOAD_WAY')<Detail>();
+
+export const osmLoadRelation = createAction('OSM_LOAD_RELATION')<Detail>();
 
 export const osmClear = createAction('OSM_CLEAR')();

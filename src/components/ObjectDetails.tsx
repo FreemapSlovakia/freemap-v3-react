@@ -79,8 +79,19 @@ export function ObjectDetails({
       </p>
 
       <p>
-        <a href={`https://www.openstreetmap.org/${type}/${id}`}>{openText}</a> (
-        <a href={`https://www.openstreetmap.org/${type}/${id}/history`}>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href={`https://www.openstreetmap.org/${type}/${id}`}
+        >
+          {openText}
+        </a>{' '}
+        (
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href={`https://www.openstreetmap.org/${type}/${id}/history`}
+        >
           {historyText}
         </a>
         )
@@ -88,9 +99,11 @@ export function ObjectDetails({
 
       {tags['description'] && <p>{tags['description']}</p>}
 
-      <Button type="button" onClick={handleEditInJosm} className="mb-4">
-        {editInJosmText}
-      </Button>
+      {!window.fmEmbedded && (
+        <Button type="button" onClick={handleEditInJosm} className="mb-4">
+          {editInJosmText}
+        </Button>
+      )}
 
       <Table striped bordered size="sm">
         <tbody>
@@ -98,6 +111,8 @@ export function ObjectDetails({
             <tr key={k}>
               <th>
                 <a
+                  target="_blank"
+                  rel="noreferrer"
                   href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(
                     k,
                   )}`}
@@ -108,6 +123,8 @@ export function ObjectDetails({
               <td>
                 {k === 'wikidata' ? (
                   <a
+                    target="_blank"
+                    rel="noreferrer"
                     href={`https://www.wikidata.org/entity/${encodeURIComponent(
                       v,
                     )}`}
@@ -116,6 +133,8 @@ export function ObjectDetails({
                   </a>
                 ) : k === 'wikipedia' ? (
                   <a
+                    target="_blank"
+                    rel="noreferrer"
                     href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
                       v,
                     )}`}
@@ -125,13 +144,23 @@ export function ObjectDetails({
                 ) : ['contact:website', 'website', 'url', 'image'].includes(
                     k,
                   ) ? (
-                  <a href={v}>{v}</a>
+                  <a target="_blank" rel="noreferrer" href={v}>
+                    {v}
+                  </a>
                 ) : ['contact:email', 'email'].includes(k) ? (
                   <a href={'mailto:' + v}>{v}</a>
                 ) : ['phone', 'contact:phone', 'contact:mobile'].includes(k) ? (
-                  <a href={'tel:' + v.replace(/ /g, '')}>{v}</a>
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={'tel:' + v.replace(/ /g, '')}
+                  >
+                    {v}
+                  </a>
                 ) : categoryKeys.has(k) ? (
                   <a
+                    target="_blank"
+                    rel="noreferrer"
                     href={`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
                       k,
                     )}=${encodeURIComponent(v)}`}

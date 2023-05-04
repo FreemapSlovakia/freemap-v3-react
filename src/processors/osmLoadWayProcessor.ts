@@ -12,7 +12,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
   errorKey: 'osm.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
-    const { id, focus } = action.payload;
+    const { id, focus, showToast } = action.payload;
 
     const res = await httpRequest({
       getState,
@@ -48,7 +48,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
               tags,
               detailed: true,
             },
-            showToast: window.isRobot,
+            showToast: showToast || window.isRobot,
             focus,
           }),
         );

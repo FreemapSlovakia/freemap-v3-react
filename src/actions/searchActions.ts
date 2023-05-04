@@ -15,6 +15,7 @@ export interface SearchResult {
   osmType: 'node' | 'way' | 'relation';
   tags: Properties;
   detailed?: true;
+  showToast?: true;
 }
 
 export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{

@@ -63,25 +63,27 @@ export function ElevationInfo({
         <div key={format}>{latLonToString(point, lang, format)}</div>
       ))}
 
-      <div>
-        {tileMessage}:{' '}
-        <Alert.Link href={baseTileUrl}>
-          {zoom}/{x}/{y}
-        </Alert.Link>
-        {overlayTileUrls.length > 0 && (
-          <>
-            {' '}
-            (
-            {overlayTileUrls.map((o, i) => (
-              <>
-                {i > 0 ? ', ' : null}
-                <Alert.Link href={o.url}>{o.type}</Alert.Link>
-              </>
-            ))}
-            )
-          </>
-        )}
-      </div>
+      {!window.fmEmbedded && (
+        <div>
+          {tileMessage}:{' '}
+          <Alert.Link target="_blank" rel="noreferrer" href={baseTileUrl}>
+            {zoom}/{x}/{y}
+          </Alert.Link>
+          {overlayTileUrls.length > 0 && (
+            <>
+              {' '}
+              (
+              {overlayTileUrls.map((o, i) => (
+                <>
+                  {i > 0 ? ', ' : null}
+                  <Alert.Link href={o.url}>{o.type}</Alert.Link>
+                </>
+              ))}
+              )
+            </>
+          )}
+        </div>
+      )}
 
       {elevation != null && (
         <div>

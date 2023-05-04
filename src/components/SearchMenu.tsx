@@ -112,7 +112,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       const result = results.find((item) => item.id === Number(eventKey));
 
       if (result) {
-        dispatch(searchSelectResult({ result }));
+        dispatch(searchSelectResult({ result, showToast: result.showToast }));
       }
 
       setOpen(false);

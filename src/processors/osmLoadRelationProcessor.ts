@@ -20,7 +20,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
   errorKey: 'osm.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
-    const { id, focus } = action.payload;
+    const { id, focus, showToast } = action.payload;
 
     const res = await httpRequest({
       getState,
@@ -108,7 +108,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           tags,
           detailed: true,
         },
-        showToast: window.isRobot,
+        showToast: showToast || window.isRobot,
         focus,
       }),
     );

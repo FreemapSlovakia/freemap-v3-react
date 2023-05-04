@@ -610,7 +610,7 @@ export function Main(): ReactElement {
             center={{ lat, lng: lon }}
             zoom={zoom}
           >
-            {!window.fmEmbedded && <MapContextMenu />}
+            <MapContextMenu />
 
             <ScaleControl imperial={false} position="bottomleft" />
 

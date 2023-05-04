@@ -51,17 +51,35 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     if (!detailed) {
       switch (osmType) {
         case 'node':
-          dispatch(osmLoadNode({ id, focus: true }));
+          dispatch(
+            osmLoadNode({
+              id,
+              focus: true,
+              showToast: action.payload.showToast,
+            }),
+          );
 
           break;
 
         case 'way':
-          dispatch(osmLoadWay({ id, focus: true }));
+          dispatch(
+            osmLoadWay({
+              id,
+              focus: true,
+              showToast: action.payload.showToast,
+            }),
+          );
 
           break;
 
         case 'relation':
-          dispatch(osmLoadRelation({ id, focus: true }));
+          dispatch(
+            osmLoadRelation({
+              id,
+              focus: true,
+              showToast: action.payload.showToast,
+            }),
+          );
 
           break;
       }

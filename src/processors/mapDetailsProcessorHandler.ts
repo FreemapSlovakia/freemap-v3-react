@@ -69,8 +69,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     elements: OverpassElement[];
   }>(await res0.json());
 
-  console.log(oRes.elements);
-
   oRes.elements.sort((a, b) => {
     return (
       distance(
@@ -110,6 +108,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
           id: element.id,
           osmType: 'node',
           tags,
+          showToast: true,
         });
 
         break;
@@ -119,6 +118,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
           id: element.id,
           osmType: 'way',
           tags,
+          showToast: true,
         });
 
         break;
@@ -129,6 +129,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
             id: element.id,
             osmType: 'relation',
             tags,
+            showToast: true,
           });
         }
 
