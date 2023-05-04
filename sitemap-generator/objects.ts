@@ -38,11 +38,15 @@ export async function objects(sitemapNames: string[]) {
   for (const [category, query] of Object.entries(queries)) {
     console.log('Category:', category);
 
-    const res = await fetch('https://overpass.freemap.sk/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: `[out:json][timeout:120]; (${query}); out center tags;`,
-    });
+    const res = await fetch(
+      'https://overpass.freemap.sk/api/interpreter', // is faster
+      // 'https://overpass-api.de/api/interpreter',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: `[out:json][timeout:120]; (${query}); out center tags;`,
+      },
+    );
 
     const name = `sitemap-feat-${category}.txt`;
 

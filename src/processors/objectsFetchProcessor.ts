@@ -93,6 +93,7 @@ export const objectsFetchProcessor: Processor = {
       getState,
       method: 'POST',
       url: 'https://overpass.freemap.sk/api/interpreter',
+      // url: 'https://overpass-api.de/api/interpreter',
       body: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
       cancelActions: [objectsSetFilter, clearMap, selectFeature, mapRefocus],
