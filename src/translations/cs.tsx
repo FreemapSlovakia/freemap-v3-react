@@ -684,7 +684,7 @@ const cs: Messages = {
   },
 
   mapDetails: {
-    notFound: 'Nebyla nalezena žádná cesta.',
+    notFound: 'Nic se zde nenašlo.',
     fetchingError: ({ err }) =>
       `Nastala chyba při získávání detailů o cestě: ${err}`,
     detail: (props: ObjectDetailBasicProps) => (

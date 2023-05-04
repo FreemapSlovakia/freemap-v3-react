@@ -713,7 +713,7 @@ const sk: Messages = {
   },
 
   mapDetails: {
-    notFound: 'Nebola nájdená žiadna cesta.',
+    notFound: 'Nič sa tu nenašlo.',
     fetchingError: ({ err }) =>
       `Nastala chyba pri získavaní detailov o ceste: ${err}`,
     detail: (props: ObjectDetailBasicProps) => (

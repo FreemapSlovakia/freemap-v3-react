@@ -670,7 +670,7 @@ const en: Messages = {
   },
 
   mapDetails: {
-    notFound: 'No road found.',
+    notFound: 'Nothing found here.',
     fetchingError: ({ err }) => `Error fetching road details: ${err}`,
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
