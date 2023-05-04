@@ -56,6 +56,10 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
       newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
     }
 
+    if (action.payload.customLayers) {
+      newState.customLayers = action.payload.customLayers;
+    }
+
     return newState;
   })
   .handleAction(gallerySetFilter, (state) => {

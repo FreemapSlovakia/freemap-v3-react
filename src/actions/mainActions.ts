@@ -79,14 +79,16 @@ export const saveHomeLocation = createAction('SAVE_HOME_LOCATION')();
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
+type Settings = {
+  layersSettings?: Record<string, LayerSettings>;
+  overlayPaneOpacity?: number;
+  customLayers?: CustomLayer[];
+  drawingColor?: string;
+  drawingWidth?: number;
+};
+
 export const saveSettings = createAction('SAVE_SETTINGS')<{
-  settings?: {
-    layersSettings?: Record<string, LayerSettings>;
-    overlayPaneOpacity?: number;
-    customLayers?: CustomLayer[];
-    drawingColor?: string;
-    drawingWidth?: number;
-  };
+  settings?: Settings;
   user?: {
     name: string;
     email: string | null;
@@ -94,13 +96,9 @@ export const saveSettings = createAction('SAVE_SETTINGS')<{
   };
 }>();
 
-export const applySettings = createAction('APPLY_SETTINGS')<{
-  layersSettings?: Record<string, LayerSettings>;
-  overlayPaneOpacity?: number;
-  drawingColor?: string;
-  drawingWidth?: number;
-  drawingApplyAll?: boolean;
-}>();
+export const applySettings = createAction('APPLY_SETTINGS')<
+  Settings & { drawingApplyAll?: boolean }
+>();
 
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
   string | undefined
