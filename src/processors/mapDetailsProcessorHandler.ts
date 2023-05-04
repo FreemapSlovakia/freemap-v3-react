@@ -43,7 +43,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     httpRequest({
       getState,
       method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
+      // url: 'https://overpass.freemap.sk/api/interpreter',
+      url: 'https://overpass-api.de/api/interpreter',
       headers: { 'Content-Type': 'text/plain' },
       body:
         '[out:json];(' +
@@ -55,7 +56,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     httpRequest({
       getState,
       method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
+      // url: 'https://overpass.freemap.sk/api/interpreter', // fails with memory error
+      url: 'https://overpass-api.de/api/interpreter',
       headers: { 'Content-Type': 'text/plain' },
       body: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;

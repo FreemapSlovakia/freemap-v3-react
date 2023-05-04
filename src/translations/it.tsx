@@ -679,7 +679,7 @@ const it: Messages = {
   mapDetails: {
     notFound: 'Niente trovato qui.', // TODO google translated
     fetchingError: ({ err }) =>
-      `Errore nel recupero dei dettagli della strada: ${err}`,
+      `Errore durante il recupero dei dettagli: ${err}`, // TODO google translated
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}

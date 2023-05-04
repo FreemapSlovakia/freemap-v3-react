@@ -685,8 +685,7 @@ const hu: Messages = {
 
   mapDetails: {
     notFound: 'Itt nem találtunk semmit.', // TODO google translated
-    fetchingError: ({ err }) =>
-      `Hiba történt az út adatainak beolvasásakor: ${err}`,
+    fetchingError: ({ err }) => `Hiba történt a részletek lekérésekor: ${err}`, // TODO google translated
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
