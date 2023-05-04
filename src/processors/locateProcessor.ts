@@ -17,10 +17,6 @@ export const locateProcessor: Processor = {
 
       watch = window.navigator.geolocation?.watchPosition(
         ({ coords: { latitude, longitude, accuracy } }) => {
-          if (watch) {
-            window.navigator.geolocation.clearWatch(watch);
-          }
-
           dispatch(
             setLocation({
               lat: latitude,
