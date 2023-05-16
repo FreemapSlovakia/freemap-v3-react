@@ -277,31 +277,41 @@ function addDrawingLines(
 
     const extEle = createElement(trkEle, 'extensions');
 
+    const color = (line.color ?? colors.normal).slice(1);
+
     if (type === 'polygon') {
       const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
 
-      createElement(
-        fillStyleEle,
-        [GPX_STYLE_NS, 'color'],
-        (line.color ?? colors.normal).slice(1),
-      );
+      createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], color);
 
-      createElement(fillStyleEle, [GPX_STYLE_NS, 'opacity'], '0.5');
+      createElement(fillStyleEle, [GPX_STYLE_NS, 'opacity'], '0.33');
     }
 
     const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
 
-    createElement(
-      lineStyleEle,
-      [GPX_STYLE_NS, 'color'],
-      (line.color ?? colors.normal).slice(1),
-    );
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], color);
 
     createElement(
       lineStyleEle,
       [GPX_STYLE_NS, 'width'],
       String(line.width || 4),
     );
+
+    const ext2Ele = createElement(lineStyleEle, 'extensions');
+
+    createElement(ext2Ele, [LOCUS_NS, 'locus:lsColorBase'], '#ff' + color);
+
+    createElement(
+      ext2Ele,
+      [LOCUS_NS, 'locus:lsWidth'],
+      String(line.width ?? 4),
+    );
+
+    createElement(ext2Ele, [LOCUS_NS, 'locus:lsUnits'], 'PIXELS');
+
+    if (type === 'polygon') {
+      createElement(ext2Ele, [LOCUS_NS, 'locus:lsColorFill'], '#60' + color);
+    }
 
     const trksegEle = createElement(trkEle, 'trkseg');
 
