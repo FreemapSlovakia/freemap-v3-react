@@ -2,7 +2,9 @@ export const GPX_NS = 'http://www.topografix.com/GPX/1/1';
 
 export const GARMIN_NS = 'http://www.garmin.com/xmlschemas/GpxExtensions/v3';
 
-export const GPX_STYLE_NS = 'http://www.topografix.com/GPX/gpx_style/0/2"';
+export const GPX_STYLE_NS = 'http://www.topografix.com/GPX/gpx_style/0/2';
+
+export const LOCUS_NS = 'http://www.locusmap.eu';
 
 export function createElement(
   parent: Element,

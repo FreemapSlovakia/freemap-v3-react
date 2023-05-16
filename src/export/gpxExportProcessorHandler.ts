@@ -1,4 +1,5 @@
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
+import { colors } from 'fm3/constants';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
@@ -15,6 +16,7 @@ import {
   GARMIN_NS,
   GPX_NS,
   GPX_STYLE_NS,
+  LOCUS_NS,
 } from './gpxExporter';
 import { upload } from './upload';
 
@@ -34,6 +36,8 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
       ${GARMIN_NS} https://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd
       ${GPX_STYLE_NS} https://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd`,
   );
+
+  doc.documentElement.setAttribute('xmlns:locus', LOCUS_NS);
 
   addAttribute(doc.documentElement, 'version', '1.1');
 
@@ -93,11 +97,11 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   }
 
   if (set.has('drawingLines')) {
-    addADMeasurement(doc, drawingLines, 'line');
+    addDrawingLines(doc, drawingLines, 'line');
   }
 
   if (set.has('drawingAreas')) {
-    addADMeasurement(doc, drawingLines, 'polygon');
+    addDrawingLines(doc, drawingLines, 'polygon');
   }
 
   if (set.has('drawingPoints')) {
@@ -259,7 +263,7 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
   }
 }
 
-function addADMeasurement(
+function addDrawingLines(
   doc: Document,
   { lines }: DrawingLinesState,
   type: 'polygon' | 'line',
@@ -273,9 +277,31 @@ function addADMeasurement(
 
     const extEle = createElement(trkEle, 'extensions');
 
+    if (type === 'polygon') {
+      const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
+
+      createElement(
+        fillStyleEle,
+        [GPX_STYLE_NS, 'color'],
+        (line.color ?? colors.normal).slice(1),
+      );
+
+      createElement(fillStyleEle, [GPX_STYLE_NS, 'opacity'], '0.5');
+    }
+
     const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
 
-    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], line.color);
+    createElement(
+      lineStyleEle,
+      [GPX_STYLE_NS, 'color'],
+      (line.color ?? colors.normal).slice(1),
+    );
+
+    createElement(
+      lineStyleEle,
+      [GPX_STYLE_NS, 'width'],
+      String(line.width || 4),
+    );
 
     const trksegEle = createElement(trkEle, 'trkseg');
 
@@ -289,7 +315,7 @@ function addADMeasurement(
 }
 
 function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
-  for (const { lat, lon, label } of points) {
+  for (const { lat, lon, label, color } of points) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -302,6 +328,36 @@ function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
 
     if (label) {
       createElement(wptEle, 'name', label);
+    }
+
+    const extEle = createElement(wptEle, 'extensions');
+
+    const canvas = document.createElement('canvas');
+
+    canvas.width = 64;
+
+    canvas.height = 64;
+
+    const ctx = canvas.getContext('2d');
+
+    if (ctx) {
+      ctx.beginPath();
+
+      ctx.closePath();
+
+      ctx.beginPath();
+
+      ctx.moveTo(32, 58);
+
+      ctx.arc(32, 24, 18, Math.PI - Math.PI / 6, Math.PI / 6);
+
+      ctx.closePath();
+
+      ctx.fillStyle = color || colors.normal;
+
+      ctx.fill();
+
+      createElement(extEle, [LOCUS_NS, 'locus:icon'], canvas.toDataURL());
     }
   }
 }
