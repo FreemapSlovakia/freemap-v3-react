@@ -325,6 +325,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     cemetery: 'Cemetery',
     commercial: 'Commercial',
     construction: 'Construction',
+    education: 'Educational zone',
     farmland: 'Farmland',
     farmyard: 'Farmyard',
     forest: 'Forest',
@@ -349,6 +350,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   leisure: {
     '*': '{}',
+    bleachers: 'Bleachers',
     escape_game: 'Escape game',
     hackerspace: 'Hackerspace',
     ice_rink: 'Ice rink',

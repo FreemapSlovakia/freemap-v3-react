@@ -325,6 +325,7 @@ export type OsmTagToNameMapping = {
     cemetery: string;
     commercial: string;
     construction: string;
+    education: string;
     farmland: string;
     farmyard: string;
     forest: string;
@@ -348,6 +349,7 @@ export type OsmTagToNameMapping = {
   };
   leisure: {
     '*': string;
+    bleachers: string;
     dog_park: string;
     escape_game: string;
     firepit: string;

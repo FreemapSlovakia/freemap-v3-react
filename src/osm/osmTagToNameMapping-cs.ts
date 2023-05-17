@@ -323,6 +323,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     cemetery: 'Hřbitov',
     commercial: 'Komerční zóna',
     construction: 'Staveniště',
+    education: 'Školní zóna',
     farmland: 'Pole',
     farmyard: 'Družstvo',
     forest: 'Les',
@@ -346,6 +347,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   leisure: {
     '*': '{}',
+    bleachers: 'Tribuny',
     escape_game: 'Úniková hra',
     hackerspace: 'Hackerspace',
     ice_rink: 'Klzisko',
