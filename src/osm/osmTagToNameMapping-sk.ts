@@ -553,6 +553,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   railway: 'Železnica',
   shop: {
     '*': 'Obchod {}',
+    household_linen: 'Domáca bielizeň',
     charity: 'Obchod s Dobročinnosťou',
     chocolate: 'Čokoládovňa',
     fashion_accessories: 'Obchod s módnymi doplnkami',
@@ -799,6 +800,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     camp_site: 'Kemp',
     caravan_site: 'Autokemp pre obytné prívesy',
     chalet: 'Chata',
+    gallery: 'Galéria',
     guest_house: 'Penzión',
     hostel: 'Hostel',
     hotel: 'Hotel',

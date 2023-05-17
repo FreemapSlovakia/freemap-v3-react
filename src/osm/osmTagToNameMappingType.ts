@@ -621,6 +621,7 @@ export type OsmTagToNameMapping = {
     health_food: string;
     hearing_aids: string;
     hifi: string;
+    household_linen: string;
     houseware: string;
     hunting: string;
     ice_cream: string;
@@ -801,6 +802,7 @@ export type OsmTagToNameMapping = {
     camp_site: string;
     caravan_site: string;
     chalet: string;
+    gallery: string;
     guest_house: string;
     hostel: string;
     hotel: string;

@@ -555,6 +555,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   railway: 'Ferrovia',
   shop: {
     '*': 'Negozio {}',
+    household_linen: 'Casa biancheria', // TODO translate
     charity: 'Negozio di Beneficenza', // TODO translate
     chocolate: 'Negozio di Cioccolato', // TODO translate
     fashion_accessories: 'Negozio di Accessori Moda', // TODO translate
@@ -801,6 +802,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     camp_site: 'Campeggio',
     caravan_site: 'Area camper',
     chalet: 'Chalet',
+    gallery: 'Galleria',
     guest_house: 'Pensione',
     hostel: 'Ostello',
     hotel: 'Albergo',

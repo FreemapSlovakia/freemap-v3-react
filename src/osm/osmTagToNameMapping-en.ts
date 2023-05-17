@@ -552,6 +552,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   railway: 'Railroad',
   shop: {
     '*': 'Shop {}',
+    household_linen: 'Household linen',
     charity: 'Charity Shop',
     chocolate: 'Chocolate Shop',
     fashion_accessories: 'Fashion Accessories Shop',
@@ -798,6 +799,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     camp_site: 'Campsite',
     caravan_site: 'Caravan site',
     chalet: 'Chalet',
+    gallery: 'Gallery',
     guest_house: 'Guest house',
     hostel: 'Hostel',
     hotel: 'Hotel',
