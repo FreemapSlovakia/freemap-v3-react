@@ -320,6 +320,7 @@ export type OsmTagToNameMapping = {
   landuse: {
     '*': string;
     allotments: string;
+    basin: string;
     brownfield: string;
     cemetery: string;
     commercial: string;
@@ -348,13 +349,18 @@ export type OsmTagToNameMapping = {
   leisure: {
     '*': string;
     dog_park: string;
+    escape_game: string;
     firepit: string;
     fishing: string;
     fitness_centre: string;
     fitness_station: string;
     garden: string;
     golf_course: string;
+    ice_rink: string;
+    hackerspace: string;
     horse_riding: string;
+    marina: string;
+    miniature_golf: string;
     nature_reserve: string;
     park: string;
     picnic_table: {
@@ -567,8 +573,10 @@ export type OsmTagToNameMapping = {
     car_parts: string;
     car_repair: string;
     carpet: string;
+    charity: string;
     cheese: string;
     chemist: string;
+    chocolate: string;
     clothes: string;
     coffee: string;
     collector: string;
@@ -591,10 +599,12 @@ export type OsmTagToNameMapping = {
     erotic: string;
     fabric: string;
     farm: string;
+    fashion_accessories: string;
     fireplace: string;
     fishing: string;
     flooring: string;
     florist: string;
+    frozen_food: string;
     funeral_directors: string;
     furniture: string;
     games: string;
@@ -607,6 +617,7 @@ export type OsmTagToNameMapping = {
     hairdresser: string;
     hardware: string;
     health_food: string;
+    hearing_aids: string;
     hifi: string;
     houseware: string;
     hunting: string;
@@ -662,6 +673,7 @@ export type OsmTagToNameMapping = {
     video: string;
     video_games: string;
     watches: string;
+    weapons: string;
     wholesale: string;
     window_blind: string;
     wine: string;
@@ -675,19 +687,27 @@ export type OsmTagToNameMapping = {
     american_football: string;
     archery: string;
     athletics: string;
+    australian_football: string;
     badminton: string;
     baseball: string;
     basketball: string;
     beachvolleyball: string;
     bicycle: string;
+    billiards: string;
     bmx: string;
     boules: string;
     bowling: string;
     bowls: string;
+    boxing: string;
     canoe: string;
     chess: string;
+    cliff_diving: string;
     climbing: string;
     climbing_adventure: string;
+    cricket: string;
+    cricket_nets: string;
+    croquet: string;
+    curling: string;
     cycling: string;
     darts: string;
     disc_golf: string;
@@ -697,27 +717,40 @@ export type OsmTagToNameMapping = {
     fitness: string;
     floorball: string;
     free_flying: string;
+    gaelic_games: string;
     golf: string;
     gymnastics: string;
     handball: string;
     hockey: string;
     horse_racing: string;
+    horseshoes: string;
     ice_hockey: string;
     ice_skating: string;
     judo: string;
     karate: string;
     karting: string;
+    korfball: string;
     laser_tag: string;
+    long_jump: string;
     model_aerodrome: string;
     motocross: string;
     motor: string;
     multi: string;
     netball: string;
+    orienteering: string;
+    paddle_tennis: string;
     paintball: string;
+    pelota: string;
     petanque: string;
+    racquet: string;
+    rc_car: string;
     roller_skating: string;
     rowing: string;
+    rugby: string;
+    rugby_league: string;
+    rugby_union: string;
     running: string;
+    sailing: string;
     scuba_diving: string;
     shooting: string;
     shooting_range: string;
@@ -729,9 +762,13 @@ export type OsmTagToNameMapping = {
     soccer: string;
     squash: string;
     streetball: string;
+    surfing: string;
     swimming: string;
+    table_soccer: string;
     table_tennis: string;
+    team_handball: string;
     tennis: string;
+    toboggan: string;
     volleyball: string;
     water_ski: string;
     workout: string;
@@ -741,6 +778,7 @@ export type OsmTagToNameMapping = {
     '*': string;
     alpine_hut: string;
     apartment: string;
+    aquarium: string;
     artwork: {
       '*': string;
       artwork_type: {

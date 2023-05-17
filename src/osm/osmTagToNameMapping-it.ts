@@ -320,6 +320,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   landuse: {
     '*': '{}',
     allotments: 'Lottizzazioni',
+    basin: 'Serbatoio di raccolta', // TODO translate
     brownfield: 'Terreno dismesso',
     cemetery: 'Cimitero',
     commercial: 'Commerciale',
@@ -348,6 +349,11 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   leisure: {
     '*': '{}',
+    escape_game: 'Gioco di fuga', // TODO translate
+    hackerspace: 'Hackerspace', // TODO translate
+    ice_rink: 'Pista di ghiaccio', // TODO translate
+    marina: 'Marina', // TODO translate
+    miniature_golf: 'Minigolf', // TODO translate
     dog_park: 'Area per cani',
     firepit: 'Focolare',
     fishing: 'Pesca',
@@ -547,6 +553,12 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   railway: 'Ferrovia',
   shop: {
     '*': 'Negozio {}',
+    charity: 'Negozio di Beneficenza', // TODO translate
+    chocolate: 'Negozio di Cioccolato', // TODO translate
+    fashion_accessories: 'Negozio di Accessori Moda', // TODO translate
+    frozen_food: 'Negozio di Alimenti Surgelati', // TODO translate
+    hearing_aids: 'Negozio di Apparecchi Acustici', // TODO translate
+    weapons: 'Negozio di Armi', // TODO translate
     alcohol: 'Alcolici',
     antiques: 'Antiquariato',
     art: 'Arti',
@@ -668,6 +680,31 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   sport: {
     '*': 'Sport {}',
+    australian_football: 'Football australiano', // TODO translate
+    billiards: 'Biliardo', // TODO translate
+    boxing: 'Boxe', // TODO translate
+    cliff_diving: 'Tuffi da scogliera', // TODO translate
+    cricket: 'Cricket', // TODO translate
+    cricket_nets: 'Reti per cricket', // TODO translate
+    croquet: 'Croquet', // TODO translate
+    curling: 'Curling', // TODO translate
+    gaelic_games: 'Giochi gaelici', // TODO translate
+    horseshoes: 'Ferri di cavallo', // TODO translate
+    korfball: 'Korfball', // TODO translate
+    long_jump: 'Salto in lungo', // TODO translate
+    orienteering: 'Orientamento', // TODO translate
+    paddle_tennis: 'Paddle tennis', // TODO translate
+    pelota: 'Pelota', // TODO translate
+    racquet: 'Racchetta', // TODO translate
+    rc_car: 'Auto RC', // TODO translate
+    rugby: 'Rugby', // TODO translate
+    rugby_league: 'Rugby a 13', // TODO translate
+    rugby_union: 'Rugby a 15', // TODO translate
+    sailing: 'Vela', // TODO translate
+    surfing: 'Surf', // TODO translate
+    table_soccer: 'Calcio balilla', // TODO translate
+    team_handball: 'Pallamano', // TODO translate
+    toboggan: 'Slitta', // TODO translate
     '9pin': 'Bowling 9 birilli',
     '10pin': 'Bowling 10 birilli',
     aikido: 'Aikido',
@@ -741,6 +778,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     '*': '{}',
     alpine_hut: 'Rifugio Alpino',
     apartment: 'Appartamento',
+    aquarium: 'Acquario', // TODO translate
     artwork: {
       '*': 'Arte',
       artwork_type: {
