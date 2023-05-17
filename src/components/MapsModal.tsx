@@ -206,6 +206,7 @@ export function MapsModal({ show }: Props): ReactElement {
                     }
                     onAdd={handleWriterAddition}
                     onDelete={handleWriterDelete}
+                    collapseOnSelect
                   />
                 </FormGroup>
               )}

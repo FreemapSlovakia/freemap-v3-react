@@ -188,6 +188,7 @@ export function GalleryEditForm({
           onAdd={handleTagAddition}
           onDelete={handleTagDelete}
           allowNew
+          collapseOnSelect
         />
 
         <RecentTags
