@@ -4,6 +4,7 @@ import { gallerySetFilter } from 'fm3/actions/galleryActions';
 import { applySettings, Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
+  mapSetCustomLayers,
   MapStateBase,
   mapSuppressLegacyMapWarning,
 } from 'fm3/actions/mapActions';
@@ -137,4 +138,8 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
       overlays: map?.overlays ?? state.overlays,
       customLayers: map?.customLayers ?? state.customLayers,
     }),
-  );
+  )
+  .handleAction(mapSetCustomLayers, (state, action) => ({
+    ...state,
+    customLayers: action.payload,
+  }));
