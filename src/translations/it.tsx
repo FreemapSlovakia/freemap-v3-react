@@ -1111,8 +1111,9 @@ const it: Messages = {
       s3: 'Strava (sport acquatici)',
       s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
-      '4': 'Ombreggiatura leggera DMR 5.0',
-      '5': 'Ombreggiatura grigia DMR 5.0',
+      '4': 'Light Terrain Hillshading (SK)', // TODO translate
+      '5': 'Terrain Hillshading (SK)', // TODO translate
+      '6': 'Surface Hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
     },

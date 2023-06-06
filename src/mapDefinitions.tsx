@@ -100,6 +100,7 @@ export const baseLayerLetters = [
   'X',
   '4',
   '5',
+  '6',
   'VO',
   'VS',
 ] as const;
@@ -346,7 +347,7 @@ export const baseLayers: BaseLayerDef[] = [
     type: '5',
     url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
-    maxNativeZoom: 17,
+    maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
       {
@@ -356,6 +357,23 @@ export const baseLayers: BaseLayerDef[] = [
       },
     ],
     key: ['KeyD', false],
+    errorTileUrl: black1x1,
+    scaleWithDpi: true,
+  },
+  {
+    type: '6',
+    url: 'https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minZoom: 0,
+    maxNativeZoom: 18,
+    icon: <GiHills />,
+    attribution: [
+      {
+        type: 'data',
+        name: 'LLS: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    key: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
   },

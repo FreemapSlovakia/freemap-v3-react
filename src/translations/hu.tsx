@@ -1118,8 +1118,9 @@ const hu: Messages = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
-      '4': 'Light Hillshading DMR 5.0', // TODO translate
-      '5': 'Gray Hillshading DMR 5.0', // TODO translate
+      '4': 'Light Terrain Hillshading (SK)', // TODO translate
+      '5': 'Terrain Hillshading (SK)', // TODO translate
+      '6': 'Surface Hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
     },
