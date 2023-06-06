@@ -113,7 +113,7 @@ _freemapITtopo_ - obsahuje mapu Talianska s turistickými a cyklistickými trasa
 - iba `gmapsupp.img` súbor:
   - [Latin1 mapa](https://www.empirical.it/freemapit/freemap_IT.zip)
 
-**Poznámka:** zariadenie Edge 1000 a GPSMap 64 (prípadne ďalšie) nezobrazujú mapu. Mapa používa unicode pre ukladanie znakov a tieto zariadenia s tím majú problém. Pokiaľ Vám zariadenie píše, že je "mapa zamknutá" [stiahnite si](https://download.freemap.sk/garmin) súbor, ktorý má v názve "latin1" a postupujte podľa návodu nižšie.
+**Poznámka:** zariadenie Edge 1000 a GPSMap 64 (prípadne ďalšie) nezobrazujú mapu. Mapa používa unicode pre ukladanie znakov a tieto zariadenia s tým majú problém. Pokiaľ Vám zariadenie píše, že je "mapa zamknutá" [stiahnite si](https://download.freemap.sk/garmin) súbor, ktorý má v názve "latin1" a postupujte podľa návodu nižšie.
 Viac o probléme zamknutej mapy na anglickom [Garmin fóre](https://forums.garmin.com/showthread.php?94680-Edge-1000-cannot-read-mkgmap-%28OSM%29-created-Unicode-maps).
 Taktiež v prípade ak vlastníte staršie zariadenie, ktoré miesto písmen s diakritikou zobrazuje nezmyselné znaky, použite verziu, ktorá má v názve "latin1".
 
