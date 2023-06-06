@@ -58,9 +58,6 @@ module.exports = {
       fm3: path.resolve(__dirname, 'src'),
       pica: 'pica/dist/pica.js',
     },
-    fallback: {
-      util: require.resolve('util/'), // for typescript-is after upgrading webpack from 4 to 5
-    },
   },
   optimization: {
     // moduleIds: 'deterministic',
