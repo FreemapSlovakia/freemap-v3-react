@@ -1444,7 +1444,7 @@ const it: Messages = {
     measurePosition: 'Trova coordinate e altitudine',
     addPoint: 'Aggiungi un punto qui',
     startLine: 'Inizia qui a disegnare una linea o misurazione',
-    queryFeatures: 'Interroga le funzioni vicine',
+    queryFeatures: 'Interroga le caratteristiche nelle vicinanze',
     startRoute: 'Pianifica una rotta da qui',
     finishRoute: 'Pianifica una rotta fino qui',
     showPhotos: 'Mostra le foto vicine',
