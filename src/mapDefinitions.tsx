@@ -190,12 +190,12 @@ export const baseLayers: BaseLayerDef[] = [
       SRTM_ATTR,
       {
         type: 'data',
-        name: 'DMR 5.0: ©\xa0ÚGKK SR',
+        name: 'DMR 5.0:\xa0©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
       {
         type: 'data',
-        name: 'DMR 5G: ©\xa0ČÚZK',
+        name: 'DMR 5G:\xa0©\xa0ČÚZK',
         url: 'https://geoportal.cuzk.cz/',
       },
     ],
