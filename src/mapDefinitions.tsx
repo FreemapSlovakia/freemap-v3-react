@@ -190,8 +190,13 @@ export const baseLayers: BaseLayerDef[] = [
       SRTM_ATTR,
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMR 5.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+      {
+        type: 'data',
+        name: 'DMR 5G: ©\xa0ČÚZK',
+        url: 'https://geoportal.cuzk.cz/',
       },
     ],
     minZoom: 6,
@@ -230,7 +235,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'Z',
-    url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 19,
     scaleWithDpi: true,
@@ -240,6 +245,11 @@ export const baseLayers: BaseLayerDef[] = [
         type: 'map',
         name: '©\xa0GKÚ, NLC',
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+      },
+      {
+        type: 'map',
+        name: '©\xa0ČÚZK',
+        url: 'https://geoportal.cuzk.cz/',
       },
     ],
     key: ['KeyZ', false],
@@ -335,7 +345,7 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMR 5.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
@@ -352,7 +362,7 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMR 5.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
@@ -369,7 +379,7 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMP 1.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
