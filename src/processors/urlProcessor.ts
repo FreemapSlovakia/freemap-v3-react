@@ -192,11 +192,11 @@ export const urlProcessor: Processor = {
       historyParts.push(['osm-node', search.osmNodeId]);
     }
 
-    if (search.osmWayId) {
+    if (search.osmWayId && search.osmWayId > 0) {
       historyParts.push(['osm-way', search.osmWayId]);
     }
 
-    if (search.osmRelationId) {
+    if (search.osmRelationId && search.osmRelationId > 0) {
       historyParts.push(['osm-relation', search.osmRelationId]);
     }
 
