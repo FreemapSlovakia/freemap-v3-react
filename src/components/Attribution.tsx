@@ -1,7 +1,7 @@
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
 
 type Props = { unknown: string };
 
@@ -40,7 +40,9 @@ export function Attribution({ unknown }: Props): ReactElement {
                 {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
               </a>
             ) : (
-              a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])
+              <Fragment key={a.type}>
+                {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
+              </Fragment>
             ),
           ])}
         </li>
