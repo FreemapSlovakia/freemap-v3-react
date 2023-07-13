@@ -1,4 +1,5 @@
-import { latLonToString, toXY } from 'fm3/geoutils';
+import { pointToTile } from '@mapbox/tilebelt';
+import { latLonToString } from 'fm3/geoutils';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
@@ -30,7 +31,7 @@ export function ElevationInfo({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const { x, y } = toXY(point.lat, point.lon, zoom);
+  const [x, y] = pointToTile(point.lon, point.lat, zoom);
 
   function substitute(url?: string) {
     return url

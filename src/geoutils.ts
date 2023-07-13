@@ -329,14 +329,3 @@ export function shouldBeArea(tags?: Properties): boolean {
     !!tags && tags['area'] !== 'no' && !tags['barrier'] && !tags['highway']
   );
 }
-
-export function toXY(lat: number, lon: number, zoom: number) {
-  const x = Math.floor(2 ** zoom * ((lon + 180) / 360));
-
-  const y = Math.floor(
-    2 ** zoom *
-      ((1 - Math.asinh(Math.tan((lat * Math.PI) / 180.0)) / Math.PI) / 2),
-  );
-
-  return { x, y };
-}

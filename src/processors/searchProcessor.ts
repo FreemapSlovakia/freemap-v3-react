@@ -1,3 +1,4 @@
+import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
 import { clearMap } from 'fm3/actions/mainActions';
 import {
@@ -38,6 +39,32 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
     if (!query) {
       return;
+    }
+
+    const m = /^\s*(\d+)\/(\d+)\/(\d+)\s*$/.exec(query);
+
+    if (m) {
+      const poly = tileToGeoJSON([Number(m[2]), Number(m[3]), Number(m[1])]);
+
+      if (poly) {
+        const tags = {
+          name: query.trim(),
+        };
+
+        dispatch(
+          searchSetResults([
+            {
+              id: -1,
+              geojson: feature(poly, tags),
+              osmType: 'relation',
+              tags,
+              detailed: true,
+            },
+          ]),
+        );
+
+        return;
+      }
     }
 
     let coords: LatLon | undefined;
