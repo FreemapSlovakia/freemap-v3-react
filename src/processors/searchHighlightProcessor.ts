@@ -90,7 +90,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
 
       (await mapPromise).fitBounds(geoJSON(geojson).getBounds(), {
         maxZoom: Math.min(
-          18,
+          action.payload.result.zoom ?? 18,
           baseLayers.find((layer) => layer.type === mapType)?.maxNativeZoom ??
             16,
         ),

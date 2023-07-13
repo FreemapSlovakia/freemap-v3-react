@@ -59,6 +59,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
               osmType: 'relation',
               tags,
               detailed: true,
+              zoom: Number(m[1]),
             },
           ]),
         );

@@ -16,6 +16,7 @@ export interface SearchResult {
   tags: Properties;
   detailed?: true;
   showToast?: true;
+  zoom?: number;
 }
 
 export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
