@@ -1086,7 +1086,7 @@ const it: Messages = {
       C: 'Bici',
       K: 'Sci di fondo',
       S: 'Aereo',
-      Z: 'Ortofotomozaika SR (Aerial, SK)',
+      Z: 'Ortofoto ČR+SR (Aerial, CZ+SK)',
       J: 'Vecchia Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',

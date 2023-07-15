@@ -1077,7 +1077,7 @@ const en: Messages = {
       C: 'Bicycle',
       K: 'Crosscountry Ski',
       S: 'Aerial',
-      Z: 'Ortofotomozaika SR (Aerial, SK)',
+      Z: 'Ortofoto ČR+SR (Aerial, CZ+SK)',
       J: 'Old Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',

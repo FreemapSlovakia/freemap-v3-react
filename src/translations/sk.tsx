@@ -1122,7 +1122,7 @@ const sk: Messages = {
       C: 'Cyklomapa',
       K: 'Bežkárska',
       S: 'Z lietadla',
-      Z: 'Ortofotomozaika SR',
+      Z: 'Ortofoto ČR+SR',
       J: 'Stará Ortofotomozaika SR',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
