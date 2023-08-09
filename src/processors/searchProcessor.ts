@@ -24,7 +24,7 @@ interface NominatimResult {
   display_name: string;
   class: string;
   type: string;
-  extratags?: Record<string, string>;
+  extratags?: null | Record<string, string>;
 }
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
