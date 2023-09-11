@@ -15,7 +15,6 @@ import {
   FaSnowflake,
   FaStrava,
   FaTractor,
-  FaTree,
   FaWikipediaW,
 } from 'react-icons/fa';
 import { GiHills, GiPathDistance, GiTreasureMap } from 'react-icons/gi';
@@ -94,7 +93,6 @@ export const baseLayerLetters = [
   'J',
   'O',
   'M',
-  'p',
   'd',
   'h',
   'X',
@@ -289,24 +287,6 @@ export const baseLayers: BaseLayerDef[] = [
       SRTM_ATTR,
     ],
     key: ['KeyQ', false],
-  },
-  {
-    type: 'p',
-    url: '//tile.opentopomap.org/{z}/{x}/{y}.png',
-    minZoom: 3,
-    maxNativeZoom: 17,
-    icon: <FaTree />,
-
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0OpenTopoMap',
-        url: 'https://tile.opentopomap.org/about#verwendung',
-      },
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ],
-    key: ['KeyN', false],
   },
   {
     type: 'd',

@@ -1126,7 +1126,6 @@ const sk: Messages = {
       J: 'Stará Ortofotomozaika SR',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Verejná doprava (ÖPNV)',
       h: 'Historická',
       X: outdoorMap,

@@ -1097,7 +1097,6 @@ const hu: Messages = {
       J: 'Régi Ortofotó (Szlovákia)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Tömegközlekedés',
       h: 'Történelmi térkép',
       X: outdoorMap,

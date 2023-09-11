@@ -1090,7 +1090,6 @@ const it: Messages = {
       J: 'Vecchia Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Trasporti pubblici (ÖPNV)',
       h: 'Storica',
       X: outdoorMap,
