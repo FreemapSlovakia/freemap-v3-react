@@ -41,8 +41,12 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   }
 
   await new Promise<void>((resolve) => {
-    w.addEventListener('beforeunload', () => {
-      resolve();
+    const ref = window.setInterval(() => {
+      if (w.closed) {
+        window.clearInterval(ref);
+
+        resolve();
+      }
     });
   });
 };
