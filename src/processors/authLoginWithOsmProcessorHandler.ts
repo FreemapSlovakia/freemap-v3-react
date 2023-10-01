@@ -1,16 +1,26 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { assert } from 'typia';
 
-interface LoginResponse {
-  redirect: string;
-}
+const handle: ProcessorHandler = async ({ dispatch, getState }) => {
+  const res = await httpRequest({
+    getState,
+    method: 'GET',
+    url: '/auth/login-osm',
+    expectedStatus: 200,
+  });
 
-const handle: ProcessorHandler = async ({ getState, dispatch }) => {
-  // open window within user gesture gandler (before await)
+  const { clientId } = await res.json();
+
+  // open window within user gesture handler (before await)
   const w = window.open(
-    '',
+    'https://www.openstreetmap.org/oauth2/authorize?' +
+      new URLSearchParams({
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri: process.env['BASE_URL'] + '/authCallback.html',
+        scope: 'read_prefs',
+      }).toString(),
     'osm-login',
     `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${
       window.screen.height / 2 - 550 / 2
@@ -30,24 +40,11 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     return;
   }
 
-  try {
-    const res = await httpRequest({
-      getState,
-      method: 'POST',
-      url: '/auth/login',
-      expectedStatus: 200,
-      cancelActions: [],
-      data: {
-        webBaseUrl: process.env['BASE_URL'],
-      },
+  await new Promise<void>((resolve) => {
+    w.addEventListener('beforeunload', () => {
+      resolve();
     });
-
-    w.location.href = assert<LoginResponse>(await res.json()).redirect;
-  } catch (e) {
-    w.close();
-
-    throw e;
-  }
+  });
 };
 
 export default handle;

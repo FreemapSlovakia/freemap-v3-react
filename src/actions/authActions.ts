@@ -3,10 +3,7 @@ import { createAction } from 'typesafe-actions';
 
 export const authLoginWithOsm = createAction('AUTH_LOGIN_WITH_OSM')();
 
-export const authLoginWithOsm2 = createAction('AUTH_LOGIN_WITH_OSM2')<{
-  token: string;
-  verifier: string;
-}>();
+export const authLoginWithOsm2 = createAction('AUTH_LOGIN_WITH_OSM2')<string>();
 
 export const authLoginWithFacebook = createAction('AUTH_LOGIN_WITH_FACEBOOK')();
 

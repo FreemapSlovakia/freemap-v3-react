@@ -14,9 +14,9 @@ const handle: ProcessorHandler<typeof authLoginWithOsm2> = async ({
   const res = await httpRequest({
     getState,
     method: 'POST',
-    url: '/auth/login2',
+    url: '/auth/login-osm',
     data: {
-      ...action.payload,
+      code: action.payload,
       language: getState().l10n.chosenLanguage,
       // homeLocation: getState().main.homeLocation,
     },
