@@ -85,6 +85,15 @@ module.exports = {
           plugins: [!prod && require('react-refresh/babel')].filter(Boolean),
         },
       },
+      // see https://github.com/mattiasw/ExifReader/issues/248
+      {
+        test: /\/exifreader\/src\/tags\.js$/,
+        loader: 'string-replace-loader',
+        options: {
+          search: 'Constants.USE_THUMBNAIL',
+          replace: 'false',
+        },
+      },
       {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,

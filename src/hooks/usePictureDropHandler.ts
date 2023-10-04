@@ -75,6 +75,8 @@ export function usePictureDropHandler(
         try {
           tags = ExifReader.load(reader.result as ArrayBuffer);
         } catch (e) {
+          console.error(e);
+
           tags = {};
         }
 
