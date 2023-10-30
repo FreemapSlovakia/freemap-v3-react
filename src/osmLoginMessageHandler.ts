@@ -1,5 +1,4 @@
 import { authLoginWithOsm2 } from 'fm3/actions/authActions';
-import qs from 'query-string';
 import { MyStore } from './storeCreator';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
@@ -14,9 +13,9 @@ export function attachOsmLoginMessageHandler(store: MyStore): void {
       return;
     }
 
-    const { code } = qs.parse(e.data.freemap.payload);
+    const code = new URLSearchParams(e.data.freemap.payload).get('code');
 
-    if (typeof code === 'string') {
+    if (code) {
       store.dispatch(authLoginWithOsm2(code));
     }
   });

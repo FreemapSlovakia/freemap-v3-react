@@ -54,7 +54,6 @@ import {
 } from 'fm3/oldFreemapUtils';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
-import queryString, { ParsedQuery } from 'query-string';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
 import { RootAction } from './actions';
@@ -70,10 +69,25 @@ import { TransportType, transportTypeDefs } from './transportTypeDefs';
 import { LatLon } from './types/common';
 import { TrackedDevice } from './types/trackingTypes';
 
-export const handleLocationChange = (
-  store: MyStore,
-  location: Location,
-): void => {
+function parseQuery(search: string) {
+  const q: Record<string, string | string[]> = {};
+
+  for (const [k, v] of new URLSearchParams(search)) {
+    const e = q[k];
+
+    if (Array.isArray(e)) {
+      e.push(v);
+    } else if (e === undefined) {
+      q[k] = v;
+    } else {
+      q[k] = [e, v];
+    }
+  }
+
+  return q;
+}
+
+export function handleLocationChange(store: MyStore, location: Location): void {
   const { getState, dispatch } = store;
 
   const search = (document.location.hash || document.location.search).slice(1);
@@ -82,7 +96,7 @@ export const handleLocationChange = (
     sq: undefined,
   };
 
-  const parsedQuery = queryString.parse(search);
+  const parsedQuery = parseQuery(search);
 
   const id =
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
@@ -102,12 +116,7 @@ export const handleLocationChange = (
   }
 
   const query =
-    id === undefined
-      ? parsedQuery
-      : {
-          ...parsedQuery,
-          ...queryString.parse(sq),
-        };
+    id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
 
   const tool =
     !query['tool'] || typeof query['tool'] !== 'string'
@@ -125,10 +134,6 @@ export const handleLocationChange = (
   if (getState().main.tool !== tool) {
     dispatch(setTool(tool));
   }
-
-  const params = new URLSearchParams(
-    id === undefined ? search : sq,
-  ) as URLSearchParams & Map<string, string>;
 
   {
     const points =
@@ -325,7 +330,9 @@ export const handleLocationChange = (
 
   const lines: Line[] = [];
 
-  for (const [key, value] of params) {
+  for (const [key, value] of new URLSearchParams(
+    id === undefined ? search : sq,
+  )) {
     if (
       key === 'distance-measurement-points' ||
       key === 'area-measurement-points' ||
@@ -639,7 +646,7 @@ export const handleLocationChange = (
       dispatch(selectFeature({ type: 'tracking', id: follow }));
     }
   }
-};
+}
 
 // TODO use some generic deep compare fn
 function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
@@ -655,7 +662,7 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
 function handleGallery(
   getState: () => RootState,
   dispatch: Dispatch<RootAction>,
-  query: ParsedQuery<string>,
+  query: Record<string, string | string[]>,
 ) {
   let a = query['gallery-user-id'];
 
@@ -816,7 +823,7 @@ function parseColorAndLabel(m: string) {
 function handleInfoPoint(
   getState: () => RootState,
   dispatch: Dispatch,
-  query: queryString.ParsedQuery<string>,
+  query: Record<string, string | string[]>,
 ) {
   const drawingPoint =
     query['point'] || query['info-point']; /* compatibility */
@@ -871,7 +878,6 @@ function handleInfoPoint(
       .sort()
       .join('\n')
   ) {
-    // console.log({ ips });
     dispatch(drawingPointSetAll(ips));
   }
 
