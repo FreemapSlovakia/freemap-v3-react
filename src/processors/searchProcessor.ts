@@ -32,10 +32,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
   errorKey: 'search.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
     const { query } = action.payload;
-    // const {
-    //   search: { query },
-    //   // l10n: { language },
-    // } = getState();
 
     if (!query) {
       return;
@@ -129,11 +125,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         };
 
         return {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: item.osm_id!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           geojson: feature(item.geojson!, tags),
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           osmType: item.osm_type!,
           tags,
         };
