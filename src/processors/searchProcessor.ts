@@ -75,7 +75,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     const parts = query.split(/\s*,\s*|\s+/).map((n) => parseFloat(n));
 
     if (parts.length === 4 && parts.every((part) => !isNaN(part))) {
-      const tags = { name: 'BBox ' + parts.join(',') };
+      const tags = { name: 'BBox ' + parts.join(', ') };
 
       const reproj = () => {
         const p1 = CRS.EPSG3857.unproject(new Point(parts[0], parts[1]));

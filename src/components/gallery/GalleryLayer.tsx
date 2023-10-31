@@ -179,7 +179,9 @@ class LGalleryLayer extends LGridLayer {
 
     if (this._options) {
       for (const [k, v] of Object.entries(createFilter(this._options.filter))) {
-        sp.set(k, String(v));
+        if (v != null) {
+          sp.set(k, String(v));
+        }
       }
     }
 
