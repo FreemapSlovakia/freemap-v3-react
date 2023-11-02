@@ -13,9 +13,11 @@ import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
+/* import { RootState } from 'fm3/reducers'; */
 
 function pointToLayer(feature: Feature, latLng: LatLng) {
   const img = resolveGenericName(osmTagToIconMapping, feature.properties ?? {});
+  /* const selectedIconValue = useSelector((state: RootState) => state.main.selectedIcon) */
 
   return marker(latLng, {
     icon: new MarkerLeafletIcon({
@@ -25,6 +27,7 @@ function pointToLayer(feature: Feature, latLng: LatLng) {
           color={window.fmHeadless?.searchResultStyle?.color ?? '#3388ff'}
           imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
           image={img[0]}
+
         />
       ),
     }),
