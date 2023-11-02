@@ -1,6 +1,5 @@
 import { selectFeature } from 'fm3/actions/mainActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-/* import { RichMarker } from 'fm3/components/RichMarker'; */
 import { colors } from 'fm3/constants';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
@@ -17,11 +16,9 @@ import { OsmMapping } from 'fm3/osm/types';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
-
-import { ObjectMarker } from './ObjectMarker';
+import { ObjectMarker } from './RichMarker';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'fm3/reducers';
-
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();
@@ -32,8 +29,10 @@ export function ObjectsResult(): ReactElement | null {
   );
 
   const getTooltipOffset = (selectedIconValue: string) => {
-    return selectedIconValue === "default" ? [0, -36] : [0, -16] as [number,number]
-  }
+    return selectedIconValue === 'default'
+      ? [0, -36]
+      : ([0, -16] as [number, number]);
+  };
 
   const interactive = useAppSelector(selectingModeSelector);
 
@@ -62,7 +61,6 @@ export function ObjectsResult(): ReactElement | null {
     return null;
   }
 
-
   return (
     <>
       {objects.map(({ id, lat, lon, tags, type }) => {
@@ -80,8 +78,6 @@ export function ObjectsResult(): ReactElement | null {
         const { ele } = tags;
 
         const access = tags['access'];
-
-
 
         return (
           <ObjectMarker
@@ -106,7 +102,11 @@ export function ObjectsResult(): ReactElement | null {
             }}
             color={activeId === id ? colors.selected : undefined}
           >
-            <Tooltip key={selectedIconValue} direction="top" offset={getTooltipOffset(selectedIconValue) as [number, number]}>
+            <Tooltip
+              key={selectedIconValue}
+              direction="top"
+              offset={getTooltipOffset(selectedIconValue) as [number, number]}
+            >
               <span>
                 {/* {m?.objects.subcategories[pt.id]} */}
                 {gn} <i>{name}</i>
