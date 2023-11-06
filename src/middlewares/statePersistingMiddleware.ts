@@ -41,6 +41,9 @@ function persistSelectedState(state: RootState) {
         drawingWidth: state.main.drawingWidth,
         drawingRecentColors: state.main.drawingRecentColors,
       },
+      objects: {
+        selectedIcon: state.objects.selectedIcon,
+      },
       routePlanner: {
         preventHint: state.routePlanner.preventHint,
         transportType: state.routePlanner.transportType,

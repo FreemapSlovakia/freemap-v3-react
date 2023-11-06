@@ -33,6 +33,3 @@ export const drawingMeasure = createAction('DRAWING_MEASURE')<{
   elevation?: boolean;
   position?: { lat: number; lon: number };
 }>();
-
-export const setSelectedIcon = createAction('SET_SELECTED_ICON')<string>();
-

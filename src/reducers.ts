@@ -28,7 +28,11 @@ import {
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
 import { mapInitialState, mapReducer, MapState } from './reducers/mapReducer';
 import { mapsReducer } from './reducers/mapsReducer';
-import { objectsReducer } from './reducers/objectsReducer';
+import {
+  objectsReducer,
+  objectInitialState,
+  ObjectsState,
+} from './reducers/objectsReducer';
 import {
   routePlannerInitialState,
   routePlannerReducer,
@@ -105,6 +109,10 @@ export function getInitialState() {
 
   if (is<Partial<MainState>>(persisted.main)) {
     initial.main = { ...mainInitialState, ...persisted.main };
+  }
+
+  if (is<Partial<ObjectsState>>(persisted.objects)) {
+    initial.objects = { ...objectInitialState, ...persisted.objects };
   }
 
   if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {

@@ -12,3 +12,5 @@ export const objectsSetFilter = createAction('OBJECTS_SET_FILTER')<string[]>();
 
 export const objectsSetResult =
   createAction('OBJECTS_SET_RESULT')<ObjectsResult[]>();
+
+export const setSelectedIcon = createAction('SET_SELECTED_ICON')<string>();

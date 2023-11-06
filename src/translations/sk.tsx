@@ -735,6 +735,12 @@ const sk: Messages = {
     tooManyPoints: ({ limit }) =>
       `Výsledok bol obmedzený na ${limit} objektov.`,
     fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,
+    icon: {
+      message: 'Typ ikony',
+      default: 'Predvolená ikona',
+      ring: 'Okruhlá ikona',
+      rectangle: 'Obĺžniková ikona',
+    },
     // categories: {
     //   1: 'Príroda',
     //   2: 'Služby',

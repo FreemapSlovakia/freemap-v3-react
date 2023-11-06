@@ -706,6 +706,12 @@ const hu: Messages = {
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`, // TODO translate
     fetchingError: ({ err }) =>
       `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
+    icon: {
+      message: 'Ikon típusa',
+      default: 'Alapértelmezett ikon',
+      ring: 'Gyűrű ikonra',
+      rectangle: 'Téglalap ikonra',
+    }, // TODO translated with google translate
     // categories: {
     //   1: 'Természet',
     //   2: 'Szolgáltatások',

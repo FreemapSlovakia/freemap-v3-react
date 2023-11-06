@@ -183,13 +183,23 @@ export function ObjectMarker({
   }, [autoOpenPopup]);
 
   const selectedIconValue = useSelector(
-    (state: RootState) => state.main.selectedIcon,
+    (state: RootState) => state.objects.selectedIcon,
   );
+
+  let iconAnchor = [12, 37] as [number, number];
+
+  if (selectedIconValue === 'ring' || selectedIconValue === 'rectangle') {
+    iconAnchor = [12, 12] as [number, number];
+  }
+
+  const componentKey = selectedIconValue || 'default';
 
   const icon = useMemo(
     () =>
       new MarkerLeafletIcon({
-        ...markerIconOptions,
+        iconAnchor,
+        popupAnchor: markerIconOptions.popupAnchor,
+        iconSize: markerIconOptions.iconSize,
         icon: (
           <MarkerObjectIcon
             selectedIconValue={selectedIconValue}
@@ -207,7 +217,9 @@ export function ObjectMarker({
     ],
   );
 
-  return <Marker {...restProps} icon={icon} ref={markerRef} />;
+  return (
+    <Marker {...restProps} icon={icon} key={componentKey} ref={markerRef} />
+  );
 }
 
 export function MarkerObjectIcon({
@@ -286,7 +298,7 @@ export function MarkerObjectIcon({
 
         {image && (
           <image
-            x={74}
+            x={78}
             y={84}
             width={160}
             height={160}
@@ -301,20 +313,21 @@ export function MarkerObjectIcon({
       )}
     </>
   );
+
   if (selectedIconValue === 'ring') {
     renderContent = (
       <>
         <svg
           x="0px"
           y="0px"
-          viewBox="0 0 330 562"
+          viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
         >
           <ellipse
             cx={155}
-            cy={400}
-            rx={150}
-            ry={150}
+            cy={155}
+            rx={135}
+            ry={135}
             style={{
               strokeWidth: 10,
               fill: color,
@@ -326,7 +339,7 @@ export function MarkerObjectIcon({
           {!!(label || image || faIcon) && (
             <ellipse
               cx={155}
-              cy={400}
+              cy={155}
               rx={110}
               ry={110}
               style={{
@@ -340,7 +353,7 @@ export function MarkerObjectIcon({
           {label && (
             <text
               x={150}
-              y={450}
+              y={150}
               style={{
                 fill: 'rgba(0, 0, 0, 0.5)',
                 fontSize: '184px',
@@ -356,8 +369,8 @@ export function MarkerObjectIcon({
 
           {image && (
             <image
-              x={95}
-              y={335}
+              x={90}
+              y={90}
               width={140}
               height={140}
               xlinkHref={image}
@@ -377,12 +390,12 @@ export function MarkerObjectIcon({
         <svg
           x="0px"
           y="0px"
-          viewBox="0 0 310 562"
+          viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
         >
           <rect
             x={30}
-            y={280}
+            y={30}
             width={240}
             height={240}
             rx={20}
@@ -398,7 +411,7 @@ export function MarkerObjectIcon({
           {!!(label || image || faIcon) && (
             <rect
               x={50}
-              y={300}
+              y={50}
               width={200}
               height={200}
               rx={20}
@@ -414,7 +427,7 @@ export function MarkerObjectIcon({
           {label && (
             <text
               x={150}
-              y={450}
+              y={150}
               style={{
                 fill: 'rgba(0, 0, 0, 0.5)',
                 fontSize: '144px',
@@ -430,10 +443,10 @@ export function MarkerObjectIcon({
 
           {image && (
             <image
-              x={95}
-              y={335}
-              width={120}
-              height={120}
+              x={90}
+              y={90}
+              width={130}
+              height={130}
               xlinkHref={image}
               opacity={imageOpacity}
             />
@@ -446,5 +459,6 @@ export function MarkerObjectIcon({
       </>
     );
   }
+
   return renderContent;
 }

@@ -24,14 +24,15 @@ export function ObjectsResult(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
   const selectedIconValue = useSelector(
-    (state: RootState) => state.main.selectedIcon,
+    (state: RootState) => state.objects.selectedIcon,
   );
 
   const getTooltipOffset = (selectedIconValue: string) => {
     return selectedIconValue === 'default'
       ? [0, -36]
-      : ([0, -16] as [number, number]);
+      : ([0, -10] as [number, number]);
   };
 
   const interactive = useAppSelector(selectingModeSelector);

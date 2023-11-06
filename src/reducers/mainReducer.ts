@@ -37,7 +37,6 @@ import {
   toggleLocate,
   Tool,
 } from 'fm3/actions/mainActions';
-import { setSelectedIcon } from 'fm3/actions/drawingPointActions'
 import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
@@ -66,7 +65,6 @@ export interface MainState {
   drawingColor: string;
   drawingWidth: number;
   drawingRecentColors: string[];
-  selectedIcon: string;
 }
 
 export const mainInitialState: MainState = {
@@ -89,7 +87,6 @@ export const mainInitialState: MainState = {
   drawingColor: '#ff00ff',
   drawingWidth: 4,
   drawingRecentColors: [],
-  selectedIcon: "default",
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(
@@ -269,8 +266,4 @@ export const mainReducer = createReducer<MainState, RootAction>(
     }
 
     return newState;
-  })
-  .handleAction(setSelectedIcon, (state, action) => ({
-    ...state,
-    selectedIcon: action.payload,
-  }));
+  });

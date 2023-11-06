@@ -705,6 +705,12 @@ const cs: Messages = {
     },
     tooManyPoints: ({ limit }) => `Výsledek byl omezen na ${limit} objektů.`,
     fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
+    icon: {
+      message: 'Typ ikony',
+      default: 'Výchozí ikona',
+      ring: 'Kruhová ikona',
+      rectangle: 'Obdélníková ikona',
+    },
     // categories: {
     //   1: 'Příroda',
     //   2: 'Služby',
