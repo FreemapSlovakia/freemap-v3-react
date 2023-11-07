@@ -544,6 +544,12 @@ export type Messages = {
     fetchingError: ({ err }: Err) => string;
     // categories: Record<number, string>;
     // subcategories: Record<number, string>;
+    icon: {
+      message: string;
+      default: string;
+      ring: string;
+      square: string;
+    };
   };
   external: {
     openInExternal: string;

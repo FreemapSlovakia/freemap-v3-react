@@ -1,4 +1,4 @@
-import { objectsSetFilter } from 'fm3/actions/objectsActions';
+import { objectsSetFilter, setSelectedIcon } from 'fm3/actions/objectsActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
@@ -18,9 +18,10 @@ import {
 } from 'react';
 import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import FormControl from 'react-bootstrap/FormControl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { HideArrow } from './SearchMenu';
 import { ToolMenu } from './ToolMenu';
+import { RootState } from 'fm3/reducers';
 
 export default ObjectsMenu;
 
@@ -183,8 +184,39 @@ export function ObjectsMenu(): ReactElement {
 
   const activeItems = makeItems(true);
 
+  const selectedIconValue = useSelector(
+    (state: RootState) => state.objects.selectedIcon,
+  );
+
+  const handleIconChange = (selectedIconValue: string) => {
+    dispatch(setSelectedIcon(selectedIconValue));
+  };
+
   return (
     <ToolMenu>
+      <Dropdown
+        className="mt-1 ml-1"
+        onSelect={(eventKey) => handleIconChange(eventKey as string)}
+      >
+        <Dropdown.Toggle size="sm">{m?.objects.icon.message}</Dropdown.Toggle>
+        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Item
+            eventKey="default"
+            active={selectedIconValue === 'default'}
+          >
+            {m?.objects.icon.default}
+          </Dropdown.Item>
+          <Dropdown.Item eventKey="ring" active={selectedIconValue === 'ring'}>
+            {m?.objects.icon.ring}
+          </Dropdown.Item>
+          <Dropdown.Item
+            eventKey="square"
+            active={selectedIconValue === 'square'}
+          >
+            {m?.objects.icon.square}
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
       <Dropdown
         className="ml-1"
         id="objectsMenuDropdown"

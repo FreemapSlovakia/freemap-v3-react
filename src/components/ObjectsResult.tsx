@@ -1,6 +1,5 @@
 import { selectFeature } from 'fm3/actions/mainActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
@@ -17,12 +16,24 @@ import { OsmMapping } from 'fm3/osm/types';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
+import { ObjectMarker } from './RichMarker';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'fm3/reducers';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
+  const selectedIconValue = useSelector(
+    (state: RootState) => state.objects.selectedIcon,
+  );
+
+  const getTooltipOffset = (selectedIconValue: string) => {
+    return selectedIconValue === 'default'
+      ? [0, -36]
+      : ([0, -10] as [number, number]);
+  };
 
   const interactive = useAppSelector(selectingModeSelector);
 
@@ -70,7 +81,7 @@ export function ObjectsResult(): ReactElement | null {
         const access = tags['access'];
 
         return (
-          <RichMarker
+          <ObjectMarker
             key={`poi-${id}-${interactive ? 'a' : 'b'}`}
             interactive={interactive}
             position={{ lat, lng: lon }}
@@ -92,7 +103,11 @@ export function ObjectsResult(): ReactElement | null {
             }}
             color={activeId === id ? colors.selected : undefined}
           >
-            <Tooltip direction="top" offset={[0, -36]}>
+            <Tooltip
+              key={selectedIconValue}
+              direction="top"
+              offset={getTooltipOffset(selectedIconValue) as [number, number]}
+            >
               <span>
                 {/* {m?.objects.subcategories[pt.id]} */}
                 {gn} <i>{name}</i>
@@ -100,7 +115,7 @@ export function ObjectsResult(): ReactElement | null {
                 {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
               </span>
             </Tooltip>
-          </RichMarker>
+          </ObjectMarker>
         );
       })}
     </>

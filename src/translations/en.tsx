@@ -691,6 +691,12 @@ const en: Messages = {
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,
     fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
+    icon: {
+      message: 'Icon type',
+      default: 'Default',
+      ring: 'Ring',
+      square: 'Square',
+    },
     // categories: {
     //   1: 'Nature',
     //   2: 'Services',

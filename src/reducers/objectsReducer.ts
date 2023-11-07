@@ -7,21 +7,24 @@ import {
   objectsSetResult,
 } from 'fm3/actions/objectsActions';
 import { createReducer } from 'typesafe-actions';
+import { setSelectedIcon } from 'fm3/actions/objectsActions';
 
 export interface ObjectsState {
   objects: ObjectsResult[];
   active: string[];
+  selectedIcon: string;
 }
 
-const initialState: ObjectsState = {
+export const objectInitialState: ObjectsState = {
   objects: [],
   active: [],
+  selectedIcon: 'default',
 };
 
 export const objectsReducer = createReducer<ObjectsState, RootAction>(
-  initialState,
+  objectInitialState,
 )
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMap, () => objectInitialState)
   .handleAction(objectsSetFilter, (state, action) => ({
     ...state,
     active: action.payload,
@@ -41,4 +44,8 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
         ? [...new Set([...state.active, ...data.objectsV2?.active])]
         : state.active,
     };
-  });
+  })
+  .handleAction(setSelectedIcon, (state, action) => ({
+    ...state,
+    selectedIcon: action.payload,
+  }));

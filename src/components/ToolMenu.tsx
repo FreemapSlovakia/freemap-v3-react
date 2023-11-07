@@ -33,9 +33,8 @@ export function ToolMenu({ children }: Props): ReactElement {
       <Card className="fm-toolbar mx-2 mt-2">
         <ButtonToolbar>
           {toolDef && (
-            <span className="align-self-center ml-1 mr-2">
-              {toolDef.icon}
-
+            <span className="d-flex align-items-center ml-1 mr-1">
+              <span>{toolDef.icon}</span>
               <span className="d-none d-sm-inline">
                 {' '}
                 {m?.tools[toolDef.msgKey]}

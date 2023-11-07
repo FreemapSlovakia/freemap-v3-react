@@ -700,6 +700,12 @@ const it: Messages = {
     tooManyPoints: ({ limit }) => `Risultato limitato a ${limit} oggetti.`,
     fetchingError: ({ err }) =>
       `Errore nel recupero degli oggetti (POI): ${err}`,
+    icon: {
+      message: 'Tipo di icona',
+      default: 'Predefinita',
+      ring: "Dell'anello",
+      square: 'Quadrata',
+    }, // TODO translated with google translate
     // categorie: {
     //   1: 'Natura',
     //   2: 'Servizi',
