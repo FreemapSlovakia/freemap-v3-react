@@ -1,4 +1,8 @@
-import { objectsSetFilter, setSelectedIcon } from 'fm3/actions/objectsActions';
+import {
+  MarkerType,
+  objectsSetFilter,
+  setSelectedIcon,
+} from 'fm3/actions/objectsActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
@@ -188,35 +192,12 @@ export function ObjectsMenu(): ReactElement {
     (state: RootState) => state.objects.selectedIcon,
   );
 
-  const handleIconChange = (selectedIconValue: string) => {
+  const handleIconChange = (selectedIconValue: MarkerType) => {
     dispatch(setSelectedIcon(selectedIconValue));
   };
 
   return (
     <ToolMenu>
-      <Dropdown
-        className="mt-1 ml-1"
-        onSelect={(eventKey) => handleIconChange(eventKey as string)}
-      >
-        <Dropdown.Toggle size="sm">{m?.objects.icon.message}</Dropdown.Toggle>
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
-          <Dropdown.Item
-            eventKey="default"
-            active={selectedIconValue === 'default'}
-          >
-            {m?.objects.icon.default}
-          </Dropdown.Item>
-          <Dropdown.Item eventKey="ring" active={selectedIconValue === 'ring'}>
-            {m?.objects.icon.ring}
-          </Dropdown.Item>
-          <Dropdown.Item
-            eventKey="square"
-            active={selectedIconValue === 'square'}
-          >
-            {m?.objects.icon.square}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
       <Dropdown
         className="ml-1"
         id="objectsMenuDropdown"
@@ -280,6 +261,32 @@ export function ObjectsMenu(): ReactElement {
 
             {makeItems()}
           </div>
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <Dropdown
+        className="ml-1"
+        onSelect={(eventKey) => handleIconChange(eventKey as MarkerType)}
+      >
+        <Dropdown.Toggle variant="secondary">
+          {m?.objects.icon[selectedIconValue]}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Item eventKey="pin" active={selectedIconValue === 'pin'}>
+            {m?.objects.icon.pin}
+          </Dropdown.Item>
+
+          <Dropdown.Item eventKey="ring" active={selectedIconValue === 'ring'}>
+            {m?.objects.icon.ring}
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            eventKey="square"
+            active={selectedIconValue === 'square'}
+          >
+            {m?.objects.icon.square}
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     </ToolMenu>

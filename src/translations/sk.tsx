@@ -736,8 +736,7 @@ const sk: Messages = {
       `Výsledok bol obmedzený na ${limit} objektov.`,
     fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,
     icon: {
-      message: 'Typ ikony',
-      default: 'Predvolená',
+      pin: 'Špendlík',
       ring: 'Okruhlá',
       square: 'Štvorcová',
     },

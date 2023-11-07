@@ -701,8 +701,7 @@ const it: Messages = {
     fetchingError: ({ err }) =>
       `Errore nel recupero degli oggetti (POI): ${err}`,
     icon: {
-      message: 'Tipo di icona',
-      default: 'Predefinita',
+      pin: 'Segnaposto',
       ring: "Dell'anello",
       square: 'Quadrata',
     }, // TODO translated with google translate

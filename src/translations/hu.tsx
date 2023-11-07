@@ -707,8 +707,7 @@ const hu: Messages = {
     fetchingError: ({ err }) =>
       `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
     icon: {
-      message: 'Ikon típusa',
-      default: 'Alapértelmezett',
+      pin: 'Tű',
       ring: 'Gyűrű',
       square: 'Négyzet',
     }, // TODO translated with google translate

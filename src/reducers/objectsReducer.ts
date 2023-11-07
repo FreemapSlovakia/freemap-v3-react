@@ -2,6 +2,7 @@ import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
+  MarkerType,
   ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
@@ -12,13 +13,13 @@ import { setSelectedIcon } from 'fm3/actions/objectsActions';
 export interface ObjectsState {
   objects: ObjectsResult[];
   active: string[];
-  selectedIcon: string;
+  selectedIcon: MarkerType;
 }
 
 export const objectInitialState: ObjectsState = {
   objects: [],
   active: [],
-  selectedIcon: 'default',
+  selectedIcon: 'pin',
 };
 
 export const objectsReducer = createReducer<ObjectsState, RootAction>(

@@ -545,8 +545,7 @@ export type Messages = {
     // categories: Record<number, string>;
     // subcategories: Record<number, string>;
     icon: {
-      message: string;
-      default: string;
+      pin: string;
       ring: string;
       square: string;
     };

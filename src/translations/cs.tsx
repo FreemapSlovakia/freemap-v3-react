@@ -706,8 +706,7 @@ const cs: Messages = {
     tooManyPoints: ({ limit }) => `Výsledek byl omezen na ${limit} objektů.`,
     fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
     icon: {
-      message: 'Typ ikony',
-      default: 'Výchozí',
+      pin: 'Špendlík',
       ring: 'Kruhová',
       square: 'Čtvercová',
     },
