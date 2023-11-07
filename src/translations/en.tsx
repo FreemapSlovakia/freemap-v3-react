@@ -693,9 +693,9 @@ const en: Messages = {
     fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
     icon: {
       message: 'Icon type',
-      default: 'Default icon',
-      ring: 'Ring icon',
-      rectangle: 'Rectangle icon',
+      default: 'Default',
+      ring: 'Ring',
+      square: 'Square',
     },
     // categories: {
     //   1: 'Nature',

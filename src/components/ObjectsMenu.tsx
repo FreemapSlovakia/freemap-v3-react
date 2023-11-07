@@ -210,10 +210,10 @@ export function ObjectsMenu(): ReactElement {
             {m?.objects.icon.ring}
           </Dropdown.Item>
           <Dropdown.Item
-            eventKey="rectangle"
-            active={selectedIconValue === 'rectangle'}
+            eventKey="square"
+            active={selectedIconValue === 'square'}
           >
-            {m?.objects.icon.rectangle}
+            {m?.objects.icon.square}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

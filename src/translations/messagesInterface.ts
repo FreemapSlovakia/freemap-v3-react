@@ -548,7 +548,7 @@ export type Messages = {
       message: string;
       default: string;
       ring: string;
-      rectangle: string;
+      square: string;
     };
   };
   external: {

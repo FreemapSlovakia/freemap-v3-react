@@ -737,9 +737,9 @@ const sk: Messages = {
     fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,
     icon: {
       message: 'Typ ikony',
-      default: 'Predvolená ikona',
-      ring: 'Okruhlá ikona',
-      rectangle: 'Obĺžniková ikona',
+      default: 'Predvolená',
+      ring: 'Okruhlá',
+      square: 'Štvorcová',
     },
     // categories: {
     //   1: 'Príroda',

@@ -188,7 +188,7 @@ export function ObjectMarker({
 
   let iconAnchor = [12, 37] as [number, number];
 
-  if (selectedIconValue === 'ring' || selectedIconValue === 'rectangle') {
+  if (selectedIconValue === 'ring' || selectedIconValue === 'square') {
     iconAnchor = [12, 12] as [number, number];
   }
 
@@ -384,7 +384,7 @@ export function MarkerObjectIcon({
         )}
       </>
     );
-  } else if (selectedIconValue === 'rectangle') {
+  } else if (selectedIconValue === 'square') {
     renderContent = (
       <>
         <svg

@@ -702,9 +702,9 @@ const it: Messages = {
       `Errore nel recupero degli oggetti (POI): ${err}`,
     icon: {
       message: 'Tipo di icona',
-      default: 'Icona predefinita',
-      ring: "Icona dell'anello",
-      rectangle: 'Icona del rettangolo',
+      default: 'Predefinita',
+      ring: "Dell'anello",
+      square: 'Quadrata',
     }, // TODO translated with google translate
     // categorie: {
     //   1: 'Natura',
