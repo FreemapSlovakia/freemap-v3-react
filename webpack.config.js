@@ -69,7 +69,7 @@ module.exports = {
     rules: [
       {
         // babelify some too modern libraries
-        test: /\bnode_modules\/.*\/?(exifreader|strict-uri-encode|query-string|split-on-first|leaflet|@?react-leaflet)\/.*\.js$/,
+        test: /\bnode_modules\/.*\/?(exifreader|strict-uri-encode|split-on-first|leaflet|@?react-leaflet)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [

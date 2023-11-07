@@ -5,7 +5,6 @@ import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
 import { RootState } from 'fm3/reducers';
 import { hasProperty } from 'fm3/typeUtils';
-import qs from 'query-string';
 import { Dispatch } from 'redux';
 
 export const licenseNotice =
@@ -51,16 +50,14 @@ export async function upload(
             typeof e.data?.freemap === 'object' &&
             e.data.freemap.action === 'dropboxAuth'
           ) {
-            const { access_token: accessToken, error } = qs.parse(
-              e.data.freemap.payload.slice(1),
-            );
+            const sp = new URLSearchParams(e.data.freemap.payload.slice(1));
 
-            const at = Array.isArray(accessToken)
-              ? accessToken[0]
-              : accessToken;
+            const accessToken = sp.get('access_token');
 
-            if (at) {
-              resolve(at);
+            const error = sp.get('error');
+
+            if (accessToken) {
+              resolve(accessToken);
             } else {
               reject(new Error(`OAuth: ${error}`));
             }

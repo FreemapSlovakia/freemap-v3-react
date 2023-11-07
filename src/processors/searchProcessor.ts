@@ -1,5 +1,7 @@
 import { tileToGeoJSON } from '@mapbox/tilebelt';
+import bboxPolygon from '@turf/bbox-polygon';
 import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
+import { BBox2d } from '@turf/helpers/dist/js/lib/geojson';
 import { clearMap } from 'fm3/actions/mainActions';
 import {
   SearchResult,
@@ -13,6 +15,7 @@ import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
+import { CRS, Point } from 'leaflet';
 import { assert } from 'typia';
 
 interface NominatimResult {
@@ -32,14 +35,81 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
   errorKey: 'search.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
     const { query } = action.payload;
-    // const {
-    //   search: { query },
-    //   // l10n: { language },
-    // } = getState();
 
     if (!query) {
       return;
     }
+
+    // try GeoJSON
+
+    try {
+      const geojson = JSON.parse(query);
+
+      if (
+        !geojson ||
+        typeof geojson !== 'object' ||
+        typeof geojson.type !== 'string'
+      ) {
+        throw 1;
+      }
+
+      dispatch(
+        searchSetResults([
+          {
+            id: -1,
+            geojson,
+            osmType: 'relation',
+            tags: { name: 'GeoJSON' },
+            detailed: true,
+          },
+        ]),
+      );
+
+      return;
+    } catch {
+      // ignore
+    }
+
+    // try BBox
+
+    const parts = query.split(/\s*,\s*|\s+/).map((n) => parseFloat(n));
+
+    if (parts.length === 4 && parts.every((part) => !isNaN(part))) {
+      const tags = { name: 'BBox ' + parts.join(', ') };
+
+      const reproj = () => {
+        const p1 = CRS.EPSG3857.unproject(new Point(parts[0], parts[1]));
+
+        const p2 = CRS.EPSG3857.unproject(new Point(parts[2], parts[3]));
+
+        console.log(p1, p2);
+
+        return [p1.lng, p1.lat, p2.lng, p2.lat] as BBox2d;
+      };
+
+      dispatch(
+        searchSetResults([
+          {
+            id: -1,
+            geojson: bboxPolygon(
+              parts.some((p) => Math.abs(p) > 180)
+                ? reproj()
+                : (parts as BBox2d),
+              {
+                properties: tags,
+              },
+            ),
+            osmType: 'relation',
+            tags,
+            detailed: true,
+          },
+        ]),
+      );
+
+      return;
+    }
+
+    // try tile
 
     const m = /^\s*(\d+)\/(\d+)\/(\d+)\s*$/.exec(query);
 
@@ -68,6 +138,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       }
     }
 
+    // try human-readable GPS coordinates
+
     let coords: LatLon | undefined;
 
     try {
@@ -95,6 +167,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
       return;
     }
+
+    // do geocoding
 
     const res = await httpRequest({
       getState,
@@ -129,11 +203,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         };
 
         return {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: item.osm_id!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           geojson: feature(item.geojson!, tags),
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           osmType: item.osm_type!,
           tags,
         };

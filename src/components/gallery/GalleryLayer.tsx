@@ -7,7 +7,6 @@ import {
   GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
-import { stringify } from 'query-string';
 import { renderGalleryTile } from './galleryTileRenderrer';
 
 type GalleryLayerOptions = GridLayerOptions & {
@@ -172,10 +171,23 @@ class LGalleryLayer extends LGridLayer {
 
     const { signal } = controller;
 
-    const fields = ['pano'];
+    const sp = new URLSearchParams({
+      by: 'bbox',
+      bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
+      fields: 'pano',
+    });
+
+    if (this._options) {
+      for (const [k, v] of Object.entries(createFilter(this._options.filter))) {
+        if (v != null) {
+          sp.set(k, String(v));
+        }
+      }
+    }
 
     if (colorizeBy) {
-      fields.push(
+      sp.append(
+        'fields',
         colorizeBy === 'mine'
           ? 'userId'
           : colorizeBy === 'season'
@@ -185,18 +197,9 @@ class LGalleryLayer extends LGridLayer {
     }
 
     // https://backend.freemap.sk/gallery/pictures
-    fetch(
-      `${process.env['API_URL']}/gallery/pictures?` +
-        stringify({
-          by: 'bbox',
-          bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
-          ...(this._options ? createFilter(this._options.filter) : {}),
-          fields,
-        }).toString(),
-      {
-        signal,
-      },
-    )
+    fetch(process.env['API_URL'] + '/gallery/pictures?' + sp.toString(), {
+      signal,
+    })
       .then((response) => {
         if (response.status !== 200) {
           throw new Error('unexpected status ' + response.status);

@@ -94,6 +94,12 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       e.preventDefault();
 
       if (polyPoints && editedLabel === 'cry me a river') {
+        const pixelSize = window.prompt('Pixel size?');
+
+        if (pixelSize == null) {
+          return;
+        }
+
         const threshold = window.prompt('Stream threshold?', '20000');
 
         if (!threshold) {
@@ -126,8 +132,15 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
             ]),
           ),
-          'to-osm': toOsm ? '1' : '',
         });
+
+        if (pixelSize) {
+          q.append('pixel-size', pixelSize);
+        }
+
+        if (toOsm) {
+          q.append('to-osm', '1');
+        }
 
         if (inJosm) {
           fetch(
