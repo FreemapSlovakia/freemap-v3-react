@@ -484,7 +484,6 @@ export const osmTagToIconMapping: Node = {
         yes: tree_protected,
       },
     },
-    viewpoint,
   },
   route: {
     horse: horse_riding,
@@ -611,6 +610,7 @@ export const osmTagToIconMapping: Node = {
     motel,
     museum,
     picnic_site: picnic_table,
+    viewpoint,
     wilderness_hut,
     zoo,
   },
