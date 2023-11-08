@@ -1,10 +1,18 @@
+import { MarkerType } from 'fm3/actions/objectsActions';
 import { colors } from 'fm3/constants';
-import { RootState } from 'fm3/reducers';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
-import { ReactElement, useEffect, useMemo, useRef } from 'react';
+import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
-import { useSelector } from 'react-redux';
+
+const textStyle: CSSProperties = {
+  fill: 'rgba(0, 0, 0, 0.5)',
+  fontSize: '184px',
+  fontWeight: 'bold',
+  whiteSpace: 'pre',
+  fontFamily: 'Sans-Serif',
+  textAnchor: 'middle',
+};
 
 interface IconProps {
   label?: string | number;
@@ -13,6 +21,8 @@ interface IconProps {
   faIcon?: ReactElement;
   cacheKey?: string;
   imageOpacity?: number;
+  selectedIconValue?: string;
+  markerType?: MarkerType;
 }
 
 interface Props extends MarkerProps, IconProps {
@@ -27,7 +37,8 @@ export const markerIconOptions = {
 
 export function RichMarker({
   autoOpenPopup,
-  cacheKey,
+  cacheKey = 'default',
+  markerType = 'pin',
   ...restProps
 }: Props): ReactElement {
   const markerRef = useRef<Leaflet.Marker | null>(null);
@@ -41,14 +52,20 @@ export function RichMarker({
   const icon = useMemo(
     () =>
       new MarkerLeafletIcon({
-        ...markerIconOptions,
-        icon: <MarkerIcon {...restProps} />,
+        iconAnchor:
+          markerType === 'ring' || markerType === 'square'
+            ? [12, 12]
+            : markerIconOptions.iconAnchor,
+        tooltipAnchor:
+          markerType === 'ring' || markerType === 'square' ? [0, 0] : [0, -35],
+        iconSize: markerIconOptions.iconSize,
+        icon: <MarkerIcon markerType={markerType} {...restProps} />,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cacheKey ?? 'default', restProps.color, restProps.image, restProps.label],
+    [cacheKey, restProps.color, restProps.image, restProps.label, markerType],
   );
 
-  return <Marker {...restProps} icon={icon} ref={markerRef} />;
+  return <Marker {...restProps} icon={icon} key={markerType} ref={markerRef} />;
 }
 
 export class MarkerLeafletIcon extends Icon<
@@ -83,240 +100,11 @@ export function MarkerIcon({
   faIcon,
   color = colors.normal,
   label,
+  markerType,
 }: IconProps): ReactElement {
   return (
     <>
-      <svg
-        x="0px"
-        y="0px"
-        viewBox="0 0 310 512"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {!!(label || image || faIcon) && (
-          <defs>
-            <radialGradient
-              id={`gradient-${color}`}
-              gradientUnits="userSpaceOnUse"
-              cx="155"
-              cy="160"
-              r="132"
-              gradientTransform="matrix(0.9, 0, 0, 0.9, 13.8, 17.9)"
-            >
-              <stop offset="0" style={{ stopColor: '#fff' }} />
-              <stop offset="0.799" style={{ stopColor: ' #ddd' }} />
-              <stop offset="1" style={{ stopColor: color }} />
-            </radialGradient>
-          </defs>
-        )}
-
-        <path
-          d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
-          style={{
-            strokeWidth: 10,
-            fill: color,
-            strokeOpacity: 0.5,
-            stroke: 'white',
-          }}
-        />
-
-        {!!(label || image || faIcon) && (
-          <ellipse
-            cx={154.12}
-            cy={163.702}
-            rx={119.462}
-            ry={119.462}
-            style={{
-              strokeWidth: 10,
-              strokeOpacity: 0.6,
-              fill: `url(#gradient-${color})`,
-            }}
-          />
-        )}
-
-        {label && (
-          <text
-            x={150}
-            y={227.615}
-            style={{
-              fill: 'rgba(0, 0, 0, 0.5)',
-              fontSize: '184px',
-              fontWeight: 'bold',
-              whiteSpace: 'pre',
-              fontFamily: 'Sans-Serif',
-              textAnchor: 'middle',
-            }}
-          >
-            {label}
-          </text>
-        )}
-
-        {image && (
-          <image
-            x={74}
-            y={84}
-            width={160}
-            height={160}
-            xlinkHref={image}
-            opacity={imageOpacity}
-          />
-        )}
-      </svg>
-
-      {faIcon && (
-        <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
-      )}
-    </>
-  );
-}
-
-export function ObjectMarker({
-  autoOpenPopup,
-  cacheKey,
-  ...restProps
-}: Props): ReactElement {
-  const markerRef = useRef<Leaflet.Marker | null>(null);
-
-  useEffect(() => {
-    if (autoOpenPopup && markerRef.current) {
-      markerRef.current.openPopup();
-    }
-  }, [autoOpenPopup]);
-
-  const selectedIconValue = useSelector(
-    (state: RootState) => state.objects.selectedIcon,
-  );
-
-  let iconAnchor = [12, 37] as [number, number];
-
-  if (selectedIconValue === 'ring' || selectedIconValue === 'square') {
-    iconAnchor = [12, 12] as [number, number];
-  }
-
-  const componentKey = selectedIconValue || 'default';
-
-  const icon = useMemo(
-    () =>
-      new MarkerLeafletIcon({
-        iconAnchor,
-        popupAnchor: markerIconOptions.popupAnchor,
-        iconSize: markerIconOptions.iconSize,
-        icon: (
-          <MarkerObjectIcon
-            selectedIconValue={selectedIconValue}
-            {...restProps}
-          />
-        ),
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      cacheKey ?? 'default',
-      restProps.color,
-      restProps.image,
-      restProps.label,
-      selectedIconValue,
-    ],
-  );
-
-  return (
-    <Marker {...restProps} icon={icon} key={componentKey} ref={markerRef} />
-  );
-}
-
-export function MarkerObjectIcon({
-  image,
-  imageOpacity,
-  faIcon,
-  color = colors.normal,
-  label,
-  selectedIconValue,
-}: IconProps & { selectedIconValue: string }): ReactElement {
-  let renderContent: ReactElement = (
-    <>
-      <svg
-        x="0px"
-        y="0px"
-        viewBox="0 0 310 512"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {!!(label || image || faIcon) && (
-          <defs>
-            <radialGradient
-              id={`gradient-${color}`}
-              gradientUnits="userSpaceOnUse"
-              cx="155"
-              cy="160"
-              r="132"
-              gradientTransform="matrix(0.9, 0, 0, 0.9, 13.8, 17.9)"
-            >
-              <stop offset="0" style={{ stopColor: '#fff' }} />
-              <stop offset="0.799" style={{ stopColor: ' #ddd' }} />
-              <stop offset="1" style={{ stopColor: color }} />
-            </radialGradient>
-          </defs>
-        )}
-
-        <path
-          d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
-          style={{
-            strokeWidth: 10,
-            fill: color,
-            strokeOpacity: 0.5,
-            stroke: 'white',
-          }}
-        />
-
-        {!!(label || image || faIcon) && (
-          <ellipse
-            cx={154.12}
-            cy={163.702}
-            rx={119.462}
-            ry={119.462}
-            style={{
-              strokeWidth: 10,
-              strokeOpacity: 0.6,
-              fill: `url(#gradient-${color})`,
-            }}
-          />
-        )}
-
-        {label && (
-          <text
-            x={150}
-            y={227.615}
-            style={{
-              fill: 'rgba(0, 0, 0, 0.5)',
-              fontSize: '184px',
-              fontWeight: 'bold',
-              whiteSpace: 'pre',
-              fontFamily: 'Sans-Serif',
-              textAnchor: 'middle',
-            }}
-          >
-            {label}
-          </text>
-        )}
-
-        {image && (
-          <image
-            x={78}
-            y={84}
-            width={160}
-            height={160}
-            xlinkHref={image}
-            opacity={imageOpacity}
-          />
-        )}
-      </svg>
-
-      {faIcon && (
-        <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
-      )}
-    </>
-  );
-
-  if (selectedIconValue === 'ring') {
-    renderContent = (
-      <>
+      {markerType === 'ring' ? (
         <svg
           x="0px"
           y="0px"
@@ -351,18 +139,7 @@ export function MarkerObjectIcon({
           )}
 
           {label && (
-            <text
-              x={150}
-              y={150}
-              style={{
-                fill: 'rgba(0, 0, 0, 0.5)',
-                fontSize: '184px',
-                fontWeight: 'bold',
-                whiteSpace: 'pre',
-                fontFamily: 'Sans-Serif',
-                textAnchor: 'middle',
-              }}
-            >
+            <text x={150} y={150} style={textStyle}>
               {label}
             </text>
           )}
@@ -378,15 +155,7 @@ export function MarkerObjectIcon({
             />
           )}
         </svg>
-
-        {faIcon && (
-          <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
-        )}
-      </>
-    );
-  } else if (selectedIconValue === 'square') {
-    renderContent = (
-      <>
+      ) : markerType === 'square' ? (
         <svg
           x="0px"
           y="0px"
@@ -452,13 +221,76 @@ export function MarkerObjectIcon({
             />
           )}
         </svg>
+      ) : (
+        <svg
+          x="0px"
+          y="0px"
+          viewBox="0 0 310 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {!!(label || image || faIcon) && (
+            <defs>
+              <radialGradient
+                id={`gradient-${color}`}
+                gradientUnits="userSpaceOnUse"
+                cx="155"
+                cy="160"
+                r="132"
+                gradientTransform="matrix(0.9, 0, 0, 0.9, 13.8, 17.9)"
+              >
+                <stop offset="0" style={{ stopColor: '#fff' }} />
+                <stop offset="0.8" style={{ stopColor: ' #ddd' }} />
+                <stop offset="1" style={{ stopColor: color }} />
+              </radialGradient>
+            </defs>
+          )}
 
-        {faIcon && (
-          <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
-        )}
-      </>
-    );
-  }
+          <path
+            d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
+            style={{
+              strokeWidth: 10,
+              fill: color,
+              strokeOpacity: 0.5,
+              stroke: 'white',
+            }}
+          />
 
-  return renderContent;
+          {!!(label || image || faIcon) && (
+            <ellipse
+              cx={154.12}
+              cy={163.702}
+              rx={119.462}
+              ry={119.462}
+              style={{
+                strokeWidth: 10,
+                strokeOpacity: 0.6,
+                fill: `url(#gradient-${color})`,
+              }}
+            />
+          )}
+
+          {label && (
+            <text x={150} y={227.615} style={textStyle}>
+              {label}
+            </text>
+          )}
+
+          {image && (
+            <image
+              x={78}
+              y={84}
+              width={160}
+              height={160}
+              xlinkHref={image}
+              opacity={imageOpacity}
+            />
+          )}
+        </svg>
+      )}
+
+      {faIcon && (
+        <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
+      )}
+    </>
+  );
 }

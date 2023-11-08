@@ -260,7 +260,7 @@ export function TrackViewerResult({
           {properties?.['name'] && (
             <Tooltip
               className="compact"
-              offset={new LPoint(10, -25)}
+              offset={new LPoint(10, 10)}
               direction="right"
               permanent
             >
@@ -284,7 +284,7 @@ export function TrackViewerResult({
           {p.startTime && !isNaN(new Date(p.startTime).getTime()) && (
             <Tooltip
               className="compact"
-              offset={new LPoint(10, -25)}
+              offset={new LPoint(10, 10)}
               direction="right"
               permanent
             >
@@ -307,7 +307,7 @@ export function TrackViewerResult({
         >
           <Tooltip
             className="compact"
-            offset={new LPoint(10, -25)}
+            offset={new LPoint(10, 10)}
             direction="right"
             permanent
           >
@@ -339,7 +339,7 @@ export function TrackViewerResult({
         >
           <Tooltip
             className="compact"
-            offset={new LPoint(10, -25)}
+            offset={new LPoint(10, 10)}
             direction="right"
             permanent
           >

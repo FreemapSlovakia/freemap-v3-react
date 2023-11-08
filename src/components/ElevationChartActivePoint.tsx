@@ -37,7 +37,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
       >
         <Tooltip
           className="compact"
-          offset={new Point(9, -25)}
+          offset={new Point(10, 10)}
           direction="right"
           permanent
         >

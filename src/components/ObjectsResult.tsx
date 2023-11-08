@@ -16,9 +16,9 @@ import { OsmMapping } from 'fm3/osm/types';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
-import { ObjectMarker } from './RichMarker';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'fm3/reducers';
+import { RichMarker } from './RichMarker';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();
@@ -28,12 +28,6 @@ export function ObjectsResult(): ReactElement | null {
   const selectedIconValue = useSelector(
     (state: RootState) => state.objects.selectedIcon,
   );
-
-  const getTooltipOffset = (selectedIconValue: string) => {
-    return selectedIconValue === 'default'
-      ? [0, -36]
-      : ([0, -10] as [number, number]);
-  };
 
   const interactive = useAppSelector(selectingModeSelector);
 
@@ -58,6 +52,10 @@ export function ObjectsResult(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
+  const markerType = useSelector(
+    (state: RootState) => state.objects.selectedIcon,
+  );
+
   if (!osmMapping) {
     return null;
   }
@@ -81,12 +79,14 @@ export function ObjectsResult(): ReactElement | null {
         const access = tags['access'];
 
         return (
-          <ObjectMarker
+          <RichMarker
             key={`poi-${id}-${interactive ? 'a' : 'b'}`}
             interactive={interactive}
             position={{ lat, lng: lon }}
             image={img[0]}
             imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
+            color={activeId === id ? colors.selected : undefined}
+            markerType={markerType}
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));
@@ -101,13 +101,8 @@ export function ObjectsResult(): ReactElement | null {
                 );
               },
             }}
-            color={activeId === id ? colors.selected : undefined}
           >
-            <Tooltip
-              key={selectedIconValue}
-              direction="top"
-              offset={getTooltipOffset(selectedIconValue) as [number, number]}
-            >
+            <Tooltip key={selectedIconValue} direction="top">
               <span>
                 {/* {m?.objects.subcategories[pt.id]} */}
                 {gn} <i>{name}</i>
@@ -115,7 +110,7 @@ export function ObjectsResult(): ReactElement | null {
                 {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
               </span>
             </Tooltip>
-          </ObjectMarker>
+          </RichMarker>
         );
       })}
     </>

@@ -7,7 +7,7 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { DragEndEvent, Point } from 'leaflet';
+import { DragEndEvent } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -97,12 +97,7 @@ export function DrawingPointsResult(): ReactElement {
             interactive={interactive}
           >
             {label && (
-              <Tooltip
-                className="compact"
-                offset={new Point(0, -36)}
-                direction="top"
-                permanent
-              >
+              <Tooltip className="compact" direction="top" permanent>
                 <span>{label}</span>
               </Tooltip>
             )}

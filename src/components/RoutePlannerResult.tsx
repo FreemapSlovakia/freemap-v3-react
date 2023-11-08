@@ -324,11 +324,11 @@ export function RoutePlannerResult(): ReactElement {
       } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
       return isSpecial(transportType) && extra?.numbers ? (
-        <Tooltip direction="top" offset={[0, -36]} permanent>
+        <Tooltip direction="top" permanent>
           <div>{imhdSummary(m, language, extra)}</div>
         </Tooltip>
       ) : distance && duration ? (
-        <Tooltip direction="top" offset={[0, -36]} permanent>
+        <Tooltip direction="top" permanent>
           {/* <div>{getPointDetails2(distance, duration)}</div> */}
           <div>
             {getPointDetails(
@@ -661,7 +661,7 @@ export function RoutePlannerResult(): ReactElement {
           {!dragging && mode !== 'roundtrip' && getSummary(endPointHovering)}
 
           {!dragging && mode === 'roundtrip' && (
-            <Tooltip direction="top" offset={[0, -36]}>
+            <Tooltip direction="top">
               {getPointDetails(midpoints.length)}
             </Tooltip>
           )}
@@ -827,11 +827,7 @@ export function RoutePlannerResult(): ReactElement {
           label={mode === 'route' ? i + 1 : waypoints[i + 1]?.waypoint_index}
           position={{ lat, lng: lon }}
         >
-          {!dragging && (
-            <Tooltip direction="top" offset={[0, -36]}>
-              {getPointDetails(i)}
-            </Tooltip>
-          )}
+          {!dragging && <Tooltip direction="top">{getPointDetails(i)}</Tooltip>}
         </RichMarker>
       )),
     [

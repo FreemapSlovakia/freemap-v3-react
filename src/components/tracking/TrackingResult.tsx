@@ -183,7 +183,7 @@ export function TrackingResult(): ReactElement {
                     )
                   }
                 >
-                  <Tooltip direction="top" offset={[0, -36]} permanent>
+                  <Tooltip direction="top" permanent>
                     {tooltipText(df, nf, tp, track.label)}
                   </Tooltip>
                 </RichMarker>

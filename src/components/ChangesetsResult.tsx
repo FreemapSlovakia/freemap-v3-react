@@ -74,7 +74,7 @@ export function ChangesetsResult(): ReactElement {
             <Tooltip
               opacity={opacity}
               className="compact"
-              offset={new Point(9, -25)}
+              offset={new Point(10, 10)}
               direction="right"
               permanent
             >
