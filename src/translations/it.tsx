@@ -1086,29 +1086,22 @@ const it: Messages = {
     interactiveLayerWarning: 'Il livello interattivo è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
-      A: 'Auto',
-      T: 'Escursione',
-      C: 'Bici',
-      K: 'Sci di fondo',
+      A: 'Auto (obsoleta)',
+      T: 'Escursione (obsoleta)',
+      C: 'Bici (obsoleta)',
+      K: 'Sci di fondo (obsoleta)',
       S: 'Aereo',
       Z: 'Ortofoto ČR+SR (Aerial, CZ+SK)',
       J: 'Vecchia Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       d: 'Trasporti pubblici (ÖPNV)',
-      h: 'Storica',
       X: outdoorMap,
       i: 'Livello interattivo',
       I: 'Foto',
       l: 'Forest tracks NLC (SK)',
-      n1: 'Nomi (auto)',
-      n2: 'Nomi (escursione)',
-      n3: 'Nomi (bici)',
-      g: 'Tracce GPS OSM',
       t: 'Percorsi escursionistici',
       c: 'Percorsi ciclistici',
-      q: 'OpenSnowMap',
-      r: 'Client di Rendering',
       s0: 'Strava (tutti)',
       s1: 'Strava (bici)',
       s2: 'Strava (corsa)',
@@ -1120,6 +1113,8 @@ const it: Messages = {
       '6': 'Surface Hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
+      VD: 'Dataviz Vector', // TODO translate
+      VT: 'Outdoor Vector', // TODO translate
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',

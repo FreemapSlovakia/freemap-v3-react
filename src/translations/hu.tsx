@@ -1093,29 +1093,22 @@ const hu: Messages = {
     interactiveLayerWarning: 'Interactive layer is hidden', // TODO translate
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     letters: {
-      A: 'Autó',
-      T: 'Túrázás',
-      C: 'Kerékpározás',
-      K: 'Síelés',
+      A: 'Autó (elavult)',
+      T: 'Túrázás (elavult)',
+      C: 'Kerékpározás (elavult)',
+      K: 'Síelés (elavult)',
       S: 'Légifelvétel',
       Z: 'Ortofotó (Szlovákia)',
       J: 'Régi Ortofotó (Szlovákia)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       d: 'Tömegközlekedés',
-      h: 'Történelmi térkép',
       X: outdoorMap,
       i: 'Interaktív réteg',
       I: 'Fényképek',
       l: 'Erdészeti utak (Szlovákia)',
-      n1: 'Nevek (autó)',
-      n2: 'Nevek (túrázás)',
-      n3: 'Nevek (kerékpározás)',
-      g: 'OSM GPS nyomvonalak',
       t: 'Turistautak',
       c: 'Kerékpáros útvonalak',
-      q: 'OpenSnowMap',
-      r: 'Megjelenítőkliensek',
       s0: 'Strava (minden)',
       s1: 'Strava (lovaglás)',
       s2: 'Strava (futás)',
@@ -1127,6 +1120,8 @@ const hu: Messages = {
       '6': 'Surface Hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
+      VD: 'Dataviz Vector', // TODO translate
+      VT: 'Outdoor Vector', // TODO translate
     },
     customBase: 'Custom map', // TODO translate
     customOverlay: 'Custom map overlay', // TODO translate

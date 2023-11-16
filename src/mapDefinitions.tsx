@@ -1,23 +1,19 @@
 import { ReactElement } from 'react';
-import { AiFillBank } from 'react-icons/ai';
-import { BsPencilSquare } from 'react-icons/bs';
 import {
   FaBicycle,
   FaBus,
   FaCamera,
   FaCar,
-  FaFont,
   FaHiking,
   FaMap,
   FaPencilAlt,
   FaPlane,
   FaSkiingNordic,
-  FaSnowflake,
   FaStrava,
   FaTractor,
   FaWikipediaW,
 } from 'react-icons/fa';
-import { GiHills, GiPathDistance, GiTreasureMap } from 'react-icons/gi';
+import { GiHills, GiTreasureMap } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
@@ -94,27 +90,22 @@ export const baseLayerLetters = [
   'O',
   'M',
   'd',
-  'h',
   'X',
   '4',
   '5',
   '6',
   'VO',
   'VS',
+  'VD',
+  'VT',
 ] as const;
 
 export const overlayLetters = [
   'i',
   'I',
   'l',
-  'n1',
-  'n2',
-  'n3',
-  'g',
   't',
   'c',
-  'q',
-  'r',
   's0',
   's1',
   's2',
@@ -153,7 +144,7 @@ export interface LayerDef {
 
 export interface BaseLayerDef extends LayerDef {
   type: BaseLayerLetters;
-  key: [code: string, shift: boolean];
+  key?: [code: string, shift: boolean];
 }
 
 export interface OverlayLayerDef extends LayerDef {
@@ -276,7 +267,6 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 3,
     maxNativeZoom: 18,
     icon: <FaBicycle />,
-
     attribution: [
       {
         type: 'map',
@@ -295,7 +285,6 @@ export const baseLayers: BaseLayerDef[] = [
     maxNativeZoom: 18,
     icon: <FaBus />,
     cors: false,
-
     attribution: [
       {
         type: 'map',
@@ -305,16 +294,6 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
     ],
     key: ['KeyQ', false],
-  },
-  {
-    type: 'h',
-    url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
-    minZoom: 8,
-    maxNativeZoom: 12,
-    icon: <AiFillBank />,
-
-    attribution: [],
-    key: ['KeyH', false],
   },
   {
     type: '4',
@@ -393,6 +372,32 @@ export const baseLayers: BaseLayerDef[] = [
       },
     ],
   },
+  {
+    type: 'VD',
+    url: 'https://api.maptiler.com/maps/dataviz-dark/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    key: ['KeyM', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'VT',
+    url: 'https://api.maptiler.com/maps/outdoor-v2/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    key: ['KeyR', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
+  },
 ];
 
 export const overlayLayers: OverlayLayerDef[] = [
@@ -457,25 +462,12 @@ export const overlayLayers: OverlayLayerDef[] = [
     errorTileUrl: transparent1x1,
   })),
   {
-    type: 'g',
-    icon: <GiPathDistance />,
-    url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
-    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    minZoom: 0,
-    maxNativeZoom: 20,
-    key: ['KeyG', true],
-
-    zIndex: 3,
-  },
-  {
     type: 't',
     icon: <FaHiking />,
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: ['KeyT', true],
-
     zIndex: 3,
   },
   {
@@ -485,50 +477,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: ['KeyC', true],
-
     zIndex: 3,
-  },
-  {
-    type: 'q',
-    icon: <FaSnowflake />,
-    url: '//www.opensnowmap.org/pistes/{z}/{x}/{y}.png',
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0OpenSnowMap.org',
-      },
-      OSM_DATA_ATTR,
-    ],
-    minZoom: 0,
-    maxNativeZoom: 18,
-    key: ['KeyS', true],
-
-    zIndex: 3,
-  },
-  ...(
-    [
-      ['n1', ''],
-      ['n2', 'h'],
-      ['n3', 'c'],
-    ] as const
-  ).map(([type, suffix]) => ({
-    type,
-    icon: <FaFont />,
-    url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
-    attribution: [FM_ATTR, OSM_DATA_ATTR],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    zIndex: 3,
-  })),
-  {
-    type: 'r',
-    icon: <BsPencilSquare />,
-    url: '//dev.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
-    minZoom: 8,
-    maxNativeZoom: 12,
-    key: ['KeyR', true],
-    zIndex: 5,
-    attribution: [FM_ATTR],
   },
 ];
