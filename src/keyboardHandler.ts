@@ -173,8 +173,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       event.code.startsWith('Digit') && !event.shiftKey
         ? '.' + event.code.slice(5)
         : baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)
-        ? baseLayer.type
-        : null
+          ? baseLayer.type
+          : null
     ) as BaseLayerLetters;
 
     if (
@@ -193,8 +193,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       event.code.startsWith('Digit') && event.shiftKey
         ? ':' + event.code.slice(5)
         : overlayLayer && (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
-        ? overlayLayer.type
-        : null
+          ? overlayLayer.type
+          : null
     ) as OverlayLetters;
 
     if (

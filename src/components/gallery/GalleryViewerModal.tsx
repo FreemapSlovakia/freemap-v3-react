@@ -282,10 +282,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         (isFullscreen
           ? window.innerWidth
           : window.matchMedia('(min-width: 1200px)').matches
-          ? 1110
-          : window.matchMedia('(min-width: 992px)').matches
-          ? 770
-          : 470),
+            ? 1110
+            : window.matchMedia('(min-width: 992px)').matches
+              ? 770
+              : 470),
     )}`;
 
   const handlePositionPick = useCallback(() => {
@@ -360,9 +360,9 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                               (window.matchMedia('(min-width: 1200px)').matches
                                 ? 1110
                                 : window.matchMedia('(min-width: 992px)')
-                                    .matches
-                                ? 770
-                                : 470) + 'px',
+                                      .matches
+                                  ? 770
+                                  : 470) + 'px',
                           }
                     }
                   />

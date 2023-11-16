@@ -191,8 +191,8 @@ class LGalleryLayer extends LGridLayer {
         colorizeBy === 'mine'
           ? 'userId'
           : colorizeBy === 'season'
-          ? 'takenAt'
-          : colorizeBy,
+            ? 'takenAt'
+            : colorizeBy,
       );
     }
 

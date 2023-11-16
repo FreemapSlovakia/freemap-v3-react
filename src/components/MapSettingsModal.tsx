@@ -163,8 +163,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     return type.startsWith('.')
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
-      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-      : m?.mapLayers.letters[type as NoncustomLayerLetters];
+        ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+        : m?.mapLayers.letters[type as NoncustomLayerLetters];
   }
 
   const handleSubmit = (e: FormEvent) => {

@@ -122,14 +122,14 @@ export function handleLocationChange(store: MyStore, location: Location): void {
     !query['tool'] || typeof query['tool'] !== 'string'
       ? null
       : query['tool'] === 'info-point'
-      ? 'draw-points'
-      : query['tool'] === 'measure-area'
-      ? 'draw-polygons'
-      : query['tool'] === 'measure-dist'
-      ? 'draw-lines'
-      : tools.includes(query['tool'] as Tool)
-      ? (query['tool'] as Tool)
-      : null;
+        ? 'draw-points'
+        : query['tool'] === 'measure-area'
+          ? 'draw-polygons'
+          : query['tool'] === 'measure-dist'
+            ? 'draw-lines'
+            : tools.includes(query['tool'] as Tool)
+              ? (query['tool'] as Tool)
+              : null;
 
   if (getState().main.tool !== tool) {
     dispatch(setTool(tool));
@@ -162,8 +162,8 @@ export function handleLocationChange(store: MyStore, location: Location): void {
       qMilestones === '1' || qMilestones === 'abs'
         ? 'abs'
         : qMilestones === 'rel'
-        ? 'rel'
-        : false;
+          ? 'rel'
+          : false;
 
     if (
       transportTypeDefs[query['transport'] as TransportType] && // for dev
@@ -834,8 +834,8 @@ function handleInfoPoint(
     !drawingPoint
       ? []
       : Array.isArray(drawingPoint)
-      ? drawingPoint
-      : [drawingPoint]
+        ? drawingPoint
+        : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
     .map((ip) =>

@@ -127,8 +127,8 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     pickMode: !state.start
       ? 'start'
       : action.payload === 'route-planner'
-      ? state.pickMode
-      : null,
+        ? state.pickMode
+        : null,
   }))
   .handleAction(clearMap, (state) => ({
     ...routePlannerInitialState,
@@ -169,9 +169,9 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     mode: isSpecial(payload.transportType)
       ? 'route'
       : transportTypeDefs[payload.transportType].api !== 'gh' &&
-        payload.mode === 'isochrone'
-      ? 'route'
-      : payload.mode || 'route',
+          payload.mode === 'isochrone'
+        ? 'route'
+        : payload.mode || 'route',
     milestones: payload.milestones ?? false,
     weighting:
       state.transportType === 'foot-stroller' &&

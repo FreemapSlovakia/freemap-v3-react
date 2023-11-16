@@ -131,8 +131,8 @@ export function DeviceForm(): ReactElement {
                 type === 'imei'
                   ? '[0-9]{15}'
                   : type === 'did'
-                  ? '[0-9]*'
-                  : undefined
+                    ? '[0-9]*'
+                    : undefined
               }
               disabled={type === 'url' || !!device?.id}
               value={

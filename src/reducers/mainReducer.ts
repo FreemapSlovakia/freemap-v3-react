@@ -124,8 +124,8 @@ export const mainReducer = createReducer<MainState, RootAction>(
       homeLocation: !p
         ? state.homeLocation
         : p.lat && p.lon
-        ? { lat: p.lat, lon: p.lon }
-        : null,
+          ? { lat: p.lat, lon: p.lon }
+          : null,
     };
   })
   .handleAction(authLogout, (state) => ({ ...state, homeLocation: null }))

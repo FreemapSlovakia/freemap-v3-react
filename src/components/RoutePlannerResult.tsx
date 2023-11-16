@@ -227,16 +227,16 @@ export function RoutePlannerResult(): ReactElement {
         zoom > 13
           ? 1
           : zoom > 12
-          ? 2
-          : zoom > 10
-          ? 5
-          : zoom > 9
-          ? 10
-          : zoom > 8
-          ? 20
-          : zoom > 7
-          ? 25
-          : 50;
+            ? 2
+            : zoom > 10
+              ? 5
+              : zoom > 9
+                ? 10
+                : zoom > 8
+                  ? 20
+                  : zoom > 7
+                    ? 25
+                    : 50;
 
       for (let d = step; d < len; d += step) {
         const milestone = along(line, d);
@@ -256,14 +256,14 @@ export function RoutePlannerResult(): ReactElement {
         pxLen < q
           ? pctSeq(50)
           : pxLen < q * 2
-          ? pctSeq(25)
-          : pxLen < q * 5
-          ? pctSeq(10)
-          : pxLen < q * 10
-          ? pctSeq(5)
-          : pxLen < q * 25
-          ? pctSeq(2)
-          : pctSeq(1);
+            ? pctSeq(25)
+            : pxLen < q * 5
+              ? pctSeq(10)
+              : pxLen < q * 10
+                ? pctSeq(5)
+                : pxLen < q * 25
+                  ? pctSeq(2)
+                  : pctSeq(1);
 
       for (const pct of steps) {
         const milestone = along(line, (len / 100) * pct);
@@ -763,8 +763,8 @@ export function RoutePlannerResult(): ReactElement {
                         alt !== activeAlternativeIndex
                           ? '#868e96'
                           : !special && routeSlice.legIndex % 2
-                          ? 'hsl(211, 100%, 66%)'
-                          : 'hsl(211, 100%, 50%)',
+                            ? 'hsl(211, 100%, 66%)'
+                            : 'hsl(211, 100%, 50%)',
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={

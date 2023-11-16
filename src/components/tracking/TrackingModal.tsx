@@ -28,13 +28,13 @@ export function TrackingModal({ show }: Props): ReactElement {
       ? state.tracking.modifiedDeviceId !== undefined
         ? 'deviceForm'
         : state.tracking.accessTokensDeviceId
-        ? state.tracking.modifiedAccessTokenId !== undefined
-          ? 'accessTokenForm'
-          : 'accessTokens'
-        : 'devices'
+          ? state.tracking.modifiedAccessTokenId !== undefined
+            ? 'accessTokenForm'
+            : 'accessTokens'
+          : 'devices'
       : state.tracking.modifiedTrackedDeviceId !== undefined
-      ? 'trackedDeviceForm'
-      : 'trackedDevices',
+        ? 'trackedDeviceForm'
+        : 'trackedDevices',
   );
 
   const dispatch = useDispatch();

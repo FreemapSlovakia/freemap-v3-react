@@ -289,8 +289,8 @@ export function MapsModal({ show }: Props): ReactElement {
                             map === selectedMap
                               ? 'table-active'
                               : map.id === activeMap?.id
-                              ? 'table-success'
-                              : undefined
+                                ? 'table-success'
+                                : undefined
                           }
                           onClick={() =>
                             setSelected((s) =>

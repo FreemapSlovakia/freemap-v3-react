@@ -47,12 +47,12 @@ export type StringDates<T> = {
   [K in keyof T]: T[K] extends Date
     ? string
     : T[K] extends Date | null
-    ? string | null
-    : T[K] extends Date | undefined
-    ? string | undefined
-    : T[K] extends Date | null | undefined
-    ? string | null | undefined
-    : StringDates<T[K]>;
+      ? string | null
+      : T[K] extends Date | undefined
+        ? string | undefined
+        : T[K] extends Date | null | undefined
+          ? string | null | undefined
+          : StringDates<T[K]>;
 };
 
 interface OsmElement {
@@ -137,8 +137,8 @@ type Join<K, P> = K extends string | number
 type Leaves<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends Record<string, unknown>
-  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
-  : '';
+    ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+    : '';
 
 export type MessagePaths = Leaves<Messages>;
 

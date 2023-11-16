@@ -140,8 +140,8 @@ async function serveFromNetwork(event: FetchEvent) {
       url.pathname === '/'
         ? FALLBACK_HTML_URL
         : url?.pathname === FALLBACK_LOGO_URL
-        ? FALLBACK_LOGO_URL
-        : undefined;
+          ? FALLBACK_LOGO_URL
+          : undefined;
 
     return path && (await cache.match(path));
   }

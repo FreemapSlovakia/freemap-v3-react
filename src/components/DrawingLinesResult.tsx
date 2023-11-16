@@ -11,8 +11,8 @@ function useLinePointColor() {
       state.main.selection?.type === 'draw-line-poly'
         ? state.drawingLines.lines[state.main.selection.id]?.color
         : state.main.selection?.type === 'line-point'
-        ? state.drawingLines.lines[state.main.selection.lineIndex]?.color
-        : undefined,
+          ? state.drawingLines.lines[state.main.selection.lineIndex]?.color
+          : undefined,
     ) || colors.normal;
 
   useEffect(() => {

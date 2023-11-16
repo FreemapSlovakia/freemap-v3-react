@@ -108,8 +108,8 @@ export function Layers(): ReactElement | null {
             maxNativeZoom === undefined
               ? undefined
               : isHdpi
-              ? maxNativeZoom - 1
-              : maxNativeZoom
+                ? maxNativeZoom - 1
+                : maxNativeZoom
           }
           opacity={opacity}
           zIndex={zIndex}

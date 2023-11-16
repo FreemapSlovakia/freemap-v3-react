@@ -79,8 +79,8 @@ export const objectsFetchProcessor: Processor = {
                 key.startsWith('!')
                   ? `[!"${key.slice(1)}"]`
                   : value
-                  ? `["${key}"="${value}"]`
-                  : `["${key}"]`,
+                    ? `["${key}"="${value}"]`
+                    : `["${key}"]`,
               )
               .join('') +
             bb +

@@ -33,8 +33,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     return selection?.type === 'draw-points' && selection.id !== undefined
       ? state.drawingPoints.points[selection.id]?.label ?? ''
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
-      ? state.drawingLines.lines[selection.id]?.label ?? ''
-      : '???';
+        ? state.drawingLines.lines[selection.id]?.label ?? ''
+        : '???';
   });
 
   const color = useAppSelector((state) => {
@@ -43,8 +43,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     return selection?.type === 'draw-points' && selection.id !== undefined
       ? state.drawingPoints.points[selection.id]?.color
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
-      ? state.drawingLines.lines[selection.id]?.color
-      : '???';
+        ? state.drawingLines.lines[selection.id]?.color
+        : '???';
   });
 
   const width = useAppSelector((state) => {

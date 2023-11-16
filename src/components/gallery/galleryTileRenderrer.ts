@@ -76,12 +76,12 @@ export function renderGalleryTile({
     colorizeBy === 'userId'
       ? sort(data, () => Math.random())
       : colorizeBy === 'takenAt' ||
-        colorizeBy === 'createdAt' ||
-        colorizeBy === 'rating'
-      ? sort(data, (a) => Number(a[colorizeBy]))
-      : colorizeBy === 'mine'
-      ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
-      : sort(data, () => 0);
+          colorizeBy === 'createdAt' ||
+          colorizeBy === 'rating'
+        ? sort(data, (a) => Number(a[colorizeBy]))
+        : colorizeBy === 'mine'
+          ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
+          : sort(data, () => 0);
 
   // remove "dense" pictures
   const marbles: Marble[] = items

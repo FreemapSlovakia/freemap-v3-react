@@ -122,8 +122,8 @@ export const mapsLoadProcessor: Processor = {
               line.type === 'area'
                 ? 'polygon'
                 : line.type === 'distance'
-                ? 'line'
-                : line.type,
+                  ? 'line'
+                  : line.type,
           })),
           points: mapData.points?.map((point) => ({
             ...point,

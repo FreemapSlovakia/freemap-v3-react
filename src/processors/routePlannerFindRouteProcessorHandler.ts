@@ -181,8 +181,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             mode === 'roundtrip'
               ? 'round_trip'
               : midpoints.length > 0
-              ? undefined
-              : 'alternative_route',
+                ? undefined
+                : 'alternative_route',
 
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,

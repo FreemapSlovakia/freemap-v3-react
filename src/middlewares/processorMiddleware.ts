@@ -131,16 +131,16 @@ export function createProcessorMiddleware(): MW {
                     messageParams: !(err instanceof Error)
                       ? { err: String(err) }
                       : (err as any)._fm_fetchError
-                      ? {
-                          err:
-                            (window.navigator.onLine === false
-                              ? window.translations?.general.offline
-                              : window.translations?.general.connectionError) ??
-                            err.message,
-                        }
-                      : {
-                          err: err.message,
-                        },
+                        ? {
+                            err:
+                              (window.navigator.onLine === false
+                                ? window.translations?.general.offline
+                                : window.translations?.general
+                                    .connectionError) ?? err.message,
+                          }
+                        : {
+                            err: err.message,
+                          },
                     style: 'danger',
                   }),
                 );

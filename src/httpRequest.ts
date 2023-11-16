@@ -105,8 +105,8 @@ export async function httpRequest({
       expectedStatus === undefined
         ? !response.ok
         : typeof expectedStatus === 'number'
-        ? status !== expectedStatus
-        : !expectedStatus.includes(status)
+          ? status !== expectedStatus
+          : !expectedStatus.includes(status)
     ) {
       throw new Error('Unexpected status ' + status);
     }

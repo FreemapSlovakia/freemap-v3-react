@@ -241,10 +241,10 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
             ? safeParseCoordinates(state.editModel.dirtyPosition)
             : null
           : typeof action.payload === 'number'
-          ? (x = state.items.find(({ id }) => id === action.payload))
-            ? safeParseCoordinates(x.dirtyPosition)
-            : null
-          : null,
+            ? (x = state.items.find(({ id }) => id === action.payload))
+              ? safeParseCoordinates(x.dirtyPosition)
+              : null
+            : null,
     };
   })
   .handleAction(galleryUpload, (state) => {
@@ -305,8 +305,8 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
             takenAt: !state.image
               ? ''
               : state.image.takenAt
-              ? toDatetimeLocal(state.image.takenAt)
-              : '',
+                ? toDatetimeLocal(state.image.takenAt)
+                : '',
             tags: state.image ? [...state.image.tags] : [],
             position,
             dirtyPosition: position

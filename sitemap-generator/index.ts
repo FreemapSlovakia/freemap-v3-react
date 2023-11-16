@@ -172,9 +172,10 @@ async function gen() {
       html`
         <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
           ${sitemapNames.map(
-            (name) => html`<sitemap>
-              <loc>https://www.freemap.sk/${name}</loc>
-            </sitemap>`,
+            (name) =>
+              html`<sitemap>
+                <loc>https://www.freemap.sk/${name}</loc>
+              </sitemap>`,
           )}
         </sitemapindex>
       `,

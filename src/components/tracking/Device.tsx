@@ -82,8 +82,8 @@ export function Device({ device }: Props): ReactElement {
         {device.token.startsWith('did:')
           ? `${device.token.slice(4)} (TK102B Device ID)`
           : device.token.startsWith('imei:')
-          ? `${device.token.slice(5)} (TK102B IMEI)`
-          : device.token}
+            ? `${device.token.slice(5)} (TK102B IMEI)`
+            : device.token}
         {!device.token.includes(':') && (
           <>
             {' '}
