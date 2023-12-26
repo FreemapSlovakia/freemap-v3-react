@@ -5,13 +5,8 @@ export const cookieConsentProcessor: Processor = {
   actionCreator: applyCookieConsent,
   statePredicate: (state) => !!state.main.cookieConsentResult,
   async handle() {
-    window.gtag('consent', 'update', {
-      ad_storage: 'granted',
-      analytics_storage: 'granted',
-    });
+    window._paq.push(['setCookieConsentGiven']);
 
-    // FB PIXEL
-
-    window?.fbq('consent', 'grant');
+    window.fbq('consent', 'grant');
   },
 };

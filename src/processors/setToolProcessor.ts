@@ -7,10 +7,7 @@ export const setToolProcessor: Processor<typeof setTool> = {
     const { tool } = getState().main;
 
     if (tool) {
-      window.gtag('event', 'setTool', {
-        event_category: 'Main',
-        value: tool,
-      });
+      window._paq.push(['trackEvent', 'Main', 'setTool', '', tool]);
 
       if (
         tool === 'track-viewer' &&

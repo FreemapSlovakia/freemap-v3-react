@@ -20,10 +20,7 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
 
       const { id } = image;
 
-      window.gtag('event', 'submitStars', {
-        event_category: 'Gallery',
-        value: stars,
-      });
+      window._paq.push(['trackEvent', 'Gallery', 'submitStars', '', stars]);
 
       await httpRequest({
         getState,

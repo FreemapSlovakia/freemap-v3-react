@@ -41,6 +41,16 @@ declare global {
   interface ServiceWorkerGlobalScope {
     __WB_MANIFEST: { revision: string; url: string }[];
   }
+
+  interface MatomoTracker {
+    push: (
+      commandArray: (string | number | ((...args: any[]) => void))[],
+    ) => void;
+  }
+
+  interface Window {
+    _paq: MatomoTracker;
+  }
 }
 
 export type StringDates<T> = {

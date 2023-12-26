@@ -23,10 +23,6 @@ import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
 
-if (process.env['GA_MEASUREMENT_ID']) {
-  window.gtag('config', process.env['GA_MEASUREMENT_ID']);
-}
-
 // filter out old browsers
 [].flatMap(() => null);
 
@@ -103,6 +99,10 @@ if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
       ],
     }),
   );
+}
+
+if (cookieConsentResult) {
+  window._paq.push(['setCookieConsentGiven']);
 }
 
 const rootElement = document.getElementById('app');

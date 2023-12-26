@@ -90,7 +90,9 @@ export function useAttributionInfo() {
 
   useEffect(() => {
     if (mapType !== 'S' || !esriAttributions || !map) {
-      dispatch(mapSetEsriAttribution([]));
+      if (esriAttribution.length > 0) {
+        dispatch(mapSetEsriAttribution([]));
+      }
 
       return;
     }
@@ -110,8 +112,12 @@ export function useAttributionInfo() {
       ),
     );
 
-    dispatch(mapSetEsriAttribution(a.map((a) => a.attribution)));
-  }, [esriAttributions, movedCount, mapType, map, dispatch]);
+    const attributions = a.map((a) => a.attribution);
+
+    if (attributions.join('\n') !== esriAttribution.join('\n')) {
+      dispatch(mapSetEsriAttribution(attributions));
+    }
+  }, [esriAttributions, esriAttribution, movedCount, mapType, map, dispatch]);
 
   useEffect(() => {
     function handleMoveZoom() {

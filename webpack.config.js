@@ -188,10 +188,7 @@ module.exports = {
           www: 'https://backend.freemap.sk',
           next: 'https://backend.freemap.sk',
         }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
-      GA_MEASUREMENT_ID:
-        { www: 'UA-89861822-3', next: 'UA-89861822-4' }[
-          process.env.DEPLOYMENT
-        ] || null,
+      MATOMO_SITE_ID: { www: '1', next: null }[process.env.DEPLOYMENT] || null,
       FB_APP_ID:
         { www: '681854635902254', next: '681854635902254' }[
           process.env.DEPLOYMENT
