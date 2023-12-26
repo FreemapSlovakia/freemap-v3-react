@@ -1127,6 +1127,7 @@ const it: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DTM providers…', // TODO translate
       maptiler: (
         // TODO translate
         <MaptilerAttribution

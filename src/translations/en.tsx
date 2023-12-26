@@ -1118,6 +1118,7 @@ const en: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DTM providers…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vector tiles from"

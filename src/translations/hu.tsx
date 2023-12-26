@@ -1134,6 +1134,7 @@ const hu: Messages = {
       freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DTM providers…', // TODO translate
       maptiler: (
         // TODO translate
         <MaptilerAttribution

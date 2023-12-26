@@ -22,7 +22,12 @@ import white1x1 from './images/1x1-white.png';
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
   name?: string;
-  nameKey?: 'osmData' | 'freemap' | 'srtm' | 'maptiler';
+  nameKey?:
+    | 'osmData'
+    | 'freemap'
+    | 'srtm'
+    | 'maptiler'
+    | 'outdoorShadingAttribution';
   url?: string;
 }
 
@@ -176,16 +181,10 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      SRTM_ATTR,
       {
         type: 'data',
-        name: 'DMR 5.0:\xa0©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
-      },
-      {
-        type: 'data',
-        name: 'DMR 5G:\xa0©\xa0ČÚZK',
-        url: 'https://geoportal.cuzk.cz/',
+        nameKey: 'outdoorShadingAttribution',
+        url: '?tip=outdoorShadingAttribution',
       },
     ],
     minZoom: 6,

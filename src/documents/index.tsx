@@ -25,7 +25,8 @@ export type DocumentKey =
   | 'gpxViewer'
   | 'planner'
   | 'dvePercenta'
-  | 'privacyPolicy';
+  | 'privacyPolicy'
+  | 'outdoorShadingAttribution';
 
 export type Document = [
   key: DocumentKey,
@@ -46,4 +47,5 @@ export const documents: Document[] = [
   ['planner', 'Vyhľadávač trás', <FaMapSigns />],
   ['dvePercenta', 'Dve percentá', <FaPercent />],
   ['privacyPolicy', 'Privacy policy', <FaLock />, true],
+  ['outdoorShadingAttribution', 'Attribution', <FaCertificate />, true],
 ];

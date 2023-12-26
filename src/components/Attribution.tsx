@@ -1,7 +1,11 @@
+import { documentShow } from 'fm3/actions/mainActions';
+import { DocumentKey } from 'fm3/documents';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { Fragment, ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
+import { is } from 'typia';
 
 type Props = { unknown: string };
 
@@ -23,6 +27,8 @@ export function Attribution({ unknown }: Props): ReactElement {
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
 
+  const dispatch = useDispatch();
+
   return categorized.length === 0 ? (
     <div>{unknown}</div>
   ) : (
@@ -38,6 +44,17 @@ export function Attribution({ unknown }: Props): ReactElement {
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (a.url?.startsWith('?tip=')) {
+                    const docKey = a.url.slice(5);
+
+                    if (is<DocumentKey>(docKey)) {
+                      e.preventDefault();
+
+                      dispatch(documentShow(docKey));
+                    }
+                  }
+                }}
               >
                 {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
               </a>
