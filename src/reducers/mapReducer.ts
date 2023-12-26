@@ -5,6 +5,7 @@ import { applySettings, Selection } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
   mapSetCustomLayers,
+  mapSetEsriAttribution,
   MapStateBase,
   mapSuppressLegacyMapWarning,
 } from 'fm3/actions/mapActions';
@@ -17,6 +18,7 @@ export interface MapState extends MapStateBase {
   gpsTracked: boolean;
   legacyMapWarningSuppressions: string[];
   tempLegacyMapWarningSuppressions: string[];
+  esriAttribution: string[];
 }
 
 export const mapInitialState: MapState = {
@@ -33,6 +35,7 @@ export const mapInitialState: MapState = {
   customLayers: [],
   legacyMapWarningSuppressions: [],
   tempLegacyMapWarningSuppressions: [],
+  esriAttribution: [],
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
@@ -142,4 +145,8 @@ export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
   .handleAction(mapSetCustomLayers, (state, action) => ({
     ...state,
     customLayers: action.payload,
+  }))
+  .handleAction(mapSetEsriAttribution, (state, action) => ({
+    ...state,
+    esriAttribution: action.payload,
   }));

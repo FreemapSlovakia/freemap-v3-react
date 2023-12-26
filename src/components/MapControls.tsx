@@ -2,8 +2,6 @@ import { toggleLocate } from 'fm3/actions/mainActions';
 import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Map } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -12,6 +10,7 @@ import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { MapSwitchButton } from './MapSwitchButton';
+import { useMap } from 'fm3/hooks/useMap';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();
@@ -33,11 +32,7 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  const [map, setMap] = useState<Map>();
-
-  useEffect(() => {
-    mapPromise.then(setMap);
-  }, []);
+  const map = useMap();
 
   const handleFullscreenClick = useCallback(() => {
     if (!document.exitFullscreen) {

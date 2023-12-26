@@ -21,6 +21,8 @@ export function Attribution({ unknown }: Props): ReactElement {
     ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
   );
 
+  const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
+
   return categorized.length === 0 ? (
     <div>{unknown}</div>
   ) : (
@@ -45,6 +47,7 @@ export function Attribution({ unknown }: Props): ReactElement {
               </Fragment>
             ),
           ])}
+          {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
         </li>
       ))}
       {/* {imhd && (

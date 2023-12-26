@@ -50,3 +50,7 @@ export const mapSuppressLegacyMapWarning = createAction(
 export const mapSetCustomLayers = createAction('MAP_SET_CUSTOM_LAYERS')<
   CustomLayer[]
 >();
+
+export const mapSetEsriAttribution = createAction('MAP_SET_ESRI_ATTRIBUTION')<
+  string[]
+>();
