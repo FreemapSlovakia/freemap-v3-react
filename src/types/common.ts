@@ -56,7 +56,8 @@ declare global {
           | ['setCookieConsentGiven']
           | ['setUserId', userId: string]
           | ['resetUserId']
-          | ['trackPageView'],
+          | ['trackPageView']
+          | ['appendToTrackingUrl', appendToUrl: string],
       ) => void;
     };
   }

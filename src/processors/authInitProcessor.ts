@@ -13,6 +13,8 @@ function track(id: number | undefined) {
   );
 
   window._paq.push(['trackPageView']);
+
+  window._paq.push(['appendToTrackingUrl', '']);
 }
 
 export const authTrackProcessor: Processor = {
