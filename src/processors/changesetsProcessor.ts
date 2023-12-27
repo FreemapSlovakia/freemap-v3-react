@@ -12,6 +12,26 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { getType } from 'typesafe-actions';
 
+export const changesetsTrackProcessor: Processor = {
+  stateChangePredicate: (state) =>
+    [state.changesets.days, state.changesets.authorName].join(','),
+  handle: ({ getState }) => {
+    const { changesets } = getState();
+
+    const sp = new URLSearchParams();
+
+    if (changesets.days) {
+      sp.append('days', String(changesets.days));
+    }
+
+    if (changesets.authorName) {
+      sp.append('authorName', changesets.authorName);
+    }
+
+    window._paq.push(['trackEvent', 'Changesets', 'set', sp.toString()]);
+  },
+};
+
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
   actionCreator: [changesetsSetParams, mapRefocus, setTool],

@@ -53,6 +53,8 @@ export async function handleTrackUpload({
       expectedStatus: 201,
     });
 
+    window._paq.push(['trackEvent', 'TrackViewer', 'upload']);
+
     dispatch(
       trackViewerSetTrackUID(assert<{ uid: string }>(await res.json()).uid),
     );

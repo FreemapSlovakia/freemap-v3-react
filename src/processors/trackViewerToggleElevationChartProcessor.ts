@@ -16,9 +16,17 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
 
       for (const feature of trackGeojson?.features ?? []) {
         if (feature.geometry.type === 'LineString') {
+          window._paq.push([
+            'trackEvent',
+            'TrackViewer',
+            'showElevationProfile',
+          ]);
+
           dispatch(
             elevationChartSetTrackGeojson(feature as Feature<LineString>),
           );
+
+          break;
         }
       }
     }

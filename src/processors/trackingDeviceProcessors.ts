@@ -12,6 +12,13 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
     handle: async ({ dispatch, getState, action }) => {
       const { modifiedDeviceId } = getState().tracking;
 
+      window._paq.push([
+        'trackEvent',
+        'Tracking',
+        'saveDevice',
+        modifiedDeviceId ? 'modify' : 'create',
+      ]);
+
       if (modifiedDeviceId) {
         await httpRequest({
           getState,

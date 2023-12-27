@@ -1,12 +1,18 @@
 import { authDeleteAccountProcessor } from './processors/authDeleteAccountProcessor';
-import { authInitProcessor } from './processors/authInitProcessor';
+import {
+  authInitProcessor,
+  authTrackProcessor,
+} from './processors/authInitProcessor';
 import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
 import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
 import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
 import { cancelProcessor } from './processors/cancelProcessor';
-import { changesetsProcessor } from './processors/changesetsProcessor';
+import {
+  changesetsProcessor,
+  changesetsTrackProcessor,
+} from './processors/changesetsProcessor';
 import { cookieConsentProcessor } from './processors/cookieConsentProcessor';
 import { elevationChartProcessor } from './processors/elevationChartProcessor';
 import { errorProcessor } from './processors/errorProcessor';
@@ -37,7 +43,10 @@ import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
 import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
-import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
+import {
+  objectsChangePredicateProcessor,
+  objectsFetchProcessor,
+} from './processors/objectsFetchProcessor';
 import { openInExternalAppProcessor } from './processors/openInExternalAppProcessor';
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
@@ -93,10 +102,13 @@ export const processors = [
   measurementProcessor,
   mapDetailsProcessor,
   changesetsProcessor,
+  changesetsTrackProcessor,
   authInitProcessor,
+  authTrackProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
   objectsFetchProcessor,
+  objectsChangePredicateProcessor,
   osmLoadNodeProcessor,
   osmLoadWayProcessor,
   osmLoadRelationProcessor,

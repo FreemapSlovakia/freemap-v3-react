@@ -17,7 +17,7 @@ export const gallerySubmitCommentProcessor: Processor = {
 
     const { id } = image;
 
-    window._paq.push(['trackEvent', 'Gallery', 'submitComment']);
+    window._paq.push(['trackEvent', 'Gallery', 'submitComment', String(id)]);
 
     await httpRequest({
       getState,

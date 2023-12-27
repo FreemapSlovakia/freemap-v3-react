@@ -34,6 +34,8 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       dispatch(applySettings(settings));
     }
 
+    window._paq.push(['trackEvent', 'Main', 'saveSettings']);
+
     dispatch(
       toastsAdd({
         id: 'settings.saved',

@@ -22,13 +22,7 @@ export const mapTypeGaProcessor: Processor = {
     const joinedOverlays = [...overlays].sort().join(',');
 
     if ([...prevOverlays].sort().join(',') !== joinedOverlays) {
-      window._paq.push([
-        'trackEvent',
-        'Map',
-        'setOverlays',
-        '',
-        joinedOverlays,
-      ]);
+      window._paq.push(['trackEvent', 'Map', 'setOverlays', joinedOverlays]);
 
       prevOverlays = overlays;
     }

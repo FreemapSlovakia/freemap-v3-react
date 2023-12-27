@@ -47,6 +47,8 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
     const mapType = mapType0 ?? getState().map.mapType;
 
+    window._paq.push(['trackEvent', 'Main', 'openInExternalApp', where]);
+
     switch (where) {
       case 'window':
         window.open(url);

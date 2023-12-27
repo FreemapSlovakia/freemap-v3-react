@@ -14,6 +14,13 @@ export const saveAccessTokenProcessor: Processor<
   handle: async ({ dispatch, getState, action }) => {
     const { modifiedAccessTokenId } = getState().tracking;
 
+    window._paq.push([
+      'trackEvent',
+      'Tracking',
+      'saveAccessToken',
+      modifiedAccessTokenId ? 'modify' : 'create',
+    ]);
+
     if (modifiedAccessTokenId) {
       await httpRequest({
         getState,

@@ -20,7 +20,13 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
 
       const { id } = image;
 
-      window._paq.push(['trackEvent', 'Gallery', 'submitStars', '', stars]);
+      window._paq.push([
+        'trackEvent',
+        'Gallery',
+        'submitStars',
+        String(id),
+        stars,
+      ]);
 
       await httpRequest({
         getState,

@@ -35,6 +35,8 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
 
     let id;
 
+    window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
+
     async function measurePoint(point: LatLon) {
       let elevation;
 

@@ -36,6 +36,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     return;
   }
 
+  window._paq.push(['trackEvent', 'MapDetails', 'search']);
+
   const kvFilter =
     '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
 

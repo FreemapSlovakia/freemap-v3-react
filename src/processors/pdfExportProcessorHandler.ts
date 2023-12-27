@@ -198,6 +198,8 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     }
   }
 
+  window._paq.push(['trackEvent', 'PdfExport', 'export', format]);
+
   const res = await httpRequest({
     getState,
     method: 'POST',

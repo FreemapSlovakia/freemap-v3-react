@@ -40,6 +40,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       return;
     }
 
+    window._paq.push(['trackEvent', 'Search', 'search', query.slice(64)]);
+
     // try GeoJSON
 
     try {

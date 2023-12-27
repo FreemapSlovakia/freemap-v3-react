@@ -42,14 +42,22 @@ declare global {
     __WB_MANIFEST: { revision: string; url: string }[];
   }
 
-  interface MatomoTracker {
-    push: (
-      commandArray: (string | number | ((...args: any[]) => void))[],
-    ) => void;
-  }
-
   interface Window {
-    _paq: MatomoTracker;
+    _paq: {
+      push: (
+        args:
+          | [
+              'trackEvent',
+              category: string,
+              action: string,
+              name?: string | number,
+              value?: string | number,
+            ]
+          | ['setCookieConsentGiven']
+          | ['setUserId', userId: string]
+          | ['resetUserId'],
+      ) => void;
+    };
   }
 }
 

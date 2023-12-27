@@ -14,6 +14,19 @@ const limit =
 
 const minZoom = 10;
 
+export const objectsChangePredicateProcessor: Processor = {
+  actionCreator: objectsSetFilter,
+  stateChangePredicate: (state) => state.objects.active.join('\n'),
+  handle: ({ getState }) => {
+    window._paq.push([
+      'trackEvent',
+      'Objects',
+      'search',
+      getState().objects.active.join('|'),
+    ]);
+  },
+};
+
 export const objectsFetchProcessor: Processor = {
   stateChangePredicate: (state) =>
     [

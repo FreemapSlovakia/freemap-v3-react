@@ -117,6 +117,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
+  window._paq.push([
+    'trackEvent',
+    'RoutePlanner',
+    'search',
+    new URLSearchParams({ transportType, mode }).toString(),
+  ]);
+
   const clearResultAction = routePlannerSetResult({
     timestamp: Date.now(),
     transportType,
