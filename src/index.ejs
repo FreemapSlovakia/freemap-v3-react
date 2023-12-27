@@ -125,30 +125,24 @@
     <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
-    <!-- prettier-ignore -->
-    <% if (process.env['NODE_ENV'] === 'production') { %>
-    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
-    <% } %>
-
     <script>
       fmEmbedded = window.self !== window.top;
 
       isRobot = window.navigator.userAgent.match(
         /\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b/,
       );
-
-      if (window.TrackJS && !fmEmbedded && !isRobot) {
-        TrackJS.install({
-          token: '47a813b67baf4f97bace2d8359f76833',
-          network: { error: false },
-          onError: function (payload) {
-            return !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker|flatMap is not a function/.test(
-              payload.message,
-            );
-          },
-        });
-      }
     </script>
+
+    <% if (process.env['SENTRY_DSN']) { %>
+    <script>
+      Sentry.init({
+        dsn: '<%= process.env["SENTRY_DSN"] %>',
+        tracesSampleRate: 0.01,
+      });
+    </script>
+    <% } %>
+
+    <script src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js" crossorigin="anonymous"></script>
 
     <% if (process.env['MATOMO_SITE_ID']) { %>
     <script>
@@ -156,7 +150,6 @@
       _paq.push(['requireCookieConsent']);
       _paq.push(['setCustomUrl', '/']);
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       (function() {
         var u="//matomo.freemap.sk/";

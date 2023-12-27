@@ -32,8 +32,7 @@
       "gtag.js",
       "facebook-js-sdk",
       "facebook-pixel",
-      "google.picker",
-      "trackjs"
+      "google.picker"
     ]
   },
   "include": ["src", "typings"]

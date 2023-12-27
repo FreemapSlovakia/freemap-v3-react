@@ -2,6 +2,7 @@ import { setErrorTicketId } from 'fm3/actions/mainActions';
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import { MyStore } from './storeCreator';
+import * as Sentry from '@sentry/browser';
 
 let store: MyStore;
 
@@ -53,16 +54,11 @@ export function sendError(errDetails: ErrorDetails): void {
 
   console.error(errDetails);
 
-  if (errDetails.error) {
-    window.TrackJS?.console.error(errDetails.error);
-  }
+  Sentry.captureException(errDetails);
 
   const state = store?.getState();
 
-  window.gtag?.('event', 'error', {
-    event_category: 'Error',
-    value: errDetails.kind,
-  });
+  window._paq.push(['trackEvent', 'Main', 'error', errDetails.kind]);
 
   fetch(`${process.env['API_URL']}/logger`, {
     method: 'POST',

@@ -6,8 +6,6 @@ import { get } from 'idb-keyval';
 import { assert } from 'typia';
 
 function track(id: number | undefined) {
-  console.log('TRACK', id);
-
   window._paq.push(
     id === undefined ? ['resetUserId'] : ['setUserId', String(id)],
   );
