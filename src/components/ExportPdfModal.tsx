@@ -16,7 +16,7 @@ import Modal from 'react-bootstrap/Modal';
 import {
   FaDownload,
   FaDrawPolygon,
-  FaRegFilePdf,
+  FaPrint,
   FaRegQuestionCircle,
   FaTimes,
 } from 'react-icons/fa';
@@ -58,6 +58,8 @@ export function ExportPdfModal({ show }: Props): ReactElement {
   const [plannedRoute, setPlannedRoute] = useState(true);
 
   const [track, setTrack] = useState(true);
+
+  const isAdmin = useAppSelector((state) => state.auth.user?.isAdmin);
 
   const [style, setStyle] = useState(`<Style name="custom-polygons">
   <Rule>
@@ -168,7 +170,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegFilePdf /> {m?.mainMenu.pdfExport}
+          <FaPrint /> {m?.mainMenu.pdfExport}
         </Modal.Title>
       </Modal.Header>
 
@@ -217,21 +219,25 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             PNG
           </Button>
 
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('pdf')}
-            active={format === 'pdf'}
-          >
-            PDF
-          </Button>
+          {isAdmin && (
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => setFormat('pdf')}
+                active={format === 'pdf'}
+              >
+                PDF
+              </Button>
 
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('svg')}
-            active={format === 'svg'}
-          >
-            SVG
-          </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setFormat('svg')}
+                active={format === 'svg'}
+              >
+                SVG
+              </Button>
+            </>
+          )}
         </ButtonGroup>
 
         <hr />

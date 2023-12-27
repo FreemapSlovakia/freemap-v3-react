@@ -5,7 +5,7 @@ import { User } from 'fm3/types/common';
 import { get } from 'idb-keyval';
 import { assert } from 'typia';
 
-export const authTrack: Processor = {
+export const authTrackProcessor: Processor = {
   stateChangePredicate: (state) => state.auth.user?.id,
   handle({ getState }) {
     const id = getState().auth.user?.id;

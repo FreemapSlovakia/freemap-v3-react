@@ -28,7 +28,7 @@ import {
   FaLanguage,
   FaMobileAlt,
   FaPencilRuler,
-  FaRegFilePdf,
+  FaPrint,
   FaRegMap,
   FaSignInAlt,
 } from 'react-icons/fa';
@@ -239,7 +239,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         eventKey="export-pdf"
         onSelect={showModal}
       >
-        <FaRegFilePdf /> {m?.mainMenu.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
+        <FaPrint /> {m?.mainMenu.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item
