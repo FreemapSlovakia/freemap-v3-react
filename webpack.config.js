@@ -189,7 +189,10 @@ module.exports = {
           next: 'https://backend.freemap.sk',
         }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
       MATOMO_SITE_ID: { www: '1', next: null }[process.env.DEPLOYMENT] ?? null,
-      SENTRY_DSN: { www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2' }[process.env.DEPLOYMENT] ?? null
+      SENTRY_DSN:
+        {
+          www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2',
+        }[process.env.DEPLOYMENT] ?? null,
       FB_APP_ID:
         { www: '681854635902254', next: '681854635902254' }[
           process.env.DEPLOYMENT
