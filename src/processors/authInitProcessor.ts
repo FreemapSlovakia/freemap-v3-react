@@ -5,14 +5,20 @@ import { User } from 'fm3/types/common';
 import { get } from 'idb-keyval';
 import { assert } from 'typia';
 
+function track(id: number | undefined) {
+  console.log('TRACK', id);
+
+  window._paq.push(
+    id === undefined ? ['resetUserId'] : ['setUserId', String(id)],
+  );
+
+  window._paq.push(['trackPageView']);
+}
+
 export const authTrackProcessor: Processor = {
   stateChangePredicate: (state) => state.auth.user?.id,
   handle({ getState }) {
-    const id = getState().auth.user?.id;
-
-    window._paq.push(
-      id === undefined ? ['resetUserId'] : ['setUserId', String(id)],
-    );
+    track(getState().auth.user?.id);
   },
 };
 
@@ -21,6 +27,8 @@ export const authInitProcessor: Processor = {
   errorKey: 'logIn.verifyError',
   async handle({ getState, dispatch }) {
     const { user } = getState().auth;
+
+    track(user?.id);
 
     if (user) {
       try {
