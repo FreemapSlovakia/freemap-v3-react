@@ -134,6 +134,8 @@
     </script>
 
     <% if (process.env['SENTRY_DSN']) { %>
+    <script src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js" crossorigin="anonymous"></script>
+
     <script>
       Sentry.init({
         dsn: '<%= process.env["SENTRY_DSN"] %>',

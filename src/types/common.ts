@@ -1,6 +1,7 @@
 import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { PathOptions } from 'leaflet';
+import type * as Sentry from '@sentry/browser';
 
 export interface LatLon {
   lat: number;
@@ -36,6 +37,8 @@ declare global {
       searchResultStyle?: PathOptions;
     };
     pannellum: any;
+
+    Sentry: typeof Sentry;
   }
 
   interface ServiceWorkerGlobalScope {

@@ -1,8 +1,5 @@
 import { setErrorTicketId } from 'fm3/actions/mainActions';
-import storage from 'local-storage-fallback';
-import { is } from 'typia';
 import { MyStore } from './storeCreator';
-import * as Sentry from '@sentry/browser';
 
 let store: MyStore;
 
@@ -37,7 +34,7 @@ window.addEventListener('error', (evt) => {
 interface ErrorDetails {
   kind: string;
   action?: any;
-  error?: any;
+  error: any;
   message?: string;
   filename?: string;
   lineno?: number;
@@ -54,43 +51,15 @@ export function sendError(errDetails: ErrorDetails): void {
 
   console.error(errDetails);
 
-  Sentry.captureException(errDetails);
+  const eventId = window.Sentry.captureException(errDetails.error);
 
-  const state = store?.getState();
+  window._paq.push(['trackEvent', 'Main', 'error', eventId]);
 
-  window._paq.push(['trackEvent', 'Main', 'error', errDetails.kind]);
-
-  fetch(`${process.env['API_URL']}/logger`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      level: 'error',
-      message: 'Webapp error.',
-      details: {
-        error: errDetails,
-        url: window.location.href,
-        userAgent: window.navigator.userAgent,
-        storage,
-        state,
-      },
-    }),
-  })
-    .then((response) => (response.status === 200 ? response.json() : undefined))
-    .then((data) => {
-      if (
-        errDetails.message === 'Script error.' ||
-        errDetails.filename === ''
-      ) {
-        // don't show to user
-      } else {
-        handle(is<{ id: string }>(data) ? data.id : undefined);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-
-      handle();
-    });
+  if (errDetails.message === 'Script error.' || errDetails.filename === '') {
+    // don't show to user
+  } else {
+    handle(eventId);
+  }
 }
 
 function handle(id?: string) {
