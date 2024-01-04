@@ -28,9 +28,7 @@ export function Layers(): ReactElement | null {
 
   const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);
 
-  const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
-
-  const userId = useAppSelector((state) => state.auth.user?.id);
+  const user = useAppSelector((state) => state.auth.user);
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -73,7 +71,8 @@ export function Layers(): ReactElement | null {
           colorizeBy={galleryColorizeBy}
           opacity={opacity}
           zIndex={zIndex}
-          myUserId={userId}
+          myUserId={user?.id}
+          authToken={user?.authToken}
         />
       );
     }
@@ -131,14 +130,14 @@ export function Layers(): ReactElement | null {
     <>
       {baseLayers
         .filter(({ type }) => type === mapType)
-        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
         .map((item) => getTileLayer(item))}
       {customLayers
         .filter(({ type }) => type === mapType)
         .map((cm) => getTileLayer(cm))}
       {overlayLayers
         .filter(({ type }) => overlays.includes(type))
-        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
         .map((item) => getTileLayer(item))}
       {customLayers
         .filter(({ type }) => overlays.includes(type as any))

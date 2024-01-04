@@ -13,6 +13,7 @@ type GalleryLayerOptions = GridLayerOptions & {
   filter: GalleryFilter;
   colorizeBy: GalleryColorizeBy | null;
   myUserId?: number;
+  authToken?: string;
 };
 
 const jobMap = new Map<
@@ -199,6 +200,9 @@ class LGalleryLayer extends LGridLayer {
     // https://backend.freemap.sk/gallery/pictures
     fetch(process.env['API_URL'] + '/gallery/pictures?' + sp.toString(), {
       signal,
+      headers: this._options?.authToken
+        ? { Authorization: 'Bearer ' + this._options?.authToken }
+        : {},
     })
       .then((response) => {
         if (response.status !== 200) {
@@ -268,6 +272,7 @@ interface Props extends LayerProps {
   opacity?: number;
   zIndex?: number;
   dirtySeq?: number; // probably unused
+  authToken?: string;
 }
 
 export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
