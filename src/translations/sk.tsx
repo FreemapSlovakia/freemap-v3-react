@@ -101,7 +101,7 @@ const sk: Messages = {
       <Attribution unknown="Licencia mapy nie je špecifikovaná" />
     ),
     unauthenticatedError:
-      'Pre prístup k tejto funkcii sa najprv prosím prihláste.',
+      'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
   },
 
   selections: {
@@ -737,7 +737,7 @@ const sk: Messages = {
     fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,
     icon: {
       pin: 'Špendlík',
-      ring: 'Okruhlá',
+      ring: 'Okrúhla',
       square: 'Štvorcová',
     },
     // categories: {
