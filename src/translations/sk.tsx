@@ -25,13 +25,11 @@ const masl = 'm\xa0n.\xa0m.';
 
 const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 <p>
-  ${
-    ticketId
-      ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
-      : ''
+  ${ticketId
+    ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
+    : ''
   }
-  Chybu môžeš nahlásiť ${
-    ticketId ? 'aj ' : ''
+  Chybu môžeš nahlásiť ${ticketId ? 'aj ' : ''
   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   prípadne nám môžete poslať podrobnosti na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -452,6 +450,21 @@ const sk: Messages = {
               Prispejte ukrajinskej armáde ›
             </a>{' '}
             🇺🇦{' '}
+          </>
+        );
+      },
+      // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
+      wiki2perc: () => {
+        return (
+          <>
+            OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023, podporte svojimi 2%{' '}
+            <a
+              href="https://2percenta.prewiki.sk/"
+              target="_blank"
+              rel="noopener"
+            >
+              Wikimedia EO
+            </a>{' '}
           </>
         );
       },
