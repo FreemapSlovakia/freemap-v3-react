@@ -90,7 +90,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
             onClick={(e) => {
               e.preventDefault();
 
-              navigate(new URLSearchParams('show=about'));
+              navigate(new URLSearchParams('https://oz.freemap.sk/'));
             }}
           >
             OZ Freemap Slovakia
