@@ -45,7 +45,7 @@ export function TrackingSubmenu(): ReactElement {
       <SubmenuHeader icon={<FaBullseye />} title={m?.tools.tracking} />
 
       <Dropdown.Item
-        href="?show=tracking-watched"
+        href="#show=tracking-watched"
         eventKey="tracking-watched"
         onSelect={showModal}
       >
@@ -53,7 +53,7 @@ export function TrackingSubmenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?show=tracking-my"
+        href="#show=tracking-my"
         eventKey="tracking-my"
         onSelect={showModal}
       >

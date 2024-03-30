@@ -59,7 +59,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   useEffect(() => {
     if (loaded) {
       for (const elem of Array.from(
-        ref?.querySelectorAll('a[href^="/"]') ?? [],
+        ref?.querySelectorAll('a[href^="#"]') ?? [],
       )) {
         const a = elem as HTMLAnchorElement;
 
@@ -75,7 +75,9 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
           e.preventDefault();
 
-          navigate(new URL(href).searchParams);
+          const i = href.lastIndexOf('#');
+
+          navigate(href.slice(i + 1));
         };
       }
     }

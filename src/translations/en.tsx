@@ -1144,7 +1144,7 @@ const en: Messages = {
       <ul>
         <li><a href="">reload last page</a></li>
         <li><a href="/">load initial page</a></li>
-        <li><a href="/?reset-local-storage">clear local data and load initial page</a></li>
+        <li><a href="/#reset-local-storage">clear local data and load initial page</a></li>
       </ul>
     `,
   },

@@ -1162,7 +1162,7 @@ const hu: Messages = {
       <ul>
         <li><a href="">újra betölti a legutóbbi oldalt</a></li>
         <li><a href="/">betölti a kezdőoldalt</a></li>
-        <li><a href="/?reset-local-storage">törli a helyi adatokat és betölti a kezdőoldalt</a></li>
+        <li><a href="/#reset-local-storage">törli a helyi adatokat és betölti a kezdőoldalt</a></li>
       </ul>
     `,
   },

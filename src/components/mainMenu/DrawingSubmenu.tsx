@@ -41,7 +41,7 @@ export function DrawingSubmenu(): ReactElement {
       <SubmenuHeader icon={<FaPencilRuler />} title={m?.tools.measurement} />
 
       <Dropdown.Item
-        href="?tool=draw-points"
+        href="#tool=draw-points"
         eventKey="draw-points"
         onSelect={setToolAndClose}
         active={tool === 'draw-points'}
@@ -50,7 +50,7 @@ export function DrawingSubmenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?tool=draw-lines"
+        href="#tool=draw-lines"
         eventKey="draw-lines"
         onSelect={setToolAndClose}
         active={tool === 'draw-lines'}
@@ -59,7 +59,7 @@ export function DrawingSubmenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?tool=draw-polygons"
+        href="#tool=draw-polygons"
         eventKey="draw-polygons"
         onSelect={setToolAndClose}
         active={tool === 'draw-polygons'}
@@ -70,7 +70,7 @@ export function DrawingSubmenu(): ReactElement {
       <Dropdown.Divider />
 
       <Dropdown.Item
-        href="?show=drawing-properties"
+        href="#show=drawing-properties"
         eventKey="drawing-properties"
         onSelect={(_, e) => {
           e.preventDefault();

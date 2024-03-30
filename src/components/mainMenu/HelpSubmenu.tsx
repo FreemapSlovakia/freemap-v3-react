@@ -62,7 +62,7 @@ export function HelpSubmenu(): JSX.Element {
         mapType,
       ) && (
         <Dropdown.Item
-          href="?show=legend"
+          href="#show=legend"
           eventKey="legend"
           onSelect={showModal}
         >
@@ -70,7 +70,7 @@ export function HelpSubmenu(): JSX.Element {
         </Dropdown.Item>
       )}
 
-      <Dropdown.Item eventKey="about" href="?show=about" onSelect={showModal}>
+      <Dropdown.Item eventKey="about" href="#show=about" onSelect={showModal}>
         <FaRegAddressCard /> {m?.mainMenu.contacts}
       </Dropdown.Item>
 

@@ -66,7 +66,7 @@ export function CopyrightButton(): ReactElement {
             {showLegendButton && (
               <Dropdown.Item
                 key="legend"
-                href="?show=legend"
+                href="#show=legend"
                 onSelect={(_, e) => {
                   e.preventDefault();
 
@@ -81,7 +81,7 @@ export function CopyrightButton(): ReactElement {
 
             <Dropdown.Item
               key="privacyPolicy"
-              href="?tip=privacyPolicy"
+              href="#tip=privacyPolicy"
               onSelect={(_, e) => {
                 e.preventDefault();
 

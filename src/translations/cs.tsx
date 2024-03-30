@@ -25,11 +25,13 @@ const masl = 'm\xa0n.\xa0m.';
 
 const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 <p>
-  ${ticketId
-    ? `Chyba nám byla automaticky reportována pod ID <b>${ticketId}</b>.`
-    : ''
+  ${
+    ticketId
+      ? `Chyba nám byla automaticky reportována pod ID <b>${ticketId}</b>.`
+      : ''
   }
-  Chybu můžeš nahlásit ${ticketId ? 'i ' : ''
+  Chybu můžeš nahlásit ${
+    ticketId ? 'i ' : ''
   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   případně nám poslat detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -412,6 +414,22 @@ const cs: Messages = {
       />
     ),
     infoBars: {
+      // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
+      wiki2perc: () => {
+        return (
+          <>
+            OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
+            podporte svojimi 2%{' '}
+            <a
+              href="https://2percenta.prewiki.sk/"
+              target="_blank"
+              rel="noopener"
+            >
+              Wikimedia EO
+            </a>{' '}
+          </>
+        );
+      },
       ua: () => (
         <>
           🇺🇦 Stojíme za Ukrajinou.{' '}
@@ -425,21 +443,6 @@ const cs: Messages = {
           🇺🇦
         </>
       ),
-      // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
-      wiki2perc: () => {
-        return (
-          <>
-            OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023, podporte svojimi 2%{' '}
-            <a
-              href="https://2percenta.prewiki.sk/"
-              target="_blank"
-              rel="noopener"
-            >
-              Wikimedia EO
-            </a>{' '}
-          </>
-        );
-      },
     },
   },
 
@@ -1173,7 +1176,7 @@ const cs: Messages = {
       <ul>
         <li><a href="">znovu načíst poslední stránku</a></li>
         <li><a href="/">znovu načíst úvodní stránku</a></li>
-        <li><a href="/?reset-local-storage">smazat lokální data a znovunačíst úvodní stránku</a></li>
+        <li><a href="/#reset-local-storage">smazat lokální data a znovunačíst úvodní stránku</a></li>
       </ul>
     `,
   },

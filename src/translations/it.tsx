@@ -1154,7 +1154,7 @@ const it: Messages = {
       <ul>
         <li><a href="">ricaricare ultima pagina</a></li>
         <li><a href="/">caricare pagina iniziale</a></li>
-        <li><a href="/?reset-local-storage">pulire dati locali e caricare pagina iniziale</a></li>
+        <li><a href="/#reset-local-storage">pulire dati locali e caricare pagina iniziale</a></li>
       </ul>
     `,
   },

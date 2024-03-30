@@ -119,7 +119,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       {user ? (
         <Dropdown.Item
           eventKey="account"
-          href="?show=account"
+          href="#show=account"
           onSelect={showModal}
         >
           <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
@@ -235,7 +235,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?show=export-pdf"
+        href="#show=export-pdf"
         eventKey="export-pdf"
         onSelect={showModal}
       >
@@ -244,7 +244,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
 
       <Dropdown.Item
         eventKey="export-gpx"
-        href="?show=export-gpx"
+        href="#show=export-gpx"
         onSelect={showModal}
       >
         <FaDownload /> {m?.mainMenu.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
@@ -252,13 +252,13 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
 
       <Dropdown.Item
         eventKey="exports"
-        href="?tip=exports"
+        href="#tip=exports"
         onSelect={handleTipSelect}
       >
         <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="embed" href="?show=embed" onSelect={showModal}>
+      <Dropdown.Item eventKey="embed" href="#show=embed" onSelect={showModal}>
         <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
       </Dropdown.Item>
 
@@ -269,7 +269,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?show=supportUs"
+        href="#show=supportUs"
         eventKey="supportUs"
         onSelect={showModal}
       >

@@ -39,7 +39,7 @@ export function GallerySubmenu(): JSX.Element {
       <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
       <Dropdown.Item
-        href="?show=gallery-filter"
+        href="#show=gallery-filter"
         onSelect={(_, e) => {
           e.preventDefault();
 
@@ -53,7 +53,7 @@ export function GallerySubmenu(): JSX.Element {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?show=gallery-upload"
+        href="#show=gallery-upload"
         onSelect={(_, e) => {
           e.preventDefault();
 

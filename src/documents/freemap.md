@@ -1,6 +1,6 @@
 Freemap Slovakia je projekt, ktorý združuje slovenskú OpenStreetMap komunitu a prevádzkuje tento portál.
 
-Vystupuje pod občianskym združením [OZ Freemap Slovakia](/?show=about).
+Vystupuje pod občianskym združením [OZ Freemap Slovakia](#show=about).
 
 Hlavným cieľom združenia Freemap Slovakia je podpora mapovania a tvorby máp so slobodnou licenciou. Tento cieľ napĺňame rôznymi spôsobmi, z ktorých spomenieme aspoň tie významnejšie:
 

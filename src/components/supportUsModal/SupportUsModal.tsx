@@ -86,11 +86,11 @@ export function SupportUsModal({ show }: Props): ReactElement {
         <p>{lm?.thanks}</p>
         <p>
           <a
-            href="?show=about"
+            href="#show=about"
             onClick={(e) => {
               e.preventDefault();
 
-              navigate(new URLSearchParams('show=about'));
+              navigate('show=about');
             }}
           >
             OZ Freemap Slovakia
