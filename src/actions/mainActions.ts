@@ -55,7 +55,8 @@ export type Exportable =
   | 'drawingAreas'
   | 'drawingPoints'
   | 'tracking'
-  | 'gpx';
+  | 'gpx'
+  | 'search';
 
 export type Destination = 'download' | 'gdrive' | 'dropbox';
 

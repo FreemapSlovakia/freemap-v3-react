@@ -7,6 +7,7 @@ import {
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import {
+  Fragment,
   ReactElement,
   ReactNode,
   useCallback,
@@ -29,6 +30,7 @@ import {
   FaMapMarkerAlt,
   FaMapSigns,
   FaRoad,
+  FaSearch,
   FaTimes,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
@@ -39,7 +41,6 @@ const exportableDefinitions: readonly {
   icon: ReactNode;
 }[] = [
   { type: 'plannedRoute', icon: <FaMapSigns /> },
-  { type: 'plannedRouteWithStops', icon: <FaMapSigns /> },
   { type: 'objects', icon: <FaMapMarkerAlt /> },
   { type: 'pictures', icon: <FaCamera /> },
   { type: 'drawingLines', icon: <MdTimeline /> },
@@ -47,6 +48,7 @@ const exportableDefinitions: readonly {
   { type: 'drawingPoints', icon: <FaMapMarkerAlt /> },
   { type: 'tracking', icon: <FaBullseye /> },
   { type: 'gpx', icon: <FaRoad /> },
+  { type: 'search', icon: <FaSearch /> },
 ];
 
 type Props = { show: boolean };
@@ -61,14 +63,12 @@ export function ExportGpxModal({ show }: Props): ReactElement {
   const initExportables = useAppSelector((state) => {
     const exportables: Exportable[] = [];
 
-    // if (state.search.selectedResult) {
-    //   exportables.push('search');
-    // }
+    if (state.search.selectedResult) {
+      exportables.push('search');
+    }
 
     if (state.routePlanner.alternatives.length) {
       exportables.push('plannedRoute');
-
-      exportables.push('plannedRouteWithStops');
     }
 
     if (state.objects.objects.length) {
@@ -101,10 +101,6 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
     // if (state.changesets.changesets.length) {
     //   exportables.push('changesets');
-    // }
-
-    // if (state.mapDetails.trackInfoPoints) {
-    //   exportables.push('mapDetails');
     // }
 
     return exportables;
@@ -167,6 +163,10 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
     if (exportables.includes(type)) {
       set.delete(type);
+
+      if (type === 'plannedRoute') {
+        set.delete('plannedRouteWithStops');
+      }
     } else {
       set.add(type);
     }
@@ -183,6 +183,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
               <FaDownload /> {m?.mainMenu.gpxExport}
             </Modal.Title>
           </Modal.Header>
+
           <Modal.Body>
             <Alert variant="warning">{m?.gpxExport.licenseAlert}</Alert>
 
@@ -193,19 +194,35 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
               <Form.Switch>
                 {exportableDefinitions.map(({ type, icon }) => (
-                  <Form.Check
-                    id={'chk-' + type}
-                    type="checkbox"
-                    key={type}
-                    checked={exportables.includes(type)}
-                    disabled={!initExportables.includes(type)}
-                    onChange={() => handleCheckboxChange(type)}
-                    label={
-                      <>
-                        {icon} {m?.gpxExport.what[type]}
-                      </>
-                    }
-                  />
+                  <Fragment key={type}>
+                    <Form.Check
+                      inline={type === 'plannedRoute'}
+                      id={'chk-' + type}
+                      type="checkbox"
+                      checked={exportables.includes(type)}
+                      disabled={!initExportables.includes(type)}
+                      onChange={() => handleCheckboxChange(type)}
+                      label={
+                        <>
+                          {icon} {m?.gpxExport.what[type]}
+                        </>
+                      }
+                    />
+
+                    {type === 'plannedRoute' && (
+                      <Form.Check
+                        id="chk-plannedRouteWithStops"
+                        inline
+                        type="checkbox"
+                        checked={exportables.includes('plannedRouteWithStops')}
+                        disabled={!exportables.includes(type)}
+                        onChange={() =>
+                          handleCheckboxChange('plannedRouteWithStops')
+                        }
+                        label={m?.gpxExport.what['plannedRouteWithStops']}
+                      />
+                    )}
+                  </Fragment>
                 ))}
               </Form.Switch>
             </Form.Group>
@@ -223,6 +240,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
                   >
                     GPX
                   </ToggleButton>
+
                   <ToggleButton
                     type="radio"
                     value="geojson"
@@ -235,10 +253,12 @@ export function ExportGpxModal({ show }: Props): ReactElement {
               </Form.Row>
             </Form.Group>
           </Modal.Body>
+
           <Modal.Footer>
             <Button onClick={handleExportClick} disabled={!exportables.length}>
               <FaDownload /> {m?.gpxExport.export}
             </Button>
+
             <Button
               variant="secondary"
               onClick={handleExportToDriveClick}
@@ -246,6 +266,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
             >
               <FaGoogle /> {m?.gpxExport.exportToDrive}
             </Button>
+
             <Button
               variant="secondary"
               onClick={handleExportToDropbox}
@@ -253,6 +274,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
             >
               <FaDropbox /> {m?.gpxExport.exportToDropbox}
             </Button>
+
             <Button variant="dark" onClick={close}>
               <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
             </Button>

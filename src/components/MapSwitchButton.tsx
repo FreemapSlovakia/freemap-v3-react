@@ -378,11 +378,11 @@ export function MapSwitchButton(): ReactElement {
 
             <Dropdown.Divider />
 
-            {overlayLayers
+            {ovls
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .filter(
                 (l) =>
-                  overlays.includes(l.type) ||
+                  overlays.includes(l.type as OverlayLetters) ||
                   show === 'all' ||
                   (layersSettings[l.type]?.showInMenu ??
                     defaultMenuLayerLetters.includes(l.type)),
@@ -391,7 +391,7 @@ export function MapSwitchButton(): ReactElement {
                 const active =
                   type === 'i'
                     ? !overlays.includes(type)
-                    : overlays.includes(type);
+                    : overlays.includes(type as OverlayLetters);
 
                 return (
                   <Dropdown.Item

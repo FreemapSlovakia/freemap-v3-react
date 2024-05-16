@@ -604,6 +604,7 @@ export type Messages = {
       drawingPoints: string;
       tracking: string;
       gpx: string;
+      search: string;
     };
     disabledAlert: string;
     licenseAlert: string;
@@ -615,6 +616,7 @@ export type Messages = {
       facebook: string;
       google: string;
       osm: string;
+      garmin: string;
     };
     success: string;
     logInError: ({ err }: Err) => string;

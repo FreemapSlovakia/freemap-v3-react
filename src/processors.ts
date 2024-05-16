@@ -7,6 +7,8 @@ import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebo
 import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
 import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
+import { authLoginWithGarminProcessor } from './processors/authLoginWithGarminProcessor';
+import { authLoginWithGarmin2Processor } from './processors/authLoginWithGarmin2Processor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
 import { cancelProcessor } from './processors/cancelProcessor';
 import {
@@ -160,6 +162,8 @@ export const processors = [
   authLoginWithGoogleProcessor,
   authLoginWithOsmProcessor,
   authLoginWithOsm2Processor,
+  authLoginWithGarminProcessor,
+  authLoginWithGarmin2Processor,
   removeAdsProcessor,
   urlProcessor,
 ];

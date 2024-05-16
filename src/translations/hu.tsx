@@ -1049,7 +1049,7 @@ const hu: Messages = {
     exportError: ({ err }) => `Hiba a exportálásakor: ${err}`,
     what: {
       plannedRoute: 'útvonal',
-      plannedRouteWithStops: 'útvonal (megállásokkal)',
+      plannedRouteWithStops: 'megállásokkal',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
       drawingLines: 'rajzolás – vonalak',
@@ -1057,6 +1057,7 @@ const hu: Messages = {
       drawingPoints: 'rajzolás – pontok',
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
+      search: 'highlighted map feature', // TODO translate
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
@@ -1071,6 +1072,7 @@ const hu: Messages = {
       facebook: 'Belépés Facebook-fiókkal',
       google: 'Belépés Google-fiókkal',
       osm: 'Belépés OpenStreetMap-fiókkal',
+      garmin: 'Belépés Garmin-fiókkal',
     },
     success: 'Sikeresen bejelentkezett.',
     logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,

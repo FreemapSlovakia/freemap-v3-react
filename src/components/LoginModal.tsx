@@ -1,5 +1,6 @@
 import {
   authLoginWithFacebook,
+  authLoginWithGarmin,
   authLoginWithGoogle,
   authLoginWithOsm,
 } from 'fm3/actions/authActions';
@@ -17,7 +18,7 @@ import {
   FaSignInAlt,
   FaTimes,
 } from 'react-icons/fa';
-import { SiOpenstreetmap } from 'react-icons/si';
+import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -41,6 +42,10 @@ export function LoginModal({ show }: Props): ReactElement {
 
   const loginWithOsm = useCallback(() => {
     dispatch(authLoginWithOsm());
+  }, [dispatch]);
+
+  const loginWithGarmin = useCallback(() => {
+    dispatch(authLoginWithGarmin());
   }, [dispatch]);
 
   const cookieConsentResult = useAppSelector(
@@ -75,7 +80,8 @@ export function LoginModal({ show }: Props): ReactElement {
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
           disabled={cookieConsentResult === null}
         >
-          <FaFacebook /> {m?.logIn.with.facebook}
+          <FaFacebook />
+          &ensp;{m?.logIn.with.facebook}
         </Button>
 
         <Button
@@ -85,7 +91,8 @@ export function LoginModal({ show }: Props): ReactElement {
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
           disabled={cookieConsentResult === null}
         >
-          <FaGoogle /> {m?.logIn.with.google}
+          <FaGoogle />
+          &ensp;{m?.logIn.with.google}
         </Button>
 
         <Button
@@ -95,7 +102,20 @@ export function LoginModal({ show }: Props): ReactElement {
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
           disabled={cookieConsentResult === null}
         >
-          <SiOpenstreetmap /> {m?.logIn.with.osm}
+          <SiOpenstreetmap />
+          &ensp;{m?.logIn.with.osm}
+        </Button>
+
+        <Button
+          onClick={loginWithGarmin}
+          size="lg"
+          block
+          style={{ backgroundColor: '#1791FF', color: '#fff' }}
+          disabled={cookieConsentResult === null}
+        >
+          <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />
+          &ensp;
+          {m?.logIn.with.garmin}
         </Button>
       </Modal.Body>
 

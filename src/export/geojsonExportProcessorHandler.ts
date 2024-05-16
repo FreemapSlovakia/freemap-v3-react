@@ -36,6 +36,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     routePlanner,
     tracking,
     trackViewer,
+    search,
   } = getState();
 
   const set = new Set(action.payload.exportables);
@@ -95,6 +96,22 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
   if (set.has('gpx')) {
     if (trackViewer.trackGeojson) {
       fc.features.push(...trackViewer.trackGeojson.features);
+    }
+  }
+
+  if (set.has('search')) {
+    const geojson = search.selectedResult?.geojson;
+
+    switch (geojson?.type) {
+      case 'FeatureCollection':
+        fc.features.push(...geojson.features);
+
+        break;
+
+      case 'Feature':
+        fc.features.push(geojson);
+
+        break;
     }
   }
 

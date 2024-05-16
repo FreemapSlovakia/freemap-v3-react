@@ -415,21 +415,21 @@ const cs: Messages = {
     ),
     infoBars: {
       // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
-      wiki2perc: () => {
-        return (
-          <>
-            OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
-            podporte svojimi 2%{' '}
-            <a
-              href="https://2percenta.prewiki.sk/"
-              target="_blank"
-              rel="noopener"
-            >
-              Wikimedia EO
-            </a>{' '}
-          </>
-        );
-      },
+      // wiki2perc: () => {
+      //   return (
+      //     <>
+      //       OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
+      //       podporte svojimi 2%{' '}
+      //       <a
+      //         href="https://2percenta.prewiki.sk/"
+      //         target="_blank"
+      //         rel="noopener"
+      //       >
+      //         Wikimedia EO
+      //       </a>{' '}
+      //     </>
+      //   );
+      // },
       ua: () => (
         <>
           🇺🇦 Stojíme za Ukrajinou.{' '}
@@ -1065,7 +1065,7 @@ const cs: Messages = {
     exportError: ({ err }) => `Chyba exportu: ${err}`,
     what: {
       plannedRoute: 'vyhledanou trasu',
-      plannedRouteWithStops: 'vyhledanou trasu se zastávkami',
+      plannedRouteWithStops: 'se zastávkami',
       objects: 'objekty (POI)',
       pictures: 'fotografie (ve viditelné části mapy)',
       drawingLines: 'kreslení - čáry',
@@ -1073,6 +1073,7 @@ const cs: Messages = {
       drawingPoints: 'kreslení - body',
       tracking: 'sledování',
       gpx: 'GPX trasu',
+      search: 'zvýrazněný prvek mapy',
     },
     disabledAlert:
       'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
@@ -1087,6 +1088,7 @@ const cs: Messages = {
       facebook: 'Přihlásit se pomocí Facebooku',
       google: 'Přihlásit se pomocí Googlu',
       osm: 'Přihlásit se pomocí OpenStreetMap',
+      garmin: 'Přihlásit se pomocí Garminu',
     },
     success: 'Byli jste úspěšně přihlášen.',
     logInError: ({ err }) => `Nepodařilo se přihlásit: ${err}`,

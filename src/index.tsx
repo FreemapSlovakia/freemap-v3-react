@@ -22,6 +22,7 @@ import { authInit } from './actions/authActions';
 import { l10nSetChosenLanguage } from './actions/l10nActions';
 import { toastsAdd } from './actions/toastsActions';
 import { MessagesProvider } from './components/TranslationProvider';
+import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler';
 
 // filter out old browsers
 [].flatMap(() => null);
@@ -71,6 +72,8 @@ history.listen((update) => {
 handleLocationChange(store, location);
 
 attachOsmLoginMessageHandler(store);
+
+attachGarminLoginMessageHandler(store);
 
 store.dispatch(enableUpdatingUrl());
 

@@ -1034,7 +1034,7 @@ const en: Messages = {
     exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
       plannedRoute: 'found route',
-      plannedRouteWithStops: 'found route including stops',
+      plannedRouteWithStops: 'include stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
       drawingLines: 'drawing - lines',
@@ -1042,6 +1042,7 @@ const en: Messages = {
       drawingPoints: 'drawing - points',
       tracking: 'live tracking',
       gpx: 'GPX track',
+      search: 'highlighted map feature',
     },
     disabledAlert:
       'Only checkboxes having anything in the map to export are enabled.',
@@ -1056,6 +1057,7 @@ const en: Messages = {
       facebook: 'Log in with Facebook',
       google: 'Log in with Google',
       osm: 'Log in with OpenStreetMap',
+      garmin: 'Log in with Garmin',
     },
     success: 'You have been successfully logged in.',
     logInError: ({ err }) => `Error logging in: ${err}`,

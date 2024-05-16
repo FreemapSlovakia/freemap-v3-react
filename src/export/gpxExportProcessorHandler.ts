@@ -19,6 +19,12 @@ import {
   LOCUS_NS,
 } from './gpxExporter';
 import { upload } from './upload';
+import {
+  Feature,
+  FeatureCollection,
+  Geometries,
+  GeometryCollection,
+} from '@turf/helpers';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
@@ -87,6 +93,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     routePlanner,
     tracking,
     trackViewer,
+    search,
     l10n: { language },
   } = getState();
 
@@ -122,6 +129,14 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
 
   if (set.has('gpx')) {
     addGpx(doc, trackViewer);
+  }
+
+  if (set.has('search')) {
+    const geojson = search.selectedResult?.geojson;
+
+    if (geojson) {
+      addGeojson(doc, geojson);
+    }
   }
 
   // order nodes
@@ -572,20 +587,66 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
       doc.documentElement.appendChild(node);
     }
   } else if (trackGeojson) {
-    for (const pass of ['wpt', 'trk'] as const) {
-      for (const feature of trackGeojson.features) {
-        const g = feature.geometry;
+    addGeojson(doc, trackGeojson);
+  }
+}
 
-        switch (g.type) {
-          case 'Point':
-            if (pass === 'wpt') {
+function getSupportedGpxElements(doc: Document) {
+  return doc.evaluate(
+    '/gpx:gpx/gpx:wpt | /gpx:gpx/gpx:rte | /gpx:gpx/gpx:trk',
+    doc,
+    (prefix) => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
+    XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
+    null,
+  );
+}
+
+function addGeojson(
+  doc: Document,
+  geojson:
+    | Feature<Geometries | GeometryCollection>
+    | FeatureCollection<Geometries | GeometryCollection>,
+) {
+  for (const pass of ['wpt', 'trk'] as const) {
+    for (const feature of geojson.type === 'FeatureCollection'
+      ? geojson.features
+      : [geojson]) {
+      const g = feature.geometry;
+
+      switch (g.type) {
+        case 'Point':
+          if (pass === 'wpt') {
+            const wptEle = createElement(
+              doc.documentElement,
+              'wpt',
+              undefined,
+              toLatLon({
+                lat: g.coordinates[1],
+                lon: g.coordinates[0],
+              }),
+            );
+
+            if (feature.properties?.['ele']) {
+              createElement(wptEle, 'ele', feature.properties['ele']);
+            }
+
+            if (feature.properties?.['name']) {
+              createElement(wptEle, 'name', feature.properties['name']);
+            }
+          }
+
+          break;
+
+        case 'MultiPoint': {
+          if (pass === 'wpt') {
+            for (const pt of g.coordinates) {
               const wptEle = createElement(
                 doc.documentElement,
                 'wpt',
                 undefined,
                 toLatLon({
-                  lat: g.coordinates[1],
-                  lon: g.coordinates[0],
+                  lat: pt[1],
+                  lon: pt[0],
                 }),
               );
 
@@ -597,46 +658,48 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 createElement(wptEle, 'name', feature.properties['name']);
               }
             }
-
-            break;
-
-          case 'MultiPoint': {
-            if (pass === 'wpt') {
-              for (const pt of g.coordinates) {
-                const wptEle = createElement(
-                  doc.documentElement,
-                  'wpt',
-                  undefined,
-                  toLatLon({
-                    lat: pt[1],
-                    lon: pt[0],
-                  }),
-                );
-
-                if (feature.properties?.['ele']) {
-                  createElement(wptEle, 'ele', feature.properties['ele']);
-                }
-
-                if (feature.properties?.['name']) {
-                  createElement(wptEle, 'name', feature.properties['name']);
-                }
-              }
-            }
-
-            break;
           }
 
-          case 'LineString': {
-            if (pass === 'trk') {
-              const trkEle = createElement(doc.documentElement, 'trk');
+          break;
+        }
 
-              if (feature.properties?.['name']) {
-                createElement(trkEle, 'name', feature.properties['name']);
-              }
+        case 'LineString': {
+          if (pass === 'trk') {
+            const trkEle = createElement(doc.documentElement, 'trk');
 
+            if (feature.properties?.['name']) {
+              createElement(trkEle, 'name', feature.properties['name']);
+            }
+
+            const trksegEle = createElement(trkEle, 'trkseg');
+
+            for (const pt of g.coordinates) {
+              createElement(
+                trksegEle,
+                'trkpt',
+                undefined,
+                toLatLon({ lat: pt[1], lon: pt[0] }),
+              );
+            }
+          }
+
+          break;
+        }
+
+        case 'Polygon':
+
+        case 'MultiLineString':
+          if (pass === 'trk') {
+            const trkEle = createElement(doc.documentElement, 'trk');
+
+            if (feature.properties?.['name']) {
+              createElement(trkEle, 'name', feature.properties['name']);
+            }
+
+            for (const seg of g.coordinates) {
               const trksegEle = createElement(trkEle, 'trkseg');
 
-              for (const pt of g.coordinates) {
+              for (const pt of seg) {
                 createElement(
                   trksegEle,
                   'trkpt',
@@ -645,21 +708,20 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 );
               }
             }
-
-            break;
           }
 
-          case 'Polygon':
+          break;
 
-          case 'MultiLineString':
-            if (pass === 'trk') {
-              const trkEle = createElement(doc.documentElement, 'trk');
+        case 'MultiPolygon':
+          if (pass === 'trk') {
+            const trkEle = createElement(doc.documentElement, 'trk');
 
-              if (feature.properties?.['name']) {
-                createElement(trkEle, 'name', feature.properties['name']);
-              }
+            if (feature.properties?.['name']) {
+              createElement(trkEle, 'name', feature.properties['name']);
+            }
 
-              for (const seg of g.coordinates) {
+            for (const seg0 of g.coordinates) {
+              for (const seg of seg0) {
                 const trksegEle = createElement(trkEle, 'trkseg');
 
                 for (const pt of seg) {
@@ -672,46 +734,10 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 }
               }
             }
+          }
 
-            break;
-
-          case 'MultiPolygon':
-            if (pass === 'trk') {
-              const trkEle = createElement(doc.documentElement, 'trk');
-
-              if (feature.properties?.['name']) {
-                createElement(trkEle, 'name', feature.properties['name']);
-              }
-
-              for (const seg0 of g.coordinates) {
-                for (const seg of seg0) {
-                  const trksegEle = createElement(trkEle, 'trkseg');
-
-                  for (const pt of seg) {
-                    createElement(
-                      trksegEle,
-                      'trkpt',
-                      undefined,
-                      toLatLon({ lat: pt[1], lon: pt[0] }),
-                    );
-                  }
-                }
-              }
-            }
-
-            break;
-        }
+          break;
       }
     }
   }
-}
-
-function getSupportedGpxElements(doc: Document) {
-  return doc.evaluate(
-    '/gpx:gpx/gpx:wpt | /gpx:gpx/gpx:rte | /gpx:gpx/gpx:trk',
-    doc,
-    (prefix) => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
-    XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
-    null,
-  );
 }

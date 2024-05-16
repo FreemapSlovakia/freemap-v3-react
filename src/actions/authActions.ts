@@ -3,11 +3,20 @@ import { createAction } from 'typesafe-actions';
 
 export const authLoginWithOsm = createAction('AUTH_LOGIN_WITH_OSM')();
 
-export const authLoginWithOsm2 = createAction('AUTH_LOGIN_WITH_OSM2')<string>();
+export const authLoginWithOsm2 = createAction(
+  'AUTH_LOGIN_WITH_OSM_2',
+)<string>();
 
 export const authLoginWithFacebook = createAction('AUTH_LOGIN_WITH_FACEBOOK')();
 
 export const authLoginWithGoogle = createAction('AUTH_LOGIN_WITH_GOOGLE')();
+
+export const authLoginWithGarmin = createAction('AUTH_LOGIN_WITH_GARMIN')();
+
+export const authLoginWithGarmin2 = createAction('AUTH_LOGIN_WITH_GARMIN_2')<{
+  token: string;
+  verifier: string;
+}>();
 
 export const authLogout = createAction('AUTH_LOGOUT')();
 

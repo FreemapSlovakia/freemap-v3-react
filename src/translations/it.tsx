@@ -1043,7 +1043,7 @@ const it: Messages = {
     exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
       plannedRoute: 'trova percorso',
-      plannedRouteWithStops: 'trova percorso incluse fermate',
+      plannedRouteWithStops: 'incluse fermate',
       objects: 'oggetti (POI)',
       pictures: 'foto (area di mappa visibile)',
       drawingLines: 'disegno - linee',
@@ -1051,6 +1051,7 @@ const it: Messages = {
       drawingPoints: 'disegno - punti',
       tracking: 'tracciamento in tempo reale',
       gpx: 'traccia GPX',
+      search: 'highlighted map feature', // TODO translate
     },
     disabledAlert:
       'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
@@ -1065,6 +1066,7 @@ const it: Messages = {
       facebook: 'Accedi con Facebook',
       google: 'Accedi con Google',
       osm: 'Accedi con OpenStreetMap',
+      garmin: 'Accedi con Garmin',
     },
     success: 'Accesso eseguito correttamente.',
     logInError: ({ err }) => `Error logging in: ${err}`,

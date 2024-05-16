@@ -441,21 +441,21 @@ const sk: Messages = {
       //   );
       // },
       // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
-      wiki2perc: () => {
-        return (
-          <>
-            OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
-            podporte svojimi 2%{' '}
-            <a
-              href="https://2percenta.prewiki.sk/"
-              target="_blank"
-              rel="noopener"
-            >
-              Wikimedia EO
-            </a>{' '}
-          </>
-        );
-      },
+      // wiki2perc: () => {
+      //   return (
+      //     <>
+      //       OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
+      //       podporte svojimi 2%{' '}
+      //       <a
+      //         href="https://2percenta.prewiki.sk/"
+      //         target="_blank"
+      //         rel="noopener"
+      //       >
+      //         Wikimedia EO
+      //       </a>{' '}
+      //     </>
+      //   );
+      // },
       ua: () => {
         return (
           <>
@@ -1095,7 +1095,7 @@ const sk: Messages = {
     exportError: ({ err }) => `Chyba exportovania: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
-      plannedRouteWithStops: 'vyhľadanú trasu so zastávkami',
+      plannedRouteWithStops: 'so zastávkami',
       objects: 'objekty (POI)',
       pictures: 'fotografie (vo viditeľnej časti mapy)',
       drawingLines: 'kreslenie - čiary',
@@ -1103,6 +1103,7 @@ const sk: Messages = {
       drawingPoints: 'kreslenie - body',
       tracking: 'sledovanie',
       gpx: 'GPX trasu',
+      search: 'zvýraznený prvok mapy',
     },
     disabledAlert:
       'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',
@@ -1117,6 +1118,7 @@ const sk: Messages = {
       facebook: 'Prihlásiť sa pomocou Facebooku',
       google: 'Prihlásiť sa pomocou Googlu',
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
+      garmin: 'Prihlásiť sa pomocou Garminu',
     },
     success: 'Boli ste úspešne prihlásený.',
     logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,

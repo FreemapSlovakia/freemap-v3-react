@@ -24,6 +24,7 @@ export interface User {
   lon?: number | null;
   language?: string | null;
   isPremium: boolean;
+  isGarminCapable: boolean;
 }
 
 declare global {
