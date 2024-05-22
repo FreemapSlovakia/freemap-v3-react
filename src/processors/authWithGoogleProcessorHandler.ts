@@ -1,4 +1,4 @@
-import { authSetUser } from 'fm3/actions/authActions';
+import { authSetUser, authWithGoogle } from 'fm3/actions/authActions';
 import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getAuth2 } from 'fm3/gapiLoader';
@@ -8,7 +8,11 @@ import { User } from 'fm3/types/common';
 import { hasProperty } from 'fm3/typeUtils';
 import { assert } from 'typia';
 
-const handle: ProcessorHandler = async ({ dispatch, getState }) => {
+const handle: ProcessorHandler<typeof authWithGoogle> = async ({
+  action,
+  dispatch,
+  getState,
+}) => {
   try {
     await getAuth2({ scope: 'profile email' });
 
@@ -18,6 +22,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
 
     const idToken = googleUser.getAuthResponse().id_token;
 
+    const { connect } = action.payload;
+
     const res = await httpRequest({
       getState,
       method: 'POST',
@@ -25,6 +31,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       cancelActions: [],
       expectedStatus: 200,
       data: {
+        connect,
         idToken,
         language: getState().l10n.chosenLanguage,
         // homeLocation: getState().main.homeLocation,
@@ -35,8 +42,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
 
     dispatch(
       toastsAdd({
-        id: 'login',
-        messageKey: 'logIn.success',
+        id: 'lcd',
+        messageKey: connect ? 'auth.connect.success' : 'auth.logIn.success',
         style: 'info',
         timeout: 5000,
       }),

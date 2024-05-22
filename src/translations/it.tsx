@@ -1061,22 +1061,32 @@ const it: Messages = {
     exportedToGdrive: 'Il file è stato salvato su Google Drive.',
   },
 
-  logIn: {
-    with: {
-      facebook: 'Accedi con Facebook',
-      google: 'Accedi con Google',
-      osm: 'Accedi con OpenStreetMap',
-      garmin: 'Accedi con Garmin',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
     },
-    success: 'Accesso eseguito correttamente.',
-    logInError: ({ err }) => `Error logging in: ${err}`,
-    logInError2: 'Error logging in.',
-    logOutError: ({ err }) => `Error logging out: ${err}`,
-    verifyError: ({ err }) => `Error verifying authentication: ${err}`,
-  },
-
-  logOut: {
-    success: 'Disconnessione avvenuta correttamente.',
+    logIn: {
+      with: 'Scegli un provider di accesso', // TODO google-translated
+      success: 'Accesso eseguito correttamente.',
+      logInError: ({ err }) => `Error logging in: ${err}`,
+      logInError2: 'Error logging in.',
+      verifyError: ({ err }) => `Error verifying authentication: ${err}`,
+    },
+    logOut: {
+      success: 'Disconnessione avvenuta correttamente.',
+      error: ({ err }) => `Error logging out: ${err}`,
+    },
+    connect: {
+      label: 'Connect', // TODO translate
+      success: 'Connected', // TODO translate
+    },
+    disconnect: {
+      label: 'Disconnect', // TODO translate
+      success: 'Disconnected', // TODO translate
+    },
   },
 
   mapLayers: {

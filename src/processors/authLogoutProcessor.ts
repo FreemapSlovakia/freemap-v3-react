@@ -5,7 +5,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const authLogoutProcessor: Processor = {
   actionCreator: authStartLogout,
-  errorKey: 'logIn.logOutError',
+  id: 'lcd',
+  errorKey: 'auth.logOut.error',
   async handle({ dispatch, getState }) {
     try {
       FB.logout();
@@ -24,8 +25,8 @@ export const authLogoutProcessor: Processor = {
 
     dispatch(
       toastsAdd({
-        id: 'login',
-        messageKey: 'logOut.success',
+        id: 'lcd',
+        messageKey: 'auth.logOut.success',
         style: 'info',
         timeout: 5000,
       }),

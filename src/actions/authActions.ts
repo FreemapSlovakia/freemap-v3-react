@@ -1,21 +1,35 @@
-import { User } from 'fm3/types/common';
+import { AuthProvider, User } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 
-export const authLoginWithOsm = createAction('AUTH_LOGIN_WITH_OSM')();
+export const authWithOsm = createAction('AUTH_WITH_OSM')<{
+  connect: boolean;
+}>();
 
-export const authLoginWithOsm2 = createAction(
-  'AUTH_LOGIN_WITH_OSM_2',
-)<string>();
+export const authWithOsm2 = createAction('AUTH_WITH_OSM_2')<{
+  connect: boolean;
+  code: string;
+}>();
 
-export const authLoginWithFacebook = createAction('AUTH_LOGIN_WITH_FACEBOOK')();
+export const authWithFacebook = createAction('AUTH_WITH_FACEBOOK')<{
+  connect: boolean;
+}>();
 
-export const authLoginWithGoogle = createAction('AUTH_LOGIN_WITH_GOOGLE')();
+export const authWithGoogle = createAction('AUTH_WITH_GOOGLE')<{
+  connect: boolean;
+}>();
 
-export const authLoginWithGarmin = createAction('AUTH_LOGIN_WITH_GARMIN')();
+export const authWithGarmin = createAction('AUTH_WITH_GARMIN')<{
+  connect: boolean;
+}>();
 
-export const authLoginWithGarmin2 = createAction('AUTH_LOGIN_WITH_GARMIN_2')<{
+export const authWithGarmin2 = createAction('AUTH_WITH_GARMIN_2')<{
+  connect: boolean;
   token: string;
   verifier: string;
+}>();
+
+export const authDisconnect = createAction('AUTH_DISCONNECT')<{
+  provider: AuthProvider;
 }>();
 
 export const authLogout = createAction('AUTH_LOGOUT')();

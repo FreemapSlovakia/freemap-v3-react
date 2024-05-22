@@ -67,11 +67,11 @@ export async function httpRequest({
       }
     : rest;
 
-  const urlIsFull = /^(https?:)?\/\//.test(url);
+  const urlIsRelative = !/^(https?:)?\/\//.test(url);
 
   const { user } = getState().auth;
 
-  if (!urlIsFull && user) {
+  if (urlIsRelative && user) {
     const authorization = `Bearer ${user.authToken}`;
 
     init.headers = addHeader(init.headers, 'Authorization', authorization);
@@ -90,7 +90,7 @@ export async function httpRequest({
 
     try {
       response = await fetch(
-        urlIsFull ? url : process.env['API_URL'] + url,
+        urlIsRelative ? process.env['API_URL'] + url : url,
         init,
       );
     } catch (err) {

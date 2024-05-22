@@ -1083,22 +1083,32 @@ const cs: Messages = {
     exportedToGdrive: 'Soubor byl uložen do Google Drive.',
   },
 
-  logIn: {
-    with: {
-      facebook: 'Přihlásit se pomocí Facebooku',
-      google: 'Přihlásit se pomocí Googlu',
-      osm: 'Přihlásit se pomocí OpenStreetMap',
-      garmin: 'Přihlásit se pomocí Garminu',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
     },
-    success: 'Byli jste úspěšně přihlášen.',
-    logInError: ({ err }) => `Nepodařilo se přihlásit: ${err}`,
-    logInError2: 'Nepodařilo se přihlásit.',
-    logOutError: ({ err }) => `Nepodařilo se odhlásit: ${err}`,
-    verifyError: ({ err }) => `Nepodařilo se ověřit přihlášení: ${err}`,
-  },
-
-  logOut: {
-    success: 'Byli jste úspěšně odhlášen.',
+    logIn: {
+      with: 'Vyberte poskytovatele přihlášení',
+      success: 'Byli jste úspěšně přihlášen.',
+      logInError: ({ err }) => `Nepodařilo se přihlásit: ${err}`,
+      logInError2: 'Nepodařilo se přihlásit.',
+      verifyError: ({ err }) => `Nepodařilo se ověřit přihlášení: ${err}`,
+    },
+    logOut: {
+      success: 'Byli jste úspěšně odhlášen.',
+      error: ({ err }) => `Nepodařilo se odhlásit: ${err}`,
+    },
+    connect: {
+      label: 'Pripojit',
+      success: 'Pripojené',
+    },
+    disconnect: {
+      label: 'Odpojit',
+      success: 'Odpojené',
+    },
   },
 
   mapLayers: {

@@ -1,21 +1,35 @@
+import { authWithOsm } from 'fm3/actions/authActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { assert } from 'typia';
 
-export const handle: ProcessorHandler = async ({ getState, dispatch }) => {
+const handle: ProcessorHandler<typeof authWithOsm> = async ({
+  action,
+  dispatch,
+  getState,
+}) => {
   const res = await httpRequest({
     getState,
-    method: 'POST',
-    url: '/auth/login-garmin',
+    method: 'GET',
+    url: '/auth/login-osm',
     expectedStatus: 200,
   });
 
-  const { redirectUrl } = assert<{ redirectUrl: string }>(await res.json());
+  const { clientId } = await res.json();
 
+  // open window within user gesture handler (before await)
   const w = window.open(
-    redirectUrl,
-    'garmin-login',
+    'https://www.openstreetmap.org/oauth2/authorize?' +
+      new URLSearchParams({
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri:
+          process.env['BASE_URL'] +
+          '/authCallback.html?connect=' +
+          action.payload.connect,
+        scope: 'read_prefs',
+      }).toString(),
+    'osm-login',
     `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${
       window.screen.height / 2 - 550 / 2
     }`,
@@ -44,3 +58,5 @@ export const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     });
   });
 };
+
+export default handle;

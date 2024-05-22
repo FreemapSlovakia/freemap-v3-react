@@ -3,13 +3,14 @@ import {
   authInitProcessor,
   authTrackProcessor,
 } from './processors/authInitProcessor';
-import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
-import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
-import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
-import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
-import { authLoginWithGarminProcessor } from './processors/authLoginWithGarminProcessor';
-import { authLoginWithGarmin2Processor } from './processors/authLoginWithGarmin2Processor';
+import { authWithFacebookProcessor } from './processors/authWithFacebookProcessor';
+import { authWithGoogleProcessor } from './processors/authWithGoogleProcessor';
+import { authWithOsm2Processor } from './processors/authWithOsm2Processor';
+import { authWithOsmProcessor } from './processors/authWithOsmProcessor';
+import { authWithGarminProcessor } from './processors/authWithGarminProcessor';
+import { authWithGarmin2Processor } from './processors/authWithGarmin2Processor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
+import { authDisconnectProcessor } from './processors/authDisconnectProcessor';
 import { cancelProcessor } from './processors/cancelProcessor';
 import {
   changesetsProcessor,
@@ -93,6 +94,7 @@ export const processors = [
   setToolProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
+  authDisconnectProcessor,
   authDeleteAccountProcessor,
   mapRefocusProcessor,
   searchProcessor,
@@ -158,12 +160,12 @@ export const processors = [
   ...Object.values(rpcProcessors),
   gpxExportProcessor,
   exportPdfProcessor,
-  authLoginWithFacebookProcessor,
-  authLoginWithGoogleProcessor,
-  authLoginWithOsmProcessor,
-  authLoginWithOsm2Processor,
-  authLoginWithGarminProcessor,
-  authLoginWithGarmin2Processor,
+  authWithFacebookProcessor,
+  authWithGoogleProcessor,
+  authWithOsmProcessor,
+  authWithOsm2Processor,
+  authWithGarminProcessor,
+  authWithGarmin2Processor,
   removeAdsProcessor,
   urlProcessor,
 ];

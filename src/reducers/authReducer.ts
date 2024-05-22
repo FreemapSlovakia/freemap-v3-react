@@ -30,7 +30,7 @@ export const authReducer = createReducer<AuthState, RootAction>(
       authToken: action.payload.authToken,
       isAdmin: action.payload.isAdmin,
       isPremium: action.payload.isPremium,
-      isGarminCapable: action.payload.isGarminCapable,
+      authProviders: action.payload.authProviders,
     },
     validated: true,
   }))

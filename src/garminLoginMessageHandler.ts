@@ -1,4 +1,4 @@
-import { authLoginWithGarmin2 } from 'fm3/actions/authActions';
+import { authWithGarmin2 } from 'fm3/actions/authActions';
 import { MyStore } from './storeCreator';
 
 export function attachGarminLoginMessageHandler(store: MyStore): void {
@@ -20,7 +20,13 @@ export function attachGarminLoginMessageHandler(store: MyStore): void {
     const verifier = sp.get('oauth_verifier');
 
     if (token && verifier) {
-      store.dispatch(authLoginWithGarmin2({ token, verifier }));
+      store.dispatch(
+        authWithGarmin2({
+          token,
+          verifier,
+          connect: sp.get('connect') === 'true',
+        }),
+      );
     }
   });
 }

@@ -1052,38 +1052,48 @@ const hu: Messages = {
       plannedRouteWithStops: 'megállásokkal',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
-      drawingLines: 'rajzolás – vonalak',
-      drawingAreas: 'rajzolás – sokszögek',
-      drawingPoints: 'rajzolás – pontok',
+      drawingLines: 'rajzolás - vonalak',
+      drawingAreas: 'rajzolás - sokszögek',
+      drawingPoints: 'rajzolás - pontok',
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
-      search: 'highlighted map feature', // TODO translate
+      search: 'kiemelt térképelem', // TODO google-translated
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
     licenseAlert:
-      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.', // TODO translate
+      'Különféle licencek vonatkozhatnak - például az OpenStreetMap. Kérjük, adja hozzá a hiányzó forrásokat az exportált fájl megosztásakor.', // TODO google-translated
     exportedToDropbox: 'Fájl elmentve a Dropboxba.',
     exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
   },
 
-  logIn: {
-    with: {
-      facebook: 'Belépés Facebook-fiókkal',
-      google: 'Belépés Google-fiókkal',
-      osm: 'Belépés OpenStreetMap-fiókkal',
-      garmin: 'Belépés Garmin-fiókkal',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
     },
-    success: 'Sikeresen bejelentkezett.',
-    logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
-    logInError2: 'Hiba történt a bejelentkezésnél.',
-    logOutError: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
-    verifyError: ({ err }) =>
-      `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
-  },
-
-  logOut: {
-    success: 'Sikeresen kijelentkezett.',
+    connect: {
+      label: 'Connect', // TODO translate
+      success: 'Connected', // TODO translate
+    },
+    disconnect: {
+      label: 'Disconnect', // TODO translate
+      success: 'Disconnected', // TODO translate
+    },
+    logIn: {
+      with: 'Válasszon bejelentkezési szolgáltatót', // TODO google translated
+      success: 'Sikeresen bejelentkezett.',
+      logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
+      logInError2: 'Hiba történt a bejelentkezésnél.',
+      verifyError: ({ err }) =>
+        `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
+    },
+    logOut: {
+      success: 'Sikeresen kijelentkezett.',
+      error: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
+    },
   },
 
   mapLayers: {

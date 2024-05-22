@@ -1,4 +1,4 @@
-import { authSetUser } from 'fm3/actions/authActions';
+import { authSetUser, authWithFacebook } from 'fm3/actions/authActions';
 import { removeAds } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { loadFb } from 'fm3/fbLoader';
@@ -7,7 +7,11 @@ import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { assert } from 'typia';
 
-const handle: ProcessorHandler = async ({ dispatch, getState }) => {
+const handle: ProcessorHandler<typeof authWithFacebook> = async ({
+  action,
+  dispatch,
+  getState,
+}) => {
   await loadFb();
 
   let response = await new Promise<fb.StatusResponse>((resolve) =>
@@ -22,7 +26,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     if (response.status !== 'connected') {
       dispatch(
         toastsAdd({
-          messageKey: 'logIn.logInError2',
+          messageKey: 'auth.logIn.logInError2',
           style: 'danger',
         }),
       );
@@ -31,6 +35,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     }
   }
 
+  const { connect } = action.payload;
+
   const res = await httpRequest({
     getState,
     method: 'POST',
@@ -38,6 +44,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     cancelActions: [],
     expectedStatus: 200,
     data: {
+      connect,
       accessToken: response.authResponse.accessToken,
       language: getState().l10n.chosenLanguage,
       // homeLocation: getState().main.homeLocation,
@@ -48,8 +55,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
 
   dispatch(
     toastsAdd({
-      id: 'login',
-      messageKey: 'logIn.success',
+      id: 'lcd',
+      messageKey: connect ? 'auth.connect.success' : 'auth.logIn.success',
       style: 'info',
       timeout: 5000,
     }),

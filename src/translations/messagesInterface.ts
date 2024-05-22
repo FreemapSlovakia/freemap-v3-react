@@ -611,21 +611,32 @@ export type Messages = {
     exportedToDropbox: string;
     exportedToGdrive: string;
   };
-  logIn: {
-    with: {
+  auth: {
+    connect: {
+      label: string;
+      success: string;
+    };
+    disconnect: {
+      label: string;
+      success: string;
+    };
+    provider: {
       facebook: string;
       google: string;
       osm: string;
       garmin: string;
     };
-    success: string;
-    logInError: ({ err }: Err) => string;
-    logInError2: string;
-    logOutError: ({ err }: Err) => string;
-    verifyError: ({ err }: Err) => string;
-  };
-  logOut: {
-    success: string;
+    logIn: {
+      with: string;
+      success: string;
+      logInError: ({ err }: Err) => string;
+      logInError2: string;
+      verifyError: ({ err }: Err) => string;
+    };
+    logOut: {
+      success: string;
+      error: ({ err }: Err) => string;
+    };
   };
   mapLayers: {
     showAll: string;

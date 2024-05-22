@@ -15,6 +15,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { AuthProviders } from './AuthProviders';
 
 type Props = { show: boolean };
 
@@ -131,6 +132,22 @@ export function AccountModal({ show }: Props): ReactElement | null {
             checked={sendGalleryEmails}
             label={m?.settings.account.sendGalleryEmails}
           />
+
+          {user.authProviders.length < 4 && (
+            <>
+              <hr />
+
+              <p>{m?.auth.connect.label}</p>
+
+              <AuthProviders mode="connect" />
+            </>
+          )}
+
+          <hr />
+
+          <p>{m?.auth.disconnect.label}</p>
+
+          <AuthProviders mode="disconnect" />
         </Modal.Body>
 
         <Modal.Footer>

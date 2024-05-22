@@ -1113,22 +1113,32 @@ const sk: Messages = {
     exportedToGdrive: 'Súbor bol uložený do Google Drive.',
   },
 
-  logIn: {
-    with: {
-      facebook: 'Prihlásiť sa pomocou Facebooku',
-      google: 'Prihlásiť sa pomocou Googlu',
-      osm: 'Prihlásiť sa pomocou OpenStreetMap',
-      garmin: 'Prihlásiť sa pomocou Garminu',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
     },
-    success: 'Boli ste úspešne prihlásený.',
-    logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
-    logInError2: 'Nepodarilo sa prihlásiť.',
-    logOutError: ({ err }) => `Nepodarilo sa odhlásiť: ${err}`,
-    verifyError: ({ err }) => `Nepodarilo sa overiť prihlásenie: ${err}`,
-  },
-
-  logOut: {
-    success: 'Boli ste úspešne odhlásený.',
+    connect: {
+      label: 'Connect', // TODO translate
+      success: 'Connected', // TODO translate
+    },
+    disconnect: {
+      label: 'Disconnect', // TODO translate
+      success: 'Disconnected', // TODO translate
+    },
+    logIn: {
+      with: 'Vyberte poskytovateľa prihlásenia',
+      success: 'Boli ste úspešne prihlásený.',
+      logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
+      logInError2: 'Nepodarilo sa prihlásiť.',
+      verifyError: ({ err }) => `Nepodarilo sa overiť prihlásenie: ${err}`,
+    },
+    logOut: {
+      success: 'Boli ste úspešne odhlásený.',
+      error: ({ err }) => `Nepodarilo sa odhlásiť: ${err}`,
+    },
   },
 
   mapLayers: {

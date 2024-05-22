@@ -1,0 +1,142 @@
+import {
+  authDisconnect,
+  authWithFacebook,
+  authWithGarmin,
+  authWithGoogle,
+  authWithOsm,
+} from 'fm3/actions/authActions';
+import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useMessages } from 'fm3/l10nInjector';
+import { AuthProvider } from 'fm3/types/common';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
+import { useDispatch } from 'react-redux';
+
+type Props = { mode: 'login' | 'connect' | 'disconnect' };
+
+export function AuthProviders({ mode }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const authProviders = useAppSelector(
+    (state) => state.auth.user?.authProviders,
+  );
+
+  const cookieConsentResult = useAppSelector(
+    (state) => state.main.cookieConsentResult,
+  );
+
+  const loginWithFacebook = useCallback(() => {
+    dispatch(
+      mode === 'disconnect'
+        ? authDisconnect({ provider: 'facebook' })
+        : authWithFacebook({ connect: mode === 'connect' }),
+    );
+  }, [dispatch, mode]);
+
+  const loginWithGoogle = useCallback(() => {
+    dispatch(
+      mode === 'disconnect'
+        ? authDisconnect({ provider: 'google' })
+        : authWithGoogle({ connect: mode === 'connect' }),
+    );
+  }, [dispatch, mode]);
+
+  const loginWithOsm = useCallback(() => {
+    dispatch(
+      mode === 'disconnect'
+        ? authDisconnect({ provider: 'osm' })
+        : authWithOsm({ connect: mode === 'connect' }),
+    );
+  }, [dispatch, mode]);
+
+  const loginWithGarmin = useCallback(() => {
+    dispatch(
+      mode === 'disconnect'
+        ? authDisconnect({ provider: 'garmin' })
+        : authWithGarmin({ connect: mode === 'connect' }),
+    );
+  }, [dispatch, mode]);
+
+  function show(provider: AuthProvider) {
+    return (
+      mode === 'login' ||
+      (mode === 'connect' && !authProviders?.includes(provider)) ||
+      (mode === 'disconnect' && authProviders?.includes(provider))
+    );
+  }
+
+  function disabled(provider: AuthProvider) {
+    if (mode === 'login') {
+      return cookieConsentResult === null;
+    }
+
+    if (!authProviders) {
+      return true;
+    }
+
+    return mode === 'connect'
+      ? authProviders.includes(provider)
+      : authProviders.length < 2 || !authProviders.includes(provider);
+  }
+
+  return (
+    <>
+      {show('facebook') && (
+        <Button
+          onClick={loginWithFacebook}
+          size="lg"
+          block
+          style={{ backgroundColor: '#3b5998', color: '#fff' }}
+          disabled={disabled('facebook')}
+        >
+          <FaFacebook />
+          &ensp;{m?.auth.provider.facebook}
+        </Button>
+      )}
+
+      {show('google') && (
+        <Button
+          onClick={loginWithGoogle}
+          size="lg"
+          block
+          style={{ backgroundColor: '#DB4437', color: '#fff' }}
+          disabled={disabled('google')}
+        >
+          <FaGoogle />
+          &ensp;{m?.auth.provider.google}
+        </Button>
+      )}
+
+      {show('osm') && (
+        <Button
+          onClick={loginWithOsm}
+          size="lg"
+          block
+          style={{ backgroundColor: '#8bdc81', color: '#585858' }}
+          disabled={disabled('osm')}
+        >
+          <SiOpenstreetmap />
+          &ensp;{m?.auth.provider.osm}
+        </Button>
+      )}
+
+      {show('garmin') && (
+        <Button
+          onClick={loginWithGarmin}
+          size="lg"
+          block
+          style={{ backgroundColor: '#1791FF', color: '#fff' }}
+          disabled={disabled('garmin')}
+        >
+          <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />
+          &ensp;
+          {m?.auth.provider.garmin}
+        </Button>
+      )}
+    </>
+  );
+}

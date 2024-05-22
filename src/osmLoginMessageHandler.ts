@@ -1,4 +1,4 @@
-import { authLoginWithOsm2 } from 'fm3/actions/authActions';
+import { authWithOsm2 } from 'fm3/actions/authActions';
 import { MyStore } from './storeCreator';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
@@ -13,10 +13,17 @@ export function attachOsmLoginMessageHandler(store: MyStore): void {
       return;
     }
 
-    const code = new URLSearchParams(e.data.freemap.payload).get('code');
+    const sp = new URLSearchParams(e.data.freemap.payload);
+
+    const code = sp.get('code');
 
     if (code) {
-      store.dispatch(authLoginWithOsm2(code));
+      store.dispatch(
+        authWithOsm2({
+          code,
+          connect: sp.get('connect') === 'true',
+        }),
+      );
     }
   });
 }

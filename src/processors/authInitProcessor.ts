@@ -24,7 +24,8 @@ export const authTrackProcessor: Processor = {
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
-  errorKey: 'logIn.verifyError',
+  id: 'lcd',
+  errorKey: 'auth.logIn.verifyError',
   async handle({ getState, dispatch }) {
     const { user } = getState().auth;
 

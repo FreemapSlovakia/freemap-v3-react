@@ -1,9 +1,9 @@
 import { RootAction } from 'fm3/actions';
 import {
-  authLoginWithFacebook,
-  authLoginWithGarmin,
-  authLoginWithGoogle,
-  authLoginWithOsm,
+  authWithFacebook,
+  authWithGarmin,
+  authWithGoogle,
+  authWithOsm,
   authLogout,
   authSetUser,
 } from 'fm3/actions/authActions';
@@ -233,12 +233,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
         : null,
   }))
   .handleAction(
-    [
-      authLoginWithFacebook,
-      authLoginWithGoogle,
-      authLoginWithOsm,
-      authLoginWithGarmin,
-    ],
+    [authWithFacebook, authWithGoogle, authWithOsm, authWithGarmin],
     (state) => ({
       ...state,
       activeModal: null,

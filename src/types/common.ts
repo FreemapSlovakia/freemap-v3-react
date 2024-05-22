@@ -8,6 +8,8 @@ export interface LatLon {
   lon: number;
 }
 
+export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
+
 export interface User {
   name: string;
   email: string | null;
@@ -24,7 +26,7 @@ export interface User {
   lon?: number | null;
   language?: string | null;
   isPremium: boolean;
-  isGarminCapable: boolean;
+  authProviders: AuthProvider[];
 }
 
 declare global {

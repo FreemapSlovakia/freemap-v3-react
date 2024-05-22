@@ -46,7 +46,7 @@ export function LanguageSubmenu(): JSX.Element {
         onSelect={handleLanguageClick}
         active={chosenLanguage === 'en'}
       >
-        English
+        🇬🇧 English
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -55,7 +55,7 @@ export function LanguageSubmenu(): JSX.Element {
         onSelect={handleLanguageClick}
         active={chosenLanguage === 'sk'}
       >
-        Slovensky
+        🇸🇰 Slovensky
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -64,7 +64,7 @@ export function LanguageSubmenu(): JSX.Element {
         onSelect={handleLanguageClick}
         active={chosenLanguage === 'cs'}
       >
-        Česky
+        🇨🇿 Česky
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -73,7 +73,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="hu"
         active={chosenLanguage === 'hu'}
       >
-        Magyar
+        🇭🇺 Magyar
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -82,7 +82,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="it"
         active={chosenLanguage === 'it'}
       >
-        Italiano
+        🇮🇹 Italiano
       </Dropdown.Item>
     </>
   );
