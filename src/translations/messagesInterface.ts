@@ -62,6 +62,7 @@ export type Messages = {
     experimentalFunction: string;
     attribution: () => JSX.Element;
     unauthenticatedError: string;
+    areYouSure: string;
   };
   selections: {
     objects: string;

@@ -97,6 +97,7 @@ const en: Messages = {
     experimentalFunction: 'Experimental function',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
+    areYouSure: 'Are you sure?',
   },
 
   selections: {

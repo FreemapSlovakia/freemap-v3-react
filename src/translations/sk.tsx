@@ -102,6 +102,7 @@ const sk: Messages = {
     ),
     unauthenticatedError:
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
+    areYouSure: 'Ste si istí?',
   },
 
   selections: {

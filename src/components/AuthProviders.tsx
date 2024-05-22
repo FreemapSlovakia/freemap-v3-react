@@ -30,36 +30,52 @@ export function AuthProviders({ mode }: Props): ReactElement {
   );
 
   const loginWithFacebook = useCallback(() => {
+    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+      return;
+    }
+
     dispatch(
       mode === 'disconnect'
         ? authDisconnect({ provider: 'facebook' })
         : authWithFacebook({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode]);
+  }, [dispatch, mode, m]);
 
   const loginWithGoogle = useCallback(() => {
+    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+      return;
+    }
+
     dispatch(
       mode === 'disconnect'
         ? authDisconnect({ provider: 'google' })
         : authWithGoogle({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode]);
+  }, [dispatch, mode, m]);
 
   const loginWithOsm = useCallback(() => {
+    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+      return;
+    }
+
     dispatch(
       mode === 'disconnect'
         ? authDisconnect({ provider: 'osm' })
         : authWithOsm({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode]);
+  }, [dispatch, mode, m]);
 
   const loginWithGarmin = useCallback(() => {
+    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+      return;
+    }
+
     dispatch(
       mode === 'disconnect'
         ? authDisconnect({ provider: 'garmin' })
         : authWithGarmin({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode]);
+  }, [dispatch, mode, m]);
 
   function show(provider: AuthProvider) {
     return (

@@ -99,6 +99,7 @@ const hu: Messages = {
     experimentalFunction: 'Experimental function', // TODO translate
     attribution: () => <Attribution unknown="Map licence is not specified" />, // TODO translate
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
+    areYouSure: 'Are you sure?', // TODO translate
   },
 
   selections: {

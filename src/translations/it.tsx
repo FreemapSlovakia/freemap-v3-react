@@ -99,6 +99,7 @@ const it: Messages = {
       <Attribution unknown="Licenza della mappa non specificata." />
     ),
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
+    areYouSure: 'Are you sure?', // TODO translate
   },
 
   selections: {

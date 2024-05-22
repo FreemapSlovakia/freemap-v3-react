@@ -102,6 +102,7 @@ const cs: Messages = {
     ),
     unauthenticatedError:
       'Pro přístup k této funkci se nejprve prosím přihlašte.',
+    areYouSure: 'Jste si jisti?',
   },
 
   selections: {
