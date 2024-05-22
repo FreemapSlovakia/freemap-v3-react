@@ -15,7 +15,7 @@ import {
 import {
   applyCookieConsent,
   applySettings,
-  clearMap,
+  clearMapFeatures,
   convertToDrawing,
   deleteFeature,
   documentShow,
@@ -111,7 +111,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
       tool: null,
     };
   })
-  .handleAction(clearMap, (state) => {
+  .handleAction(clearMapFeatures, (state) => {
     return {
       ...state,
       selection: null,

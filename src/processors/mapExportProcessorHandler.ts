@@ -7,7 +7,7 @@ import {
   point,
   polygon,
 } from '@turf/helpers';
-import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
+import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { colors } from 'fm3/constants';
 import { httpRequest } from 'fm3/httpRequest';
@@ -27,7 +27,7 @@ const geometryTypeMapping = {
   GeometryCollection: 'geometrycollection',
 } as const;
 
-const handle: ProcessorHandler<typeof exportPdf> = async ({
+const handle: ProcessorHandler<typeof exportMap> = async ({
   dispatch,
   getState,
   action,
@@ -198,7 +198,7 @@ const handle: ProcessorHandler<typeof exportPdf> = async ({
     }
   }
 
-  window._paq.push(['trackEvent', 'PdfExport', 'export', format]);
+  window._paq.push(['trackEvent', 'MapExport', 'export', format]);
 
   const res = await httpRequest({
     getState,

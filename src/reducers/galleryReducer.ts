@@ -34,7 +34,7 @@ import {
   Picture,
 } from 'fm3/actions/galleryActions';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
-import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
+import { clearMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
@@ -113,7 +113,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
         ? galleryInitialState.filter
         : state.filter,
   }))
-  .handleAction(clearMap, (state) => ({
+  .handleAction(clearMapFeatures, (state) => ({
     ...galleryInitialState,
     dirtySeq: state.dirtySeq,
     colorizeBy: state.colorizeBy,

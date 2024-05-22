@@ -4,7 +4,7 @@ import {
   GeometryCollection,
 } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { osmClear } from 'fm3/actions/osmActions';
 import {
@@ -42,7 +42,7 @@ export const trackViewerInitialState: TrackViewerState = {
 export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
   trackViewerInitialState,
 )
-  .handleAction(clearMap, () => trackViewerInitialState)
+  .handleAction(clearMapFeatures, () => trackViewerInitialState)
   .handleAction(trackViewerSetData, (state, action) => ({
     ...state,
     trackGpx: action.payload.trackGpx ?? state.trackGpx,

@@ -1,4 +1,4 @@
-import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
+import { exportMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
@@ -28,7 +28,7 @@ import {
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
-const handle: ProcessorHandler<typeof exportGpx> = async ({
+const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
   action,
   dispatch,
@@ -161,18 +161,18 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     }
   }
 
-  const { destination } = action.payload;
+  const { target } = action.payload;
 
   if (
     await upload(
       'gpx',
       new Blob([new XMLSerializer().serializeToString(doc)], {
         type:
-          destination === 'dropbox'
+          target === 'dropbox'
             ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
             : 'application/gpx+xml',
       }),
-      destination,
+      target,
       getState,
       dispatch,
     )

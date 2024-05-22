@@ -14,7 +14,7 @@ import {
 } from 'fm3/actions/drawingLineActions';
 import {
   applySettings,
-  clearMap,
+  clearMapFeatures,
   selectFeature,
   setTool,
 } from 'fm3/actions/mainActions';
@@ -37,7 +37,7 @@ export const initialState: DrawingLinesState = {
 export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   initialState,
 )
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMapFeatures, () => initialState)
   .handleAction([setTool, drawingLineStopDrawing], (state) => ({
     ...state,
     drawing: false,

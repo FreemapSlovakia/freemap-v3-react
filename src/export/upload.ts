@@ -1,5 +1,5 @@
 import FileSaver from 'file-saver';
-import { Destination } from 'fm3/actions/mainActions';
+import { ExportTarget } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
@@ -13,11 +13,11 @@ export const licenseNotice =
 export async function upload(
   type: 'gpx' | 'geojson',
   data: Blob,
-  destination: Destination,
+  target: ExportTarget,
   getState: () => RootState,
   dispatch: Dispatch,
 ): Promise<boolean> {
-  switch (destination) {
+  switch (target) {
     case 'dropbox': {
       const redirUri = encodeURIComponent(
         `${location.protocol}//${location.host}/dropboxAuthCallback.html`,
@@ -105,7 +105,7 @@ export async function upload(
           id: 'gpxExport',
           style: 'info',
           timeout: 5000,
-          messageKey: 'gpxExport.exportedToDropbox',
+          messageKey: 'exportMapFeatures.exportedToDropbox',
         }),
       );
 
@@ -222,7 +222,7 @@ export async function upload(
           id: 'gpxExport',
           style: 'info',
           timeout: 5000,
-          messageKey: 'gpxExport.exportedToGdrive',
+          messageKey: 'exportMapFeatures.exportedToGdrive',
         }),
       );
 

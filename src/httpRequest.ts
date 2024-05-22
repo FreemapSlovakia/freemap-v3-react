@@ -1,5 +1,5 @@
 import { ActionCreator } from 'typesafe-actions';
-import { clearMap } from './actions/mainActions';
+import { clearMapFeatures } from './actions/mainActions';
 import { CancelItem, cancelRegister } from './cancelRegister';
 import { RootState } from './reducers';
 
@@ -36,7 +36,7 @@ export async function httpRequest({
   getState,
   expectedStatus,
   cancelActions = [
-    clearMap,
+    clearMapFeatures,
     // selectFeature,
     // setActiveModal -- TODO we should maybe cancel only if closing modal
   ],

@@ -1,5 +1,5 @@
 import { Feature, LineString, Polygon } from '@turf/helpers';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { clearMapFeatures, setTool } from 'fm3/actions/mainActions';
 import {
   Alternative,
   Leg,
@@ -21,7 +21,7 @@ import { isActionOf } from 'typesafe-actions';
 import { assert } from 'typia';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor';
 
-const cancelTypes = [...updateRouteTypes, clearMap, setTool];
+const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
 
 enum GraphhopperSign {
   UNKNOWN = -99,

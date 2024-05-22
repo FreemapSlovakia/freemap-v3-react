@@ -1,6 +1,10 @@
 import { Feature, Polygon } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
-import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
+import {
+  clearMapFeatures,
+  selectFeature,
+  setTool,
+} from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -130,7 +134,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
         ? state.pickMode
         : null,
   }))
-  .handleAction(clearMap, (state) => ({
+  .handleAction(clearMapFeatures, (state) => ({
     ...routePlannerInitialState,
     preventHint: state.preventHint,
     transportType: state.transportType,

@@ -7,7 +7,7 @@ import {
   Point,
   Polygon,
 } from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { mergeLines } from 'fm3/geoutils';
@@ -26,7 +26,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       getState,
       url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSelectResult],
+      cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
     const data = assert<OsmResult>(await res.json());

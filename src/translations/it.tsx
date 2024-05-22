@@ -100,6 +100,7 @@ const it: Messages = {
     ),
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
     areYouSure: 'Are you sure?', // TODO translate
+    export: 'Esporta',
   },
 
   selections: {
@@ -1036,11 +1037,10 @@ const it: Messages = {
     errorLoading: 'Errore caricamento consigli.',
   },
 
-  gpxExport: {
-    export: 'Download',
+  exportMapFeatures: {
+    download: 'Download',
     format: 'Formato',
-    exportToDrive: 'Salva su Google Drive',
-    exportToDropbox: 'Salva su Dropbox',
+    target: 'Target', // TODO translate
     exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
       plannedRoute: 'trova percorso',
@@ -1350,7 +1350,6 @@ const it: Messages = {
   pdfExport: {
     advancedSettings: 'Opzioni avanzate',
     styles: 'Stili livelli interattivi',
-    export: 'Esporta',
     exportError: ({ err }) => `Error exporting map: ${err}`,
     exporting: 'Attendere prego, esportazione in corso…',
     exported: ({ url }) => (

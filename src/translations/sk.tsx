@@ -103,6 +103,7 @@ const sk: Messages = {
     unauthenticatedError:
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
     areYouSure: 'Ste si istí?',
+    export: 'Exportovať',
   },
 
   selections: {
@@ -1088,11 +1089,10 @@ const sk: Messages = {
     errorLoading: 'Tip sa nepodarilo načítať.',
   },
 
-  gpxExport: {
-    export: 'Stiahnuť',
+  exportMapFeatures: {
+    download: 'Stiahnuť',
     format: 'Formát',
-    exportToDrive: 'Uložiť do Google Drive',
-    exportToDropbox: 'Uložiť do Dropboxu',
+    target: 'Cieľ',
     exportError: ({ err }) => `Chyba exportovania: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
@@ -1405,7 +1405,6 @@ const sk: Messages = {
   pdfExport: {
     advancedSettings: 'Rozšírené nastavenia',
     styles: 'Štýly interaktívnej vrstvy',
-    export: 'Exportovať',
     exportError: ({ err }) => `Chyba exportovania mapy: ${err}`,
     exporting: 'Prosím počkajte, mapa sa exportuje…',
     exported: ({ url }) => (

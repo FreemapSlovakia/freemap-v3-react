@@ -100,6 +100,7 @@ const hu: Messages = {
     attribution: () => <Attribution unknown="Map licence is not specified" />, // TODO translate
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
     areYouSure: 'Are you sure?', // TODO translate
+    export: 'Exportálás',
   },
 
   selections: {
@@ -1042,11 +1043,10 @@ const hu: Messages = {
     errorLoading: 'Hiba történt a tipp betöltésekor.',
   },
 
-  gpxExport: {
-    export: 'Letöltés',
+  exportMapFeatures: {
+    download: 'Letöltés',
     format: 'Type', // TODO translate
-    exportToDrive: 'Mentés Google Drive-ra',
-    exportToDropbox: 'Mentés Dropbox-ba',
+    target: 'Target', // TODO translate
     exportError: ({ err }) => `Hiba a exportálásakor: ${err}`,
     what: {
       plannedRoute: 'útvonal',
@@ -1363,7 +1363,6 @@ const hu: Messages = {
   pdfExport: {
     advancedSettings: 'Advanced options', // TODO translate
     styles: 'Interactive layer styles', // TODO translate
-    export: 'Exportálás',
     exportError: ({ err }) => `Hiba történt a térkép exportálásakor: ${err}`,
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
     exported: ({ url }) => (

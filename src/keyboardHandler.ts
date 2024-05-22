@@ -19,7 +19,7 @@ import {
   galleryShowOnTheMap,
 } from './actions/galleryActions';
 import {
-  clearMap,
+  clearMapFeatures,
   deleteFeature,
   openInExternalApp,
   selectFeature,
@@ -264,7 +264,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   if (keyTimer) {
     if (initCode === 'KeyG') {
       if (event.code === 'KeyC') {
-        return clearMap();
+        return clearMapFeatures();
       }
 
       if (event.code === 'KeyM') {

@@ -30,7 +30,7 @@ export const setLocation = createAction('SET_LOCATION')<{
   accuracy: number;
 }>();
 
-export interface PdfExportOptions {
+export interface MapExportOptions {
   contours: boolean;
   shadedRelief: boolean;
   hikingTrails: boolean;
@@ -58,17 +58,28 @@ export type Exportable =
   | 'gpx'
   | 'search';
 
-export type Destination = 'download' | 'gdrive' | 'dropbox';
+export const exportTargets = [
+  'download',
+  'gdrive',
+  'dropbox',
+  'garmin',
+] as const;
 
-export const exportGpx = createAction('EXPORT_GPX')<{
+export type ExportTarget = (typeof exportTargets)[number];
+
+export const exportTypes = ['gpx', 'geojson'] as const;
+
+export type ExportType = (typeof exportTypes)[number];
+
+export const exportMapFeatures = createAction('EXPORT_MAP_FEATURES')<{
   exportables: Exportable[];
-  type: 'gpx' | 'geojson';
-  destination: Destination;
+  type: ExportType;
+  target: ExportTarget;
 }>();
 
-export const exportPdf = createAction('EXPORT_PDF')<PdfExportOptions>();
+export const exportMap = createAction('EXPORT_MAP')<MapExportOptions>();
 
-export const clearMap = createAction('CLEAR_MAP')();
+export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES')();
 
 export const toggleLocate = createAction('LOCATE')<boolean | undefined>();
 

@@ -1,5 +1,5 @@
 import {
-  clearMap,
+  clearMapFeatures,
   convertToDrawing,
   selectFeature,
 } from 'fm3/actions/mainActions';
@@ -108,7 +108,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             tags,
           },
           cancelType: [
-            getType(clearMap),
+            getType(clearMapFeatures),
             getType(searchSetResults),
             getType(osmLoadNode),
             getType(osmLoadWay),

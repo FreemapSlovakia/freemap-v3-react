@@ -8,7 +8,7 @@ import {
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { clearMapFeatures, selectFeature } from 'fm3/actions/mainActions';
 import { containsElevations, distance } from 'fm3/geoutils';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
@@ -100,7 +100,7 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartSetTrackGeojson,
       selectFeature,
       elevationChartClose,
-      clearMap,
+      clearMapFeatures,
     ],
   });
 

@@ -1,4 +1,4 @@
-import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
+import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
@@ -24,9 +24,9 @@ import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
-export default ExportPdfModal;
+export default ExportMapModal;
 
-export function ExportPdfModal({ show }: Props): ReactElement {
+export function ExportMapModal({ show }: Props): ReactElement {
   const canExportByPolygon = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
@@ -398,7 +398,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
         <Button
           onClick={() =>
             dispatch(
-              exportPdf({
+              exportMap({
                 area,
                 scale: scale / 96,
                 format,
@@ -416,7 +416,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             )
           }
         >
-          <FaDownload /> {m?.pdfExport.export}
+          <FaDownload /> {m?.general.export}
         </Button>
 
         <Button variant="dark" onClick={close}>

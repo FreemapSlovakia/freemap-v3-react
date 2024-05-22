@@ -1,5 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
   MarkerType,
@@ -25,7 +25,7 @@ export const objectInitialState: ObjectsState = {
 export const objectsReducer = createReducer<ObjectsState, RootAction>(
   objectInitialState,
 )
-  .handleAction(clearMap, () => objectInitialState)
+  .handleAction(clearMapFeatures, () => objectInitialState)
   .handleAction(objectsSetFilter, (state, action) => ({
     ...state,
     active: action.payload,

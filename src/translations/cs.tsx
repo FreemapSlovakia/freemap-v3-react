@@ -103,6 +103,7 @@ const cs: Messages = {
     unauthenticatedError:
       'Pro přístup k této funkci se nejprve prosím přihlašte.',
     areYouSure: 'Jste si jisti?',
+    export: 'Exportovat',
   },
 
   selections: {
@@ -1058,11 +1059,10 @@ const cs: Messages = {
     errorLoading: 'Tip se nepodařilo načíst.',
   },
 
-  gpxExport: {
-    export: 'Stáhnout',
+  exportMapFeatures: {
+    download: 'Stáhnout',
     format: 'Formát',
-    exportToDrive: 'Uložit do Google Drive',
-    exportToDropbox: 'Uložit do Dropboxu',
+    target: 'Cíl',
     exportError: ({ err }) => `Chyba exportu: ${err}`,
     what: {
       plannedRoute: 'vyhledanou trasu',
@@ -1373,7 +1373,6 @@ const cs: Messages = {
   pdfExport: {
     advancedSettings: 'Rozšířená nastavení',
     styles: 'Styly interaktivní vrstvy',
-    export: 'Exportovat',
     exportError: ({ err }) => `Chyba exportu mapy: ${err}`,
     exporting: 'Prosím počkejte, mapa se exportuje…',
     exported: ({ url }) => (

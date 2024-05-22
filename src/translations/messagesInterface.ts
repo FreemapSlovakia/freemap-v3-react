@@ -63,6 +63,7 @@ export type Messages = {
     attribution: () => JSX.Element;
     unauthenticatedError: string;
     areYouSure: string;
+    export: string;
   };
   selections: {
     objects: string;
@@ -589,11 +590,10 @@ export type Messages = {
   tips: {
     errorLoading: string;
   };
-  gpxExport: {
-    export: string;
+  exportMapFeatures: {
+    download: string;
     format: string;
-    exportToDrive: string;
-    exportToDropbox: string;
+    target: string;
     exportError: ({ err }: Err) => string;
     what: {
       plannedRoute: string;
@@ -736,7 +736,6 @@ export type Messages = {
     subscribeError: ({ id }: { id: string | number }) => JSX.Element;
   };
   pdfExport: {
-    export: string;
     exportError: ({ err }: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;

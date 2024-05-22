@@ -54,7 +54,7 @@ import { openInExternalAppProcessor } from './processors/openInExternalAppProces
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
-import { exportPdfProcessor } from './processors/pdfExportProcessor';
+import { exportMapProcessor } from './processors/mapExportProcessor';
 import { removeAdsProcessor } from './processors/removeAdsProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
@@ -159,7 +159,7 @@ export const processors = [
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   gpxExportProcessor,
-  exportPdfProcessor,
+  exportMapProcessor,
   authWithFacebookProcessor,
   authWithGoogleProcessor,
   authWithOsmProcessor,

@@ -1,5 +1,5 @@
 import { point } from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { osmLoadNode } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { httpRequest } from 'fm3/httpRequest';
@@ -17,7 +17,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       getState,
       url: `//api.openstreetmap.org/api/0.6/node/${id}.json`,
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSelectResult],
+      cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
     const { elements } = assert<OsmResult>(await res.json());

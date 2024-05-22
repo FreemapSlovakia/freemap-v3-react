@@ -1,5 +1,5 @@
 import {
-  clearMap,
+  clearMapFeatures,
   convertToDrawing,
   setActiveModal,
 } from 'fm3/actions/mainActions';
@@ -137,7 +137,10 @@ export function TrackViewerMenu(): ReactElement {
               toastsAdd({
                 id: 'trackViewer.trackInfo',
                 messageKey: 'trackViewer.info',
-                cancelType: [getType(clearMap), getType(trackViewerSetData)],
+                cancelType: [
+                  getType(clearMapFeatures),
+                  getType(trackViewerSetData),
+                ],
                 style: 'info',
               }),
             );

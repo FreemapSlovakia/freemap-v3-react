@@ -1,4 +1,4 @@
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { clearMapFeatures, selectFeature } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -64,7 +64,7 @@ export const objectsFetchProcessor: Processor = {
               },
             ],
             cancelType: [
-              getType(clearMap),
+              getType(clearMapFeatures),
               getType(mapRefocus),
               getType(objectsSetFilter),
             ],
@@ -109,7 +109,12 @@ export const objectsFetchProcessor: Processor = {
       // url: 'https://overpass-api.de/api/interpreter',
       body: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
-      cancelActions: [objectsSetFilter, clearMap, selectFeature, mapRefocus],
+      cancelActions: [
+        objectsSetFilter,
+        clearMapFeatures,
+        selectFeature,
+        mapRefocus,
+      ],
     });
 
     const result = assert<OverpassResult>(await res.json()).elements.map(
@@ -132,7 +137,7 @@ export const objectsFetchProcessor: Processor = {
           },
           style: 'warning',
           cancelType: [
-            getType(clearMap),
+            getType(clearMapFeatures),
             getType(mapRefocus),
             getType(objectsSetFilter),
           ],

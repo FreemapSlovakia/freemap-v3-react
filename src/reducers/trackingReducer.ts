@@ -1,5 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
+import { clearMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
@@ -45,7 +45,7 @@ const initialState: TrackingState = {
 export const trackingReducer = createReducer<TrackingState, RootAction>(
   initialState,
 )
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMapFeatures, () => initialState)
   .handleAction(setActiveModal, (state) => ({
     ...state,
     devices: [],

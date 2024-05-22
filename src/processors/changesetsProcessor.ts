@@ -3,7 +3,11 @@ import {
   changesetsSet,
   changesetsSetParams,
 } from 'fm3/actions/changesetsActions';
-import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
+import {
+  clearMapFeatures,
+  selectFeature,
+  setTool,
+} from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
@@ -66,7 +70,7 @@ export const changesetsProcessor: Processor = {
             getType(selectFeature),
             getType(changesetsSetParams),
             getType(setTool),
-            getType(clearMap),
+            getType(clearMapFeatures),
           ],
           timeout: 5000,
           style: 'warning',
@@ -109,7 +113,7 @@ export const changesetsProcessor: Processor = {
           changesetsSetParams,
           mapRefocus,
           selectFeature,
-          clearMap,
+          clearMapFeatures,
           setTool,
         ],
       });
@@ -186,7 +190,7 @@ export const changesetsProcessor: Processor = {
               getType(selectFeature),
               getType(changesetsSetParams),
               getType(setTool),
-              getType(clearMap),
+              getType(clearMapFeatures),
               getType(mapRefocus),
             ],
             timeout: 5000,

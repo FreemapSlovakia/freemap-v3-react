@@ -1,5 +1,5 @@
 import { lineString, polygon } from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { positionsEqual, shouldBeArea } from 'fm3/geoutils';
@@ -18,7 +18,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       getState,
       url: `//api.openstreetmap.org/api/0.6/way/${id}/full.json`,
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSelectResult],
+      cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
     const nodes: Record<string, [number, number]> = {};

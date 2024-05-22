@@ -5,7 +5,7 @@ import {
   drawingPointChangePosition,
   drawingPointSetAll,
 } from 'fm3/actions/drawingPointActions';
-import { applySettings, clearMap } from 'fm3/actions/mainActions';
+import { applySettings, clearMapFeatures } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
@@ -24,7 +24,7 @@ export const drawingPointsReducer = createReducer<
   DrawingPointsState,
   RootAction
 >(initialState)
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMapFeatures, () => initialState)
   .handleAction(applySettings, (state, { payload }) =>
     produce(state, (draft) => {
       if (payload.drawingApplyAll) {

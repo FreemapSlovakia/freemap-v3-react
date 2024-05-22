@@ -3,7 +3,7 @@ import { lineString, polygon } from '@turf/helpers';
 import length from '@turf/length';
 import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import {
-  clearMap,
+  clearMapFeatures,
   deleteFeature,
   selectFeature,
   setTool,
@@ -18,7 +18,7 @@ import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 
 const cancelType = [
-  getType(clearMap),
+  getType(clearMapFeatures),
   getType(selectFeature),
   getType(deleteFeature),
   getType(setTool),
@@ -59,7 +59,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         const res = await httpRequest({
           getState,
           url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
-          cancelActions: [drawingMeasure, clearMap],
+          cancelActions: [drawingMeasure, clearMapFeatures],
         });
 
         elevation = assert<[number]>(await res.json())[0];

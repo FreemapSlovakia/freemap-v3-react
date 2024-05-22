@@ -4,7 +4,7 @@ import {
   changesetsSet,
   changesetsSetParams,
 } from 'fm3/actions/changesetsActions';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { clearMapFeatures, setTool } from 'fm3/actions/mainActions';
 import { createReducer } from 'typesafe-actions';
 
 export interface ChangesetsState {
@@ -22,7 +22,7 @@ export const initialState: ChangesetsState = {
 export const changesetReducer = createReducer<ChangesetsState, RootAction>(
   initialState,
 )
-  .handleAction(clearMap, () => initialState)
+  .handleAction(clearMapFeatures, () => initialState)
   .handleAction(setTool, (_state, action) => ({
     ...initialState,
     days: action.payload === 'changesets' ? 3 : null,

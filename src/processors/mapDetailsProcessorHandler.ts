@@ -1,5 +1,5 @@
 import {
-  clearMap,
+  clearMapFeatures,
   deleteFeature,
   selectFeature,
   setTool,
@@ -15,7 +15,7 @@ import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 
 const cancelType = [
-  getType(clearMap),
+  getType(clearMapFeatures),
   getType(selectFeature),
   getType(deleteFeature),
   getType(setTool),

@@ -117,9 +117,10 @@ const mapSettingsModalFactory = () => import('./MapSettingsModal');
 
 const embedMapModalFactory = () => import('fm3/components/EmbedMapModal');
 
-const exportGpxModalFactory = () => import('fm3/components/ExportGpxModal');
+const exportGpxModalFactory = () =>
+  import('fm3/components/ExportMapFeaturesModal');
 
-const exportPdfModalFactory = () => import('fm3/components/ExportPdfModal');
+const exportMapModalFactory = () => import('fm3/components/ExportMapModal');
 
 const documentModalFactory = () => import('fm3/components/DocumentModal');
 
@@ -692,7 +693,7 @@ export function Main(): ReactElement {
 
         <AsyncModal
           show={activeModal === 'export-pdf'}
-          factory={exportPdfModalFactory}
+          factory={exportMapModalFactory}
         />
 
         <AsyncModal

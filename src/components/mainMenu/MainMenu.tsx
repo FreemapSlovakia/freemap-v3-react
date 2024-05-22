@@ -1,5 +1,5 @@
 import {
-  clearMap,
+  clearMapFeatures,
   documentShow,
   Modal,
   setActiveModal,
@@ -143,7 +143,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         onSelect={() => {
           closeMenu();
 
-          dispatch(clearMap());
+          dispatch(clearMapFeatures());
         }}
       >
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>

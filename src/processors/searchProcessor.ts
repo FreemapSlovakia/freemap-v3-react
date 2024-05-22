@@ -2,7 +2,7 @@ import { tileToGeoJSON } from '@mapbox/tilebelt';
 import bboxPolygon from '@turf/bbox-polygon';
 import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
 import { BBox2d } from '@turf/helpers/dist/js/lib/geojson';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMapFeatures } from 'fm3/actions/mainActions';
 import {
   SearchResult,
   searchSelectResult,
@@ -189,7 +189,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             : (await mapPromise).getBounds().toBBoxString(),
         }),
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSetQuery],
+      cancelActions: [clearMapFeatures, searchSetQuery],
     });
 
     const results = assert<NominatimResult[]>(await res.json())

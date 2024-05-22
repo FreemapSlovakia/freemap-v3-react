@@ -98,6 +98,7 @@ const en: Messages = {
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
     areYouSure: 'Are you sure?',
+    export: 'Export',
   },
 
   selections: {
@@ -1027,11 +1028,10 @@ const en: Messages = {
     errorLoading: 'Error loading tip.',
   },
 
-  gpxExport: {
-    export: 'Download',
+  exportMapFeatures: {
+    download: 'Download',
     format: 'Format',
-    exportToDrive: 'Save to Google Drive',
-    exportToDropbox: 'Save to Dropbox',
+    target: 'Target',
     exportError: ({ err }) => `Error exporting: ${err}`,
     what: {
       plannedRoute: 'found route',
@@ -1340,7 +1340,6 @@ const en: Messages = {
   pdfExport: {
     advancedSettings: 'Advanced options',
     styles: 'Interactive layer styles',
-    export: 'Export',
     exportError: ({ err }) => `Error exporting map: ${err}`,
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
