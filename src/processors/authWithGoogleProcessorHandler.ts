@@ -1,5 +1,5 @@
 import { authSetUser, authWithGoogle } from 'fm3/actions/authActions';
-import { removeAds } from 'fm3/actions/mainActions';
+import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getAuth2 } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
@@ -53,6 +53,10 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
 
     if (!user.isPremium && getState().main.removeAdsOnLogin) {
       dispatch(removeAds());
+    }
+
+    if (connect) {
+      dispatch(setActiveModal('account'));
     }
   } catch (err) {
     if (

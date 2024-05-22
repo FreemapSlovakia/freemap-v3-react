@@ -1,5 +1,5 @@
 import { authSetUser, authWithFacebook } from 'fm3/actions/authActions';
-import { removeAds } from 'fm3/actions/mainActions';
+import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { loadFb } from 'fm3/fbLoader';
 import { httpRequest } from 'fm3/httpRequest';
@@ -66,6 +66,10 @@ const handle: ProcessorHandler<typeof authWithFacebook> = async ({
 
   if (!user.isPremium && getState().main.removeAdsOnLogin) {
     dispatch(removeAds());
+  }
+
+  if (connect) {
+    dispatch(setActiveModal('account'));
   }
 };
 

@@ -1,5 +1,5 @@
 import { authWithOsm2, authSetUser } from 'fm3/actions/authActions';
-import { removeAds } from 'fm3/actions/mainActions';
+import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
@@ -41,6 +41,10 @@ const handle: ProcessorHandler<typeof authWithOsm2> = async ({
 
   if (!user.isPremium && getState().main.removeAdsOnLogin) {
     dispatch(removeAds());
+  }
+
+  if (connect) {
+    dispatch(setActiveModal('account'));
   }
 };
 
