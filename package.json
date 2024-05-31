@@ -6,7 +6,7 @@
     "@mapbox/tilebelt": "1.0.2",
     "@maplibre/maplibre-gl-leaflet": "0.0.20",
     "@react-leaflet/core": "2.1.0",
-    "@sentry/browser": "7.106.1",
+    "@sentry/browser": "8.7.0",
     "@tmcw/togeojson": "5.8.1",
     "@turf/along": "6.5.0",
     "@turf/area": "6.5.0",
