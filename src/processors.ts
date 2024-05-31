@@ -33,7 +33,7 @@ import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapPr
 import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor';
 import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
 import { galleryUploadModalProcessor } from './processors/galleryUploadModalProcessor';
-import { gpxExportProcessor } from './processors/gpxExportProcessor';
+import { exportMapFeaturesProcessor } from './processors/exportMapFeaturesProcessor';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
 import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor';
 import { legendProcessor } from './processors/legendProcessor';
@@ -158,7 +158,7 @@ export const processors = [
   legacyMapWarningProcessor,
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
-  gpxExportProcessor,
+  exportMapFeaturesProcessor,
   exportMapProcessor,
   authWithFacebookProcessor,
   authWithGoogleProcessor,

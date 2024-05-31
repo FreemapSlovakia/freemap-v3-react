@@ -130,6 +130,12 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const initJoined = initExportables.join(',');
 
+  const [name, setName] = useState('');
+
+  const [description, setDescription] = useState('');
+
+  const [activity, setActivity] = useState('');
+
   useEffect(() => {
     if (show) {
       setExportables(initExportables);
@@ -142,10 +148,19 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       e.preventDefault();
 
       if (exportables) {
-        dispatch(exportMapFeatures({ type, exportables, target }));
+        dispatch(
+          exportMapFeatures({
+            type,
+            exportables,
+            target,
+            name: name || undefined,
+            description: description || undefined,
+            activity: activity || undefined,
+          }),
+        );
       }
     },
-    [dispatch, type, exportables, target],
+    [dispatch, type, exportables, target, name, description, activity],
   );
 
   function close() {
@@ -233,6 +248,46 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               </div>
             </Form.Group>
 
+            {target === 'garmin' && (
+              <>
+                <Form.Group>
+                  <Form.Label>Course name:</Form.Label>
+                  <Form.Control
+                    value={name}
+                    onChange={(e) => setName(e.currentTarget.value)}
+                  />
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Description:</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={description}
+                    onChange={(e) => setDescription(e.currentTarget.value)}
+                  />
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Activity type:</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={activity}
+                    onChange={(e) => setActivity(e.currentTarget.value)}
+                  >
+                    <option value="" />
+                    <option value="RUNNING">Running</option>
+                    <option value="HIKING">Hiking</option>
+                    <option value="OTHER">Other</option>
+                    <option value="MOUNTAIN_BIKING">Mountain_biking</option>
+                    <option value="TRAIL_RUNNING">Trail running</option>
+                    <option value="ROAD_CYCLING">Road cycling</option>
+                    <option value="GRAVEL_CYCLING">Gravel cycling</option>
+                  </Form.Control>
+                </Form.Group>
+              </>
+            )}
+
             {target !== 'garmin' && (
               <Form.Group>
                 <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
@@ -265,9 +320,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   .map(([type, icon]) => (
                     <Fragment key={type}>
                       <Form.Check
+                        name="exportable"
                         inline={type === 'plannedRoute'}
                         id={'chk-' + type}
-                        type="checkbox"
+                        type={target === 'garmin' ? 'radio' : 'checkbox'}
                         checked={exportables.includes(type)}
                         disabled={!initExportables.includes(type)}
                         onChange={() => handleCheckboxChange(type)}

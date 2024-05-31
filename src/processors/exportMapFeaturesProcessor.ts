@@ -1,7 +1,7 @@
 import { exportMapFeatures } from 'fm3/actions/mainActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const gpxExportProcessor: Processor<typeof exportMapFeatures> = {
+export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,
   errorKey: 'exportMapFeatures.exportError',
   id: 'gpxExport',

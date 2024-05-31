@@ -75,6 +75,9 @@ export const exportMapFeatures = createAction('EXPORT_MAP_FEATURES')<{
   exportables: Exportable[];
   type: ExportType;
   target: ExportTarget;
+  name?: string;
+  description?: string;
+  activity?: string;
 }>();
 
 export const exportMap = createAction('EXPORT_MAP')<MapExportOptions>();
