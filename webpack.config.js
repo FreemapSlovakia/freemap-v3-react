@@ -166,7 +166,10 @@ module.exports = {
     ],
   },
   plugins: [
-    !prod && new ReactRefreshWebpackPlugin(),
+    !prod &&
+      new ReactRefreshWebpackPlugin({
+        overlay: false,
+      }),
     new InjectManifest({
       swSrc: './sw/sw.ts',
       maximumFileSizeToCacheInBytes: 100000000,
