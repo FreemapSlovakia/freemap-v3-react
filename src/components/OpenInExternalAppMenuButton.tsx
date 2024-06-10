@@ -32,7 +32,10 @@ export function OpenInExternalAppMenuButton({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler();
+  const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler({
+    pointTitle,
+    pointDescription,
+  });
 
   const mapType = useAppSelector((state) => state.map.mapType);
 

@@ -24,9 +24,15 @@ import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
 const NOP = () => false;
 
-export function useMenuHandler(
-  extraHandler: (eventKey: string) => boolean = NOP,
-) {
+export function useMenuHandler({
+  extraHandler = NOP,
+  pointTitle,
+  pointDescription,
+}: {
+  extraHandler?: (eventKey: string) => boolean;
+  pointTitle?: string;
+  pointDescription?: string;
+}) {
   const dispatch = useDispatch();
 
   const lat = useAppSelector((state) => state.map.lat);
@@ -116,8 +122,8 @@ export function useMenuHandler(
               lon,
               zoom,
               mapType,
-              pointTitle: document.title,
-              pointDescription: document.title,
+              pointTitle,
+              pointDescription,
             }),
           );
         }
@@ -129,7 +135,16 @@ export function useMenuHandler(
         // nothing
       }
     },
-    [dispatch, extraHandler, lat, lon, mapType, zoom],
+    [
+      dispatch,
+      extraHandler,
+      lat,
+      lon,
+      mapType,
+      pointDescription,
+      pointTitle,
+      zoom,
+    ],
   );
 
   const handleMenuToggle = useCallback((nextShow: boolean) => {
