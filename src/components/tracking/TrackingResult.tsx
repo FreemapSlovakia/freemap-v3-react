@@ -4,7 +4,8 @@ import {
   tooltipText,
   TrackingPoint,
 } from 'fm3/components/tracking/TrackingPoint';
-import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
+import { toLatLng, toLatLngArr } from 'fm3/geoutils';
+import distance from '@turf/distance';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
@@ -92,8 +93,9 @@ export function TrackingResult(): ReactElement {
           if (
             prevTp &&
             ((typeof track.splitDistance === 'number' &&
-              distance(tp.lat, tp.lon, prevTp.lat, prevTp.lon) >
-                track.splitDistance) ||
+              distance([tp.lon, tp.lat], [prevTp.lon, prevTp.lat], {
+                units: 'meters',
+              }) > track.splitDistance) ||
               (typeof track.splitDuration === 'number' &&
                 tp.ts.getTime() - prevTp.ts.getTime() >
                   track.splitDuration * 60000))

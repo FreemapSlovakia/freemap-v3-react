@@ -86,7 +86,7 @@ export async function httpRequest({
   }
 
   try {
-    let response: Response;
+    let response;
 
     try {
       response = await fetch(

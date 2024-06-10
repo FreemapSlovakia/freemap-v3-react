@@ -1,4 +1,5 @@
 import { AuthProvider, User } from 'fm3/types/common';
+import { Action } from 'redux';
 import { createAction } from 'typesafe-actions';
 
 export const authWithOsm = createAction('AUTH_WITH_OSM')<{
@@ -20,12 +21,14 @@ export const authWithGoogle = createAction('AUTH_WITH_GOOGLE')<{
 
 export const authWithGarmin = createAction('AUTH_WITH_GARMIN')<{
   connect: boolean;
+  successAction?: Action;
 }>();
 
 export const authWithGarmin2 = createAction('AUTH_WITH_GARMIN_2')<{
   connect: boolean;
   token: string;
   verifier: string;
+  successAction?: Action;
 }>();
 
 export const authDisconnect = createAction('AUTH_DISCONNECT')<{

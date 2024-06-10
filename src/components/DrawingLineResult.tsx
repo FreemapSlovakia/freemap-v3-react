@@ -9,7 +9,7 @@ import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
-import { distance } from 'fm3/geoutils';
+import distance from '@turf/distance';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { isEventOnMap } from 'fm3/mapUtils';
 import {
@@ -315,7 +315,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         ps.map((p, i) => {
           if (i % 2 === 0) {
             if (prev) {
-              dist += distance(p.lat, p.lon, prev.lat, prev.lon);
+              dist += distance([p.lon, p.lat], [prev.lon, prev.lat], {
+                units: 'kilometers',
+              });
             }
 
             prev = p;
@@ -379,7 +381,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
             >
               {line.type === 'line' && !joinWith && (
                 <Tooltip className="compact" offset={[-4, 0]} direction="right">
-                  <span>{nf.format(dist / 1000)} km</span>
+                  <span>{nf.format(dist)} km</span>
                 </Tooltip>
               )}
             </Marker>

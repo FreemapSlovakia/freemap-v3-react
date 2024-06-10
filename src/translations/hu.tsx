@@ -101,6 +101,7 @@ const hu: Messages = {
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
     areYouSure: 'Are you sure?', // TODO translate
     export: 'Exportálás',
+    success: 'Success!', // TODO translate
   },
 
   selections: {

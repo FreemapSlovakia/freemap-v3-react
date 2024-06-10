@@ -64,6 +64,7 @@ export type Messages = {
     unauthenticatedError: string;
     areYouSure: string;
     export: string;
+    success: string;
   };
   selections: {
     objects: string;

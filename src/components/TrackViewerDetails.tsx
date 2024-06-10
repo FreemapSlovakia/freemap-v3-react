@@ -1,4 +1,5 @@
-import { distance, smoothElevations } from 'fm3/geoutils';
+import { smoothElevations } from 'fm3/geoutils';
+import distance from '@turf/distance';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
@@ -116,12 +117,9 @@ export function TrackViewerDetailsInt({
   let [prevCoord] = smoothed;
 
   for (const coord of smoothed) {
-    const distanceFromPrevPointInMeters = distance(
-      coord[1],
-      coord[0],
-      prevCoord[1],
-      prevCoord[0],
-    );
+    const distanceFromPrevPointInMeters = distance(coord, prevCoord, {
+      units: 'meters',
+    });
 
     if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
       // otherwise the ele sums are very high

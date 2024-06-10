@@ -67,7 +67,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
 
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, (draft) => {
-      let line: Line;
+      let line;
 
       if (action.payload.index === undefined) {
         if (action.payload.type === undefined) {

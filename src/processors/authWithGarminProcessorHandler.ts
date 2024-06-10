@@ -5,7 +5,9 @@ import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { assert } from 'typia';
 
 export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
-  action,
+  action: {
+    payload: { connect, successAction },
+  },
   getState,
   dispatch,
 }) => {
@@ -13,13 +15,19 @@ export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
     getState,
     method: 'POST',
     url: '/auth/login-garmin',
+    data: {
+      extraQuery: {
+        connect,
+        successAction: successAction && JSON.stringify(successAction),
+      },
+    },
     expectedStatus: 200,
   });
 
   const { redirectUrl } = assert<{ redirectUrl: string }>(await res.json());
 
   const w = window.open(
-    redirectUrl + '&connect=' + action.payload.connect,
+    redirectUrl,
     'garmin-login',
     `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${
       window.screen.height / 2 - 550 / 2

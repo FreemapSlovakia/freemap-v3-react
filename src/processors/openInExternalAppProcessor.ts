@@ -87,13 +87,13 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'josm': {
-        let left: number;
+        let left;
 
-        let right: number;
+        let right;
 
-        let top: number;
+        let top;
 
-        let bottom: number;
+        let bottom;
 
         if (includePoint) {
           const buffered = buffer(point([lon, lat]), 100, {

@@ -7,7 +7,7 @@ import {
 import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
 import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { distance } from 'fm3/geoutils';
+import distance from '@turf/distance';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement } from 'fm3/types/common';
@@ -76,16 +76,20 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   oRes.elements.sort((a, b) => {
     return (
       distance(
-        userSelectedLat,
-        userSelectedLon,
-        a.type === 'node' ? a.lat : a.center.lat,
-        a.type === 'node' ? a.lon : a.center.lon,
+        [userSelectedLon, userSelectedLat],
+        [
+          a.type === 'node' ? a.lon : a.center.lon,
+          a.type === 'node' ? a.lat : a.center.lat,
+        ],
+        { units: 'meters' },
       ) -
       distance(
-        userSelectedLat,
-        userSelectedLon,
-        b.type === 'node' ? b.lat : b.center.lat,
-        b.type === 'node' ? b.lon : b.center.lon,
+        [userSelectedLon, userSelectedLat],
+        [
+          b.type === 'node' ? b.lon : b.center.lon,
+          b.type === 'node' ? b.lat : b.center.lat,
+        ],
+        { units: 'meters' },
       )
     );
   });

@@ -38,7 +38,7 @@ export function DrawingLinesTool(): null {
 
       const pos = linePoints.length;
 
-      let id: number;
+      let id;
 
       if (pos === 0) {
         id = linePoints.length ? linePoints[pos].id - 1 : 0;

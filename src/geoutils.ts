@@ -3,8 +3,6 @@ import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common';
 import { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 
-const PI2 = 2 * Math.PI;
-
 export type GpsCoordStyle = 'DMS' | 'DM' | 'D';
 
 export function formatGpsCoord(
@@ -59,41 +57,6 @@ export function formatGpsCoord(
       throw new Error('unknown GPS coords style');
     }
   }
-}
-
-// distance in meters
-export function distance(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number,
-): number {
-  const a =
-    0.5 -
-    Math.cos(toRad(lat2 - lat1)) / 2 +
-    (Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      (1 - Math.cos(toRad(lon2 - lon1)))) /
-      2;
-
-  return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
-}
-
-export function bearing(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number,
-): number {
-  const dLon = lon2 - lon1;
-
-  const y = Math.sin(dLon) * Math.cos(lat2);
-
-  const x =
-    Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-
-  return PI2 - ((Math.atan2(y, x) + PI2) % PI2);
 }
 
 export function toRad(deg: number): number {

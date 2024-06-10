@@ -1,3 +1,4 @@
+import { authWithGarmin } from 'fm3/actions/authActions';
 import {
   ExportTarget,
   ExportType,
@@ -30,6 +31,7 @@ import {
   FaDownload,
   FaDrawPolygon,
   FaDropbox,
+  FaExclamationTriangle,
   FaFileExport,
   FaGoogle,
   FaMapMarkerAlt,
@@ -122,6 +124,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     return exportables;
   });
 
+  const userHasGarmin = useAppSelector((state) =>
+    Boolean(state.auth.user?.authProviders.includes('garmin')),
+  );
+
   const [exportables, setExportables] = useState<Exportable[] | undefined>();
 
   const [type, setType] = useState<ExportType>('gpx');
@@ -147,20 +153,44 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     (e: FormEvent) => {
       e.preventDefault();
 
-      if (exportables) {
-        dispatch(
-          exportMapFeatures({
-            type,
-            exportables,
-            target,
-            name: name || undefined,
-            description: description || undefined,
-            activity: activity || undefined,
-          }),
-        );
+      if (!exportables) {
+        return;
+      }
+
+      const exportAction = exportMapFeatures({
+        type,
+        exportables,
+        target,
+        name: name || undefined,
+        description: description || undefined,
+        activity: activity || undefined,
+      });
+
+      if (target === 'garmin' && !userHasGarmin) {
+        if (
+          window.confirm(
+            // TODO translate
+            "You don't have your Garmin account connected yet. Do you wish to connect it now?",
+          )
+        ) {
+          dispatch(
+            authWithGarmin({ connect: true, successAction: exportAction }),
+          );
+        }
+      } else {
+        dispatch(exportAction);
       }
     },
-    [dispatch, type, exportables, target, name, description, activity],
+    [
+      dispatch,
+      type,
+      exportables,
+      target,
+      name,
+      description,
+      activity,
+      userHasGarmin,
+    ],
   );
 
   function close() {
@@ -238,7 +268,17 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                           ),
                           garmin: (
                             <>
-                              <SiGarmin /> Garmin
+                              <SiGarmin
+                                style={{
+                                  fontSize: '400%',
+                                  marginBlock: '-24px',
+                                }}
+                              />
+                              &ensp;Garmin&ensp;
+                              <FaExclamationTriangle
+                                title={m?.general.experimentalFunction}
+                                className="text-warning"
+                              />
                             </>
                           ),
                         }[target1]
@@ -366,8 +406,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             <Button
               type="submit"
               variant="primary"
-              onClick={close}
-              disabled={!exportables.length}
+              disabled={
+                !exportables.length ||
+                (target === 'garmin' && (!name.trim() || !activity))
+              }
             >
               <FaFileExport /> {m?.general.export}
             </Button>

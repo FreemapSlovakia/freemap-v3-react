@@ -50,7 +50,7 @@ export function createProcessorMiddleware(): MW {
     (action: Action): unknown => {
       const prevState = getState();
 
-      let a: Action = action;
+      let a = action;
 
       for (const {
         actionCreator: actionType,

@@ -9,10 +9,10 @@ import { assert } from 'typia';
 const handle: ProcessorHandler<typeof authWithGarmin2> = async ({
   getState,
   dispatch,
-  action,
+  action: {
+    payload: { connect, token, verifier, successAction },
+  },
 }) => {
-  const { connect, token, verifier } = action.payload;
-
   const res = await httpRequest({
     getState,
     method: 'POST',
@@ -46,6 +46,10 @@ const handle: ProcessorHandler<typeof authWithGarmin2> = async ({
 
   if (connect) {
     dispatch(setActiveModal('account'));
+  }
+
+  if (successAction) {
+    dispatch(successAction);
   }
 };
 

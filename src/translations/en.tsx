@@ -99,6 +99,7 @@ const en: Messages = {
     unauthenticatedError: 'Please log-in to access this feature.',
     areYouSure: 'Are you sure?',
     export: 'Export',
+    success: 'Success!',
   },
 
   selections: {

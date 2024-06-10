@@ -7,7 +7,8 @@ import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePo
 import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
-import { distance, smoothElevations } from 'fm3/geoutils';
+import { smoothElevations } from 'fm3/geoutils';
+import distance from '@turf/distance';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
@@ -81,7 +82,7 @@ export function TrackViewerResult({
       return smoothed.map((coord) => {
         const [lon, lat, ele] = coord;
 
-        const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
+        const d = distance([lon, lat], prevCoord, { units: 'meters' });
 
         let angle = 0;
 

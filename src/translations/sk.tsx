@@ -104,6 +104,7 @@ const sk: Messages = {
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
     areYouSure: 'Ste si istí?',
     export: 'Exportovať',
+    success: 'Hotovo!',
   },
 
   selections: {
