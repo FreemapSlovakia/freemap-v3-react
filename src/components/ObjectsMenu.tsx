@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { HideArrow } from './SearchMenu';
 import { ToolMenu } from './ToolMenu';
 import { RootState } from 'fm3/reducers';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 export default ObjectsMenu;
 
@@ -218,7 +219,7 @@ export function ObjectsMenu(): ReactElement {
           />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
           <div className="dropdown-long" ref={sc}>
             <div />
 
@@ -270,7 +271,7 @@ export function ObjectsMenu(): ReactElement {
           {m?.objects.icon[selectedIconValue]}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
           <Dropdown.Item eventKey="pin" active={selectedIconValue === 'pin'}>
             {m?.objects.icon.pin}
           </Dropdown.Item>

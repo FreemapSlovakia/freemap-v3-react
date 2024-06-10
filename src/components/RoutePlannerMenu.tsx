@@ -60,6 +60,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';
 import InputGroupText from 'react-bootstrap/esm/InputGroupText';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 export default RoutePlannerMenu;
 
@@ -482,7 +483,7 @@ export function RoutePlannerMenu(): ReactElement {
           )}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
           <div className="dropdown-long" ref={sc}>
             <div />
 
@@ -526,7 +527,7 @@ export function RoutePlannerMenu(): ReactElement {
             {m?.routePlanner.weighting[activeWeighting] ?? '…'}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             {(
               ['fastest', 'short_fastest', 'shortest'] satisfies Weighting[]
             ).map((weighting) => (
@@ -563,7 +564,7 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu
-            popperConfig={{ strategy: 'fixed' }}
+            popperConfig={fixedPopperConfig}
             as={GraphopperModeMenu}
           >
             {(['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]).map(
@@ -601,7 +602,7 @@ export function RoutePlannerMenu(): ReactElement {
             {m?.routePlanner.mode[activeMode] ?? '…'}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             {(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
               (mode) => (
                 <Dropdown.Item
@@ -644,7 +645,7 @@ export function RoutePlannerMenu(): ReactElement {
             </span>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item eventKey="pick">
               <FaMapMarkerAlt />
               &nbsp;{m?.routePlanner.point.pick ?? '…'}
@@ -709,7 +710,7 @@ export function RoutePlannerMenu(): ReactElement {
                 </span>
               </Dropdown.Toggle>
 
-              <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+              <Dropdown.Menu popperConfig={fixedPopperConfig}>
                 <Dropdown.Item eventKey="pick">
                   <FaMapMarkerAlt />
                   &nbsp;
@@ -749,7 +750,7 @@ export function RoutePlannerMenu(): ReactElement {
             <FaEllipsisV />
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item
               active={elevationProfileIsVisible}
               eventKey="toggle-elevation-chart"

@@ -36,6 +36,7 @@ import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
 import { Checkbox } from './Checkbox';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
   return (
@@ -283,7 +284,7 @@ export function MapSwitchButton(): ReactElement {
             <FaRegMap className="d-sm-none" />
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <div className="fm-menu-scroller" ref={sc}>
               <div />
 

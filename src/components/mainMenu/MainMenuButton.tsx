@@ -23,6 +23,7 @@ import { TrackingSubmenu } from './TrackingSubmenu';
 import { CacheMode } from 'fm3/types/common';
 import { get } from 'idb-keyval';
 import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 export function MainMenuButton(): ReactElement {
   const mapType = useAppSelector((state) => state.map.mapType);
@@ -111,11 +112,7 @@ export function MainMenuButton(): ReactElement {
         <FaBars />
       </Dropdown.Toggle>
 
-      <Dropdown.Menu
-        popperConfig={{
-          strategy: 'fixed',
-        }}
-      >
+      <Dropdown.Menu popperConfig={fixedPopperConfig}>
         <div className="fm-menu-scroller" ref={sc}>
           <div />
 

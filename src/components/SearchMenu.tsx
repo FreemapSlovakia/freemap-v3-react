@@ -10,6 +10,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
@@ -241,7 +242,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           <Dropdown.Menu
             key={searchSeq}
             className="fm-search-dropdown"
-            popperConfig={{ strategy: 'fixed' }}
+            popperConfig={fixedPopperConfig}
           >
             <div className="dropdown-long" ref={sc}>
               <div />

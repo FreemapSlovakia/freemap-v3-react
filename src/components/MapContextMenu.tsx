@@ -34,19 +34,21 @@ import { useDispatch } from 'react-redux';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 import { useMap } from 'fm3/hooks/useMap';
 
+const initialState = {
+  shown: false,
+  x: 0,
+  y: 0,
+  lat: 0,
+  lon: 0,
+  maxHeight: 100000,
+};
+
 export function MapContextMenu(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
-  const [contextMenu, setContextMenu] = useState({
-    shown: false,
-    x: 0,
-    y: 0,
-    lat: 0,
-    lon: 0,
-    maxHeight: 100000,
-  });
+  const [contextMenu, setContextMenu] = useState(initialState);
 
   const [openInExternal, setOpenInExternal] = useState(false);
 
@@ -67,7 +69,7 @@ export function MapContextMenu(): ReactElement {
       setOpenInExternal(false);
 
       setContextMenu({
-        shown: false,
+        shown: true,
         x: e.containerPoint.x,
         y: e.containerPoint.y,
         lat: e.latlng.lat,
@@ -76,10 +78,6 @@ export function MapContextMenu(): ReactElement {
           window.innerHeight / 2 +
           Math.abs(e.containerPoint.y - window.innerHeight / 2) -
           15,
-      });
-
-      setTimeout(() => {
-        setContextMenu((m) => ({ ...m, shown: true }));
       });
     }
 
@@ -266,7 +264,19 @@ export function MapContextMenu(): ReactElement {
         }}
       />
 
-      <Dropdown.Menu>
+      <Dropdown.Menu
+        // this modifier somehow fixes menu
+        popperConfig={{
+          modifiers: [
+            {
+              name: 'fixFlashing',
+              phase: 'afterMain',
+              enabled: true,
+              effect() {},
+            },
+          ],
+        }}
+      >
         <div className="fm-menu-scroller" ref={sc}>
           <div />
 

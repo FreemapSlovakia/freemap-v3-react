@@ -31,6 +31,7 @@ import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 export default TrackViewerMenu;
 
@@ -114,7 +115,7 @@ export function TrackViewerMenu(): ReactElement {
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
               <Dropdown.Item
                 eventKey={mode}

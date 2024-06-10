@@ -9,6 +9,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import { FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ToolMenu } from './ToolMenu';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 export default ChangesetsMenu;
 
@@ -35,7 +36,7 @@ export function ChangesetsMenu(): ReactElement {
           {m?.changesets.olderThanFull({ days }) ?? '…'}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
           {[3, 7, 14, 30].map((d) => (
             <Dropdown.Item key={d} eventKey={String(d)} active={d === days}>
               {m?.changesets.olderThan({ days: d })}
