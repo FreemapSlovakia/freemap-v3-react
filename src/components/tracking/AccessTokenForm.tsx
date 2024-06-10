@@ -5,10 +5,9 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+
 import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -64,7 +63,7 @@ export function AccessTokenForm(): ReactElement {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
@@ -78,29 +77,29 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <FormGroup>
-          <FormLabel>{m?.tracking.accessToken.timeFrom}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.accessToken.timeFrom}</Form.Label>
           <DateTime value={timeFrom} onChange={setTimeFrom} />
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.accessToken.timeTo}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.accessToken.timeTo}</Form.Label>
           <DateTime value={timeTo} onChange={setTimeTo} />
-        </FormGroup>
+        </Form.Group>
 
-        {/* <FormGroup>
-          <FormLabel>{m?.tracking.accessToken.listingLabel}</FormLabel>
-          <FormControl
+        {/* <Form.Group>
+          <Form.Label>{m?.tracking.accessToken.listingLabel}</Form.Label>
+          <Form.Control
             value={listingLabel}
             onChange={setListingLabel}
             maxLength={255}
           />
-        </FormGroup> */}
+        </Form.Group> */}
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.accessToken.note}</FormLabel>
-          <FormControl value={note} onChange={setNote} maxLength={255} />
-        </FormGroup>
+        <Form.Group>
+          <Form.Label>{m?.tracking.accessToken.note}</Form.Label>
+          <Form.Control value={note} onChange={setNote} maxLength={255} />
+        </Form.Group>
       </Modal.Body>
 
       <Modal.Footer>
@@ -116,6 +115,6 @@ export function AccessTokenForm(): ReactElement {
           {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
-    </form>
+    </Form>
   );
 }

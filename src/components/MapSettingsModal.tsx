@@ -23,13 +23,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  Accordion,
-  Card,
-  FormControl,
-  FormGroup,
-  FormLabel,
-} from 'react-bootstrap';
+import Accordion from 'react-bootstrap/Accordion';
+import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -395,16 +390,16 @@ export function MapSettingsModal({ show }: Props): ReactElement {
               </Card.Header>
 
               <Accordion.Collapse eventKey="0" className="p-2">
-                <FormGroup>
-                  <FormLabel>
+                <Form.Group>
+                  <Form.Label>
                     {m?.settings.customLayersDef}{' '}
                     <FaFlask
                       title={m?.general.experimentalFunction}
                       className="text-warning"
                     />
-                  </FormLabel>
+                  </Form.Label>
 
-                  <FormControl
+                  <Form.Control
                     as="textarea"
                     value={customLayersDef}
                     onChange={(e) => setCustomLayersDef(e.target.value)}
@@ -413,7 +408,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     onFocus={handleCustomLayersDefFocus}
                     placeholder={customLayersHelp}
                   />
-                </FormGroup>
+                </Form.Group>
               </Accordion.Collapse>
             </Card>
           </Accordion>

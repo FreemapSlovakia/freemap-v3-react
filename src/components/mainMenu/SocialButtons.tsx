@@ -13,7 +13,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
   return (
     <div style={{ fontSize: '1.2rem' }} className={className}>
       <a
-        onSelect={closeMenu}
+        onClick={closeMenu}
         href="https://www.facebook.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"
@@ -23,7 +23,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         <FaFacebook />
       </a>{' '}
       <a
-        onSelect={closeMenu}
+        onClick={closeMenu}
         href="https://twitter.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"
@@ -33,7 +33,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         <FaTwitter />
       </a>{' '}
       <a
-        onSelect={closeMenu}
+        onClick={closeMenu}
         href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
         target="_blank"
         rel="noopener noreferrer"
@@ -43,7 +43,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         <FaYoutube />
       </a>{' '}
       <a
-        onSelect={closeMenu}
+        onClick={closeMenu}
         href="https://github.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"

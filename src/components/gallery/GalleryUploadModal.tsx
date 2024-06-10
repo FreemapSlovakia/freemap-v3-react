@@ -15,7 +15,7 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import FormCheck from 'react-bootstrap/FormCheck';
+import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes, FaUpload } from 'react-icons/fa';
@@ -159,7 +159,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
         )}
         {!uploading && (
           <>
-            <FormCheck
+            <Form.Check
               id="chk-preview"
               type="checkbox"
               onChange={() => {

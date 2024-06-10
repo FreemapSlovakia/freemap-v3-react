@@ -1,5 +1,5 @@
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { Button } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 
 type Props = {
   onColor: (color: string) => void;

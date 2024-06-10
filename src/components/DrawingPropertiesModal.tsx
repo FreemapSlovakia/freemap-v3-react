@@ -14,13 +14,11 @@ import {
 } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { DrawingRecentColors } from './DrawingRecentColors';
+import Form from 'react-bootstrap/Form';
 
 type Props = { show: boolean };
 
@@ -277,43 +275,43 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   return (
     <Modal show={show} onHide={close}>
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <FormGroup>
-            <FormLabel>{m?.drawing.edit.label}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.drawing.edit.label}</Form.Label>
 
-            <FormControl
+            <Form.Control
               autoFocus
               type="text"
               value={editedLabel ?? ''}
               onChange={handleLocalLabelChange}
             />
-          </FormGroup>
+          </Form.Group>
 
           <Alert variant="secondary">{m?.drawing.edit.hint}</Alert>
 
-          <FormGroup>
-            <FormLabel>{m?.drawing.edit.color}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
-            <FormControl
+            <Form.Control
               type="color"
               value={editedColor || colors.normal}
               onChange={handleLocalColorChange}
             />
 
             <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
-          </FormGroup>
+          </Form.Group>
 
           {drawType === 'draw-line-poly' && (
             <>
-              <FormGroup>
-                <FormLabel>{m?.drawing.edit.width}</FormLabel>
+              <Form.Group>
+                <Form.Label>{m?.drawing.edit.width}</Form.Label>
 
-                <FormControl
+                <Form.Control
                   type="number"
                   value={editedWidth}
                   min={1}
@@ -321,20 +319,20 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
                   step={0.1}
                   onChange={handleLocalWidthChange}
                 />
-              </FormGroup>
+              </Form.Group>
 
-              <FormGroup>
-                <FormLabel>{m?.drawing.edit.type}:</FormLabel>
+              <Form.Group>
+                <Form.Label>{m?.drawing.edit.type}:</Form.Label>
 
-                <FormControl
+                <Form.Control
                   as="select"
                   value={editedType}
                   onChange={(e) => setEditedType(e.currentTarget.value as any)}
                 >
                   <option value="line">{m?.selections.drawLines}</option>
                   <option value="polygon">{m?.selections.drawPolygons}</option>
-                </FormControl>
-              </FormGroup>
+                </Form.Control>
+              </Form.Group>
             </>
           )}
         </Modal.Body>
@@ -348,7 +346,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
-      </form>
+      </Form>
     </Modal>
   );
 }

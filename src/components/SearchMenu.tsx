@@ -35,9 +35,8 @@ import {
 } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
+import Dropdown, { type DropdownProps } from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -206,7 +205,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         >
           <Dropdown.Toggle as={HideArrow}>
             <InputGroup className="flex-nowrap">
-              <FormControl
+              <Form.Control
                 type="search"
                 className="fm-search-input"
                 onChange={handleChange}

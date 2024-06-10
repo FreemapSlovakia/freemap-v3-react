@@ -10,14 +10,11 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Form } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+
 import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -227,10 +224,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
         <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
       </Modal.Header>
 
-      <form onSubmit={handleFormSubmit}>
+      <Form onSubmit={handleFormSubmit}>
         <Modal.Body>
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.tag}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
 
             <Form.Select value={tag} onChange={handleTagChange}>
               <option value="" />
@@ -242,10 +239,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 </option>
               ))}
             </Form.Select>
-          </FormGroup>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.author}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
 
             <Form.Select value={userId} onChange={handleUserIdChange}>
               <option value="" />
@@ -256,53 +253,53 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 </option>
               ))}
             </Form.Select>
-          </FormGroup>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.createdAt}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
 
             <InputGroup>
-              <FormControl
+              <Form.Control
                 type="date"
                 value={createdAtFrom}
                 onChange={handleCreatedAtFromChange}
               />
 
-              <InputGroupText> - </InputGroupText>
+              <InputGroup.Text> - </InputGroup.Text>
 
-              <FormControl
+              <Form.Control
                 type="date"
                 value={createdAtTo}
                 onChange={handleCreatedAtToChange}
               />
             </InputGroup>
-          </FormGroup>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.takenAt}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
 
             <InputGroup>
-              <FormControl
+              <Form.Control
                 type="date"
                 value={takenAtFrom}
                 onChange={handleTakenAtFromChange}
               />
 
-              <InputGroupText> - </InputGroupText>
+              <InputGroup.Text> - </InputGroup.Text>
 
-              <FormControl
+              <Form.Control
                 type="date"
                 value={takenAtTo}
                 onChange={handleTakenAtToChange}
               />
             </InputGroup>
-          </FormGroup>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.rating}</FormLabel>
+          <Form.Group>
+            <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
 
             <InputGroup>
-              <FormControl
+              <Form.Control
                 type="number"
                 min={1}
                 max={ratingTo || 5}
@@ -311,9 +308,9 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleRatingFromChange}
               />
 
-              <InputGroupText> - </InputGroupText>
+              <InputGroup.Text> - </InputGroup.Text>
 
-              <FormControl
+              <Form.Control
                 type="number"
                 min={ratingFrom || 1}
                 max={5}
@@ -322,7 +319,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleRatingToChange}
               />
             </InputGroup>
-          </FormGroup>
+          </Form.Group>
 
           <Form.Check
             id="filt-pano"
@@ -346,7 +343,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             <FaTimes /> {m?.general.cancel}
           </Button>
         </Modal.Footer>
-      </form>
+      </Form>
     </Modal>
   );
 }

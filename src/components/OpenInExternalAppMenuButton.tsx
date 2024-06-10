@@ -2,9 +2,9 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement } from 'react';
-import { OverlayProps } from 'react-bootstrap/esm/Overlay';
+import type { OverlayProps } from 'react-bootstrap/esm/Overlay';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
-import { Dropdown } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
 
 interface Props extends LatLon {

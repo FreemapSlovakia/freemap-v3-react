@@ -35,7 +35,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -59,8 +59,8 @@ import { is } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';
-import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 export default RoutePlannerMenu;
 
@@ -143,11 +143,11 @@ function TripSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.tripParameters}</legend>
 
-        <FormGroup as="form" onSubmit={handleDistanceSubmit}>
-          <FormLabel>{ghParams?.distance}</FormLabel>
+        <Form.Group as="form" onSubmit={handleDistanceSubmit}>
+          <Form.Label>{ghParams?.distance}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={distance}
               onChange={handleDistanceChange}
@@ -156,15 +156,15 @@ function TripSettings() {
               max={1000}
             />
 
-            <InputGroupText>㎞</InputGroupText>
+            <InputGroup.Text>㎞</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup as="form" onSubmit={handleSeedSubmit}>
-          <FormLabel className="mt-2">{ghParams?.seed}</FormLabel>
+        <Form.Group as="form" onSubmit={handleSeedSubmit}>
+          <Form.Label className="mt-2">{ghParams?.seed}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={seed}
               onChange={handleSeedChange}
@@ -186,7 +186,7 @@ function TripSettings() {
               <FaDiceThree />
             </Button>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
       </fieldset>
     </>
   );
@@ -248,11 +248,11 @@ function IsochroneSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.isochroneParameters}</legend>
 
-        <FormGroup as="form" onSubmit={handleTimeLimitSubmit}>
-          <FormLabel>{ghParams?.timeLimit}</FormLabel>
+        <Form.Group as="form" onSubmit={handleTimeLimitSubmit}>
+          <Form.Label>{ghParams?.timeLimit}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={timeLimit}
               onChange={handleTimeLimitChange}
@@ -262,15 +262,15 @@ function IsochroneSettings() {
               disabled={distanceLimit !== '0'}
             />
 
-            <InputGroupText>{m?.general.minutes}</InputGroupText>
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup as="form" onSubmit={handleDistanceLimitSubmit}>
-          <FormLabel className="mt-2">{ghParams?.distanceLimit}</FormLabel>
+        <Form.Group as="form" onSubmit={handleDistanceLimitSubmit}>
+          <Form.Label className="mt-2">{ghParams?.distanceLimit}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={distanceLimit === '0' ? '' : distanceLimit}
               onChange={handleDistanceLimitChange}
@@ -279,14 +279,14 @@ function IsochroneSettings() {
               max={1000}
             />
 
-            <InputGroupText>㎞</InputGroupText>
+            <InputGroup.Text>㎞</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup as="form" onSubmit={handleBucketsSubmit}>
-          <FormLabel className="mt-2">{ghParams?.buckets}</FormLabel>
+        <Form.Group as="form" onSubmit={handleBucketsSubmit}>
+          <Form.Label className="mt-2">{ghParams?.buckets}</Form.Label>
 
-          <FormControl
+          <Form.Control
             type="number"
             value={buckets}
             onChange={handleBucketsChange}
@@ -294,7 +294,7 @@ function IsochroneSettings() {
             step={1}
             max={5}
           />
-        </FormGroup>
+        </Form.Group>
       </fieldset>
     </>
   );

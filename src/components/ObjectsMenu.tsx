@@ -20,13 +20,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
-import FormControl from 'react-bootstrap/FormControl';
+import Dropdown, { type DropdownProps } from 'react-bootstrap/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { HideArrow } from './SearchMenu';
 import { ToolMenu } from './ToolMenu';
 import { RootState } from 'fm3/reducers';
 import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
+import Form from 'react-bootstrap/Form';
 
 export default ObjectsMenu;
 
@@ -205,7 +205,7 @@ export function ObjectsMenu(): ReactElement {
         onToggle={handleToggle}
       >
         <Dropdown.Toggle as={HideArrow}>
-          <FormControl
+          <Form.Control
             type="search"
             placeholder={m?.objects.type}
             onChange={handleFilterSet}

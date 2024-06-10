@@ -1,14 +1,11 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+
 import Button from 'react-bootstrap/Button';
-import FormCheck from 'react-bootstrap/FormCheck';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -130,13 +127,13 @@ export function EmbedMapModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <FormGroup style={{ maxWidth: '542px' }}>
-          <FormLabel>{m?.embed.dimensions}</FormLabel>
+        <Form.Group style={{ maxWidth: '542px' }}>
+          <Form.Label>{m?.embed.dimensions}</Form.Label>
 
           <InputGroup>
-            <InputGroupText>{m?.embed.width}</InputGroupText>
+            <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
 
-            <FormControl
+            <Form.Control
               type="number"
               value={width}
               min={100}
@@ -148,9 +145,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               }}
             />
 
-            <InputGroupText>{m?.embed.height}</InputGroupText>
+            <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
 
-            <FormControl
+            <Form.Control
               type="number"
               value={height}
               min={100}
@@ -162,11 +159,11 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               }}
             />
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
         <strong>{m?.embed.enableFeatures}</strong>
 
-        <FormCheck
+        <Form.Check
           id="enableSearch"
           type="checkbox"
           onChange={({ currentTarget }) => {
@@ -176,7 +173,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           label={m?.embed.enableSearch}
         />
 
-        <FormCheck
+        <Form.Check
           id="enableMapSwitch"
           type="checkbox"
           onChange={({ currentTarget }) => {
@@ -186,7 +183,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           label={m?.embed.enableMapSwitch}
         />
 
-        <FormCheck
+        <Form.Check
           id="enableLocateMe"
           type="checkbox"
           onChange={({ currentTarget }) => {
@@ -200,7 +197,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
         <p>{m?.embed.code}</p>
 
-        <FormControl
+        <Form.Control
           ref={setFormControl}
           as="textarea"
           value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen allow="${allow.join(

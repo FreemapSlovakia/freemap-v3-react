@@ -35,8 +35,6 @@ import {
 } from 'react';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import {
@@ -53,7 +51,7 @@ import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 import { RecentTags } from './RecentTags';
-import { Form } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
 
 type Props = { show: boolean };
 
@@ -491,7 +489,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 ))}
 
               {!isFullscreen && editModel && (
-                <form onSubmit={handleSave}>
+                <Form onSubmit={handleSave}>
                   <hr />
 
                   <h5>{m?.gallery.viewer.modify}</h5>
@@ -507,7 +505,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   <Button variant="primary" type="submit">
                     <FaSave /> {m?.general.save}
                   </Button>
-                </form>
+                </Form>
               )}
 
               {!isFullscreen && (
@@ -525,10 +523,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     ))}
 
                   {user && (
-                    <form onSubmit={handleCommentFormSubmit}>
-                      <FormGroup>
+                    <Form onSubmit={handleCommentFormSubmit}>
+                      <Form.Group>
                         <InputGroup>
-                          <FormControl
+                          <Form.Control
                             type="text"
                             placeholder={m?.gallery.viewer.newComment}
                             value={comment}
@@ -548,8 +546,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                             {m?.gallery.viewer.addComment}
                           </Button>
                         </InputGroup>
-                      </FormGroup>
-                    </form>
+                      </Form.Group>
+                    </Form>
                   )}
 
                   {user && (

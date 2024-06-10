@@ -9,8 +9,6 @@ import {
 } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -18,6 +16,7 @@ import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
 import { DateTime } from '../DateTime';
 import { RecentTags } from './RecentTags';
+import Form from 'react-bootstrap/Form';
 
 export interface PictureModel {
   title: string;
@@ -126,28 +125,28 @@ export function GalleryEditForm({
         </Alert>
       ))}
 
-      <FormGroup>
-        <FormControl
+      <Form.Group>
+        <Form.Control
           placeholder={m?.gallery.editForm.name}
           type="text"
           value={model.title}
           onChange={handleTitleChange}
           maxLength={255}
         />
-      </FormGroup>
+      </Form.Group>
 
-      <FormGroup>
-        <FormControl
+      <Form.Group>
+        <Form.Control
           placeholder={m?.gallery.editForm.description}
           as="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
           maxLength={4096}
         />
-      </FormGroup>
+      </Form.Group>
 
       {m && (
-        <FormGroup>
+        <Form.Group>
           <DateTime
             value={model.takenAt}
             onChange={handleTakenAtChange}
@@ -157,12 +156,12 @@ export function GalleryEditForm({
               datetime: m.gallery.editForm.takenAt.datetime,
             }}
           />
-        </FormGroup>
+        </Form.Group>
       )}
 
-      <FormGroup>
+      <Form.Group>
         <InputGroup>
-          <FormControl
+          <Form.Control
             type="text"
             placeholder={m?.gallery.editForm.location}
             onChange={handlePositionChange}
@@ -173,9 +172,9 @@ export function GalleryEditForm({
             <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
           </Button>
         </InputGroup>
-      </FormGroup>
+      </Form.Group>
 
-      <FormGroup key={key}>
+      <Form.Group key={key}>
         <ReactTags
           placeholderText={m?.gallery.editForm.tags}
           selected={model.tags.map((tag) => ({ label: tag, value: tag }))}
@@ -194,7 +193,7 @@ export function GalleryEditForm({
           existingTags={model.tags}
           onAdd={(tag) => handleTagAddition({ label: tag, value: tag })}
         />
-      </FormGroup>
+      </Form.Group>
     </div>
   );
 }

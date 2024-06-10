@@ -3,15 +3,13 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaBullseye, FaSync } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -86,7 +84,7 @@ export function DeviceForm(): ReactElement {
   }, [setRegenerateToken]);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
@@ -99,9 +97,9 @@ export function DeviceForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <FormGroup className="required">
-          <FormLabel>{m?.tracking.device.name}</FormLabel>
-          <FormControl
+        <Form.Group className="required">
+          <Form.Label>{m?.tracking.device.name}</Form.Label>
+          <Form.Control
             type="text"
             value={name}
             onChange={setName}
@@ -109,10 +107,10 @@ export function DeviceForm(): ReactElement {
             pattern=".*\w.*"
             maxLength={255}
           />
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup className="required">
-          <FormLabel>Token</FormLabel>
+        <Form.Group className="required">
+          <Form.Label>Token</Form.Label>
           <InputGroup>
             <DropdownButton
               variant="secondary"
@@ -128,7 +126,7 @@ export function DeviceForm(): ReactElement {
               ))}
             </DropdownButton>
 
-            <FormControl
+            <Form.Control
               type="text"
               pattern={
                 type === 'imei'
@@ -155,25 +153,25 @@ export function DeviceForm(): ReactElement {
               </Button>
             )}
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.device.maxCount}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.device.maxCount}</Form.Label>
 
-          <FormControl
+          <Form.Control
             type="number"
             min="0"
             step="1"
             value={maxCount}
             onChange={setMaxCount}
           />
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.device.maxAge}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.device.maxAge}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
@@ -181,9 +179,9 @@ export function DeviceForm(): ReactElement {
               onChange={setMaxAge}
             />
 
-            <InputGroupText>{m?.general.minutes}</InputGroupText>
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
       </Modal.Body>
 
       <Modal.Footer>
@@ -199,6 +197,6 @@ export function DeviceForm(): ReactElement {
           {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
-    </form>
+    </Form>
   );
 }

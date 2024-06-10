@@ -3,10 +3,11 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+
 import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -118,11 +119,11 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <FormGroup>
+        <Form.Group>
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.close}
           </Button>
-        </FormGroup>
+        </Form.Group>
       </Modal.Footer>
     </Modal>
   );

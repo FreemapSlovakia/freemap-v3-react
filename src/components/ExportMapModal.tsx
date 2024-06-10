@@ -7,13 +7,8 @@ import Accordion from 'react-bootstrap/Accordion';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import FormCheck from 'react-bootstrap/FormCheck';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import {
   FaDownload,
   FaDrawPolygon,
@@ -22,6 +17,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import Form from 'react-bootstrap/Form';
 
 type Props = { show: boolean };
 
@@ -245,7 +241,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <p>{m?.pdfExport.layersTitle}</p>
 
-        <FormCheck
+        <Form.Check
           id="contours"
           type="checkbox"
           checked={contours}
@@ -255,7 +251,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.contours}
         />
 
-        <FormCheck
+        <Form.Check
           id="shading"
           type="checkbox"
           checked={shadedRelief}
@@ -263,7 +259,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.shading}
         />
 
-        <FormCheck
+        <Form.Check
           id="hikingTrails"
           type="checkbox"
           checked={hikingTrails}
@@ -273,7 +269,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.hikingTrails}
         />
 
-        <FormCheck
+        <Form.Check
           id="bicycleTrails"
           checked={bicycleTrails}
           onChange={() => {
@@ -282,7 +278,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.bicycleTrails}
         />
 
-        <FormCheck
+        <Form.Check
           id="skiTrails"
           type="checkbox"
           checked={skiTrails}
@@ -292,7 +288,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.skiTrails}
         />
 
-        <FormCheck
+        <Form.Check
           id="horseTrails"
           type="checkbox"
           checked={horseTrails}
@@ -302,7 +298,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.horseTrails}
         />
 
-        <FormCheck
+        <Form.Check
           id="drawing"
           type="checkbox"
           checked={drawing}
@@ -312,7 +308,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.drawing}
         />
 
-        <FormCheck
+        <Form.Check
           id="plannedRoute"
           type="checkbox"
           checked={plannedRoute}
@@ -322,7 +318,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.plannedRoute}
         />
 
-        <FormCheck
+        <Form.Check
           id="track"
           type="checkbox"
           checked={track}
@@ -337,7 +333,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <p>{m?.pdfExport.mapScale}</p>
 
         <InputGroup>
-          <FormControl
+          <Form.Control
             type="number"
             value={scale}
             min={60}
@@ -348,7 +344,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             }}
           />
 
-          <InputGroupText>DPI</InputGroupText>
+          <InputGroup.Text>DPI</InputGroup.Text>
         </InputGroup>
 
         <hr />
@@ -367,8 +363,8 @@ export function ExportMapModal({ show }: Props): ReactElement {
             </Card.Header>
 
             <Accordion.Collapse eventKey="0" className="p-2">
-              <FormGroup className="mt-2">
-                <FormLabel>
+              <Form.Group className="mt-2">
+                <Form.Label>
                   {m?.pdfExport.styles}{' '}
                   <a
                     href="http://mapnik.org/mapnik-reference/"
@@ -376,9 +372,9 @@ export function ExportMapModal({ show }: Props): ReactElement {
                   >
                     <FaRegQuestionCircle />
                   </a>
-                </FormLabel>
+                </Form.Label>
 
-                <FormControl
+                <Form.Control
                   as="textarea"
                   value={style}
                   onChange={handleStyleChange}
@@ -386,7 +382,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
                   disabled={!(drawing || plannedRoute || track)}
                   className="text-monospace"
                 />
-              </FormGroup>
+              </Form.Group>
             </Accordion.Collapse>
           </Card>
         </Accordion>

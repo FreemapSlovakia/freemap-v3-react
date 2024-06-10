@@ -11,12 +11,10 @@ import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useOnline } from 'fm3/hooks/useOnline';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import FormCheck from 'react-bootstrap/FormCheck';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
@@ -171,22 +169,22 @@ export function MapsModal({ show }: Props): ReactElement {
               )}
             </Card.Title>
 
-            <form>
+            <Form>
               {(isOwnMap || !activeMap) && (
-                <FormGroup>
-                  <FormLabel>{m?.general.name}</FormLabel>
+                <Form.Group>
+                  <Form.Label>{m?.general.name}</Form.Label>
 
-                  <FormControl
+                  <Form.Control
                     disabled={!online}
                     value={name}
                     onChange={(e) => setName(e.currentTarget.value)}
                   />
-                </FormGroup>
+                </Form.Group>
               )}
 
               {(isOwnMap || !activeMap) && (
-                <FormGroup>
-                  <FormLabel>{m?.maps.writers}</FormLabel>
+                <Form.Group>
+                  <Form.Label>{m?.maps.writers}</Form.Label>
 
                   <ReactTags
                     selected={writers?.map((id) => ({
@@ -208,7 +206,7 @@ export function MapsModal({ show }: Props): ReactElement {
                     onDelete={handleWriterDelete}
                     collapseOnSelect
                   />
-                </FormGroup>
+                </Form.Group>
               )}
 
               <div className="d-flex flex-row flex-wrap align-items-baseline">
@@ -240,7 +238,7 @@ export function MapsModal({ show }: Props): ReactElement {
                   </Button>
                 )}
               </div>
-            </form>
+            </Form>
           </Card.Body>
         </Card>
 
@@ -262,7 +260,7 @@ export function MapsModal({ show }: Props): ReactElement {
                             <FaFilter />
                           </InputGroup.Text>
 
-                          <FormControl
+                          <Form.Control
                             value={filter}
                             onChange={(e) => setFilter(e.currentTarget.value)}
                           />
@@ -308,7 +306,7 @@ export function MapsModal({ show }: Props): ReactElement {
               </Table>
             </div>
 
-            <FormCheck
+            <Form.Check
               id="clear"
               type="checkbox"
               checked={clear}
@@ -316,7 +314,7 @@ export function MapsModal({ show }: Props): ReactElement {
               label={m?.maps.loadToEmpty}
             />
 
-            <FormCheck
+            <Form.Check
               id="inclPosition"
               type="checkbox"
               checked={inclPosition}

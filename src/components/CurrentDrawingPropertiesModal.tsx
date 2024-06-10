@@ -8,7 +8,9 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { DrawingRecentColors } from './DrawingRecentColors';

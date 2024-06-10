@@ -4,7 +4,7 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { LatLon } from 'fm3/types/common';
-import { Alert } from 'react-bootstrap';
+import Alert from 'react-bootstrap/Alert';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;

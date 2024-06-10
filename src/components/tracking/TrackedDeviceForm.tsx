@@ -7,13 +7,10 @@ import { useTextInputState } from 'fm3/hooks/useTextInputState';
 import { useMessages } from 'fm3/l10nInjector';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { FormEvent, ReactElement, useState } from 'react';
+import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 
@@ -98,7 +95,7 @@ export function TrackedDeviceForm(): ReactElement {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
@@ -113,76 +110,76 @@ export function TrackedDeviceForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <FormGroup className="required">
+        <Form.Group className="required">
           {/* TODD: or ID */}
-          <FormLabel>{m?.tracking.trackedDevice.token}</FormLabel>
-          <FormControl value={id} onChange={setId} required />
-        </FormGroup>
+          <Form.Label>{m?.tracking.trackedDevice.token}</Form.Label>
+          <Form.Control value={id} onChange={setId} required />
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.label}</FormLabel>
-          <FormControl value={label} onChange={setLabel} />
-        </FormGroup>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.label}</Form.Label>
+          <Form.Control value={label} onChange={setLabel} />
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.color}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.color}</Form.Label>
           <InputGroup>
-            <FormControl type="color" value={color} onChange={setColor} />
+            <Form.Control type="color" value={color} onChange={setColor} />
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.width}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.width}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               value={width}
               onChange={setWidth}
               type="number"
               min="1"
             />
-            <InputGroupText>px</InputGroupText>
+            <InputGroup.Text>px</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.fromTime}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.fromTime}</Form.Label>
 
           <DateTime value={fromTime} onChange={setFromTime} />
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.maxAge}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.maxAge}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroupText>{m?.general.minutes}</InputGroupText>
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.maxCount}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.maxCount}</Form.Label>
 
-          <FormControl
+          <Form.Control
             type="number"
             min="0"
             step="1"
             value={maxCount}
             onChange={setMaxCount}
           />
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.splitDistance}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.splitDistance}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
@@ -190,15 +187,15 @@ export function TrackedDeviceForm(): ReactElement {
               onChange={setSplitDistance}
             />
 
-            <InputGroupText>{m?.general.meters}</InputGroupText>
+            <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.splitDuration}</FormLabel>
+        <Form.Group>
+          <Form.Label>{m?.tracking.trackedDevice.splitDuration}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
@@ -206,9 +203,9 @@ export function TrackedDeviceForm(): ReactElement {
               onChange={setSplitDuration}
             />
 
-            <InputGroupText>{m?.general.minutes}</InputGroupText>
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
       </Modal.Body>
 
       <Modal.Footer>
@@ -224,6 +221,6 @@ export function TrackedDeviceForm(): ReactElement {
           {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
-    </form>
+    </Form>
   );
 }

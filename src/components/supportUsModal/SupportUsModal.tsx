@@ -8,6 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { SupportUsMessages } from './translations/SupportUsMessages';
+import Form from 'react-bootstrap/Form';
 
 type Props = { show: boolean };
 
@@ -37,12 +38,15 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
       <Modal.Body>
         <p>{lm?.explanation}</p>
+
         <hr />
+
         <p>
           {lm?.account} VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
+
         <div>
           <img
             className="d-block mx-auto w-50 mt-2"
@@ -50,19 +54,25 @@ export function SupportUsModal({ show }: Props): ReactElement {
             alt=""
           />
         </div>
+
         <hr />
-        <form
+
+        <Form
           action="https://www.paypal.com/cgi-bin/webscr"
           method="post"
           target="_blank"
         >
           <input name="cmd" value="_s-xclick" type="hidden" />
+
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
+
           <Button className="d-block mx-auto" type="submit">
             <FaPaypal /> {lm?.paypal}
           </Button>
-        </form>
+        </Form>
+
         <hr />
+
         {(language === 'sk' || language === 'cs') && (
           <>
             <p>
@@ -83,7 +93,9 @@ export function SupportUsModal({ show }: Props): ReactElement {
             <hr />
           </>
         )}
+
         <p>{lm?.thanks}</p>
+
         <p>
           <a
             href="#show=about"
