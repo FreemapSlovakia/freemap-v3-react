@@ -83,7 +83,7 @@ export function MainMenuButton(): ReactElement {
   );
 
   const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
-    useMenuHandler(extraMenuHandler);
+    useMenuHandler({ extraHandler: extraMenuHandler });
 
   useEffect(() => {
     get('cacheMode').then((cacheMode) =>

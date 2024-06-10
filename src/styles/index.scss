@@ -46,7 +46,6 @@ body {
 
 .menus {
   pointer-events: none;
-  // margin: 0.25rem;
   & > * {
     pointer-events: auto;
   }
@@ -212,10 +211,6 @@ button#freemap-logo {
     flex-grow: 1;
     padding-left: 10px;
   }
-}
-
-.fm-attr-popover {
-  max-width: 400px;
 }
 
 .fm-no-after::after {
