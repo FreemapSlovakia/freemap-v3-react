@@ -66,9 +66,6 @@ export function OpenInExternalAppMenuButton({
           // onSelect={handleDropdownItemClick}
         />
       </Dropdown.Menu>
-      {/* </Popover.Body>
-        </Popover>
-      </Overlay> */}
     </Dropdown>
   );
 }
