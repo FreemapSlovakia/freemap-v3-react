@@ -2,7 +2,7 @@ import { hideInfoBar } from 'fm3/actions/mainActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useState } from 'react';
-import { CloseButton } from 'react-bootstrap';
+import CloseButton from 'react-bootstrap/CloseButton';
 import { useDispatch } from 'react-redux';
 
 export function InfoBar(): ReactElement | null {
