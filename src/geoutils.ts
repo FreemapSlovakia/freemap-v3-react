@@ -1,7 +1,7 @@
 import booleanContains from '@turf/boolean-contains';
-import { Feature, Geometries, Position, Properties } from '@turf/helpers';
 import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common';
+import { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 
 const PI2 = 2 * Math.PI;
 
@@ -190,9 +190,9 @@ export function positionsEqual(pt1: Position, pt2: Position): boolean {
 }
 
 // TODO so far unused
-export function mergeLines<T extends Geometries>(
+export function mergeLines<T extends Geometry>(
   features: Feature<T>[],
-  properties: Properties = {},
+  properties: GeoJsonProperties = {},
 ): void {
   restart: for (;;) {
     for (let i = 0; i < features.length - 1; i++) {
@@ -323,7 +323,7 @@ export function mergeLines<T extends Geometries>(
   }
 }
 
-export function shouldBeArea(tags?: Properties): boolean {
+export function shouldBeArea(tags?: GeoJsonProperties): boolean {
   return (
     // taken from https://wiki.openstreetmap.org/wiki/Key:area
     !!tags && tags['area'] !== 'no' && !tags['barrier'] && !tags['highway']

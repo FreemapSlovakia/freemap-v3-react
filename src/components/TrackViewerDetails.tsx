@@ -1,4 +1,3 @@
-import { Geometries, GeometryCollection } from '@turf/helpers';
 import { distance, smoothElevations } from 'fm3/geoutils';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
@@ -6,6 +5,7 @@ import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { useMessages } from 'fm3/l10nInjector';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { Geometry } from 'geojson';
 import { ReactElement } from 'react';
 
 export function TrackViewerDetails(): ReactElement | null {
@@ -21,7 +21,7 @@ export function TrackViewerDetails(): ReactElement | null {
 export function TrackViewerDetailsInt({
   geometry,
 }: {
-  geometry: Geometries | GeometryCollection;
+  geometry: Geometry;
 }): ReactElement | null {
   const m = useMessages();
 

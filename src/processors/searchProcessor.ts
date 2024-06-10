@@ -1,7 +1,7 @@
 import { tileToGeoJSON } from '@mapbox/tilebelt';
 import bboxPolygon from '@turf/bbox-polygon';
-import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
-import { BBox2d } from '@turf/helpers/dist/js/lib/geojson';
+import { feature, point } from '@turf/helpers';
+import { BBox } from 'geojson';
 import { clearMapFeatures } from 'fm3/actions/mainActions';
 import {
   SearchResult,
@@ -15,13 +15,14 @@ import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { LatLon } from 'fm3/types/common';
+import { Geometry } from 'geojson';
 import { CRS, Point } from 'leaflet';
 import { assert } from 'typia';
 
 interface NominatimResult {
   osm_id?: number;
   osm_type?: 'node' | 'way' | 'relation';
-  geojson?: Geometries | GeometryCollection;
+  geojson?: Geometry;
   lat: string;
   lon: string;
   display_name: string;
@@ -86,7 +87,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
         console.log(p1, p2);
 
-        return [p1.lng, p1.lat, p2.lng, p2.lat] as BBox2d;
+        return [p1.lng, p1.lat, p2.lng, p2.lat] as BBox;
       };
 
       dispatch(
@@ -94,9 +95,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
           {
             id: -1,
             geojson: bboxPolygon(
-              parts.some((p) => Math.abs(p) > 180)
-                ? reproj()
-                : (parts as BBox2d),
+              parts.some((p) => Math.abs(p) > 180) ? reproj() : (parts as BBox),
               {
                 properties: tags,
               },

@@ -1,8 +1,5 @@
 import {
-  FeatureCollection,
   featureCollection,
-  Geometry,
-  GeometryCollection,
   lineString,
   multiLineString,
   point,
@@ -14,13 +11,14 @@ import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { fetchPictures, Picture } from './fetchPictures';
 import { licenseNotice, upload } from './upload';
+import { FeatureCollection } from 'geojson';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
   action,
   dispatch,
 }) => {
-  const fc = featureCollection<Geometry | GeometryCollection>([]);
+  const fc = featureCollection([]);
 
   (fc as any).metadata = {
     description: 'Exported from https://www.freemap.sk/',

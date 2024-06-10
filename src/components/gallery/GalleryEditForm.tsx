@@ -169,11 +169,9 @@ export function GalleryEditForm({
             value={model.dirtyPosition}
           />
 
-          <InputGroup.Append>
-            <Button onClick={onPositionPick}>
-              <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
-            </Button>
-          </InputGroup.Append>
+          <Button onClick={onPositionPick}>
+            <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
+          </Button>
         </InputGroup>
       </FormGroup>
 

@@ -381,7 +381,7 @@ export function Main(): ReactElement {
 
   const showMapsMenu = useAppSelector((state) => !!state.maps.activeMap);
 
-  // prevents map click action if popper is open
+  // prevents map click action if dropdown is open
   const handleMapWrapperClick = (e: MouseEvent) => {
     let el: EventTarget | null = e.target;
 
@@ -394,11 +394,7 @@ export function Main(): ReactElement {
       el = el.parentElement;
     }
 
-    if (
-      document.querySelector(
-        '*[data-popper-reference-hidden=false], .dropdown-menu.show',
-      ) !== null
-    ) {
+    if (document.querySelector('*[aria-expanded=true]') !== null) {
       e.stopPropagation();
 
       document.body.click();
@@ -498,7 +494,7 @@ export function Main(): ReactElement {
 
                     {routeFound && (
                       <Button
-                        className={trackFound ? 'ml-1' : ''}
+                        className={trackFound ? 'ms-1' : ''}
                         variant="secondary"
                         onClick={() =>
                           dispatch(routePlannerToggleElevationChart())
@@ -585,6 +581,8 @@ export function Main(): ReactElement {
 
             <CopyrightButton />
           </div>
+
+          <MapContextMenu />
         </>
       )}
 
@@ -611,8 +609,6 @@ export function Main(): ReactElement {
             center={{ lat, lng: lon }}
             zoom={zoom}
           >
-            <MapContextMenu />
-
             <ScaleControl imperial={false} position="bottomleft" />
 
             <Layers />

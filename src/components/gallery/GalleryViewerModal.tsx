@@ -53,6 +53,7 @@ import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 import { RecentTags } from './RecentTags';
+import { Form } from 'react-bootstrap';
 
 type Props = { show: boolean };
 
@@ -319,8 +320,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         <Modal.Title>
           {m?.gallery.viewer.title}{' '}
           {imageIds && (
-            <FormControl
-              as="select"
+            <Form.Select
               value={index}
               onChange={handleIndexChange}
               className="w-auto d-inline-block"
@@ -330,7 +330,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   {i + 1}
                 </option>
               ))}
-            </FormControl>
+            </Form.Select>
           )}
           {imageIds ? ` / ${imageIds.length} ` : ''}
           {title && `- ${title}`}
@@ -486,7 +486,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 tags.map((tag) => (
                   <Fragment key={tag}>
                     {' '}
-                    <Badge variant="secondary">{tag}</Badge>
+                    <Badge bg="secondary">{tag}</Badge>
                   </Fragment>
                 ))}
 
@@ -540,15 +540,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                             maxLength={4096}
                           />
 
-                          <InputGroup.Append>
-                            <Button
-                              variant="secondary"
-                              type="submit"
-                              disabled={comment.length < 1}
-                            >
-                              {m?.gallery.viewer.addComment}
-                            </Button>
-                          </InputGroup.Append>
+                          <Button
+                            variant="secondary"
+                            type="submit"
+                            disabled={comment.length < 1}
+                          >
+                            {m?.gallery.viewer.addComment}
+                          </Button>
                         </InputGroup>
                       </FormGroup>
                     </form>
@@ -561,7 +559,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                       </div>
 
                       <ReactStars
-                        className="stars ml-1  flex-shrink-0"
+                        className="stars ms-1  flex-shrink-0"
                         size={22}
                         half={false}
                         value={myStars ?? 0}

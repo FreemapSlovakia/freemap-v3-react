@@ -2,7 +2,7 @@ import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
-import { Card } from 'react-bootstrap';
+import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -13,6 +13,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import {
   FaDownload,
   FaDrawPolygon,
@@ -338,7 +339,6 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <InputGroup>
           <FormControl
             type="number"
-            custom
             value={scale}
             min={60}
             max={960}
@@ -348,9 +348,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             }}
           />
 
-          <InputGroup.Append>
-            <InputGroup.Text>DPI</InputGroup.Text>
-          </InputGroup.Append>
+          <InputGroupText>DPI</InputGroupText>
         </InputGroup>
 
         <hr />
@@ -358,14 +356,14 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <Accordion>
           <Card>
             <Card.Header>
-              <Accordion.Toggle
+              <Accordion.Button
                 as={Button}
                 variant="link"
                 eventKey="0"
                 className="text-left w-100"
               >
                 {m?.pdfExport.advancedSettings}
-              </Accordion.Toggle>
+              </Accordion.Button>
             </Card.Header>
 
             <Accordion.Collapse eventKey="0" className="p-2">

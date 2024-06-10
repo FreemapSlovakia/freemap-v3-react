@@ -120,6 +120,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         {items.map(
           ({
@@ -185,6 +186,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
           </>
         )}
       </Modal.Body>
+
       <Modal.Footer>
         <Button
           onClick={() => {
@@ -197,6 +199,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
+
         <Button onClick={handleClose} variant="dark">
           <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>

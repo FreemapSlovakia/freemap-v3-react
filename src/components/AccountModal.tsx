@@ -69,11 +69,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
     );
   };
 
-  if (!user) {
-    return null;
-  }
-
-  return (
+  return !user ? null : (
     <Modal show={show} onHide={close}>
       <Form
         onSubmit={(e) => {

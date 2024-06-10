@@ -100,12 +100,11 @@ export function AuthProviders({ mode }: Props): ReactElement {
   }
 
   return (
-    <>
+    <div className="d-grid gap-2">
       {show('facebook') && (
         <Button
           onClick={loginWithFacebook}
           size="lg"
-          block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
           disabled={disabled('facebook')}
         >
@@ -118,7 +117,6 @@ export function AuthProviders({ mode }: Props): ReactElement {
         <Button
           onClick={loginWithGoogle}
           size="lg"
-          block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
           disabled={disabled('google')}
         >
@@ -131,7 +129,6 @@ export function AuthProviders({ mode }: Props): ReactElement {
         <Button
           onClick={loginWithOsm}
           size="lg"
-          block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
           disabled={disabled('osm')}
         >
@@ -144,7 +141,6 @@ export function AuthProviders({ mode }: Props): ReactElement {
         <Button
           onClick={loginWithGarmin}
           size="lg"
-          block
           style={{ backgroundColor: '#1791FF', color: '#fff' }}
           disabled={disabled('garmin')}
         >
@@ -153,6 +149,6 @@ export function AuthProviders({ mode }: Props): ReactElement {
           {m?.auth.provider.garmin}
         </Button>
       )}
-    </>
+    </div>
   );
 }

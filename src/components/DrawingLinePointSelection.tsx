@@ -41,7 +41,8 @@ export function DrawingLinePointSelection(): ReactElement | null {
   ) {
     return (
       <Card className="fm-toolbar mx-2 mt-2">
-        <span className="mr-2">{m?.drawing.selectPointToJoin}</span>
+        <span className="me-2">{m?.drawing.selectPointToJoin}</span>
+
         <Button
           variant="secondary"
           onClick={() => {
@@ -77,7 +78,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
     >
       {line.type === 'line' && !end && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineSplit(pt))}
         >
@@ -88,7 +89,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
 
       {line.type === 'line' && end && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineJoinStart(pt))}
         >
@@ -99,7 +100,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
 
       {line.type === 'line' && end && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineContinue(pt))}
         >

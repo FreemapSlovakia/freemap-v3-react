@@ -1,16 +1,16 @@
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
-import { ReactElement, useCallback, useRef, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Overlay, { Placement } from 'react-bootstrap/esm/Overlay';
-import Popover from 'react-bootstrap/Popover';
+import { ReactElement } from 'react';
+import { OverlayProps } from 'react-bootstrap/esm/Overlay';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
+import { Dropdown } from 'react-bootstrap';
+import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
 
 interface Props extends LatLon {
   lat: number;
   lon: number;
-  placement?: Placement;
+  placement?: OverlayProps['placement'];
   includePoint?: boolean;
   pointTitle?: string;
   pointDescription?: string;
@@ -32,63 +32,40 @@ export function OpenInExternalAppMenuButton({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  const [show, setShow] = useState(false);
-
-  const handleDropdownItemClick = useCallback(() => {
-    setShow(false);
-  }, [setShow]);
-
-  const handleButtonClick = useCallback(() => {
-    setShow(true);
-  }, [setShow]);
-
-  const handleHide = useCallback(() => {
-    setShow(false);
-  }, [setShow]);
-
-  const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
+  const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler();
 
   const mapType = useAppSelector((state) => state.map.mapType);
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
   return (
-    <>
-      <Button
-        variant="secondary"
-        ref={buttonRef}
-        onClick={handleButtonClick}
-        title={m?.external.openInExternal}
-        className={className}
-      >
+    <Dropdown
+      placement={placement}
+      className={className}
+      onSelect={handleSelect}
+      show={menuShown}
+      onToggle={handleMenuToggle}
+    >
+      <Dropdown.Toggle variant="secondary" title={m?.external.openInExternal}>
         {children}
-      </Button>
-      <Overlay
-        rootClose
-        placement={placement ?? 'bottom'}
-        // trigger="focus"
-        show={show}
-        onHide={handleHide}
-        target={getTarget}
-      >
-        <Popover id="popover-open-ext" className="fm-menu">
-          <Popover.Content>
-            <OpenInExternalAppDropdownItems
-              lat={lat}
-              lon={lon}
-              zoom={zoom}
-              mapType={mapType}
-              includePoint={includePoint}
-              pointTitle={pointTitle}
-              pointDescription={pointDescription}
-              url={url}
-              onSelect={handleDropdownItemClick}
-            />
-          </Popover.Content>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <OpenInExternalAppDropdownItems
+          lat={lat}
+          lon={lon}
+          zoom={zoom}
+          mapType={mapType}
+          includePoint={includePoint}
+          // pointTitle={pointTitle}
+          // pointDescription={pointDescription}
+          url={url}
+          // onSelect={handleDropdownItemClick}
+        />
+      </Dropdown.Menu>
+      {/* </Popover.Body>
         </Popover>
-      </Overlay>
-    </>
+      </Overlay> */}
+    </Dropdown>
   );
 }

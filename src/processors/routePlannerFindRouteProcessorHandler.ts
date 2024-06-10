@@ -1,4 +1,3 @@
-import { Feature, LineString, Polygon } from '@turf/helpers';
 import { clearMapFeatures, setTool } from 'fm3/actions/mainActions';
 import {
   Alternative,
@@ -20,6 +19,7 @@ import { hasProperty } from 'fm3/typeUtils';
 import { isActionOf } from 'typesafe-actions';
 import { assert } from 'typia';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor';
+import { Feature, LineString, Polygon } from 'geojson';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
 

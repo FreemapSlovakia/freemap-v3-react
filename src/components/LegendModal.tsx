@@ -34,16 +34,19 @@ export function LegendModal({ show }: Props): ReactElement {
           <FaRegMap /> Legenda mapy
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <p>
           Legenda k vrstvám <i>Automapa, Turistická, Cyklomapa a Lyžiarska</i>:
         </p>
+
         <Accordion>
           {legend.map((c: LegendItem, i: number) => (
             <Card key={c.n}>
-              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
+              <Accordion.Button as={Card.Header} eventKey={String(i)}>
                 {c.n}
-              </Accordion.Toggle>
+              </Accordion.Button>
+
               <Accordion.Collapse eventKey={String(i)}>
                 <Card.Body>
                   {c.items.map((e) => (
@@ -53,6 +56,7 @@ export function LegendModal({ show }: Props): ReactElement {
                           <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
                         </div>
                       </div>
+
                       <div>{e.n}</div>
                     </div>
                   ))}
@@ -62,6 +66,7 @@ export function LegendModal({ show }: Props): ReactElement {
           ))}
         </Accordion>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
           <FaTimes /> Zavrieť

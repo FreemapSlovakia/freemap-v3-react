@@ -8,6 +8,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -127,13 +128,14 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           <FaCode /> {m?.mainMenu.embedMap}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <FormGroup style={{ maxWidth: '542px' }}>
           <FormLabel>{m?.embed.dimensions}</FormLabel>
+
           <InputGroup>
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroupText>{m?.embed.width}</InputGroupText>
+
             <FormControl
               type="number"
               value={width}
@@ -145,9 +147,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
                 setWidth(currentTarget.value);
               }}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroupText>{m?.embed.height}</InputGroupText>
+
             <FormControl
               type="number"
               value={height}
@@ -163,6 +165,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
         </FormGroup>
 
         <strong>{m?.embed.enableFeatures}</strong>
+
         <FormCheck
           id="enableSearch"
           type="checkbox"
@@ -172,6 +175,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           checked={enableSearch}
           label={m?.embed.enableSearch}
         />
+
         <FormCheck
           id="enableMapSwitch"
           type="checkbox"
@@ -181,6 +185,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           checked={enableMapSwitch}
           label={m?.embed.enableMapSwitch}
         />
+
         <FormCheck
           id="enableLocateMe"
           type="checkbox"
@@ -190,8 +195,11 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           checked={enableLocateMe}
           label={m?.embed.enableLocateMe}
         />
+
         <hr />
+
         <p>{m?.embed.code}</p>
+
         <FormControl
           ref={setFormControl}
           as="textarea"
@@ -201,8 +209,11 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           readOnly
           rows={3}
         />
+
         <br />
+
         <p>{m?.embed.example}</p>
+
         <div style={{ overflowX: 'auto' }}>
           <iframe
             title="Freemap.sk"
@@ -220,6 +231,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           />
         </div>
       </Modal.Body>
+
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
           <FaClipboard /> {m?.general.copyCode}

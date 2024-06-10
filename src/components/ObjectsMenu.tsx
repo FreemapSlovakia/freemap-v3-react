@@ -119,17 +119,15 @@ export function ObjectsMenu(): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleToggle: DropdownProps['onToggle'] = (isOpen, e, metadata) => {
+  const handleToggle: DropdownProps['onToggle'] = (nextShow, metadata) => {
     if (justOpenedRef.current) {
       justOpenedRef.current = false;
-    } else if (!isOpen && metadata.source !== 'select') {
+    } else if (!nextShow && metadata.source !== 'select') {
       setDropdownOpened(false);
 
-      if (e) {
-        e.preventDefault();
+      metadata.originalEvent?.preventDefault();
 
-        e.stopPropagation();
-      }
+      metadata.originalEvent?.stopPropagation();
 
       inputRef.current?.blur();
     }
@@ -199,7 +197,7 @@ export function ObjectsMenu(): ReactElement {
   return (
     <ToolMenu>
       <Dropdown
-        className="ml-1"
+        className="ms-1"
         id="objectsMenuDropdown"
         show={dropdownOpened}
         onSelect={handleSelect}
@@ -265,7 +263,7 @@ export function ObjectsMenu(): ReactElement {
       </Dropdown>
 
       <Dropdown
-        className="ml-1"
+        className="ms-1"
         onSelect={(eventKey) => handleIconChange(eventKey as MarkerType)}
       >
         <Dropdown.Toggle variant="secondary">

@@ -85,9 +85,9 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
         <Accordion>
           {[...legend].map((c: Item, i: number) => (
             <Card key={c.name}>
-              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
+              <Accordion.Button as={Card.Header} eventKey={String(i)}>
                 {c.name}
-              </Accordion.Toggle>
+              </Accordion.Button>
 
               <Accordion.Collapse eventKey={String(i)}>
                 <Card.Body>

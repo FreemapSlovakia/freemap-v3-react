@@ -1,67 +1,24 @@
 import { useMessages } from 'fm3/l10nInjector';
 import { CacheMode } from 'fm3/types/common';
-import { get } from 'idb-keyval';
-import { useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaEraser } from 'react-icons/fa';
 import { Checkbox } from '../Checkbox';
 import { SubmenuHeader } from './SubmenuHeader';
 
-export function OfflineSubmenu(): JSX.Element {
-  // const closeMenu = useMenuClose();
+type Props = {
+  className?: string;
+  cacheMode: CacheMode;
+  cachingActive: boolean;
+  cacheExists: boolean;
+};
 
+export function OfflineSubmenu({
+  cacheMode,
+  cachingActive,
+  cacheExists,
+}: Props): JSX.Element {
   const m = useMessages();
-
-  const [cachingActive, setCachingActive] = useState<boolean>(false);
-
-  const handleCacheActiveSelect = () => {
-    window.navigator.serviceWorker.ready.then((registration) => {
-      registration.active?.postMessage({
-        type: 'setCachingActive',
-        payload: !cachingActive,
-      });
-
-      setCacheExists(true); // TODO use events from sw
-    });
-
-    setCachingActive((a) => !a);
-  };
-
-  const handleCacheClear = () => {
-    window.navigator.serviceWorker.ready.then((registration) => {
-      registration.active?.postMessage({ type: 'clearCache' });
-
-      setCacheExists(false); // TODO use events from sw
-    });
-  };
-
-  const [cacheMode, setCacheMode] = useState<CacheMode>('networkOnly');
-
-  const handleModeSelect = (mode: string | null) => {
-    window.navigator.serviceWorker.ready.then((registration) => {
-      registration.active?.postMessage({
-        type: 'setCacheMode',
-        payload: mode,
-      });
-    });
-
-    setCacheMode(mode as CacheMode);
-  };
-
-  const [cacheExists, setCacheExists] = useState(false);
-
-  useEffect(() => {
-    get('cacheMode').then((cacheMode) =>
-      setCacheMode(cacheMode ?? 'networkOnly'),
-    );
-
-    caches.keys().then((key) => setCacheExists(key.includes('offline')));
-  }, []);
-
-  useEffect(() => {
-    get('cachingActive').then(setCachingActive);
-  }, []);
 
   return (
     <>
@@ -69,18 +26,14 @@ export function OfflineSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={handleCacheActiveSelect}
+        eventKey="caching-active-toggle"
         active={cachingActive}
         disabled={cacheMode === 'cacheOnly'}
       >
         <Checkbox value={cachingActive} /> {m?.offline.cachingActive}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={handleCacheClear}
-        disabled={!cacheExists}
-      >
+      <Dropdown.Item as="button" eventKey="cache-clear" disabled={!cacheExists}>
         <FaEraser /> {m?.offline.clearCache}
       </Dropdown.Item>
 
@@ -90,8 +43,7 @@ export function OfflineSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        eventKey="networkOnly"
-        onSelect={handleModeSelect}
+        eventKey="cacheMode-networkOnly"
         active={cacheMode === 'networkOnly'}
       >
         <Checkbox value={cacheMode === 'networkOnly'} />{' '}
@@ -100,8 +52,7 @@ export function OfflineSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        eventKey="networkFirst"
-        onSelect={handleModeSelect}
+        eventKey="cacheMode-networkFirst"
         active={cacheMode === 'networkFirst'}
       >
         <Checkbox value={cacheMode === 'networkFirst'} />{' '}
@@ -110,8 +61,7 @@ export function OfflineSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        eventKey="cacheFirst"
-        onSelect={handleModeSelect}
+        eventKey="cacheMode-cacheFirst"
         active={cacheMode === 'cacheFirst'}
       >
         <Checkbox value={cacheMode === 'cacheFirst'} /> {m?.offline.cacheFirst}
@@ -119,8 +69,7 @@ export function OfflineSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        eventKey="cacheOnly"
-        onSelect={handleModeSelect}
+        eventKey="cacheMode-cacheOnly"
         active={cacheMode === 'cacheOnly'}
         disabled={!cacheExists}
       >

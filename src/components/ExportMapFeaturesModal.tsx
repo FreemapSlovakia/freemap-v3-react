@@ -208,9 +208,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               <Form.Label>{m?.exportMapFeatures.target}:</Form.Label>
 
               <div>
-                <ButtonGroup toggle>
+                <ButtonGroup>
                   {exportTargets.map((target1) => (
                     <ToggleButton
+                      id={target1}
                       key={target1}
                       type="radio"
                       checked={target === target1}
@@ -252,6 +253,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               <>
                 <Form.Group>
                   <Form.Label>Course name:</Form.Label>
+
                   <Form.Control
                     value={name}
                     onChange={(e) => setName(e.currentTarget.value)}
@@ -260,6 +262,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
                 <Form.Group>
                   <Form.Label>Description:</Form.Label>
+
                   <Form.Control
                     as="textarea"
                     rows={2}
@@ -270,6 +273,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
                 <Form.Group>
                   <Form.Label>Activity type:</Form.Label>
+
                   <Form.Control
                     as="select"
                     value={activity}
@@ -293,9 +297,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                 <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
 
                 <div>
-                  <ButtonGroup toggle>
+                  <ButtonGroup>
                     {exportTypes.map((type1) => (
                       <ToggleButton
+                        id={type1}
                         key={type1}
                         type="radio"
                         value={type1}

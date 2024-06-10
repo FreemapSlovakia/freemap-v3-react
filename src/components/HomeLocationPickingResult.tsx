@@ -26,11 +26,7 @@ export function HomeLocationPickingResult(): ReactElement | null {
     (state) => state.main.selectingHomeLocation,
   );
 
-  if (!selectingHomeLocation) {
-    return null;
-  }
-
-  return (
+  return !selectingHomeLocation ? null : (
     <RichMarker
       // eventHandlers={{
       //   dragstart: onSelects[i],

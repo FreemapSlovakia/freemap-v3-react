@@ -57,9 +57,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   // state.gallery.showPosition;
 
   if (!withModifiers && event.code === 'Escape') {
-    if (
-      document.querySelector('*[data-popper-reference-hidden=false]') !== null
-    ) {
+    if (document.querySelector('*[aria-expanded=true]') !== null) {
       return undefined;
     }
 

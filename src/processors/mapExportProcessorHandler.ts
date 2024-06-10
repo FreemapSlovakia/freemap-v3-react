@@ -1,18 +1,11 @@
-import {
-  Feature,
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-  lineString,
-  point,
-  polygon,
-} from '@turf/helpers';
+import { lineString, point, polygon } from '@turf/helpers';
 import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { colors } from 'fm3/constants';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
+import { Feature, FeatureCollection } from 'geojson';
 import { assert } from 'typia';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
@@ -88,7 +81,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     }
   }
 
-  const features: Feature<Geometries | GeometryCollection>[] = [];
+  const features: Feature[] = [];
 
   if (drawing) {
     for (let i = 0; i < lines.length; i++) {

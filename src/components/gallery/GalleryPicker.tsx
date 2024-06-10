@@ -42,11 +42,7 @@ export function GalleryPicker(): ReactElement | null {
     }, []),
   );
 
-  if (!latLon) {
-    return null;
-  }
-
-  return (
+  return !latLon ? null : (
     <Circle
       interactive={false}
       center={[latLon.lat, latLon.lon]}

@@ -1,4 +1,4 @@
-import { featureCollection, Geometry, GeometryCollection } from '@turf/helpers';
+import { featureCollection } from '@turf/helpers';
 import { exportMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { licenseNotice } from './upload';
@@ -10,7 +10,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   action,
   dispatch,
 }) => {
-  const fc = featureCollection<Geometry | GeometryCollection>([]);
+  const fc = featureCollection([]);
 
   (fc as any).metadata = {
     description: 'Exported from https://www.freemap.sk/',

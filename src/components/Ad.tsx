@@ -133,7 +133,7 @@ export function Ad(): ReactElement | null {
       <div className="align-self-end d-flex">
         {window.innerHeight < 600 && (
           <Button
-            className="py-0 rounded-bottom mr-1"
+            className="py-0 rounded-bottom me-1"
             style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
             variant="warning"
             size="sm"

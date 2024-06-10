@@ -1,68 +1,17 @@
 import { useMessages } from 'fm3/l10nInjector';
-import {
-  createContext,
-  ReactElement,
-  ReactNode,
-  useContext,
-  useMemo,
-} from 'react';
+import { ReactElement } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { FaChevronLeft } from 'react-icons/fa';
-
-type Ctx = {
-  handleBack: () => void;
-  onClose: () => void;
-};
-
-const SubmenuContext = createContext<Ctx | undefined>(undefined);
-
-type CtxProps = Ctx & {
-  children: ReactNode;
-};
-
-export function MenuProvier({
-  handleBack,
-  onClose,
-  children,
-}: CtxProps): JSX.Element {
-  const ctx = useMemo(
-    () => ({
-      handleBack,
-      onClose,
-    }),
-    [handleBack, onClose],
-  );
-
-  return (
-    <SubmenuContext.Provider value={ctx}>{children}</SubmenuContext.Provider>
-  );
-}
 
 type SubmenuHeaderProps = {
   icon: ReactElement;
   title?: string;
 };
 
-export function useMenuClose(): () => void {
-  const ctx = useContext(SubmenuContext);
-
-  if (!ctx) {
-    throw new Error('not in MenuProvier');
-  }
-
-  return ctx.onClose;
-}
-
 export function SubmenuHeader({
   icon,
   title,
 }: SubmenuHeaderProps): JSX.Element {
-  const ctx = useContext(SubmenuContext);
-
-  if (!ctx) {
-    throw new Error('not in MenuProvier');
-  }
-
   const m = useMessages();
 
   return (
@@ -71,7 +20,7 @@ export function SubmenuHeader({
         {icon} {title}
       </Dropdown.Header>
 
-      <Dropdown.Item as="button" onSelect={ctx.handleBack}>
+      <Dropdown.Item as="button" eventKey="submenu-">
         <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
       </Dropdown.Item>
 

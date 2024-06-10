@@ -1,8 +1,7 @@
-import { Modal, setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, SyntheticEvent, useCallback } from 'react';
+import { ReactElement } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import {
   FaBullseye,
@@ -13,12 +12,9 @@ import {
   FaRegEye,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
+import { SubmenuHeader } from './SubmenuHeader';
 
 export function TrackingSubmenu(): ReactElement {
-  const closeMenu = useMenuClose();
-
   const dispatch = useDispatch();
 
   const m = useMessages();
@@ -27,36 +23,18 @@ export function TrackingSubmenu(): ReactElement {
     (state) => state.tracking.showPoints + ',' + state.tracking.showLine,
   );
 
-  const showModal = useCallback(
-    (modal: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      closeMenu();
-
-      if (is<Modal>(modal)) {
-        dispatch(setActiveModal(modal));
-      }
-    },
-    [closeMenu, dispatch],
-  );
-
   return (
     <>
       <SubmenuHeader icon={<FaBullseye />} title={m?.tools.tracking} />
 
       <Dropdown.Item
         href="#show=tracking-watched"
-        eventKey="tracking-watched"
-        onSelect={showModal}
+        eventKey="modal-tracking-watched"
       >
         <FaRegEye /> {m?.tracking.trackedDevices.button}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        href="#show=tracking-my"
-        eventKey="tracking-my"
-        onSelect={showModal}
-      >
+      <Dropdown.Item href="#show=tracking-my" eventKey="modal-tracking-my">
         <FaMobileAlt /> {m?.tracking.devices.button}
       </Dropdown.Item>
 

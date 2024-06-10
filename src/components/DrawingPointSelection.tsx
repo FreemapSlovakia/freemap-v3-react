@@ -21,18 +21,14 @@ export function DrawingPointSelection(): ReactElement | null {
       : undefined,
   );
 
-  if (!point) {
-    return null;
-  }
-
-  return (
+  return !point ? null : (
     <Selection
       icon={<FaMapMarkerAlt />}
       title={m?.selections.drawPoints}
       deletable
     >
       <Button
-        className="ml-1"
+        className="ms-1"
         variant="secondary"
         onClick={() => dispatch(setActiveModal('edit-label'))}
       >
@@ -41,7 +37,7 @@ export function DrawingPointSelection(): ReactElement | null {
       </Button>
 
       <OpenInExternalAppMenuButton
-        className="ml-1"
+        className="ms-1"
         lat={point.lat}
         lon={point.lon}
         includePoint

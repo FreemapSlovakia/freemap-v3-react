@@ -1,6 +1,6 @@
-import { Feature, Polygon } from '@turf/helpers';
 import { TransportType } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
+import { Feature, Polygon } from 'geojson';
 import { createAction } from 'typesafe-actions';
 
 export type PickMode = 'start' | 'finish';

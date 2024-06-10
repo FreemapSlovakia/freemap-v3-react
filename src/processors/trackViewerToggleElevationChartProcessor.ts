@@ -1,10 +1,10 @@
-import { Feature, LineString } from '@turf/helpers';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
 import { trackViewerToggleElevationChart } from 'fm3/actions/trackViewerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { Feature, LineString } from 'geojson';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,

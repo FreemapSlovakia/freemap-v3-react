@@ -1,16 +1,7 @@
-import {
-  clearMapFeatures,
-  documentShow,
-  Modal,
-  setActiveModal,
-  setTool,
-  Tool,
-} from 'fm3/actions/mainActions';
-import { DocumentKey } from 'fm3/documents';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { toolDefinitions } from 'fm3/toolDefinitions';
-import { ReactElement, SyntheticEvent, useCallback } from 'react';
+import { ReactElement } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -32,51 +23,13 @@ import {
   FaRegMap,
   FaSignInAlt,
 } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { Submenu } from './submenu';
-import { useMenuClose } from './SubmenuHeader';
 
-type Props = {
-  onSubmenu: (submenu: Submenu) => void;
-};
-
-export function MainMenu({ onSubmenu }: Props): ReactElement {
+export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
-
-  const closeMenu = useMenuClose();
-
-  const dispatch = useDispatch();
-
-  const handleTipSelect = useCallback(
-    (key: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      closeMenu();
-
-      if (is<DocumentKey>(key)) {
-        dispatch(documentShow(key));
-      }
-    },
-    [closeMenu, dispatch],
-  );
 
   const m = useMessages();
 
   const tool = useAppSelector((state) => state.main.tool);
-
-  const handleToolSelect = useCallback(
-    (tool: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      if (is<Tool | null>(tool)) {
-        closeMenu();
-
-        dispatch(setTool(tool));
-      }
-    },
-    [closeMenu, dispatch],
-  );
 
   const toolDef = toolDefinitions.find(
     (t) =>
@@ -86,94 +39,39 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
         : tool),
   ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
-  const showModal = (modal: string | null, e: SyntheticEvent<unknown>) => {
-    e.preventDefault();
-
-    closeMenu();
-
-    if (is<Modal>(modal)) {
-      dispatch(setActiveModal(modal));
-    }
-  };
-
-  const handleSubmenuSelect = useCallback(
-    (submenu: string | null) => {
-      if (is<Submenu>(submenu)) {
-        onSubmenu(submenu);
-      }
-    },
-    [onSubmenu],
-  );
-
   return (
     <>
-      <Dropdown.Item
-        as="button"
-        eventKey="language"
-        onSelect={handleSubmenuSelect}
-      >
+      <Dropdown.Item as="button" eventKey="submenu-language">
         <FaLanguage /> Language / Jazyk / Nyelv / Lingua
         <FaChevronRight />
       </Dropdown.Item>
 
       {user ? (
-        <Dropdown.Item
-          eventKey="account"
-          href="#show=account"
-          onSelect={showModal}
-        >
+        <Dropdown.Item eventKey="modal-account" href="#show=account">
           <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
         </Dropdown.Item>
       ) : (
-        <Dropdown.Item
-          onSelect={() => {
-            closeMenu();
-
-            dispatch(setActiveModal('login'));
-          }}
-        >
+        <Dropdown.Item eventKey="modal-login">
           <FaSignInAlt /> {m?.mainMenu.logIn}
         </Dropdown.Item>
       )}
 
       <Dropdown.Divider />
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          closeMenu();
-
-          dispatch(clearMapFeatures());
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="clear-map-features">
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          closeMenu();
-
-          dispatch(setActiveModal('maps'));
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="modal-maps">
         <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={handleSubmenuSelect}
-        eventKey="drawing"
-      >
+      <Dropdown.Item as="button" eventKey="submenu-drawing">
         <FaPencilRuler /> {m?.tools.measurement}
         <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={handleSubmenuSelect}
-        eventKey="photos"
-      >
+      <Dropdown.Item as="button" eventKey="submenu-photos">
         <FaCamera /> {m?.tools.photos}
         <FaChevronRight />
       </Dropdown.Item>
@@ -186,8 +84,7 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
               <Dropdown.Item
                 href={`?tool=${tool}`}
                 key={newTool}
-                eventKey={newTool}
-                onSelect={handleToolSelect}
+                eventKey={'tool-' + newTool}
                 active={toolDef?.tool === newTool}
               >
                 {icon} {m?.tools[msgKey]}{' '}
@@ -201,20 +98,12 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
             ),
         )}
 
-      <Dropdown.Item
-        as="button"
-        onSelect={handleSubmenuSelect}
-        eventKey="tracking"
-      >
+      <Dropdown.Item as="button" eventKey="submenu-tracking">
         <FaBullseye /> {m?.tools.tracking}
         <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={handleSubmenuSelect}
-        eventKey="offline"
-      >
+      <Dropdown.Item as="button" eventKey="submenu-offline">
         <BiWifiOff />{' '}
         <FaFlask
           title={m?.general.experimentalFunction}
@@ -226,53 +115,33 @@ export function MainMenu({ onSubmenu }: Props): ReactElement {
 
       <Dropdown.Divider />
 
-      <Dropdown.Item
-        as="button"
-        onSelect={handleSubmenuSelect}
-        eventKey="openExternally"
-      >
+      <Dropdown.Item as="button" eventKey="submenu-openExternally">
         <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item
-        href="#show=export-pdf"
-        eventKey="export-pdf"
-        onSelect={showModal}
-      >
+      <Dropdown.Item href="#show=export-pdf" eventKey="modal-export-pdf">
         <FaPrint /> {m?.mainMenu.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        eventKey="export-gpx"
-        href="#show=export-gpx"
-        onSelect={showModal}
-      >
+      <Dropdown.Item eventKey="modal-export-gpx" href="#show=export-gpx">
         <FaDownload /> {m?.mainMenu.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        eventKey="exports"
-        href="#tip=exports"
-        onSelect={handleTipSelect}
-      >
+      <Dropdown.Item eventKey="tip-exports" href="#tip=exports">
         <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="embed" href="#show=embed" onSelect={showModal}>
+      <Dropdown.Item eventKey="modal-embed" href="#show=embed">
         <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
       </Dropdown.Item>
 
       <Dropdown.Divider />
 
-      <Dropdown.Item as="button" onSelect={handleSubmenuSelect} eventKey="help">
+      <Dropdown.Item as="button" eventKey="submenu-help">
         <FaBook /> {m?.mainMenu.help} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item
-        href="#show=supportUs"
-        eventKey="supportUs"
-        onSelect={showModal}
-      >
+      <Dropdown.Item href="#show=supportUs" eventKey="modal-supportUs">
         <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
       </Dropdown.Item>
     </>

@@ -222,7 +222,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
             <Form.Control
               type="range"
-              custom
               value={overlayPaneOpacity}
               min={0}
               max={1}
@@ -361,7 +360,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
                   <Form.Control
                     type="range"
-                    custom
                     value={layersSettings[selectedLayer]?.opacity ?? 1}
                     min={0.1}
                     max={1.0}
@@ -386,14 +384,14 @@ export function MapSettingsModal({ show }: Props): ReactElement {
           <Accordion>
             <Card>
               <Card.Header>
-                <Accordion.Toggle
+                <Accordion.Button
                   as={Button}
                   eventKey="0"
                   variant="link"
                   className="text-left w-100"
                 >
                   {m?.pdfExport.advancedSettings}
-                </Accordion.Toggle>
+                </Accordion.Button>
               </Card.Header>
 
               <Accordion.Collapse eventKey="0" className="p-2">

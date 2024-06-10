@@ -19,12 +19,7 @@ import {
   LOCUS_NS,
 } from './gpxExporter';
 import { upload } from './upload';
-import {
-  Feature,
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-} from '@turf/helpers';
+import { Feature, FeatureCollection } from 'geojson';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
@@ -601,12 +596,7 @@ function getSupportedGpxElements(doc: Document) {
   );
 }
 
-function addGeojson(
-  doc: Document,
-  geojson:
-    | Feature<Geometries | GeometryCollection>
-    | FeatureCollection<Geometries | GeometryCollection>,
-) {
+function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
   for (const pass of ['wpt', 'trk'] as const) {
     for (const feature of geojson.type === 'FeatureCollection'
       ? geojson.features

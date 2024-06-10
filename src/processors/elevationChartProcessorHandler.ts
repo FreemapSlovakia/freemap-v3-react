@@ -1,5 +1,4 @@
 import turfAlong from '@turf/along';
-import { Feature, Geometries, LineString } from '@turf/helpers';
 import { getCoord, getCoords } from '@turf/invariant';
 import turfLength from '@turf/length';
 import { RootAction } from 'fm3/actions';
@@ -14,6 +13,15 @@ import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/reducers';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
+import {
+  Feature,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from 'geojson';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
 
@@ -34,7 +42,9 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
 export default handle;
 
 function resolveElevationProfilePointsLocally(
-  trackGeojson: Feature<Geometries>,
+  trackGeojson: Feature<
+    Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon
+  >,
   dispatch: Dispatch<RootAction>,
 ) {
   let dist = 0;

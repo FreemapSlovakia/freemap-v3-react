@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function ToolMenu({ children }: Props): ReactElement {
-  const sc1 = useScrollClasses('horizontal');
+  const sc = useScrollClasses('horizontal');
 
   const dispatch = useDispatch();
 
@@ -27,13 +27,13 @@ export function ToolMenu({ children }: Props): ReactElement {
   const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
 
   return (
-    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc1}>
+    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
       <Card className="fm-toolbar mx-2 mt-2">
         <ButtonToolbar>
           {toolDef && (
-            <span className="d-flex align-items-center ml-1 mr-1">
+            <span className="d-flex align-items-center ms-1 me-1">
               <span>{toolDef.icon}</span>
               <span className="d-none d-sm-inline">
                 {' '}
@@ -43,7 +43,7 @@ export function ToolMenu({ children }: Props): ReactElement {
           )}
 
           <Button
-            className="ml-1"
+            className="ms-1"
             variant="secondary"
             // size="sm"
             onClick={() => dispatch(setTool(null))}

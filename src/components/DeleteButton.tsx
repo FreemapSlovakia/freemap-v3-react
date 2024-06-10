@@ -12,7 +12,7 @@ export function DeleteButton(): ReactElement {
 
   return (
     <Button
-      className="ml-1"
+      className="ms-1"
       variant="danger"
       title={m?.general.delete}
       onClick={() => {

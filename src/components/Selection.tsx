@@ -7,6 +7,7 @@ import Card from 'react-bootstrap/Card';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { DeleteButton } from './DeleteButton';
+import { useMessages } from 'fm3/l10nInjector';
 
 export function Selection({
   title,
@@ -23,28 +24,31 @@ export function Selection({
 
   const sc = useScrollClasses('horizontal');
 
+  const m = useMessages();
+
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
       <Card className="fm-toolbar mt-2 mx-2">
         <ButtonToolbar>
-          <span className="align-self-center ml-1">
+          <span className="align-self-center ms-1">
             {icon}
-            <span className="d-none d-sm-inline"> {title}</span> {children}
-            {deletable && <DeleteButton />}{' '}
-            <Button
-              variant="secondary"
-              // size="sm"
-              onClick={() => dispatch(selectFeature(null))}
-              title={
-                // TODO m?.general.close +
-                '[Esc]'
-              }
-            >
-              <FaTimes />
-            </Button>
+            <span className="d-none d-sm-inline"> {title}</span>
           </span>
+
+          {children}
+
+          {deletable && <DeleteButton />}
+
+          <Button
+            variant="secondary"
+            className="ms-1"
+            onClick={() => dispatch(selectFeature(null))}
+            title={m?.general.close + ' [Esc]'}
+          >
+            <FaTimes />
+          </Button>
         </ButtonToolbar>
       </Card>
     </div>

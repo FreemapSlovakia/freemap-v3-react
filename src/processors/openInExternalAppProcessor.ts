@@ -96,9 +96,16 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         let bottom: number;
 
         if (includePoint) {
-          [left, bottom, right, top] = bbox(
-            buffer(point([lon, lat]), 100, { units: 'meters', steps: 10 }),
-          );
+          const buffered = buffer(point([lon, lat]), 100, {
+            units: 'meters',
+            steps: 10,
+          });
+
+          if (!buffered) {
+            throw new Error('empty buffer');
+          }
+
+          [left, bottom, right, top] = bbox(buffered);
         } else {
           const bounds = (await mapPromise).getBounds();
 

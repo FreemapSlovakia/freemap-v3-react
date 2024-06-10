@@ -1,4 +1,3 @@
-import { Feature, Polygon } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import {
   clearMapFeatures,
@@ -40,6 +39,7 @@ import {
   transportTypeDefs,
 } from 'fm3/transportTypeDefs';
 import { LatLon } from 'fm3/types/common';
+import { Feature, Polygon } from 'geojson';
 import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
 

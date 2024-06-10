@@ -1,19 +1,11 @@
-import {
-  Feature,
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-  Properties,
-} from '@turf/helpers';
+import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 import { createAction } from 'typesafe-actions';
 
 export interface SearchResult {
   id: number;
-  geojson?:
-    | Feature<Geometries | GeometryCollection>
-    | FeatureCollection<Geometries | GeometryCollection>;
+  geojson?: Feature | FeatureCollection;
   osmType: 'node' | 'way' | 'relation';
-  tags: Properties;
+  tags: GeoJsonProperties;
   detailed?: true;
   showToast?: true;
   zoom?: number;

@@ -1,15 +1,6 @@
 // import turfLineSlice from '@turf/line-slice';
 // import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
-import {
-  Feature,
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-  LineString,
-  Point,
-  Properties,
-} from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 import { setTool } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
@@ -22,6 +13,7 @@ import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
 import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
+import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
@@ -29,8 +21,8 @@ import { Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 
 interface GetFeatures {
-  (type: 'LineString'): Feature<LineString, Properties>[];
-  (type: 'Point'): Feature<Point, Properties>[];
+  (type: 'LineString'): Feature<LineString>[];
+  (type: 'Point'): Feature<Point>[];
 }
 
 export default TrackViewerResult;
@@ -38,7 +30,7 @@ export default TrackViewerResult;
 export function TrackViewerResult({
   trackGeojson,
 }: {
-  trackGeojson: FeatureCollection<Geometries | GeometryCollection, Properties>;
+  trackGeojson: FeatureCollection;
 }): ReactElement | null {
   const [startPoints, finishPoints] = useStartFinishPoints();
 

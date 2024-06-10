@@ -20,8 +20,9 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
     <div>
       <Card className="fm-toolbar mx-2 mt-2">
         <div className="m-2">{m?.gallery.locationPicking.title}</div>
+
         <Button
-          className="mr-1"
+          className="me-1"
           onClick={() => {
             dispatch(galleryConfirmPickedPosition());
           }}
@@ -29,6 +30,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
           <FaCheck />
           <span className="d-none d-sm-inline"> {m?.general.ok}</span>
         </Button>
+
         <Button
           onClick={() => {
             dispatch(gallerySetItemForPositionPicking(null));

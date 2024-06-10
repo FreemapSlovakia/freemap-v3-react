@@ -1,5 +1,3 @@
-import { galleryColorizeBy, galleryList } from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
@@ -15,7 +13,7 @@ import {
 import { IoIosColorPalette } from 'react-icons/io';
 import { useDispatch } from 'react-redux';
 import { Checkbox } from '../Checkbox';
-import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
+import { SubmenuHeader } from './SubmenuHeader';
 
 export function GallerySubmenu(): JSX.Element {
   const m = useMessages();
@@ -32,21 +30,13 @@ export function GallerySubmenu(): JSX.Element {
 
   const colorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
-  const closeMenu = useMenuClose();
-
   return (
     <>
       <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
       <Dropdown.Item
         href="#show=gallery-filter"
-        onSelect={(_, e) => {
-          e.preventDefault();
-
-          dispatch(setActiveModal('gallery-filter'));
-
-          closeMenu();
-        }}
+        eventKey="modal-gallery-filter"
         active={filterIsActive}
       >
         <FaFilter /> {m?.gallery.filter} <kbd>p</kbd> <kbd>f</kbd>
@@ -54,13 +44,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         href="#show=gallery-upload"
-        onSelect={(_, e) => {
-          e.preventDefault();
-
-          dispatch(setActiveModal('gallery-upload'));
-
-          closeMenu();
-        }}
+        eventKey="modal-gallery-upload"
       >
         <FaUpload /> {m?.gallery.upload} <kbd>p</kbd> <kbd>u</kbd>
       </Dropdown.Item>
@@ -88,47 +72,19 @@ export function GallerySubmenu(): JSX.Element {
         <FaBook /> {m?.gallery.showPhotosFrom}
       </Dropdown.Header>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(galleryList('-createdAt'));
-
-          closeMenu();
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="photosBy--createdAt">
         {m?.gallery.f.lastUploaded} <kbd>p</kbd> <kbd>l</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(galleryList('-takenAt'));
-
-          closeMenu();
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="photosBy--takenAt">
         {m?.gallery.f.lastCaptured}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(galleryList('-rating'));
-
-          closeMenu();
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="photosBy--rating">
         {m?.gallery.f.mostRated}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(galleryList('-lastCommentedAt'));
-
-          closeMenu();
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="photosBy--lastCommentedAt">
         {m?.gallery.f.lastComment}
       </Dropdown.Item>
 
@@ -138,58 +94,37 @@ export function GallerySubmenu(): JSX.Element {
         <IoIosColorPalette /> {m?.gallery.colorizeBy}
       </Dropdown.Header>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy(null))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-">
         {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.disable}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy('mine'))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-mine">
         {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.mine}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy('userId'))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-userId">
         {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.author}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy('rating'))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-rating">
         {colorizeBy === 'rating' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.rating}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy('takenAt'))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-takenAt">
         {colorizeBy === 'takenAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.takenAt}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy('createdAt'))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-createdAt">
         {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.createdAt}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => dispatch(galleryColorizeBy('season'))}
-      >
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-season">
         {colorizeBy === 'season' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.season}
       </Dropdown.Item>

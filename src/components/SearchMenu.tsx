@@ -166,7 +166,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   }, [hidden, preventShortcut]);
 
   const handleClearClick = useCallback(
-    (e: MouseEvent<HTMLInputElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
 
       dispatch(searchSelectResult(null));
@@ -193,9 +193,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   return (
     <>
       <Form
-        inline
         onSubmit={handleSearch}
         style={{ display: hidden ? 'none' : '' }}
+        className="ms-1"
       >
         <Dropdown
           as={ButtonGroup}
@@ -215,27 +215,26 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 onFocus={handleInputFocus}
               />
 
-              <InputGroup.Append className="w-auto">
-                {!!selectedResult && (
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    title={m?.general.clear}
-                    onClick={handleClearClick}
-                  >
-                    <FaTimes />
-                  </Button>
-                )}
-
+              {!!selectedResult && (
                 <Button
+                  className="w-auto"
                   variant="secondary"
-                  type="submit"
-                  title={m?.search.buttonTitle}
-                  disabled={!value}
+                  type="button"
+                  title={m?.general.clear}
+                  onClick={handleClearClick}
                 >
-                  <FaSearch />
+                  <FaTimes />
                 </Button>
-              </InputGroup.Append>
+              )}
+
+              <Button
+                variant="secondary"
+                type="submit"
+                title={m?.search.buttonTitle}
+                disabled={!value}
+              >
+                <FaSearch />
+              </Button>
             </InputGroup>
           </Dropdown.Toggle>
 
@@ -263,7 +262,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
-          <ButtonGroup className="ml-1">
+          <ButtonGroup className="ms-1">
             <Button
               variant="secondary"
               title={m?.search.routeFrom}
@@ -312,7 +311,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </ButtonGroup>
 
           <Button
-            className="ml-1"
+            className="ms-1"
             title={m?.general.convertToDrawing}
             variant="secondary"
             onClick={() => {
@@ -380,7 +379,7 @@ function Result({ value }: { value: SearchResult }) {
         </div>
       </div>
 
-      {name && <small className="ml-4 text-truncate">{name}</small>}
+      {name && <small className="ms-4 text-truncate">{name}</small>}
     </div>
   );
 }

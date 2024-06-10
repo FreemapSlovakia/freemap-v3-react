@@ -17,6 +17,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -231,7 +232,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.tag}</FormLabel>
 
-            <FormControl as="select" value={tag} onChange={handleTagChange}>
+            <Form.Select value={tag} onChange={handleTagChange}>
               <option value="" />
 
               <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
@@ -240,17 +241,13 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                   {name} ({count})
                 </option>
               ))}
-            </FormControl>
+            </Form.Select>
           </FormGroup>
 
           <FormGroup>
             <FormLabel>{m?.gallery.filterModal.author}</FormLabel>
 
-            <FormControl
-              as="select"
-              value={userId}
-              onChange={handleUserIdChange}
-            >
+            <Form.Select value={userId} onChange={handleUserIdChange}>
               <option value="" />
 
               {users.map(({ id, name, count }) => (
@@ -258,7 +255,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                   {name} ({count})
                 </option>
               ))}
-            </FormControl>
+            </Form.Select>
           </FormGroup>
 
           <FormGroup>
@@ -271,9 +268,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleCreatedAtFromChange}
               />
 
-              <InputGroup.Append>
-                <InputGroup.Text> - </InputGroup.Text>
-              </InputGroup.Append>
+              <InputGroupText> - </InputGroupText>
 
               <FormControl
                 type="date"
@@ -293,9 +288,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleTakenAtFromChange}
               />
 
-              <InputGroup.Append>
-                <InputGroup.Text> - </InputGroup.Text>
-              </InputGroup.Append>
+              <InputGroupText> - </InputGroupText>
 
               <FormControl
                 type="date"
@@ -318,9 +311,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleRatingFromChange}
               />
 
-              <InputGroup.Append>
-                <InputGroup.Text> - </InputGroup.Text>
-              </InputGroup.Append>
+              <InputGroupText> - </InputGroupText>
 
               <FormControl
                 type="number"

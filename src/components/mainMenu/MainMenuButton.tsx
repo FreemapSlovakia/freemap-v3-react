@@ -6,13 +6,9 @@ import {
   ReactElement,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from 'react';
-import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Overlay from 'react-bootstrap/Overlay';
-import Popover from 'react-bootstrap/Popover';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems';
 import { DrawingSubmenu } from './DrawingSubmenu';
@@ -22,9 +18,11 @@ import { LanguageSubmenu } from './LanguageSubmenu';
 import { MainMenu } from './MainMenu';
 import { OfflineSubmenu } from './OfflineSubmenu';
 import { SocialButtons } from './SocialButtons';
-import { Submenu } from './submenu';
-import { MenuProvier, SubmenuHeader } from './SubmenuHeader';
+import { SubmenuHeader } from './SubmenuHeader';
 import { TrackingSubmenu } from './TrackingSubmenu';
+import { CacheMode } from 'fm3/types/common';
+import { get } from 'idb-keyval';
+import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
 
 export function MainMenuButton(): ReactElement {
   const mapType = useAppSelector((state) => state.map.mapType);
@@ -35,101 +33,136 @@ export function MainMenuButton(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const [show, setShow] = useState(false);
-
-  const [submenu, setSubmenu] = useState<Submenu>(null);
-
-  const button = useRef<HTMLButtonElement | null>(null);
-
-  const closeMenu = useCallback(() => {
-    setShow(false);
-  }, []);
-
-  const handleButtonClick = useCallback(() => {
-    setShow(true);
-  }, []);
-
-  useEffect(() => {
-    if (show) {
-      setSubmenu(null);
-    }
-  }, [show]);
-
   const m = useMessages();
 
   const sc = useScrollClasses('vertical');
 
-  const handleBack = useCallback(() => {
-    setSubmenu(null);
+  const [cacheMode, setCacheMode] = useState<CacheMode>('networkOnly');
+
+  const [cachingActive, setCachingActive] = useState<boolean>(false);
+
+  const [cacheExists, setCacheExists] = useState(false);
+
+  const extraMenuHandler = useCallback(
+    (eventKey: string) => {
+      if (eventKey.startsWith('cacheMode-')) {
+        const cacheMode = eventKey.slice(10) as CacheMode;
+
+        window.navigator.serviceWorker.ready.then((registration) => {
+          registration.active?.postMessage({
+            type: 'setCacheMode',
+            payload: cacheMode,
+          });
+        });
+
+        setCacheMode(cacheMode);
+      } else if (eventKey === 'caching-active-toggle') {
+        window.navigator.serviceWorker.ready.then((registration) => {
+          registration.active?.postMessage({
+            type: 'setCachingActive',
+            payload: !cachingActive,
+          });
+
+          setCacheExists(true); // TODO use events from sw
+        });
+
+        setCachingActive((a) => !a);
+      } else if (eventKey === 'cache-clear') {
+        window.navigator.serviceWorker.ready.then((registration) => {
+          registration.active?.postMessage({ type: 'clearCache' });
+
+          setCacheExists(false); // TODO use events from sw
+        });
+      } else {
+        return false;
+      }
+
+      return true;
+    },
+    [cachingActive],
+  );
+
+  const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
+    useMenuHandler(extraMenuHandler);
+
+  useEffect(() => {
+    get('cacheMode').then((cacheMode) =>
+      setCacheMode(cacheMode ?? 'networkOnly'),
+    );
+
+    caches.keys().then((key) => setCacheExists(key.includes('offline')));
+  }, []);
+
+  useEffect(() => {
+    get('cachingActive').then(setCachingActive);
   }, []);
 
   return (
-    <MenuProvier handleBack={handleBack} onClose={closeMenu}>
-      <Button
-        ref={button}
-        onClick={handleButtonClick}
+    <Dropdown
+      onSelect={handleSelect}
+      autoClose="outside"
+      show={menuShown}
+      onToggle={handleMenuToggle}
+    >
+      <Dropdown.Toggle
         title={m?.mainMenu.title}
-        variant="primary"
-        className="mr-1"
+        bsPrefix="fm-dropdown-toggle-nocaret"
       >
         <FaBars />
-      </Button>
+      </Dropdown.Toggle>
 
-      <Overlay
-        rootClose
-        placement="bottom"
-        show={show}
-        onHide={closeMenu}
-        target={button.current}
+      <Dropdown.Menu
+        popperConfig={{
+          strategy: 'fixed',
+        }}
       >
-        <Popover id="popover-main" className="fm-menu">
-          <Popover.Content className="fm-menu-scroller" ref={sc}>
-            <div />
+        <div className="fm-menu-scroller" ref={sc}>
+          <div />
 
-            {submenu === null ? (
-              <MainMenu onSubmenu={setSubmenu} />
-            ) : submenu === 'offline' ? (
-              <OfflineSubmenu />
-            ) : submenu === 'help' ? (
-              <HelpSubmenu />
-            ) : submenu === 'openExternally' ? (
-              <Fragment key="openExternally">
-                <SubmenuHeader
-                  icon={<FaExternalLinkAlt />}
-                  title={m?.external.openInExternal}
-                />
+          {submenu === null ? (
+            <MainMenu />
+          ) : submenu === 'offline' ? (
+            <OfflineSubmenu
+              cacheMode={cacheMode}
+              cacheExists={cacheExists}
+              cachingActive={cachingActive}
+            />
+          ) : submenu === 'help' ? (
+            <HelpSubmenu />
+          ) : submenu === 'openExternally' ? (
+            <Fragment key="openExternally">
+              <SubmenuHeader
+                icon={<FaExternalLinkAlt />}
+                title={m?.external.openInExternal}
+              />
 
-                <OpenInExternalAppDropdownItems
-                  lat={lat}
-                  lon={lon}
-                  zoom={zoom}
-                  mapType={mapType}
-                  onSelect={closeMenu}
-                  pointTitle={document.title}
-                  pointDescription={document.title}
-                  showKbdShortcut
-                />
-              </Fragment>
-            ) : submenu === 'language' ? (
-              <LanguageSubmenu />
-            ) : submenu === 'photos' ? (
-              <GallerySubmenu />
-            ) : submenu === 'tracking' ? (
-              <TrackingSubmenu />
-            ) : submenu === 'drawing' ? (
-              <DrawingSubmenu />
-            ) : null}
+              <OpenInExternalAppDropdownItems
+                lat={lat}
+                lon={lon}
+                zoom={zoom}
+                mapType={mapType}
+                showKbdShortcut
+              />
+            </Fragment>
+          ) : submenu === 'language' ? (
+            <LanguageSubmenu />
+          ) : submenu === 'photos' ? (
+            <GallerySubmenu />
+          ) : submenu === 'tracking' ? (
+            <TrackingSubmenu />
+          ) : submenu === 'drawing' ? (
+            <DrawingSubmenu />
+          ) : null}
 
-            {submenu === null && (
-              <>
-                <Dropdown.Divider />
+          {submenu === null && (
+            <>
+              <Dropdown.Divider />
 
-                <SocialButtons className="mx-2" />
-              </>
-            )}
-          </Popover.Content>
-        </Popover>
-      </Overlay>
-    </MenuProvier>
+              <SocialButtons className="mx-2" closeMenu={closeMenu} />
+            </>
+          )}
+        </div>
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }

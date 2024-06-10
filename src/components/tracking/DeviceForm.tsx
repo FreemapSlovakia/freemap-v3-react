@@ -11,6 +11,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaBullseye, FaSync } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -96,6 +97,7 @@ export function DeviceForm(): ReactElement {
             : m?.tracking.devices.createTitle}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <FormGroup className="required">
           <FormLabel>{m?.tracking.device.name}</FormLabel>
@@ -108,12 +110,12 @@ export function DeviceForm(): ReactElement {
             maxLength={255}
           />
         </FormGroup>
+
         <FormGroup className="required">
           <FormLabel>Token</FormLabel>
           <InputGroup>
             <DropdownButton
               variant="secondary"
-              as={InputGroup.Append}
               id="input-dropdown-addon"
               title={types[type]}
               onSelect={onSelect}
@@ -125,6 +127,7 @@ export function DeviceForm(): ReactElement {
                 </Dropdown.Item>
               ))}
             </DropdownButton>
+
             <FormControl
               type="text"
               pattern={
@@ -142,20 +145,21 @@ export function DeviceForm(): ReactElement {
               }
               onChange={setToken}
             />
+
             {type === 'url' && !!device?.id && (
-              <InputGroup.Append>
-                <Button
-                  active={regenerateToken}
-                  onClick={handleRegenerateTokenClick}
-                >
-                  <FaSync /> Regenerate
-                </Button>
-              </InputGroup.Append>
+              <Button
+                active={regenerateToken}
+                onClick={handleRegenerateTokenClick}
+              >
+                <FaSync /> Regenerate
+              </Button>
             )}
           </InputGroup>
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.device.maxCount}</FormLabel>
+
           <FormControl
             type="number"
             min="0"
@@ -164,8 +168,10 @@ export function DeviceForm(): ReactElement {
             onChange={setMaxCount}
           />
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.device.maxAge}</FormLabel>
+
           <InputGroup>
             <FormControl
               type="number"
@@ -174,14 +180,15 @@ export function DeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroupText>{m?.general.minutes}</InputGroupText>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
+
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
+
         <Button
           type="button"
           variant="dark"

@@ -46,7 +46,7 @@ export function RecentTags({
             onClick={() => onAdd(tag)}
             variant="secondary"
             size="sm"
-            className="py-0 ml-1"
+            className="py-0 ms-1"
           >
             {tag}
           </Button>

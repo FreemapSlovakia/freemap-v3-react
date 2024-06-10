@@ -1,4 +1,3 @@
-import { BBox2d } from '@turf/helpers/dist/js/lib/geojson';
 import { mapSetEsriAttribution } from 'fm3/actions/mapActions';
 import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
@@ -6,6 +5,7 @@ import { useMap } from 'fm3/hooks/useMap';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
+import { BBox } from 'geojson';
 
 type EsriWorldImageryAttribution = {
   contributors: {
@@ -14,7 +14,7 @@ type EsriWorldImageryAttribution = {
       zoomMax: number;
       zoomMin: number;
       score: number;
-      bbox: BBox2d;
+      bbox: BBox;
     }[];
   }[];
 };

@@ -71,7 +71,7 @@ export function TrackViewerMenu(): ReactElement {
   return (
     <ToolMenu>
       <Button
-        className="ml-1"
+        className="ms-1"
         variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('upload-track'));
@@ -83,7 +83,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {enableElevationChart && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           active={elevationChartActive}
           onClick={() => {
@@ -100,7 +100,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {enableElevationChart && (
         <Dropdown
-          className="ml-1"
+          className="ms-1"
           onSelect={(approach) => {
             dispatch(
               trackViewerColorizeTrackBy(
@@ -130,7 +130,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {enableElevationChart && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => {
             dispatch(
@@ -153,7 +153,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {canUpload && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => {
             dispatch(trackViewerUploadTrack());
@@ -166,7 +166,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {hasTrack && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={handleConvertToDrawing}
           title={m?.general.convertToDrawing}

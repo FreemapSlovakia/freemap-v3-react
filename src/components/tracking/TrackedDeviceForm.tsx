@@ -13,6 +13,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 
@@ -110,24 +111,29 @@ export function TrackedDeviceForm(): ReactElement {
               )}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <FormGroup className="required">
           {/* TODD: or ID */}
           <FormLabel>{m?.tracking.trackedDevice.token}</FormLabel>
           <FormControl value={id} onChange={setId} required />
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.label}</FormLabel>
           <FormControl value={label} onChange={setLabel} />
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.color}</FormLabel>
           <InputGroup>
             <FormControl type="color" value={color} onChange={setColor} />
           </InputGroup>
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.width}</FormLabel>
+
           <InputGroup>
             <FormControl
               value={width}
@@ -135,17 +141,19 @@ export function TrackedDeviceForm(): ReactElement {
               type="number"
               min="1"
             />
-            <InputGroup.Append>
-              <InputGroup.Text>px</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroupText>px</InputGroupText>
           </InputGroup>
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.fromTime}</FormLabel>
+
           <DateTime value={fromTime} onChange={setFromTime} />
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.maxAge}</FormLabel>
+
           <InputGroup>
             <FormControl
               type="number"
@@ -154,13 +162,13 @@ export function TrackedDeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroupText>{m?.general.minutes}</InputGroupText>
           </InputGroup>
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.maxCount}</FormLabel>
+
           <FormControl
             type="number"
             min="0"
@@ -169,8 +177,10 @@ export function TrackedDeviceForm(): ReactElement {
             onChange={setMaxCount}
           />
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.splitDistance}</FormLabel>
+
           <InputGroup>
             <FormControl
               type="number"
@@ -179,13 +189,14 @@ export function TrackedDeviceForm(): ReactElement {
               value={splitDistance}
               onChange={setSplitDistance}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroupText>{m?.general.meters}</InputGroupText>
           </InputGroup>
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.splitDuration}</FormLabel>
+
           <InputGroup>
             <FormControl
               type="number"
@@ -194,14 +205,15 @@ export function TrackedDeviceForm(): ReactElement {
               value={splitDuration}
               onChange={setSplitDuration}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroupText>{m?.general.minutes}</InputGroupText>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
+
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
+
         <Button
           variant="dark"
           type="button"

@@ -29,8 +29,10 @@ export function Devices(): ReactElement {
           <FaBullseye /> {m?.tracking.devices.modalTitle}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <Alert variant="secondary">{m?.tracking.devices.desc()}</Alert>
+
         <Table striped bordered responsive>
           <thead>
             <tr>
@@ -42,6 +44,7 @@ export function Devices(): ReactElement {
               <th>{m?.general.actions}</th>
             </tr>
           </thead>
+
           <tbody>
             {devices.map((device) => (
               <Device key={device.id} device={device} />
@@ -49,6 +52,7 @@ export function Devices(): ReactElement {
           </tbody>
         </Table>
       </Modal.Body>
+
       <Modal.Footer>
         <Button
           type="button"
@@ -58,6 +62,7 @@ export function Devices(): ReactElement {
         >
           {m?.general.add}
         </Button>
+
         <Button
           variant="dark"
           type="button"

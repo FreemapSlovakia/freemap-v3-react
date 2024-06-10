@@ -25,11 +25,14 @@ export function TrackedDevices(): ReactElement {
           <FaBullseye /> {m?.tracking.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <p>{m?.tracking.trackedDevices.desc}</p>
+
         <Alert variant="warning">
           {m?.tracking.trackedDevices.storageWarning}
         </Alert>
+
         <Table striped bordered responsive>
           <thead>
             <tr>
@@ -43,6 +46,7 @@ export function TrackedDevices(): ReactElement {
               <th>{m?.general.actions}</th>
             </tr>
           </thead>
+
           <tbody>
             {devices.map((device) => (
               <TrackedDevice key={device.token} device={device} />
@@ -50,6 +54,7 @@ export function TrackedDevices(): ReactElement {
           </tbody>
         </Table>
       </Modal.Body>
+
       <Modal.Footer>
         <Button
           type="button"
@@ -59,6 +64,7 @@ export function TrackedDevices(): ReactElement {
         >
           {m?.general.add}
         </Button>
+
         <Button
           variant="dark"
           type="button"

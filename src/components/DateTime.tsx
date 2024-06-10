@@ -1,6 +1,7 @@
 import { ChangeEvent, ReactElement, useCallback } from 'react';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
+import InputGroupText from 'react-bootstrap/esm/InputGroupText';
 import { FaCalendar, FaClock } from 'react-icons/fa';
 
 function checkDatetimeLocalInput(): boolean {
@@ -71,11 +72,9 @@ export function DateTime({
     />
   ) : (
     <InputGroup>
-      <InputGroup.Append>
-        <InputGroup.Text>
-          <FaCalendar />
-        </InputGroup.Text>
-      </InputGroup.Append>
+      <InputGroupText>
+        <FaCalendar />
+      </InputGroupText>
 
       <FormControl
         type="date"
@@ -86,11 +85,9 @@ export function DateTime({
         required={!!timePart}
       />
 
-      <InputGroup.Append>
-        <InputGroup.Text>
-          <FaClock />
-        </InputGroup.Text>
-      </InputGroup.Append>
+      <InputGroupText>
+        <FaClock />
+      </InputGroupText>
 
       <FormControl
         type="time"

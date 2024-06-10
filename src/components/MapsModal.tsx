@@ -215,7 +215,7 @@ export function MapsModal({ show }: Props): ReactElement {
                 {(!activeMap || activeMap?.canWrite) && (
                   <Button
                     type="button"
-                    className="mb-1 mr-1"
+                    className="mb-1 me-1"
                     onClick={() =>
                       dispatch(
                         mapsSave({
@@ -258,11 +258,9 @@ export function MapsModal({ show }: Props): ReactElement {
                     <th>
                       <div className="form-row mb-2">
                         <InputGroup className="col-auto">
-                          <InputGroup.Prepend>
-                            <InputGroup.Text>
-                              <FaFilter />
-                            </InputGroup.Text>
-                          </InputGroup.Prepend>
+                          <InputGroup.Text>
+                            <FaFilter />
+                          </InputGroup.Text>
 
                           <FormControl
                             value={filter}
@@ -345,7 +343,7 @@ export function MapsModal({ show }: Props): ReactElement {
               </Button>
 
               <Button
-                className="ml-1"
+                className="ms-1"
                 variant="danger"
                 disabled={
                   !myUserId ||

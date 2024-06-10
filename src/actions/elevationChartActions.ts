@@ -1,5 +1,5 @@
-import { Feature, LineString } from '@turf/helpers';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
+import { Feature, LineString } from 'geojson';
 import { createAction } from 'typesafe-actions';
 
 export const elevationChartSetTrackGeojson = createAction(

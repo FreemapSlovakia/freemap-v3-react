@@ -32,7 +32,7 @@ export function Attribution({ unknown }: Props): ReactElement {
   return categorized.length === 0 ? (
     <div>{unknown}</div>
   ) : (
-    <ul className="m-0 ml-n4 mr-n4">
+    <ul className="m-0 ms-n4 me-n4">
       {categorized.map(({ type, attributions }) => (
         <li key={type}>
           {m?.mapLayers.type[type]}{' '}

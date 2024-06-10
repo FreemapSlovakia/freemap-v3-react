@@ -26,7 +26,7 @@ export function ChangesetsMenu(): ReactElement {
   return (
     <ToolMenu>
       <Dropdown
-        className="ml-1"
+        className="ms-1"
         onSelect={(d) => {
           dispatch(changesetsSetParams({ days: Number(d) }));
         }}
@@ -45,8 +45,7 @@ export function ChangesetsMenu(): ReactElement {
       </Dropdown>
 
       <Form
-        className="ml-1 d-flex flex-nowrap"
-        inline
+        className="ms-1 d-flex flex-nowrap"
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -64,19 +63,17 @@ export function ChangesetsMenu(): ReactElement {
             value={authorName ?? ''}
           />
 
-          <InputGroup.Append>
-            <Button
-              variant="secondary"
-              disabled={!authorName}
-              onClick={() => {
-                setAuthorName(null);
+          <Button
+            variant="secondary"
+            disabled={!authorName}
+            onClick={() => {
+              setAuthorName(null);
 
-                dispatch(changesetsSetParams({ days, authorName: null }));
-              }}
-            >
-              <FaEraser />
-            </Button>
-          </InputGroup.Append>
+              dispatch(changesetsSetParams({ days, authorName: null }));
+            }}
+          >
+            <FaEraser />
+          </Button>
         </InputGroup>
       </Form>
     </ToolMenu>

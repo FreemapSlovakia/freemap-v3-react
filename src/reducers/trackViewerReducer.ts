@@ -1,8 +1,3 @@
-import {
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-} from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
@@ -14,10 +9,11 @@ import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from 'fm3/actions/trackViewerActions';
+import { FeatureCollection } from 'geojson';
 import { createReducer } from 'typesafe-actions';
 
 export interface TrackViewerStateBase {
-  trackGeojson: FeatureCollection<Geometries | GeometryCollection> | null;
+  trackGeojson: FeatureCollection | null;
   trackGpx: string | null;
   trackUID: string | null;
   gpxUrl: string | null;

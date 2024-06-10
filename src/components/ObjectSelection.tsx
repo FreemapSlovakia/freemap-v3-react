@@ -19,7 +19,7 @@ export function ObjectSelection(): ReactElement {
   return (
     <Selection icon={<FaMapMarkerAlt />} title={m?.selections.objects}>
       <Button
-        className="ml-1"
+        className="ms-1"
         variant="secondary"
         onClick={() => {
           if (selection?.type === 'objects') {

@@ -56,11 +56,7 @@ export function ObjectsResult(): ReactElement | null {
     (state: RootState) => state.objects.selectedIcon,
   );
 
-  if (!osmMapping) {
-    return null;
-  }
-
-  return (
+  return !osmMapping ? null : (
     <>
       {objects.map(({ id, lat, lon, tags, type }) => {
         const name = getNameFromOsmElement(tags, language);

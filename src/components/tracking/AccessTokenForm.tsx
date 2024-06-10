@@ -76,15 +76,18 @@ export function AccessTokenForm(): ReactElement {
             : m?.tracking.accessTokens.createTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <FormGroup>
           <FormLabel>{m?.tracking.accessToken.timeFrom}</FormLabel>
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </FormGroup>
+
         <FormGroup>
           <FormLabel>{m?.tracking.accessToken.timeTo}</FormLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
+
         {/* <FormGroup>
           <FormLabel>{m?.tracking.accessToken.listingLabel}</FormLabel>
           <FormControl
@@ -93,13 +96,16 @@ export function AccessTokenForm(): ReactElement {
             maxLength={255}
           />
         </FormGroup> */}
+
         <FormGroup>
           <FormLabel>{m?.tracking.accessToken.note}</FormLabel>
           <FormControl value={note} onChange={setNote} maxLength={255} />
         </FormGroup>
       </Modal.Body>
+
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
+
         <Button
           variant="dark"
           type="button"

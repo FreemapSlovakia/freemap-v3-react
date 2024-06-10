@@ -1,4 +1,3 @@
-import { Feature, GeometryObject } from '@turf/helpers';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import {
@@ -13,6 +12,7 @@ import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
+import { Feature } from 'geojson';
 
 function pointToLayer(feature: Feature, latLng: LatLng) {
   const img = resolveGenericName(osmTagToIconMapping, feature.properties ?? {});
@@ -32,7 +32,7 @@ function pointToLayer(feature: Feature, latLng: LatLng) {
 }
 
 function annotateFeature(
-  feature: Feature<GeometryObject>,
+  feature: Feature,
   layer: Layer,
   language: string,
   isBg: boolean,
@@ -79,22 +79,18 @@ export function SearchResults(): ReactElement | null {
   const dispatch = useDispatch();
 
   const cachedAnnotateFeatureBg = useCallback(
-    (feature: Feature<GeometryObject>, layer: Layer) =>
+    (feature: Feature, layer: Layer) =>
       annotateFeature(feature, layer, language, true),
     [language],
   );
 
   const cachedAnnotateFeature = useCallback(
-    (feature: Feature<GeometryObject>, layer: Layer) =>
+    (feature: Feature, layer: Layer) =>
       annotateFeature(feature, layer, language, false),
     [language],
   );
 
-  if (!selectedResult?.geojson) {
-    return null;
-  }
-
-  return (
+  return !selectedResult?.geojson ? null : (
     <Fragment key={language + selectedResultSeq}>
       <GeoJSON
         interactive={false}

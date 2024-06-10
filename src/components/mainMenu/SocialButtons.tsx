@@ -1,15 +1,13 @@
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import { FaFacebook, FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa';
-import { useMenuClose } from './SubmenuHeader';
 
 type Props = {
   className?: string;
+  closeMenu: () => void;
 };
 
-export function SocialButtons({ className }: Props): ReactElement {
-  const closeMenu = useMenuClose();
-
+export function SocialButtons({ className, closeMenu }: Props): ReactElement {
   const m = useMessages();
 
   return (

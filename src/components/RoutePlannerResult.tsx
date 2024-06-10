@@ -1,5 +1,5 @@
 import along from '@turf/along';
-import { Feature, lineString, Point, Properties } from '@turf/helpers';
+import { lineString } from '@turf/helpers';
 import length from '@turf/length';
 import { setTool } from 'fm3/actions/mainActions';
 import {
@@ -22,6 +22,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { isSpecial, transportTypeDefs } from 'fm3/transportTypeDefs';
+import { Feature, Point } from 'geojson';
 import {
   divIcon,
   DragEndEvent,
@@ -220,7 +221,7 @@ export function RoutePlannerResult(): ReactElement {
 
     const len = length(line);
 
-    const milestones: Feature<Point, Properties>[] = [];
+    const milestones: Feature<Point>[] = [];
 
     if (milestonesMode === 'abs') {
       const step =

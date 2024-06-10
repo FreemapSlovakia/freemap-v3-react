@@ -27,7 +27,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
         <div className="m-1">Zvoľte domovskú pozíciu</div>
 
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="primary"
           onClick={() => dispatch(saveHomeLocation())}
           disabled={!selectingHomeLocation}
@@ -37,7 +37,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
         </Button>
 
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="dark"
           onClick={() => dispatch(setSelectingHomeLocation(false))}
         >
