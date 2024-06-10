@@ -171,7 +171,7 @@ export function MapsModal({ show }: Props): ReactElement {
 
             <Form>
               {(isOwnMap || !activeMap) && (
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>{m?.general.name}</Form.Label>
 
                   <Form.Control
@@ -183,7 +183,7 @@ export function MapsModal({ show }: Props): ReactElement {
               )}
 
               {(isOwnMap || !activeMap) && (
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>{m?.maps.writers}</Form.Label>
 
                   <ReactTags
@@ -307,6 +307,7 @@ export function MapsModal({ show }: Props): ReactElement {
             </div>
 
             <Form.Check
+              className="mb-3"
               id="clear"
               type="checkbox"
               checked={clear}
@@ -315,6 +316,7 @@ export function MapsModal({ show }: Props): ReactElement {
             />
 
             <Form.Check
+              className="mb-3"
               id="inclPosition"
               type="checkbox"
               checked={inclPosition}

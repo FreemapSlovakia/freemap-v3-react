@@ -127,7 +127,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group style={{ maxWidth: '542px' }}>
+        <Form.Group className="mb-3" style={{ maxWidth: '542px' }}>
           <Form.Label>{m?.embed.dimensions}</Form.Label>
 
           <InputGroup>
@@ -161,7 +161,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <strong>{m?.embed.enableFeatures}</strong>
+        <Form.Label className="mb-3">{m?.embed.enableFeatures}</Form.Label>
 
         <Form.Check
           id="enableSearch"

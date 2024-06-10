@@ -110,25 +110,26 @@ export function TrackedDeviceForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="required">
+        <Form.Group className="mb-3 required">
           {/* TODD: or ID */}
           <Form.Label>{m?.tracking.trackedDevice.token}</Form.Label>
+
           <Form.Control value={id} onChange={setId} required />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.label}</Form.Label>
           <Form.Control value={label} onChange={setLabel} />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.color}</Form.Label>
           <InputGroup>
             <Form.Control type="color" value={color} onChange={setColor} />
           </InputGroup>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.width}</Form.Label>
 
           <InputGroup>
@@ -142,13 +143,13 @@ export function TrackedDeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.fromTime}</Form.Label>
 
           <DateTime value={fromTime} onChange={setFromTime} />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.maxAge}</Form.Label>
 
           <InputGroup>
@@ -163,7 +164,7 @@ export function TrackedDeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.maxCount}</Form.Label>
 
           <Form.Control
@@ -175,7 +176,7 @@ export function TrackedDeviceForm(): ReactElement {
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.splitDistance}</Form.Label>
 
           <InputGroup>
@@ -191,7 +192,7 @@ export function TrackedDeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.splitDuration}</Form.Label>
 
           <InputGroup>

@@ -204,7 +204,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               {m?.exportMapFeatures.disabledAlert}
             </Alert>
 
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>{m?.exportMapFeatures.target}:</Form.Label>
 
               <div>
@@ -251,7 +251,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
             {target === 'garmin' && (
               <>
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>Course name:</Form.Label>
 
                   <Form.Control
@@ -260,7 +260,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   />
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>Description:</Form.Label>
 
                   <Form.Control
@@ -271,7 +271,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   />
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>Activity type:</Form.Label>
 
                   <Form.Control
@@ -293,7 +293,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             )}
 
             {target !== 'garmin' && (
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
 
                 <div>
@@ -316,7 +316,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               </Form.Group>
             )}
 
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>{m?.exportMapFeatures.download}:</Form.Label>
 
               <div>

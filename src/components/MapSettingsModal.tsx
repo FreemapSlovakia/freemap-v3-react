@@ -208,7 +208,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>
               {m?.settings.map.overlayPaneOpacity}{' '}
               {nf.format(overlayPaneOpacity * 100)}
@@ -231,7 +231,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
             <>
               <hr />
 
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>{m?.settings.layer}</Form.Label>
 
                 <DropdownButton
@@ -390,7 +390,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
               </Card.Header>
 
               <Accordion.Collapse eventKey="0" className="p-2">
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>
                     {m?.settings.customLayersDef}{' '}
                     <FaFlask

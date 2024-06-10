@@ -97,7 +97,7 @@ export function DeviceForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="required">
+        <Form.Group className="mb-3 required">
           <Form.Label>{m?.tracking.device.name}</Form.Label>
           <Form.Control
             type="text"
@@ -109,7 +109,7 @@ export function DeviceForm(): ReactElement {
           />
         </Form.Group>
 
-        <Form.Group className="required">
+        <Form.Group className="mb-3 required">
           <Form.Label>Token</Form.Label>
           <InputGroup>
             <DropdownButton
@@ -155,7 +155,7 @@ export function DeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.device.maxCount}</Form.Label>
 
           <Form.Control
@@ -167,7 +167,7 @@ export function DeviceForm(): ReactElement {
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.device.maxAge}</Form.Label>
 
           <InputGroup>

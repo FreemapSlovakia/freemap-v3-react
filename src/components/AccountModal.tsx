@@ -93,7 +93,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>{m?.settings.account.name}</Form.Label>
 
             <Form.Control
@@ -106,7 +106,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
             />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>{m?.settings.account.email}</Form.Label>
 
             <Form.Control
@@ -120,6 +120,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
           </Form.Group>
 
           <Form.Check
+            className="mb-3"
             id="chk-galEmails"
             type="checkbox"
             onChange={(e) => {

@@ -3,7 +3,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import Form from 'react-bootstrap/Form';
 
 import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
@@ -119,11 +118,9 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Form.Group>
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close}
-          </Button>
-        </Form.Group>
+        <Button variant="dark" onClick={close}>
+          <FaTimes /> {m?.general.close}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

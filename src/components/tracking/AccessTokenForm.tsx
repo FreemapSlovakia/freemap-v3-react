@@ -77,17 +77,19 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.accessToken.timeFrom}</Form.Label>
+
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.accessToken.timeTo}</Form.Label>
+
           <DateTime value={timeTo} onChange={setTimeTo} />
         </Form.Group>
 
-        {/* <Form.Group>
+        {/* <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.accessToken.listingLabel}</Form.Label>
           <Form.Control
             value={listingLabel}
@@ -96,8 +98,9 @@ export function AccessTokenForm(): ReactElement {
           />
         </Form.Group> */}
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label>{m?.tracking.accessToken.note}</Form.Label>
+
           <Form.Control value={note} onChange={setNote} maxLength={255} />
         </Form.Group>
       </Modal.Body>

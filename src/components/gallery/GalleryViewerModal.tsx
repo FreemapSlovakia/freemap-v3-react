@@ -524,7 +524,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
                   {user && (
                     <Form onSubmit={handleCommentFormSubmit}>
-                      <Form.Group>
+                      <Form.Group className="mb-3">
                         <InputGroup>
                           <Form.Control
                             type="text"
@@ -551,13 +551,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
 
                   {user && (
-                    <div className="d-flex f-gap-1 align-items-center">
-                      <div className="flex-shrink-0">
+                    <div className="d-flex f-gap-1 align-items-center mb-3">
+                      <span className="flex-shrink-0">
                         {m?.gallery.viewer.yourRating}
-                      </div>
+                      </span>
 
                       <ReactStars
-                        className="stars ms-1  flex-shrink-0"
+                        className="stars ms-1 flex-shrink-0"
                         size={22}
                         half={false}
                         value={myStars ?? 0}
