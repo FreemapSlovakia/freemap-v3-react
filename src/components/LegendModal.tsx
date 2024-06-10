@@ -28,7 +28,7 @@ export function LegendModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show={show} onHide={close} size="sm">
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaRegMap /> Legenda mapy
@@ -42,27 +42,23 @@ export function LegendModal({ show }: Props): ReactElement {
 
         <Accordion>
           {legend.map((c: LegendItem, i: number) => (
-            <Card key={c.n}>
-              <Accordion.Button as={Card.Header} eventKey={String(i)}>
-                {c.n}
-              </Accordion.Button>
+            <Accordion.Item key={c.n} eventKey={String(i)}>
+              <Accordion.Button as={Card.Header}>{c.n}</Accordion.Button>
 
-              <Accordion.Collapse eventKey={String(i)}>
-                <Card.Body>
-                  {c.items.map((e) => (
-                    <div key={e.n} className="legend-item">
+              <Accordion.Body>
+                {c.items.map((e) => (
+                  <div key={e.n} className="legend-item">
+                    <div>
                       <div>
-                        <div>
-                          <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
-                        </div>
+                        <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
                       </div>
-
-                      <div>{e.n}</div>
                     </div>
-                  ))}
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
+
+                    <div>{e.n}</div>
+                  </div>
+                ))}
+              </Accordion.Body>
+            </Accordion.Item>
           ))}
         </Accordion>
       </Modal.Body>

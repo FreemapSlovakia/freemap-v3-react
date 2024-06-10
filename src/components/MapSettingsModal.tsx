@@ -24,7 +24,6 @@ import {
   useState,
 } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -377,19 +376,12 @@ export function MapSettingsModal({ show }: Props): ReactElement {
           <hr />
 
           <Accordion>
-            <Card>
-              <Card.Header>
-                <Accordion.Button
-                  as={Button}
-                  eventKey="0"
-                  variant="link"
-                  className="text-left w-100"
-                >
-                  {m?.pdfExport.advancedSettings}
-                </Accordion.Button>
-              </Card.Header>
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                {m?.pdfExport.advancedSettings}
+              </Accordion.Header>
 
-              <Accordion.Collapse eventKey="0" className="p-2">
+              <Accordion.Body>
                 <Form.Group className="mb-3">
                   <Form.Label>
                     {m?.settings.customLayersDef}{' '}
@@ -409,8 +401,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     placeholder={customLayersHelp}
                   />
                 </Form.Group>
-              </Accordion.Collapse>
-            </Card>
+              </Accordion.Body>
+            </Accordion.Item>
           </Accordion>
         </Modal.Body>
 

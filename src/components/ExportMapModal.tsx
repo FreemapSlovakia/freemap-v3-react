@@ -2,7 +2,6 @@ import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
-import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -350,20 +349,11 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <hr />
 
         <Accordion>
-          <Card>
-            <Card.Header>
-              <Accordion.Button
-                as={Button}
-                variant="link"
-                eventKey="0"
-                className="text-left w-100"
-              >
-                {m?.pdfExport.advancedSettings}
-              </Accordion.Button>
-            </Card.Header>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>{m?.pdfExport.advancedSettings}</Accordion.Header>
 
-            <Accordion.Collapse eventKey="0" className="p-2">
-              <Form.Group className="mt-2">
+            <Accordion.Body>
+              <Form.Group className="mb-3">
                 <Form.Label>
                   {m?.pdfExport.styles}{' '}
                   <a
@@ -383,8 +373,8 @@ export function ExportMapModal({ show }: Props): ReactElement {
                   className="text-monospace"
                 />
               </Form.Group>
-            </Accordion.Collapse>
-          </Card>
+            </Accordion.Body>
+          </Accordion.Item>
         </Accordion>
       </Modal.Body>
 
