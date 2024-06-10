@@ -214,8 +214,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
               {' %'}
             </Form.Label>
 
-            <Form.Control
-              type="range"
+            <Form.Range
               value={overlayPaneOpacity}
               min={0}
               max={1}
@@ -352,8 +351,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 <Form.Group className="mt-2">
                   <Form.Label>{m?.settings.overlayOpacity}</Form.Label>
 
-                  <Form.Control
-                    type="range"
+                  <Form.Range
                     value={layersSettings[selectedLayer]?.opacity ?? 1}
                     min={0.1}
                     max={1.0}
