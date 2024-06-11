@@ -20,7 +20,7 @@ export function attachOsmLoginMessageHandler(store: MyStore): void {
       store.dispatch(
         authWithOsm2({
           code,
-          connect: sp.get('connect') === 'true',
+          connect: sp.get('state') === 'true',
         }),
       );
     }

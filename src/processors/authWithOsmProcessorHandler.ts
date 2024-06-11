@@ -23,11 +23,9 @@ const handle: ProcessorHandler<typeof authWithOsm> = async ({
       new URLSearchParams({
         response_type: 'code',
         client_id: clientId,
-        redirect_uri:
-          process.env['BASE_URL'] +
-          '/authCallback.html?connect=' +
-          action.payload.connect,
+        redirect_uri: process.env['BASE_URL'] + '/authCallback.html',
         scope: 'read_prefs',
+        state: String(action.payload.connect),
       }).toString(),
     'osm-login',
     `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${
