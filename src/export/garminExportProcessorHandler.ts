@@ -5,6 +5,7 @@ import { LineString } from 'geojson';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import length from '@turf/length';
 import { lineString } from '@turf/helpers';
+import { mergeLines } from 'fm3/geoutils';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
@@ -88,9 +89,15 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
     switch (geojson?.type) {
       case 'FeatureCollection':
-        const lines = geojson.features
+        const features = structuredClone(geojson.features);
+
+        mergeLines(features);
+
+        const lines = features
           .map((f) => f.geometry)
           .filter((g): g is LineString => g.type === 'LineString');
+
+        console.log('LLLL', lines);
 
         if (lines.length === 1) {
           coordinates = lines[0].coordinates;
@@ -118,7 +125,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         description,
         activity,
         coordinates,
-        distance: length(lineString(coordinates), { units: 'kilometers' }),
+        distance: length(lineString(coordinates), { units: 'meters' }),
         elevationGain: 0,
         elevationLoss: 0,
       },
@@ -131,9 +138,18 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         messageKey: 'general.success',
       }),
     );
-  } // TODO else report error "nothing to export" or better - disable exporting if there is nothing
 
-  dispatch(setActiveModal(null));
+    dispatch(setActiveModal(null));
+  } else {
+    // TODO else report error "nothing to export" or better - disable exporting if there is nothing
+
+    dispatch(
+      toastsAdd({
+        style: 'danger',
+        message: "Features can't be converted to a course", // TODO translate
+      }),
+    );
+  }
 };
 
 export default handle;
