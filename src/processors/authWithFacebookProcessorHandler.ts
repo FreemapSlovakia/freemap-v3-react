@@ -1,11 +1,9 @@
-import { authSetUser, authWithFacebook } from 'fm3/actions/authActions';
-import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
+import { authWithFacebook } from 'fm3/actions/authActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { loadFb } from 'fm3/fbLoader';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { User } from 'fm3/types/common';
-import { assert } from 'typia';
+import { handleLoginResponse } from './loginResponseHandler';
 
 const handle: ProcessorHandler<typeof authWithFacebook> = async ({
   action,
@@ -51,26 +49,7 @@ const handle: ProcessorHandler<typeof authWithFacebook> = async ({
     },
   });
 
-  const user = assert<User>(await res.json());
-
-  dispatch(
-    toastsAdd({
-      id: 'lcd',
-      messageKey: connect ? 'auth.connect.success' : 'auth.logIn.success',
-      style: 'info',
-      timeout: 5000,
-    }),
-  );
-
-  dispatch(authSetUser(user));
-
-  if (!user.isPremium && getState().main.removeAdsOnLogin) {
-    dispatch(removeAds());
-  }
-
-  if (connect) {
-    dispatch(setActiveModal('account'));
-  }
+  await handleLoginResponse(res, getState, dispatch);
 };
 
 export default handle;

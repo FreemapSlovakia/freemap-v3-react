@@ -118,7 +118,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         description,
         activity,
         coordinates,
-        distance: length(lineString(coordinates)),
+        distance: length(lineString(coordinates), { units: 'kilometers' }),
         elevationGain: 0,
         elevationLoss: 0,
       },
@@ -131,7 +131,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         messageKey: 'general.success',
       }),
     );
-  } // TODO else report error "nothing to export" od better - disable exporting if there is nothing
+  } // TODO else report error "nothing to export" or better - disable exporting if there is nothing
 
   dispatch(setActiveModal(null));
 };

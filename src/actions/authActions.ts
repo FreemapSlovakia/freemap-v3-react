@@ -25,10 +25,10 @@ export const authWithGarmin = createAction('AUTH_WITH_GARMIN')<{
 }>();
 
 export const authWithGarmin2 = createAction('AUTH_WITH_GARMIN_2')<{
-  connect: boolean;
+  // connect: boolean;
   token: string;
   verifier: string;
-  successAction?: Action;
+  // successAction?: Action;
 }>();
 
 export const authDisconnect = createAction('AUTH_DISCONNECT')<{

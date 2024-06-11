@@ -2,6 +2,7 @@ import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { PathOptions } from 'leaflet';
 import type * as Sentry from '@sentry/browser';
+import { Action } from 'redux';
 
 export interface LatLon {
   lat: number;
@@ -28,6 +29,12 @@ export interface User {
   isPremium: boolean;
   authProviders: AuthProvider[];
 }
+
+export type LoginResponse = {
+  user: User;
+  connect: boolean;
+  clientData?: { successAction?: Action };
+};
 
 declare global {
   interface Window {
