@@ -152,7 +152,6 @@ export function positionsEqual(pt1: Position, pt2: Position): boolean {
   return pt1[0] === pt2[0] && pt1[1] === pt2[1];
 }
 
-// TODO so far unused
 export function mergeLines<T extends Geometry>(
   features: Feature<T>[],
   properties: GeoJsonProperties = {},

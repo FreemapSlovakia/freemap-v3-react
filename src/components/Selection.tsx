@@ -30,10 +30,11 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Card className="fm-toolbar mt-2 mx-2">
+      <Card className="fm-toolbar mx-2 mt-2">
         <ButtonToolbar>
           <span className="align-self-center ms-1">
             {icon}
+
             <span className="d-none d-sm-inline"> {title}</span>
           </span>
 
