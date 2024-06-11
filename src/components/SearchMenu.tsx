@@ -73,8 +73,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  const searchSeq = useAppSelector((state) => state.search.searchSeq);
-
   // const inProgress = useAppSelector((state) => state.search.inProgress);
 
   const [value, setValue] = useState('');
@@ -239,7 +237,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu
-            key={searchSeq}
             className="fm-search-dropdown"
             popperConfig={fixedPopperConfig}
           >
