@@ -29,6 +29,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const filter = useAppSelector((state) => state.gallery.filter);
 
+  const currentUserId = useAppSelector((state) => state.auth.user?.id);
+
   const users = useAppSelector((state) => state.gallery.users);
 
   const tags = useAppSelector((state) => state.gallery.tags);
@@ -247,11 +249,27 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             <Form.Select value={userId} onChange={handleUserIdChange}>
               <option value="" />
 
-              {users.map(({ id, name, count }) => (
-                <option key={id} value={id}>
-                  {name} ({count})
-                </option>
-              ))}
+              {currentUserId ? (
+                <>
+                  {users
+                    .filter(({ id }) => currentUserId === id)
+                    .map(({ id, name, count }) => (
+                      <option key={id} value={id}>
+                        {name} ({count})
+                      </option>
+                    ))}
+
+                  <option disabled>──────────</option>
+                </>
+              ) : null}
+
+              {users
+                .filter(({ id }) => currentUserId !== id)
+                .map(({ id, name, count }) => (
+                  <option key={id} value={id}>
+                    {name} ({count})
+                  </option>
+                ))}
             </Form.Select>
           </Form.Group>
 
