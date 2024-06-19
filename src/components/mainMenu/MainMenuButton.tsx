@@ -44,7 +44,16 @@ export function MainMenuButton(): ReactElement {
 
   const [cacheExists, setCacheExists] = useState(false);
 
-  const extraMenuHandler = useCallback(
+  const {
+    handleSelect,
+    menuShown,
+    handleMenuToggle,
+    closeMenu,
+    submenu,
+    extraHandler,
+  } = useMenuHandler();
+
+  extraHandler.current = useCallback(
     (eventKey: string) => {
       if (eventKey.startsWith('cacheMode-')) {
         const cacheMode = eventKey.slice(10) as CacheMode;
@@ -82,9 +91,6 @@ export function MainMenuButton(): ReactElement {
     },
     [cachingActive],
   );
-
-  const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
-    useMenuHandler({ extraHandler: extraMenuHandler });
 
   useEffect(() => {
     get('cacheMode').then((cacheMode) =>

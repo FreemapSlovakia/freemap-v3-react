@@ -15,7 +15,7 @@ import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { useMessages } from 'fm3/l10nInjector';
 import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import {
   FaCamera,
@@ -33,9 +33,9 @@ import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 import { useMap } from 'fm3/hooks/useMap';
+import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
 
 const initialState = {
-  shown: false,
   x: 0,
   y: 0,
   lat: 0,
@@ -50,13 +50,20 @@ export function MapContextMenu(): ReactElement {
 
   const [contextMenu, setContextMenu] = useState(initialState);
 
-  const [openInExternal, setOpenInExternal] = useState(false);
-
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   const map = useMap();
+
+  const {
+    handleSelect,
+    menuShown,
+    handleMenuToggle,
+    closeMenu,
+    submenu,
+    extraHandler,
+  } = useMenuHandler();
 
   useEffect(() => {
     if (!map) {
@@ -66,10 +73,11 @@ export function MapContextMenu(): ReactElement {
     function handlecontextMenu(e: LeafletMouseEvent) {
       e.originalEvent.preventDefault();
 
-      setOpenInExternal(false);
+      closeMenu();
+
+      handleMenuToggle(true);
 
       setContextMenu({
-        shown: true,
         x: e.containerPoint.x,
         y: e.containerPoint.y,
         lat: e.latlng.lat,
@@ -86,15 +94,13 @@ export function MapContextMenu(): ReactElement {
     return () => {
       map.removeEventListener('contextmenu', handlecontextMenu);
     };
-  }, [map]);
-
-  const { shown } = contextMenu;
+  }, [closeMenu, handleMenuToggle, map]);
 
   useEffect(() => {
-    if (shown) {
+    if (menuShown) {
       toggleRef.current?.focus();
     }
-  }, [shown]);
+  }, [menuShown]);
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
@@ -106,145 +112,139 @@ export function MapContextMenu(): ReactElement {
 
   const width = useAppSelector((state) => state.main.drawingWidth);
 
-  const handleToggle = (nextShow: boolean) => {
-    setContextMenu((m) => ({ ...m, shown: nextShow }));
-  };
-
-  const handleSelect = (eventKey: string | null) => {
-    switch (eventKey) {
-      case 'center':
-        dispatch(
-          mapRefocus({
-            lat: contextMenu.lat,
-            lon: contextMenu.lon,
-          }),
-        );
-
-        handleToggle(false);
-
-        break;
-
-      case 'measure':
-        dispatch(
-          drawingMeasure({
-            position: {
+  extraHandler.current = useCallback(
+    (eventKey: string | null) => {
+      switch (eventKey) {
+        case 'center':
+          dispatch(
+            mapRefocus({
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            },
-          }),
-        );
+            }),
+          );
 
-        handleToggle(false);
+          closeMenu();
 
-        break;
+          break;
 
-      case 'details':
-        dispatch(
-          mapDetailsSetUserSelectedPosition({
-            lat: contextMenu.lat,
-            lon: contextMenu.lon,
-          }),
-        );
+        case 'measure':
+          dispatch(
+            drawingMeasure({
+              position: {
+                lat: contextMenu.lat,
+                lon: contextMenu.lon,
+              },
+            }),
+          );
 
-        handleToggle(false);
+          closeMenu();
 
-        break;
+          break;
 
-      case 'photos':
-        dispatch(
-          galleryRequestImages({
-            lat: contextMenu.lat,
-            lon: contextMenu.lon,
-          }),
-        );
-
-        handleToggle(false);
-
-        break;
-
-      case 'addPoint':
-        dispatch(
-          drawingPointAdd({
-            lat: contextMenu.lat,
-            lon: contextMenu.lon,
-            color,
-          }),
-        );
-
-        dispatch(drawingMeasure({}));
-
-        handleToggle(false);
-
-        break;
-
-      case 'startLine':
-        dispatch(setTool('draw-lines'));
-
-        dispatch(
-          drawingLineAddPoint({
-            type: 'line',
-            color,
-            width,
-            point: {
-              id: 0,
+        case 'details':
+          dispatch(
+            mapDetailsSetUserSelectedPosition({
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            },
-          }),
-        );
+            }),
+          );
 
-        handleToggle(false);
+          closeMenu();
 
-        break;
+          break;
 
-      case 'startRoute':
-        dispatch(setTool('route-planner'));
-
-        dispatch(
-          routePlannerSetStart({
-            start: {
+        case 'photos':
+          dispatch(
+            galleryRequestImages({
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            },
-          }),
-        );
+            }),
+          );
 
-        handleToggle(false);
+          closeMenu();
 
-        break;
+          break;
 
-      case 'finishRoute':
-        dispatch(setTool('route-planner'));
-
-        dispatch(
-          routePlannerSetFinish({
-            finish: {
+        case 'addPoint':
+          dispatch(
+            drawingPointAdd({
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            },
-          }),
-        );
+              color,
+            }),
+          );
 
-        handleToggle(false);
+          dispatch(drawingMeasure({}));
 
-        break;
+          closeMenu();
 
-      case 'openInExternal':
-        setOpenInExternal(true);
+          break;
 
-        break;
+        case 'startLine':
+          dispatch(setTool('draw-lines'));
 
-      case 'back':
-        setOpenInExternal(false);
+          dispatch(
+            drawingLineAddPoint({
+              type: 'line',
+              color,
+              width,
+              point: {
+                id: 0,
+                lat: contextMenu.lat,
+                lon: contextMenu.lon,
+              },
+            }),
+          );
 
-        break;
-    }
-  };
+          closeMenu();
+
+          break;
+
+        case 'startRoute':
+          dispatch(setTool('route-planner'));
+
+          dispatch(
+            routePlannerSetStart({
+              start: {
+                lat: contextMenu.lat,
+                lon: contextMenu.lon,
+              },
+            }),
+          );
+
+          closeMenu();
+
+          break;
+
+        case 'finishRoute':
+          dispatch(setTool('route-planner'));
+
+          dispatch(
+            routePlannerSetFinish({
+              finish: {
+                lat: contextMenu.lat,
+                lon: contextMenu.lon,
+              },
+            }),
+          );
+
+          closeMenu();
+
+          break;
+
+        default:
+          return false;
+      }
+
+      return true;
+    },
+    [closeMenu, color, contextMenu.lat, contextMenu.lon, dispatch, width],
+  );
 
   return (
     <Dropdown
-      show={contextMenu.shown}
-      onToggle={handleToggle}
+      show={menuShown}
+      onToggle={handleMenuToggle}
       onSelect={handleSelect}
       autoClose="outside"
     >
@@ -280,13 +280,13 @@ export function MapContextMenu(): ReactElement {
         <div className="fm-menu-scroller" ref={sc}>
           <div />
 
-          {openInExternal ? (
+          {submenu === 'openExternally' ? (
             <>
               <Dropdown.Header>
                 <FaExternalLinkAlt /> {m?.external.openInExternal}
               </Dropdown.Header>
 
-              <Dropdown.Item as="button" eventKey="back">
+              <Dropdown.Item as="button" eventKey="submenu-">
                 <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
               </Dropdown.Item>
 
@@ -326,7 +326,7 @@ export function MapContextMenu(): ReactElement {
 
               {!window.fmEmbedded && (
                 <>
-                  <Dropdown.Item as="button" eventKey="openInExternal">
+                  <Dropdown.Item as="button" eventKey="submenu-openExternally">
                     <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
                     <FaChevronRight />
                   </Dropdown.Item>

@@ -22,17 +22,13 @@ import { is } from 'typia';
 import { useAppSelector } from './reduxSelectHook';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
-const NOP = () => false;
-
 export function useMenuHandler({
-  extraHandler = NOP,
   pointTitle,
   pointDescription,
 }: {
-  extraHandler?: (eventKey: string) => boolean;
   pointTitle?: string;
   pointDescription?: string;
-}) {
+} = {}) {
   const dispatch = useDispatch();
 
   const lat = useAppSelector((state) => state.map.lat);
@@ -68,6 +64,8 @@ export function useMenuHandler({
       setSubmenu(null);
     }
   }, [menuShown]);
+
+  const extraHandler = useRef<(eventKey: string) => boolean>();
 
   const handleSelect = useCallback(
     (eventKey: string | null, e: React.SyntheticEvent<unknown, Event>) => {
@@ -131,20 +129,11 @@ export function useMenuHandler({
         setShow(false);
       } else if (eventKey === 'close' || eventKey === 'url') {
         setShow(false);
-      } else if (extraHandler(eventKey)) {
+      } else if (extraHandler.current?.(eventKey)) {
         // nothing
       }
     },
-    [
-      dispatch,
-      extraHandler,
-      lat,
-      lon,
-      mapType,
-      pointDescription,
-      pointTitle,
-      zoom,
-    ],
+    [dispatch, lat, lon, mapType, pointDescription, pointTitle, zoom],
   );
 
   const handleMenuToggle = useCallback((nextShow: boolean) => {
@@ -161,5 +150,6 @@ export function useMenuHandler({
     handleMenuToggle,
     closeMenu,
     submenu,
+    extraHandler,
   };
 }
