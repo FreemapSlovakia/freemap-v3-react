@@ -1,10 +1,16 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import { latLonToString } from 'fm3/geoutils';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { LatLon } from 'fm3/types/common';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Alert from 'react-bootstrap/Alert';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { useCallback } from 'react';
+import { latLonToString } from 'fm3/geoutils';
+import useLocalStorageState from 'use-local-storage-state';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;
@@ -58,11 +64,41 @@ export function ElevationInfo({
   const baseTileUrl =
     substitute(baseLayers.find((l) => l.type === mapType)?.url) ?? '';
 
+  const [format, setFormat] = useLocalStorageState<number>('fm.ele.gpsFormat', {
+    defaultValue: 0,
+  });
+
+  const handleMinusClick = useCallback(() => {
+    setFormat((f) => (f > 0 ? f - 1 : f));
+  }, [setFormat]);
+
+  const handlePlusClick = useCallback(() => {
+    setFormat((f) => (f < 3 ? f + 1 : f));
+  }, [setFormat]);
+
   return (
     <>
-      {(['D', 'DM', 'DMS'] as const).map((format) => (
-        <div key={format}>{latLonToString(point, lang, format)}</div>
-      ))}
+      <InputGroup size="sm">
+        <Button onClick={handleMinusClick}>
+          <FaAngleLeft />
+        </Button>
+        <Form.Control
+          readOnly
+          className="fm-fs-content"
+          value={
+            format === 0
+              ? `${point.lat.toFixed(6)}, ${point.lon.toFixed(6)}`
+              : latLonToString(
+                  point,
+                  lang,
+                  (['D', 'DM', 'DMS'] as const)[format - 1],
+                )
+          }
+        />
+        <Button onClick={handlePlusClick}>
+          <FaAngleRight />
+        </Button>
+      </InputGroup>
 
       {!window.fmEmbedded && (
         <div>
