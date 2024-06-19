@@ -387,7 +387,7 @@ export const baseLayers: BaseLayerDef[] = [
   {
     type: 'VT',
     url: 'https://api.maptiler.com/maps/outdoor-v2/style.json?key=hpnL3lUOTtPNnue7UkOt',
-    key: ['KeyR', false],
+    key: ['KeyU', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
