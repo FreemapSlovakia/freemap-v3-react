@@ -20,7 +20,7 @@ import { ReactElement } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import {
   FaClipboard,
-  FaFacebook,
+  // FaFacebook,
   FaLink,
   FaShareAlt,
   FaTwitter,
@@ -98,7 +98,7 @@ export function OpenInExternalAppDropdownItems({
 
       {!url && ((hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
 
-      <Dropdown.Item as="button" eventKey="open-facebook">
+      {/* <Dropdown.Item as="button" eventKey="open-facebook">
         <FaFacebook /> Facebook
         {showKbdShortcut && (
           <>
@@ -106,7 +106,7 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>f</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </Dropdown.Item> */}
 
       <Dropdown.Item
         href={getTwitterUrl()}
