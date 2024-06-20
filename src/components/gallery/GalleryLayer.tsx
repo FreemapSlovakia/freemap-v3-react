@@ -276,12 +276,10 @@ interface Props extends LayerProps {
 }
 
 export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
-  (props, context) => {
-    return {
-      instance: new LGalleryLayer(props),
-      context,
-    };
-  },
+  (props, context) => ({
+    instance: new LGalleryLayer(props),
+    context,
+  }),
 
   (instance, props, prevProps) => {
     if (
