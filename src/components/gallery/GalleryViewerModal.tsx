@@ -409,8 +409,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   className="carousel-control-prev-icon"
                   aria-hidden="true"
                 />
-
-                <span className="sr-only">Previous</span>
               </button>
             )}
 
@@ -431,8 +429,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   className="carousel-control-next-icon"
                   aria-hidden="true"
                 />
-
-                <span className="sr-only">Next</span>
               </button>
             )}
           </div>
