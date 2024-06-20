@@ -59,7 +59,7 @@
     "redux-logger": "3.0.6",
     "reselect": "4.1.8",
     "typesafe-actions": "5.1.0",
-    "typia": "6.1.1",
+    "typia": "6.1.2",
     "use-debounce": "10.0.1",
     "use-local-storage-state": "19.3.1",
     "vhtml": "2.2.0"
