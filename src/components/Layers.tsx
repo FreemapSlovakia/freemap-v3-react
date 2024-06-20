@@ -63,7 +63,7 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={galleryLayerFactory}
-          key={`I-${galleryDirtySeq}-${opacity}-${JSON.stringify({
+          key={`I-${galleryDirtySeq}-${opacity}-${user?.id}-${JSON.stringify({
             galleryFilter,
             galleryColorizeBy,
           })}`}
