@@ -215,7 +215,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     Partial<Record<Exportable, Position[] | string | null>> | undefined
   >();
 
-  const state = useAppSelector((state) => state);
+  const state = useAppSelector((state) => state); // TODO optimize - return only necessary
 
   useEffect(() => {
     if (!isGarmin) {

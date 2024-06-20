@@ -1,4 +1,3 @@
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -11,14 +10,11 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
-import { useDispatch } from 'react-redux';
 import { Checkbox } from '../Checkbox';
 import { SubmenuHeader } from './SubmenuHeader';
 
 export function GallerySubmenu(): JSX.Element {
   const m = useMessages();
-
-  const dispatch = useDispatch();
 
   const filterIsActive = useAppSelector(
     (state) =>
@@ -51,15 +47,7 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={() => {
-          dispatch(
-            mapRefocus({
-              overlays: overlays.includes('I')
-                ? overlays.filter((o) => o !== 'I')
-                : [...overlays, 'I'],
-            }),
-          );
-        }}
+        eventKey="overlays-toggle-I"
         active={overlays.includes('I')}
       >
         <Checkbox value={overlays.includes('I')} /> {m?.gallery.showLayer}{' '}

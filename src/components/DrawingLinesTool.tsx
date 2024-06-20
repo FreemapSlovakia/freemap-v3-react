@@ -1,4 +1,4 @@
-import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
+import { Point, drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
 import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { isEventOnMap } from 'fm3/mapUtils';
@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 
 export default DrawingLinesTool;
 
+const EMPTY: Point[] = [];
+
 export function DrawingLinesTool(): null {
   const selection = useAppSelector((state) => state.main.selection);
 
@@ -17,7 +19,7 @@ export function DrawingLinesTool(): null {
   const linePoints = useAppSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'
       ? state.drawingLines.lines[state.main.selection.id].points
-      : [],
+      : EMPTY,
   );
 
   const dispatch = useDispatch();

@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { useAppSelector } from './reduxSelectHook';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 
 export function useMenuHandler({
   pointTitle,
@@ -38,6 +39,8 @@ export function useMenuHandler({
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const mapType = useAppSelector((state) => state.map.mapType);
+
+  const overlays = useAppSelector((state) => state.map.overlays);
 
   const [menuShown, setShow] = useState(false);
 
@@ -127,13 +130,21 @@ export function useMenuHandler({
         }
 
         setShow(false);
+      } else if (eventKey.startsWith('overlays-toggle-')) {
+        dispatch(
+          mapRefocus({
+            overlays: overlays.includes('I')
+              ? overlays.filter((o) => o !== 'I')
+              : [...overlays, 'I'],
+          }),
+        );
       } else if (eventKey === 'close' || eventKey === 'url') {
         setShow(false);
       } else if (extraHandler.current?.(eventKey)) {
         // nothing
       }
     },
-    [dispatch, lat, lon, mapType, pointDescription, pointTitle, zoom],
+    [dispatch, lat, lon, mapType, pointDescription, pointTitle, zoom, overlays],
   );
 
   const handleMenuToggle = useCallback((nextShow: boolean) => {
