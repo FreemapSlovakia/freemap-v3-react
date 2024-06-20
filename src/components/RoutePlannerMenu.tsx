@@ -301,14 +301,9 @@ function IsochroneSettings() {
 }
 
 const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
-  ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+  ({ children, style, className }, ref) => {
     return (
-      <div
-        ref={ref}
-        style={style}
-        className={className}
-        aria-labelledby={labeledBy}
-      >
+      <div ref={ref} style={style} className={className}>
         {children}
 
         {Children.toArray(children)

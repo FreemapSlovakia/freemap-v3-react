@@ -396,39 +396,27 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
             {imageIds && (
               <button
+                type="button"
                 className={`carousel-control-prev ${
                   index < 1 ? 'carousel-control-disabled' : ''
                 } ${pano ? 'carousel-control-short' : ''}`}
-                onClick={(e) => {
-                  e?.preventDefault();
-
-                  dispatch(galleryRequestImage('prev'));
-                }}
+                onClick={() => dispatch(galleryRequestImage('prev'))}
               >
-                <span
-                  className="carousel-control-prev-icon"
-                  aria-hidden="true"
-                />
+                <span className="carousel-control-prev-icon" />
               </button>
             )}
 
             {imageIds && (
               <button
+                type="button"
                 className={`carousel-control-next ${
                   index >= imageIds.length - 1
                     ? 'carousel-control-disabled'
                     : ''
                 }`}
-                onClick={(e) => {
-                  e?.preventDefault();
-
-                  dispatch(galleryRequestImage('next'));
-                }}
+                onClick={() => dispatch(galleryRequestImage('next'))}
               >
-                <span
-                  className="carousel-control-next-icon"
-                  aria-hidden="true"
-                />
+                <span className="carousel-control-next-icon" />
               </button>
             )}
           </div>
