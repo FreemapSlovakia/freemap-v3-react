@@ -10,6 +10,7 @@ import {
 } from 'fm3/actions/mainActions';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useMessages } from 'fm3/l10nInjector';
+import { Position } from 'geojson';
 import {
   FormEvent,
   Fragment,
@@ -31,8 +32,8 @@ import {
   FaDownload,
   FaDrawPolygon,
   FaDropbox,
-  FaExclamationTriangle,
   FaFileExport,
+  FaFlask,
   FaGoogle,
   FaMapMarkerAlt,
   FaMapSigns,
@@ -43,6 +44,7 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 
 const exportableDefinitions: readonly [
   type: Exportable,
@@ -121,33 +123,24 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     //   exportables.push('changesets');
     // }
 
-    return exportables;
+    return '|' + exportables.map((e) => e + '|').join('');
   });
 
   const userHasGarmin = useAppSelector((state) =>
     Boolean(state.auth.user?.authProviders.includes('garmin')),
   );
 
-  const [exportables, setExportables] = useState<Exportable[] | undefined>();
+  const [exportables, setExportables] = useState<string>('|');
 
   const [type, setType] = useState<ExportType>('gpx');
 
   const [target, setTarget] = useState<ExportTarget>('download');
-
-  const initJoined = initExportables.join(',');
 
   const [name, setName] = useState('');
 
   const [description, setDescription] = useState('');
 
   const [activity, setActivity] = useState('');
-
-  useEffect(() => {
-    if (show) {
-      setExportables(initExportables);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [show, initJoined]);
 
   const runExport = useCallback(
     (e: FormEvent) => {
@@ -159,7 +152,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
       const exportAction = exportMapFeatures({
         type,
-        exportables,
+        exportables: exportables.split('|').filter((a) => a) as Exportable[],
         target,
         name: name || undefined,
         description: description || undefined,
@@ -193,233 +186,285 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     ],
   );
 
+  const isGarmin = target === 'garmin';
+
   function close() {
     dispatch(setActiveModal(null));
   }
 
-  const handleCheckboxChange = (type: Exportable) => {
-    if (!exportables) {
+  const handleCheckboxChange = useCallback(
+    (type: Exportable) => {
+      let next = isGarmin ? '|' : exportables;
+
+      if (exportables.includes(type)) {
+        next = exportables.replace(type + '|', '');
+
+        if (type === 'plannedRoute') {
+          next = exportables.replace('|plannedRouteWithStops', '');
+        }
+      } else {
+        next += type + '|';
+      }
+
+      setExportables(next);
+    },
+    [exportables, isGarmin],
+  );
+
+  const [garminExportables, setGarminExportables] = useState<
+    Partial<Record<Exportable, Position[] | string | null>> | undefined
+  >();
+
+  const state = useAppSelector((state) => state);
+
+  useEffect(() => {
+    if (!isGarmin) {
       return;
     }
 
-    const set = new Set(exportables);
+    import('../export/garminExport').then((x) =>
+      setGarminExportables(
+        Object.fromEntries(
+          Object.entries(x.getExportables()).map(([exportable, tryExport]) => [
+            exportable,
+            tryExport(state),
+          ]),
+        ),
+      ),
+    );
+  }, [state, isGarmin]);
 
-    if (exportables.includes(type)) {
-      set.delete(type);
+  const garminEnabled = isGarmin
+    ? Object.entries(garminExportables ?? [])
+        .filter(([, v]) => Array.isArray(v))
+        .map(([k]) => k)
+    : undefined;
 
-      if (type === 'plannedRoute') {
-        set.delete('plannedRouteWithStops');
-      }
-    } else {
-      set.add(type);
-    }
+  const garminSingleEnabled =
+    garminEnabled?.length === 1
+      ? garminEnabled[0]
+      : garminEnabled
+        ? ''
+        : undefined;
 
-    setExportables([...set]);
-  };
+  useEffect(() => {
+    setExportables(
+      garminSingleEnabled !== undefined
+        ? garminSingleEnabled
+          ? '|' + garminSingleEnabled + '|'
+          : '|'
+        : initExportables
+          ? initExportables
+          : '|',
+    );
+  }, [initExportables, garminSingleEnabled]);
+
+  const isWide = useMediaQuery({ query: '(min-width: 992px)' });
 
   return (
-    <Modal show={show && !!exportables} onHide={close} size="lg">
-      {exportables && (
-        <Form onSubmit={runExport}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              <FaDownload /> {m?.mainMenu.gpxExport}
-            </Modal.Title>
-          </Modal.Header>
+    <Modal show={show} onHide={close} size="lg">
+      <Form onSubmit={runExport}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaDownload /> {m?.mainMenu.gpxExport}
+          </Modal.Title>
+        </Modal.Header>
 
-          <Modal.Body>
-            <Alert variant="warning">{m?.exportMapFeatures.licenseAlert}</Alert>
+        <Modal.Body>
+          <Alert variant="warning">{m?.exportMapFeatures.licenseAlert}</Alert>
 
-            <Alert variant="warning">
-              {m?.exportMapFeatures.disabledAlert}
-            </Alert>
+          <Alert variant="warning">{m?.exportMapFeatures.disabledAlert}</Alert>
 
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.exportMapFeatures.target}:</Form.Label>
+
+            <div>
+              <ButtonGroup vertical={!isWide}>
+                {exportTargets.map((target1) => (
+                  <ToggleButton
+                    id={target1}
+                    key={target1}
+                    type="radio"
+                    checked={target === target1}
+                    value={target1}
+                    onChange={() => setTarget(target1)}
+                    disabled={!initExportables}
+                  >
+                    {
+                      {
+                        download: (
+                          <>
+                            <FaDownload /> {m?.exportMapFeatures.download}
+                          </>
+                        ),
+                        gdrive: (
+                          <>
+                            <FaGoogle /> Google Drive
+                          </>
+                        ),
+                        dropbox: (
+                          <>
+                            <FaDropbox /> Dropbox
+                          </>
+                        ),
+                        garmin: (
+                          <>
+                            <SiGarmin
+                              style={{
+                                fontSize: '400%',
+                                marginBlock: '-24px',
+                              }}
+                            />
+                            &ensp;Garmin&ensp;
+                            <FaFlask
+                              title={m?.general.experimentalFunction}
+                              className="text-warning"
+                            />
+                          </>
+                        ),
+                      }[target1]
+                    }
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+            </div>
+          </Form.Group>
+
+          {isGarmin ? (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label>Course name:</Form.Label>
+
+                <Form.Control
+                  value={name}
+                  onChange={(e) => setName(e.currentTarget.value)}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Description:</Form.Label>
+
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.currentTarget.value)}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Activity type:</Form.Label>
+
+                <Form.Control
+                  as="select"
+                  value={activity}
+                  onChange={(e) => setActivity(e.currentTarget.value)}
+                >
+                  <option value="" />
+                  <option value="RUNNING">Running</option>
+                  <option value="HIKING">Hiking</option>
+                  <option value="OTHER">Other</option>
+                  <option value="MOUNTAIN_BIKING">Mountain_biking</option>
+                  <option value="TRAIL_RUNNING">Trail running</option>
+                  <option value="ROAD_CYCLING">Road cycling</option>
+                  <option value="GRAVEL_CYCLING">Gravel cycling</option>
+                </Form.Control>
+              </Form.Group>
+            </>
+          ) : (
             <Form.Group className="mb-3">
-              <Form.Label>{m?.exportMapFeatures.target}:</Form.Label>
+              <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
 
               <div>
                 <ButtonGroup>
-                  {exportTargets.map((target1) => (
+                  {exportTypes.map((type1) => (
                     <ToggleButton
-                      id={target1}
-                      key={target1}
+                      id={type1}
+                      key={type1}
                       type="radio"
-                      checked={target === target1}
-                      value={target1}
-                      onChange={() => setTarget(target1)}
+                      value={type1}
+                      checked={type === type1}
+                      onChange={() => setType(type1)}
                       disabled={!exportables.length}
                     >
-                      {
-                        {
-                          download: (
-                            <>
-                              <FaDownload /> {m?.exportMapFeatures.download}
-                            </>
-                          ),
-                          gdrive: (
-                            <>
-                              <FaGoogle /> Google Drive
-                            </>
-                          ),
-                          dropbox: (
-                            <>
-                              <FaDropbox /> Dropbox
-                            </>
-                          ),
-                          garmin: (
-                            <>
-                              <SiGarmin
-                                style={{
-                                  fontSize: '400%',
-                                  marginBlock: '-24px',
-                                }}
-                              />
-                              &ensp;Garmin&ensp;
-                              <FaExclamationTriangle
-                                title={m?.general.experimentalFunction}
-                                className="text-warning"
-                              />
-                            </>
-                          ),
-                        }[target1]
-                      }
+                      {type1 === 'gpx' ? 'GPX' : 'GeoJSON'}
                     </ToggleButton>
                   ))}
                 </ButtonGroup>
               </div>
             </Form.Group>
+          )}
 
-            {target === 'garmin' && (
-              <>
-                <Form.Group className="mb-3">
-                  <Form.Label>Course name:</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.exportMapFeatures.download}:</Form.Label>
 
-                  <Form.Control
-                    value={name}
-                    onChange={(e) => setName(e.currentTarget.value)}
-                  />
-                </Form.Group>
+            <div>
+              {exportableDefinitions
+                .filter(([, , garmin]) => target !== 'garmin' || garmin)
+                .map(([type, icon]) => (
+                  <Fragment key={type}>
+                    <Form.Check
+                      name="exportable"
+                      inline={type === 'plannedRoute'}
+                      id={'chk-' + type}
+                      type={target === 'garmin' ? 'radio' : 'checkbox'}
+                      checked={exportables.includes(type)}
+                      disabled={
+                        target === 'garmin'
+                          ? !Array.isArray(garminExportables?.[type])
+                          : !initExportables.includes(type)
+                      }
+                      onChange={() => handleCheckboxChange(type)}
+                      label={
+                        <>
+                          {icon} {m?.exportMapFeatures.what[type]}
+                        </>
+                      }
+                    />
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Description:</Form.Label>
+                    {target === 'garmin' &&
+                    typeof garminExportables?.[type] === 'string' ? (
+                      <Form.Text>{garminExportables[type]}</Form.Text>
+                    ) : null}
 
-                  <Form.Control
-                    as="textarea"
-                    rows={2}
-                    value={description}
-                    onChange={(e) => setDescription(e.currentTarget.value)}
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Activity type:</Form.Label>
-
-                  <Form.Control
-                    as="select"
-                    value={activity}
-                    onChange={(e) => setActivity(e.currentTarget.value)}
-                  >
-                    <option value="" />
-                    <option value="RUNNING">Running</option>
-                    <option value="HIKING">Hiking</option>
-                    <option value="OTHER">Other</option>
-                    <option value="MOUNTAIN_BIKING">Mountain_biking</option>
-                    <option value="TRAIL_RUNNING">Trail running</option>
-                    <option value="ROAD_CYCLING">Road cycling</option>
-                    <option value="GRAVEL_CYCLING">Gravel cycling</option>
-                  </Form.Control>
-                </Form.Group>
-              </>
-            )}
-
-            {target !== 'garmin' && (
-              <Form.Group className="mb-3">
-                <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
-
-                <div>
-                  <ButtonGroup>
-                    {exportTypes.map((type1) => (
-                      <ToggleButton
-                        id={type1}
-                        key={type1}
-                        type="radio"
-                        value={type1}
-                        checked={type === type1}
-                        onChange={() => setType(type1)}
-                        disabled={!exportables.length}
-                      >
-                        {type1 === 'gpx' ? 'GPX' : 'GeoJSON'}
-                      </ToggleButton>
-                    ))}
-                  </ButtonGroup>
-                </div>
-              </Form.Group>
-            )}
-
-            <Form.Group className="mb-3">
-              <Form.Label>{m?.exportMapFeatures.download}:</Form.Label>
-
-              <div>
-                {exportableDefinitions
-                  .filter(([, , garmin]) => target !== 'garmin' || garmin)
-                  .map(([type, icon]) => (
-                    <Fragment key={type}>
+                    {type === 'plannedRoute' && target !== 'garmin' && (
                       <Form.Check
-                        name="exportable"
-                        inline={type === 'plannedRoute'}
-                        id={'chk-' + type}
-                        type={target === 'garmin' ? 'radio' : 'checkbox'}
-                        checked={exportables.includes(type)}
-                        disabled={!initExportables.includes(type)}
-                        onChange={() => handleCheckboxChange(type)}
+                        id="chk-plannedRouteWithStops"
+                        inline
+                        type="checkbox"
+                        checked={exportables.includes('plannedRouteWithStops')}
+                        disabled={!exportables.includes(type)}
+                        onChange={() =>
+                          handleCheckboxChange('plannedRouteWithStops')
+                        }
                         label={
-                          <>
-                            {icon} {m?.exportMapFeatures.what[type]}
-                          </>
+                          m?.exportMapFeatures.what['plannedRouteWithStops']
                         }
                       />
+                    )}
+                  </Fragment>
+                ))}
+            </div>
+          </Form.Group>
+        </Modal.Body>
 
-                      {type === 'plannedRoute' && target !== 'garmin' && (
-                        <Form.Check
-                          id="chk-plannedRouteWithStops"
-                          inline
-                          type="checkbox"
-                          checked={exportables.includes(
-                            'plannedRouteWithStops',
-                          )}
-                          disabled={!exportables.includes(type)}
-                          onChange={() =>
-                            handleCheckboxChange('plannedRouteWithStops')
-                          }
-                          label={
-                            m?.exportMapFeatures.what['plannedRouteWithStops']
-                          }
-                        />
-                      )}
-                    </Fragment>
-                  ))}
-              </div>
-            </Form.Group>
-          </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={
+              !exportables.length ||
+              (target === 'garmin' && (!name.trim() || !activity))
+            }
+          >
+            <FaFileExport /> {m?.general.export}
+          </Button>
 
-          <Modal.Footer>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={
-                !exportables.length ||
-                (target === 'garmin' && (!name.trim() || !activity))
-              }
-            >
-              <FaFileExport /> {m?.general.export}
-            </Button>
-
-            <Button type="button" variant="dark" onClick={close}>
-              <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-            </Button>
-          </Modal.Footer>
-        </Form>
-      )}
+          <Button type="button" variant="dark" onClick={close}>
+            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </Form>
     </Modal>
   );
 }
