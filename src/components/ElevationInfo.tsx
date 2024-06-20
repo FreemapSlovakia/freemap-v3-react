@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Alert from 'react-bootstrap/Alert';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { latLonToString } from 'fm3/geoutils';
 import useLocalStorageState from 'use-local-storage-state';
 
@@ -64,8 +64,26 @@ export function ElevationInfo({
   const baseTileUrl =
     substitute(baseLayers.find((l) => l.type === mapType)?.url) ?? '';
 
+  const cookiesEnabled = useAppSelector(
+    (state) => !!state.main.cookieConsentResult,
+  );
+
+  const serializer = useMemo(() => {
+    return cookiesEnabled
+      ? undefined
+      : {
+          stringify() {
+            throw new Error('cookies not enabled');
+          },
+          parse() {
+            throw new Error('cookies not enabled');
+          },
+        };
+  }, [cookiesEnabled]);
+
   const [format, setFormat] = useLocalStorageState<number>('fm.ele.gpsFormat', {
     defaultValue: 0,
+    serializer,
   });
 
   const handleMinusClick = useCallback(() => {
