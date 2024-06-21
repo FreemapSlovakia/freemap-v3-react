@@ -19,14 +19,14 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     activity,
   } = action.payload;
 
-  const coordinates = getExportables()[exportable]?.(getState());
+  const result = getExportables()[exportable]?.(getState());
 
-  if (!Array.isArray(coordinates)) {
+  if (!result || typeof result === 'string') {
     dispatch(
       toastsAdd({
         id: 'gpxExport',
         style: 'danger',
-        message: coordinates || 'Error exporting to Garmin',
+        message: result || 'Error exporting to Garmin',
       }),
     );
 
@@ -40,12 +40,14 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       name,
       description,
       activity,
-      coordinates,
-      distance: length(lineString(coordinates), { units: 'meters' }),
-      elevationGain: 0,
-      elevationLoss: 0,
-      // speedMetersPerSecond
-      // elapsedSeconds
+      coordinates: result.coordinates,
+      distance:
+        result.distance ??
+        length(lineString(result.coordinates), { units: 'meters' }),
+      elevationGain: result.elevationGain ?? 0,
+      elevationLoss: result.elevationLoss ?? 0,
+      speedMetersPerSecond: result.speedMetersPerSecond,
+      elapsedSeconds: result.elapsedSeconds,
     },
     getState,
     expectedStatus: null,

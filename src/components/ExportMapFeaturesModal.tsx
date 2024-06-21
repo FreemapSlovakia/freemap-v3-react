@@ -196,11 +196,11 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     (type: Exportable) => {
       let next = isGarmin ? '|' : exportables;
 
-      if (exportables.includes(type)) {
+      if (exportables.includes('|' + type + '|')) {
         next = exportables.replace(type + '|', '');
 
         if (type === 'plannedRoute') {
-          next = exportables.replace('|plannedRouteWithStops', '');
+          next = next.replace('|plannedRouteWithStops', '');
         }
       } else {
         next += type + '|';
@@ -236,7 +236,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const garminEnabled = isGarmin
     ? Object.entries(garminExportables ?? [])
-        .filter(([, v]) => Array.isArray(v))
+        .filter(([, v]) => v && typeof v !== 'string')
         .map(([k]) => k)
     : undefined;
 
@@ -248,15 +248,16 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
         : undefined;
 
   useEffect(() => {
-    setExportables(
+    const e =
       garminSingleEnabled !== undefined
         ? garminSingleEnabled
           ? '|' + garminSingleEnabled + '|'
           : '|'
         : initExportables
           ? initExportables
-          : '|',
-    );
+          : '|';
+
+    setExportables(e);
   }, [initExportables, garminSingleEnabled]);
 
   const isWide = useMediaQuery({ query: '(min-width: 992px)' });
@@ -404,36 +405,48 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                 .map(([type, icon]) => (
                   <Fragment key={type}>
                     <Form.Check
-                      name="exportable"
-                      inline={type === 'plannedRoute'}
                       id={'chk-' + type}
+                      name="exportable"
                       type={target === 'garmin' ? 'radio' : 'checkbox'}
-                      checked={exportables.includes(type)}
-                      disabled={
-                        target === 'garmin'
-                          ? !Array.isArray(garminExportables?.[type])
-                          : !initExportables.includes(type)
-                      }
-                      onChange={() => handleCheckboxChange(type)}
-                      label={
-                        <>
-                          {icon} {m?.exportMapFeatures.what[type]}
-                        </>
-                      }
-                    />
+                      inline={type === 'plannedRoute'}
+                    >
+                      <Form.Check.Input
+                        isInvalid={
+                          target === 'garmin' &&
+                          typeof garminExportables?.[type] === 'string'
+                        }
+                        disabled={
+                          target === 'garmin'
+                            ? !garminExportables?.[type] ||
+                              typeof garminExportables[type] === 'string'
+                            : !initExportables.includes('|' + type + '|')
+                        }
+                        checked={exportables.includes('|' + type + '|')}
+                        onChange={() => handleCheckboxChange(type)}
+                        type={target === 'garmin' ? 'radio' : 'checkbox'}
+                      />
 
-                    {target === 'garmin' &&
-                    typeof garminExportables?.[type] === 'string' ? (
-                      <Form.Text>{garminExportables[type]}</Form.Text>
-                    ) : null}
+                      <Form.Check.Label>
+                        {icon} {m?.exportMapFeatures.what[type]}
+                      </Form.Check.Label>
+
+                      {target === 'garmin' &&
+                      typeof garminExportables?.[type] === 'string' ? (
+                        <Form.Control.Feedback type="invalid">
+                          {garminExportables[type]}
+                        </Form.Control.Feedback>
+                      ) : null}
+                    </Form.Check>
 
                     {type === 'plannedRoute' && target !== 'garmin' && (
                       <Form.Check
                         id="chk-plannedRouteWithStops"
                         inline
                         type="checkbox"
-                        checked={exportables.includes('plannedRouteWithStops')}
-                        disabled={!exportables.includes(type)}
+                        checked={exportables.includes(
+                          '|plannedRouteWithStops|',
+                        )}
+                        disabled={!exportables.includes('|' + type + '|')}
                         onChange={() =>
                           handleCheckboxChange('plannedRouteWithStops')
                         }

@@ -3,8 +3,17 @@ import { LineString, Position } from 'geojson';
 import { mergeLines } from 'fm3/geoutils';
 import { RootState } from 'fm3/reducers';
 
+export type GarminCourse = {
+  distance?: number;
+  elevationGain?: number;
+  elevationLoss?: number;
+  speedMetersPerSecond?: number;
+  elapsedSeconds?: number;
+  coordinates: Position[];
+};
+
 export function getExportables(): Partial<
-  Record<Exportable, (state: RootState) => Position[] | string | null>
+  Record<Exportable, (state: RootState) => GarminCourse | string | null>
 > {
   return {
     search({ search }: RootState) {
@@ -25,7 +34,7 @@ export function getExportables(): Partial<
             .filter((g): g is LineString => g.type === 'LineString');
 
           return lines.length === 1
-            ? lines[0].coordinates
+            ? { coordinates: lines[0].coordinates }
             : lines.length > 1
               ? 'contains more than single continuous linestring'
               : 'contains no continuous linestring';
@@ -34,7 +43,7 @@ export function getExportables(): Partial<
           const { geometry } = geojson;
 
           return geometry.type === 'LineString'
-            ? geometry.coordinates
+            ? { coordinates: geometry.coordinates }
             : 'contains no continuous linestring';
       }
     },
@@ -53,7 +62,7 @@ export function getExportables(): Partial<
         .filter((g): g is LineString => g.type === 'LineString');
 
       return lines.length === 1
-        ? lines[0].coordinates
+        ? { coordinates: lines[0].coordinates }
         : lines.length > 1
           ? 'contains more than single continuous linestring'
           : 'contains no continuous linestring';
@@ -89,27 +98,29 @@ export function getExportables(): Partial<
         return 'Multiple tracks are not supported. Select a single one.';
       }
 
-      return track.trackPoints.map((tp) => [tp.lon, tp.lat]);
+      return { coordinates: track.trackPoints.map((tp) => [tp.lon, tp.lat]) };
     },
 
-    plannedRoute({ routePlanner }: RootState): null | string | Position[] {
-      if (routePlanner.alternatives.length === 0) {
+    plannedRoute({ routePlanner }: RootState) {
+      const alternative =
+        routePlanner.alternatives[routePlanner.activeAlternativeIndex];
+
+      if (!alternative) {
         return null;
       }
 
-      const coordinates = routePlanner.alternatives[
-        routePlanner.activeAlternativeIndex
-      ].legs.flatMap((leg) =>
+      const coordinates = alternative.legs.flatMap((leg) =>
         leg.steps.flatMap((step) => step.geometry.coordinates),
       );
 
-      return coordinates;
+      return {
+        coordinates,
+        distance: alternative.distance,
+        elapsedSeconds: alternative.duration,
+      };
     },
 
-    drawingLines({
-      drawingLines,
-      main: { selection },
-    }: RootState): null | string | Position[] {
+    drawingLines({ drawingLines, main: { selection } }: RootState) {
       const lines = drawingLines.lines.filter((line) => line.type === 'line');
 
       if (lines.length === 0) {
@@ -136,7 +147,7 @@ export function getExportables(): Partial<
         return 'Multiple lines are not supported. Select a single one.';
       }
 
-      return line.points.map((p) => [p.lon, p.lat]);
+      return { coordinates: line.points.map((p) => [p.lon, p.lat]) };
     },
   };
 }
