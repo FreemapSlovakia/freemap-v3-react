@@ -6,7 +6,7 @@
     "@mapbox/tilebelt": "1.0.2",
     "@maplibre/maplibre-gl-leaflet": "0.0.21",
     "@react-leaflet/core": "2.1.0",
-    "@sentry/browser": "8.10.0",
+    "@sentry/browser": "8.11.0",
     "@tmcw/togeojson": "5.8.1",
     "@turf/along": "7.0.0",
     "@turf/area": "7.0.0",
@@ -59,7 +59,7 @@
     "redux-logger": "3.0.6",
     "reselect": "4.1.8",
     "typesafe-actions": "5.1.0",
-    "typia": "6.1.2",
+    "typia": "6.2.1",
     "use-debounce": "10.0.1",
     "use-local-storage-state": "19.3.1",
     "vhtml": "2.2.0"
