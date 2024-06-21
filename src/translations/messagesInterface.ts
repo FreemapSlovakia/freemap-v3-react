@@ -835,7 +835,8 @@ export function addError(
 ): string {
   const detail =
     err instanceof HttpError
-      ? (messages.errorStatus[err.status] ?? err.status) + ': ' + err.body
+      ? (messages.errorStatus[err.status] ?? err.status) +
+        (err.body ? ': ' + err.body : '')
       : !(err instanceof Error)
         ? { err: String(err) }
         : (err as any)._fm_fetchError

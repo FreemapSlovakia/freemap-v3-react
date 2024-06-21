@@ -236,6 +236,7 @@ export const mainReducer = createReducer<MainState, RootAction>(
     [authWithFacebook, authWithGoogle, authWithOsm, authWithGarmin],
     (state) => ({
       ...state,
+      // activeModal: state.activeModal === 'login' ? null : state.activeModal,
       activeModal: null,
     }),
   )

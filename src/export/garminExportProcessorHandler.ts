@@ -1,10 +1,11 @@
 import { exportMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/httpRequest';
+import { HttpError, httpRequest } from 'fm3/httpRequest';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import length from '@turf/length';
 import { lineString } from '@turf/helpers';
 import { getExportables } from './garminExport';
+import { authWithGarmin } from 'fm3/actions/authActions';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
@@ -32,7 +33,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     return;
   }
 
-  await httpRequest({
+  const res = await httpRequest({
     url: '/garmin-courses',
     method: 'POST',
     data: {
@@ -47,16 +48,38 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       // elapsedSeconds
     },
     getState,
+    expectedStatus: null,
   });
 
-  dispatch(
-    toastsAdd({
-      id: 'gpxExport',
-      messageKey: 'general.success',
-    }),
-  );
+  if (res.status === 204) {
+    dispatch(
+      toastsAdd({
+        id: 'gpxExport',
+        messageKey: 'general.success',
+      }),
+    );
 
-  dispatch(setActiveModal(null));
+    dispatch(setActiveModal(null));
+
+    return;
+  }
+
+  const body = await res.text();
+
+  if (res.status === 401 && body === 'invalid oauth token') {
+    dispatch(authWithGarmin({ connect: false, successAction: action }));
+  } else if (res.status === 403 && body === 'missing permission') {
+    dispatch(
+      toastsAdd({
+        id: 'gpxExport',
+        timeout: 5000,
+        style: 'danger',
+        message: 'Exporting course to Garmin has been revoked.',
+      }),
+    );
+  } else {
+    throw new HttpError(res.status, body);
+  }
 };
 
 export default handle;
