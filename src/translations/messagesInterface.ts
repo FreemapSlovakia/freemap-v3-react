@@ -1,5 +1,6 @@
 import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
 import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
+import { HttpError } from 'fm3/httpRequest';
 import { AttributionDef, NoncustomLayerLetters } from 'fm3/mapDefinitions';
 import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { ReactNode } from 'react';
@@ -824,4 +825,29 @@ export type Messages = {
     cacheFirst: string;
     cacheOnly: string;
   };
+  errorStatus: Record<number, string>;
 };
+
+export function addError(
+  messages: Messages,
+  message: string,
+  err: unknown,
+): string {
+  const detail =
+    err instanceof HttpError
+      ? (messages.errorStatus[err.status] ?? err.status) + ': ' + err.body
+      : !(err instanceof Error)
+        ? { err: String(err) }
+        : (err as any)._fm_fetchError
+          ? {
+              err:
+                (window.navigator.onLine === false
+                  ? messages.general.offline
+                  : messages.general.connectionError) ?? err.message,
+            }
+          : {
+              err: err.message,
+            };
+
+  return message + ': ' + detail;
+}

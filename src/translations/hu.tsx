@@ -14,7 +14,7 @@ import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.json';
-import { Messages } from './messagesInterface';
+import { Messages, addError } from './messagesInterface';
 
 const nf33 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 3,
@@ -64,7 +64,7 @@ const hu: Messages = {
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => `Alkalmazáshiba: ${err}`,
+    processorError: ({ err }) => addError(hu, 'Alkalmazáshiba', err),
     seconds: 'másodperc',
     minutes: 'perc',
     meters: 'méter',
@@ -78,10 +78,10 @@ const hu: Messages = {
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',
     copyPageUrl: 'URL másolása', // TODO update
-    savingError: ({ err }) => `Mentési hiba: ${err}`,
-    loadError: ({ err }) => `Betöltési hiba: ${err}`,
-    deleteError: ({ err }) => `Törlési hiba: ${err}`,
-    operationError: ({ err }) => `Operation error: ${err}`, // TODO translate
+    savingError: ({ err }) => addError(hu, 'Mentési hiba', err),
+    loadError: ({ err }) => addError(hu, 'Betöltési hiba', err),
+    deleteError: ({ err }) => addError(hu, 'Törlési hiba', err),
+    operationError: ({ err }) => addError(hu, 'Operation error', err), // TODO translate
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
@@ -217,7 +217,8 @@ const hu: Messages = {
     gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
     routeNotFound:
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
-    fetchingError: ({ err }) => `Hiba történt az útvonaltervezésnél: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(hu, 'Hiba történt az útvonaltervezésnél', err),
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} itt: ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -509,17 +510,20 @@ const hu: Messages = {
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
     },
-    deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
+    deletingError: ({ err }) =>
+      addError(hu, 'Hiba történt a fénykép törlésénél', err),
     tagsFetchingError: ({ err }) =>
-      `Hiba történt a címkék beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt a címkék beolvasásánál', err),
     pictureFetchingError: ({ err }) =>
-      `Hiba történt a fénykép beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt a fénykép beolvasásánál', err),
     picturesFetchingError: ({ err }) =>
-      `Hiba történt a fényképek beolvasásánál: ${err}`,
-    savingError: ({ err }) => `Hiba történt a fénykép mentésénél: ${err}`,
+      addError(hu, 'Hiba történt a fényképek beolvasásánál', err),
+    savingError: ({ err }) =>
+      addError(hu, 'Hiba történt a fénykép mentésénél', err),
     commentAddingError: ({ err }) =>
-      `Hiba történt a hozzászólás hozzáadásánál: ${err}`,
-    ratingError: ({ err }) => `Hiba történt a fénykép értékelésénél: ${err}`,
+      addError(hu, 'Hiba történt a hozzászólás hozzáadásánál', err),
+    ratingError: ({ err }) =>
+      addError(hu, 'Hiba történt a fénykép értékelésénél', err),
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
@@ -543,7 +547,7 @@ const hu: Messages = {
     elevation: 'Magasság',
     area: 'Terület',
     elevationFetchError: ({ err }) =>
-      `Hiba történt a pont magasságának beolvasásakor: ${err}`,
+      addError(hu, 'Hiba történt a pont magasságának beolvasásakor', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -601,8 +605,9 @@ const hu: Messages = {
     },
     shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.', // TODO update translation
     fetchingError: ({ err }) =>
-      `Hiba történt a nyomvonal adatainak beolvasásakor: ${err}`,
-    savingError: ({ err }) => `Hiba történt a nyomvonal mentésekor: ${err}`,
+      addError(hu, 'Hiba történt a nyomvonal adatainak beolvasásakor', err),
+    savingError: ({ err }) =>
+      addError(hu, 'Hiba történt a nyomvonal mentésekor', err),
     loadingError: 'Hiba történt a fájl betöltésekor.',
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
@@ -658,7 +663,8 @@ const hu: Messages = {
     showInMenu: 'Show in menu', // TODO translate
     showInToolbar: 'Show in toolbar', // TODO translate
     saveSuccess: 'A beállítások el lettek mentve.',
-    savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
+    savingError: ({ err }) =>
+      addError(hu, 'Hiba történt a beállítások mentésénél', err),
     customLayersDef: 'Custom map layers definition', // TODO translate
     customLayersDefError: 'Invalid definition of custom map layers.', // TODO translate
   },
@@ -671,7 +677,7 @@ const hu: Messages = {
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
     fetchError: ({ err }) =>
-      `Hiba történt a módosításkészletek beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt a módosításkészletek beolvasásánál', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Szerző:',
@@ -688,7 +694,8 @@ const hu: Messages = {
 
   mapDetails: {
     notFound: 'Itt nem találtunk semmit.', // TODO google translated
-    fetchingError: ({ err }) => `Hiba történt a részletek lekérésekor: ${err}`, // TODO google translated
+    fetchingError: ({ err }) =>
+      addError(hu, 'Hiba történt a részletek lekérésekor', err), // TODO google translated
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -708,7 +715,7 @@ const hu: Messages = {
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`, // TODO translate
     fetchingError: ({ err }) =>
-      `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt az objektumok (POI-k) beolvasásánál', err),
     icon: {
       pin: 'Tű',
       ring: 'Gyűrű',
@@ -1023,7 +1030,7 @@ const hu: Messages = {
     prompt: 'Adja meg a helyet',
     routeFrom: 'Útvonal innen',
     routeTo: 'Útvonal ide',
-    fetchingError: ({ err }) => `Keresési hiba: ${err}`,
+    fetchingError: ({ err }) => addError(hu, 'Keresési hiba', err),
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
   },
@@ -1048,7 +1055,7 @@ const hu: Messages = {
     download: 'Letöltés',
     format: 'Type', // TODO translate
     target: 'Target', // TODO translate
-    exportError: ({ err }) => `Hiba a exportálásakor: ${err}`,
+    exportError: ({ err }) => addError(hu, 'Hiba a exportálásakor', err),
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'megállásokkal',
@@ -1087,14 +1094,15 @@ const hu: Messages = {
     logIn: {
       with: 'Válasszon bejelentkezési szolgáltatót', // TODO google translated
       success: 'Sikeresen bejelentkezett.',
-      logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
+      logInError: ({ err }) =>
+        addError(hu, 'Hiba történt a bejelentkezésnél', err),
       logInError2: 'Hiba történt a bejelentkezésnél.',
       verifyError: ({ err }) =>
-        `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
+        addError(hu, 'Hiba történt a hitelesítés ellenőrzésénél', err),
     },
     logOut: {
       success: 'Sikeresen kijelentkezett.',
-      error: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
+      error: ({ err }) => addError(hu, 'Hiba történt a kijelentkezésnél', err),
     },
   },
 
@@ -1165,7 +1173,7 @@ const hu: Messages = {
     distance: 'Távolság [km]',
     ele: `Magasság [${masl}]`,
     fetchError: ({ err }) =>
-      `Hiba történt a magasságiprofil-adatok lekérésénél: ${err}`,
+      addError(hu, 'Hiba történt a magasságiprofil-adatok lekérésénél', err),
   },
 
   errorCatcher: {
@@ -1183,7 +1191,7 @@ const hu: Messages = {
 
   osm: {
     fetchingError: ({ err }) =>
-      `Hiba történt az OSM-adatok lekérésénél: ${err}`,
+      addError(hu, 'Hiba történt az OSM-adatok lekérésénél', err),
   },
 
   tracking: {
@@ -1364,7 +1372,8 @@ const hu: Messages = {
   pdfExport: {
     advancedSettings: 'Advanced options', // TODO translate
     styles: 'Interactive layer styles', // TODO translate
-    exportError: ({ err }) => `Hiba történt a térkép exportálásakor: ${err}`,
+    exportError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép exportálásakor', err),
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
     exported: ({ url }) => (
       <>
@@ -1445,12 +1454,18 @@ const hu: Messages = {
     delete: 'Törlés',
     disconnect: 'Disconnect', // TODO translate
     deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`, // TODO translate
-    fetchError: ({ err }) => `Hiba történt a térkép betöltéskor: ${err}`,
-    fetchListError: ({ err }) => `Hiba történt a térképek betöltéskor: ${err}`,
-    deleteError: ({ err }) => `Hiba történt a térkép törlésekor: ${err}`,
-    renameError: ({ err }) => `Hiba történt a térkép átnevezésekor: ${err}`,
-    createError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
-    saveError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
+    fetchError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép betöltéskor', err),
+    fetchListError: ({ err }) =>
+      addError(hu, 'Hiba történt a térképek betöltéskor', err),
+    deleteError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép törlésekor', err),
+    renameError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép átnevezésekor', err),
+    createError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép mentésekor', err),
+    saveError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép mentésekor', err),
     loadToEmpty: 'Load to empty map',
     loadInclMapAndPosition:
       'Load including saved background map and its position',
@@ -1538,6 +1553,72 @@ const hu: Messages = {
     networkFirst: 'Network first',
     cacheFirst: 'Cache first',
     cacheOnly: 'Cache only',
+  },
+
+  errorStatus: {
+    100: 'Folytatás',
+    101: 'Protokollok váltása',
+    102: 'Feldolgozás',
+    103: 'Előzetes válasz',
+    200: 'OK',
+    201: 'Létrehozva',
+    202: 'Elfogadva',
+    203: 'Nem hitelesített információ',
+    204: 'Nincs tartalom',
+    205: 'Tartalom visszaállítása',
+    206: 'Részleges tartalom',
+    207: 'Több állapotú',
+    208: 'Már jelentett',
+    226: 'IM használt',
+    300: 'Több választás',
+    301: 'Állandóan átirányítva',
+    302: 'Találat',
+    303: 'Másikra mutat',
+    304: 'Nem módosult',
+    305: 'Proxy használata szükséges',
+    306: 'Proxy váltás',
+    307: 'Ideiglenes átirányítás',
+    308: 'Végleges átirányítás',
+    400: 'Rossz kérés',
+    401: 'Hitelesítés szükséges',
+    402: 'Fizetés szükséges',
+    403: 'Tiltott',
+    404: 'Nem található',
+    405: 'Nem engedélyezett módszer',
+    406: 'Nem elfogadható',
+    407: 'Proxy hitelesítés szükséges',
+    408: 'Kérés időtúllépése',
+    409: 'Ütközés',
+    410: 'Elveszett',
+    411: 'Hossz szükséges',
+    412: 'Előfeltétel sikertelen',
+    413: 'Túl nagy terhelés',
+    414: 'URI túl hosszú',
+    415: 'Nem támogatott médium típus',
+    416: 'Kérelmezett tartomány nem elérhető',
+    417: 'Elvárás sikertelen',
+    418: 'Én egy teáskanna vagyok',
+    421: 'Rosszul irányított kérés',
+    422: 'Feldolgozhatatlan entitás',
+    423: 'Zárolva',
+    424: 'Függőség hibája',
+    425: 'Túl korai',
+    426: 'Frissítés szükséges',
+    428: 'Előfeltétel szükséges',
+    429: 'Túl sok kérés',
+    431: 'Túl nagy kérés fejléc',
+    451: 'Jogi okok miatt nem elérhető',
+    500: 'Szerver belső hibája',
+    501: 'Nem implementált',
+    502: 'Rossz átjáró',
+    503: 'Szolgáltatás nem elérhető',
+    504: 'Átjáró időtúllépése',
+    505: 'HTTP verzió nem támogatott',
+    506: 'Változat tárgyalás',
+    507: 'Nem elegendő tárolókapacitás',
+    508: 'Végtelen hurok észlelve',
+    510: 'Nem bővített',
+    511: 'Hálózati hitelesítés szükséges',
   },
 };
 

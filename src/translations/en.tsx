@@ -14,7 +14,7 @@ import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import shared from './en-shared.json';
-import { Messages } from './messagesInterface';
+import { Messages, addError } from './messagesInterface';
 
 const nf33 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 3,
@@ -63,7 +63,7 @@ const en: Messages = {
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => `Application error: ${err}`,
+    processorError: ({ err }) => addError(en, 'Application error', err),
     seconds: 'seconds',
     minutes: 'minutes',
     meters: 'meters',
@@ -77,10 +77,10 @@ const en: Messages = {
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',
     copyPageUrl: 'Copy page URL',
-    savingError: ({ err }) => `Save error: ${err}`,
-    loadError: ({ err }) => `Loading error: ${err}`,
-    deleteError: ({ err }) => `Deleting error: ${err}`,
-    operationError: ({ err }) => `Operation error: ${err}`,
+    savingError: ({ err }) => addError(en, 'Save error', err),
+    loadError: ({ err }) => addError(en, 'Loading error', err),
+    deleteError: ({ err }) => addError(en, 'Deleting error', err),
+    operationError: ({ err }) => addError(en, 'Operation error', err),
     deleted: 'Deleted.',
     saved: 'Saved.',
     visual: 'Display',
@@ -213,7 +213,7 @@ const en: Messages = {
     gpsError: 'Error getting your current location.',
     routeNotFound:
       'No route found. Try to change parameters or move the route points.',
-    fetchingError: ({ err }) => `Error finding the route: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error finding the route', err),
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} on ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -502,13 +502,15 @@ const en: Messages = {
     locationPicking: {
       title: 'Select photo location',
     },
-    deletingError: ({ err }) => `Error deleting photo: ${err}`,
-    tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
-    pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,
-    picturesFetchingError: ({ err }) => `Error fetching photos: ${err}`,
-    savingError: ({ err }) => `Error saving photo: ${err}`,
-    commentAddingError: ({ err }) => `Error adding comment: ${err}`,
-    ratingError: ({ err }) => `Error rating photo: ${err}`,
+    deletingError: ({ err }) => addError(en, 'Error deleting photo', err),
+    tagsFetchingError: ({ err }) => addError(en, 'Error fetching tags', err),
+    pictureFetchingError: ({ err }) =>
+      addError(en, 'Error fetching photo', err),
+    picturesFetchingError: ({ err }) =>
+      addError(en, 'Error fetching photos', err),
+    savingError: ({ err }) => addError(en, 'Error saving photo', err),
+    commentAddingError: ({ err }) => addError(en, 'Error adding comment', err),
+    ratingError: ({ err }) => addError(en, 'Error rating photo', err),
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
     invalidTakenAt: 'Invalid capture date and time.',
@@ -531,7 +533,8 @@ const en: Messages = {
     distance: 'Line',
     elevation: 'Point',
     area: 'Polygon',
-    elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
+    elevationFetchError: ({ err }) =>
+      addError(en, 'Error fetching point elevation', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -589,8 +592,8 @@ const en: Messages = {
     },
     shareToast:
       'The track has been saved to the server and can be shared by copying page URL.',
-    fetchingError: ({ err }) => `Error fetching track data: ${err}`,
-    savingError: ({ err }) => `Error saving the track: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error fetching track data', err),
+    savingError: ({ err }) => addError(en, 'Error saving the track', err),
     loadingError: 'Error loading file.',
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
@@ -645,7 +648,7 @@ const en: Messages = {
     showInMenu: 'Show in menu',
     showInToolbar: 'Show in toolbar',
     saveSuccess: 'Settings have been saved.',
-    savingError: ({ err }) => `Error saving settings: ${err}`,
+    savingError: ({ err }) => addError(en, 'Error saving settings', err),
     customLayersDef: 'Custom map layers definition',
     customLayersDefError: 'Invalid definition of custom map layers.',
   },
@@ -657,7 +660,7 @@ const en: Messages = {
     olderThan: ({ days }) => `${days} days`,
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
-    fetchError: ({ err }) => `Error fetching changesets: ${err}`,
+    fetchError: ({ err }) => addError(en, 'Error fetching changesets', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Author:',
@@ -674,7 +677,7 @@ const en: Messages = {
 
   mapDetails: {
     notFound: 'Nothing found here.',
-    fetchingError: ({ err }) => `Error fetching details: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error fetching details', err),
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -693,7 +696,8 @@ const en: Messages = {
       zoom: 'Zoom-in',
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,
-    fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
+    fetchingError: ({ err }) =>
+      addError(en, 'Error fetching objects (POIs)', err),
     icon: {
       pin: 'Pin',
       ring: 'Ring',
@@ -1008,7 +1012,7 @@ const en: Messages = {
     prompt: 'Enter the place',
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
-    fetchingError: ({ err }) => `Searching error: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Searching error', err),
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
   },
@@ -1033,7 +1037,7 @@ const en: Messages = {
     download: 'Download',
     format: 'Format',
     target: 'Target',
-    exportError: ({ err }) => `Error exporting: ${err}`,
+    exportError: ({ err }) => addError(en, 'Error exporting', err),
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'include stops',
@@ -1072,13 +1076,14 @@ const en: Messages = {
     logIn: {
       with: 'Choose a login provider',
       success: 'You have been successfully logged in.',
-      logInError: ({ err }) => `Error logging in: ${err}`,
+      logInError: ({ err }) => addError(en, 'Error logging in', err),
       logInError2: 'Error logging in.',
-      verifyError: ({ err }) => `Error verifying authentication: ${err}`,
+      verifyError: ({ err }) =>
+        addError(en, 'Error verifying authentication', err),
     },
     logOut: {
       success: 'You have been successfully logged out.',
-      error: ({ err }) => `Error logging out: ${err}`,
+      error: ({ err }) => addError(en, 'Error logging out', err),
     },
   },
 
@@ -1147,7 +1152,8 @@ const en: Messages = {
   elevationChart: {
     distance: 'Distance [km]',
     ele: `Elevation [${masl}]`,
-    fetchError: ({ err }) => `Error fetching elevation profile data: ${err}`,
+    fetchError: ({ err }) =>
+      addError(en, 'Error fetching elevation profile data', err),
   },
 
   errorCatcher: {
@@ -1164,7 +1170,7 @@ const en: Messages = {
   },
 
   osm: {
-    fetchingError: ({ err }) => `Error fetching OSM data: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error fetching OSM data', err),
   },
 
   tracking: {
@@ -1341,7 +1347,7 @@ const en: Messages = {
   pdfExport: {
     advancedSettings: 'Advanced options',
     styles: 'Interactive layer styles',
-    exportError: ({ err }) => `Error exporting map: ${err}`,
+    exportError: ({ err }) => addError(en, 'Error exporting map', err),
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
       <>
@@ -1422,12 +1428,12 @@ const en: Messages = {
     delete: 'Delete',
     disconnect: 'Disconnect',
     deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
-    fetchError: ({ err }) => `Error loading map: ${err}`,
-    fetchListError: ({ err }) => `Error loading maps: ${err}`,
-    deleteError: ({ err }) => `Error deleting map: ${err}`,
-    renameError: ({ err }) => `Error renaming map: ${err}`,
-    createError: ({ err }) => `Error saving map: ${err}`,
-    saveError: ({ err }) => `Error saving map: ${err}`,
+    fetchError: ({ err }) => addError(en, 'Error loading map', err),
+    fetchListError: ({ err }) => addError(en, 'Error loading maps', err),
+    deleteError: ({ err }) => addError(en, 'Error deleting map', err),
+    renameError: ({ err }) => addError(en, 'Error renaming map', err),
+    createError: ({ err }) => addError(en, 'Error saving map', err),
+    saveError: ({ err }) => addError(en, 'Error saving map', err),
     loadToEmpty: 'Load to empty map',
     loadInclMapAndPosition:
       'Load including saved background map and its position',
@@ -1511,6 +1517,72 @@ const en: Messages = {
     networkFirst: 'Network first',
     cacheFirst: 'Cache first',
     cacheOnly: 'Cache only',
+  },
+
+  errorStatus: {
+    100: 'Continue',
+    101: 'Switching Protocols',
+    102: 'Processing',
+    103: 'Early Hints',
+    200: 'OK',
+    201: 'Created',
+    202: 'Accepted',
+    203: 'Non-Authoritative Information',
+    204: 'No Content',
+    205: 'Reset Content',
+    206: 'Partial Content',
+    207: 'Multi-Status',
+    208: 'Already Reported',
+    226: 'IM Used',
+    300: 'Multiple Choices',
+    301: 'Moved Permanently',
+    302: 'Found',
+    303: 'See Other',
+    304: 'Not Modified',
+    305: 'Use Proxy',
+    306: 'Switch Proxy',
+    307: 'Temporary Redirect',
+    308: 'Permanent Redirect',
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    402: 'Payment Required',
+    403: 'Forbidden',
+    404: 'Not Found',
+    405: 'Method Not Allowed',
+    406: 'Not Acceptable',
+    407: 'Proxy Authentication Required',
+    408: 'Request Timeout',
+    409: 'Conflict',
+    410: 'Gone',
+    411: 'Length Required',
+    412: 'Precondition Failed',
+    413: 'Payload Too Large',
+    414: 'URI Too Long',
+    415: 'Unsupported Media Type',
+    416: 'Range Not Satisfiable',
+    417: 'Expectation Failed',
+    418: "I'm a teapot",
+    421: 'Misdirected Request',
+    422: 'Unprocessable Entity',
+    423: 'Locked',
+    424: 'Failed Dependency',
+    425: 'Too Early',
+    426: 'Upgrade Required',
+    428: 'Precondition Required',
+    429: 'Too Many Requests',
+    431: 'Request Header Fields Too Large',
+    451: 'Unavailable For Legal Reasons',
+    500: 'Internal Server Error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout',
+    505: 'HTTP Version Not Supported',
+    506: 'Variant Also Negotiates',
+    507: 'Insufficient Storage',
+    508: 'Loop Detected',
+    510: 'Not Extended',
+    511: 'Network Authentication Required',
   },
 };
 

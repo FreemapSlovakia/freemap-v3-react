@@ -3,11 +3,24 @@ import { clearMapFeatures } from './actions/mainActions';
 import { CancelItem, cancelRegister } from './cancelRegister';
 import { RootState } from './reducers';
 
+export class HttpError extends Error {
+  status: number;
+  body: string;
+
+  constructor(status: number, body: string) {
+    super('Unexpected HTTP response ' + status + ': ' + body);
+
+    this.status = status;
+
+    this.body = body;
+  }
+}
+
 interface HttpRequestParams extends Omit<RequestInit, 'signal'> {
   url: string;
   data?: unknown;
   getState: () => RootState;
-  expectedStatus?: number | number[];
+  expectedStatus?: number | number[] | null;
   cancelActions?: ActionCreator<string>[];
 }
 
@@ -102,13 +115,14 @@ export async function httpRequest({
     const { status } = response;
 
     if (
-      expectedStatus === undefined
+      expectedStatus !== null &&
+      (expectedStatus === undefined
         ? !response.ok
         : typeof expectedStatus === 'number'
           ? status !== expectedStatus
-          : !expectedStatus.includes(status)
+          : !expectedStatus.includes(status))
     ) {
-      throw new Error('Unexpected status ' + status);
+      throw new HttpError(status, await response.text());
     }
 
     return response;
