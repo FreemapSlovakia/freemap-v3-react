@@ -15,7 +15,6 @@ import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import { hasProperty } from 'fm3/typeUtils';
 import { isActionOf } from 'typesafe-actions';
 import { assert } from 'typia';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor';
@@ -238,7 +237,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
         let err: string | undefined;
 
-        if (hasProperty(data, 'message')) {
+        if (data && typeof data === 'object' && 'message' in data) {
           const msg = String(data['message']);
 
           if (
