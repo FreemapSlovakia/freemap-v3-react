@@ -142,7 +142,6 @@ export function Layers(): ReactElement | null {
       {customLayers
         .filter(({ type }) => overlays.includes(type as any))
         .map((cm) => getTileLayer(cm))}
-      ]
     </>
   );
 }
