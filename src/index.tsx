@@ -131,7 +131,9 @@ createRoot(rootElement).render(
 );
 
 if ('serviceWorker' in window.navigator) {
-  window.navigator.serviceWorker.register('/sw.js'); // TODO explicit casting - otherwise it fails on HMR recompiling
+  window.navigator.serviceWorker.register('/sw.js').catch((e) => {
+    console.warn('Error registering service worker:', e);
+  });
 }
 
 window.addEventListener('message', (e: MessageEvent) => {
