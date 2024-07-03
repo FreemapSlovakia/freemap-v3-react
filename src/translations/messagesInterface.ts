@@ -833,22 +833,18 @@ export function addError(
   message: string,
   err: unknown,
 ): string {
-  const detail =
-    err instanceof HttpError
+  return (
+    message +
+    ': ' +
+    (err instanceof HttpError
       ? (messages.errorStatus[err.status] ?? err.status) +
         (err.body ? ': ' + err.body : '')
       : !(err instanceof Error)
-        ? { err: String(err) }
+        ? String(err)
         : (err as any)._fm_fetchError
-          ? {
-              err:
-                (window.navigator.onLine === false
-                  ? messages.general.offline
-                  : messages.general.connectionError) ?? err.message,
-            }
-          : {
-              err: err.message,
-            };
-
-  return message + ': ' + detail;
+          ? (window.navigator.onLine === false
+              ? messages.general.offline
+              : messages.general.connectionError) ?? err.message
+          : err.message)
+  );
 }
