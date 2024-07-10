@@ -1,29 +1,22 @@
 /* eslint-disable react/jsx-key */
 
 import {
-  FaCamera,
   FaCertificate,
   FaExternalLinkAlt,
   FaLock,
-  FaMapSigns,
   FaPercent,
   FaRegKeyboard,
-  FaRoad,
-  FaShareAlt,
   FaUsers,
 } from 'react-icons/fa';
-import { SiOpenstreetmap } from 'react-icons/si';
+import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
 
 export type DocumentKey =
+  | 'garmin'
   | 'freemap'
   | 'osm'
   | 'attribution'
   | 'shortcuts'
   | 'exports'
-  | 'sharing'
-  | 'galleryUpload'
-  | 'gpxViewer'
-  | 'planner'
   | 'dvePercenta'
   | 'privacyPolicy'
   | 'outdoorShadingAttribution';
@@ -40,12 +33,9 @@ export const documents: Document[] = [
   ['osm', 'O OpenStreetMap', <SiOpenstreetmap />],
   ['attribution', 'Licencia máp', <FaCertificate />],
   ['shortcuts', 'Klávesové skratky', <FaRegKeyboard />],
-  ['exports', 'Exporty máp', <FaExternalLinkAlt />],
-  ['sharing', 'Zdieľanie a vkladanie mapy', <FaShareAlt />],
-  ['galleryUpload', 'Galéria fotografií', <FaCamera />],
-  ['gpxViewer', 'Prehliadač trás GPX', <FaRoad />],
-  ['planner', 'Vyhľadávač trás', <FaMapSigns />],
+  ['exports', 'Exporty máp', <FaExternalLinkAlt />, true],
   ['dvePercenta', 'Dve percentá', <FaPercent />],
   ['privacyPolicy', 'Privacy policy', <FaLock />, true],
   ['outdoorShadingAttribution', 'Attribution', <FaCertificate />, true],
+  ['garmin', 'Garmin', <SiGarmin />],
 ];

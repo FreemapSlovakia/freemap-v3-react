@@ -382,7 +382,6 @@ const messages: Messages = {
     back: 'Naspäť',
     mapLegend: 'Legenda mapy',
     contacts: 'Kontakty',
-    tips: 'Tipy',
     facebook: 'Freemap na Facebooku',
     twitter: 'Freemap na Twitteri',
     youtube: 'Freemap na YouTube',
@@ -1099,8 +1098,8 @@ const messages: Messages = {
     enableLocateMe: 'nájdenie vlastnej pozície',
   },
 
-  tips: {
-    errorLoading: 'Tip sa nepodarilo načítať.',
+  documents: {
+    errorLoading: 'Dokument sa nepodarilo načítať.',
   },
 
   exportMapFeatures: {
@@ -1126,6 +1125,21 @@ const messages: Messages = {
       'Exportovaný súbor môže podliehať rôznym licenciám, ako napríklad licencii OpenStreetMap. Prosím dodržte podmienky týchto licencií pri zdieľaní vyexportovaného súboru.',
     exportedToDropbox: 'Súbor bol uložený do Dropboxu.',
     exportedToGdrive: 'Súbor bol uložený do Google Drive.',
+    garmin: {
+      courseName: 'Názov kurzu',
+      description: 'Popis',
+      activityType: 'Typ aktivity',
+      at: {
+        running: 'Beh',
+        hiking: 'Turistika',
+        other: 'Iné',
+        mountain_biking: 'Horská cyklistika',
+        trailRunning: 'Trailový beh',
+        roadCycling: 'Cestná cyklistika',
+        gravelCycling: 'Štrková cyklistika',
+      },
+      revoked: 'Exportovanie kurzu do Garminu bolo zrušené.',
+    },
   },
 
   auth: {

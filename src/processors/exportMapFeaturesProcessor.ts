@@ -4,7 +4,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,
   errorKey: 'exportMapFeatures.exportError',
-  id: 'gpxExport',
+  id: 'mapFeaturesExport',
   handle: async (...params) => {
     return (
       params[0].action.payload.target === 'garmin'

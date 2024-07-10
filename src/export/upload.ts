@@ -102,7 +102,7 @@ export async function upload(
 
       dispatch(
         toastsAdd({
-          id: 'gpxExport',
+          id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
           messageKey: 'exportMapFeatures.exportedToDropbox',
@@ -219,7 +219,7 @@ export async function upload(
 
       dispatch(
         toastsAdd({
-          id: 'gpxExport',
+          id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
           messageKey: 'exportMapFeatures.exportedToGdrive',

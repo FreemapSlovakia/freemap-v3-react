@@ -281,14 +281,14 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
             <div>
               <ButtonGroup vertical={!isWide}>
-                {exportTargets.map((target1) => (
+                {exportTargets.map((targ) => (
                   <ToggleButton
-                    id={target1}
-                    key={target1}
+                    id={targ}
+                    key={targ}
                     type="radio"
-                    checked={target === target1}
-                    value={target1}
-                    onChange={() => setTarget(target1)}
+                    checked={target === targ}
+                    value={targ}
+                    onChange={() => setTarget(targ)}
                     disabled={!initExportables}
                   >
                     {
@@ -323,7 +323,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                             />
                           </>
                         ),
-                      }[target1]
+                      }[targ]
                     }
                   </ToggleButton>
                 ))}
@@ -334,7 +334,9 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
           {isGarmin ? (
             <>
               <Form.Group className="mb-3">
-                <Form.Label>Course name:</Form.Label>
+                <Form.Label>
+                  {m?.exportMapFeatures.garmin.courseName}:
+                </Form.Label>
 
                 <Form.Control
                   value={name}
@@ -343,7 +345,9 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Description:</Form.Label>
+                <Form.Label>
+                  {m?.exportMapFeatures.garmin.description}:
+                </Form.Label>
 
                 <Form.Control
                   as="textarea"
@@ -354,7 +358,9 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Activity type:</Form.Label>
+                <Form.Label>
+                  {m?.exportMapFeatures.garmin.activityType}:
+                </Form.Label>
 
                 <Form.Control
                   as="select"
@@ -362,13 +368,27 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   onChange={(e) => setActivity(e.currentTarget.value)}
                 >
                   <option value="" />
-                  <option value="RUNNING">Running</option>
-                  <option value="HIKING">Hiking</option>
-                  <option value="OTHER">Other</option>
-                  <option value="MOUNTAIN_BIKING">Mountain_biking</option>
-                  <option value="TRAIL_RUNNING">Trail running</option>
-                  <option value="ROAD_CYCLING">Road cycling</option>
-                  <option value="GRAVEL_CYCLING">Gravel cycling</option>
+                  <option value="RUNNING">
+                    {m?.exportMapFeatures.garmin.at.running}
+                  </option>
+                  <option value="HIKING">
+                    {m?.exportMapFeatures.garmin.at.hiking}
+                  </option>
+                  <option value="OTHER">
+                    {m?.exportMapFeatures.garmin.at.other}
+                  </option>
+                  <option value="MOUNTAIN_BIKING">
+                    {m?.exportMapFeatures.garmin.at.mountain_biking}
+                  </option>
+                  <option value="TRAIL_RUNNING">
+                    {m?.exportMapFeatures.garmin.at.trailRunning}
+                  </option>
+                  <option value="ROAD_CYCLING">
+                    {m?.exportMapFeatures.garmin.at.roadCycling}
+                  </option>
+                  <option value="GRAVEL_CYCLING">
+                    {m?.exportMapFeatures.garmin.at.gravelCycling}
+                  </option>
                 </Form.Control>
               </Form.Group>
             </>

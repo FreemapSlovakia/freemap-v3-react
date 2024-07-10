@@ -378,7 +378,6 @@ const hu: Messages = {
     back: 'Vissza',
     mapLegend: 'Jelmagyarázat',
     contacts: 'Kapcsolat',
-    tips: 'Tippek',
     facebook: 'Freemap a Facebookon',
     twitter: 'Freemap a Twitteren',
     youtube: 'Freemap a YouTubeon',
@@ -1047,8 +1046,8 @@ const hu: Messages = {
     enableLocateMe: 'saját hely megtalálása',
   },
 
-  tips: {
-    errorLoading: 'Hiba történt a tipp betöltésekor.',
+  documents: {
+    errorLoading: 'Hiba történt a dokumentum betöltésekor.',
   },
 
   exportMapFeatures: {
@@ -1074,6 +1073,22 @@ const hu: Messages = {
       'Különféle licencek vonatkozhatnak - például az OpenStreetMap. Kérjük, adja hozzá a hiányzó forrásokat az exportált fájl megosztásakor.', // TODO google-translated
     exportedToDropbox: 'Fájl elmentve a Dropboxba.',
     exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
+    garmin: {
+      // TODO chatgpt translated
+      courseName: 'Tanfolyam neve',
+      description: 'Leírás',
+      activityType: 'Tevékenység típusa',
+      at: {
+        running: 'Futás',
+        hiking: 'Túrázás',
+        other: 'Egyéb',
+        mountain_biking: 'Hegyi kerékpározás',
+        trailRunning: 'Terepfutás',
+        roadCycling: 'Országúti kerékpározás',
+        gravelCycling: 'Murvás kerékpározás',
+      },
+      revoked: 'A kurzus Garmin-ba való exportálása vissza lett vonva.',
+    },
   },
 
   auth: {

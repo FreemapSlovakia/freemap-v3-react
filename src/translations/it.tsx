@@ -380,7 +380,6 @@ const messages: Messages = {
     back: 'Indietro',
     mapLegend: 'Legenda',
     contacts: 'Contatti',
-    tips: 'Consigli',
     facebook: 'Freemap su Facebook',
     twitter: 'Freemap su Twitter',
     youtube: 'Freemap su YouTube',
@@ -1050,8 +1049,8 @@ const messages: Messages = {
     enableLocateMe: 'trovami',
   },
 
-  tips: {
-    errorLoading: 'Errore caricamento consigli.',
+  documents: {
+    errorLoading: 'Errore caricamento documento.',
   },
 
   exportMapFeatures: {
@@ -1077,6 +1076,21 @@ const messages: Messages = {
       'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
     exportedToDropbox: 'Il file è stato salvato su Dropbox.',
     exportedToGdrive: 'Il file è stato salvato su Google Drive.',
+    garmin: {
+      courseName: 'Nome del corso',
+      description: 'Descrizione',
+      activityType: 'Tipo di attività',
+      at: {
+        running: 'Corsa',
+        hiking: 'Escursionismo',
+        other: 'Altro',
+        mountain_biking: 'Mountain bike',
+        trailRunning: 'Corsa su sentiero',
+        roadCycling: 'Ciclismo su strada',
+        gravelCycling: 'Ciclismo su ghiaia',
+      },
+      revoked: "L'esportazione del corso su Garmin è stata revocata.",
+    },
   },
 
   auth: {

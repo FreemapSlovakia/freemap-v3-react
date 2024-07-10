@@ -373,7 +373,6 @@ const en: Messages = {
     back: 'Back',
     mapLegend: 'Map legend',
     contacts: 'Contacts',
-    tips: 'Tips',
     facebook: 'Freemap on Facebook',
     twitter: 'Freemap on Twitter',
     youtube: 'Freemap on YouTube',
@@ -1029,8 +1028,8 @@ const en: Messages = {
     enableLocateMe: 'find me',
   },
 
-  tips: {
-    errorLoading: 'Error loading tip.',
+  documents: {
+    errorLoading: 'Error loading document.',
   },
 
   exportMapFeatures: {
@@ -1056,6 +1055,21 @@ const en: Messages = {
       'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
     exportedToDropbox: 'File has been saved to Dropboxu.',
     exportedToGdrive: 'File has been saved to Google Drive.',
+    garmin: {
+      courseName: 'Course name',
+      description: 'Description',
+      activityType: 'Activity type',
+      at: {
+        running: 'Running',
+        hiking: 'Hiking',
+        other: 'Other',
+        mountain_biking: 'Mountain biking',
+        trailRunning: 'Trail running',
+        roadCycling: 'Road cycling',
+        gravelCycling: 'Gravel cycling',
+      },
+      revoked: 'Exporting course to Garmin has been revoked.',
+    },
   },
 
   auth: {

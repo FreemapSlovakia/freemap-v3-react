@@ -6,7 +6,7 @@ import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { FaRegLightbulb, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -35,14 +35,14 @@ export function DocumentModal({ show }: Props): ReactElement | null {
         setContent(content);
       })
       .catch(() => {
-        setContent(m?.tips.errorLoading ?? null);
+        setContent(m?.documents.errorLoading ?? null);
       })
       .then(() => {
         setLoading(false);
       });
   }, [documentKey, m, language]);
 
-  const tip = useMemo(
+  const document = useMemo(
     () => documents.find(([key]) => key === documentKey),
     [documentKey],
   );
@@ -93,23 +93,23 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   //     });
   // }, [tip]);
 
-  if (!tip) {
+  if (!document) {
     return null;
   }
 
-  const [, title, icon, hidden] = tip;
+  const [, title, icon] = document;
 
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          {!hidden && (
+          {/* {!hidden && (
             <>
               <FaRegLightbulb />
               {m?.mainMenu.tips}
               {'\u00A0 | \u00A0'}
             </>
-          )}
+          )} */}
           {title && icon ? (
             <>
               {icon} {title}

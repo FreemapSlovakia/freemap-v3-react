@@ -295,7 +295,6 @@ export type Messages = {
     back: string;
     mapLegend: string;
     contacts: string;
-    tips: string;
     facebook: string;
     twitter: string;
     youtube: string;
@@ -589,7 +588,7 @@ export type Messages = {
     enableMapSwitch: string;
     enableLocateMe: string;
   };
-  tips: {
+  documents: {
     errorLoading: string;
   };
   exportMapFeatures: {
@@ -613,6 +612,21 @@ export type Messages = {
     licenseAlert: string;
     exportedToDropbox: string;
     exportedToGdrive: string;
+    garmin: {
+      courseName: string;
+      description: string;
+      activityType: string;
+      at: {
+        running: string;
+        hiking: string;
+        other: string;
+        mountain_biking: string;
+        trailRunning: string;
+        roadCycling: string;
+        gravelCycling: string;
+      };
+      revoked: string;
+    };
   };
   auth: {
     connect: {

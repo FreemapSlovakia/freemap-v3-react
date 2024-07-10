@@ -24,7 +24,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (!result || typeof result === 'string') {
     dispatch(
       toastsAdd({
-        id: 'gpxExport',
+        id: 'mapFeaturesExport',
         style: 'danger',
         message: result || 'Error exporting to Garmin',
       }),
@@ -56,7 +56,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (res.status === 204) {
     dispatch(
       toastsAdd({
-        id: 'gpxExport',
+        id: 'mapFeaturesExport',
         messageKey: 'general.success',
       }),
     );
@@ -73,10 +73,10 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   } else if (res.status === 403 && body === 'missing permission') {
     dispatch(
       toastsAdd({
-        id: 'gpxExport',
+        id: 'mapFeaturesExport',
         timeout: 5000,
         style: 'danger',
-        message: 'Exporting course to Garmin has been revoked.',
+        messageKey: 'exportMapFeatures.garmin.revoked',
       }),
     );
   } else {

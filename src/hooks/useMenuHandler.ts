@@ -86,8 +86,8 @@ export function useMenuHandler({
         setShow(false);
       } else if (eventKey.startsWith('submenu-')) {
         setSubmenu((eventKey.slice(8) || null) as Submenu);
-      } else if (eventKey.startsWith('tip-')) {
-        dispatch(documentShow(eventKey.slice(4) as DocumentKey));
+      } else if (eventKey.startsWith('document-')) {
+        dispatch(documentShow(eventKey.slice(9) as DocumentKey));
 
         setShow(false);
       } else if (eventKey.startsWith('tool-')) {
