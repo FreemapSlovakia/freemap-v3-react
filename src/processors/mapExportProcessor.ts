@@ -3,8 +3,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const exportMapProcessor: Processor<typeof exportMap> = {
   actionCreator: exportMap,
-  errorKey: 'pdfExport.exportError',
-  id: 'pdfExport.export',
+  errorKey: 'mapExport.exportError',
+  id: 'mapExport.export',
   handle: async (...params) =>
     (await import('./mapExportProcessorHandler')).default(...params),
 };

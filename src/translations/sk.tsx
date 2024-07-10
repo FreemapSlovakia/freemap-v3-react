@@ -374,7 +374,7 @@ const messages: Messages = {
     logOut: 'Odhlásiť',
     logIn: 'Prihlásenie',
     account: 'Účet',
-    gpxExport: 'Exportovať do GPX / GeoJSON',
+    mapFeaturesExport: 'Exportovať do GPX / GeoJSON',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
@@ -388,7 +388,7 @@ const messages: Messages = {
     youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
-    pdfExport: 'Exportovať mapu',
+    mapExport: 'Exportovať mapu',
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
   },
@@ -1419,7 +1419,7 @@ const messages: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Rozšírené nastavenia',
     styles: 'Štýly interaktívnej vrstvy',
     exportError: ({ err }) =>

@@ -372,7 +372,7 @@ const messages: Messages = {
     logOut: 'Esci',
     logIn: 'Accedi',
     account: 'Account',
-    gpxExport: 'Esporta in GPX / GeoJSON',
+    mapFeaturesExport: 'Esporta in GPX / GeoJSON',
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
@@ -386,7 +386,7 @@ const messages: Messages = {
     youtube: 'Freemap su YouTube',
     github: 'Freemap su GitHub',
     automaticLanguage: 'Automatico',
-    pdfExport: 'Esporta la mappa',
+    mapExport: 'Esporta la mappa',
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
@@ -1367,7 +1367,7 @@ const messages: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Opzioni avanzate',
     styles: 'Stili livelli interattivi',
     exportError: ({ err }) => addError(messages, 'Error exporting map:', err),

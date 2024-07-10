@@ -376,7 +376,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
           <Accordion>
             <Accordion.Item eventKey="0">
               <Accordion.Header>
-                {m?.pdfExport.advancedSettings}
+                {m?.mapExport.advancedSettings}
               </Accordion.Header>
 
               <Accordion.Body>

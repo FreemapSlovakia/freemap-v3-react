@@ -120,11 +120,11 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item href="#show=export-pdf" eventKey="modal-export-pdf">
-        <FaPrint /> {m?.mainMenu.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
+        <FaPrint /> {m?.mainMenu.mapExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-export-gpx" href="#show=export-gpx">
-        <FaDownload /> {m?.mainMenu.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
+        <FaDownload /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd> <kbd>g</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="tip-exports" href="#tip=exports">

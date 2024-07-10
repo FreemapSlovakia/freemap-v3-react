@@ -166,14 +166,14 @@ export function ExportMapModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaPrint /> {m?.mainMenu.pdfExport}
+          <FaPrint /> {m?.mainMenu.mapExport}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <Alert variant="warning">{m?.pdfExport.alert()}</Alert>
+        <Alert variant="warning">{m?.mapExport.alert()}</Alert>
 
-        <p>{m?.pdfExport.area}</p>
+        <p>{m?.mapExport.area}</p>
 
         <ButtonGroup>
           <Button
@@ -181,7 +181,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             active={area === 'visible'}
             onClick={() => setArea('visible')}
           >
-            {m?.pdfExport.areas.visible}
+            {m?.mapExport.areas.visible}
           </Button>
 
           <Button
@@ -190,13 +190,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
             onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
           >
-            {m?.pdfExport.areas.pinned} <FaDrawPolygon />
+            {m?.mapExport.areas.pinned} <FaDrawPolygon />
           </Button>
         </ButtonGroup>
 
         <hr />
 
-        <p>{m?.pdfExport.format}</p>
+        <p>{m?.mapExport.format}</p>
 
         <ButtonGroup>
           <Button
@@ -238,7 +238,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <hr />
 
-        <p>{m?.pdfExport.layersTitle}</p>
+        <p>{m?.mapExport.layersTitle}</p>
 
         <Form.Check
           id="contours"
@@ -247,7 +247,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setContours((b) => !b);
           }}
-          label={m?.pdfExport.layers.contours}
+          label={m?.mapExport.layers.contours}
         />
 
         <Form.Check
@@ -255,7 +255,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           type="checkbox"
           checked={shadedRelief}
           onChange={() => setShadedRelief((b) => !b)}
-          label={m?.pdfExport.layers.shading}
+          label={m?.mapExport.layers.shading}
         />
 
         <Form.Check
@@ -265,7 +265,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setHikingTrails((b) => !b);
           }}
-          label={m?.pdfExport.layers.hikingTrails}
+          label={m?.mapExport.layers.hikingTrails}
         />
 
         <Form.Check
@@ -274,7 +274,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setBicycleTrails((b) => !b);
           }}
-          label={m?.pdfExport.layers.bicycleTrails}
+          label={m?.mapExport.layers.bicycleTrails}
         />
 
         <Form.Check
@@ -284,7 +284,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setSkiTrails((b) => !b);
           }}
-          label={m?.pdfExport.layers.skiTrails}
+          label={m?.mapExport.layers.skiTrails}
         />
 
         <Form.Check
@@ -294,7 +294,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setHorseTrails((b) => !b);
           }}
-          label={m?.pdfExport.layers.horseTrails}
+          label={m?.mapExport.layers.horseTrails}
         />
 
         <Form.Check
@@ -304,7 +304,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setDrawing((b) => !b);
           }}
-          label={m?.pdfExport.layers.drawing}
+          label={m?.mapExport.layers.drawing}
         />
 
         <Form.Check
@@ -314,7 +314,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setPlannedRoute((b) => !b);
           }}
-          label={m?.pdfExport.layers.plannedRoute}
+          label={m?.mapExport.layers.plannedRoute}
         />
 
         <Form.Check
@@ -324,12 +324,12 @@ export function ExportMapModal({ show }: Props): ReactElement {
           onChange={() => {
             setTrack((b) => !b);
           }}
-          label={m?.pdfExport.layers.track}
+          label={m?.mapExport.layers.track}
         />
 
         <hr />
 
-        <p>{m?.pdfExport.mapScale}</p>
+        <p>{m?.mapExport.mapScale}</p>
 
         <InputGroup>
           <Form.Control
@@ -350,12 +350,12 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <Accordion>
           <Accordion.Item eventKey="0">
-            <Accordion.Header>{m?.pdfExport.advancedSettings}</Accordion.Header>
+            <Accordion.Header>{m?.mapExport.advancedSettings}</Accordion.Header>
 
             <Accordion.Body>
               <Form.Group className="mb-3">
                 <Form.Label>
-                  {m?.pdfExport.styles}{' '}
+                  {m?.mapExport.styles}{' '}
                   <a
                     href="http://mapnik.org/mapnik-reference/"
                     target="mapnik_reference"

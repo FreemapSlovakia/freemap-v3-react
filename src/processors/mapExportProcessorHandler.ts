@@ -223,8 +223,8 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
   dispatch(
     toastsAdd({
-      id: 'pdfExport.export',
-      messageKey: 'pdfExport.exporting',
+      id: 'mapExport.export',
+      messageKey: 'mapExport.exporting',
       style: 'info',
     }),
   );
@@ -249,8 +249,8 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
   dispatch(
     toastsAdd({
-      id: 'pdfExport.export',
-      messageKey: 'pdfExport.exported',
+      id: 'mapExport.export',
+      messageKey: 'mapExport.exported',
       messageParams: {
         url: `${fmMapserverUrl}/export?token=${data.token}`,
       },

@@ -370,7 +370,7 @@ const hu: Messages = {
     logOut: 'Kijelentkezés',
     logIn: 'Bejelentkezés',
     account: 'Fiók',
-    gpxExport: 'Exportálás GPX / GeoJSON-be',
+    mapFeaturesExport: 'Exportálás GPX / GeoJSON-be',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
@@ -384,7 +384,7 @@ const hu: Messages = {
     youtube: 'Freemap a YouTubeon',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
-    pdfExport: 'Térkép exportálása',
+    mapExport: 'Térkép exportálása',
     osmWiki: 'OpenStreetMap documentation', // TODO translate
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
   },
@@ -1369,7 +1369,7 @@ const hu: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Advanced options', // TODO translate
     styles: 'Interactive layer styles', // TODO translate
     exportError: ({ err }) =>

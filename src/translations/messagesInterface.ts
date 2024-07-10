@@ -287,7 +287,7 @@ export type Messages = {
     logOut: string;
     logIn: string;
     account: string;
-    gpxExport: string;
+    mapFeaturesExport: string;
     mapExports: string;
     embedMap: string;
     supportUs: string;
@@ -301,7 +301,7 @@ export type Messages = {
     youtube: string;
     github: string;
     automaticLanguage: string;
-    pdfExport: string;
+    mapExport: string;
     osmWiki: string;
     wikiLink: string;
   };
@@ -737,7 +737,7 @@ export type Messages = {
     subscribeNotFound: ({ id }: { id: string | number }) => JSX.Element;
     subscribeError: ({ id }: { id: string | number }) => JSX.Element;
   };
-  pdfExport: {
+  mapExport: {
     exportError: ({ err }: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;

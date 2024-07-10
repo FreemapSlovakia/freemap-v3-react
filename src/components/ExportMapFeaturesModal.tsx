@@ -267,7 +267,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       <Form onSubmit={runExport}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDownload /> {m?.mainMenu.gpxExport}
+            <FaDownload /> {m?.mainMenu.mapFeaturesExport}
           </Modal.Title>
         </Modal.Header>
 

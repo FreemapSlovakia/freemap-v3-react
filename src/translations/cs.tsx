@@ -374,7 +374,7 @@ const messages: Messages = {
     logOut: 'Odhlásit',
     logIn: 'Přihlášení',
     account: 'Účet',
-    gpxExport: 'Exportovat do GPX / GeoJSON',
+    mapFeaturesExport: 'Exportovat do GPX / GeoJSON',
     mapExports: 'Mapa pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
     supportUs: 'Podpořit Freemap',
@@ -388,7 +388,7 @@ const messages: Messages = {
     youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHub-u',
     automaticLanguage: 'Automaticky',
-    pdfExport: 'Exportovat mapu',
+    mapExport: 'Exportovat mapu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
   },
@@ -1388,7 +1388,7 @@ const messages: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Rozšířená nastavení',
     styles: 'Styly interaktivní vrstvy',
     exportError: ({ err }) => addError(messages, 'Chyba exportu mapy', err),
