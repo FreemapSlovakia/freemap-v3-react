@@ -4,10 +4,8 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const cssnano = require('cssnano');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -19,11 +17,6 @@ const huMessages = require('./src/translations/hu-shared.json');
 const itMessages = require('./src/translations/it-shared.json');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
-
-const renderer = new marked.Renderer();
-
-renderer.link = (href, title, text) =>
-  `<a href="${href}" title="${title ?? ''}">${text}</a>`;
 
 const htmlPluginProps = {
   filename: 'index.html',
@@ -151,10 +144,7 @@ module.exports = {
             loader: 'html-loader',
           },
           {
-            loader: 'markdown-loader',
-            options: {
-              renderer,
-            },
+            loader: path.resolve('markdown-loader.js'),
           },
         ],
       },
