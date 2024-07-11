@@ -2,7 +2,7 @@ import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
 import { ShowModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { basicModals } from 'fm3/constants';
-import { documents as allTips } from 'fm3/documents';
+import { DocumentKey } from 'fm3/documents';
 import { history } from 'fm3/historyHolder';
 import { OverlayLetters } from 'fm3/mapDefinitions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -297,8 +297,8 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (main.documentKey && is<(typeof allTips)[number][0]>(main.documentKey)) {
-      queryParts.push(['tip', main.documentKey]);
+    if (is<DocumentKey>(main.documentKey)) {
+      queryParts.push(['document', main.documentKey]);
     }
 
     if (main.embedFeatures.length) {

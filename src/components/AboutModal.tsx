@@ -95,7 +95,12 @@ export function AboutModal({ show }: Props): ReactElement {
 
       <Modal.Footer>
         {(language === 'sk' || language === 'cs') && (
-          <Button variant="link" href="https://oz.freemap.sk/">
+          <Button
+            variant="link"
+            href="https://oz.freemap.sk/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Ako sa stať členom?
           </Button>
         )}

@@ -365,7 +365,7 @@ const en: Messages = {
     logOut: 'Log out',
     logIn: 'Log in',
     account: 'Account',
-    mapFeaturesExport: 'Export to GPX / GeoJSON',
+    mapFeaturesExport: 'Export map features',
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',

@@ -370,7 +370,7 @@ const hu: Messages = {
     logOut: 'Kijelentkezés',
     logIn: 'Bejelentkezés',
     account: 'Fiók',
-    mapFeaturesExport: 'Exportálás GPX / GeoJSON-be',
+    mapFeaturesExport: 'A térkép jellemzőinek exportálása',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',

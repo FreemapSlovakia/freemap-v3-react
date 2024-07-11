@@ -374,7 +374,7 @@ const messages: Messages = {
     logOut: 'Odhlásiť',
     logIn: 'Prihlásenie',
     account: 'Účet',
-    mapFeaturesExport: 'Exportovať do GPX / GeoJSON',
+    mapFeaturesExport: 'Exportovať mapové prvky',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',

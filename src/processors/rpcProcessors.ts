@@ -96,11 +96,7 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
       // ignore
     }
 
-    if (
-      is<JsonRpcRequest>(object) &&
-      'method' in object /* for dev */ &&
-      object.id === undefined
-    ) {
+    if (is<JsonRpcRequest>(object) && object.id === undefined) {
       dispatch(rpcEvent({ method: object.method, params: object.params }));
     } else if (
       is<JsonRpcOkResponse | JsonRpcErrorResponse>(object) &&

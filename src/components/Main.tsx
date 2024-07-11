@@ -592,7 +592,12 @@ export function Main(): ReactElement {
         <input {...getInputProps()} />
 
         {mapType[0] === 'V' && (
-          <a href="https://www.maptiler.com" className="watermark">
+          <a
+            href="https://www.maptiler.com"
+            className="watermark"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="https://api.maptiler.com/resources/logo.svg"
               alt="MapTiler logo"
@@ -683,12 +688,12 @@ export function Main(): ReactElement {
         />
 
         <AsyncModal
-          show={activeModal === 'export-gpx'}
+          show={activeModal === 'export-map-features'}
           factory={exportGpxModalFactory}
         />
 
         <AsyncModal
-          show={activeModal === 'export-pdf'}
+          show={activeModal === 'export-map'}
           factory={exportMapModalFactory}
         />
 

@@ -348,10 +348,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return setActiveModal('account');
 
         case 'KeyG':
-          return setActiveModal('export-gpx');
+          return setActiveModal('export-map-features');
 
         case 'KeyP':
-          return setActiveModal('export-pdf');
+          return setActiveModal('export-map');
 
         case 'KeyE':
           return setActiveModal('embed');

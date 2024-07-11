@@ -2,7 +2,11 @@ const { parse, marked } = require('marked');
 
 const renderer = {
   link(href, title, text) {
-    return `<a href="${href}" title="${title ?? ''}">${text}</a>`;
+    const ext = href.match('^https?://')
+      ? ' target="_blank" rel="noopener noreferrer"'
+      : '';
+
+    return `<a href="${href}" title="${title ?? ''}"${ext}>${text}</a>`;
   },
 };
 

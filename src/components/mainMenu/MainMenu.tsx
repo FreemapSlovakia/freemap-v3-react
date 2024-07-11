@@ -119,11 +119,14 @@ export function MainMenu(): ReactElement {
         <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item href="#show=export-pdf" eventKey="modal-export-pdf">
+      <Dropdown.Item href="#show=export-map" eventKey="modal-export-map">
         <FaPrint /> {m?.mainMenu.mapExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="modal-export-gpx" href="#show=export-gpx">
+      <Dropdown.Item
+        eventKey="modal-export-map-features"
+        href="#show=export-map-features"
+      >
         <FaDownload /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd> <kbd>g</kbd>
       </Dropdown.Item>
 

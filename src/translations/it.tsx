@@ -372,7 +372,7 @@ const messages: Messages = {
     logOut: 'Esci',
     logIn: 'Accedi',
     account: 'Account',
-    mapFeaturesExport: 'Esporta in GPX / GeoJSON',
+    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa', // TODO google translatted
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',

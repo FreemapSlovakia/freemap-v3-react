@@ -62,10 +62,10 @@ import { mapsLoad } from './actions/mapsActions';
 import { objectsSetFilter } from './actions/objectsActions';
 import { searchSetQuery } from './actions/searchActions';
 import { trackingActions } from './actions/trackingActions';
-import { basicModals, tools } from './constants';
+import { tools } from './constants';
 import { RootState } from './reducers';
 import { MyStore } from './storeCreator';
-import { TransportType, transportTypeDefs } from './transportTypeDefs';
+import { TransportType } from './transportTypeDefs';
 import { LatLon } from './types/common';
 import { TrackedDevice } from './types/trackingTypes';
 
@@ -165,11 +165,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
           ? 'rel'
           : false;
 
-    if (
-      transportTypeDefs[query['transport'] as TransportType] && // for dev
-      is<TransportType>(query['transport']) && // for prod
-      pointsOk
-    ) {
+    if (is<TransportType>(query['transport']) && pointsOk) {
       const {
         start,
         finish,
@@ -481,21 +477,28 @@ export function handleLocationChange(store: MyStore, location: Location): void {
 
   const activeModal = getState().main.activeModal;
 
-  const { show } = query;
+  let { show } = query;
 
-  if (is<ShowModal>(show) && show) {
+  // support legacy
+  if (show === 'export-gpx') {
+    show = 'export-map-features';
+  } else if (show === 'export-pdf') {
+    show = 'export-map';
+  }
+
+  if (is<ShowModal>(show)) {
     if (show !== activeModal) {
       dispatch(setActiveModal(show));
     }
-  } else if (is<ShowModal>(activeModal) && basicModals.includes(activeModal)) {
+  } else if (is<ShowModal>(activeModal)) {
     dispatch(setActiveModal(null));
   }
 
-  const tip = query['tip'];
+  const doc = query['document'] ?? query['tip'];
 
-  if (typeof tip === 'string' && is<DocumentKey>(tip)) {
-    if (getState().main.documentKey !== tip) {
-      dispatch(documentShow(tip));
+  if (is<DocumentKey>(doc)) {
+    if (getState().main.documentKey !== doc) {
+      dispatch(documentShow(doc));
     }
   } else if (getState().main.documentKey) {
     dispatch(documentShow(null));
@@ -784,7 +787,7 @@ function handleGallery(
 
   const cb = query['gallery-cb'];
 
-  if (cb && is<GalleryColorizeBy>(cb)) {
+  if (is<GalleryColorizeBy>(cb)) {
     dispatch(galleryColorizeBy(cb));
   }
 }

@@ -4,10 +4,12 @@ export function navigate(query: string) {
   const sp = new URLSearchParams(url.hash.slice(1));
 
   new URLSearchParams(query).forEach((value, key) => {
-    if (key === 'show' || key === 'tip') {
+    if (['show', 'tip', 'document'].includes(key)) {
       sp.delete('show');
 
       sp.delete('tip');
+
+      sp.delete('document');
     }
 
     if (value) {

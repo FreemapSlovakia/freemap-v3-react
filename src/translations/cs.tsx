@@ -374,7 +374,7 @@ const messages: Messages = {
     logOut: 'Odhlásit',
     logIn: 'Přihlášení',
     account: 'Účet',
-    mapFeaturesExport: 'Exportovat do GPX / GeoJSON',
+    mapFeaturesExport: 'Exportovat mapové prvky',
     mapExports: 'Mapa pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
     supportUs: 'Podpořit Freemap',
