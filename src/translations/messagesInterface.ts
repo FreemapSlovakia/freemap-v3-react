@@ -626,6 +626,8 @@ export type Messages = {
         gravelCycling: string;
       };
       revoked: string;
+      connectPrompt: string;
+      authPrompt: string;
     };
   };
   auth: {

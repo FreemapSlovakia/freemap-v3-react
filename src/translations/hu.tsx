@@ -1088,6 +1088,10 @@ const hu: Messages = {
         gravelCycling: 'Murvás kerékpározás',
       },
       revoked: 'A kurzus Garmin-ba való exportálása vissza lett vonva.',
+      connectPrompt:
+        'Még nincs csatlakoztatva Garmin fiókod. Szeretné most csatlakoztatni?',
+      authPrompt:
+        'Még nem vagy bejelentkezve a Garminonba. Szeretnél ez alkalommal bejelentkezni?',
     },
   },
 

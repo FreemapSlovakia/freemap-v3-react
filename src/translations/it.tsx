@@ -1090,6 +1090,10 @@ const messages: Messages = {
         gravelCycling: 'Ciclismo su ghiaia',
       },
       revoked: "L'esportazione del corso su Garmin è stata revocata.",
+      connectPrompt:
+        'Non hai ancora collegato il tuo account Garmin. Vuoi collegarlo ora?',
+      authPrompt:
+        "Non hai ancora effettuato l'accesso a Garminon. Vuoi accedere questa volta?",
     },
   },
 

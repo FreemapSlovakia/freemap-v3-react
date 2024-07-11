@@ -127,7 +127,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
   });
 
   const userHasGarmin = useAppSelector((state) =>
-    Boolean(state.auth.user?.authProviders.includes('garmin')),
+    state.auth.user?.authProviders.includes('garmin'),
   );
 
   const [exportables, setExportables] = useState<string>('|');
@@ -162,8 +162,9 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       if (target === 'garmin' && !userHasGarmin) {
         if (
           window.confirm(
-            // TODO translate
-            "You don't have your Garmin account connected yet. Do you wish to connect it now?",
+            userHasGarmin === false
+              ? m?.exportMapFeatures.garmin.connectPrompt
+              : m?.exportMapFeatures.garmin.authPrompt,
           )
         ) {
           dispatch(
@@ -183,6 +184,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       description,
       activity,
       userHasGarmin,
+      m,
     ],
   );
 

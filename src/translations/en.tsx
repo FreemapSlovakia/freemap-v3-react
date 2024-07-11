@@ -1069,6 +1069,10 @@ const en: Messages = {
         gravelCycling: 'Gravel cycling',
       },
       revoked: 'Exporting course to Garmin has been revoked.',
+      connectPrompt:
+        "You don't have your Garmin account connected yet. Do you wish to do it now?",
+      authPrompt:
+        'You are not authenticated with Garmin yet. Do you wish to do it now?',
     },
   },
 

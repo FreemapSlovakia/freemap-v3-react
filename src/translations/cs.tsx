@@ -1110,6 +1110,10 @@ const messages: Messages = {
         gravelCycling: 'Štěrková cyklistika',
       },
       revoked: 'Export kurzu do Garminu byl zrušen.',
+      connectPrompt:
+        'Garmin účet ještě nemáte připojen. Chcete jej připojit nyní?',
+      authPrompt:
+        'Nejste ještě přihlášen Garminon. Přejete se přihlásit tetaz?',
     },
   },
 
