@@ -121,7 +121,11 @@ export function ObjectDetails({
                 </a>
               </th>
               <td>
-                {k === 'wikidata' ? (
+                {/^https?:\/\//.test(v) ? (
+                  <a target="_blank" rel="noreferrer" href={v}>
+                    {v}
+                  </a>
+                ) : k === 'wikidata' ? (
                   <a
                     target="_blank"
                     rel="noreferrer"
@@ -139,12 +143,6 @@ export function ObjectDetails({
                       v,
                     )}`}
                   >
-                    {v}
-                  </a>
-                ) : ['contact:website', 'website', 'url', 'image'].includes(
-                    k,
-                  ) ? (
-                  <a target="_blank" rel="noreferrer" href={v}>
                     {v}
                   </a>
                 ) : ['contact:email', 'email'].includes(k) ? (
