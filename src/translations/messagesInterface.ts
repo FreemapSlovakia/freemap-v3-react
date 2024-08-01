@@ -858,9 +858,9 @@ export function addError(
       : !(err instanceof Error)
         ? String(err)
         : (err as any)._fm_fetchError
-          ? (window.navigator.onLine === false
+          ? ((window.navigator.onLine === false
               ? messages.general.offline
-              : messages.general.connectionError) ?? err.message
+              : messages.general.connectionError) ?? err.message)
           : err.message)
   );
 }
