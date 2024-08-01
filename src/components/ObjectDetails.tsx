@@ -140,7 +140,17 @@ export function ObjectDetails({
                     target="_blank"
                     rel="noreferrer"
                     href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-                      v,
+                      v.replace(/ /g, '_'),
+                    )}`}
+                  >
+                    {v}
+                  </a>
+                ) : k === 'wikimedia_commons' ? (
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
+                      v.replace(/ /g, '_'),
                     )}`}
                   >
                     {v}
