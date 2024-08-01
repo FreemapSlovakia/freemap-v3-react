@@ -190,19 +190,26 @@ export async function objects(sitemapNames: string[]) {
                               >`
                             : key === 'wikipedia'
                               ? html`<a
-                                  href=${`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-                                    key,
+                                  href=${`https://wikipedia.org/wiki/${encodeURIComponent(
+                                    value.replace(/ /g, '_'),
                                   )}`}
                                   >${value}</a
                                 >`
-                              : categoryKeys.has(key)
+                              : key === 'wikimedia_commons'
                                 ? html`<a
-                                    href=${`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
-                                      key,
-                                    )}=${encodeURIComponent(value)}`}
+                                    href=${`https://commons.wikimedia.org/wiki/${encodeURIComponent(
+                                      value.replace(/ /g, '_'),
+                                    )}`}
                                     >${value}</a
                                   >`
-                                : value}
+                                : categoryKeys.has(key)
+                                  ? html`<a
+                                      href=${`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
+                                        key,
+                                      )}=${encodeURIComponent(value)}`}
+                                      >${value}</a
+                                    >`
+                                  : value}
                   </dd>
                 `,
               )}
