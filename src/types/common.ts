@@ -113,7 +113,7 @@ export interface OsmResult {
 
 interface OverpassElementBase {
   id: number;
-  tags: Record<string, string>;
+  tags?: Record<string, string>; // probably bug in overpass, but it returned node without tags
 }
 
 interface OverpassNodeElement extends OverpassElementBase, LatLon {

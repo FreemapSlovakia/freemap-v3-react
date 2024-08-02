@@ -45,8 +45,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     httpRequest({
       getState,
       method: 'POST',
-      // url: 'https://overpass.freemap.sk/api/interpreter',
-      url: 'https://overpass-api.de/api/interpreter',
+      url: 'https://overpass.freemap.sk/api/interpreter',
+      // url: 'https://overpass-api.de/api/interpreter',
       headers: { 'Content-Type': 'text/plain' },
       body:
         '[out:json];(' +

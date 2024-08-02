@@ -117,15 +117,15 @@ export const objectsFetchProcessor: Processor = {
       ],
     });
 
-    const result = assert<OverpassResult>(await res.json()).elements.map(
-      (e) => ({
+    const result = assert<OverpassResult>(await res.json())
+      .elements.filter((e) => e.tags)
+      .map((e) => ({
         id: e.id,
         lat: e.type === 'node' ? e.lat : e.center.lat,
         lon: e.type === 'node' ? e.lon : e.center.lon,
-        tags: e.tags,
+        tags: e.tags ?? {},
         type: e.type,
-      }),
-    );
+      }));
 
     if (result.length >= limit) {
       dispatch(
