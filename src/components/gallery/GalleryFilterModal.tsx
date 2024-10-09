@@ -54,7 +54,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   const [pano, setPano] = useState<boolean>();
 
   useEffect(() => {
-    setTag(filter.tag === '' ? '⌘' : filter.tag ?? '');
+    setTag(filter.tag === '' ? '⌘' : (filter.tag ?? ''));
 
     setUserId(
       typeof filter.userId === 'number' ? filter.userId.toString() : '',

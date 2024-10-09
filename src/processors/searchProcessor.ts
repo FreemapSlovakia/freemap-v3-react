@@ -145,7 +145,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
     try {
       coords = parseCoordinates(query);
-    } catch (e) {
+    } catch {
       // bad format
     }
 

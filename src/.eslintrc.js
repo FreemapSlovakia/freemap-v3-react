@@ -97,5 +97,6 @@ module.exports = {
         html: true,
       },
     ],
+    '@typescript-eslint/no-require-imports': 0,
   },
 };

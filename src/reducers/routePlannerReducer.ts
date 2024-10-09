@@ -181,7 +181,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       state.transportType === 'foot-stroller' &&
       (payload.weighting ?? 'fastest') === 'fastest'
         ? 'short_fastest'
-        : payload.weighting ?? 'fastest',
+        : (payload.weighting ?? 'fastest'),
     roundtripParams: {
       ...state.roundtripParams,
       ...payload.roundtripParams,

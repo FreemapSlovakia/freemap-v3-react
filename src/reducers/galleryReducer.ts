@@ -374,7 +374,7 @@ function getErrors(item: GalleryItem | PictureModel) {
   } else {
     try {
       parseCoordinates(item.dirtyPosition);
-    } catch (err) {
+    } catch {
       errors.push('gallery.invalidPositionError');
     }
   }
@@ -394,7 +394,7 @@ function getErrors(item: GalleryItem | PictureModel) {
 function safeParseCoordinates(coords: string) {
   try {
     return parseCoordinates(coords);
-  } catch (err) {
+  } catch {
     return null;
   }
 }

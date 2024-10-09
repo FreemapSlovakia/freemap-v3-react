@@ -40,7 +40,7 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
     return {
       ...state,
       active: !merge
-        ? data.objectsV2?.active ?? []
+        ? (data.objectsV2?.active ?? [])
         : data.objectsV2
           ? [...new Set([...state.active, ...data.objectsV2?.active])]
           : state.active,

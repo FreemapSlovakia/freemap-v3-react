@@ -20,7 +20,7 @@ export function DrawingPointsResult(): ReactElement {
 
   const activeIndex = useAppSelector((state) =>
     state.main.selection?.type === 'draw-points'
-      ? state.main.selection.id ?? null
+      ? (state.main.selection.id ?? null)
       : null,
   );
 

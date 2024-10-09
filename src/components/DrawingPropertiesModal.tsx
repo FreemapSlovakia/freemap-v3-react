@@ -29,9 +29,9 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     const { selection } = state.main;
 
     return selection?.type === 'draw-points' && selection.id !== undefined
-      ? state.drawingPoints.points[selection.id]?.label ?? ''
+      ? (state.drawingPoints.points[selection.id]?.label ?? '')
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
-        ? state.drawingLines.lines[selection.id]?.label ?? ''
+        ? (state.drawingLines.lines[selection.id]?.label ?? '')
         : '???';
   });
 

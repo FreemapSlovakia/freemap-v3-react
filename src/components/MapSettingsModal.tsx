@@ -274,16 +274,16 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                         )}{' '}
                         <FaEllipsisH
                           color={
-                            layersSettings[type]?.showInToolbar ??
-                            defaultToolbarLayerLetters.includes(type)
+                            (layersSettings[type]?.showInToolbar ??
+                            defaultToolbarLayerLetters.includes(type))
                               ? ''
                               : '#ddd'
                           }
                         />{' '}
                         <FaRegListAlt
                           color={
-                            layersSettings[type]?.showInMenu ??
-                            defaultMenuLayerLetters.includes(type)
+                            (layersSettings[type]?.showInMenu ??
+                            defaultMenuLayerLetters.includes(type))
                               ? ''
                               : '#ddd'
                           }

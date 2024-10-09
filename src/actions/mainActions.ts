@@ -6,11 +6,7 @@ import { CustomLayer, LayerSettings } from './mapActions';
 
 export type Tool = (typeof tools)[number];
 
-const specialModals = ['tips', 'edit-label'] as const;
-
-export type Modal =
-  | (typeof basicModals)[number]
-  | (typeof specialModals)[number];
+export type Modal = (typeof basicModals)[number] | 'tips' | 'edit-label';
 
 export type ShowModal = (typeof basicModals)[number];
 

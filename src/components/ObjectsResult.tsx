@@ -37,7 +37,7 @@ export function ObjectsResult(): ReactElement | null {
 
   const activeId = useAppSelector((state) =>
     state.main.selection?.type === 'objects'
-      ? state.main.selection.id ?? null
+      ? (state.main.selection.id ?? null)
       : null,
   );
 
