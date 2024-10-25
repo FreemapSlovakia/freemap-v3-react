@@ -51,23 +51,14 @@ const exportableDefinitions: readonly [
   icon: ReactNode,
   garmin: boolean,
 ][] = [
-  // eslint-disable-next-line react/jsx-key
   ['plannedRoute', <FaMapSigns />, true],
-  // eslint-disable-next-line react/jsx-key
   ['objects', <FaMapMarkerAlt />, false],
-  // eslint-disable-next-line react/jsx-key
   ['pictures', <FaCamera />, false],
-  // eslint-disable-next-line react/jsx-key
   ['drawingLines', <MdTimeline />, true],
-  // eslint-disable-next-line react/jsx-key
   ['drawingAreas', <FaDrawPolygon />, false],
-  // eslint-disable-next-line react/jsx-key
   ['drawingPoints', <FaMapMarkerAlt />, false],
-  // eslint-disable-next-line react/jsx-key
   ['tracking', <FaBullseye />, true],
-  // eslint-disable-next-line react/jsx-key
   ['gpx', <FaRoad />, true],
-  // eslint-disable-next-line react/jsx-key
   ['search', <FaSearch />, true],
 ];
 

@@ -56,7 +56,7 @@ export function ElevationInfo({
   const overlayTileUrls = overlays
     .map((type) => ({
       type,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       url: substitute(overlayLayers.find((l) => l.type === type)?.url)!,
     }))
     .filter(({ url }) => !!url);

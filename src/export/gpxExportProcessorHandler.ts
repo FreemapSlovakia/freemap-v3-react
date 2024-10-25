@@ -678,6 +678,7 @@ function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
 
         case 'Polygon':
 
+        // eslint-disable-next-line no-fallthrough
         case 'MultiLineString':
           if (pass === 'trk') {
             const trkEle = createElement(doc.documentElement, 'trk');

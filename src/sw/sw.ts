@@ -197,6 +197,8 @@ async function handleCacheAction(action: SwCacheAction) {
     case 'setCacheMode':
       await set('cacheMode', action.payload);
 
+      break;
+
     default:
       break;
   }

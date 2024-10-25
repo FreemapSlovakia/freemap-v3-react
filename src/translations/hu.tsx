@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
@@ -182,7 +180,6 @@ const hu: Messages = {
       shortest: 'Shortest',
     },
     alternative: 'Alternatíva',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Távolság:{' '}
@@ -191,7 +188,6 @@ const hu: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Időtartam:{' '}
@@ -200,7 +196,6 @@ const hu: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Távolság: <b>{distance} km</b> | Időtartam:{' '}
@@ -260,7 +255,6 @@ const hu: Messages = {
     },
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
@@ -272,7 +266,6 @@ const hu: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
@@ -296,7 +289,6 @@ const hu: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             <b>{departure}</b> sétáljon{' '}
@@ -314,7 +306,6 @@ const hu: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             <b>{departure}</b> {type} <b>{number}</b> erre: <b>{destination}</b>
@@ -330,7 +321,6 @@ const hu: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             sétáljon{' '}
@@ -348,7 +338,6 @@ const hu: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             kerékpározzon{' '}
@@ -495,7 +484,7 @@ const hu: Messages = {
           <li>Ne töltsön fel túl kicsi fényképeket (bélyegképek/thumbnails). A fénykép legnagyobb mérete nincs korlátozva. A legnagyobb fájlméret 10MB, a nagyobb fájlok elutasíttatnak.</li>
           <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>
           <li>Kérjük, csak a saját fényképeit töltse fel.</li>
-          <li>Azok a feliratok vagy megjegyzések, amelyek nem kapcsolódnak közvetlenül a feltöltött fotók tartalmához, vagy ellentmondanak a civilizált együttélés általánosan elfogadott elveinek, eltávolításra kerülnek. A szabály megsértőit ​​figyelmeztetjük, ismételt megsértése esetén az alkalmazásban lévő fiókjukat törölhetjük.</li>
+          <li>Azok a feliratok vagy megjegyzések, amelyek nem kapcsolódnak közvetlenül a feltöltött fotók tartalmához, vagy ellentmondanak a civilizált együttélés általánosan elfogadott elveinek, eltávolításra kerülnek. A szabály megsértőit figyelmeztetjük, ismételt megsértése esetén az alkalmazásban lévő fiókjukat törölhetjük.</li>
           <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC-BY-SA 4.0 licenc alapján terjesszék.</li>
           <li>Az üzemeltető (Freemap.sk) minden kötelezettséget elhárít, és nem vállal felelősséget a fénykép galériában történő közzétételéből eredő közvetlen vagy közvetett károkért. A fényképért teljes mértékben az azt a kiszolgálóra feltöltő személy felel.</li>
           <li>Az üzemeltető fenntartja a jogot, hogy a fénykép leírását, nevét, pozíciójáőt és címkéit szerkesszt, illetve hogy a fényképet törölje, ha annak tartalma nem megfelelő (megszegi ezeket a szabályokat).</li>

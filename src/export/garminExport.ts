@@ -24,7 +24,7 @@ export function getExportables(): Partial<
       }
 
       switch (geojson.type) {
-        case 'FeatureCollection':
+        case 'FeatureCollection': {
           const features = structuredClone(geojson.features);
 
           mergeLines(features);
@@ -38,13 +38,15 @@ export function getExportables(): Partial<
             : lines.length > 1
               ? 'contains more than single continuous linestring'
               : 'contains no continuous linestring';
+        }
 
-        case 'Feature':
+        case 'Feature': {
           const { geometry } = geojson;
 
           return geometry.type === 'LineString'
             ? { coordinates: geometry.coordinates }
             : 'contains no continuous linestring';
+        }
       }
     },
 

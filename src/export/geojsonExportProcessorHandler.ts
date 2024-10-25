@@ -20,13 +20,6 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 }) => {
   const fc = featureCollection([]);
 
-  (fc as any).metadata = {
-    description: 'Exported from https://www.freemap.sk/',
-    licenseNotice,
-    time: new Date().toISOString(),
-    content: action.payload.exportables,
-  };
-
   const {
     drawingLines,
     drawingPoints,
@@ -118,12 +111,27 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (
     await upload(
       'geojson',
-      new Blob([JSON.stringify(fc)], {
-        type:
-          target === 'dropbox'
-            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-            : 'application/geo+json',
-      }),
+      new Blob(
+        [
+          JSON.stringify({
+            ...fc,
+            ...{
+              metadata: {
+                description: 'Exported from https://www.freemap.sk/',
+                licenseNotice,
+                time: new Date().toISOString(),
+                content: action.payload.exportables,
+              },
+            },
+          }),
+        ],
+        {
+          type:
+            target === 'dropbox'
+              ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+              : 'application/geo+json',
+        },
+      ),
       target,
       getState,
       dispatch,

@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
@@ -28,7 +26,7 @@ const getErrorMarkup = (ticketId?: string) => `
 <p>
   ${
     ticketId
-      ? `L\'errore è stato automaticamente segnalato con il Ticket numero (ID) <b>${ticketId}</b>.`
+      ? `L'errore è stato automaticamente segnalato con il Ticket numero (ID) <b>${ticketId}</b>.`
       : ''
   }
   Puoi segnalare il problema a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
@@ -183,7 +181,6 @@ const messages: Messages = {
       isochrone: 'Isocrono',
     },
     alternative: 'Alternativo',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Distance:{' '}
@@ -192,7 +189,6 @@ const messages: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Durata:{' '}
@@ -201,7 +197,6 @@ const messages: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Distanza: <b>{distance} km</b> | Durata:{' '}
@@ -262,7 +257,6 @@ const messages: Messages = {
     },
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -274,7 +268,6 @@ const messages: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -298,7 +291,6 @@ const messages: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             at <b>{departure}</b> walk{' '}
@@ -316,7 +308,6 @@ const messages: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
@@ -332,7 +323,6 @@ const messages: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             walk{' '}
@@ -350,7 +340,6 @@ const messages: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             bicycle{' '}

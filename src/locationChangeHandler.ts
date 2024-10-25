@@ -635,7 +635,6 @@ export function handleLocationChange(store: MyStore, location: Location): void {
     break;
   }
 
-  // eslint-disable-next-line
   const fq = query['follow'];
 
   if (typeof fq === 'string') {
@@ -847,7 +846,6 @@ function handleInfoPoint(
     .filter((ipMatch) => ipMatch)
     .map((ipMatch) => {
       // see https://github.com/microsoft/TypeScript/issues/29642
-      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       const m = ipMatch!;
 
       return {

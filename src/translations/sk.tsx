@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
@@ -184,7 +182,6 @@ const messages: Messages = {
       shortest: 'Najkratšia',
     },
     alternative: 'Alternatíva',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Vzdialenosť:{' '}
@@ -193,7 +190,6 @@ const messages: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Trvanie:{' '}
@@ -202,7 +198,6 @@ const messages: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Vzdialenosť: <b>{distance} km</b> | Trvanie:{' '}
@@ -264,7 +259,6 @@ const messages: Messages = {
 
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
@@ -276,7 +270,6 @@ const messages: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
@@ -300,7 +293,6 @@ const messages: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             o <b>{departure}</b> pešo{' '}
@@ -318,7 +310,6 @@ const messages: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b>
@@ -334,7 +325,6 @@ const messages: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             pešo{' '}
@@ -352,7 +342,6 @@ const messages: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             bicyklom{' '}

@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { Attribution } from 'fm3/components/Attribution';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { CookieConsent } from 'fm3/components/CookieConsent';
@@ -178,7 +176,6 @@ const en: Messages = {
       isochrone: 'Isochrones',
     },
     alternative: 'Alternative',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Distance:{' '}
@@ -187,7 +184,6 @@ const en: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Duration:{' '}
@@ -196,7 +192,6 @@ const en: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Distance: <b>{distance} km</b> | Duration:{' '}
@@ -255,7 +250,6 @@ const en: Messages = {
     },
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -267,7 +261,6 @@ const en: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -291,7 +284,6 @@ const en: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             at <b>{departure}</b> walk{' '}
@@ -309,7 +301,6 @@ const en: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
@@ -325,7 +316,6 @@ const en: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             walk{' '}
@@ -343,7 +333,6 @@ const en: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             bicycle{' '}

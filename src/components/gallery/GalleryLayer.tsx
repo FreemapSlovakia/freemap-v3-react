@@ -19,7 +19,7 @@ type GalleryLayerOptions = GridLayerOptions & {
 const jobMap = new Map<
   number,
   {
-    reject: (e: any) => void;
+    reject: (e: unknown) => void;
     resolve: () => void;
     run: (w: Worker) => void;
     started?: true;
@@ -156,7 +156,7 @@ class LGalleryLayer extends LGridLayer {
 
     if (supportsOffscreen === undefined) {
       try {
-        (document.createElement('canvas') as any).transferControlToOffscreen();
+        document.createElement('canvas').transferControlToOffscreen();
 
         supportsOffscreen = true;
       } catch {
@@ -239,7 +239,7 @@ class LGalleryLayer extends LGridLayer {
             resolve,
             reject,
             run(w) {
-              const offscreen = (tile as any).transferControlToOffscreen();
+              const offscreen = tile.transferControlToOffscreen();
 
               w.postMessage({ ...ctx, id: myId, tile: offscreen }, [offscreen]);
             },

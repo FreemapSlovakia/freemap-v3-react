@@ -105,7 +105,6 @@ export const changesetsProcessor: Processor = {
           objectToURLSearchParams({
             bbox,
             time: fromTime + (toTime0 ? `,${toTime0}` : ''),
-            // eslint-disable-next-line
             display_name: state.changesets.authorName ?? undefined,
           }),
         expectedStatus: [200, 404],

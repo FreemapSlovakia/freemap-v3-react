@@ -153,7 +153,9 @@ export async function upload(
 
         const ar = result.getAuthResponse();
 
-        const folder = await new Promise<any>((resolve) => {
+        const folder = await new Promise<
+          google.picker.DocumentObject | undefined
+        >((resolve) => {
           const pkr = google.picker;
 
           new pkr.PickerBuilder()
@@ -167,7 +169,7 @@ export async function upload(
             .build()
             .setVisible(true);
 
-          function pickerCallback(data: any) {
+          function pickerCallback(data: google.picker.ResponseObject) {
             switch (data[pkr.Response.ACTION]) {
               case pkr.Action.PICKED:
                 resolve(data[pkr.Response.DOCUMENTS][0]);

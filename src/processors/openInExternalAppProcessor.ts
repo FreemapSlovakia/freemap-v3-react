@@ -220,6 +220,8 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       case 'f4map':
         window.open(getF4mapUrl(lat, lon, zoom));
 
+        break;
+
       case 'url':
         window.navigator
           .share({

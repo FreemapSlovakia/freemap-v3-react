@@ -90,6 +90,7 @@ export const mouseCursorSelector = createSelector(
 
     switch (tool) {
       case 'draw-lines':
+        return pencilCursor;
 
       case 'draw-polygons':
         return pencilCursor;

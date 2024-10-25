@@ -100,21 +100,19 @@ export function tooltipText(
   const items: [string, ReactElement, string][] = [];
 
   if (typeof altitude === 'number') {
-    // eslint-disable-next-line react/jsx-key
     items.push(['alt', <FaLongArrowAltUp />, `${nf.format(altitude)} m`]);
   }
 
   if (typeof speed === 'number') {
     items.push([
       'speed',
-      // eslint-disable-next-line react/jsx-key
+
       <FaTachometerAlt />,
       `${nf.format(speed * 3.6)} km/h`,
     ]);
   }
 
   if (typeof gsmSignal === 'number') {
-    // eslint-disable-next-line react/jsx-key
     items.push(['signal', <FaSignal />, `${gsmSignal} %`]);
   }
 

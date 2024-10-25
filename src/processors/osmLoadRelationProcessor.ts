@@ -56,7 +56,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       const { ref, type } = member;
 
       switch (type) {
-        case 'node':
+        case 'node': {
           const n = nodes[ref];
 
           if (n) {
@@ -64,8 +64,9 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           }
 
           break;
+        }
 
-        case 'way':
+        case 'way': {
           const w = ways[ref];
 
           if (w) {
@@ -81,10 +82,12 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           }
 
           break;
+        }
 
         case 'relation':
+          // TODO add support for relations in relation
+          break;
 
-        // TODO add support for relations in relation
         default:
           break;
       }

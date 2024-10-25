@@ -33,8 +33,8 @@ window.addEventListener('error', (evt) => {
 
 interface ErrorDetails {
   kind: string;
-  action?: any;
-  error: any;
+  action?: unknown;
+  error: unknown;
   message?: string;
   filename?: string;
   lineno?: number;

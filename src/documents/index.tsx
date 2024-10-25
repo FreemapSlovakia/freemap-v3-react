@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-key */
-
 import {
   FaCertificate,
   FaExternalLinkAlt,
