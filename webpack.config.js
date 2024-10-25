@@ -319,10 +319,11 @@ module.exports = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-    prod &&
-      new ESLintPlugin({
-        extensions: ['js', 'jsx', 'ts', 'tsx'],
-        threads: 4,
-      }),
+    // TODO
+    // prod &&
+    //   new ESLintPlugin({
+    //     extensions: ['js', 'jsx', 'ts', 'tsx'],
+    //     threads: 4,
+    //   }),
   ].filter(Boolean),
 };

@@ -13,7 +13,7 @@ import { AsyncComponent } from './AsyncComponent';
 
 const galleryLayerFactory = () => import('fm3/components/gallery/GalleryLayer');
 
-const maplibreLayerFactory = () => import('./MaplibreLayer') as any;
+const maplibreLayerFactory = () => import('./MaplibreLayer');
 
 export function Layers(): ReactElement | null {
   const overlays = useAppSelector((state) => state.map.overlays);
@@ -140,7 +140,9 @@ export function Layers(): ReactElement | null {
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
         .map((item) => getTileLayer(item))}
       {customLayers
-        .filter(({ type }) => overlays.includes(type as any))
+        .filter(({ type }) =>
+          overlays.includes(type as (typeof overlays)[number]),
+        )
         .map((cm) => getTileLayer(cm))}
     </>
   );

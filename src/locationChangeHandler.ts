@@ -92,7 +92,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.location.state as any) ?? {
+  const { sq } = (history.location.state as { sq: string }) ?? {
     sq: undefined,
   };
 
@@ -335,6 +335,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
       key === 'line' ||
       key === 'polygon'
     ) {
+      // eslint-disable-next-line no-control-regex
       const m = /([^;\x1e]*)([;\x1e].*)?/.exec(value);
 
       if (!m) {
@@ -454,7 +455,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
 
       if (newCls.length) {
         for (const cm of newCls) {
-          if ((cm as any).tileSize) {
+          if ('tileSize' in cm && cm.tileSize) {
             cm.scaleWithDpi = true;
           }
         }

@@ -7,11 +7,12 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { colors } from 'fm3/constants';
 import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { DragEndEvent } from 'leaflet';
+import { DragEndEvent, LeafletEvent } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { RichMarker } from './RichMarker';
+import { is } from 'typia';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
@@ -25,10 +26,19 @@ export function DrawingPointsResult(): ReactElement {
   );
 
   const handleMove = useCallback(
-    // see https://github.com/PaulLeCam/react-leaflet/issues/981
-    ({ latlng: { lat, lng: lon } }: any) => {
-      if (activeIndex !== null) {
-        dispatch(drawingPointChangePosition({ index: activeIndex, lat, lon }));
+    (e: LeafletEvent) => {
+      if (
+        activeIndex !== null &&
+        // see https://github.com/PaulLeCam/react-leaflet/issues/981
+        is<{ latlng: { lat: number; lng: number } }>(e)
+      ) {
+        dispatch(
+          drawingPointChangePosition({
+            index: activeIndex,
+            lat: e.latlng.lat,
+            lon: e.latlng.lng,
+          }),
+        );
 
         dispatch(drawingMeasure({ elevation: false }));
       }

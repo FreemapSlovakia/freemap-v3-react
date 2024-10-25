@@ -346,7 +346,9 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 }}
               />
 
-              {(overlayLetters.includes(selectedLayer as any) ||
+              {(overlayLetters.includes(
+                selectedLayer as (typeof overlayLetters)[number],
+              ) ||
                 selectedLayer.charAt(0) === ':') && (
                 <Form.Group className="mt-2">
                   <Form.Label>{m?.settings.overlayOpacity}</Form.Label>

@@ -172,22 +172,24 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const panoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (p) {
-      const v = window.pannellum.viewer(panoRef.current, {
-        panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
-        type: 'equirectangular',
-        autoLoad: true,
-        showControls: false,
-        autoRotate: 15,
-        autoRotateInactivityDelay: 60000,
-        // compass: true,
-        // title: 'panorama',
-      });
-
-      return () => {
-        v.destroy();
-      };
+    if (!p || !panoRef.current) {
+      return;
     }
+
+    const v = window.pannellum.viewer(panoRef.current, {
+      panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
+      type: 'equirectangular',
+      autoLoad: true,
+      showControls: false,
+      autoRotate: 15,
+      autoRotateInactivityDelay: 60000,
+      // compass: true,
+      // title: 'panorama',
+    });
+
+    return () => {
+      v.destroy();
+    };
   }, [p, activeImageId]);
 
   const handleFullscreen = useCallback(() => {

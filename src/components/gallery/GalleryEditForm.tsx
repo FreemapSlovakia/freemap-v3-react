@@ -44,7 +44,7 @@ export function GalleryEditForm({
   const m = useMessages();
 
   const changeModel = useCallback(
-    (key: keyof PictureModel, value: any) => {
+    (key: keyof PictureModel, value: unknown) => {
       onModelChange({ ...model, [key]: value });
     },
     [model, onModelChange],

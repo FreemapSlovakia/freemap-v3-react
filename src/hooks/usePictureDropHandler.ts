@@ -1,4 +1,4 @@
-import ExifReader from 'exifreader';
+import ExifReader, { Tags } from 'exifreader';
 import { GalleryItem } from 'fm3/actions/galleryActions';
 import { latLonToString } from 'fm3/geoutils';
 import pica from 'pica';
@@ -70,14 +70,14 @@ export function usePictureDropHandler(
       };
 
       reader.onload = () => {
-        let tags: { [key: string]: any };
+        let tags: Tags;
 
         try {
           tags = ExifReader.load(reader.result as ArrayBuffer);
         } catch (e) {
           console.error(e);
 
-          tags = {};
+          tags = {} as Tags;
         }
 
         const keywords: string[] = [];
@@ -100,37 +100,43 @@ export function usePictureDropHandler(
 
         const description = (
           tags['description']?.description ||
-          tags['ImageDescription']?.description ||
+          tags.ImageDescription?.description ||
           ''
         ).trim();
 
-        const takenAtRaw = tags['DateTimeOriginal'] || tags['DateTime'];
+        const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
 
-        const [rawLat, latRef] = adaptGpsCoordinate(tags['GPSLatitude']);
+        const [rawLat, latRef] = adaptGpsCoordinate(
+          tags.GPSLatitude as WeirdGpsCoordinate,
+        );
 
         const NS: Record<string, number> = { S: -1, N: 1 };
 
         const lat =
           rawLat *
           (NS[
-            (
+            String(
               latRef ||
-              (tags['GPSLatitudeRef'] || { value: [] }).value[0] ||
-              ''
+                ((tags.GPSLatitudeRef as { value: string[] }) ?? { value: [] })
+                  .value[0] ||
+                '',
             ).toUpperCase()
           ] || Number.NaN);
 
-        const [rawLon, lonRef] = adaptGpsCoordinate(tags['GPSLongitude']);
+        const [rawLon, lonRef] = adaptGpsCoordinate(
+          tags.GPSLongitude as WeirdGpsCoordinate,
+        );
 
         const EW: Record<string, number> = { W: -1, E: 1 };
 
         const lon =
           rawLon *
           (EW[
-            (
+            String(
               lonRef ||
-              (tags['GPSLongitudeRef'] || { value: [] }).value[0] ||
-              ''
+                ((tags.GPSLongitudeRef as { value: string[] }) ?? { value: [] })
+                  .value[0] ||
+                '',
             ).toUpperCase()
           ] || Number.NaN);
 
@@ -147,7 +153,8 @@ export function usePictureDropHandler(
             ''
           ).trim(),
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
-          takenAt: takenAtRaw && parseExifDateTime(takenAtRaw.description),
+          takenAt:
+            (takenAtRaw && parseExifDateTime(takenAtRaw.description)) ?? null,
           tags: keywords,
           errors: [],
         });
@@ -188,11 +195,13 @@ export function usePictureDropHandler(
   );
 }
 
-// adds support for Olympus and other weirdos
-function adaptGpsCoordinate(x: {
+type WeirdGpsCoordinate = {
   description: string | number;
   value: string;
-}) {
+};
+
+// adds support for Olympus and other weirdos
+function adaptGpsCoordinate(x: WeirdGpsCoordinate) {
   if (x) {
     if (typeof x.description === 'number') {
       return [x.description];

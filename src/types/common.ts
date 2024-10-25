@@ -46,8 +46,6 @@ declare global {
     fmHeadless?: {
       searchResultStyle?: PathOptions;
     };
-    pannellum: any;
-
     Sentry: typeof Sentry;
   }
 

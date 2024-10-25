@@ -2,8 +2,9 @@ import { MarkerType } from 'fm3/actions/objectsActions';
 import { colors } from 'fm3/constants';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
 import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
+import { assertGuard } from 'typia';
 
 const textStyle: CSSProperties = {
   fill: 'rgba(0, 0, 0, 0.5)',
@@ -71,13 +72,19 @@ export function RichMarker({
 export class MarkerLeafletIcon extends Icon<
   BaseIconOptions & { icon: ReactElement }
 > {
-  createIcon(oldIcon?: HTMLElement): HTMLElement {
+  createIcon(oldIcon?: HTMLElement & { _fm_root?: HTMLElement }): HTMLElement {
     const reuse = oldIcon?.tagName === 'DIV';
 
-    const div = (reuse ? oldIcon : document.createElement('div')) as any;
+    const div = (
+      reuse ? oldIcon : document.createElement('div')
+    ) as HTMLElement & { _fm_root?: Root };
 
     if (!div._fm_root) {
-      (this as any)._setIconStyles(div, 'icon');
+      assertGuard<{ _setIconStyles: (el: HTMLElement, str: string) => void }>(
+        this,
+      );
+
+      this._setIconStyles(div, 'icon');
 
       div._fm_root = createRoot(div);
 
@@ -90,7 +97,7 @@ export class MarkerLeafletIcon extends Icon<
   }
 
   createShadow(oldIcon?: HTMLElement): HTMLElement {
-    return oldIcon || (null as any as HTMLElement);
+    return oldIcon ?? document.createElement('div');
   }
 }
 

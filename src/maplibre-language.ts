@@ -1,6 +1,8 @@
 import { Map } from 'maplibre-gl';
 
-(Map.prototype as any).setLanguage = function (language: string) {
+(
+  Map.prototype as Map & { setLanguage: (language: string) => void }
+).setLanguage = function (language: string) {
   const setLanguage = () => {
     const replacer = [
       'case',

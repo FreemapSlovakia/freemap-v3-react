@@ -329,7 +329,9 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
                 <Form.Control
                   as="select"
                   value={editedType}
-                  onChange={(e) => setEditedType(e.currentTarget.value as any)}
+                  onChange={(e) =>
+                    setEditedType(e.currentTarget.value as 'polygon' | 'line')
+                  }
                 >
                   <option value="line">{m?.selections.drawLines}</option>
                   <option value="polygon">{m?.selections.drawPolygons}</option>

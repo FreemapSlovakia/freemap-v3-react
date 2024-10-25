@@ -27,10 +27,12 @@ import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
 import {
   ChangeEvent,
   Children,
+  CSSProperties,
   FormEvent,
   forwardRef,
   Fragment,
   ReactElement,
+  ReactNode,
   SyntheticEvent,
   useCallback,
   useState,
@@ -300,20 +302,28 @@ function IsochroneSettings() {
   );
 }
 
-const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
+type Props = { children: ReactNode; style: CSSProperties; className: string };
+
+const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
   ({ children, style, className }, ref) => {
     return (
       <div ref={ref} style={style} className={className}>
         {children}
 
         {Children.toArray(children)
-          .filter((item) => (item as any).props.active)
+          .filter(
+            (item): item is ReactElement =>
+              item &&
+              typeof item === 'object' &&
+              'props' in item &&
+              item.props.active,
+          )
           .map((item) => {
             return (
-              <Fragment key={'m-' + (item as any).props.eventKey}>
-                {(item as any).props.eventKey === 'roundtrip' ? (
+              <Fragment key={'m-' + item.props.eventKey}>
+                {item.props.eventKey === 'roundtrip' ? (
                   <TripSettings />
-                ) : (item as any).props.eventKey === 'isochrone' ? (
+                ) : item.props.eventKey === 'isochrone' ? (
                   <IsochroneSettings />
                 ) : null}
               </Fragment>
@@ -379,7 +389,7 @@ export function RoutePlannerMenu(): ReactElement {
 
         break;
 
-      case 'convert-to-drawing':
+      case 'convert-to-drawing': {
         const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
         if (tolerance !== null) {
@@ -392,6 +402,7 @@ export function RoutePlannerMenu(): ReactElement {
         }
 
         break;
+      }
 
       case 'toggle-milestones-km':
         dispatch(routePlannerToggleMilestones({ type: 'abs', toggle: true }));

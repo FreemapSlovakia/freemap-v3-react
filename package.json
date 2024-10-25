@@ -25,6 +25,7 @@
     "@turf/line-offset": "^7.1.0",
     "@turf/line-slice": "^7.1.0",
     "@turf/simplify": "^7.1.0",
+    "@types/pannellum": "^2.5.0",
     "bootstrap": "^5.3.3",
     "color": "^4.2.3",
     "enzyme": "^3.11.0",

@@ -52,7 +52,7 @@ export function renderGalleryTile({
   pointB,
   pointA,
 }: Props): void {
-  const ctx = (tile as any).getContext('2d');
+  const ctx = tile.getContext('2d');
 
   if (!ctx) {
     throw Error('no context');

@@ -1,3 +1,4 @@
+import { Changeset } from 'fm3/actions/changesetsActions';
 import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
 import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
 import { HttpError } from 'fm3/httpRequest';
@@ -509,7 +510,7 @@ export type Messages = {
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;
     fetchError: ({ err }: Err) => string;
-    detail: ({ changeset }: { changeset: any }) => JSX.Element;
+    detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
     details: {
       author: string;
       description: string;
@@ -857,7 +858,7 @@ export function addError(
         (err.body ? ': ' + err.body : '')
       : !(err instanceof Error)
         ? String(err)
-        : (err as any)._fm_fetchError
+        : (err as Error & { _fm_fetchError: boolean })._fm_fetchError
           ? ((window.navigator.onLine === false
               ? messages.general.offline
               : messages.general.connectionError) ?? err.message)

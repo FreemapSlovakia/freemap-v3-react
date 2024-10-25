@@ -230,7 +230,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     return s;
   })
   .handleAction(gallerySetItemForPositionPicking, (state, action) => {
-    let x: GalleryItem | undefined;
+    let x;
 
     return {
       ...state,
@@ -241,7 +241,8 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
             ? safeParseCoordinates(state.editModel.dirtyPosition)
             : null
           : typeof action.payload === 'number'
-            ? (x = state.items.find(({ id }) => id === action.payload))
+            ? // eslint-disable-next-line no-cond-assign
+              (x = state.items.find(({ id }) => id === action.payload))
               ? safeParseCoordinates(x.dirtyPosition)
               : null
             : null,

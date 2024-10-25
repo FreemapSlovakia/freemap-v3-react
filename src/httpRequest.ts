@@ -107,7 +107,7 @@ export async function httpRequest({
         init,
       );
     } catch (err) {
-      (err as any)._fm_fetchError = true;
+      (err as { _fm_fetchError: boolean })._fm_fetchError = true;
 
       throw err;
     }

@@ -15,7 +15,7 @@ import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
 import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Feature, FeatureCollection, LineString, Point } from 'geojson';
-import { Point as LPoint } from 'leaflet';
+import { LatLngExpression, Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
@@ -52,9 +52,7 @@ export function TrackViewerResult({
   const [infoDistanceKm] = useState<number>();
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
-    turfFlatten(trackGeojson as any).features.filter(
-      (f) => f.geometry?.type === type,
-    ) as any;
+    turfFlatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
   const getColorLineDataForElevation = () =>
     getFeatures('LineString').map((feature) => {
@@ -66,10 +64,10 @@ export function TrackViewerResult({
 
       const minEle = Math.min(...eles);
 
-      return smoothed.map((coord) => {
+      return smoothed.map((coord): LatLngExpression => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
 
-        return [coord[1], coord[0], color || 0] as const;
+        return [coord[1], coord[0], color || 0];
       });
     });
 
@@ -79,7 +77,7 @@ export function TrackViewerResult({
 
       let prevCoord = smoothed[0];
 
-      return smoothed.map((coord) => {
+      return smoothed.map((coord): LatLngExpression => {
         const [lon, lat, ele] = coord;
 
         const d = distance([lon, lat], prevCoord, { units: 'meters' });
@@ -94,7 +92,7 @@ export function TrackViewerResult({
 
         const color = angle / 0.5 + 0.5;
 
-        return [lat, lon, color || 0] as const;
+        return [lat, lon, color || 0];
       });
     });
 

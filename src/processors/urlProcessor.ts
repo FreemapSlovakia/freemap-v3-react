@@ -365,7 +365,7 @@ export const urlProcessor: Processor = {
     const urlSearch = serializeQuery(queryParts);
 
     if (
-      (mapId && sq !== (history.location.state as any)?.sq) ||
+      (mapId && sq !== (history.location.state as { sq: string })?.sq) ||
       urlSearch !== window.location.hash.slice(1)
     ) {
       const method =
