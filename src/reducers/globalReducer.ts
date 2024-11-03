@@ -1,5 +1,5 @@
 import turfFlatten from '@turf/flatten';
-import { AllGeoJSON, lineString } from '@turf/helpers';
+import { lineString } from '@turf/helpers';
 import simplify from '@turf/simplify';
 import { RootAction } from 'fm3/actions';
 import {
@@ -160,16 +160,16 @@ export function preGlobalReducer(
           return;
         }
 
-        const gjs = draft.search.selectedResult.geojson as AllGeoJSON;
+        const { geojson } = draft.search.selectedResult;
 
         const { features } = turfFlatten(
           payload.tolerance
-            ? simplify(gjs, {
+            ? simplify(geojson, {
                 mutate: false,
                 highQuality: true,
                 tolerance: payload.tolerance,
               })
-            : gjs,
+            : geojson,
         );
 
         const lines: Line[] = [];

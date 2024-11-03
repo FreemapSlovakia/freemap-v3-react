@@ -312,13 +312,25 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             title={m?.general.convertToDrawing}
             variant="secondary"
             onClick={() => {
-              const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+              console.log(selectedResult.geojson);
+
+              const ask =
+                (selectedResult.geojson?.type === 'FeatureCollection' &&
+                  selectedResult.geojson.features.some(
+                    (feature) => !feature.geometry.type.endsWith('Point'),
+                  )) ||
+                (selectedResult.geojson?.type === 'Feature' &&
+                  !selectedResult.geojson.geometry.type.endsWith('Point'));
+
+              const tolerance = ask
+                ? window.prompt(m?.general.simplifyPrompt, '50')
+                : '50';
 
               if (tolerance !== null) {
                 dispatch(
                   convertToDrawing({
                     type: 'search-result',
-                    tolerance: Number(tolerance || '0') / 100000,
+                    tolerance: Number(tolerance || '0') / 100_000,
                   }),
                 );
               }
