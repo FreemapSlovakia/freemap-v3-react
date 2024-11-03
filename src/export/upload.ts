@@ -172,7 +172,7 @@ export async function upload(
           function pickerCallback(data: google.picker.ResponseObject) {
             switch (data[pkr.Response.ACTION]) {
               case pkr.Action.PICKED:
-                resolve(data[pkr.Response.DOCUMENTS][0]);
+                resolve(data[pkr.Response.DOCUMENTS]?.[0]);
 
                 break;
 
