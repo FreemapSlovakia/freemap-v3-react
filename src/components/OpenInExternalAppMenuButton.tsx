@@ -6,6 +6,7 @@ import type { OverlayProps } from 'react-bootstrap/esm/Overlay';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
+import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 
 interface Props extends LatLon {
   lat: number;
@@ -53,7 +54,7 @@ export function OpenInExternalAppMenuButton({
         {children}
       </Dropdown.Toggle>
 
-      <Dropdown.Menu>
+      <Dropdown.Menu popperConfig={fixedPopperConfig}>
         <OpenInExternalAppDropdownItems
           lat={lat}
           lon={lon}
