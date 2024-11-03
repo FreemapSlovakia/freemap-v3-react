@@ -5,7 +5,6 @@ import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
-  Line,
   Point,
 } from 'fm3/actions/drawingLineActions';
 import {
@@ -16,6 +15,7 @@ import {
   applySettings,
   convertToDrawing,
   deleteFeature,
+  Selection,
 } from 'fm3/actions/mainActions';
 import { mergeLines } from 'fm3/geoutils';
 import { RootState } from 'fm3/reducers';
@@ -172,9 +172,9 @@ export function preGlobalReducer(
             : geojson,
         );
 
-        const lines: Line[] = [];
-
         mergeLines(features);
+
+        let selection: Selection | { type: 'none' } | undefined;
 
         for (const feature of features) {
           const { geometry } = feature;
@@ -186,12 +186,24 @@ export function preGlobalReducer(
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
-          } else if (geometry?.type === 'LineString') {
+
+            selection = selection
+              ? { type: 'none' }
+              : {
+                  type: 'draw-points',
+                  id: draft.drawingPoints.points.length - 1,
+                };
+          } else if (
+            geometry?.type === 'LineString' ||
+            geometry?.type === 'Polygon'
+          ) {
             let id = 0;
 
             const points: Point[] = [];
 
-            for (const node of geometry.coordinates) {
+            for (const node of geometry?.type === 'Polygon'
+              ? geometry.coordinates[0]
+              : geometry.coordinates) {
               points.push({
                 lat: node[1],
                 lon: node[0],
@@ -199,41 +211,30 @@ export function preGlobalReducer(
               });
             }
 
-            lines.push({
-              type: 'line',
-              // label: feature.properties?.['name'], // ignore street names
+            draft.drawingLines.lines.push({
+              type: geometry?.type === 'Polygon' ? 'polygon' : 'line',
+              label:
+                geometry?.type === 'Polygon'
+                  ? feature.properties?.['name']
+                  : undefined, // ignore street names
               color: draft.main.drawingColor,
               width: draft.main.drawingWidth,
               points,
             });
-          } else if (geometry?.type === 'Polygon') {
-            let id = 0;
 
-            const points: Point[] = [];
-
-            // TODO add suport for inner rings
-
-            for (const node of geometry.coordinates[0]) {
-              points.push({
-                lat: node[1],
-                lon: node[0],
-                id: id++,
-              });
-            }
-
-            lines.push({
-              type: 'polygon',
-              label: feature.properties?.['name'],
-              color: draft.main.drawingColor,
-              width: draft.main.drawingWidth,
-              points,
-            });
+            selection = selection
+              ? { type: 'none' }
+              : {
+                  type: 'draw-line-poly',
+                  id: draft.drawingLines.lines.length - 1,
+                };
           }
         }
 
-        draft.drawingLines.lines.push(...lines);
-
         draft.search = searchInitialState;
+
+        draft.main.selection =
+          !selection || selection.type === 'none' ? null : selection;
       });
     }
   } else if (
