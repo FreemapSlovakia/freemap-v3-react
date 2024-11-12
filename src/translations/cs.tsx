@@ -426,11 +426,11 @@ const messages: Messages = {
         <>
           🇺🇦 Stojíme za Ukrajinou.{' '}
           <a
-            href="https://bank.gov.ua/en/about/support-the-armed-forces"
+            href="https://donio.cz/pomocukrajine"
             target="_blank"
             rel="noopener"
           >
-            Přispějte ukrajinské armádě ›
+            Pomozte Ukrajině ›
           </a>{' '}
           🇺🇦
         </>

@@ -451,15 +451,15 @@ const messages: Messages = {
       ua: () => {
         return (
           <>
-            🇺🇦 Stojíme pri Ukrajine.{' '}
+            {'🇺🇦 '}
             <a
-              href="https://bank.gov.ua/en/about/support-the-armed-forces"
+              href="https://donio.sk/spolocne-pre-ukrajinu"
               target="_blank"
               rel="noopener"
             >
-              Prispejte ukrajinskej armáde ›
-            </a>{' '}
-            🇺🇦{' '}
+              Spoločne pre Ukrajinu ›
+            </a>
+            {' 🇺🇦'}
           </>
         );
       },
