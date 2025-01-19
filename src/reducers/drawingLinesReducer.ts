@@ -1,7 +1,11 @@
 import { RootAction } from 'fm3/actions';
 import {
+  drawingLineAdd,
   drawingLineAddPoint,
+  drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineDelete,
+  drawingLineDeletePoint,
   drawingLineJoinFinish,
   drawingLineJoinStart,
   drawingLineRemovePoint,
@@ -38,6 +42,26 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   initialState,
 )
   .handleAction(clearMapFeatures, () => initialState)
+  .handleAction(drawingLineAdd, (state, { payload }) => ({
+    ...state,
+    lines: [...state.lines, payload],
+  }))
+  .handleAction(drawingLineChangeProperties, (state, { payload }) =>
+    produce(state, (draft) => {
+      Object.assign(draft.lines[payload.index], payload.properties);
+    }),
+  )
+  .handleAction(drawingLineDelete, (state, { payload }) => ({
+    ...state,
+    lines: state.lines.filter((_, i) => i !== payload.lineIndex),
+  }))
+  .handleAction(drawingLineDeletePoint, (state, { payload }) =>
+    produce(state, (draft) => {
+      const line = draft.lines[payload.lineIndex];
+
+      line.points = line.points.filter((point) => point.id !== payload.pointId);
+    }),
+  )
   .handleAction([setTool, drawingLineStopDrawing], (state) => ({
     ...state,
     drawing: false,
@@ -64,7 +88,6 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
       }
     }),
   )
-
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, (draft) => {
       let line;

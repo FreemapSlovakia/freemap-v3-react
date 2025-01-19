@@ -11,6 +11,7 @@ import {
   PickMode,
   RoundtripParams,
   routePlannerAddMidpoint,
+  routePlannerDelete,
   routePlannerPreventHint,
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
@@ -107,6 +108,14 @@ export const routePlannerInitialState: RoutePlannerState = {
 export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   routePlannerInitialState,
 )
+  .handleAction(routePlannerDelete, (state) => ({
+    ...routePlannerInitialState,
+    transportType: state.transportType,
+    mode: state.mode,
+    milestones: state.milestones,
+    pickMode: 'start',
+    preventHint: state.preventHint,
+  }))
   .handleAction(routePlannerPreventHint, (state) => {
     return {
       ...state,

@@ -8,10 +8,12 @@ import {
   authSetUser,
 } from 'fm3/actions/authActions';
 import {
+  drawingLineChangeProperties,
   drawingLineContinue,
   drawingLineSetLines,
   drawingLineStopDrawing,
 } from 'fm3/actions/drawingLineActions';
+import { drawingPointChangeProperties } from 'fm3/actions/drawingPointActions';
 import {
   applyCookieConsent,
   applySettings,
@@ -40,6 +42,7 @@ import {
 } from 'fm3/actions/mainActions';
 import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
+import { produce } from 'immer';
 import { createReducer } from 'typesafe-actions';
 
 interface Location extends LatLon {
@@ -268,4 +271,29 @@ export const mainReducer = createReducer<MainState, RootAction>(
     }
 
     return newState;
+  })
+  .handleAction(
+    [drawingLineChangeProperties, drawingPointChangeProperties],
+    (state, { payload }) => {
+      const color = payload.properties.color;
+
+      return color ? updateRecentDrawingColors(state, color) : state;
+    },
+  )
+  .handleAction([applySettings], (state, { payload }) => {
+    const color = payload.drawingColor;
+
+    return color ? updateRecentDrawingColors(state, color) : state;
   });
+
+function updateRecentDrawingColors(state: MainState, drawingColor: string) {
+  return produce(state, (draft) => {
+    draft.drawingRecentColors = draft.drawingRecentColors.filter(
+      (color) => color !== drawingColor,
+    );
+
+    draft.drawingRecentColors.unshift(drawingColor);
+
+    draft.drawingRecentColors.splice(12, Infinity);
+  });
+}

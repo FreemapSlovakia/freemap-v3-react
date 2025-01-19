@@ -224,3 +224,5 @@ export const routePlannerSetRoundtripParams = createAction(
 export const routePlannerSetIsochroneParams = createAction(
   'ROUTE_PLANNER_SET_ISOCHRONE_PARAMS',
 )<Partial<IsochroneParams>>();
+
+export const routePlannerDelete = createAction('ROUTE_PLANNER_DELETE')();

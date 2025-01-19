@@ -3,6 +3,8 @@ import {
   DrawingPoint,
   drawingPointAdd,
   drawingPointChangePosition,
+  drawingPointChangeProperties,
+  drawingPointDelete,
   drawingPointSetAll,
 } from 'fm3/actions/drawingPointActions';
 import { applySettings, clearMapFeatures } from 'fm3/actions/mainActions';
@@ -25,6 +27,10 @@ export const drawingPointsReducer = createReducer<
   RootAction
 >(initialState)
   .handleAction(clearMapFeatures, () => initialState)
+  .handleAction(drawingPointDelete, (state, { payload }) => ({
+    ...state,
+    points: state.points.filter((_, i) => i !== payload.index),
+  }))
   .handleAction(applySettings, (state, { payload }) =>
     produce(state, (draft) => {
       if (payload.drawingApplyAll) {
@@ -41,6 +47,11 @@ export const drawingPointsReducer = createReducer<
     points: [...state.points, payload],
     change: state.change + 1,
   }))
+  .handleAction(drawingPointChangeProperties, (state, { payload }) =>
+    produce(state, (draft) => {
+      Object.assign(draft.points[payload.index], payload.properties);
+    }),
+  )
   .handleAction(drawingPointChangePosition, (state, { payload }) =>
     produce(state, (draft) => {
       const point = draft.points[payload.index];

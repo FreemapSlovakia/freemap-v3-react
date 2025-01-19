@@ -14,6 +14,8 @@ export interface Line {
   width?: number;
 }
 
+export const drawingLineAdd = createAction('DRAWING_LINE_ADD')<Line>();
+
 export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{
   type?: 'polygon' | 'line';
   index?: number;
@@ -21,6 +23,18 @@ export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{
   width?: number;
   point: Point;
   position?: number;
+}>();
+
+export const drawingLineChangeProperties = createAction(
+  'DRAWING_LINE_CHANGE_PROPERTIES',
+)<{
+  index: number;
+  properties: {
+    label: string | undefined;
+    color: string | undefined;
+    width: number | undefined;
+    type: 'line' | 'polygon';
+  };
 }>();
 
 export const drawingLineUpdatePoint = createAction(
@@ -61,3 +75,14 @@ export const drawingLineContinue = createAction('DRAWING_LINE_CONTINUE')<{
 export const drawingLineStopDrawing = createAction(
   'DRAWING_LINE_STOP_DRAWING',
 )();
+
+export const drawingLineDelete = createAction('DRAWING_LINE_DELETE')<{
+  lineIndex: number;
+}>();
+
+export const drawingLineDeletePoint = createAction(
+  'DRAWING_LINE_DELETE_POINT',
+)<{
+  lineIndex: number;
+  pointId: number;
+}>();

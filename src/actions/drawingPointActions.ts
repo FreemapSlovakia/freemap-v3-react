@@ -14,13 +14,14 @@ export const drawingPointChangePosition = createAction(
   'DRAWING_POINT_CHANGE_POSITION',
 )<{ index: number; lat: number; lon: number }>();
 
-export const drawingChangeProperties = createAction(
-  'DRAWING_CHANGE_PROPERTIES',
+export const drawingPointChangeProperties = createAction(
+  'DRAWING_POINT_CHANGE_PROPERTIES',
 )<{
-  label: string | undefined;
-  color: string | undefined;
-  width: number | undefined;
-  type: 'line' | 'polygon';
+  index: number;
+  properties: {
+    label: string | undefined;
+    color: string | undefined;
+  };
 }>();
 
 export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<
@@ -32,4 +33,8 @@ export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<
 export const drawingMeasure = createAction('DRAWING_MEASURE')<{
   elevation?: boolean;
   position?: { lat: number; lon: number };
+}>();
+
+export const drawingPointDelete = createAction('DRAWING_POINT_DELETE')<{
+  index: number;
 }>();

@@ -4,6 +4,7 @@ import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { osmClear } from 'fm3/actions/osmActions';
 import {
   trackViewerColorizeTrackBy,
+  trackViewerDelete,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
   trackViewerSetData,
@@ -39,6 +40,10 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
   trackViewerInitialState,
 )
   .handleAction(clearMapFeatures, () => trackViewerInitialState)
+  .handleAction(trackViewerDelete, (state) => ({
+    ...trackViewerInitialState,
+    colorizeTrackBy: state.colorizeTrackBy,
+  }))
   .handleAction(trackViewerSetData, (state, action) => ({
     ...state,
     trackGpx: action.payload.trackGpx ?? state.trackGpx,

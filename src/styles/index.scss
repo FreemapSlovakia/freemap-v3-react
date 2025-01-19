@@ -1,8 +1,8 @@
-@import '~bootstrap/scss/bootstrap';
+@use '~bootstrap/scss/bootstrap';
 
-@import './bootstrap-override.scss';
+@use './bootstrap-override.scss';
 
-@import './leaflet.scss';
+@use './leaflet.scss';
 
 :root {
   --scroller-mix-blend-mode: multiply;

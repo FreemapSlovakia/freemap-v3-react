@@ -39,3 +39,5 @@ export const trackViewerToggleElevationChart = createAction(
 export const trackViewerGpxLoad = createAction(
   'TRACK_VIEWER_GPX_LOAD',
 )<string>();
+
+export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE')();

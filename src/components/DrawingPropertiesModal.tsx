@@ -1,5 +1,5 @@
 import { polygon } from '@turf/helpers';
-import { drawingChangeProperties } from 'fm3/actions/drawingPointActions';
+import { drawingPointChangeProperties } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { colors } from 'fm3/constants';
@@ -19,6 +19,7 @@ import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { DrawingRecentColors } from './DrawingRecentColors';
 import Form from 'react-bootstrap/Form';
+import { drawingLineChangeProperties } from 'fm3/actions/drawingLineActions';
 
 type Props = { show: boolean };
 
@@ -71,6 +72,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   const drawType = useAppSelector((state) => state.main.selection?.type);
 
+  const selection = useAppSelector((state) => state.main.selection);
+
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
@@ -89,6 +92,13 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
+      if (
+        selection?.type !== 'draw-line-poly' &&
+        selection?.type !== 'draw-points'
+      ) {
+        return;
+      }
+
       e.preventDefault();
 
       if (polyPoints && editedLabel === 'cry me a river') {
@@ -231,12 +241,23 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       }
 
       dispatch(
-        drawingChangeProperties({
-          label: editedLabel || undefined,
-          color: editedColor,
-          width: Number(editedWidth) || undefined,
-          type: editedType,
-        }),
+        selection.type === 'draw-line-poly'
+          ? drawingLineChangeProperties({
+              index: selection.id,
+              properties: {
+                label: editedLabel || undefined,
+                color: editedColor,
+                width: Number(editedWidth) || undefined,
+                type: editedType,
+              },
+            })
+          : drawingPointChangeProperties({
+              index: selection.id,
+              properties: {
+                label: editedLabel || undefined,
+                color: editedColor,
+              },
+            }),
       );
 
       close();
@@ -249,6 +270,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       editedWidth,
       editedType,
       close,
+      selection,
     ],
   );
 

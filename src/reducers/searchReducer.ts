@@ -6,6 +6,7 @@ import {
   osmLoadWay,
 } from 'fm3/actions/osmActions';
 import {
+  searchClear,
   SearchResult,
   searchSelectResult,
   searchSetResults,
@@ -44,6 +45,7 @@ export const searchReducer = createReducer<SearchState, RootAction>(
   searchInitialState,
 )
   .handleAction(clearMapFeatures, () => searchInitialState)
+  .handleAction(searchClear, () => searchInitialState)
   .handleAction(searchSetResults, (state, action) => ({
     ...state,
     results: action.payload,

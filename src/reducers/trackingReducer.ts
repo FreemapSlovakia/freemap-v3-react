@@ -46,6 +46,12 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
   initialState,
 )
   .handleAction(clearMapFeatures, () => initialState)
+  .handleAction(trackingActions.delete, (state, { payload }) => ({
+    ...state,
+    trackedDevices: state.trackedDevices.filter(
+      (td) => td.token !== payload.token,
+    ),
+  }))
   .handleAction(setActiveModal, (state) => ({
     ...state,
     devices: [],

@@ -55,4 +55,6 @@ export const trackingActions = {
   setShowPoints: createAction('TRACKING_SET_SHOW_POINTS')<boolean>(),
 
   setShowLine: createAction('TRACKING_SET_SHOW_LINE')<boolean>(),
+
+  delete: createAction('TRACKING_DELETE')<{ token: string | number }>(),
 };

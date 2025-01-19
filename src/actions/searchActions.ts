@@ -19,6 +19,8 @@ export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
 export const searchSetResults =
   createAction('SEARCH_SET_RESULTS')<SearchResult[]>();
 
+export const searchClear = createAction('SEARCH_CLEAR')();
+
 export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<{
   result: SearchResult;
   showToast?: boolean;

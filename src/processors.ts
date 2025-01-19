@@ -86,12 +86,16 @@ import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadT
 import { urlProcessor } from './processors/urlProcessor';
 import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
 import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
+import { deleteProcessor } from './processors/deleteProcessor';
+import { convertToDrawingProcessor } from './processors/convertToDrawingProcessor';
 
 export const processors = [
   errorProcessor,
   toastsCancelTypeProcessor,
   cancelProcessor,
   setToolProcessor,
+  deleteProcessor,
+  convertToDrawingProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
   authDisconnectProcessor,
