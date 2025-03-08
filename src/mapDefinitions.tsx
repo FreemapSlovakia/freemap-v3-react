@@ -225,7 +225,7 @@ export const baseLayers: BaseLayerDef[] = [
     type: 'Z',
     url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
-    maxNativeZoom: 19,
+    maxNativeZoom: 20,
     scaleWithDpi: true,
     icon: <FaPlane />,
     attribution: [
