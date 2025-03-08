@@ -13,6 +13,8 @@ import Alert from 'react-bootstrap/Alert';
 import { FaKey } from 'react-icons/fa';
 import { Messages, addError } from './messagesInterface';
 import shared from './sk-shared.json';
+import { useDispatch } from 'react-redux';
+import { documentShow } from 'fm3/actions/mainActions';
 
 const nf33 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 3,
@@ -405,49 +407,33 @@ const messages: Messages = {
       />
     ),
     infoBars: {
-      // dp: () => {
-      //   const dispatch = useDispatch();
+      dp: () => {
+        const dispatch = useDispatch();
 
-      //   return (
-      //     <>
-      //       <span className="d-sm-none">Podporte nás prosím</span>
-      //       <span className="d-none d-sm-inline d-xl-none">
-      //         Podporte prosím prevádzku služieb Freemap.sk vašimi
-      //       </span>
-      //       <span className="d-none d-xl-inline">
-      //         Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
-      //         potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
-      //       </span>{' '}
-      //       <a
-      //         href="/#tip=dvePercenta"
-      //         onClick={(e) => {
-      //           e.preventDefault();
+        return (
+          <>
+            <span className="d-sm-none">Podporte nás prosím</span>
+            <span className="d-none d-sm-inline d-xl-none">
+              Podporte prosím prevádzku služieb Freemap.sk vašimi
+            </span>
+            <span className="d-none d-xl-inline">
+              Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
+              potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
+            </span>{' '}
+            <a
+              href="/#tip=dvePercenta"
+              onClick={(e) => {
+                e.preventDefault();
 
-      //           dispatch(documentShow('dvePercenta'));
-      //         }}
-      //       >
-      //         2% z dane
-      //       </a>
-      //       .
-      //     </>
-      //   );
-      // },
-      // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
-      // wiki2perc: () => {
-      //   return (
-      //     <>
-      //       OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
-      //       podporte svojimi 2%{' '}
-      //       <a
-      //         href="https://2percenta.prewiki.sk/"
-      //         target="_blank"
-      //         rel="noopener"
-      //       >
-      //         Wikimedia EO
-      //       </a>{' '}
-      //     </>
-      //   );
-      // },
+                dispatch(documentShow('dvePercenta'));
+              }}
+            >
+              2% z dane
+            </a>
+            .
+          </>
+        );
+      },
       ua: () => {
         return (
           <>

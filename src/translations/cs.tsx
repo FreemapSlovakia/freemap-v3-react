@@ -406,22 +406,6 @@ const messages: Messages = {
       />
     ),
     infoBars: {
-      // 2% sa daju darovat len do 30.4.2024, potom tento banner straca zmysel
-      // wiki2perc: () => {
-      //   return (
-      //     <>
-      //       OZ Freemap Slovakia nie je prijímateľom 2% z dane za rok 2023,
-      //       podporte svojimi 2%{' '}
-      //       <a
-      //         href="https://2percenta.prewiki.sk/"
-      //         target="_blank"
-      //         rel="noopener"
-      //       >
-      //         Wikimedia EO
-      //       </a>{' '}
-      //     </>
-      //   );
-      // },
       ua: () => (
         <>
           🇺🇦 Stojíme za Ukrajinou.{' '}
