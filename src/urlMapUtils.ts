@@ -1,4 +1,8 @@
-import { BaseLayerLetters, overlayLetters } from 'fm3/mapDefinitions';
+import {
+  BaseLayerLetters,
+  OverlayLetters,
+  overlayLetters,
+} from 'fm3/mapDefinitions';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getTrasformedParamsIfIsOldFreemapUrl,
@@ -53,7 +57,11 @@ export function getMapStateFromUrl(
 
   const ovl = layers.slice(isTwoChar ? 2 : 1);
 
-  const overlays = overlayLetters.filter((x) => ovl.includes(x));
+  const overlays: OverlayLetters[] = overlayLetters.filter((x) =>
+    ovl.includes(x),
+  );
+
+  overlays.push(...((ovl.match(/:\d+/g) ?? []) as OverlayLetters[]));
 
   return { lat, lon, zoom, mapType, overlays };
 }
