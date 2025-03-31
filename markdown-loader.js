@@ -1,7 +1,7 @@
 const { parse, marked } = require('marked');
 
 const renderer = {
-  link(href, title, text) {
+  link({ href, title, text }) {
     const ext = href.match('^https?://')
       ? ' target="_blank" rel="noopener noreferrer"'
       : '';

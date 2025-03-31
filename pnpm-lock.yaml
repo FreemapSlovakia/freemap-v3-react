@@ -24,11 +24,11 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       '@sentry/browser':
-        specifier: ^8.55.0
-        version: 8.55.0
+        specifier: ^9.10.1
+        version: 9.10.1
       '@tmcw/togeojson':
-        specifier: ^6.0.1
-        version: 6.0.1(@types/geojson@7946.0.16)(@xmldom/xmldom@0.9.8)
+        specifier: ^7.0.0
+        version: 7.0.0
       '@turf/along':
         specifier: ^7.2.0
         version: 7.2.0
@@ -126,8 +126,8 @@ importers:
         specifier: ^4.7.1
         version: 4.7.1
       marked:
-        specifier: ^13.0.3
-        version: 13.0.3
+        specifier: ^15.0.7
+        version: 15.0.7
       pannellum:
         specifier: ^2.5.6
         version: 2.5.6
@@ -216,9 +216,6 @@ importers:
       '@types/color':
         specifier: ^4.2.0
         version: 4.2.0
-      '@types/eslint__js':
-        specifier: ^8.42.3
-        version: 8.42.3
       '@types/facebook-js-sdk':
         specifier: ^3.3.12
         version: 3.3.12
@@ -241,8 +238,8 @@ importers:
         specifier: ^7946.0.16
         version: 7946.0.16
       '@types/google.picker':
-        specifier: ^0.0.47
-        version: 0.0.47
+        specifier: ^0.0.50
+        version: 0.0.50
       '@types/leaflet':
         specifier: ^1.9.17
         version: 1.9.17
@@ -1418,29 +1415,29 @@ packages:
   '@samchon/openapi@3.2.3':
     resolution: {integrity: sha512-CQVa92i3hvfZftd6mULs13/WRib5a5/5qfEH/L6e5gjSSHIXrKMmwVPawi447F/bQiEd4EPE+dPmGU3lvEsVqw==}
 
-  '@sentry-internal/browser-utils@8.55.0':
-    resolution: {integrity: sha512-ROgqtQfpH/82AQIpESPqPQe0UyWywKJsmVIqi3c5Fh+zkds5LUxnssTj3yNd1x+kxaPDVB023jAP+3ibNgeNDw==}
-    engines: {node: '>=14.18'}
+  '@sentry-internal/browser-utils@9.10.1':
+    resolution: {integrity: sha512-O/ibpHbKfpG+xtZuEzbLNtLcbanRcDYGxT+QbslVItmcS9GjMSwvMpp1jnD9Y7/LIFtv7O1gJZ9Hrz///lLprw==}
+    engines: {node: '>=18'}
 
-  '@sentry-internal/feedback@8.55.0':
-    resolution: {integrity: sha512-cP3BD/Q6pquVQ+YL+rwCnorKuTXiS9KXW8HNKu4nmmBAyf7urjs+F6Hr1k9MXP5yQ8W3yK7jRWd09Yu6DHWOiw==}
-    engines: {node: '>=14.18'}
+  '@sentry-internal/feedback@9.10.1':
+    resolution: {integrity: sha512-DM32eAzRvXk36iGBWtlLZA88QzOFBODd+kbz55X4Py+1bDNdRc3Vl6214uuAr7iweHcOQy1rIvmAeO8Xusp7tQ==}
+    engines: {node: '>=18'}
 
-  '@sentry-internal/replay-canvas@8.55.0':
-    resolution: {integrity: sha512-nIkfgRWk1091zHdu4NbocQsxZF1rv1f7bbp3tTIlZYbrH62XVZosx5iHAuZG0Zc48AETLE7K4AX9VGjvQj8i9w==}
-    engines: {node: '>=14.18'}
+  '@sentry-internal/replay-canvas@9.10.1':
+    resolution: {integrity: sha512-fxrpqElqdsAQrzVly0V/XaljhAlwwMk+iGyf+wZeK6RwEPVxtoxXVfx7fEEtPn+gortqQR09N/zH179hefjuaw==}
+    engines: {node: '>=18'}
 
-  '@sentry-internal/replay@8.55.0':
-    resolution: {integrity: sha512-roCDEGkORwolxBn8xAKedybY+Jlefq3xYmgN2fr3BTnsXjSYOPC7D1/mYqINBat99nDtvgFvNfRcZPiwwZ1hSw==}
-    engines: {node: '>=14.18'}
+  '@sentry-internal/replay@9.10.1':
+    resolution: {integrity: sha512-nqG33NwojtteL8e3Qg/SOu0BsTJ9R7AjpmQIlOpFGL007nzKgcJHOngewd7FEHyB+F3iOI0MoI9iEWhRFEGRLw==}
+    engines: {node: '>=18'}
 
-  '@sentry/browser@8.55.0':
-    resolution: {integrity: sha512-1A31mCEWCjaMxJt6qGUK+aDnLDcK6AwLAZnqpSchNysGni1pSn1RWSmk9TBF8qyTds5FH8B31H480uxMPUJ7Cw==}
-    engines: {node: '>=14.18'}
+  '@sentry/browser@9.10.1':
+    resolution: {integrity: sha512-9RWjcyskhnDK2Q6LntFR90EqZD5+DXcXNqeTlE+mpVf65y7wz+9SIuVjAMP7qiDBwfxNbmTxiVCXeCuQnnATsQ==}
+    engines: {node: '>=18'}
 
-  '@sentry/core@8.55.0':
-    resolution: {integrity: sha512-6g7jpbefjHYs821Z+EBJ8r4Z7LT5h80YSWRJaylGS4nW5W5Z2KXzpdnyFarv37O7QjauzVC2E+PABmpkw5/JGA==}
-    engines: {node: '>=14.18'}
+  '@sentry/core@9.10.1':
+    resolution: {integrity: sha512-TE2zZV3Od4131mZNgFo2Mv4aKU8FXxL0s96yqRvmV+8AU57mJoycMXBnmNSYfWuDICbPJTVAp+3bYMXwX7N5YA==}
+    engines: {node: '>=18'}
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -1451,11 +1448,8 @@ packages:
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
 
-  '@tmcw/togeojson@6.0.1':
-    resolution: {integrity: sha512-eit0noOFdAz6f26ODt5h3E/7wkmW/Sr8b3cVDPTKwYCXk9JL1lfoRKGw2axFVYJC6s5unVTVCjOe86Vak02Vuw==}
-    peerDependencies:
-      '@types/geojson': '*'
-      '@xmldom/xmldom': ^0.9.5
+  '@tmcw/togeojson@7.0.0':
+    resolution: {integrity: sha512-e2BoFtuCm47R0Bz4m/HATdMIDcsbNUKiNCtm9AySukG8uaanEluncdvq+h3b2tT36LBkEdM6hmpWDcOw97tWpQ==}
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
@@ -1581,9 +1575,6 @@ packages:
   '@types/eslint@9.6.1':
     resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
 
-  '@types/eslint__js@8.42.3':
-    resolution: {integrity: sha512-alfG737uhmPdnvkrLdZLcEKJ/B8s9Y4hrZ+YAdzUeoArBlSUERA2E87ROfOaS4jd/C45fzOoZzidLc1IPwLqOw==}
-
   '@types/estree@0.0.39':
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
 
@@ -1620,8 +1611,8 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
-  '@types/google.picker@0.0.47':
-    resolution: {integrity: sha512-G8kaCqHaZNLM23JthmzkfJl5vz/HoH8L3Xhwqc6lxtMPVUAh3oGqt5sScc4LycFUnnnonRFv52mXjiTWLwxILA==}
+  '@types/google.picker@0.0.50':
+    resolution: {integrity: sha512-0gY/HaMFjzmX5yYm+wZLEIZIn6x6hrn9Cn2ERp4E6T7v5X4s5nqcjfr62KRILEy+YEaj5isxSbfTYcEe1fX5hQ==}
 
   '@types/hoist-non-react-statics@3.3.6':
     resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
@@ -3614,8 +3605,8 @@ packages:
     resolution: {integrity: sha512-lgL7XpIwsgICiL82ITplfS7IGwrB1OJIw/pCvprDp2dhmSSEBgmPzYRvwYYYvJGJD7fxUv1Tvpih4nZ6VrLuaA==}
     engines: {node: '>=16.14.0', npm: '>=8.1.0'}
 
-  marked@13.0.3:
-    resolution: {integrity: sha512-rqRix3/TWzE9rIoFGIn8JmsVfhiuC8VIQ8IdX5TfzmeBucdY05/0UlzKaw0eVtpcN/OdVFpBk7CjKGo9iHJ/zA==}
+  marked@15.0.7:
+    resolution: {integrity: sha512-dgLIeKGLx5FwziAnsk4ONoGwHwGPJzselimvlVskE9XLN4Orv9u2VA3GWw/lYUqjfA0rUT/6fqKwfZJapP9BEg==}
     engines: {node: '>= 18'}
     hasBin: true
 
@@ -6620,33 +6611,33 @@ snapshots:
 
   '@samchon/openapi@3.2.3': {}
 
-  '@sentry-internal/browser-utils@8.55.0':
+  '@sentry-internal/browser-utils@9.10.1':
     dependencies:
-      '@sentry/core': 8.55.0
+      '@sentry/core': 9.10.1
 
-  '@sentry-internal/feedback@8.55.0':
+  '@sentry-internal/feedback@9.10.1':
     dependencies:
-      '@sentry/core': 8.55.0
+      '@sentry/core': 9.10.1
 
-  '@sentry-internal/replay-canvas@8.55.0':
+  '@sentry-internal/replay-canvas@9.10.1':
     dependencies:
-      '@sentry-internal/replay': 8.55.0
-      '@sentry/core': 8.55.0
+      '@sentry-internal/replay': 9.10.1
+      '@sentry/core': 9.10.1
 
-  '@sentry-internal/replay@8.55.0':
+  '@sentry-internal/replay@9.10.1':
     dependencies:
-      '@sentry-internal/browser-utils': 8.55.0
-      '@sentry/core': 8.55.0
+      '@sentry-internal/browser-utils': 9.10.1
+      '@sentry/core': 9.10.1
 
-  '@sentry/browser@8.55.0':
+  '@sentry/browser@9.10.1':
     dependencies:
-      '@sentry-internal/browser-utils': 8.55.0
-      '@sentry-internal/feedback': 8.55.0
-      '@sentry-internal/replay': 8.55.0
-      '@sentry-internal/replay-canvas': 8.55.0
-      '@sentry/core': 8.55.0
+      '@sentry-internal/browser-utils': 9.10.1
+      '@sentry-internal/feedback': 9.10.1
+      '@sentry-internal/replay': 9.10.1
+      '@sentry-internal/replay-canvas': 9.10.1
+      '@sentry/core': 9.10.1
 
-  '@sentry/core@8.55.0': {}
+  '@sentry/core@9.10.1': {}
 
   '@sinclair/typebox@0.27.8': {}
 
@@ -6661,10 +6652,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@tmcw/togeojson@6.0.1(@types/geojson@7946.0.16)(@xmldom/xmldom@0.9.8)':
-    dependencies:
-      '@types/geojson': 7946.0.16
-      '@xmldom/xmldom': 0.9.8
+  '@tmcw/togeojson@7.0.0': {}
 
   '@tokenizer/token@0.3.0': {}
 
@@ -6908,10 +6896,6 @@ snapshots:
       '@types/estree': 1.0.7
       '@types/json-schema': 7.0.15
 
-  '@types/eslint__js@8.42.3':
-    dependencies:
-      '@types/eslint': 9.6.1
-
   '@types/estree@0.0.39': {}
 
   '@types/estree@1.0.7': {}
@@ -6950,7 +6934,7 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
-  '@types/google.picker@0.0.47': {}
+  '@types/google.picker@0.0.50': {}
 
   '@types/hoist-non-react-statics@3.3.6':
     dependencies:
@@ -7269,7 +7253,8 @@ snapshots:
     optionalDependencies:
       webpack-dev-server: 5.2.1(webpack-cli@6.0.1)(webpack@5.98.0)
 
-  '@xmldom/xmldom@0.9.8': {}
+  '@xmldom/xmldom@0.9.8':
+    optional: true
 
   '@xtuc/ieee754@1.2.0': {}
 
@@ -9210,7 +9195,7 @@ snapshots:
       tinyqueue: 3.0.0
       vt-pbf: 3.1.3
 
-  marked@13.0.3: {}
+  marked@15.0.7: {}
 
   matchmediaquery@0.4.2:
     dependencies:
