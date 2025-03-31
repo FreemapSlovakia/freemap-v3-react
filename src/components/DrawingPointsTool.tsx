@@ -11,6 +11,8 @@ import { useDispatch } from 'react-redux';
 export function DrawingPointsTool(): null {
   const color = useAppSelector((state) => state.main.drawingColor);
 
+  const length = useAppSelector((state) => state.drawingPoints.points.length);
+
   const dispatch = useDispatch();
 
   useMapEvent(
@@ -22,12 +24,13 @@ export function DrawingPointsTool(): null {
             lat: latlng.lat,
             lon: latlng.lng,
             color,
+            id: length,
           }),
         );
 
         dispatch(drawingMeasure({}));
       },
-      [dispatch, color],
+      [dispatch, color, length],
     ),
   );
 

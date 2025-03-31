@@ -157,6 +157,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         index,
         point: { lat, lon, id },
         position: pos,
+        id: index,
       }),
     );
 
@@ -361,6 +362,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                       drawingLineJoinFinish({
                         lineIndex: index,
                         pointId: p.id,
+                        selection: {
+                          type: 'draw-line-poly',
+                          id:
+                            joinWith.lineIndex -
+                            (index > joinWith.lineIndex ? 0 : 1),
+                        },
                       }),
                     );
 

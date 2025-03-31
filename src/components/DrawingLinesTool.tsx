@@ -28,6 +28,10 @@ export function DrawingLinesTool(): null {
 
   const width = useAppSelector((state) => state.main.drawingWidth);
 
+  const linesLength = useAppSelector(
+    (state) => state.drawingLines.lines.length,
+  );
+
   const handleMapClick = useCallback(
     ({ latlng, originalEvent }: LeafletMouseEvent) => {
       if (
@@ -50,21 +54,24 @@ export function DrawingLinesTool(): null {
         id = (linePoints[pos - 1].id + linePoints[pos].id) / 2;
       }
 
+      const index =
+        selection?.type === 'draw-line-poly' ? selection.id : undefined;
+
       dispatch(
         drawingLineAddPoint({
-          index:
-            selection?.type === 'draw-line-poly' ? selection.id : undefined,
+          index,
           color,
           width,
           point: { lat: latlng.lat, lon: latlng.lng, id },
           position: pos,
           type: tool === 'draw-lines' ? 'line' : 'polygon',
+          id: index ?? linesLength,
         }),
       );
 
       dispatch(drawingMeasure({}));
     },
-    [linePoints, dispatch, selection, tool, color, width],
+    [linePoints, dispatch, selection, tool, color, width, linesLength],
   );
 
   useMapEvent('click', handleMapClick);

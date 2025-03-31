@@ -1,5 +1,4 @@
 import storage from 'local-storage-fallback';
-import reduceReducers from 'reduce-reducers';
 import { combineReducers } from 'redux';
 import { StateType } from 'typesafe-actions';
 import { is } from 'typia';
@@ -14,7 +13,6 @@ import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { galleryInitialState, galleryReducer } from './reducers/galleryReducer';
-import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
 import {
   l10nInitialState,
   l10nReducer,
@@ -78,11 +76,7 @@ export type CombinedReducers = typeof combinedReducers;
 
 export type RootState = StateType<CombinedReducers>;
 
-export const rootReducer = reduceReducers<RootState>(
-  preGlobalReducer,
-  combinedReducers,
-  postGlobalReducer,
-);
+export const rootReducer = combinedReducers;
 
 export function getInitialState() {
   let persisted: Partial<Record<keyof RootState, unknown>>;

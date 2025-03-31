@@ -1,4 +1,5 @@
 import { createAction } from 'typesafe-actions';
+import { Selection } from './mainActions';
 
 export interface Point {
   lat: number;
@@ -23,6 +24,7 @@ export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{
   width?: number;
   point: Point;
   position?: number;
+  id: number;
 }>();
 
 export const drawingLineChangeProperties = createAction(
@@ -65,6 +67,7 @@ export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<
 export const drawingLineJoinFinish = createAction('DRAWING_LINE_JOIN_FINISH')<{
   lineIndex: number;
   pointId: number;
+  selection: Selection;
 }>();
 
 export const drawingLineContinue = createAction('DRAWING_LINE_CONTINUE')<{

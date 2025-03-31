@@ -112,6 +112,14 @@ export function MapContextMenu(): ReactElement {
 
   const width = useAppSelector((state) => state.main.drawingWidth);
 
+  const linesLength = useAppSelector(
+    (state) => state.drawingLines.lines.length,
+  );
+
+  const pointsLength = useAppSelector(
+    (state) => state.drawingPoints.points.length,
+  );
+
   extraHandler.current = useCallback(
     (eventKey: string | null) => {
       switch (eventKey) {
@@ -171,6 +179,7 @@ export function MapContextMenu(): ReactElement {
               lat: contextMenu.lat,
               lon: contextMenu.lon,
               color,
+              id: pointsLength,
             }),
           );
 
@@ -193,6 +202,7 @@ export function MapContextMenu(): ReactElement {
                 lat: contextMenu.lat,
                 lon: contextMenu.lon,
               },
+              id: linesLength,
             }),
           );
 
@@ -238,7 +248,16 @@ export function MapContextMenu(): ReactElement {
 
       return true;
     },
-    [closeMenu, color, contextMenu.lat, contextMenu.lon, dispatch, width],
+    [
+      closeMenu,
+      color,
+      contextMenu.lat,
+      contextMenu.lon,
+      dispatch,
+      width,
+      linesLength,
+      pointsLength,
+    ],
   );
 
   return (

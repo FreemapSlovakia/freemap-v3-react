@@ -378,7 +378,9 @@ export function handleLocationChange(store: MyStore, location: Location): void {
   if (transformed) {
     const { lat, lon } = transformed;
 
-    dispatch(drawingPointAdd({ lat, lon }));
+    dispatch(
+      drawingPointAdd({ lat, lon, id: getState().drawingPoints.points.length }),
+    );
   }
 
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
@@ -386,7 +388,14 @@ export function handleLocationChange(store: MyStore, location: Location): void {
   if (f2) {
     const { lat, lon, label } = f2;
 
-    dispatch(drawingPointAdd({ lat, lon, label }));
+    dispatch(
+      drawingPointAdd({
+        lat,
+        lon,
+        label,
+        id: getState().drawingPoints.points.length,
+      }),
+    );
   }
 
   const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */

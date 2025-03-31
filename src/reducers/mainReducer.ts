@@ -8,12 +8,17 @@ import {
   authSetUser,
 } from 'fm3/actions/authActions';
 import {
+  drawingLineAddPoint,
   drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineJoinFinish,
   drawingLineSetLines,
   drawingLineStopDrawing,
 } from 'fm3/actions/drawingLineActions';
-import { drawingPointChangeProperties } from 'fm3/actions/drawingPointActions';
+import {
+  drawingPointAdd,
+  drawingPointChangeProperties,
+} from 'fm3/actions/drawingPointActions';
 import {
   applyCookieConsent,
   applySettings,
@@ -112,6 +117,30 @@ export const mainReducer = createReducer<MainState, RootAction>(
     return {
       ...state,
       tool: null,
+    };
+  })
+  .handleAction(drawingLineJoinFinish, (state, { payload }) => {
+    return {
+      ...state,
+      selection: payload.selection,
+    };
+  })
+  .handleAction(drawingLineAddPoint, (state, { payload }) => {
+    return {
+      ...state,
+      selection: {
+        type: 'draw-line-poly',
+        id: payload.id,
+      },
+    };
+  })
+  .handleAction(drawingPointAdd, (state, { payload }) => {
+    return {
+      ...state,
+      selection: {
+        type: 'draw-points',
+        id: payload.id,
+      },
     };
   })
   .handleAction(clearMapFeatures, (state) => {

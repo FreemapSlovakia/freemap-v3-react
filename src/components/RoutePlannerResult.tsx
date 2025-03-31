@@ -920,8 +920,6 @@ function reverse(c: [number, number]) {
   return [c[1], c[0]] as [number, number];
 }
 
-// TODO instead of calling dispatch(setTool('route-planner')) implement selecting feature in globalReducer
-
 // TODO do it in processor so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
 function addMissingSegments(alt: Alternative) {

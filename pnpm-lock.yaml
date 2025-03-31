@@ -173,9 +173,6 @@ importers:
       react-tag-autocomplete:
         specifier: ^7.5.0
         version: 7.5.0(react@19.1.0)
-      reduce-reducers:
-        specifier: ^1.0.4
-        version: 1.0.4
       redux:
         specifier: ^4.2.1
         version: 4.2.1
@@ -4409,9 +4406,6 @@ packages:
   rechoir@0.8.0:
     resolution: {integrity: sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==}
     engines: {node: '>= 10.13.0'}
-
-  reduce-reducers@1.0.4:
-    resolution: {integrity: sha512-Mb2WZ2bJF597exiqX7owBzrqJ74DHLK3yOQjCyPAaNifRncE8OD0wFIuoMhXxTnHK07+8zZ2SJEKy/qtiyR7vw==}
 
   redux-devtools-extension@2.13.9:
     resolution: {integrity: sha512-cNJ8Q/EtjhQaZ71c8I9+BPySIBVEKssbPpskBfsXqb8HJ002A3KRVHfeRzwRo6mGPqsm7XuHTqNSNeS1Khig0A==}
@@ -9968,8 +9962,6 @@ snapshots:
   rechoir@0.8.0:
     dependencies:
       resolve: 1.22.10
-
-  reduce-reducers@1.0.4: {}
 
   redux-devtools-extension@2.13.9(redux@4.2.1):
     dependencies:

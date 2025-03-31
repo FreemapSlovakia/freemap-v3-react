@@ -73,6 +73,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             lon: object.lon,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
             color: state.main.drawingColor,
+            id: getState().drawingPoints.points.length,
           }),
         );
 
@@ -110,6 +111,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
               color: state.main.drawingColor,
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
+              id: getState().drawingPoints.points.length,
             }),
           );
 
@@ -187,6 +189,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
               color: state.main.drawingColor,
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
+              id: getState().drawingPoints.points.length,
             }),
           );
 
