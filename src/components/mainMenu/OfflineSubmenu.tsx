@@ -5,6 +5,7 @@ import { BiWifiOff } from 'react-icons/bi';
 import { FaEraser } from 'react-icons/fa';
 import { Checkbox } from '../Checkbox';
 import { SubmenuHeader } from './SubmenuHeader';
+import { JSX } from 'react';
 
 type Props = {
   className?: string;

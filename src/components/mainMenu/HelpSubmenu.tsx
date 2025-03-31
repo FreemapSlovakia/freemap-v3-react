@@ -4,6 +4,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
 import { SubmenuHeader } from './SubmenuHeader';
+import { JSX } from 'react';
 
 export function HelpSubmenu(): JSX.Element {
   const m = useMessages();

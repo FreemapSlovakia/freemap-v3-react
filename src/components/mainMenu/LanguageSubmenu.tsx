@@ -3,6 +3,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { FaLanguage } from 'react-icons/fa';
 import { SubmenuHeader } from './SubmenuHeader';
+import { JSX } from 'react';
 
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();

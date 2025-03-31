@@ -14,6 +14,7 @@ import {
   FaTachometerAlt,
 } from 'react-icons/fa';
 import { CircleMarker, Tooltip } from 'react-leaflet';
+import { JSX } from 'react';
 
 interface TrackingPointProps {
   tp: TrackPoint;

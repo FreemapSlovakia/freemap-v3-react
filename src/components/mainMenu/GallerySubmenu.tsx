@@ -12,6 +12,7 @@ import {
 import { IoIosColorPalette } from 'react-icons/io';
 import { Checkbox } from '../Checkbox';
 import { SubmenuHeader } from './SubmenuHeader';
+import { JSX } from 'react';
 
 export function GallerySubmenu(): JSX.Element {
   const m = useMessages();

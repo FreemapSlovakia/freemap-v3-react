@@ -312,10 +312,16 @@ const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
 
         {Children.toArray(children)
           .filter(
-            (item): item is ReactElement =>
-              item &&
+            (
+              item,
+            ): item is ReactElement & { props: { eventKey: string | null } } =>
               typeof item === 'object' &&
+              item !== null &&
               'props' in item &&
+              typeof item.props === 'object' &&
+              item.props !== null &&
+              'active' in item.props &&
+              typeof item.props.active === 'boolean' &&
               item.props.active,
           )
           .map((item) => {

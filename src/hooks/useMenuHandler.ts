@@ -68,7 +68,7 @@ export function useMenuHandler({
     }
   }, [menuShown]);
 
-  const extraHandler = useRef<(eventKey: string) => boolean>();
+  const extraHandler = useRef<(eventKey: string) => boolean>(undefined);
 
   const handleSelect = useCallback(
     (eventKey: string | null, e: React.SyntheticEvent<unknown, Event>) => {

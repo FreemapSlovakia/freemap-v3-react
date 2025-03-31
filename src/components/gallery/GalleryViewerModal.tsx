@@ -88,7 +88,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
 
-  const imageElement = useRef<HTMLImageElement>();
+  const imageElement = useRef<HTMLImageElement>(undefined);
 
   const fullscreenElement = useRef<HTMLDivElement | null>(null);
 

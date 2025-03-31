@@ -145,7 +145,7 @@ export function ElevationChart(): ReactElement | null {
     };
   }, [ref, ref2]);
 
-  const startPosRef = useRef<[number, number]>();
+  const startPosRef = useRef<[number, number]>(undefined);
 
   const posRef = useRef([0, 0]);
 

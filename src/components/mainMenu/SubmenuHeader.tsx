@@ -2,6 +2,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { FaChevronLeft } from 'react-icons/fa';
+import { JSX } from 'react';
 
 type SubmenuHeaderProps = {
   icon: ReactElement;

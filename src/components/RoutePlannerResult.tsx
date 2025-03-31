@@ -95,9 +95,9 @@ export function RoutePlannerResult(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const tRef = useRef<number>();
+  const tRef = useRef<number>(undefined);
 
-  const draggingRef = useRef<boolean>();
+  const draggingRef = useRef<boolean>(undefined);
 
   const [dragLat, setDragLat] = useState<number>();
 

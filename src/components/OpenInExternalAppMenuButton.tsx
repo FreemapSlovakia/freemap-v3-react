@@ -7,6 +7,7 @@ import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
 import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
+import { JSX } from 'react';
 
 interface Props extends LatLon {
   lat: number;

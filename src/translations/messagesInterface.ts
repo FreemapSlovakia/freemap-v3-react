@@ -6,6 +6,7 @@ import { AttributionDef, NoncustomLayerLetters } from 'fm3/mapDefinitions';
 import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
 import { ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
+import { JSX } from 'react';
 
 type Err = { err: string };
 
