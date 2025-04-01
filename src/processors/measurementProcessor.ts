@@ -104,8 +104,6 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       selection.type === 'draw-line-poly' ||
       selection.type === 'line-point'
     ) {
-      console.log('VVVVVVV', id);
-
       const { points, type } = getState().drawingLines.lines[id];
 
       if (type === 'polygon' && points.length > 2) {
