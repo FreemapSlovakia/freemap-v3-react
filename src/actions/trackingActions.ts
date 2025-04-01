@@ -1,3 +1,4 @@
+import { createAction } from '@reduxjs/toolkit';
 import {
   AccessToken,
   AccessTokenBase,
@@ -5,56 +6,53 @@ import {
   EditedDevice,
   TrackedDevice,
 } from 'fm3/types/trackingTypes';
-import { createAction } from 'typesafe-actions';
 
 export const trackingActions = {
-  setTrackedDevices: createAction('TRACKING_SET_TRACKED_DEVICES')<
-    TrackedDevice[]
-  >(),
+  setTrackedDevices: createAction<TrackedDevice[]>(
+    'TRACKING_SET_TRACKED_DEVICES',
+  ),
 
-  modifyTrackedDevice: createAction('TRACKING_MODIFY_TRACKED_DEVICE')<
-    string | null | undefined
-  >(),
+  modifyTrackedDevice: createAction<string | null | undefined>(
+    'TRACKING_MODIFY_TRACKED_DEVICE',
+  ),
 
-  deleteTrackedDevice: createAction('TRACKING_DELETE_TRACKED_DEVICE')<string>(),
+  deleteTrackedDevice: createAction<string>('TRACKING_DELETE_TRACKED_DEVICE'),
 
-  saveTrackedDevice: createAction(
+  saveTrackedDevice: createAction<TrackedDevice>(
     'TRACKING_SAVE_TRACKED_DEVICE',
-  )<TrackedDevice>(),
+  ),
 
-  setDevices: createAction('TRACKING_SET_DEVICES')<Device[]>(),
+  setDevices: createAction<Device[]>('TRACKING_SET_DEVICES'),
 
-  modifyDevice: createAction('TRACKING_MODIFY_DEVICE')<
-    number | undefined | null
-  >(),
+  modifyDevice: createAction<number | undefined | null>(
+    'TRACKING_MODIFY_DEVICE',
+  ),
 
-  deleteDevice: createAction('TRACKING_DELETE_DEVICE')<number>(),
+  deleteDevice: createAction<number>('TRACKING_DELETE_DEVICE'),
 
-  saveDevice: createAction('TRACKING_SAVE_DEVICE')<EditedDevice>(),
+  saveDevice: createAction<EditedDevice>('TRACKING_SAVE_DEVICE'),
 
-  loadDevices: createAction('TRACKING_LOAD_DEVICES')(),
+  loadDevices: createAction('TRACKING_LOAD_DEVICES'),
 
-  setAccessTokens: createAction('TRACKING_SET_ACCESS_TOKENS')<AccessToken[]>(),
+  setAccessTokens: createAction<AccessToken[]>('TRACKING_SET_ACCESS_TOKENS'),
 
-  modifyAccessToken: createAction('TRACKING_MODIFY_ACCESS_TOKEN')<
-    number | null | undefined
-  >(),
+  modifyAccessToken: createAction<number | null | undefined>(
+    'TRACKING_MODIFY_ACCESS_TOKEN',
+  ),
 
-  deleteAccessToken: createAction('TRACKING_DELETE_ACCESS_TOKEN')<number>(),
+  deleteAccessToken: createAction<number>('TRACKING_DELETE_ACCESS_TOKEN'),
 
-  saveAccessToken: createAction(
-    'TRACKING_SAVE_ACCESS_TOKEN',
-  )<AccessTokenBase>(),
+  saveAccessToken: createAction<AccessTokenBase>('TRACKING_SAVE_ACCESS_TOKEN'),
 
-  loadAccessTokens: createAction('TRACKING_LOAD_ACCESS_TOKENS')(),
+  loadAccessTokens: createAction('TRACKING_LOAD_ACCESS_TOKENS'),
 
-  showAccessTokens: createAction('TRACKING_SHOW_ACCESS_TOKENS')<
-    number | undefined
-  >(),
+  showAccessTokens: createAction<number | undefined>(
+    'TRACKING_SHOW_ACCESS_TOKENS',
+  ),
 
-  setShowPoints: createAction('TRACKING_SET_SHOW_POINTS')<boolean>(),
+  setShowPoints: createAction<boolean>('TRACKING_SET_SHOW_POINTS'),
 
-  setShowLine: createAction('TRACKING_SET_SHOW_LINE')<boolean>(),
+  setShowLine: createAction<boolean>('TRACKING_SET_SHOW_LINE'),
 
-  delete: createAction('TRACKING_DELETE')<{ token: string | number }>(),
+  delete: createAction<{ token: string | number }>('TRACKING_DELETE'),
 };

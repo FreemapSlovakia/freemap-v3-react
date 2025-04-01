@@ -1,17 +1,18 @@
+import { createAction } from '@reduxjs/toolkit';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import { Feature, LineString } from 'geojson';
-import { createAction } from 'typesafe-actions';
 
-export const elevationChartSetTrackGeojson = createAction(
+export const elevationChartSetTrackGeojson = createAction<Feature<LineString>>(
   'ELEVATION_CHART_SET_TRACK_GEOJSON',
-)<Feature<LineString>>();
+);
 
-export const elevationChartClose = createAction('ELEVATION_CHART_CLOSE')();
+export const elevationChartClose = createAction('ELEVATION_CHART_CLOSE');
 
-export const elevationChartSetActivePoint = createAction(
-  'ELEVATION_CHART_SET_ACTIVE_POINT',
-)<ElevationProfilePoint | null>();
+export const elevationChartSetActivePoint =
+  createAction<ElevationProfilePoint | null>(
+    'ELEVATION_CHART_SET_ACTIVE_POINT',
+  );
 
-export const elevationChartSetElevationProfile = createAction(
-  'ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS',
-)<ElevationProfilePoint[]>();
+export const elevationChartSetElevationProfile = createAction<
+  ElevationProfilePoint[]
+>('ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS');

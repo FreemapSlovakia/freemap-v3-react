@@ -3,7 +3,7 @@ import { ExportTarget } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { httpRequest } from 'fm3/httpRequest';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { hasProperty } from 'fm3/typeUtils';
 import { Dispatch } from 'redux';
 

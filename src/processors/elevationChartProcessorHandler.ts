@@ -11,7 +11,7 @@ import { clearMapFeatures, selectFeature } from 'fm3/actions/mainActions';
 import { containsElevations } from 'fm3/geoutils';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import {
   Feature,

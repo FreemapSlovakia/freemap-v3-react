@@ -29,6 +29,7 @@ const cfg = tseslint.config(
       'react-hooks': eslintPluginReactHooks,
     },
     rules: {
+      '@typescript-eslint/no-empty-object-type': 0,
       '@typescript-eslint/method-signature-style': [1, 'property'],
       '@typescript-eslint/no-empty-function': 0,
       '@typescript-eslint/no-explicit-any': 1, // TODO remove one day

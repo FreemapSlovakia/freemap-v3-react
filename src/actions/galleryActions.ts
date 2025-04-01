@@ -1,6 +1,6 @@
+import { createAction } from '@reduxjs/toolkit';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { LatLon, User } from 'fm3/types/common';
-import { createAction } from 'typesafe-actions';
 
 export interface GalleryItem {
   id: number;
@@ -76,95 +76,90 @@ export interface GalleryFilter {
   pano?: boolean;
 }
 
-export const galleryAddTag = createAction('GALLERY_ADD_TAG')<string>();
+export const galleryAddTag = createAction<string>('GALLERY_ADD_TAG');
 
-export const galleryRequestImages = createAction(
+export const galleryRequestImages = createAction<LatLon>(
   'GALLERY_REQUEST_IMAGES',
-)<LatLon>();
+);
 
-export const galleryRequestImage = createAction('GALLERY_REQUEST_IMAGE')<
-  number | 'next' | 'prev'
->();
+export const galleryRequestImage = createAction<number | 'next' | 'prev'>(
+  'GALLERY_REQUEST_IMAGE',
+);
 
-export const gallerySetImageIds = createAction('GALLERY_SET_IMAGE_IDS')<
-  number[]
->();
+export const gallerySetImageIds = createAction<number[]>(
+  'GALLERY_SET_IMAGE_IDS',
+);
 
-export const gallerySetImage = createAction('GALLERY_SET_IMAGE')<Picture>();
+export const gallerySetImage = createAction<Picture>('GALLERY_SET_IMAGE');
 
-export const galleryClear = createAction('GALLERY_CLEAR')();
+export const galleryClear = createAction('GALLERY_CLEAR');
 
-export const galleryShowOnTheMap = createAction('GALLERY_SHOW_ON_THE_MAP')();
+export const galleryShowOnTheMap = createAction('GALLERY_SHOW_ON_THE_MAP');
 
 export const galleryCancelShowOnTheMap = createAction(
   'GALLERY_CANCEL_SHOW_ON_THE_MAP',
-)();
+);
 
-export const galleryAddItem = createAction('GALLERY_ADD_ITEM')<GalleryItem>();
+export const galleryAddItem = createAction<GalleryItem>('GALLERY_ADD_ITEM');
 
-export const galleryRemoveItem = createAction('GALLERY_REMOVE_ITEM')<number>();
+export const galleryRemoveItem = createAction<number>('GALLERY_REMOVE_ITEM');
 
-export const galleryMergeItem = createAction('GALLERY_SET_ITEM')<
+export const galleryMergeItem = createAction<
   Pick<GalleryItem, 'id'> & Partial<GalleryItem>
->();
+>('GALLERY_SET_ITEM');
 
-export const gallerySetItemError = createAction('GALLERY_SET_ITEM_ERROR')<{
+export const gallerySetItemError = createAction<{
   id: number;
   error: string;
-}>();
+}>('GALLERY_SET_ITEM_ERROR');
 
-export const gallerySetPickingPosition = createAction(
+export const gallerySetPickingPosition = createAction<LatLon>(
   'GALLERY_SET_PICKING_POSITION',
-)<LatLon>();
+);
 
 export const galleryConfirmPickedPosition = createAction(
   'GALLERY_CONFIRM_PICKED_POSITION',
-)();
+);
 
-export const gallerySetItemForPositionPicking = createAction(
+export const gallerySetItemForPositionPicking = createAction<number | null>(
   'GALLERY_SET_ITEM_FOR_POSITION_PICKING',
-)<number | null>();
+);
 
-export const galleryUpload = createAction('GALLERY_UPLOAD')();
+export const galleryUpload = createAction('GALLERY_UPLOAD');
 
-export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY')();
+export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY');
 
-export const gallerySetTags = createAction('GALLERY_SET_TAGS')<GalleryTag[]>();
+export const gallerySetTags = createAction<GalleryTag[]>('GALLERY_SET_TAGS');
 
-export const gallerySetUsers =
-  createAction('GALLERY_SET_USERS')<GalleryUser[]>();
+export const gallerySetUsers = createAction<GalleryUser[]>('GALLERY_SET_USERS');
 
-export const gallerySetComment = createAction('GALLERY_SET_COMMENT')<string>();
+export const gallerySetComment = createAction<string>('GALLERY_SET_COMMENT');
 
-export const gallerySubmitComment = createAction('GALLERY_SUBMIT_COMMENT')();
+export const gallerySubmitComment = createAction('GALLERY_SUBMIT_COMMENT');
 
-export const gallerySubmitStars = createAction(
-  'GALLERY_SUBMIT_STARS',
-)<number>();
+export const gallerySubmitStars = createAction<number>('GALLERY_SUBMIT_STARS');
 
-export const galleryEditPicture = createAction('GALLERY_EDIT_PICTURE')();
+export const galleryEditPicture = createAction('GALLERY_EDIT_PICTURE');
 
-export const gallerySetEditModel = createAction(
+export const gallerySetEditModel = createAction<PictureModel>(
   'GALLERY_SET_EDIT_MODEL',
-)<PictureModel>();
+);
 
-export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE')();
+export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE');
 
 export const gallerySetFilter =
-  createAction('GALLERY_SET_FILTER')<GalleryFilter>();
+  createAction<GalleryFilter>('GALLERY_SET_FILTER');
 
-export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE')();
+export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE');
 
-export const galleryList = createAction('GALLERY_LIST')<GalleryListOrder>();
+export const galleryList = createAction<GalleryListOrder>('GALLERY_LIST');
 
-export const galleryColorizeBy = createAction(
+export const galleryColorizeBy = createAction<GalleryColorizeBy | null>(
   'GALLERY_COLORIZE_BY',
-)<GalleryColorizeBy | null>();
+);
 
 export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',
-)();
+);
 
-export const galleryQuickAddTag = createAction(
-  'GALLERY_QUICK_ADD_TAG',
-)<string>();
+export const galleryQuickAddTag = createAction<string>('GALLERY_QUICK_ADD_TAG');

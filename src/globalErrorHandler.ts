@@ -1,5 +1,5 @@
 import { setErrorTicketId } from 'fm3/actions/mainActions';
-import { MyStore } from './storeCreator';
+import { MyStore } from './store';
 
 let store: MyStore;
 

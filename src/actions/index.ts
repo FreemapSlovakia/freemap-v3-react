@@ -19,7 +19,6 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import * as trackViewer from 'fm3/actions/trackViewerActions';
 import * as ws from 'fm3/actions/websocketActions';
 import * as wiki from 'fm3/actions/wikiActions';
-import { Action } from 'typesafe-actions';
 
 export const actions = {
   tracking: trackingActions,
@@ -43,12 +42,16 @@ export const actions = {
   trackViewer,
   maps,
   wiki,
-};
+} as const;
 
-export type RootAction = Action; // much slower but typesafe:  ActionType<typeof actions>;
+type ActionGroups = typeof actions;
 
-declare module 'typesafe-actions' {
-  interface Types {
-    RootAction: RootAction;
-  }
-}
+type ExtractActionCreators<T> =
+  T extends Record<string, (...args: any[]) => any> ? T[keyof T] : never;
+
+type AllActionCreators = ExtractActionCreators<
+  ActionGroups[keyof ActionGroups]
+>;
+
+// TODO we should not need such type
+export type RootAction = ReturnType<AllActionCreators>;

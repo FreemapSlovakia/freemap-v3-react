@@ -9,7 +9,6 @@ import { ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { getType } from 'typesafe-actions';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
@@ -48,7 +47,7 @@ export function ChangesetsResult(): ReactElement {
         messageParams: {
           changeset,
         },
-        cancelType: getType(changesetsSetParams),
+        cancelType: changesetsSetParams.type,
         style: 'info',
       }),
     );

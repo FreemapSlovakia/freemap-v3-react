@@ -1,7 +1,7 @@
 import { createFilter } from 'fm3/galleryUtils';
 import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { assert } from 'typia';
 

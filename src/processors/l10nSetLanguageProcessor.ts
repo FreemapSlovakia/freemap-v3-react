@@ -6,7 +6,6 @@ import {
 import { httpRequest } from 'fm3/httpRequest';
 import { getEffectiveChosenLanguage } from 'fm3/langUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { isActionOf } from 'typesafe-actions';
 
 export const l10nSetLanguageProcessor: Processor = {
   actionCreator: [l10nSetChosenLanguage, authSetUser],
@@ -25,7 +24,7 @@ export const l10nSetLanguageProcessor: Processor = {
     document.documentElement.lang = language;
 
     if (
-      isActionOf(l10nSetChosenLanguage, action) &&
+      l10nSetChosenLanguage.match(action) &&
       getState().auth.user &&
       !action.payload.noSave
     ) {

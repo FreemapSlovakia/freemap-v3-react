@@ -11,7 +11,6 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { getType } from 'typesafe-actions';
 
 type Props = {
   accessToken: AccessTokenType;
@@ -41,9 +40,9 @@ export function AccessToken({ accessToken }: Props): ReactElement {
         messageKey: 'tracking.accessToken.delete',
         style: 'warning',
         cancelType: [
-          getType(trackingActions.modifyAccessToken),
-          getType(trackingActions.showAccessTokens),
-          getType(setActiveModal),
+          trackingActions.modifyAccessToken.type,
+          trackingActions.showAccessTokens.type,
+          setActiveModal.type,
         ],
         actions: [
           {

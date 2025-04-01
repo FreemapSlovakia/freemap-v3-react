@@ -6,7 +6,6 @@ import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassResult } from 'fm3/types/common';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 
 const limit =
@@ -64,9 +63,9 @@ export const objectsFetchProcessor: Processor = {
               },
             ],
             cancelType: [
-              getType(clearMapFeatures),
-              getType(mapRefocus),
-              getType(objectsSetFilter),
+              clearMapFeatures.type,
+              mapRefocus.type,
+              objectsSetFilter.type,
             ],
           }),
         );
@@ -137,9 +136,9 @@ export const objectsFetchProcessor: Processor = {
           },
           style: 'warning',
           cancelType: [
-            getType(clearMapFeatures),
-            getType(mapRefocus),
-            getType(objectsSetFilter),
+            clearMapFeatures.type,
+            mapRefocus.type,
+            objectsSetFilter.type,
           ],
         }),
       );

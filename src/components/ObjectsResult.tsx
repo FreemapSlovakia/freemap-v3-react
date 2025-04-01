@@ -17,7 +17,7 @@ import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { RichMarker } from './RichMarker';
 
 export function ObjectsResult(): ReactElement | null {

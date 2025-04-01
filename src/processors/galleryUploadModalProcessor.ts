@@ -6,7 +6,6 @@ import {
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { isActionOf } from 'typesafe-actions';
 import { assert } from 'typia';
 
 export const galleryUploadModalProcessor: Processor = {
@@ -15,9 +14,8 @@ export const galleryUploadModalProcessor: Processor = {
   handle: async ({ getState, dispatch, action }) => {
     if (
       // don't load tags when canceling editing
-      (isActionOf(galleryEditPicture, action) &&
-        !getState().gallery.editModel) ||
-      (isActionOf(setActiveModal, action) &&
+      (galleryEditPicture.match(action) && !getState().gallery.editModel) ||
+      (setActiveModal.match(action) &&
         action.payload !== 'gallery-filter' &&
         action.payload !== 'gallery-upload')
     ) {

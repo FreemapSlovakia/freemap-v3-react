@@ -1,5 +1,5 @@
 import { authWithGarmin2 } from 'fm3/actions/authActions';
-import { MyStore } from './storeCreator';
+import { MyStore } from './store';
 
 export function attachGarminLoginMessageHandler(store: MyStore): void {
   window.addEventListener('message', (e) => {

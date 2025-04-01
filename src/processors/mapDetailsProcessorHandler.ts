@@ -11,16 +11,15 @@ import distance from '@turf/distance';
 import { httpRequest } from 'fm3/httpRequest';
 import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement } from 'fm3/types/common';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 
 const cancelType = [
-  getType(clearMapFeatures),
-  getType(selectFeature),
-  getType(deleteFeature),
-  getType(setTool),
+  clearMapFeatures.type,
+  selectFeature.type,
+  deleteFeature.type,
+  setTool.type,
 
-  getType(mapDetailsSetUserSelectedPosition),
+  mapDetailsSetUserSelectedPosition.type,
 ];
 
 interface SimpleOverpassElement {

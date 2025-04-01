@@ -1,5 +1,5 @@
+import { createAction } from '@reduxjs/toolkit';
 import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
-import { createAction } from 'typesafe-actions';
 
 export interface SearchResult {
   id: number;
@@ -11,20 +11,20 @@ export interface SearchResult {
   zoom?: number;
 }
 
-export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
+export const searchSetQuery = createAction<{
   query: string;
   fromUrl?: boolean;
-}>();
+}>('SEARCH_SET_QUERY');
 
 export const searchSetResults =
-  createAction('SEARCH_SET_RESULTS')<SearchResult[]>();
+  createAction<SearchResult[]>('SEARCH_SET_RESULTS');
 
-export const searchClear = createAction('SEARCH_CLEAR')();
+export const searchClear = createAction('SEARCH_CLEAR');
 
-export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<{
+export const searchSelectResult = createAction<{
   result: SearchResult;
   showToast?: boolean;
   focus?: boolean;
   storeResult?: boolean;
   // TODO refactor to: actions?: ('showToast' | 'focus' | 'storeResult')[];
-} | null>();
+} | null>('SEARCH_SELECT_RESULT');

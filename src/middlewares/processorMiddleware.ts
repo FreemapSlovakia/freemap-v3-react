@@ -2,38 +2,50 @@ import { RootAction } from 'fm3/actions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { MessagePaths } from 'fm3/types/common';
-import { Dispatch, Middleware } from 'redux';
+import { Action, Dispatch, Middleware } from 'redux';
 import {
-  Action,
-  ActionCreator,
-  ActionType,
-  isActionOf,
-} from 'typesafe-actions';
+  ActionCreatorWithPayload,
+  ActionCreatorWithoutPayload,
+} from '@reduxjs/toolkit';
 
-export type ProcessorHandler<T extends ActionCreator = ActionCreator> =
+type AnyActionCreator =
+  | ActionCreatorWithPayload<any>
+  | ActionCreatorWithoutPayload;
+
+type ActionOf<T extends AnyActionCreator> = ReturnType<T>;
+
+type ActionOfUnion<T extends AnyActionCreator[]> = ReturnType<T[number]>;
+
+type ActionFrom<T> = T extends AnyActionCreator
+  ? ActionOf<T>
+  : T extends AnyActionCreator[]
+    ? ActionOfUnion<T>
+    : Action;
+
+export type ProcessorHandler<T extends AnyActionCreator = AnyActionCreator> =
   (params: {
     prevState: RootState;
     getState: () => RootState;
     dispatch: Dispatch;
-    action: ActionType<T>;
+    action: ActionFrom<T>;
   }) => void | Promise<void>;
 
-export interface Processor<T extends ActionCreator = ActionCreator> {
+export interface Processor<T extends AnyActionCreator = AnyActionCreator> {
   transform?: (params: {
     prevState: RootState;
     getState: () => RootState;
     dispatch: Dispatch;
-    action: ActionType<T>;
+    action: ActionFrom<T>;
   }) => Action | null | undefined | void;
   handle?: ProcessorHandler<T>;
   actionCreator?: T | T[];
-  actionPredicate?: (action: ActionType<T>) => boolean;
+  actionPredicate?: (action: ActionFrom<T>) => boolean;
   statePredicate?: (state: RootState) => boolean;
   stateChangePredicate?: (state: RootState) => unknown;
   errorKey?: MessagePaths;
-  id?: string; // toast collapse key
+  id?: string;
   predicatesOperation?: 'AND' | 'OR';
 }
 
@@ -61,9 +73,9 @@ export function createProcessorMiddleware(): MW {
         if (
           transform &&
           (!actionType ||
-            (Array.isArray(actionType) &&
-              actionType.some((ac) => isActionOf(ac, a))) ||
-            isActionOf(actionType, a)) &&
+            (Array.isArray(actionType)
+              ? actionType.some((ac) => ac.match(a))
+              : actionType.match(a))) &&
           (!statePredicate || statePredicate(getState())) &&
           (!actionPredicate || actionPredicate(action))
         ) {
@@ -98,18 +110,18 @@ export function createProcessorMiddleware(): MW {
             handle &&
             (predicatesOperation === 'OR'
               ? (actionType &&
-                  ((Array.isArray(actionType) &&
-                    actionType.some((ac) => isActionOf(ac, a))) ||
-                    isActionOf(actionType, a))) ||
+                  (Array.isArray(actionType)
+                    ? actionType.some((ac) => ac.match(a))
+                    : actionType.match(a))) ||
                 statePredicate?.(getState()) ||
                 (stateChangePredicate &&
                   stateChangePredicate(getState()) !==
                     stateChangePredicate(prevState)) ||
                 actionPredicate?.(action)
               : (!actionType ||
-                  (Array.isArray(actionType) &&
-                    actionType.some((ac) => isActionOf(ac, a))) ||
-                  isActionOf(actionType, a)) &&
+                  (Array.isArray(actionType)
+                    ? actionType.some((ac) => ac.match(a))
+                    : actionType.match(a))) &&
                 (!statePredicate || statePredicate(getState())) &&
                 (!stateChangePredicate ||
                   stateChangePredicate(getState()) !==

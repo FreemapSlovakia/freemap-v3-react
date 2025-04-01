@@ -2,10 +2,10 @@ import { MapState } from 'fm3/reducers/mapReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { createAction } from 'typesafe-actions';
 import { Line } from './drawingLineActions';
 import { DrawingPoint } from './drawingPointActions';
 import { GalleryFilter } from './galleryActions';
+import { createAction } from '@reduxjs/toolkit';
 
 export interface MapMeta {
   id: string;
@@ -52,24 +52,24 @@ export type MapLoadMeta = {
   merge?: boolean;
 };
 
-export const mapsLoad = createAction('MAPS_LOAD')<MapLoadMeta>();
+export const mapsLoad = createAction<MapLoadMeta>('MAPS_LOAD');
 
-export const mapsDisconnect = createAction('MAPS_DISCONNECT')();
+export const mapsDisconnect = createAction('MAPS_DISCONNECT');
 
-export const mapsLoadList = createAction('MAPS_LOAD_LIST')();
+export const mapsLoadList = createAction('MAPS_LOAD_LIST');
 
-export const mapsSetList = createAction('MAPS_SET_LIST')<MapMeta[]>();
+export const mapsSetList = createAction<MapMeta[]>('MAPS_SET_LIST');
 
-export const mapsSave = createAction('MAPS_SAVE')<
+export const mapsSave = createAction<
   { name?: string; writers?: number[]; asCopy?: boolean } | undefined
->();
+>('MAPS_SAVE');
 
-export const mapsDelete = createAction('MAPS_DELETE')<string>();
+export const mapsDelete = createAction<string>('MAPS_DELETE');
 
-export const mapsLoaded = createAction('MAPS_LOADED')<{
+export const mapsLoaded = createAction<{
   meta: MapMeta;
   data: MapData;
   merge?: boolean;
-}>();
+}>('MAPS_LOADED');
 
-export const mapsSetMeta = createAction('MAPS_SET_META')<MapMeta>();
+export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');

@@ -8,7 +8,6 @@ import { createFilter } from 'fm3/galleryUtils';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 
 export const galleryRequestImagesByRadiusProcessor: Processor<
@@ -49,7 +48,7 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
           timeout: 5000,
           style: 'warning',
           messageKey: 'gallery.noPicturesFound',
-          cancelType: [getType(galleryRequestImages)],
+          cancelType: [galleryRequestImages.type],
         }),
       );
     }

@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import { clearMapFeatures } from 'fm3/actions/mainActions';
 import {
   osmLoadNode,
@@ -12,7 +12,6 @@ import {
   searchSetResults,
 } from 'fm3/actions/searchActions';
 import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
 
 export interface SearchState {
   results: SearchResult[];
@@ -41,68 +40,68 @@ export const searchInitialState: SearchState = {
   selectedResult: null,
 };
 
-export const searchReducer = createReducer<SearchState, RootAction>(
-  searchInitialState,
-)
-  .handleAction(clearMapFeatures, () => searchInitialState)
-  .handleAction(searchClear, () => searchInitialState)
-  .handleAction(searchSetResults, (state, action) => ({
-    ...state,
-    results: action.payload,
-    searchSeq: state.searchSeq + 1,
-  }))
-  .handleAction(osmLoadNode, (state, action) => ({
-    ...state,
-    ...searchInitialState0,
-    osmNodeId: action.payload.id,
-  }))
-  .handleAction(osmLoadWay, (state, action) => ({
-    ...state,
-    ...searchInitialState0,
-    osmWayId: action.payload.id,
-  }))
-  .handleAction(osmLoadRelation, (state, action) => ({
-    ...state,
-    ...searchInitialState0,
-    osmRelationId: action.payload.id,
-  }))
-  .handleAction(searchSelectResult, (state, action) =>
-    produce(state, (draft) => {
-      if (action.payload?.storeResult === false) {
-        return;
-      }
-
-      draft.osmNodeId = null;
-
-      draft.osmWayId = null;
-
-      draft.osmRelationId = null;
-
-      const { payload } = action;
-
-      const result = payload?.result;
-
-      draft.selectedResult = result ?? null;
-
-      draft.searchResultSeq = draft.searchResultSeq + 1;
-
-      if (result) {
-        switch (result.osmType) {
-          case 'node':
-            draft.osmNodeId = result.id;
-
-            break;
-
-          case 'way':
-            draft.osmWayId = result.id;
-
-            break;
-
-          case 'relation':
-            draft.osmRelationId = result.id;
-
-            break;
+export const searchReducer = createReducer(searchInitialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => searchInitialState)
+    .addCase(searchClear, () => searchInitialState)
+    .addCase(searchSetResults, (state, action) => ({
+      ...state,
+      results: action.payload,
+      searchSeq: state.searchSeq + 1,
+    }))
+    .addCase(osmLoadNode, (state, action) => ({
+      ...state,
+      ...searchInitialState0,
+      osmNodeId: action.payload.id,
+    }))
+    .addCase(osmLoadWay, (state, action) => ({
+      ...state,
+      ...searchInitialState0,
+      osmWayId: action.payload.id,
+    }))
+    .addCase(osmLoadRelation, (state, action) => ({
+      ...state,
+      ...searchInitialState0,
+      osmRelationId: action.payload.id,
+    }))
+    .addCase(searchSelectResult, (state, action) =>
+      produce(state, (draft) => {
+        if (action.payload?.storeResult === false) {
+          return;
         }
-      }
-    }),
-  );
+
+        draft.osmNodeId = null;
+
+        draft.osmWayId = null;
+
+        draft.osmRelationId = null;
+
+        const { payload } = action;
+
+        const result = payload?.result;
+
+        draft.selectedResult = result ?? null;
+
+        draft.searchResultSeq = draft.searchResultSeq + 1;
+
+        if (result) {
+          switch (result.osmType) {
+            case 'node':
+              draft.osmNodeId = result.id;
+
+              break;
+
+            case 'way':
+              draft.osmWayId = result.id;
+
+              break;
+
+            case 'relation':
+              draft.osmRelationId = result.id;
+
+              break;
+          }
+        }
+      }),
+    ),
+);

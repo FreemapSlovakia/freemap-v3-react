@@ -1,10 +1,10 @@
+import { createAction } from '@reduxjs/toolkit';
 import {
   BaseLayerLetters,
   LayerDef,
   Num1digit,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
-import { createAction } from 'typesafe-actions';
 
 export interface MapViewState {
   mapType: BaseLayerLetters;
@@ -39,18 +39,18 @@ export interface MapStateBase extends MapViewState {
   customLayers: CustomLayer[]; // URL is mandatory here
 }
 
-export const mapRefocus = createAction('MAP_REFOCUS')<
+export const mapRefocus = createAction<
   Partial<MapViewState> & { gpsTracked?: boolean }
->();
+>('MAP_REFOCUS');
 
-export const mapSuppressLegacyMapWarning = createAction(
+export const mapSuppressLegacyMapWarning = createAction<{ forever: boolean }>(
   'MAP_SUPPRESS_LEGACY_MAP_WARING',
-)<{ forever: boolean }>();
+);
 
-export const mapSetCustomLayers = createAction('MAP_SET_CUSTOM_LAYERS')<
-  CustomLayer[]
->();
+export const mapSetCustomLayers = createAction<CustomLayer[]>(
+  'MAP_SET_CUSTOM_LAYERS',
+);
 
-export const mapSetEsriAttribution = createAction('MAP_SET_ESRI_ATTRIBUTION')<
-  string[]
->();
+export const mapSetEsriAttribution = createAction<string[]>(
+  'MAP_SET_ESRI_ATTRIBUTION',
+);

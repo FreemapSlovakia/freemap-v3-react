@@ -1,8 +1,8 @@
 import { basicModals, tools } from 'fm3/constants';
 import { DocumentKey } from 'fm3/documents';
 import { LatLon } from 'fm3/types/common';
-import { createAction } from 'typesafe-actions';
 import { CustomLayer, LayerSettings } from './mapActions';
+import { createAction } from '@reduxjs/toolkit';
 
 export type Tool = (typeof tools)[number];
 
@@ -10,21 +10,21 @@ export type Modal = (typeof basicModals)[number] | 'tips' | 'edit-label';
 
 export type ShowModal = (typeof basicModals)[number];
 
-export const setTool = createAction('SET_TOOL')<Tool | null>();
+export const setTool = createAction<Tool | null>('SET_TOOL');
 
-export const setActiveModal = createAction('SET_ACTIVE_MODAL')<Modal | null>();
+export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
 
-export const documentShow = createAction('DOCUMENT_SHOW')<DocumentKey | null>();
+export const documentShow = createAction<DocumentKey | null>('DOCUMENT_SHOW');
 
-export const startProgress = createAction('START_PROGRESS')<string | number>();
+export const startProgress = createAction<string | number>('START_PROGRESS');
 
-export const stopProgress = createAction('STOP_PROGRESS')<string | number>();
+export const stopProgress = createAction<string | number>('STOP_PROGRESS');
 
-export const setLocation = createAction('SET_LOCATION')<{
+export const setLocation = createAction<{
   lat: number;
   lon: number;
   accuracy: number;
-}>();
+}>('SET_LOCATION');
 
 export interface MapExportOptions {
   contours: boolean;
@@ -67,28 +67,28 @@ export const exportTypes = ['gpx', 'geojson'] as const;
 
 export type ExportType = (typeof exportTypes)[number];
 
-export const exportMapFeatures = createAction('EXPORT_MAP_FEATURES')<{
+export const exportMapFeatures = createAction<{
   exportables: Exportable[];
   type: ExportType;
   target: ExportTarget;
   name?: string;
   description?: string;
   activity?: string;
-}>();
+}>('EXPORT_MAP_FEATURES');
 
-export const exportMap = createAction('EXPORT_MAP')<MapExportOptions>();
+export const exportMap = createAction<MapExportOptions>('EXPORT_MAP');
 
-export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES')();
+export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 
-export const toggleLocate = createAction('LOCATE')<boolean | undefined>();
+export const toggleLocate = createAction<boolean | undefined>('LOCATE');
 
-export const setSelectingHomeLocation = createAction(
+export const setSelectingHomeLocation = createAction<LatLon | boolean>(
   'SET_SELECTING_HOME_LOCATION',
-)<LatLon | boolean>();
+);
 
-export const saveHomeLocation = createAction('SAVE_HOME_LOCATION')();
+export const saveHomeLocation = createAction('SAVE_HOME_LOCATION');
 
-export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
+export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
@@ -98,30 +98,30 @@ type Settings = {
   drawingWidth?: number;
 };
 
-export const saveSettings = createAction('SAVE_SETTINGS')<{
+export const saveSettings = createAction<{
   settings?: Settings;
   user?: {
     name: string;
     email: string | null;
     sendGalleryEmails: boolean;
   };
-}>();
+}>('SAVE_SETTINGS');
 
-export const applySettings = createAction('APPLY_SETTINGS')<
+export const applySettings = createAction<
   Settings & { drawingApplyAll?: boolean }
->();
+>('APPLY_SETTINGS');
 
-export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
-  string | undefined
->();
+export const setErrorTicketId = createAction<string | undefined>(
+  'SET_ERROR_TICKET_ID',
+);
 
-export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
+export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
 
-export const removeAdsOnLogin = createAction('REMOVE_ADS_ON_LOGIN')();
+export const removeAdsOnLogin = createAction('REMOVE_ADS_ON_LOGIN');
 
-export const removeAds = createAction('REMOVE_ADS')();
+export const removeAds = createAction('REMOVE_ADS');
 
-export const deleteFeature = createAction('DELETE_FEATURE')();
+export const deleteFeature = createAction('DELETE_FEATURE');
 
 export interface DrawPointSelection {
   type: 'draw-points';
@@ -156,14 +156,14 @@ export type Selection =
   | DrawLinePolySelection
   | TrackingSelection;
 
-export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
+export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
-export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
+export const convertToDrawing = createAction<
   | ObjectsSelection
   | { type: 'planned-route'; tolerance: number }
   | { type: 'track'; tolerance: number }
   | { type: 'search-result'; tolerance: number }
->();
+>('CONVERT_TO_DRAWING');
 
 export type ExternalTargets =
   | 'copy'
@@ -186,7 +186,7 @@ export type ExternalTargets =
   | 'window'
   | 'zbgis';
 
-export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
+export const openInExternalApp = createAction<{
   where: ExternalTargets;
   lat?: number;
   lon?: number;
@@ -196,15 +196,15 @@ export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
   pointTitle?: string;
   pointDescription?: string;
   url?: string;
-}>();
+}>('OPEN_IN_EXTERNAL');
 
-export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT')();
+export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT');
 
-export const setAnalyticCookiesAllowed = createAction(
+export const setAnalyticCookiesAllowed = createAction<boolean>(
   'SET_ANALYTICS_COOKIES_ALLOWED',
-)<boolean>();
+);
 
-export const hideInfoBar = createAction('HIDE_INFO_BAR')<{
+export const hideInfoBar = createAction<{
   key: string;
   ts: number;
-}>();
+}>('HIDE_INFO_BAR');

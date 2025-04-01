@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import { authLogout } from 'fm3/actions/authActions';
 import {
   MapLoadMeta,
@@ -9,7 +9,6 @@ import {
   mapsSetList,
   mapsSetMeta,
 } from 'fm3/actions/mapsActions';
-import { createReducer } from 'typesafe-actions';
 
 export interface MapsState {
   loadMeta: MapLoadMeta | undefined;
@@ -23,37 +22,39 @@ const initialState: MapsState = {
   activeMap: undefined,
 };
 
-export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
-  .handleAction(mapsSetList, (state, { payload }) => ({
-    ...state,
-    maps: payload,
-  }))
-  .handleAction(mapsLoaded, (state, { payload }) => ({
-    ...state,
-    activeMap: payload.meta,
-    loadMeta: undefined,
-  }))
-  .handleAction(mapsLoad, (state, { payload }) => ({
-    ...state,
-    loadMeta: payload,
-  }))
-  .handleAction(mapsDisconnect, (state) => ({
-    ...state,
-    activeMap: undefined,
-  }))
-  .handleAction(mapsSetMeta, (state, { payload }) => ({
-    ...state,
-    activeMap: state.activeMap
-      ? Object.assign({}, state.activeMap, payload)
-      : payload,
-  }))
-  .handleAction(authLogout, (state) => ({
-    ...initialState,
-    activeMap: state.activeMap?.public
-      ? {
-          ...state.activeMap,
-          canWrite: false,
-          writers: undefined,
-        }
-      : undefined,
-  }));
+export const mapsReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(mapsSetList, (state, { payload }) => ({
+      ...state,
+      maps: payload,
+    }))
+    .addCase(mapsLoaded, (state, { payload }) => ({
+      ...state,
+      activeMap: payload.meta,
+      loadMeta: undefined,
+    }))
+    .addCase(mapsLoad, (state, { payload }) => ({
+      ...state,
+      loadMeta: payload,
+    }))
+    .addCase(mapsDisconnect, (state) => ({
+      ...state,
+      activeMap: undefined,
+    }))
+    .addCase(mapsSetMeta, (state, { payload }) => ({
+      ...state,
+      activeMap: state.activeMap
+        ? Object.assign({}, state.activeMap, payload)
+        : payload,
+    }))
+    .addCase(authLogout, (state) => ({
+      ...initialState,
+      activeMap: state.activeMap?.public
+        ? {
+            ...state.activeMap,
+            canWrite: false,
+            writers: undefined,
+          }
+        : undefined,
+    })),
+);

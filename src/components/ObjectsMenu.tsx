@@ -24,7 +24,7 @@ import Dropdown, { type DropdownProps } from 'react-bootstrap/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { HideArrow } from './SearchMenu';
 import { ToolMenu } from './ToolMenu';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
 import Form from 'react-bootstrap/Form';
 

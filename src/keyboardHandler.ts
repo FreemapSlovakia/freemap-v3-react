@@ -29,9 +29,9 @@ import {
 } from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
 import { history } from './historyHolder';
-import { RootState } from './reducers';
+import { RootState } from './store';
 import { showGalleryViewerSelector } from './selectors/mainSelectors';
-import { MyStore } from './storeCreator';
+import { MyStore } from './store';
 import { toolDefinitions } from './toolDefinitions';
 
 let keyTimer: number | null = null;

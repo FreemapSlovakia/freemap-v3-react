@@ -1,7 +1,11 @@
-import { ActionCreator } from 'typesafe-actions';
+import { UnknownAction } from '@reduxjs/toolkit';
+
+export type ActionCreatorMatchable = {
+  match: (action: UnknownAction) => boolean;
+};
 
 export interface CancelItem {
-  cancelActions: ActionCreator<string>[];
+  cancelActions: ActionCreatorMatchable[];
   cancel: () => void;
 }
 

@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import { clearMapFeatures } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import {
@@ -7,7 +7,6 @@ import {
   objectsSetFilter,
   objectsSetResult,
 } from 'fm3/actions/objectsActions';
-import { createReducer } from 'typesafe-actions';
 import { setSelectedIcon } from 'fm3/actions/objectsActions';
 
 export interface ObjectsState {
@@ -22,31 +21,31 @@ export const objectInitialState: ObjectsState = {
   selectedIcon: 'pin',
 };
 
-export const objectsReducer = createReducer<ObjectsState, RootAction>(
-  objectInitialState,
-)
-  .handleAction(clearMapFeatures, () => objectInitialState)
-  .handleAction(objectsSetFilter, (state, action) => ({
-    ...state,
-    active: action.payload,
-  }))
-  .handleAction(objectsSetResult, (state, action) => {
-    return {
+export const objectsReducer = createReducer(objectInitialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => objectInitialState)
+    .addCase(objectsSetFilter, (state, action) => ({
       ...state,
-      objects: action.payload,
-    };
-  })
-  .handleAction(mapsLoaded, (state, { payload: { merge, data } }) => {
-    return {
+      active: action.payload,
+    }))
+    .addCase(objectsSetResult, (state, action) => {
+      return {
+        ...state,
+        objects: action.payload,
+      };
+    })
+    .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
+      return {
+        ...state,
+        active: !merge
+          ? (data.objectsV2?.active ?? [])
+          : data.objectsV2
+            ? [...new Set([...state.active, ...(data.objectsV2?.active ?? {})])]
+            : state.active,
+      };
+    })
+    .addCase(setSelectedIcon, (state, action) => ({
       ...state,
-      active: !merge
-        ? (data.objectsV2?.active ?? [])
-        : data.objectsV2
-          ? [...new Set([...state.active, ...(data.objectsV2?.active ?? {})])]
-          : state.active,
-    };
-  })
-  .handleAction(setSelectedIcon, (state, action) => ({
-    ...state,
-    selectedIcon: action.payload,
-  }));
+      selectedIcon: action.payload,
+    })),
+);

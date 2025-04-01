@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   drawingLineAddPoint,
   drawingLineRemovePoint,
@@ -13,7 +13,6 @@ import {
 import { selectFeature, setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { LatLon } from 'fm3/types/common';
-import { createReducer } from 'typesafe-actions';
 
 export interface ElevationProfilePoint extends LatLon {
   climbUp?: number;
@@ -32,26 +31,25 @@ const initialState: ElevationChartState = {
   elevationProfilePoints: null,
 };
 
-export const elevationChartReducer = createReducer<
-  ElevationChartState,
-  RootAction
->(initialState)
-  .handleAction(elevationChartSetTrackGeojson, () => initialState)
-  .handleAction(elevationChartSetActivePoint, (state, action) => ({
-    ...state,
-    activePoint: action.payload,
-  }))
-  .handleAction(elevationChartSetElevationProfile, (state, action) => ({
-    ...state,
-    elevationProfilePoints: action.payload,
-  }))
-  .handleAction(setTool, setInitialState)
-  .handleAction(selectFeature, setInitialState)
-  .handleAction(routePlannerSetResult, setInitialState)
-  .handleAction(drawingLineAddPoint, setInitialState)
-  .handleAction(drawingLineUpdatePoint, setInitialState)
-  .handleAction(drawingLineRemovePoint, setInitialState)
-  .handleAction(elevationChartClose, setInitialState);
+export const elevationChartReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(elevationChartSetTrackGeojson, () => initialState)
+    .addCase(elevationChartSetActivePoint, (state, action) => ({
+      ...state,
+      activePoint: action.payload,
+    }))
+    .addCase(elevationChartSetElevationProfile, (state, action) => ({
+      ...state,
+      elevationProfilePoints: action.payload,
+    }))
+    .addCase(setTool, setInitialState)
+    .addCase(selectFeature, setInitialState)
+    .addCase(routePlannerSetResult, setInitialState)
+    .addCase(drawingLineAddPoint, setInitialState)
+    .addCase(drawingLineUpdatePoint, setInitialState)
+    .addCase(drawingLineRemovePoint, setInitialState)
+    .addCase(elevationChartClose, setInitialState),
+);
 
 function setInitialState() {
   return initialState;

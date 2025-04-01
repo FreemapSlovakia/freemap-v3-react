@@ -2,7 +2,7 @@ import { Tool } from 'fm3/actions/mainActions';
 import { PickMode } from 'fm3/actions/routePlannerActions';
 import marker from 'fm3/images/cursors/marker.svg';
 import pencil from 'fm3/images/cursors/pencil.svg';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { Track } from 'fm3/types/trackingTypes';
 import { createSelector } from 'reselect';
 

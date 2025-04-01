@@ -1,6 +1,5 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
-import { createReducer } from 'typesafe-actions';
 
 export interface WebsocketState {
   state: number;
@@ -14,10 +13,10 @@ const initialState: WebsocketState = {
   timestamp: 0,
 };
 
-export const websocketReducer = createReducer<WebsocketState, RootAction>(
-  initialState,
-).handleAction(wsStateChanged, (_, action) => ({
-  state: action.payload.state,
-  code: action.payload.code,
-  timestamp: action.payload.timestamp,
-}));
+export const websocketReducer = createReducer(initialState, (builder) =>
+  builder.addCase(wsStateChanged, (_, action) => ({
+    state: action.payload.state,
+    code: action.payload.code,
+    timestamp: action.payload.timestamp,
+  })),
+);

@@ -11,7 +11,7 @@ import { history } from 'fm3/historyHolder';
 import { attachKeyboardHandler } from 'fm3/keyboardHandler';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
 import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
-import { createReduxStore } from 'fm3/storeCreator';
+import { createReduxStore } from 'fm3/store';
 import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';

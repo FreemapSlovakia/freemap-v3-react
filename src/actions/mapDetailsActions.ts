@@ -1,5 +1,6 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
-export const mapDetailsSetUserSelectedPosition = createAction(
-  'MAP_DETAILS_SET_USER_SELECTED_POSITION',
-)<{ lat: number; lon: number }>();
+export const mapDetailsSetUserSelectedPosition = createAction<{
+  lat: number;
+  lon: number;
+}>('MAP_DETAILS_SET_USER_SELECTED_POSITION');

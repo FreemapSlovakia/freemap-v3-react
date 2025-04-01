@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import { clearMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
 import { mapsLoaded } from 'fm3/actions/mapsActions';
 import { rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
@@ -13,7 +13,6 @@ import {
   TrackPoint,
 } from 'fm3/types/trackingTypes';
 import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
 import { is } from 'typia';
 
 export interface TrackingState {
@@ -42,173 +41,173 @@ const initialState: TrackingState = {
   showPoints: true,
 };
 
-export const trackingReducer = createReducer<TrackingState, RootAction>(
-  initialState,
-)
-  .handleAction(clearMapFeatures, () => initialState)
-  .handleAction(trackingActions.delete, (state, { payload }) => ({
-    ...state,
-    trackedDevices: state.trackedDevices.filter(
-      (td) => td.token !== payload.token,
-    ),
-  }))
-  .handleAction(setActiveModal, (state) => ({
-    ...state,
-    devices: [],
-    accessTokens: [],
-    accessTokensDeviceId: undefined,
-    modifiedDeviceId: undefined,
-    modifiedAccessTokenId: undefined,
-    modifiedTrackedDeviceId: undefined,
-  }))
-  .handleAction(trackingActions.setDevices, (state, { payload }) => ({
-    ...state,
-    devices: payload,
-    accessTokens: [],
-  }))
-  .handleAction(trackingActions.modifyDevice, (state, { payload }) => ({
-    ...state,
-    modifiedDeviceId: payload,
-  }))
-  .handleAction(trackingActions.setAccessTokens, (state, { payload }) => ({
-    ...state,
-    accessTokens: payload,
-  }))
-  .handleAction(trackingActions.modifyAccessToken, (state, { payload }) => ({
-    ...state,
-    modifiedAccessTokenId: payload,
-  }))
-  .handleAction(trackingActions.showAccessTokens, (state, { payload }) => ({
-    ...state,
-    accessTokensDeviceId: payload,
-  }))
-  .handleAction(trackingActions.setTrackedDevices, (state, { payload }) => ({
-    ...state,
-    trackedDevices: payload,
-  }))
-  .handleAction(trackingActions.modifyTrackedDevice, (state, { payload }) => ({
-    ...state,
-    modifiedTrackedDeviceId: payload,
-  }))
-  .handleAction(trackingActions.saveTrackedDevice, (state, { payload }) => ({
-    ...state,
-    trackedDevices: [
-      ...state.trackedDevices.filter(
-        (d) => d.token !== state.modifiedTrackedDeviceId,
+export const trackingReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => initialState)
+    .addCase(trackingActions.delete, (state, { payload }) => ({
+      ...state,
+      trackedDevices: state.trackedDevices.filter(
+        (td) => td.token !== payload.token,
       ),
-      payload,
-    ],
-    modifiedTrackedDeviceId: undefined,
-  }))
-  .handleAction(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
-    ...state,
-    trackedDevices: state.trackedDevices.filter((d) => d.token !== payload),
-  }))
-  .handleAction(trackingActions.setShowPoints, (state, { payload }) => ({
-    ...state,
-    showPoints: payload,
-  }))
-  .handleAction(trackingActions.setShowLine, (state, { payload }) => ({
-    ...state,
-    showLine: payload,
-  }))
-  .handleAction(wsStateChanged, (state, { payload }) =>
-    payload.state === 1 ? state : { ...state, tracks: [] },
-  )
-  .handleAction(rpcResponse, (state, action) => {
-    const { payload } = action;
+    }))
+    .addCase(setActiveModal, (state) => ({
+      ...state,
+      devices: [],
+      accessTokens: [],
+      accessTokensDeviceId: undefined,
+      modifiedDeviceId: undefined,
+      modifiedAccessTokenId: undefined,
+      modifiedTrackedDeviceId: undefined,
+    }))
+    .addCase(trackingActions.setDevices, (state, { payload }) => ({
+      ...state,
+      devices: payload,
+      accessTokens: [],
+    }))
+    .addCase(trackingActions.modifyDevice, (state, { payload }) => ({
+      ...state,
+      modifiedDeviceId: payload,
+    }))
+    .addCase(trackingActions.setAccessTokens, (state, { payload }) => ({
+      ...state,
+      accessTokens: payload,
+    }))
+    .addCase(trackingActions.modifyAccessToken, (state, { payload }) => ({
+      ...state,
+      modifiedAccessTokenId: payload,
+    }))
+    .addCase(trackingActions.showAccessTokens, (state, { payload }) => ({
+      ...state,
+      accessTokensDeviceId: payload,
+    }))
+    .addCase(trackingActions.setTrackedDevices, (state, { payload }) => ({
+      ...state,
+      trackedDevices: payload,
+    }))
+    .addCase(trackingActions.modifyTrackedDevice, (state, { payload }) => ({
+      ...state,
+      modifiedTrackedDeviceId: payload,
+    }))
+    .addCase(trackingActions.saveTrackedDevice, (state, { payload }) => ({
+      ...state,
+      trackedDevices: [
+        ...state.trackedDevices.filter(
+          (d) => d.token !== state.modifiedTrackedDeviceId,
+        ),
+        payload,
+      ],
+      modifiedTrackedDeviceId: undefined,
+    }))
+    .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
+      ...state,
+      trackedDevices: state.trackedDevices.filter((d) => d.token !== payload),
+    }))
+    .addCase(trackingActions.setShowPoints, (state, { payload }) => ({
+      ...state,
+      showPoints: payload,
+    }))
+    .addCase(trackingActions.setShowLine, (state, { payload }) => ({
+      ...state,
+      showLine: payload,
+    }))
+    .addCase(wsStateChanged, (state, { payload }) =>
+      payload.state === 1 ? state : { ...state, tracks: [] },
+    )
+    .addCase(rpcResponse, (state, action) => {
+      const { payload } = action;
 
-    const { params } = payload;
+      const { params } = payload;
 
-    if (!is<{ token: string }>(params)) {
-      return state;
-    }
-
-    if (
-      payload.method === 'tracking.subscribe' &&
-      payload.type === 'result' &&
-      is<StringDates<TrackPoint[]>>(payload.result)
-    ) {
-      const { token } = params;
-
-      if (token === undefined) {
-        throw new Error();
+      if (!is<{ token: string }>(params)) {
+        return state;
       }
 
-      return {
-        ...state,
-        tracks: [
-          ...state.tracks.filter(({ token: id }) => id !== token),
-          {
-            token,
-            trackPoints: payload.result.map((tp) => ({
-              ...tp,
-              ts: new Date(tp.ts),
-            })),
-          },
-        ],
-      };
-    }
+      if (
+        payload.method === 'tracking.subscribe' &&
+        payload.type === 'result' &&
+        is<StringDates<TrackPoint[]>>(payload.result)
+      ) {
+        const { token } = params;
 
-    if (
-      payload.method === 'tracking.unsubscribe' &&
-      payload.type === 'result'
-    ) {
-      return {
-        ...state,
-        tracks: state.tracks.filter((track) => track.token !== params.token),
-      };
-    }
-
-    return state;
-  })
-  .handleAction(rpcEvent, (state, { payload: { method, params } }) => {
-    if (
-      method === 'tracking.addPoint' &&
-      is<StringDates<TrackPoint> & { token: string }>(params)
-    ) {
-      const { token, ts, ...rest } = params;
-
-      return produce(state, (draft) => {
         if (token === undefined) {
-          return;
+          throw new Error();
         }
 
-        let track = draft.tracks.find((t) => t.token === token);
+        return {
+          ...state,
+          tracks: [
+            ...state.tracks.filter(({ token: id }) => id !== token),
+            {
+              token,
+              trackPoints: payload.result.map((tp) => ({
+                ...tp,
+                ts: new Date(tp.ts),
+              })),
+            },
+          ],
+        };
+      }
 
-        if (!track) {
-          track = { token, trackPoints: [] };
+      if (
+        payload.method === 'tracking.unsubscribe' &&
+        payload.type === 'result'
+      ) {
+        return {
+          ...state,
+          tracks: state.tracks.filter((track) => track.token !== params.token),
+        };
+      }
 
-          draft.tracks.push(track);
-        }
+      return state;
+    })
+    .addCase(rpcEvent, (state, { payload: { method, params } }) => {
+      if (
+        method === 'tracking.addPoint' &&
+        is<StringDates<TrackPoint> & { token: string }>(params)
+      ) {
+        const { token, ts, ...rest } = params;
 
-        track.trackPoints.push({ ts: new Date(ts), ...rest });
+        return produce(state, (draft) => {
+          if (token === undefined) {
+            return;
+          }
 
-        // TODO apply limits from trackedDevices
-      });
-    }
+          let track = draft.tracks.find((t) => t.token === token);
 
-    return state;
-  })
-  .handleAction(
-    mapsLoaded,
-    (
-      state,
-      {
-        payload: {
-          data: { tracking },
-          merge,
+          if (!track) {
+            track = { token, trackPoints: [] };
+
+            draft.tracks.push(track);
+          }
+
+          track.trackPoints.push({ ts: new Date(ts), ...rest });
+
+          // TODO apply limits from trackedDevices
+        });
+      }
+
+      return state;
+    })
+    .addCase(
+      mapsLoaded,
+      (
+        state,
+        {
+          payload: {
+            data: { tracking },
+            merge,
+          },
         },
+      ) => {
+        return {
+          ...state,
+          trackedDevices: [
+            ...(merge ? state.trackedDevices : []),
+            ...(tracking?.trackedDevices ?? initialState.trackedDevices),
+          ],
+          showLine: tracking?.showLine ?? initialState.showLine,
+          showPoints: tracking?.showPoints ?? initialState.showPoints,
+        };
       },
-    ) => {
-      return {
-        ...state,
-        trackedDevices: [
-          ...(merge ? state.trackedDevices : []),
-          ...(tracking?.trackedDevices ?? initialState.trackedDevices),
-        ],
-        showLine: tracking?.showLine ?? initialState.showLine,
-        showPoints: tracking?.showPoints ?? initialState.showPoints,
-      };
-    },
-  );
+    ),
+);

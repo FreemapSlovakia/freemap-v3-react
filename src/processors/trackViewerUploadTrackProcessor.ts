@@ -5,7 +5,7 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
 

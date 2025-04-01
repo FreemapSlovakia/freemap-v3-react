@@ -14,7 +14,6 @@ import { httpRequest } from 'fm3/httpRequest';
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { getType } from 'typesafe-actions';
 
 export const changesetsTrackProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -67,10 +66,10 @@ export const changesetsProcessor: Processor = {
           id: 'changeset.detail',
           messageKey: 'changesets.tooBig',
           cancelType: [
-            getType(selectFeature),
-            getType(changesetsSetParams),
-            getType(setTool),
-            getType(clearMapFeatures),
+            selectFeature.type,
+            changesetsSetParams.type,
+            setTool.type,
+            clearMapFeatures.type,
           ],
           timeout: 5000,
           style: 'warning',
@@ -186,11 +185,11 @@ export const changesetsProcessor: Processor = {
             id: 'changeset.detail',
             messageKey: 'changesets.notFound',
             cancelType: [
-              getType(selectFeature),
-              getType(changesetsSetParams),
-              getType(setTool),
-              getType(clearMapFeatures),
-              getType(mapRefocus),
+              selectFeature.type,
+              changesetsSetParams.type,
+              setTool.type,
+              clearMapFeatures.type,
+              mapRefocus.type,
             ],
             timeout: 5000,
             style: 'info',

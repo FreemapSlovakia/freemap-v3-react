@@ -8,7 +8,6 @@ import {
   routePlannerToggleElevationChart,
 } from 'fm3/actions/routePlannerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { isActionOf } from 'typesafe-actions';
 
 export const routePlannerToggleElevationChartProcessor: Processor<
   | typeof routePlannerToggleElevationChart
@@ -21,7 +20,7 @@ export const routePlannerToggleElevationChartProcessor: Processor<
   handle: async ({ dispatch, getState, action }) => {
     const shown = !!getState().elevationChart.elevationProfilePoints;
 
-    const toggling = isActionOf(routePlannerToggleElevationChart, action);
+    const toggling = routePlannerToggleElevationChart.match(action);
 
     if (toggling && shown) {
       dispatch(elevationChartClose());

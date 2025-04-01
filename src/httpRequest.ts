@@ -1,7 +1,10 @@
-import { ActionCreator } from 'typesafe-actions';
 import { clearMapFeatures } from './actions/mainActions';
-import { CancelItem, cancelRegister } from './cancelRegister';
-import { RootState } from './reducers';
+import {
+  ActionCreatorMatchable,
+  CancelItem,
+  cancelRegister,
+} from './cancelRegister';
+import { RootState } from './store';
 
 export class HttpError extends Error {
   status: number;
@@ -21,7 +24,7 @@ interface HttpRequestParams extends Omit<RequestInit, 'signal'> {
   data?: unknown;
   getState: () => RootState;
   expectedStatus?: number | number[] | null;
-  cancelActions?: ActionCreator<string>[];
+  cancelActions?: ActionCreatorMatchable[];
 }
 
 export function addHeader(

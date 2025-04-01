@@ -14,15 +14,14 @@ import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
 import { httpRequest } from 'fm3/httpRequest';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 
 const cancelType = [
-  getType(clearMapFeatures),
-  getType(selectFeature),
-  getType(deleteFeature),
-  getType(setTool),
-  getType(mapRefocus),
+  clearMapFeatures.type,
+  selectFeature.type,
+  deleteFeature.type,
+  setTool.type,
+  mapRefocus.type,
 ];
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {

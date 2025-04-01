@@ -1,6 +1,4 @@
 import storage from 'local-storage-fallback';
-import { combineReducers } from 'redux';
-import { StateType } from 'typesafe-actions';
 import { is } from 'typia';
 import { GalleryColorizeBy } from './actions/galleryActions';
 import {
@@ -47,8 +45,9 @@ import {
 import { websocketReducer } from './reducers/websocketReducer';
 import { wikiReducer } from './reducers/wikiReducer';
 import { transportTypeDefs } from './transportTypeDefs';
+import { RootState } from './store';
 
-const reducers = {
+export const reducers = {
   auth: authReducer,
   changesets: changesetReducer,
   drawingLines: drawingLinesReducer,
@@ -69,14 +68,6 @@ const reducers = {
   maps: mapsReducer,
   wiki: wikiReducer,
 };
-
-const combinedReducers = combineReducers(reducers);
-
-export type CombinedReducers = typeof combinedReducers;
-
-export type RootState = StateType<CombinedReducers>;
-
-export const rootReducer = combinedReducers;
 
 export function getInitialState() {
   let persisted: Partial<Record<keyof RootState, unknown>>;

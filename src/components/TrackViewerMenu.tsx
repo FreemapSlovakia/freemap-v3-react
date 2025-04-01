@@ -27,7 +27,6 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
 import { DeleteButton } from './DeleteButton';
 import { ToolMenu } from './ToolMenu';
@@ -138,10 +137,7 @@ export function TrackViewerMenu(): ReactElement {
               toastsAdd({
                 id: 'trackViewer.trackInfo',
                 messageKey: 'trackViewer.info',
-                cancelType: [
-                  getType(clearMapFeatures),
-                  getType(trackViewerSetData),
-                ],
+                cancelType: [clearMapFeatures.type, trackViewerSetData.type],
                 style: 'info',
               }),
             );

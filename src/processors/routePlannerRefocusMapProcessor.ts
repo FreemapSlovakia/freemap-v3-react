@@ -6,7 +6,6 @@ import {
 import { mapPromise } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
-import { isActionOf } from 'typesafe-actions';
 
 export const routePlannerRefocusMapProcessor: Processor<
   typeof routePlannerSetStart | typeof routePlannerSetFinish
@@ -19,9 +18,9 @@ export const routePlannerRefocusMapProcessor: Processor<
 
     let focusPoint: LatLon | null | undefined;
 
-    if (isActionOf(routePlannerSetStart, action)) {
+    if (routePlannerSetStart.match(action)) {
       focusPoint = start;
-    } else if (isActionOf(routePlannerSetFinish, action)) {
+    } else if (routePlannerSetFinish.match(action)) {
       focusPoint = finish;
     }
 

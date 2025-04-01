@@ -48,7 +48,6 @@ import {
 import { RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import ReactStars from 'react-stars';
-import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 import { RecentTags } from './RecentTags';
 import Form from 'react-bootstrap/Form';
@@ -208,7 +207,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         id: 'gallery.deletePicture',
         messageKey: 'gallery.viewer.deletePrompt',
         style: 'warning',
-        cancelType: [getType(galleryClear), getType(galleryRequestImage)],
+        cancelType: [galleryClear.type, galleryRequestImage.type],
         actions: [
           {
             nameKey: 'general.yes',

@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
 export interface Changeset {
   id: number;
@@ -14,8 +14,8 @@ export type ChangesetParams = {
   authorName?: string | null;
 };
 
-export const changesetsSet = createAction('CHANGESETS_SET')<Changeset[]>();
+export const changesetsSet = createAction<Changeset[]>('CHANGESETS_SET');
 
-export const changesetsSetParams = createAction(
+export const changesetsSetParams = createAction<ChangesetParams>(
   'CHANGESETS_SET_PARAMS',
-)<ChangesetParams>();
+);

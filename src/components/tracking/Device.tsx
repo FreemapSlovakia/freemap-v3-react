@@ -17,7 +17,6 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { getType } from 'typesafe-actions';
 
 type Props = {
   device: DeviceType;
@@ -47,10 +46,10 @@ export function Device({ device }: Props): ReactElement {
         messageKey: 'tracking.devices.delete',
         style: 'warning',
         cancelType: [
-          getType(trackingActions.modifyDevice),
-          getType(trackingActions.modifyTrackedDevice),
-          getType(trackingActions.showAccessTokens),
-          getType(setActiveModal),
+          trackingActions.modifyDevice.type,
+          trackingActions.modifyTrackedDevice.type,
+          trackingActions.showAccessTokens.type,
+          setActiveModal.type,
         ],
         actions: [
           {

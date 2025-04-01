@@ -1,5 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import { RootState } from 'fm3/reducers';
+import { RootState } from 'fm3/store';
 import { Dispatch, Middleware } from 'redux';
 
 export const loggerMiddleware: Middleware<
