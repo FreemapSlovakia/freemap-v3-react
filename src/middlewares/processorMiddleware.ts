@@ -1,30 +1,28 @@
-import { RootAction } from 'fm3/actions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
 import { RootState } from 'fm3/store';
 import { MessagePaths } from 'fm3/types/common';
 import { Action, Dispatch, Middleware } from 'redux';
-import {
-  ActionCreatorWithPayload,
-  ActionCreatorWithoutPayload,
-} from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 
-type AnyActionCreator =
-  | ActionCreatorWithPayload<any>
-  | ActionCreatorWithoutPayload;
+type BaseActionCreator<P = any, T extends string = string> = {
+  (payload: P): PayloadAction<P, T>;
+  type: T;
+  match: (action: unknown) => action is PayloadAction<P, T>;
+};
 
-type ActionOf<T extends AnyActionCreator> = ReturnType<T>;
+type ActionOf<T extends BaseActionCreator> = ReturnType<T>;
 
-type ActionOfUnion<T extends AnyActionCreator[]> = ReturnType<T[number]>;
+type ActionOfUnion<T extends BaseActionCreator[]> = ReturnType<T[number]>;
 
-type ActionFrom<T> = T extends AnyActionCreator
+type ActionFrom<T> = T extends BaseActionCreator
   ? ActionOf<T>
-  : T extends AnyActionCreator[]
+  : T extends BaseActionCreator[]
     ? ActionOfUnion<T>
     : Action;
 
-export type ProcessorHandler<T extends AnyActionCreator = AnyActionCreator> =
+export type ProcessorHandler<T extends BaseActionCreator = BaseActionCreator> =
   (params: {
     prevState: RootState;
     getState: () => RootState;
@@ -32,13 +30,13 @@ export type ProcessorHandler<T extends AnyActionCreator = AnyActionCreator> =
     action: ActionFrom<T>;
   }) => void | Promise<void>;
 
-export interface Processor<T extends AnyActionCreator = AnyActionCreator> {
+export interface Processor<T extends BaseActionCreator = BaseActionCreator> {
   transform?: (params: {
     prevState: RootState;
     getState: () => RootState;
     dispatch: Dispatch;
     action: ActionFrom<T>;
-  }) => Action | null | undefined | void;
+  }) => unknown;
   handle?: ProcessorHandler<T>;
   actionCreator?: T | T[];
   actionPredicate?: (action: ActionFrom<T>) => boolean;
@@ -49,17 +47,15 @@ export interface Processor<T extends AnyActionCreator = AnyActionCreator> {
   predicatesOperation?: 'AND' | 'OR';
 }
 
-type MW = Middleware<unknown, RootState, Dispatch<RootAction>> & {
-  processors: Processor[];
-};
-
-export function createProcessorMiddleware(): MW {
+export function createProcessorMiddleware() {
   const processors: Processor[] = [];
 
-  const processorMiddleware: MW =
+  const processorMiddleware: Middleware<{}, RootState> & {
+    processors: Processor[];
+  } =
     ({ getState, dispatch }) =>
-    (next: Dispatch) =>
-    (action: Action): unknown => {
+    (next) =>
+    (action) => {
       const prevState = getState();
 
       let a = action;
@@ -77,9 +73,14 @@ export function createProcessorMiddleware(): MW {
               ? actionType.some((ac) => ac.match(a))
               : actionType.match(a))) &&
           (!statePredicate || statePredicate(getState())) &&
-          (!actionPredicate || actionPredicate(action))
+          (!actionPredicate || actionPredicate(action as any))
         ) {
-          const a1 = transform({ getState, dispatch, action: a, prevState });
+          const a1 = transform({
+            getState,
+            dispatch,
+            action: a as any,
+            prevState,
+          });
 
           if (!a1) {
             return undefined;
@@ -117,7 +118,7 @@ export function createProcessorMiddleware(): MW {
                 (stateChangePredicate &&
                   stateChangePredicate(getState()) !==
                     stateChangePredicate(prevState)) ||
-                actionPredicate?.(action)
+                actionPredicate?.(action as any)
               : (!actionType ||
                   (Array.isArray(actionType)
                     ? actionType.some((ac) => ac.match(a))
@@ -126,7 +127,7 @@ export function createProcessorMiddleware(): MW {
                 (!stateChangePredicate ||
                   stateChangePredicate(getState()) !==
                     stateChangePredicate(prevState)) &&
-                (!actionPredicate || actionPredicate(action)))
+                (!actionPredicate || actionPredicate(action as any)))
           ) {
             const handleError = (err: unknown) => {
               if (err instanceof DOMException && err.name === 'AbortError') {
@@ -150,7 +151,12 @@ export function createProcessorMiddleware(): MW {
             let promise;
 
             try {
-              promise = handle({ getState, dispatch, action: a, prevState });
+              promise = handle({
+                getState,
+                dispatch,
+                action: a as ActionFrom<BaseActionCreator>,
+                prevState,
+              });
             } catch (err) {
               handleError(err);
             }

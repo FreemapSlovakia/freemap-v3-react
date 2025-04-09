@@ -18,16 +18,15 @@ const rootReducer = combineReducers(reducers);
 export function createReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
-    middleware(getDefaultMiddleware) {
-      return getDefaultMiddleware().concat(
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(
         errorHandlingMiddleware,
         // process.env['NODE_ENV'] !== 'production' && loggerMiddleware,
         statePersistingMiddleware,
         createWebsocketMiddleware(),
         processorMiddleware,
         createTrackingMiddleware(),
-      );
-    },
+      ),
     preloadedState: getInitialState(),
   });
 

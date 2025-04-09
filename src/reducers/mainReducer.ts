@@ -99,8 +99,8 @@ export const mainInitialState: MainState = {
 
 export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
-    .addCase(setTool, (state, action) => {
-      return window.fmEmbedded
+    .addCase(setTool, (state, action) =>
+      window.fmEmbedded
         ? state
         : {
             ...state,
@@ -109,44 +109,29 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
               action.payload === state.tool || action.payload === null
                 ? state.selection
                 : null,
-          };
-    })
-    .addCase(drawingLineStopDrawing, (state) => {
-      return {
-        ...state,
-        tool: null,
-      };
-    })
-    .addCase(clearMapFeatures, (state) => {
-      return {
-        ...state,
-        selection: null,
-      };
-    })
-    .addCase(authSetUser, (state, action) => {
-      const p = action.payload;
+          },
+    )
+    .addCase(drawingLineStopDrawing, (state) => ({
+      ...state,
+      tool: null,
+    }))
+    .addCase(clearMapFeatures, (state) => ({
+      ...state,
+      selection: null,
+    }))
+    .addCase(authSetUser, (state, action) => ({
+      ...state,
 
-      return {
-        ...state,
-        homeLocation: !p
-          ? state.homeLocation
-          : p.lat && p.lon
-            ? { lat: p.lat, lon: p.lon }
-            : null,
-      };
-    })
+      homeLocation:
+        action.payload?.lat != null && action.payload?.lon != null
+          ? { lat: action.payload?.lat, lon: action.payload?.lon }
+          : state.homeLocation,
+    }))
     .addCase(authLogout, (state) => ({ ...state, homeLocation: null }))
     .addCase(setActiveModal, (state, action) => ({
       ...state,
       activeModal: action.payload,
       removeAdsOnLogin: action.payload ? state.removeAdsOnLogin : false,
-    }))
-    .addCase(authSetUser, (state, action) => ({
-      ...state,
-      homeLocation:
-        action.payload?.lat != null && action.payload?.lon != null
-          ? { lat: action.payload?.lat, lon: action.payload?.lon }
-          : state.homeLocation,
     }))
     .addCase(startProgress, (state, action) => ({
       ...state,
@@ -179,9 +164,10 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       selectingHomeLocation: false,
       homeLocation: state.selectingHomeLocation || null,
     }))
-    .addCase(documentShow, (state) => ({
+    .addCase(documentShow, (state, action) => ({
       ...state,
-      activeModal: 'tips',
+      documentKey: action.payload,
+      activeModal: action.payload === null ? 'tips' : null,
     }))
     .addCase(enableUpdatingUrl, (state) => ({
       ...state,
@@ -258,13 +244,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
           ? { type: 'draw-line-poly', id: state.selection.lineIndex }
           : null,
     }))
-    .addCase(documentShow, (state, action) => {
-      return {
-        ...state,
-        documentKey: action.payload === null ? null : action.payload,
-        activeModal: action.payload === null ? state.activeModal : null,
-      };
-    })
     .addCase(hideInfoBar, (state, action) => {
       return {
         ...state,
@@ -277,6 +256,8 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(applySettings, (state, action) => {
       const newState = { ...state };
 
+      const color = action.payload.drawingColor;
+
       if (action.payload.drawingColor) {
         newState.drawingColor = action.payload.drawingColor;
       }
@@ -285,13 +266,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         newState.drawingWidth = action.payload.drawingWidth;
       }
 
-      return newState;
-    })
-
-    .addCase(applySettings, (state, { payload }) => {
-      const color = payload.drawingColor;
-
-      return color ? updateRecentDrawingColors(state, color) : state;
+      return color ? updateRecentDrawingColors(newState, color) : newState;
     })
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => ({
       ...state,

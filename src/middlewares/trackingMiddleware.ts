@@ -1,4 +1,3 @@
-import { RootAction } from 'fm3/actions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
@@ -8,15 +7,15 @@ import { Dispatch, Middleware } from 'redux';
 import { is } from 'typia';
 
 export function createTrackingMiddleware(): Middleware<
-  unknown,
+  {},
   RootState,
   Dispatch
 > {
   let reopenTs: number | undefined;
 
   return ({ dispatch, getState }) =>
-    (next: Dispatch) =>
-    (action: RootAction): unknown => {
+    (next) =>
+    (action) => {
       if (rpcResponse.match(action)) {
         const { payload } = action;
 

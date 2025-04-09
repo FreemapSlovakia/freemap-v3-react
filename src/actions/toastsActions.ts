@@ -34,14 +34,15 @@ export type ResolvedToast = Toast & {
   id: string;
 };
 
-export const toastsAdd = createAction<ResolvedToast>(
-  'TOASTS_ADD',
-  (toast: Toast) =>
-    Object.assign(
-      { actions: [] as ToastAction[], id: Math.random().toString(36).slice(2) },
-      toast,
-    ),
-);
+export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) => {
+  return {
+    payload: {
+      actions: [] as ToastAction[],
+      id: Math.random().toString(36).slice(2),
+      ...toast,
+    } satisfies ResolvedToast,
+  };
+});
 
 export const toastsRemove = createAction<string>('TOASTS_REMOVE');
 
