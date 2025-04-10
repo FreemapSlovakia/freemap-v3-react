@@ -17,6 +17,7 @@ const rootReducer = combineReducers(reducers);
 
 export function createReduxStore() {
   const store = configureStore({
+    devTools: true,
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -26,7 +27,6 @@ export function createReduxStore() {
         },
       }).concat(
         errorHandlingMiddleware,
-        // process.env['NODE_ENV'] !== 'production' && loggerMiddleware,
         statePersistingMiddleware,
         createWebsocketMiddleware(),
         processorMiddleware,
