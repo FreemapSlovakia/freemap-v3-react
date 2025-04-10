@@ -1,12 +1,15 @@
-import { clearMapFeatures, selectFeature } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { OverpassResult } from 'fm3/types/common';
 import { assert } from 'typia';
+import { clearMapFeatures, selectFeature } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import {
+  objectsSetFilter,
+  objectsSetResult,
+} from '../actions/objectsActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { OverpassResult } from '../types/common.js';
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;

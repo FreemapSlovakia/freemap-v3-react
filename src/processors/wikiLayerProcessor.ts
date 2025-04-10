@@ -1,15 +1,15 @@
 import area from '@turf/area';
 import bboxPolygon from '@turf/bbox-polygon';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { WikiPoint, wikiSetPoints } from 'fm3/actions/wikiActions';
-import { cancelRegister } from 'fm3/cancelRegister';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
 import { CRS, Point } from 'leaflet';
 import RBush, { BBox } from 'rbush';
 import { assert } from 'typia';
+import { mapRefocus } from '../actions/mapActions.js';
+import { WikiPoint, wikiSetPoints } from '../actions/wikiActions.js';
+import { cancelRegister } from '../cancelRegister.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
 
 interface WikiResponse {
   entities?: {

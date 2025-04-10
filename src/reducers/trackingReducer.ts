@@ -1,19 +1,19 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { clearMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { wsStateChanged } from 'fm3/actions/websocketActions';
-import { StringDates } from 'fm3/types/common';
+import { produce } from 'immer';
+import { is } from 'typia';
+import { clearMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
+import { rpcEvent, rpcResponse } from '../actions/rpcActions.js';
+import { trackingActions } from '../actions/trackingActions.js';
+import { wsStateChanged } from '../actions/websocketActions.js';
+import { StringDates } from '../types/common.js';
 import {
   AccessToken,
   Device,
   Track,
   TrackedDevice,
   TrackPoint,
-} from 'fm3/types/trackingTypes';
-import { produce } from 'immer';
-import { is } from 'typia';
+} from '../types/trackingTypes.js';
 
 export interface TrackingState {
   devices: Device[];

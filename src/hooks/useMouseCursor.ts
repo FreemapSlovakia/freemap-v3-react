@@ -1,6 +1,6 @@
-import { mouseCursorSelector } from 'fm3/selectors/mainSelectors';
 import { useEffect, useState } from 'react';
-import { useAppSelector } from './reduxSelectHook';
+import { mouseCursorSelector } from '../selectors/mainSelectors.js';
+import { useAppSelector } from './reduxSelectHook.js';
 
 // TODO handle also dropdown menus (.dropdown-menu.show)
 

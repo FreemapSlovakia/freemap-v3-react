@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { authLogout } from 'fm3/actions/authActions';
+import { authLogout } from '../actions/authActions.js';
 import {
   MapLoadMeta,
   MapMeta,
@@ -8,7 +8,7 @@ import {
   mapsLoaded,
   mapsSetList,
   mapsSetMeta,
-} from 'fm3/actions/mapsActions';
+} from '../actions/mapsActions.js';
 
 export interface MapsState {
   loadMeta: MapLoadMeta | undefined;

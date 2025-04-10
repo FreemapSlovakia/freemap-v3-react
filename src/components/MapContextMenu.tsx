@@ -1,22 +1,6 @@
-import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
-import {
-  drawingMeasure,
-  drawingPointAdd,
-} from 'fm3/actions/drawingPointActions';
-import { galleryRequestImages } from 'fm3/actions/galleryActions';
-import { setTool } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from 'fm3/actions/routePlannerActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,
   FaChevronLeft,
@@ -31,9 +15,25 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
-import { useMap } from 'fm3/hooks/useMap';
-import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
+import { drawingLineAddPoint } from '../actions/drawingLineActions.js';
+import {
+  drawingMeasure,
+  drawingPointAdd,
+} from '../actions/drawingPointActions.js';
+import { galleryRequestImages } from '../actions/galleryActions.js';
+import { setTool } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetStart,
+} from '../actions/routePlannerActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMap } from '../hooks/useMap.js';
+import { useMenuHandler } from '../hooks/useMenuHandler.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
 
 const initialState = {
   x: 0,

@@ -1,7 +1,7 @@
-import { authDisconnect, authSetUser } from 'fm3/actions/authActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
+import { authDisconnect, authSetUser } from '../actions/authActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const handle: ProcessorHandler<typeof authDisconnect> = async ({
   action,

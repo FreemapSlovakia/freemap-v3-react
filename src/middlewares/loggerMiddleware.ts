@@ -1,5 +1,5 @@
-import { RootState } from 'fm3/store';
 import { Middleware } from 'redux';
+import { RootState } from '../store.js';
 
 export const loggerMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>

@@ -1,18 +1,18 @@
+import { ReactElement, useCallback } from 'react';
+import { Button } from 'react-bootstrap';
+import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
+import { useDispatch } from 'react-redux';
 import {
   authDisconnect,
   authWithFacebook,
   authWithGarmin,
   authWithGoogle,
   authWithOsm,
-} from 'fm3/actions/authActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { AuthProvider } from 'fm3/types/common';
-import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import { FaFacebook, FaGoogle } from 'react-icons/fa';
-import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
-import { useDispatch } from 'react-redux';
+} from '../actions/authActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { AuthProvider } from '../types/common.js';
 
 type Props = { mode: 'login' | 'connect' | 'disconnect' };
 

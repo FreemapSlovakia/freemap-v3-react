@@ -1,10 +1,8 @@
-import { RootAction } from 'fm3/actions';
-import { ResolvedToast } from 'fm3/actions/toastsActions';
-import 'fm3/styles/toasts.scss';
 import { ReactElement, ReactNode, useCallback } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import { Alert, Button, ButtonToolbar } from 'react-bootstrap';
+import { RootAction } from '../actions/index.js';
+import { ResolvedToast } from '../actions/toastsActions.js';
+import '../styles/toasts.scss';
 
 interface Props
   extends Pick<ResolvedToast, 'id' | 'actions' | 'style' | 'noClose'> {

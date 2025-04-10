@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
-import { TransportType } from 'fm3/transportTypeDefs';
-import { LatLon } from 'fm3/types/common';
 import { Feature, Polygon } from 'geojson';
+import { TransportType } from '../transportTypeDefs.js';
+import { LatLon } from '../types/common.js';
 
 export type PickMode = 'start' | 'finish';
 

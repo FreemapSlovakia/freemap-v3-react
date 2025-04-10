@@ -1,17 +1,17 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { clearMapFeatures } from 'fm3/actions/mainActions';
+import { produce } from 'immer';
+import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from 'fm3/actions/osmActions';
+} from '../actions/osmActions.js';
 import {
   searchClear,
   SearchResult,
   searchSelectResult,
   searchSetResults,
-} from 'fm3/actions/searchActions';
-import { produce } from 'immer';
+} from '../actions/searchActions.js';
 
 export interface SearchState {
   results: SearchResult[];

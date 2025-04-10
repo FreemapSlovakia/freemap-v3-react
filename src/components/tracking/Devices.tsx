@@ -1,15 +1,12 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Table from 'react-bootstrap/Table';
+import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { Device } from './Device';
+import { setActiveModal } from '../../actions/mainActions.js';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { Device } from './Device.js';
 
 export function Devices(): ReactElement {
   const m = useMessages();

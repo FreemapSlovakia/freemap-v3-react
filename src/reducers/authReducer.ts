@@ -3,8 +3,8 @@ import {
   authLogout,
   authSetPremium,
   authSetUser,
-} from 'fm3/actions/authActions';
-import { User } from 'fm3/types/common';
+} from '../actions/authActions.js';
+import { User } from '../types/common.js';
 
 export interface AuthState {
   validated: boolean;

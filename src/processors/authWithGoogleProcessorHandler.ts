@@ -1,9 +1,9 @@
-import { authWithGoogle } from 'fm3/actions/authActions';
-import { getAuth2 } from 'fm3/gapiLoader';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { hasProperty } from 'fm3/typeUtils';
-import { handleLoginResponse } from './loginResponseHandler';
+import { authWithGoogle } from '../actions/authActions.js';
+import { getAuth2 } from '../gapiLoader.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { hasProperty } from '../typeUtils.js';
+import { handleLoginResponse } from './loginResponseHandler.js';
 
 const handle: ProcessorHandler<typeof authWithGoogle> = async ({
   action,

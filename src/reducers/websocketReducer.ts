@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { wsStateChanged } from 'fm3/actions/websocketActions';
+import { wsStateChanged } from '../actions/websocketActions.js';
 
 export interface WebsocketState {
   state: number;

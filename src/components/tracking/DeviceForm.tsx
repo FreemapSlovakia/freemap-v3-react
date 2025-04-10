@@ -1,15 +1,17 @@
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useTextInputState } from 'fm3/hooks/useTextInputState';
-import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
-import Form from 'react-bootstrap/Form';
+import { Form } from 'react-bootstrap';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useTextInputState } from '../../hooks/useTextInputState.js';
+import { useMessages } from '../../l10nInjector.js';
 
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import {
+  Button,
+  Dropdown,
+  DropdownButton,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
 import { FaBullseye, FaSync } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 

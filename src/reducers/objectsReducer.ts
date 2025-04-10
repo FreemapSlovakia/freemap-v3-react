@@ -1,13 +1,13 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { clearMapFeatures } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 import {
   MarkerType,
   ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
-} from 'fm3/actions/objectsActions';
-import { setSelectedIcon } from 'fm3/actions/objectsActions';
+  setSelectedIcon,
+} from '../actions/objectsActions.js';
 
 export interface ObjectsState {
   objects: ObjectsResult[];

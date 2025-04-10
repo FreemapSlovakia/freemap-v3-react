@@ -1,8 +1,5 @@
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Dropdown } from 'react-bootstrap';
 import {
   FaBullseye,
   FaMobileAlt,
@@ -12,7 +9,10 @@ import {
   FaRegEye,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { SubmenuHeader } from './SubmenuHeader';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function TrackingSubmenu(): ReactElement {
   const dispatch = useDispatch();

@@ -1,12 +1,9 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import legend from 'fm3/legend/index.json';
 import { ReactElement, useCallback } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import Modal from 'react-bootstrap/Modal';
+import { Accordion, Button, Card, Modal } from 'react-bootstrap';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../actions/mainActions.js';
+import legend from '../legend/index.json' with { type: 'json' };
 
 interface LegendItem {
   n: string;
@@ -50,7 +47,7 @@ export function LegendModal({ show }: Props): ReactElement {
                   <div key={e.n} className="legend-item">
                     <div>
                       <div>
-                        <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+                        <img src={require(`../legend/${e.i}`)} alt={e.n} />
                       </div>
                     </div>
 

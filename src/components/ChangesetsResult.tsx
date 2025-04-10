@@ -1,14 +1,17 @@
-import { Changeset, changesetsSetParams } from 'fm3/actions/changesetsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import {
+  Changeset,
+  changesetsSetParams,
+} from '../actions/changesetsActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { RichMarker } from '../components/RichMarker.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import '../styles/changesets.scss';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 

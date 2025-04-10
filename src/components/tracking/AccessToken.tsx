@@ -1,16 +1,14 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { copyToClipboard } from 'fm3/clipboardUtils';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../../actions/mainActions.js';
+import { toastsAdd } from '../../actions/toastsActions.js';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { copyToClipboard } from '../../clipboardUtils.js';
+import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
+import { useMessages } from '../../l10nInjector.js';
+import { AccessToken as AccessTokenType } from '../../types/trackingTypes.js';
 
 type Props = {
   accessToken: AccessTokenType;

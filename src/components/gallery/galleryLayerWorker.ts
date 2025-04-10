@@ -1,4 +1,4 @@
-import { renderGalleryTile } from './galleryTileRenderrer';
+import { renderGalleryTile } from './galleryTileRenderrer.js';
 
 self.onmessage = (evt) => {
   const id = evt.data.id;

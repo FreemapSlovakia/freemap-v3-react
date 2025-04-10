@@ -1,15 +1,14 @@
-import { toggleLocate } from 'fm3/actions/mainActions';
-import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
-import { MapSwitchButton } from './MapSwitchButton';
-import { useMap } from 'fm3/hooks/useMap';
+import { toggleLocate } from '../actions/mainActions.js';
+import { mapRefocus, MapViewState } from '../actions/mapActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMap } from '../hooks/useMap.js';
+import { useMessages } from '../l10nInjector.js';
+import { MapSwitchButton } from './MapSwitchButton.js';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();

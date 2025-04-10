@@ -1,22 +1,28 @@
-const process = require('process');
-const path = require('path');
-const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WebpackPwaManifest = require('webpack-pwa-manifest');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const { InjectManifest } = require('workbox-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { fileURLToPath } from 'node:url';
+import path from 'path';
+import process from 'process';
+import reactRefreshBabel from 'react-refresh/babel';
+import type SassLoader from 'sass-loader';
+import type StringReplaceLoader from 'string-replace-loader';
+import type { Configuration } from 'webpack';
+import webpack from 'webpack';
+import { InjectManifest } from 'workbox-webpack-plugin';
+// import ESLintPlugin from 'eslint-webpack-plugin';
 
-const skMessages = require('./src/translations/sk-shared.json');
-const csMessages = require('./src/translations/cs-shared.json');
-const enMessages = require('./src/translations/en-shared.json');
-const huMessages = require('./src/translations/hu-shared.json');
-const itMessages = require('./src/translations/it-shared.json');
+import csMessages from './src/translations/cs-shared.js';
+import enMessages from './src/translations/en-shared.js';
+import huMessages from './src/translations/hu-shared.js';
+import itMessages from './src/translations/it-shared.js';
+import skMessages from './src/translations/sk-shared.js';
 
-const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const prod = process.env['DEPLOYMENT'] && process.env['DEPLOYMENT'] !== 'dev';
 
 const htmlPluginProps = {
   filename: 'index.html',
@@ -35,7 +41,7 @@ const htmlPluginProps = {
   },
 };
 
-module.exports = {
+const config: Configuration = {
   mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
   entry: './index.tsx',
@@ -46,9 +52,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js'],
+    extensionAlias: {
+      '.js': ['.js', '.ts', '.tsx'],
+    },
     alias: {
-      fm3: path.resolve(__dirname, 'src'),
       pica: 'pica/dist/pica.js',
     },
   },
@@ -75,7 +83,7 @@ module.exports = {
               },
             ],
           ],
-          plugins: [!prod && require('react-refresh/babel')].filter(Boolean),
+          plugins: [!prod && reactRefreshBabel].filter(Boolean),
         },
       },
       // see https://github.com/mattiasw/ExifReader/issues/248
@@ -85,10 +93,10 @@ module.exports = {
         options: {
           search: 'Constants.USE_THUMBNAIL',
           replace: 'false',
-        },
+        } satisfies StringReplaceLoader.Options,
       },
       {
-        test: /\.(t|j)sx?$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
         loader: 'ts-loader',
       },
@@ -108,11 +116,23 @@ module.exports = {
                       path.relative(path.dirname(resourcePath), context) + '/'
                     );
                   },
-                },
+                } satisfies MiniCssExtractPlugin.LoaderOptions,
               }
             : 'style-loader',
           'css-loader',
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                silenceDeprecations: [
+                  'mixed-decls',
+                  'color-functions',
+                  'global-builtin',
+                  'import',
+                ],
+              },
+            } satisfies SassLoader.Options,
+          },
         ],
       },
       {
@@ -131,7 +151,7 @@ module.exports = {
                       path.relative(path.dirname(resourcePath), context) + '/'
                     );
                   },
-                },
+                } satisfies MiniCssExtractPlugin.LoaderOptions,
               }
             : 'style-loader',
           'css-loader',
@@ -167,34 +187,35 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: true,
-      DEPLOYMENT: process.env.DEPLOYMENT ?? null,
+      DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
-        process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk',
+        process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
       MAX_GPX_TRACK_SIZE_IN_MB: 15,
       BASE_URL:
         {
           www: 'https://www.freemap.sk',
           next: 'https://next.freemap.sk',
-        }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:9000',
+        }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:9000',
       API_URL:
         {
           www: 'https://backend.freemap.sk',
           next: 'https://backend.freemap.sk',
-        }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
-      MATOMO_SITE_ID: { www: '1', next: null }[process.env.DEPLOYMENT] ?? null,
+        }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:3000',
+      MATOMO_SITE_ID:
+        { www: '1', next: null }[process.env['DEPLOYMENT']!] ?? null,
       SENTRY_DSN:
         {
           www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2',
-        }[process.env.DEPLOYMENT] ?? null,
+        }[process.env['DEPLOYMENT']!] ?? null,
       FB_APP_ID:
         { www: '681854635902254', next: '681854635902254' }[
-          process.env.DEPLOYMENT
+          process.env['DEPLOYMENT']!
         ] ?? null,
       ROVAS_URL_PREFIX:
         {
           www: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
           next: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
-        }[process.env.DEPLOYMENT] ||
+        }[process.env['DEPLOYMENT']!] ||
         'https://dev.merit.world/rewpro?paytype=project&recipient=24130',
     }),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
@@ -262,43 +283,6 @@ module.exports = {
         loadingMessage: 'Caricamento…',
       },
     }),
-    new WebpackPwaManifest({
-      inject: true,
-      ios: true,
-      publicPath: '/',
-      name: 'Freemap Slovakia',
-      short_name: 'Freemap',
-      description:
-        'Freemap je voľne dostupná online mapa Slovenska založená na dátach z OpenStreetMap',
-      background_color: '#ffffff',
-      theme_color: '#ffffff',
-      'theme-color': '#ffffff',
-      display: 'standalone',
-      dir: 'auto',
-      icons: [
-        {
-          src: path.resolve('src/images/freemap-logo-small.png'),
-          sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
-        },
-      ],
-      // orientation: 'any', // any doesn't respect orientation lock
-      share_target: {
-        action: '/',
-        method: 'POST',
-        enctype: 'multipart/form-data',
-        params: {
-          title: 'title',
-          text: 'text',
-          url: 'url',
-          files: [
-            {
-              name: 'file',
-              accept: ['image/jpeg', 'application/gpx+xml'],
-            },
-          ],
-        },
-      },
-    }),
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -327,3 +311,5 @@ module.exports = {
     //   }),
   ].filter(Boolean),
 };
+
+export default config;

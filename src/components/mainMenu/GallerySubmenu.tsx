@@ -1,6 +1,5 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { JSX } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaCamera,
@@ -10,9 +9,10 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
-import { Checkbox } from '../Checkbox';
-import { SubmenuHeader } from './SubmenuHeader';
-import { JSX } from 'react';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { Checkbox } from '../Checkbox.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function GallerySubmenu(): JSX.Element {
   const m = useMessages();

@@ -1,9 +1,9 @@
-import { authSetPremium } from 'fm3/actions/authActions';
-import { removeAds } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assert } from 'typia';
+import { authSetPremium } from '../actions/authActions.js';
+import { removeAds } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 type Response = {
   rovasToken: string;

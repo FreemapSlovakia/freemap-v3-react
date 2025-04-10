@@ -1,6 +1,4 @@
-import { toLatLng } from 'fm3/geoutils';
-import { TrackPoint } from 'fm3/types/trackingTypes';
-import { Fragment, memo, ReactElement, useCallback } from 'react';
+import { Fragment, JSX, memo, ReactElement, useCallback } from 'react';
 import {
   FaBatteryEmpty,
   FaBatteryFull,
@@ -14,7 +12,8 @@ import {
   FaTachometerAlt,
 } from 'react-icons/fa';
 import { CircleMarker, Tooltip } from 'react-leaflet';
-import { JSX } from 'react';
+import { toLatLng } from '../../geoutils.js';
+import { TrackPoint } from '../../types/trackingTypes.js';
 
 interface TrackingPointProps {
   tp: TrackPoint;

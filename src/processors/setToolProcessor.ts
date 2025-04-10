@@ -1,5 +1,5 @@
-import { setActiveModal, setTool } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { setActiveModal, setTool } from '../actions/mainActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const setToolProcessor: Processor<typeof setTool> = {
   actionCreator: setTool,

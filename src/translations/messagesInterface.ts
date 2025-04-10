@@ -1,12 +1,11 @@
-import { Changeset } from 'fm3/actions/changesetsActions';
-import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
-import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
-import { HttpError } from 'fm3/httpRequest';
-import { AttributionDef, NoncustomLayerLetters } from 'fm3/mapDefinitions';
-import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
-import { ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
-import { JSX } from 'react';
+import { Changeset } from '../actions/changesetsActions.js';
+import { RoutingMode, Weighting } from '../actions/routePlannerActions.js';
+import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+import { HttpError } from '../httpRequest.js';
+import { AttributionDef, NoncustomLayerLetters } from '../mapDefinitions.js';
+import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
 

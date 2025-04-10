@@ -1,5 +1,5 @@
-import { cancelRegister } from 'fm3/cancelRegister';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { cancelRegister } from '../cancelRegister.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const cancelProcessor: Processor = {
   async handle({ action }) {

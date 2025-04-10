@@ -1,6 +1,6 @@
-import { MessagePaths } from 'fm3/types/common';
-import { RootAction } from '.';
 import { createAction } from '@reduxjs/toolkit';
+import { MessagePaths } from '../types/common.js';
+import { RootAction } from './index.js';
 
 export interface ToastAction {
   name?: string;

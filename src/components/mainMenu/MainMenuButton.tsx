@@ -1,6 +1,4 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
+import { get } from 'idb-keyval';
 import {
   Fragment,
   ReactElement,
@@ -8,22 +6,24 @@ import {
   useEffect,
   useState,
 } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
-import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems';
-import { DrawingSubmenu } from './DrawingSubmenu';
-import { GallerySubmenu } from './GallerySubmenu';
-import { HelpSubmenu } from './HelpSubmenu';
-import { LanguageSubmenu } from './LanguageSubmenu';
-import { MainMenu } from './MainMenu';
-import { OfflineSubmenu } from './OfflineSubmenu';
-import { SocialButtons } from './SocialButtons';
-import { SubmenuHeader } from './SubmenuHeader';
-import { TrackingSubmenu } from './TrackingSubmenu';
-import { CacheMode } from 'fm3/types/common';
-import { get } from 'idb-keyval';
-import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
+import { fixedPopperConfig } from '../../fixedPopperConfig.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMenuHandler } from '../../hooks/useMenuHandler.js';
+import { useScrollClasses } from '../../hooks/useScrollClasses.js';
+import { useMessages } from '../../l10nInjector.js';
+import { CacheMode } from '../../types/common.js';
+import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
+import { DrawingSubmenu } from './DrawingSubmenu.js';
+import { GallerySubmenu } from './GallerySubmenu.js';
+import { HelpSubmenu } from './HelpSubmenu.js';
+import { LanguageSubmenu } from './LanguageSubmenu.js';
+import { MainMenu } from './MainMenu.js';
+import { OfflineSubmenu } from './OfflineSubmenu.js';
+import { SocialButtons } from './SocialButtons.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
+import { TrackingSubmenu } from './TrackingSubmenu.js';
 
 export function MainMenuButton(): ReactElement {
   const mapType = useAppSelector((state) => state.map.mapType);

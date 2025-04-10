@@ -1,13 +1,11 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapsDisconnect, mapsSave } from 'fm3/actions/mapsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import ButtonToolbar from 'react-bootstrap/esm/ButtonToolbar';
+import { Button, ButtonToolbar, Card } from 'react-bootstrap';
 import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../actions/mainActions.js';
+import { mapsDisconnect, mapsSave } from '../actions/mapsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();

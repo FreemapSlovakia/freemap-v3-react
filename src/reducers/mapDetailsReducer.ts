@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { clearMapFeatures } from 'fm3/actions/mainActions';
-import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
 
 export interface MapDetailsState {
   userSelectedLat: number | null;

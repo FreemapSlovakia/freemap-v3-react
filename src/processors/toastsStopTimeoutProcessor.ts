@@ -1,6 +1,6 @@
-import { toastsStopTimeout } from 'fm3/actions/toastsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { timeoutMap } from 'fm3/processors/toasts';
+import { toastsStopTimeout } from '../actions/toastsActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { timeoutMap } from '../processors/toasts.js';
 
 export const toastsStopTimeoutProcessor: Processor<typeof toastsStopTimeout> = {
   actionCreator: toastsStopTimeout,

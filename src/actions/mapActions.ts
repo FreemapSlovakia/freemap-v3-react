@@ -4,7 +4,7 @@ import {
   LayerDef,
   Num1digit,
   OverlayLetters,
-} from 'fm3/mapDefinitions';
+} from '../mapDefinitions.js';
 
 export interface MapViewState {
   mapType: BaseLayerLetters;

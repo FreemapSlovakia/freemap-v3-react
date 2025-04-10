@@ -1,13 +1,13 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { assert } from 'typia';
+import { setActiveModal } from '../actions/mainActions.js';
 import {
   wikiLoadPreview,
   WikiPreview,
   wikiSetPreview,
-} from 'fm3/actions/wikiActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { assert } from 'typia';
+} from '../actions/wikiActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
 
 interface WikiResponse1 {
   query: {

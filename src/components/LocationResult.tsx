@@ -1,7 +1,7 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { divIcon } from 'leaflet';
 import { ReactElement } from 'react';
 import { Circle, Marker } from 'react-leaflet';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 
 const circularIcon = divIcon({
   iconSize: [40, 40],

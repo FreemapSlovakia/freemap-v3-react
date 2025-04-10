@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
-import { AuthProvider, User } from 'fm3/types/common';
 import { Action } from 'redux';
+import { AuthProvider, User } from '../types/common.js';
 
 export const authWithOsm = createAction<{
   connect: boolean;

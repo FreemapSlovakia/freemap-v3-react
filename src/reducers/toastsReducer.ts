@@ -3,7 +3,7 @@ import {
   ResolvedToast,
   toastsAdd,
   toastsRemove,
-} from 'fm3/actions/toastsActions';
+} from '../actions/toastsActions.js';
 
 export interface ToastsState {
   toasts: ResolvedToast[];

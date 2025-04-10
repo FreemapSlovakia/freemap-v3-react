@@ -1,5 +1,5 @@
-import { authWithOsm2 } from 'fm3/actions/authActions';
-import { MyStore } from './store';
+import { authWithOsm2 } from './actions/authActions.js';
+import { MyStore } from './store.js';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
   window.addEventListener('message', (e) => {

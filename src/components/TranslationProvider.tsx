@@ -1,6 +1,6 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { Messages } from 'fm3/translations/messagesInterface';
 import { createContext, ReactElement, ReactNode } from 'react';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { Messages } from '../translations/messagesInterface.js';
 
 const MessagesContext = createContext<Messages | undefined>(undefined);
 

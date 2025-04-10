@@ -1,13 +1,12 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { LatLon } from 'fm3/types/common';
-import { ReactElement } from 'react';
-import type { OverlayProps } from 'react-bootstrap/esm/Overlay';
-import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { useMenuHandler } from 'fm3/hooks/useMenuHandler';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
-import { JSX } from 'react';
+import { JSX, ReactElement } from 'react';
+import type { OverlayProps } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMenuHandler } from '../hooks/useMenuHandler.js';
+import { useMessages } from '../l10nInjector.js';
+import { LatLon } from '../types/common.js';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
 
 interface Props extends LatLon {
   lat: number;

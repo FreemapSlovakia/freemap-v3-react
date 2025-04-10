@@ -1,11 +1,11 @@
-import { useLazy } from 'fm3/hooks/useLazy';
 import {
-  ComponentType,
-  ReactElement,
-  FunctionComponent,
-  ComponentClass,
   Attributes,
+  ComponentClass,
+  ComponentType,
+  FunctionComponent,
+  ReactElement,
 } from 'react';
+import { useLazy } from '../hooks/useLazy.js';
 
 type Factory<T> = () => Promise<{ default: T }>;
 

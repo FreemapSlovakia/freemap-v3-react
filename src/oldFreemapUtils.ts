@@ -1,7 +1,7 @@
 import { Location } from 'history';
 import { is } from 'typia';
-import { MapViewState } from './actions/mapActions';
-import { BaseLayerLetters } from './mapDefinitions';
+import { MapViewState } from './actions/mapActions.js';
+import { BaseLayerLetters } from './mapDefinitions.js';
 
 // it's amazing that old freemap is using at least three different url param formats
 

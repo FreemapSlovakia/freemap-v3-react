@@ -1,5 +1,5 @@
-import { applyCookieConsent } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { applyCookieConsent } from '../actions/mainActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const cookieConsentProcessor: Processor = {
   actionCreator: applyCookieConsent,

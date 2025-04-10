@@ -1,11 +1,11 @@
-import { MapState } from 'fm3/reducers/mapReducer';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { Line } from './drawingLineActions';
-import { DrawingPoint } from './drawingPointActions';
-import { GalleryFilter } from './galleryActions';
 import { createAction } from '@reduxjs/toolkit';
+import { MapState } from '../reducers/mapReducer.js';
+import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
+import { TrackingState } from '../reducers/trackingReducer.js';
+import { TrackViewerState } from '../reducers/trackViewerReducer.js';
+import { Line } from './drawingLineActions.js';
+import { DrawingPoint } from './drawingPointActions.js';
+import { GalleryFilter } from './galleryActions.js';
 
 export interface MapMeta {
   id: string;

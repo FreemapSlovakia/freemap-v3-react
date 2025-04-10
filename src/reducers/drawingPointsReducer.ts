@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { produce } from 'immer';
 import {
   DrawingPoint,
   drawingPointAdd,
@@ -6,10 +7,9 @@ import {
   drawingPointChangeProperties,
   drawingPointDelete,
   drawingPointSetAll,
-} from 'fm3/actions/drawingPointActions';
-import { applySettings, clearMapFeatures } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { produce } from 'immer';
+} from '../actions/drawingPointActions.js';
+import { applySettings, clearMapFeatures } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];

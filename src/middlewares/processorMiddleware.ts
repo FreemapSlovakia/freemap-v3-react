@@ -1,10 +1,10 @@
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { sendError } from 'fm3/globalErrorHandler';
-import { RootState } from 'fm3/store';
-import { MessagePaths } from 'fm3/types/common';
-import { Action, Dispatch, Middleware } from 'redux';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { Action, Dispatch, Middleware } from 'redux';
+import { startProgress, stopProgress } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { sendError } from '../globalErrorHandler.js';
+import { RootState } from '../store.js';
+import { MessagePaths } from '../types/common.js';
 
 type BaseActionCreator<P = any, T extends string = string> = {
   (payload: P): PayloadAction<P, T>;

@@ -1,7 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { clearMapFeatures } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { osmClear } from 'fm3/actions/osmActions';
+import { FeatureCollection } from 'geojson';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
+import { osmClear } from '../actions/osmActions.js';
 import {
   trackViewerColorizeTrackBy,
   trackViewerDelete,
@@ -9,8 +10,7 @@ import {
   trackViewerGpxLoad,
   trackViewerSetData,
   trackViewerSetTrackUID,
-} from 'fm3/actions/trackViewerActions';
-import { FeatureCollection } from 'geojson';
+} from '../actions/trackViewerActions.js';
 
 export interface TrackViewerStateBase {
   trackGeojson: FeatureCollection | null;

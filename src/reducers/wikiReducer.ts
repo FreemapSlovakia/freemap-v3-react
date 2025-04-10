@@ -5,7 +5,7 @@ import {
   WikiPreview,
   wikiSetPoints,
   wikiSetPreview,
-} from 'fm3/actions/wikiActions';
+} from '../actions/wikiActions.js';
 
 export interface WikiState {
   points: WikiPoint[];

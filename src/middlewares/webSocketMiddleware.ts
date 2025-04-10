@@ -1,3 +1,4 @@
+import { Middleware } from '@reduxjs/toolkit';
 import {
   wsClose,
   wsInvalidState,
@@ -5,9 +6,8 @@ import {
   wsReceived,
   wsSend,
   wsStateChanged,
-} from 'fm3/actions/websocketActions';
-import { RootState } from 'fm3/store';
-import { Middleware } from '@reduxjs/toolkit';
+} from '../actions/websocketActions.js';
+import { RootState } from '../store.js';
 
 export function createWebsocketMiddleware(): Middleware<{}, RootState> {
   let ws: WebSocket | null = null;

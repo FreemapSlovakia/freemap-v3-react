@@ -1,13 +1,13 @@
-import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import {
+  Accordion,
+  Alert,
+  Button,
+  ButtonGroup,
+  Form,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
 import {
   FaDownload,
   FaDrawPolygon,
@@ -16,7 +16,9 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import Form from 'react-bootstrap/Form';
+import { exportMap, setActiveModal } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 type Props = { show: boolean };
 

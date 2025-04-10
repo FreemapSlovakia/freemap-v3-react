@@ -1,6 +1,6 @@
-import { enableUpdatingUrl } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { enableUpdatingUrl } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 let prevMapType: string | undefined;
 

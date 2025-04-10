@@ -1,18 +1,15 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { DateTime } from 'fm3/components/DateTime';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useTextInputState } from 'fm3/hooks/useTextInputState';
-import { useMessages } from 'fm3/l10nInjector';
-import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { FormEvent, ReactElement, useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
+import { selectFeature } from '../../actions/mainActions.js';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { DateTime } from '../../components/DateTime.js';
+import { toDatetimeLocal } from '../../dateUtils.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useTextInputState } from '../../hooks/useTextInputState.js';
+import { useMessages } from '../../l10nInjector.js';
+import { TrackedDevice } from '../../types/trackingTypes.js';
 
 export function TrackedDeviceForm(): ReactElement {
   const m = useMessages();

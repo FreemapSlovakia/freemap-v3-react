@@ -1,8 +1,7 @@
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { JSX, ReactElement } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
-import { JSX } from 'react';
+import { useMessages } from '../../l10nInjector.js';
 
 type SubmenuHeaderProps = {
   icon: ReactElement;

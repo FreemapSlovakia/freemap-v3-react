@@ -1,6 +1,6 @@
-import { RootState } from 'fm3/store';
-import storage from 'local-storage-fallback';
 import { Middleware } from '@reduxjs/toolkit';
+import storage from 'local-storage-fallback';
+import { RootState } from '../store.js';
 
 export const statePersistingMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>

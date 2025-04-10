@@ -1,9 +1,9 @@
 import {
   galleryRequestImage,
   gallerySubmitStars,
-} from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/galleryActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
   {

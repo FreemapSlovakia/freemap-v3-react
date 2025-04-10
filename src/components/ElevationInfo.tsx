@@ -1,16 +1,13 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import { LatLon } from 'fm3/types/common';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Alert from 'react-bootstrap/Alert';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { useCallback, useMemo } from 'react';
-import { latLonToString } from 'fm3/geoutils';
+import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import useLocalStorageState from 'use-local-storage-state';
+import { latLonToString } from '../geoutils.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { baseLayers, overlayLayers } from '../mapDefinitions.js';
+import { LatLon } from '../types/common.js';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;

@@ -1,3 +1,27 @@
+import 'pannellum';
+import 'pannellum/build/pannellum.css';
+import {
+  ChangeEvent,
+  FormEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  FaExternalLinkAlt,
+  FaPencilAlt,
+  FaRegDotCircle,
+  FaSave,
+  FaTimes,
+  FaTrash,
+} from 'react-icons/fa';
+import { RiFullscreenLine } from 'react-icons/ri';
+import { useDispatch } from 'react-redux';
+import { Rating } from 'react-simple-star-rating';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -11,46 +35,18 @@ import {
   galleryShowOnTheMap,
   gallerySubmitComment,
   gallerySubmitStars,
-} from 'fm3/actions/galleryActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+} from '../../actions/galleryActions.js';
+import { toastsAdd } from '../../actions/toastsActions.js';
 import {
   GalleryEditForm,
   PictureModel,
-} from 'fm3/components/gallery/GalleryEditForm';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/gallery.scss';
-import 'pannellum';
-import 'pannellum/build/pannellum.css';
-import {
-  ChangeEvent,
-  FormEvent,
-  Fragment,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import {
-  FaExternalLinkAlt,
-  FaPencilAlt,
-  FaRegDotCircle,
-  FaSave,
-  FaTimes,
-  FaTrash,
-} from 'react-icons/fa';
-import { RiFullscreenLine } from 'react-icons/ri';
-import { useDispatch } from 'react-redux';
-import ReactStars from 'react-stars';
-import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
-import { RecentTags } from './RecentTags';
-import Form from 'react-bootstrap/Form';
+} from '../../components/gallery/GalleryEditForm.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
+import { useMessages } from '../../l10nInjector.js';
+import '../../styles/gallery.scss';
+import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton.js';
+import { RecentTags } from './RecentTags.js';
 
 type Props = { show: boolean };
 
@@ -454,11 +450,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
               {' ｜ '}
 
-              <ReactStars
+              <Rating
                 className="stars"
                 size={22}
-                value={rating}
-                edit={false}
+                initialValue={rating}
+                readonly
               />
 
               {description && ` ｜ ${description}`}
@@ -541,12 +537,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                         {m?.gallery.viewer.yourRating}
                       </span>
 
-                      <ReactStars
+                      <Rating
                         className="stars ms-1 flex-shrink-0"
                         size={22}
-                        half={false}
-                        value={myStars ?? 0}
-                        onChange={handleStarsChange}
+                        allowFraction={false}
+                        initialValue={myStars ?? 0}
+                        onClick={handleStarsChange}
                       />
 
                       {editModel === null && tags && canEdit && (

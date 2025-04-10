@@ -1,15 +1,15 @@
 import { isAnyOf } from '@reduxjs/toolkit';
-import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
-import { ShowModal } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { basicModals } from 'fm3/constants';
-import { DocumentKey } from 'fm3/documents';
-import { history } from 'fm3/historyHolder';
-import { OverlayLetters } from 'fm3/mapDefinitions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import { LatLon } from 'fm3/types/common';
 import { is } from 'typia';
+import { drawingLineUpdatePoint } from '../actions/drawingLineActions.js';
+import { ShowModal } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { basicModals } from '../constants.js';
+import { DocumentKey } from '../documents/index.js';
+import { history } from '../historyHolder.js';
+import { OverlayLetters } from '../mapDefinitions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { transportTypeDefs } from '../transportTypeDefs.js';
+import { LatLon } from '../types/common.js';
 
 let lastActionType: string | undefined;
 

@@ -1,10 +1,10 @@
-import { clearMapFeatures } from './actions/mainActions';
+import { clearMapFeatures } from './actions/mainActions.js';
 import {
   ActionCreatorMatchable,
   CancelItem,
   cancelRegister,
-} from './cancelRegister';
-import { RootState } from './store';
+} from './cancelRegister.js';
+import { RootState } from './store.js';
 
 export class HttpError extends Error {
   status: number;

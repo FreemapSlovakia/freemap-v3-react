@@ -1,8 +1,8 @@
-import { basicModals, tools } from 'fm3/constants';
-import { DocumentKey } from 'fm3/documents';
-import { LatLon } from 'fm3/types/common';
-import { CustomLayer, LayerSettings } from './mapActions';
 import { createAction } from '@reduxjs/toolkit';
+import { basicModals, tools } from '../constants.js';
+import { DocumentKey } from '../documents/index.js';
+import { LatLon } from '../types/common.js';
+import { CustomLayer, LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];
 

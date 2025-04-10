@@ -1,25 +1,25 @@
 // import turfLineSlice from '@turf/line-slice';
 // import turfLength from '@turf/length';
+import distance from '@turf/distance';
 import turfFlatten from '@turf/flatten';
 import { getCoords } from '@turf/invariant';
-import { setTool } from 'fm3/actions/mainActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { Hotline } from 'fm3/components/Hotline';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { colors } from 'fm3/constants';
-import { smoothElevations } from 'fm3/geoutils';
-import distance from '@turf/distance';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { LatLngExpression, Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { setTool } from '../actions/mainActions.js';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { Hotline } from '../components/Hotline.js';
+import { RichMarker } from '../components/RichMarker.js';
+import { colors } from '../constants.js';
+import { smoothElevations } from '../geoutils.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString>[];

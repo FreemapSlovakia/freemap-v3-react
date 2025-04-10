@@ -1,9 +1,9 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { authSetUser } from 'fm3/actions/authActions';
+import { authSetUser } from '../actions/authActions.js';
 import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
-} from 'fm3/actions/l10nActions';
+} from '../actions/l10nActions.js';
 
 export interface L10nState {
   chosenLanguage: string | null;

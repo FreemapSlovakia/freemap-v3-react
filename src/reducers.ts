@@ -1,51 +1,58 @@
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
-import { GalleryColorizeBy } from './actions/galleryActions';
+import { GalleryColorizeBy } from './actions/galleryActions.js';
 import {
   authInitialState,
   authReducer,
   AuthState,
-} from './reducers/authReducer';
-import { changesetReducer } from './reducers/changesetsReducer';
-import { drawingLinesReducer } from './reducers/drawingLinesReducer';
-import { drawingPointsReducer } from './reducers/drawingPointsReducer';
-import { elevationChartReducer } from './reducers/elevationChartReducer';
-import { galleryInitialState, galleryReducer } from './reducers/galleryReducer';
+} from './reducers/authReducer.js';
+import { changesetReducer } from './reducers/changesetsReducer.js';
+import { drawingLinesReducer } from './reducers/drawingLinesReducer.js';
+import { drawingPointsReducer } from './reducers/drawingPointsReducer.js';
+import { elevationChartReducer } from './reducers/elevationChartReducer.js';
+import {
+  galleryInitialState,
+  galleryReducer,
+} from './reducers/galleryReducer.js';
 import {
   l10nInitialState,
   l10nReducer,
   L10nState,
-} from './reducers/l10nReducer';
+} from './reducers/l10nReducer.js';
 import {
   mainInitialState,
   mainReducer,
   MainState,
-} from './reducers/mainReducer';
-import { mapDetailsReducer } from './reducers/mapDetailsReducer';
-import { mapInitialState, mapReducer, MapState } from './reducers/mapReducer';
-import { mapsReducer } from './reducers/mapsReducer';
+} from './reducers/mainReducer.js';
+import { mapDetailsReducer } from './reducers/mapDetailsReducer.js';
 import {
-  objectsReducer,
+  mapInitialState,
+  mapReducer,
+  MapState,
+} from './reducers/mapReducer.js';
+import { mapsReducer } from './reducers/mapsReducer.js';
+import {
   objectInitialState,
+  objectsReducer,
   ObjectsState,
-} from './reducers/objectsReducer';
+} from './reducers/objectsReducer.js';
 import {
   routePlannerInitialState,
   routePlannerReducer,
   RoutePlannerState,
-} from './reducers/routePlannerReducer';
-import { searchReducer } from './reducers/searchReducer';
-import { toastsReducer } from './reducers/toastsReducer';
-import { trackingReducer } from './reducers/trackingReducer';
+} from './reducers/routePlannerReducer.js';
+import { searchReducer } from './reducers/searchReducer.js';
+import { toastsReducer } from './reducers/toastsReducer.js';
+import { trackingReducer } from './reducers/trackingReducer.js';
 import {
   trackViewerInitialState,
   trackViewerReducer,
   TrackViewerState,
-} from './reducers/trackViewerReducer';
-import { websocketReducer } from './reducers/websocketReducer';
-import { wikiReducer } from './reducers/wikiReducer';
-import { transportTypeDefs } from './transportTypeDefs';
-import { RootState } from './store';
+} from './reducers/trackViewerReducer.js';
+import { websocketReducer } from './reducers/websocketReducer.js';
+import { wikiReducer } from './reducers/wikiReducer.js';
+import { RootState } from './store.js';
+import { transportTypeDefs } from './transportTypeDefs.js';
 
 export const reducers = {
   auth: authReducer,

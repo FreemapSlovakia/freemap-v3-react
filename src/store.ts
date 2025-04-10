@@ -1,13 +1,13 @@
 ///<reference types="webpack-env" />
 
-import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
-import { createProcessorMiddleware } from './middlewares/processorMiddleware';
-import { statePersistingMiddleware } from './middlewares/statePersistingMiddleware';
-import { createTrackingMiddleware } from './middlewares/trackingMiddleware';
-import { createWebsocketMiddleware } from './middlewares/webSocketMiddleware';
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { processors } from './processors';
-import { getInitialState, reducers } from './reducers';
+import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
+import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware.js';
+import { createProcessorMiddleware } from './middlewares/processorMiddleware.js';
+import { statePersistingMiddleware } from './middlewares/statePersistingMiddleware.js';
+import { createTrackingMiddleware } from './middlewares/trackingMiddleware.js';
+import { createWebsocketMiddleware } from './middlewares/webSocketMiddleware.js';
+import { processors } from './processors.js';
+import { getInitialState, reducers } from './reducers.js';
 
 const processorMiddleware = createProcessorMiddleware();
 
@@ -19,7 +19,14 @@ export function createReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(
+      getDefaultMiddleware({
+        serializableCheck: {
+          isSerializable: (value: unknown) =>
+            typeof value === 'object' && value instanceof Date
+              ? true
+              : isPlain(value),
+        },
+      }).concat(
         errorHandlingMiddleware,
         // process.env['NODE_ENV'] !== 'production' && loggerMiddleware,
         statePersistingMiddleware,

@@ -1,7 +1,7 @@
-import { authLogout, authStartLogout } from 'fm3/actions/authActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { authLogout, authStartLogout } from '../actions/authActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const authLogoutProcessor: Processor = {
   actionCreator: authStartLogout,

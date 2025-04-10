@@ -3,8 +3,8 @@ import {
   Changeset,
   changesetsSet,
   changesetsSetParams,
-} from 'fm3/actions/changesetsActions';
-import { clearMapFeatures, setTool } from 'fm3/actions/mainActions';
+} from '../actions/changesetsActions.js';
+import { clearMapFeatures, setTool } from '../actions/mainActions.js';
 
 export interface ChangesetsState {
   changesets: Changeset[];

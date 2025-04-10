@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile } from 'fs/promises';
 import htm from 'htm';
 import { marked } from 'marked';
 import vhtml from 'vhtml';
-import { objects } from './objects';
+import { objects } from './objects.js';
 
 const html = htm.bind(vhtml);
 

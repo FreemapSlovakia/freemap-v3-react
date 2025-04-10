@@ -1,10 +1,10 @@
-import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
-import { RootState } from 'fm3/store';
-import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { Dispatch, Middleware } from 'redux';
 import { is } from 'typia';
+import { rpcCall, rpcResponse } from '../actions/rpcActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { wsClose, wsOpen } from '../actions/websocketActions.js';
+import { RootState } from '../store.js';
+import { TrackedDevice } from '../types/trackingTypes.js';
 
 export function createTrackingMiddleware(): Middleware<
   {},

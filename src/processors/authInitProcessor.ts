@@ -1,9 +1,9 @@
-import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { User } from 'fm3/types/common';
 import { get } from 'idb-keyval';
 import { assert } from 'typia';
+import { authInit, authSetUser } from '../actions/authActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { User } from '../types/common.js';
 
 function track(id: number | undefined) {
   window._paq.push(

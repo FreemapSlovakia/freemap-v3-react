@@ -3,16 +3,16 @@ import {
   drawingLineAddPoint,
   drawingLineRemovePoint,
   drawingLineUpdatePoint,
-} from 'fm3/actions/drawingLineActions';
+} from '../actions/drawingLineActions.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
-import { selectFeature, setTool } from 'fm3/actions/mainActions';
-import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
-import { LatLon } from 'fm3/types/common';
+} from '../actions/elevationChartActions.js';
+import { selectFeature, setTool } from '../actions/mainActions.js';
+import { routePlannerSetResult } from '../actions/routePlannerActions.js';
+import { LatLon } from '../types/common.js';
 
 export interface ElevationProfilePoint extends LatLon {
   climbUp?: number;

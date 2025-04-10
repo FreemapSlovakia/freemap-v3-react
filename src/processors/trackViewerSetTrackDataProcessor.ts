@@ -1,10 +1,10 @@
 import * as toGeoJSON from '@tmcw/togeojson';
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { FeatureCollection } from 'geojson';
 import { geoJSON } from 'leaflet';
 import { assert } from 'typia';
+import { trackViewerSetData } from '../actions/trackViewerActions.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData

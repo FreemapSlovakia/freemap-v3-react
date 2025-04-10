@@ -1,14 +1,13 @@
+import { ReactElement } from 'react';
+import { Button, Card } from 'react-bootstrap';
+import { FaCheck, FaTimes } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import {
   saveHomeLocation,
   setSelectingHomeLocation,
-} from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import { FaCheck, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+} from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 export default HomeLocationPickingMenu;
 

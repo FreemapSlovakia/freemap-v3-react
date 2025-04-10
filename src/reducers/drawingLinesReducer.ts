@@ -1,4 +1,5 @@
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { produce } from 'immer';
 import {
   drawingLineAdd,
   drawingLineAddPoint,
@@ -15,15 +16,14 @@ import {
   drawingLineUpdatePoint,
   Line,
   Point,
-} from 'fm3/actions/drawingLineActions';
+} from '../actions/drawingLineActions.js';
 import {
   applySettings,
   clearMapFeatures,
   selectFeature,
   setTool,
-} from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { produce } from 'immer';
+} from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface DrawingLinesState {
   drawing: boolean;

@@ -5,7 +5,7 @@ import {
   Device,
   EditedDevice,
   TrackedDevice,
-} from 'fm3/types/trackingTypes';
+} from '../types/trackingTypes.js';
 
 export const trackingActions = {
   setTrackedDevices: createAction<TrackedDevice[]>(

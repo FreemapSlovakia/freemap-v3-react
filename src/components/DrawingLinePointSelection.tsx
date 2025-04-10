@@ -1,19 +1,18 @@
-import {
-  drawingLineContinue,
-  drawingLineJoinStart,
-  drawingLineSplit,
-} from 'fm3/actions/drawingLineActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/esm/Card';
+import { Button, Card } from 'react-bootstrap';
 import { CgArrowsMergeAltH } from 'react-icons/cg';
 import { FaDrawPolygon, FaRegPlayCircle, FaTimes } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { RiScissorsFill } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
-import { Selection } from './Selection';
+import {
+  drawingLineContinue,
+  drawingLineJoinStart,
+  drawingLineSplit,
+} from '../actions/drawingLineActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { Selection } from './Selection.js';
 
 export default DrawingLinePointSelection;
 

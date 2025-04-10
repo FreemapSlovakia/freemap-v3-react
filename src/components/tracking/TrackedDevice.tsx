@@ -1,11 +1,11 @@
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
+import { useMessages } from '../../l10nInjector.js';
+import { TrackedDevice as TrackedDeviceType } from '../../types/trackingTypes.js';
 
 type Props = {
   device: TrackedDeviceType;

@@ -1,9 +1,9 @@
 import {
   trackViewerGpxLoad,
   trackViewerSetData,
-} from 'fm3/actions/trackViewerActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/trackViewerActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const trackViewerGpxLoadProcessor: Processor = {
   actionCreator: trackViewerGpxLoad,

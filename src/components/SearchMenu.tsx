@@ -1,27 +1,4 @@
 import center from '@turf/center';
-import { convertToDrawing, setTool } from 'fm3/actions/mainActions';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from 'fm3/actions/routePlannerActions';
-import {
-  SearchResult,
-  searchSelectResult,
-  searchSetQuery,
-  searchSetResults,
-} from 'fm3/actions/searchActions';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
-import {
-  getNameFromOsmElement,
-  resolveGenericName,
-} from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
-import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
   forwardRef,
@@ -33,13 +10,39 @@ import {
   useRef,
   useState,
 } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown, { type DropdownProps } from 'react-bootstrap/Dropdown';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+  type DropdownProps,
+} from 'react-bootstrap';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { convertToDrawing, setTool } from '../actions/mainActions.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetStart,
+} from '../actions/routePlannerActions.js';
+import {
+  SearchResult,
+  searchSelectResult,
+  searchSetQuery,
+  searchSetResults,
+} from '../actions/searchActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  getNameFromOsmElement,
+  resolveGenericName,
+} from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
+import '../styles/search.scss';
 
 type Props = {
   hidden?: boolean;

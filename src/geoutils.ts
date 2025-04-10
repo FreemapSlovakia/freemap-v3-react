@@ -1,7 +1,7 @@
 import booleanContains from '@turf/boolean-contains';
-import { LatLngLiteral } from 'leaflet';
-import { LatLon } from './types/common';
 import { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
+import { LatLngLiteral } from 'leaflet';
+import { LatLon } from './types/common.js';
 
 export type GpsCoordStyle = 'DMS' | 'DM' | 'D';
 

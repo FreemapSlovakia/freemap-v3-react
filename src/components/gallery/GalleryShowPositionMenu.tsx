@@ -1,10 +1,9 @@
-import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import { Button, Card } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { galleryCancelShowOnTheMap } from '../../actions/galleryActions.js';
+import { useMessages } from '../../l10nInjector.js';
 
 export default GalleryShowPositionMenu;
 

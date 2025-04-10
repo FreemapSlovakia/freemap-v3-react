@@ -1,17 +1,17 @@
+import distance from '@turf/distance';
+import { assert } from 'typia';
 import {
   clearMapFeatures,
   deleteFeature,
   selectFeature,
   setTool,
-} from 'fm3/actions/mainActions';
-import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
-import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import distance from '@turf/distance';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { OverpassElement } from 'fm3/types/common';
-import { assert } from 'typia';
+} from '../actions/mainActions.js';
+import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import { SearchResult, searchSetResults } from '../actions/searchActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { OverpassElement } from '../types/common.js';
 
 const cancelType = [
   clearMapFeatures.type,

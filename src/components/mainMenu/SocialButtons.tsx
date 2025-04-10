@@ -1,6 +1,6 @@
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import { FaFacebook, FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { useMessages } from '../../l10nInjector.js';
 
 type Props = {
   className?: string;

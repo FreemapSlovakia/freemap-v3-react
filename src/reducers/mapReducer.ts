@@ -1,15 +1,15 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { authSetUser } from 'fm3/actions/authActions';
-import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { applySettings, Selection } from 'fm3/actions/mainActions';
+import { authSetUser } from '../actions/authActions.js';
+import { gallerySetFilter } from '../actions/galleryActions.js';
+import { applySettings, Selection } from '../actions/mainActions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
   mapSetEsriAttribution,
   MapStateBase,
   mapSuppressLegacyMapWarning,
-} from 'fm3/actions/mapActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
+} from '../actions/mapActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;

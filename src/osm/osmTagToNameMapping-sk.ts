@@ -1,4 +1,4 @@
-import { OsmTagToNameMapping } from './osmTagToNameMappingType';
+import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
   aeroway: {

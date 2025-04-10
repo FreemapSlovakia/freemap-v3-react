@@ -1,11 +1,11 @@
-import { mapSetEsriAttribution } from 'fm3/actions/mapActions';
-import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMap } from 'fm3/hooks/useMap';
+import { BBox } from 'geojson';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
-import { BBox } from 'geojson';
+import { mapSetEsriAttribution } from '../actions/mapActions.js';
+import { toastsAdd, toastsRemove } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMap } from '../hooks/useMap.js';
 
 type EsriWorldImageryAttribution = {
   contributors: {

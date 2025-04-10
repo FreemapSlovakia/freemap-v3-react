@@ -1,14 +1,14 @@
-import { enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { enableUpdatingUrl } from '../actions/mainActions.js';
 import {
   mapRefocus,
   mapSuppressLegacyMapWarning,
-} from 'fm3/actions/mapActions';
+} from '../actions/mapActions.js';
 import {
   ToastAction,
   toastsAdd,
   toastsRemove,
-} from 'fm3/actions/toastsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/toastsActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const legacyMapWarningProcessor: Processor = {
   stateChangePredicate: (state) => state.map.mapType,

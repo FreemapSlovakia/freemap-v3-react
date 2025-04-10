@@ -1,9 +1,9 @@
-import { hideInfoBar } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useState } from 'react';
-import CloseButton from 'react-bootstrap/CloseButton';
+import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { hideInfoBar } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 export function InfoBar(): ReactElement | null {
   const m = useMessages();

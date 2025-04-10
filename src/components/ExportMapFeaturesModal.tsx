@@ -1,15 +1,3 @@
-import { authWithGarmin } from 'fm3/actions/authActions';
-import {
-  ExportTarget,
-  ExportType,
-  Exportable,
-  exportMapFeatures,
-  exportTargets,
-  exportTypes,
-  setActiveModal,
-} from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { Position } from 'geojson';
 import {
   FormEvent,
@@ -20,12 +8,14 @@ import {
   useEffect,
   useState,
 } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import ToggleButton from 'react-bootstrap/ToggleButton';
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  Form,
+  Modal,
+  ToggleButton,
+} from 'react-bootstrap';
 import {
   FaBullseye,
   FaCamera,
@@ -45,6 +35,18 @@ import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import { authWithGarmin } from '../actions/authActions.js';
+import {
+  ExportTarget,
+  ExportType,
+  Exportable,
+  exportMapFeatures,
+  exportTargets,
+  exportTypes,
+  setActiveModal,
+} from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 const exportableDefinitions: readonly [
   type: Exportable,
@@ -215,7 +217,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       return;
     }
 
-    import('../export/garminExport').then((x) =>
+    import('../export/garminExport.js').then((x) =>
       setGarminExportables(
         Object.fromEntries(
           Object.entries(x.getExportables()).map(([exportable, tryExport]) => [

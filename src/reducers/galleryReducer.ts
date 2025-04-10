@@ -1,4 +1,5 @@
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { produce } from 'immer';
 import {
   galleryAddItem,
   galleryAddTag,
@@ -32,17 +33,16 @@ import {
   galleryUpload,
   GalleryUser,
   Picture,
-} from 'fm3/actions/galleryActions';
-import { l10nSetLanguage } from 'fm3/actions/l10nActions';
-import { clearMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { latLonToString } from 'fm3/geoutils';
-import { LatLon } from 'fm3/types/common';
-import { produce } from 'immer';
+} from '../actions/galleryActions.js';
+import { l10nSetLanguage } from '../actions/l10nActions.js';
+import { clearMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
+import { PictureModel } from '../components/gallery/GalleryEditForm.js';
+import { parseCoordinates } from '../coordinatesParser.js';
+import { toDatetimeLocal } from '../dateUtils.js';
+import { latLonToString } from '../geoutils.js';
+import { LatLon } from '../types/common.js';
 
 export interface GalleryState {
   imageIds: number[] | null;

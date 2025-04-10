@@ -1,18 +1,7 @@
 import along from '@turf/along';
+import distance from '@turf/distance';
 import { getCoord, getCoords } from '@turf/invariant';
 import length from '@turf/length';
-import { RootAction } from 'fm3/actions';
-import {
-  elevationChartClose,
-  elevationChartSetElevationProfile,
-  elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
-import { clearMapFeatures, selectFeature } from 'fm3/actions/mainActions';
-import { containsElevations } from 'fm3/geoutils';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { RootState } from 'fm3/store';
-import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import {
   Feature,
   LineString,
@@ -24,7 +13,18 @@ import {
 } from 'geojson';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
-import distance from '@turf/distance';
+import {
+  elevationChartClose,
+  elevationChartSetElevationProfile,
+  elevationChartSetTrackGeojson,
+} from '../actions/elevationChartActions.js';
+import { RootAction } from '../actions/index.js';
+import { clearMapFeatures, selectFeature } from '../actions/mainActions.js';
+import { containsElevations } from '../geoutils.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { ElevationProfilePoint } from '../reducers/elevationChartReducer.js';
+import { RootState } from '../store.js';
 
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch,

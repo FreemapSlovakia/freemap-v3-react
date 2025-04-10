@@ -1,5 +1,5 @@
-import { UseDropdownMenuOptions } from 'react-overlays/cjs/DropdownMenu';
 import { Modifier, Obj } from '@popperjs/core';
+import { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 
 const positionFixerModifier: Modifier<'positionFixer', Obj> = {
   name: 'positionFixer',

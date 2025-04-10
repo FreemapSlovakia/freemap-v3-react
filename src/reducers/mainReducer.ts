@@ -1,12 +1,13 @@
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { produce } from 'immer';
 import {
+  authLogout,
+  authSetUser,
   authWithFacebook,
   authWithGarmin,
   authWithGoogle,
   authWithOsm,
-  authLogout,
-  authSetUser,
-} from 'fm3/actions/authActions';
+} from '../actions/authActions.js';
 import {
   drawingLineAddPoint,
   drawingLineChangeProperties,
@@ -14,11 +15,11 @@ import {
   drawingLineJoinFinish,
   drawingLineSetLines,
   drawingLineStopDrawing,
-} from 'fm3/actions/drawingLineActions';
+} from '../actions/drawingLineActions.js';
 import {
   drawingPointAdd,
   drawingPointChangeProperties,
-} from 'fm3/actions/drawingPointActions';
+} from '../actions/drawingPointActions.js';
 import {
   applyCookieConsent,
   applySettings,
@@ -44,10 +45,9 @@ import {
   stopProgress,
   toggleLocate,
   Tool,
-} from 'fm3/actions/mainActions';
-import { DocumentKey } from 'fm3/documents';
-import { LatLon } from 'fm3/types/common';
-import { produce } from 'immer';
+} from '../actions/mainActions.js';
+import { DocumentKey } from '../documents/index.js';
+import { LatLon } from '../types/common.js';
 
 interface Location extends LatLon {
   accuracy: number;

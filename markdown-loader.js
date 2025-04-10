@@ -1,4 +1,4 @@
-const { parse, marked } = require('marked');
+import { marked, parse } from 'marked';
 
 const renderer = {
   link({ href, title, text }) {
@@ -12,8 +12,6 @@ const renderer = {
 
 marked.use({ renderer });
 
-module.exports = function markdownLoader(markdown) {
-  const options = this.getOptions();
-
-  return parse(markdown, options);
-};
+export default function markdownLoader(markdown) {
+  return parse(markdown, this.getOptions());
+}

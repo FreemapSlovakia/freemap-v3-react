@@ -1,15 +1,16 @@
-import { exportMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
-import { colors } from 'fm3/constants';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
-import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
-import { ObjectsState } from 'fm3/reducers/objectsReducer';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { escapeHtml } from 'fm3/stringUtils';
-import { LatLon } from 'fm3/types/common';
-import { fetchPictures, Picture } from './fetchPictures';
+import { Feature, FeatureCollection } from 'geojson';
+import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { colors } from '../constants.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { DrawingLinesState } from '../reducers/drawingLinesReducer.js';
+import { DrawingPointsState } from '../reducers/drawingPointsReducer.js';
+import { ObjectsState } from '../reducers/objectsReducer.js';
+import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
+import { TrackingState } from '../reducers/trackingReducer.js';
+import { TrackViewerState } from '../reducers/trackViewerReducer.js';
+import { escapeHtml } from '../stringUtils.js';
+import { LatLon } from '../types/common.js';
+import { fetchPictures, Picture } from './fetchPictures.js';
 import {
   addAttribute,
   createElement,
@@ -17,9 +18,8 @@ import {
   GPX_NS,
   GPX_STYLE_NS,
   LOCUS_NS,
-} from './gpxExporter';
-import { upload } from './upload';
-import { Feature, FeatureCollection } from 'geojson';
+} from './gpxExporter.js';
+import { upload } from './upload.js';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 

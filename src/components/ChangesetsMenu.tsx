@@ -1,15 +1,12 @@
-import { changesetsSetParams } from 'fm3/actions/changesetsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
 import { FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { ToolMenu } from './ToolMenu';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
+import { changesetsSetParams } from '../actions/changesetsActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export default ChangesetsMenu;
 

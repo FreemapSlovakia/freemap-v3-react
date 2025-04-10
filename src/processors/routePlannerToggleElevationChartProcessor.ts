@@ -2,12 +2,12 @@ import { lineString } from '@turf/helpers';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
+} from '../actions/elevationChartActions.js';
 import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerToggleElevationChart,
-} from 'fm3/actions/routePlannerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/routePlannerActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const routePlannerToggleElevationChartProcessor: Processor<
   | typeof routePlannerToggleElevationChart

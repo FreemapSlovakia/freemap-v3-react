@@ -1,14 +1,14 @@
+import { assert } from 'typia';
 import {
   galleryRequestImage,
   galleryRequestImages,
   gallerySetImageIds,
-} from 'fm3/actions/galleryActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { createFilter } from 'fm3/galleryUtils';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { assert } from 'typia';
+} from '../actions/galleryActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { createFilter } from '../galleryUtils.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
 
 export const galleryRequestImagesByRadiusProcessor: Processor<
   typeof galleryRequestImages

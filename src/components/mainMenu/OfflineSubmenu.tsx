@@ -1,11 +1,11 @@
-import { useMessages } from 'fm3/l10nInjector';
-import { CacheMode } from 'fm3/types/common';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { JSX } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaEraser } from 'react-icons/fa';
-import { Checkbox } from '../Checkbox';
-import { SubmenuHeader } from './SubmenuHeader';
-import { JSX } from 'react';
+import { useMessages } from '../../l10nInjector.js';
+import { CacheMode } from '../../types/common.js';
+import { Checkbox } from '../Checkbox.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 type Props = {
   className?: string;

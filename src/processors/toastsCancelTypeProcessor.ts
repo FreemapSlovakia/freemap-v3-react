@@ -1,5 +1,5 @@
-import { toastsRemove } from 'fm3/actions/toastsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { toastsRemove } from '../actions/toastsActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const toastsCancelTypeProcessor: Processor = {
   handle: async ({ dispatch, getState, action }) => {

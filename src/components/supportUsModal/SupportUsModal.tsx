@@ -1,14 +1,12 @@
-import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useLocalMessages, useMessages } from 'fm3/l10nInjector';
-import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { SupportUsMessages } from './translations/SupportUsMessages';
-import Form from 'react-bootstrap/Form';
+import { documentShow, setActiveModal } from '../../actions/mainActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useLocalMessages, useMessages } from '../../l10nInjector.js';
+import { navigate } from '../../navigationUtils.js';
+import { SupportUsMessages } from './translations/SupportUsMessages.js';
 
 type Props = { show: boolean };
 

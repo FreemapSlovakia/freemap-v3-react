@@ -1,13 +1,11 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
 import { ReactElement, ReactNode } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Card from 'react-bootstrap/Card';
+import { Button, ButtonToolbar, Card } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { DeleteButton } from './DeleteButton';
-import { useMessages } from 'fm3/l10nInjector';
+import { selectFeature } from '../actions/mainActions.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import { DeleteButton } from './DeleteButton.js';
 
 export function Selection({
   title,

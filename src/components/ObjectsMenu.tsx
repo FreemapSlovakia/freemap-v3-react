@@ -1,17 +1,4 @@
 import {
-  MarkerType,
-  objectsSetFilter,
-  setSelectedIcon,
-} from 'fm3/actions/objectsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
-import { getOsmMapping, resolveGenericName } from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { Node, OsmMapping } from 'fm3/osm/types';
-import { removeAccents } from 'fm3/stringUtils';
-import {
   ChangeEvent,
   ReactElement,
   useCallback,
@@ -20,13 +7,25 @@ import {
   useRef,
   useState,
 } from 'react';
-import Dropdown, { type DropdownProps } from 'react-bootstrap/Dropdown';
+import { type DropdownProps, Dropdown, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { HideArrow } from './SearchMenu';
-import { ToolMenu } from './ToolMenu';
-import { RootState } from 'fm3/store';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
-import Form from 'react-bootstrap/Form';
+import {
+  MarkerType,
+  objectsSetFilter,
+  setSelectedIcon,
+} from '../actions/objectsActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import { getOsmMapping, resolveGenericName } from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { Node, OsmMapping } from '../osm/types.js';
+import { RootState } from '../store.js';
+import { removeAccents } from '../stringUtils.js';
+import { HideArrow } from './SearchMenu.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export default ObjectsMenu;
 

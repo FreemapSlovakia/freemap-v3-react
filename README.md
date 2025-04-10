@@ -38,7 +38,7 @@ Set `DEPLOYMENT` to:
 
 ```bash
 npm i
-DEPLOYMENT=www ./node_modules/.bin/webpack
+DEPLOYMENT=www npm run build
 ```
 
 You'll then find all static web resources in `dist` directory.

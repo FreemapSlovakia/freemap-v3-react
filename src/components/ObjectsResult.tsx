@@ -1,24 +1,24 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { searchSelectResult } from 'fm3/actions/searchActions';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useEffect, useState } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFeature } from '../actions/mainActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
   getOsmMapping,
   resolveGenericName,
-} from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { OsmMapping } from 'fm3/osm/types';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { ReactElement, useEffect, useState } from 'react';
-import { Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'fm3/store';
-import { RichMarker } from './RichMarker';
+} from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { OsmMapping } from '../osm/types.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
+import { RootState } from '../store.js';
+import { RichMarker } from './RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();

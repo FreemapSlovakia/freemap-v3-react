@@ -1,13 +1,11 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/esm/Alert';
-import Modal from 'react-bootstrap/Modal';
+import { Alert, Button, Modal } from 'react-bootstrap';
 import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { AuthProviders } from './AuthProviders';
+import { setActiveModal } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { AuthProviders } from './AuthProviders.js';
 
 type Props = { show: boolean };
 

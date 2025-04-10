@@ -1,12 +1,12 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton';
-import { Selection } from './Selection';
+import { setActiveModal } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton.js';
+import { Selection } from './Selection.js';
 
 export default DrawingPointSelection;
 

@@ -1,6 +1,5 @@
 import { createPathComponent, PathProps } from '@react-leaflet/core';
-import { LatLngExpression } from 'leaflet';
-import { Polyline } from 'leaflet';
+import { LatLngExpression, Polyline } from 'leaflet';
 import 'leaflet-hotline';
 
 interface Props extends PathProps {

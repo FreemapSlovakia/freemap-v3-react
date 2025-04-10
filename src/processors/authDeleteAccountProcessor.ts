@@ -1,8 +1,8 @@
-import { authDeleteAccount, authLogout } from 'fm3/actions/authActions';
-import { gallerySetLayerDirty } from 'fm3/actions/galleryActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { authDeleteAccount, authLogout } from '../actions/authActions.js';
+import { gallerySetLayerDirty } from '../actions/galleryActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const authDeleteAccountProcessor: Processor<typeof authDeleteAccount> = {
   actionCreator: authDeleteAccount,
