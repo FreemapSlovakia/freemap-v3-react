@@ -55,7 +55,7 @@ export function renderGalleryTile({
   const ctx = tile.getContext('2d');
 
   if (!ctx) {
-    throw Error('no context');
+    throw new Error('no context');
   }
 
   const zk = Math.min(1, 1.1 ** zoom / 3);
