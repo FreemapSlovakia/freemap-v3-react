@@ -1,5 +1,6 @@
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
+import type { Configuration } from '@rspack/core';
+import { rspack } from '@rspack/core';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -7,9 +8,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'path';
 import process from 'process';
 import type SassLoader from 'sass-loader';
-import type { Configuration } from 'webpack';
-import webpack from 'webpack';
-import { InjectManifest } from 'workbox-webpack-plugin';
+//  import { InjectManifest } from 'workbox-webpack-plugin';
 // import ESLintPlugin from 'eslint-webpack-plugin';
 
 import csMessages from './src/translations/cs-shared.js';
@@ -151,17 +150,17 @@ const config: Configuration = {
       new ReactRefreshWebpackPlugin({
         overlay: false,
       }),
-    new InjectManifest({
-      swSrc: './sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 100000000,
-    }),
-    new webpack.EnvironmentPlugin({
+    // new InjectManifest({
+    //   swSrc: './sw/sw.ts',
+    //   maximumFileSizeToCacheInBytes: 100000000,
+    // }),
+    new rspack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
-      BROWSER: true,
+      BROWSER: 'true',
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
-      MAX_GPX_TRACK_SIZE_IN_MB: 15,
+      MAX_GPX_TRACK_SIZE_IN_MB: '15',
       BASE_URL:
         {
           www: 'https://www.freemap.sk',
@@ -254,7 +253,7 @@ const config: Configuration = {
         loadingMessage: 'Caricamento…',
       },
     }),
-    new CopyWebpackPlugin({
+    new rspack.CopyRspackPlugin({
       patterns: [
         {
           from: 'static/**/*',
@@ -270,7 +269,7 @@ const config: Configuration = {
         filename: '[name].[chunkhash].css',
         chunkFilename: '[name].[chunkhash].css',
       }),
-    new webpack.ContextReplacementPlugin(
+    new rspack.ContextReplacementPlugin(
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
