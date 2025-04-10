@@ -1,10 +1,10 @@
-import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
-import { isEventOnMap } from 'fm3/mapUtils';
-import { LatLon } from 'fm3/types/common';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import { isEventOnMap } from '../mapUtils.js';
+import { LatLon } from '../types/common.js';
 
 export function MapDetailsTool(): ReactElement | null {
   const dispatch = useDispatch();

@@ -1,12 +1,12 @@
-import {
-  drawingMeasure,
-  drawingPointAdd,
-} from 'fm3/actions/drawingPointActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import {
+  drawingMeasure,
+  drawingPointAdd,
+} from '../actions/drawingPointActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 
 export function DrawingPointsTool(): null {
   const color = useAppSelector((state) => state.main.drawingColor);

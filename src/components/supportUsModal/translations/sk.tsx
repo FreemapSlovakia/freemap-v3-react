@@ -1,4 +1,4 @@
-import { SupportUsMessages } from './SupportUsMessages';
+import { SupportUsMessages } from './SupportUsMessages.js';
 
 const sk: SupportUsMessages = {
   explanation:

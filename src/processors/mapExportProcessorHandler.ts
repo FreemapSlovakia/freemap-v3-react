@@ -1,12 +1,12 @@
 import { lineString, point, polygon } from '@turf/helpers';
-import { exportMap, setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { colors } from 'fm3/constants';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
 import { Feature, FeatureCollection } from 'geojson';
 import { assert } from 'typia';
+import { exportMap, setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { colors } from '../constants.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 

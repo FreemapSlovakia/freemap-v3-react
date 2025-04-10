@@ -1,5 +1,5 @@
-import { authWithGarmin2 } from 'fm3/actions/authActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { authWithGarmin2 } from '../actions/authActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const authWithGarmin2Processor: Processor<typeof authWithGarmin2> = {
   actionCreator: authWithGarmin2,
@@ -7,6 +7,6 @@ export const authWithGarmin2Processor: Processor<typeof authWithGarmin2> = {
   errorKey: 'auth.logIn.logInError',
   handle: async (...params) =>
     await (
-      await import('./authWithGarmin2ProcessorHandler')
+      await import('./authWithGarmin2ProcessorHandler.js')
     ).default(...params),
 };

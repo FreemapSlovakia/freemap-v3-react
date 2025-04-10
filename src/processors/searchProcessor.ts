@@ -1,23 +1,22 @@
 import { tileToGeoJSON } from '@mapbox/tilebelt';
 import bboxPolygon from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
-import { BBox } from 'geojson';
-import { clearMapFeatures } from 'fm3/actions/mainActions';
+import { BBox, Geometry } from 'geojson';
+import { CRS, Point } from 'leaflet';
+import { assert } from 'typia';
+import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
-} from 'fm3/actions/searchActions';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { LatLon } from 'fm3/types/common';
-import { Geometry } from 'geojson';
-import { CRS, Point } from 'leaflet';
-import { assert } from 'typia';
+} from '../actions/searchActions.js';
+import { parseCoordinates } from '../coordinatesParser.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
+import { LatLon } from '../types/common.js';
 
 interface NominatimResult {
   osm_id?: number;

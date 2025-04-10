@@ -1,11 +1,10 @@
-import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { SiAdblock } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
+import { removeAds, setActiveModal } from '../actions/mainActions.js';
+import { useMessages } from '../l10nInjector.js';
 
 type Props = { show: boolean };
 

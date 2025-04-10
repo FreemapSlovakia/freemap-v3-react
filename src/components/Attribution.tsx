@@ -1,11 +1,15 @@
-import { documentShow } from 'fm3/actions/mainActions';
-import { DocumentKey } from 'fm3/documents';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { Fragment, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
+import { documentShow } from '../actions/mainActions.js';
+import { DocumentKey } from '../documents/index.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  AttributionDef,
+  baseLayers,
+  overlayLayers,
+} from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 

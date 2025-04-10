@@ -1,7 +1,7 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { ReactElement } from 'react';
-import { DeleteButton } from './DeleteButton';
-import { ToolMenu } from './ToolMenu';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { DeleteButton } from './DeleteButton.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export function MapDetailsMenu(): ReactElement | null {
   const canDelete = useAppSelector((state) => !!state.trackViewer.trackGeojson);

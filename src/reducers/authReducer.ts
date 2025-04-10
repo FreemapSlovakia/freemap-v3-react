@@ -1,11 +1,10 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   authLogout,
   authSetPremium,
   authSetUser,
-} from 'fm3/actions/authActions';
-import { User } from 'fm3/types/common';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/authActions.js';
+import { User } from '../types/common.js';
 
 export interface AuthState {
   validated: boolean;
@@ -17,25 +16,25 @@ export const authInitialState: AuthState = {
   user: null,
 };
 
-export const authReducer = createReducer<AuthState, RootAction>(
-  authInitialState,
-)
-  .handleAction(authSetUser, (state, action) => ({
-    ...state,
-    user: action.payload && {
-      name: action.payload.name,
-      email: action.payload.email,
-      sendGalleryEmails: action.payload.sendGalleryEmails,
-      id: action.payload.id,
-      authToken: action.payload.authToken,
-      isAdmin: action.payload.isAdmin,
-      isPremium: action.payload.isPremium,
-      authProviders: action.payload.authProviders,
-    },
-    validated: true,
-  }))
-  .handleAction(authSetPremium, (state) => ({
-    ...state,
-    user: state.user && { ...state.user, isPremium: true },
-  }))
-  .handleAction(authLogout, () => authInitialState);
+export const authReducer = createReducer(authInitialState, (builder) =>
+  builder
+    .addCase(authSetUser, (state, action) => ({
+      ...state,
+      user: action.payload && {
+        name: action.payload.name,
+        email: action.payload.email,
+        sendGalleryEmails: action.payload.sendGalleryEmails,
+        id: action.payload.id,
+        authToken: action.payload.authToken,
+        isAdmin: action.payload.isAdmin,
+        isPremium: action.payload.isPremium,
+        authProviders: action.payload.authProviders,
+      },
+      validated: true,
+    }))
+    .addCase(authSetPremium, (state) => ({
+      ...state,
+      user: state.user && { ...state.user, isPremium: true },
+    }))
+    .addCase(authLogout, () => authInitialState),
+);

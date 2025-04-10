@@ -1,10 +1,10 @@
+import { Feature, LineString } from 'geojson';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
-import { trackViewerToggleElevationChart } from 'fm3/actions/trackViewerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { Feature, LineString } from 'geojson';
+} from '../actions/elevationChartActions.js';
+import { trackViewerToggleElevationChart } from '../actions/trackViewerActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,

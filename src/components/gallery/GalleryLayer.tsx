@@ -1,13 +1,16 @@
 import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
-import { GalleryColorizeBy, GalleryFilter } from 'fm3/actions/galleryActions';
-import { createFilter } from 'fm3/galleryUtils';
 import {
   Coords,
   DoneCallback,
-  GridLayer as LGridLayer,
   GridLayerOptions,
+  GridLayer as LGridLayer,
 } from 'leaflet';
-import { renderGalleryTile } from './galleryTileRenderrer';
+import {
+  GalleryColorizeBy,
+  GalleryFilter,
+} from '../../actions/galleryActions.js';
+import { createFilter } from '../../galleryUtils.js';
+import { renderGalleryTile } from './galleryTileRenderrer.js';
 
 type GalleryLayerOptions = GridLayerOptions & {
   filter: GalleryFilter;

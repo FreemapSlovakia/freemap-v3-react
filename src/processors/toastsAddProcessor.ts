@@ -1,6 +1,6 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { removeTimeout, setupTimeout } from 'fm3/processors/toasts';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { removeTimeout, setupTimeout } from '../processors/toasts.js';
 
 export const toastsAddProcessor: Processor<typeof toastsAdd> = {
   actionCreator: toastsAdd,

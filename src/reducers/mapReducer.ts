@@ -1,16 +1,15 @@
-import { RootAction } from 'fm3/actions';
-import { authSetUser } from 'fm3/actions/authActions';
-import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { applySettings, Selection } from 'fm3/actions/mainActions';
+import { createReducer } from '@reduxjs/toolkit';
+import { authSetUser } from '../actions/authActions.js';
+import { gallerySetFilter } from '../actions/galleryActions.js';
+import { applySettings, Selection } from '../actions/mainActions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
   mapSetEsriAttribution,
   MapStateBase,
   mapSuppressLegacyMapWarning,
-} from 'fm3/actions/mapActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/mapActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;
@@ -38,115 +37,117 @@ export const mapInitialState: MapState = {
   esriAttribution: [],
 };
 
-export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
-  .handleAction(mapSuppressLegacyMapWarning, (state, action) => {
-    const key = action.payload.forever
-      ? 'legacyMapWarningSuppressions'
-      : 'tempLegacyMapWarningSuppressions';
+export const mapReducer = createReducer(mapInitialState, (builder) =>
+  builder
+    .addCase(mapSuppressLegacyMapWarning, (state, action) => {
+      const key = action.payload.forever
+        ? 'legacyMapWarningSuppressions'
+        : 'tempLegacyMapWarningSuppressions';
 
-    return {
-      ...state,
-      [key]: [...state[key], state.mapType],
-    };
-  })
-  .handleAction(applySettings, (state, action) => {
-    const newState = { ...state };
+      return {
+        ...state,
+        [key]: [...state[key], state.mapType],
+      };
+    })
+    .addCase(applySettings, (state, action) => {
+      const newState = { ...state };
 
-    if (action.payload.layersSettings) {
-      newState.layersSettings = action.payload.layersSettings;
-    }
+      if (action.payload.layersSettings) {
+        newState.layersSettings = action.payload.layersSettings;
+      }
 
-    if (action.payload.overlayPaneOpacity) {
-      newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
-    }
+      if (action.payload.overlayPaneOpacity) {
+        newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
+      }
 
-    if (action.payload.customLayers) {
-      newState.customLayers = action.payload.customLayers;
-    }
+      if (action.payload.customLayers) {
+        newState.customLayers = action.payload.customLayers;
+      }
 
-    return newState;
-  })
-  .handleAction(gallerySetFilter, (state) => {
-    return {
-      ...state,
-      overlays: state.overlays.includes('I')
-        ? state.overlays
-        : [...state.overlays, 'I'],
-    };
-  })
-  .handleAction(mapRefocus, (state, action) => {
-    const newState: MapState = { ...state };
+      return newState;
+    })
+    .addCase(gallerySetFilter, (state) => {
+      return {
+        ...state,
+        overlays: state.overlays.includes('I')
+          ? state.overlays
+          : [...state.overlays, 'I'],
+      };
+    })
+    .addCase(mapRefocus, (state, action) => {
+      const newState: MapState = { ...state };
 
-    const { zoom, lat, lon, mapType, overlays } = action.payload;
+      const { zoom, lat, lon, mapType, overlays } = action.payload;
 
-    if (zoom) {
-      newState.zoom = zoom;
-    }
+      if (zoom) {
+        newState.zoom = zoom;
+      }
 
-    if (lat !== undefined) {
-      newState.lat = lat;
-    }
+      if (lat !== undefined) {
+        newState.lat = lat;
+      }
 
-    if (lon !== undefined) {
-      newState.lon = lon;
-    }
+      if (lon !== undefined) {
+        newState.lon = lon;
+      }
 
-    if (mapType) {
-      newState.mapType = mapType;
-    }
+      if (mapType) {
+        newState.mapType = mapType;
+      }
 
-    if (overlays) {
-      newState.overlays = overlays;
-    }
+      if (overlays) {
+        newState.overlays = overlays;
+      }
 
-    if (
-      action.payload.gpsTracked !== undefined ||
-      (lat !== undefined && lon !== undefined)
-    ) {
-      newState.gpsTracked = !!action.payload.gpsTracked;
-    }
+      if (
+        action.payload.gpsTracked !== undefined ||
+        (lat !== undefined && lon !== undefined)
+      ) {
+        newState.gpsTracked = !!action.payload.gpsTracked;
+      }
 
-    return newState;
-  })
-  .handleAction(authSetUser, (state, action) => {
-    const settings = action.payload?.settings;
+      return newState;
+    })
+    .addCase(authSetUser, (state, action) => {
+      const settings = action.payload?.settings;
 
-    return settings
-      ? {
-          ...state,
-          layersSettings: settings.layersSettings ?? state.layersSettings,
-          overlayPaneOpacity:
-            settings.overlayPaneOpacity ?? state.overlayPaneOpacity,
-          customLayers: settings.customLayers?.length
-            ? settings.customLayers
-            : state.customLayers,
-        }
-      : state;
-  })
-  .handleAction(
-    mapsLoaded,
-    (
-      state,
-      {
-        payload: {
-          data: { map },
+      return settings
+        ? {
+            ...state,
+            layersSettings: settings.layersSettings ?? state.layersSettings,
+            overlayPaneOpacity:
+              settings.overlayPaneOpacity ?? state.overlayPaneOpacity,
+            customLayers: settings.customLayers?.length
+              ? settings.customLayers
+              : state.customLayers,
+          }
+        : state;
+    })
+    .addCase(
+      mapsLoaded,
+      (
+        state,
+        {
+          payload: {
+            data: { map },
+          },
         },
-      },
-    ) => ({
+      ) => ({
+        ...state,
+        lat: map?.lat ?? state.lat,
+        lon: map?.lon ?? state.lon,
+        zoom: map?.zoom ?? state.zoom,
+        mapType: map?.mapType ?? state.mapType,
+        overlays: map?.overlays ?? state.overlays,
+        customLayers: map?.customLayers ?? state.customLayers,
+      }),
+    )
+    .addCase(mapSetCustomLayers, (state, action) => ({
       ...state,
-      lat: map?.lat ?? state.lat,
-      lon: map?.lon ?? state.lon,
-      zoom: map?.zoom ?? state.zoom,
-      mapType: map?.mapType ?? state.mapType,
-      overlays: map?.overlays ?? state.overlays,
-      customLayers: map?.customLayers ?? state.customLayers,
-    }),
-  )
-  .handleAction(mapSetCustomLayers, (state, action) => ({
-    ...state,
-    customLayers: action.payload,
-  }))
-  .handleAction(mapSetEsriAttribution, (state, action) => ({
-    ...state,
-    esriAttribution: action.payload,
-  }));
+      customLayers: action.payload,
+    }))
+    .addCase(mapSetEsriAttribution, (state, action) => ({
+      ...state,
+      esriAttribution: action.payload,
+    })),
+);

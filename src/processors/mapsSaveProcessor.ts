@@ -1,17 +1,17 @@
+import { assert } from 'typia';
 import {
   MapData,
   MapMeta,
   mapsLoadList,
   mapsSave,
   mapsSetMeta,
-} from 'fm3/actions/mapsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { RootState } from 'fm3/reducers';
-import { StringDates } from 'fm3/types/common';
-import { assert } from 'typia';
-import { handleTrackUpload } from './trackViewerUploadTrackProcessor';
+} from '../actions/mapsActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { RootState } from '../store.js';
+import { StringDates } from '../types/common.js';
+import { handleTrackUpload } from './trackViewerUploadTrackProcessor.js';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,

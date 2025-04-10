@@ -1,14 +1,13 @@
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { DateTime } from 'fm3/components/DateTime';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useTextInputState } from 'fm3/hooks/useTextInputState';
-import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useState } from 'react';
-import Form from 'react-bootstrap/Form';
+import { Form } from 'react-bootstrap';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { DateTime } from '../../components/DateTime.js';
+import { toDatetimeLocal } from '../../dateUtils.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useTextInputState } from '../../hooks/useTextInputState.js';
+import { useMessages } from '../../l10nInjector.js';
 
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 

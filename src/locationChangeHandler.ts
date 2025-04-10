@@ -1,13 +1,16 @@
+import { Location } from 'history';
+import { Dispatch } from 'redux';
+import { assert, is } from 'typia';
 import {
   ChangesetParams,
   changesetsSet,
   changesetsSetParams,
-} from 'fm3/actions/changesetsActions';
-import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
+} from './actions/changesetsActions.js';
+import { drawingLineSetLines, Line } from './actions/drawingLineActions.js';
 import {
   drawingPointAdd,
   drawingPointSetAll,
-} from 'fm3/actions/drawingPointActions';
+} from './actions/drawingPointActions.js';
 import {
   galleryClear,
   galleryColorizeBy,
@@ -15,7 +18,9 @@ import {
   GalleryFilter,
   galleryRequestImage,
   gallerySetFilter,
-} from 'fm3/actions/galleryActions';
+} from './actions/galleryActions.js';
+import { RootAction } from './actions/index.js';
+import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
   documentShow,
   selectFeature,
@@ -24,50 +29,44 @@ import {
   setTool,
   ShowModal,
   Tool,
-} from 'fm3/actions/mainActions';
+} from './actions/mainActions.js';
 import {
   CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
-} from 'fm3/actions/mapActions';
+} from './actions/mapActions.js';
+import { mapsLoad } from './actions/mapsActions.js';
+import { objectsSetFilter } from './actions/objectsActions.js';
 import {
   osmClear,
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from 'fm3/actions/osmActions';
+} from './actions/osmActions.js';
 import {
   routePlannerSetParams,
   Weighting,
-} from 'fm3/actions/routePlannerActions';
+} from './actions/routePlannerActions.js';
+import { searchSetQuery } from './actions/searchActions.js';
+import { trackingActions } from './actions/trackingActions.js';
 import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
-} from 'fm3/actions/trackViewerActions';
-import { DocumentKey } from 'fm3/documents';
-import { history } from 'fm3/historyHolder';
+} from './actions/trackViewerActions.js';
+import { tools } from './constants.js';
+import { DocumentKey } from './documents/index.js';
+import { history } from './historyHolder.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
-} from 'fm3/oldFreemapUtils';
-import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
-import { Location } from 'history';
-import { Dispatch } from 'redux';
-import { assert, is } from 'typia';
-import { RootAction } from './actions';
-import { l10nSetChosenLanguage } from './actions/l10nActions';
-import { mapsLoad } from './actions/mapsActions';
-import { objectsSetFilter } from './actions/objectsActions';
-import { searchSetQuery } from './actions/searchActions';
-import { trackingActions } from './actions/trackingActions';
-import { tools } from './constants';
-import { RootState } from './reducers';
-import { MyStore } from './storeCreator';
-import { TransportType } from './transportTypeDefs';
-import { LatLon } from './types/common';
-import { TrackedDevice } from './types/trackingTypes';
+} from './oldFreemapUtils.js';
+import { MyStore, RootState } from './store.js';
+import { TransportType } from './transportTypeDefs.js';
+import { LatLon } from './types/common.js';
+import { TrackedDevice } from './types/trackingTypes.js';
+import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {
   const q: Record<string, string | string[]> = {};

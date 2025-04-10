@@ -1,13 +1,12 @@
-import { documentShow } from 'fm3/actions/mainActions';
-import { documents } from 'fm3/documents';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { documentShow } from '../actions/mainActions.js';
+import { documents } from '../documents/index.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { navigate } from '../navigationUtils.js';
 
 type Props = { show: boolean };
 
@@ -29,8 +28,8 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   useEffect(() => {
     setLoading(true);
 
-    import(`fm3/documents/${documentKey}.${language}.md`)
-      .catch(() => import(`fm3/documents/${documentKey}.md`))
+    import(`../documents/${documentKey}.${language}.md`)
+      .catch(() => import(`../documents/${documentKey}.md`))
       .then(({ default: content }) => {
         setContent(content);
       })

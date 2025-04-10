@@ -1,19 +1,18 @@
-import {
-  wikiLoadPreview,
-  WikiPreview,
-  wikiSetPreview,
-} from 'fm3/actions/wikiActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { Icon } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from 'react-bootstrap';
 import { createRoot } from 'react-dom/client';
 import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { assertGuard } from 'typia';
+import {
+  wikiLoadPreview,
+  WikiPreview,
+  wikiSetPreview,
+} from '../actions/wikiActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 class WikiIcon extends Icon {
   static template: ChildNode | undefined;

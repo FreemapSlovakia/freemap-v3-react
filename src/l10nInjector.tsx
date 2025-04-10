@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { useAppSelector } from './hooks/reduxSelectHook';
-import { useLazy } from './hooks/useLazy';
-import { Messages } from './translations/messagesInterface';
+import { useAppSelector } from './hooks/reduxSelectHook.js';
+import { useLazy } from './hooks/useLazy.js';
+import { Messages } from './translations/messagesInterface.js';
 
 export function useLocalMessages<T>(
   factory: (language: string) => Promise<{ default: T }>,

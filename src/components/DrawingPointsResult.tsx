@@ -1,18 +1,18 @@
 import Color from 'color';
-import {
-  drawingMeasure,
-  drawingPointChangePosition,
-} from 'fm3/actions/drawingPointActions';
-import { selectFeature } from 'fm3/actions/mainActions';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { DragEndEvent, LeafletEvent } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { RichMarker } from './RichMarker';
 import { is } from 'typia';
+import {
+  drawingMeasure,
+  drawingPointChangePosition,
+} from '../actions/drawingPointActions.js';
+import { selectFeature } from '../actions/mainActions.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
+import { RichMarker } from './RichMarker.js';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();

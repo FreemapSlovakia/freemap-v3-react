@@ -1,3 +1,13 @@
+import { ReactElement } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import {
+  FaClipboard,
+  // FaFacebook,
+  FaLink,
+  FaShareAlt,
+  FaTwitter,
+  FaWindowMaximize,
+} from 'react-icons/fa';
 import {
   getF4mapUrl,
   getGeocachingUrl,
@@ -13,19 +23,9 @@ import {
   getTwitterUrl,
   getWazeUrl,
   getZbgisUrl,
-} from 'fm3/externalUrlUtils';
-import { useMessages } from 'fm3/l10nInjector';
-import { LatLon } from 'fm3/types/common';
-import { ReactElement } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
-import {
-  FaClipboard,
-  // FaFacebook,
-  FaLink,
-  FaShareAlt,
-  FaTwitter,
-  FaWindowMaximize,
-} from 'react-icons/fa';
+} from '../externalUrlUtils.js';
+import { useMessages } from '../l10nInjector.js';
+import { LatLon } from '../types/common.js';
 
 interface Props extends LatLon {
   lat: number;

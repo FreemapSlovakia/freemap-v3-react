@@ -1,5 +1,3 @@
-import { galleryAddTag, GalleryTag } from 'fm3/actions/galleryActions';
-import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
   ReactElement,
@@ -7,16 +5,15 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
-import { DateTime } from '../DateTime';
-import { RecentTags } from './RecentTags';
-import Form from 'react-bootstrap/Form';
+import { galleryAddTag, GalleryTag } from '../../actions/galleryActions.js';
+import { getMessageByKey, useMessages } from '../../l10nInjector.js';
+import { DateTime } from '../DateTime.js';
+import { RecentTags } from './RecentTags.js';
 
 export interface PictureModel {
   title: string;

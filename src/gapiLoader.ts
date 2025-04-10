@@ -25,7 +25,7 @@ export function loadGapi(): Promise<void> {
     const fjs = document.getElementsByTagName('script')[0];
 
     if (!fjs || !fjs.parentNode) {
-      reject(Error('no script'));
+      reject(new Error('no script'));
     } else {
       fjs.parentNode.insertBefore(js, fjs);
     }

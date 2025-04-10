@@ -1,4 +1,5 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
+import { produce } from 'immer';
 import {
   DrawingPoint,
   drawingPointAdd,
@@ -6,11 +7,9 @@ import {
   drawingPointChangeProperties,
   drawingPointDelete,
   drawingPointSetAll,
-} from 'fm3/actions/drawingPointActions';
-import { applySettings, clearMapFeatures } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/drawingPointActions.js';
+import { applySettings, clearMapFeatures } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];
@@ -22,55 +21,54 @@ const initialState: DrawingPointsState = {
   change: 0,
 };
 
-export const drawingPointsReducer = createReducer<
-  DrawingPointsState,
-  RootAction
->(initialState)
-  .handleAction(clearMapFeatures, () => initialState)
-  .handleAction(drawingPointDelete, (state, { payload }) => ({
-    ...state,
-    points: state.points.filter((_, i) => i !== payload.index),
-  }))
-  .handleAction(applySettings, (state, { payload }) =>
-    produce(state, (draft) => {
-      if (payload.drawingApplyAll) {
-        for (const point of draft.points) {
-          if (payload.drawingColor) {
-            point.color = payload.drawingColor;
+export const drawingPointsReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => initialState)
+    .addCase(drawingPointDelete, (state, { payload }) => ({
+      ...state,
+      points: state.points.filter((_, i) => i !== payload.index),
+    }))
+    .addCase(applySettings, (state, { payload }) =>
+      produce(state, (draft) => {
+        if (payload.drawingApplyAll) {
+          for (const point of draft.points) {
+            if (payload.drawingColor) {
+              point.color = payload.drawingColor;
+            }
           }
         }
-      }
-    }),
-  )
-  .handleAction(drawingPointAdd, (state, { payload }) => ({
-    ...state,
-    points: [...state.points, payload],
-    change: state.change + 1,
-  }))
-  .handleAction(drawingPointChangeProperties, (state, { payload }) =>
-    produce(state, (draft) => {
-      Object.assign(draft.points[payload.index], payload.properties);
-    }),
-  )
-  .handleAction(drawingPointChangePosition, (state, { payload }) =>
-    produce(state, (draft) => {
-      const point = draft.points[payload.index];
+      }),
+    )
+    .addCase(drawingPointAdd, (state, { payload }) => ({
+      ...state,
+      points: [...state.points, payload],
+      change: state.change + 1,
+    }))
+    .addCase(drawingPointChangeProperties, (state, { payload }) =>
+      produce(state, (draft) => {
+        Object.assign(draft.points[payload.index], payload.properties);
+      }),
+    )
+    .addCase(drawingPointChangePosition, (state, { payload }) =>
+      produce(state, (draft) => {
+        const point = draft.points[payload.index];
 
-      point.lat = payload.lat;
+        point.lat = payload.lat;
 
-      point.lon = payload.lon;
+        point.lon = payload.lon;
+      }),
+    )
+    .addCase(drawingPointSetAll, (state, { payload }) => ({
+      ...state,
+      points: payload,
+    }))
+    .addCase(mapsLoaded, (state, { payload }) => {
+      return {
+        ...initialState,
+        points: [
+          ...(payload.merge ? state.points : []),
+          ...(payload.data.points ?? initialState.points),
+        ],
+      };
     }),
-  )
-  .handleAction(drawingPointSetAll, (state, { payload }) => ({
-    ...state,
-    points: payload,
-  }))
-  .handleAction(mapsLoaded, (state, { payload }) => {
-    return {
-      ...initialState,
-      points: [
-        ...(payload.merge ? state.points : []),
-        ...(payload.data.points ?? initialState.points),
-      ],
-    };
-  });
+);

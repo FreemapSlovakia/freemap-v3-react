@@ -1,9 +1,9 @@
-import { ShowProps } from 'fm3/hooks/useShow';
 import { ReactElement } from 'react';
-import { AsyncModal } from '../AsyncModal';
+import { ShowProps } from '../../hooks/useShow.js';
+import { AsyncModal } from '../AsyncModal.js';
 
 const supportUsModalFactory = () =>
-  import('fm3/components/supportUsModal/SupportUsModal');
+  import('../../components/supportUsModal/SupportUsModal.js');
 
 export function AsyncSupportUsModal({ show }: ShowProps): ReactElement | null {
   return <AsyncModal show={show} factory={supportUsModalFactory} />;

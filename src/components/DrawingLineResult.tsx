@@ -1,22 +1,5 @@
-import Color from 'color';
-import {
-  drawingLineAddPoint,
-  drawingLineJoinFinish,
-  drawingLineUpdatePoint,
-  Point,
-} from 'fm3/actions/drawingLineActions';
-import { drawingMeasure } from 'fm3/actions/drawingPointActions';
-import { selectFeature } from 'fm3/actions/mainActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { colors } from 'fm3/constants';
 import distance from '@turf/distance';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { isEventOnMap } from 'fm3/mapUtils';
-import {
-  drawingLinePolys,
-  selectingModeSelector,
-} from 'fm3/selectors/mainSelectors';
-import { LatLon } from 'fm3/types/common';
+import Color from 'color';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
 import { Fragment, ReactElement, useEffect, useMemo, useState } from 'react';
 import {
@@ -28,6 +11,23 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import {
+  drawingLineAddPoint,
+  drawingLineJoinFinish,
+  drawingLineUpdatePoint,
+  Point,
+} from '../actions/drawingLineActions.js';
+import { drawingMeasure } from '../actions/drawingPointActions.js';
+import { selectFeature } from '../actions/mainActions.js';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { isEventOnMap } from '../mapUtils.js';
+import {
+  drawingLinePolys,
+  selectingModeSelector,
+} from '../selectors/mainSelectors.js';
+import { LatLon } from '../types/common.js';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],

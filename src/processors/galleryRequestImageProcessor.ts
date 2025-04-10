@@ -1,12 +1,12 @@
+import { assert } from 'typia';
 import {
   galleryRequestImage,
   gallerySetImage,
   Picture,
-} from 'fm3/actions/galleryActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { StringDates } from 'fm3/types/common';
-import { assert } from 'typia';
+} from '../actions/galleryActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { StringDates } from '../types/common.js';
 
 // TODO react only on getState().gallery.activeImageId change
 export const galleryRequestImageProcessor: Processor = {

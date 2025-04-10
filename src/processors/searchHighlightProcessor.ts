@@ -1,23 +1,22 @@
+import { geoJSON } from 'leaflet';
 import {
   clearMapFeatures,
   convertToDrawing,
   selectFeature,
-} from 'fm3/actions/mainActions';
+} from '../actions/mainActions.js';
 import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from 'fm3/actions/osmActions';
+} from '../actions/osmActions.js';
 import {
   searchSelectResult,
   searchSetResults,
-} from 'fm3/actions/searchActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { baseLayers } from 'fm3/mapDefinitions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { geoJSON } from 'leaflet';
-import { getType } from 'typesafe-actions';
+} from '../actions/searchActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { baseLayers } from '../mapDefinitions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
@@ -108,13 +107,13 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             tags,
           },
           cancelType: [
-            getType(clearMapFeatures),
-            getType(searchSetResults),
-            getType(osmLoadNode),
-            getType(osmLoadWay),
-            getType(osmLoadRelation),
-            getType(convertToDrawing),
-            getType(selectFeature),
+            clearMapFeatures.type,
+            searchSetResults.type,
+            osmLoadNode.type,
+            osmLoadWay.type,
+            osmLoadRelation.type,
+            convertToDrawing.type,
+            selectFeature.type,
           ],
           style: 'info',
         }),

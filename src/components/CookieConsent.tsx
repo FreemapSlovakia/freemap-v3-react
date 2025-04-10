@@ -1,8 +1,8 @@
-import { setAnalyticCookiesAllowed } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { ReactElement } from 'react';
-import Form from 'react-bootstrap/Form';
+import { Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { setAnalyticCookiesAllowed } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 
 type Props = { prompt: string; local: string; analytics: string };
 

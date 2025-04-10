@@ -1,8 +1,5 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { toolDefinitions } from 'fm3/toolDefinitions';
 import { ReactElement } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
@@ -23,6 +20,9 @@ import {
   FaRegMap,
   FaSignInAlt,
 } from 'react-icons/fa';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { toolDefinitions } from '../../toolDefinitions.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);

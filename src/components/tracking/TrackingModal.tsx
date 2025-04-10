@@ -1,14 +1,14 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { ReactElement } from 'react';
-import Modal from 'react-bootstrap/Modal';
+import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { AccessTokenForm } from './AccessTokenForm';
-import { AccessTokens } from './AccessTokens';
-import { DeviceForm } from './DeviceForm';
-import { Devices } from './Devices';
-import { TrackedDeviceForm } from './TrackedDeviceForm';
-import { TrackedDevices } from './TrackedDevices';
+import { setActiveModal } from '../../actions/mainActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { AccessTokenForm } from './AccessTokenForm.js';
+import { AccessTokens } from './AccessTokens.js';
+import { DeviceForm } from './DeviceForm.js';
+import { Devices } from './Devices.js';
+import { TrackedDeviceForm } from './TrackedDeviceForm.js';
+import { TrackedDevices } from './TrackedDevices.js';
 
 // type Views =
 //   | 'devices'

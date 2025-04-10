@@ -1,11 +1,11 @@
 import FileSaver from 'file-saver';
-import { ExportTarget } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getAuth2, loadGapi } from 'fm3/gapiLoader';
-import { httpRequest } from 'fm3/httpRequest';
-import { RootState } from 'fm3/reducers';
-import { hasProperty } from 'fm3/typeUtils';
 import { Dispatch } from 'redux';
+import { ExportTarget } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { getAuth2, loadGapi } from '../gapiLoader.js';
+import { httpRequest } from '../httpRequest.js';
+import { RootState } from '../store.js';
+import { hasProperty } from '../typeUtils.js';
 
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';

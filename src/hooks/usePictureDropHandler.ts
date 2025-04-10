@@ -1,8 +1,8 @@
 import ExifReader, { Tags } from 'exifreader';
-import { GalleryItem } from 'fm3/actions/galleryActions';
-import { latLonToString } from 'fm3/geoutils';
 import pica from 'pica';
 import { useCallback } from 'react';
+import { GalleryItem } from '../actions/galleryActions.js';
+import { latLonToString } from '../geoutils.js';
 
 let nextId = 1;
 

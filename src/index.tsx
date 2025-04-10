@@ -1,28 +1,28 @@
-import {
-  applyCookieConsent,
-  enableUpdatingUrl,
-  setEmbedFeatures,
-} from 'fm3/actions/mainActions';
-import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
-import { Main } from 'fm3/components/Main';
-import 'fm3/fbLoader';
-import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
-import { history } from 'fm3/historyHolder';
-import { attachKeyboardHandler } from 'fm3/keyboardHandler';
-import { handleLocationChange } from 'fm3/locationChangeHandler';
-import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
-import { createReduxStore } from 'fm3/storeCreator';
-import 'fm3/styles/index.scss';
 import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
-import { authInit } from './actions/authActions';
-import { l10nSetChosenLanguage } from './actions/l10nActions';
-import { toastsAdd } from './actions/toastsActions';
-import { MessagesProvider } from './components/TranslationProvider';
-import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler';
+import { authInit } from './actions/authActions.js';
+import { l10nSetChosenLanguage } from './actions/l10nActions.js';
+import {
+  applyCookieConsent,
+  enableUpdatingUrl,
+  setEmbedFeatures,
+} from './actions/mainActions.js';
+import { toastsAdd } from './actions/toastsActions.js';
+import { ErrorCatcher } from './components/ErrorCatcher.js';
+import { Main } from './components/Main.js';
+import { MessagesProvider } from './components/TranslationProvider.js';
+import './fbLoader.js';
+import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler.js';
+import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
+import { history } from './historyHolder.js';
+import { attachKeyboardHandler } from './keyboardHandler.js';
+import { handleLocationChange } from './locationChangeHandler.js';
+import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
+import { createReduxStore } from './store.js';
+import './styles/index.scss';
 
 // filter out old browsers
 [].flatMap(() => null);

@@ -1,30 +1,4 @@
 import {
-  convertToDrawing,
-  setSelectingHomeLocation,
-} from 'fm3/actions/mainActions';
-import {
-  routePlannerSetFinish,
-  routePlannerSetFromCurrentPosition,
-  routePlannerSetIsochroneParams,
-  routePlannerSetMode,
-  routePlannerSetPickMode,
-  routePlannerSetRoundtripParams,
-  routePlannerSetStart,
-  routePlannerSetTransportType,
-  routePlannerSetWeighting,
-  routePlannerSwapEnds,
-  // routePlannerToggleItineraryVisibility,
-  routePlannerToggleElevationChart,
-  routePlannerToggleMilestones,
-  RoutingMode,
-  Weighting,
-} from 'fm3/actions/routePlannerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
-import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
-import {
   ChangeEvent,
   Children,
   CSSProperties,
@@ -37,10 +11,13 @@ import {
   useCallback,
   useState,
 } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+} from 'react-bootstrap';
 import {
   FaBullseye,
   FaChartArea,
@@ -59,10 +36,35 @@ import {
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
-import { DeleteButton } from './DeleteButton';
-import { ToolMenu } from './ToolMenu';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
-import InputGroup from 'react-bootstrap/InputGroup';
+import {
+  convertToDrawing,
+  setSelectingHomeLocation,
+} from '../actions/mainActions.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetFromCurrentPosition,
+  routePlannerSetIsochroneParams,
+  routePlannerSetMode,
+  routePlannerSetPickMode,
+  routePlannerSetRoundtripParams,
+  routePlannerSetStart,
+  routePlannerSetTransportType,
+  routePlannerSetWeighting,
+  routePlannerSwapEnds,
+  // routePlannerToggleItineraryVisibility,
+  routePlannerToggleElevationChart,
+  routePlannerToggleMilestones,
+  RoutingMode,
+  Weighting,
+} from '../actions/routePlannerActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
+import { DeleteButton } from './DeleteButton.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export default RoutePlannerMenu;
 

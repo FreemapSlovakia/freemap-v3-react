@@ -1,11 +1,9 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import Form from 'react-bootstrap/Form';
+import { Form } from 'react-bootstrap';
+import { setActiveModal } from '../actions/mainActions.js';
+import { useMessages } from '../l10nInjector.js';
 
-import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import { Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 

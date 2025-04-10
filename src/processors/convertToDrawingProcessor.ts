@@ -1,14 +1,14 @@
-import { convertToDrawing, selectFeature } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import turfFlatten from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import simplify from '@turf/simplify';
-import { drawingLineAdd, Point } from 'fm3/actions/drawingLineActions';
-import { mergeLines } from 'fm3/geoutils';
-import { routePlannerDelete } from 'fm3/actions/routePlannerActions';
-import { drawingPointAdd } from 'fm3/actions/drawingPointActions';
-import { trackViewerDelete } from 'fm3/actions/trackViewerActions';
-import { searchClear } from 'fm3/actions/searchActions';
+import { drawingLineAdd, Point } from '../actions/drawingLineActions.js';
+import { drawingPointAdd } from '../actions/drawingPointActions.js';
+import { convertToDrawing, selectFeature } from '../actions/mainActions.js';
+import { routePlannerDelete } from '../actions/routePlannerActions.js';
+import { searchClear } from '../actions/searchActions.js';
+import { trackViewerDelete } from '../actions/trackViewerActions.js';
+import { mergeLines } from '../geoutils.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,

@@ -1,5 +1,5 @@
-import { gallerySetImage } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { gallerySetImage } from '../actions/galleryActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryShowImageGaProcessor: Processor = {
   actionCreator: gallerySetImage,

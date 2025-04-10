@@ -1,10 +1,4 @@
 import { polygon } from '@turf/helpers';
-import { drawingPointChangeProperties } from 'fm3/actions/drawingPointActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
   FormEvent,
@@ -12,14 +6,17 @@ import {
   useCallback,
   useState,
 } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { DrawingRecentColors } from './DrawingRecentColors';
-import Form from 'react-bootstrap/Form';
-import { drawingLineChangeProperties } from 'fm3/actions/drawingLineActions';
+import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
+import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
+import { setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { DrawingRecentColors } from './DrawingRecentColors.js';
 
 type Props = { show: boolean };
 

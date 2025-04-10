@@ -1,6 +1,6 @@
-import { MessagePaths } from 'fm3/types/common';
-import { createAction } from 'typesafe-actions';
-import { RootAction } from '.';
+import { createAction } from '@reduxjs/toolkit';
+import { MessagePaths } from '../types/common.js';
+import { RootAction } from './index.js';
 
 export interface ToastAction {
   name?: string;
@@ -34,17 +34,20 @@ export type ResolvedToast = Toast & {
   id: string;
 };
 
-export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) =>
-  Object.assign(
-    { actions: [] as ToastAction[], id: Math.random().toString(36).slice(2) },
-    toast,
-  ),
-)<ResolvedToast>();
+export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) => {
+  return {
+    payload: {
+      actions: [] as ToastAction[],
+      id: Math.random().toString(36).slice(2),
+      ...toast,
+    } satisfies ResolvedToast,
+  };
+});
 
-export const toastsRemove = createAction('TOASTS_REMOVE')<string>();
+export const toastsRemove = createAction<string>('TOASTS_REMOVE');
 
-export const toastsStopTimeout = createAction('TOASTS_STOP_TIMEOUT')<string>();
+export const toastsStopTimeout = createAction<string>('TOASTS_STOP_TIMEOUT');
 
-export const toastsRestartTimeout = createAction(
+export const toastsRestartTimeout = createAction<string>(
   'TOASTS_RESTART_TIMEOUT',
-)<string>();
+);

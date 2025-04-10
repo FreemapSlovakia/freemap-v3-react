@@ -1,10 +1,10 @@
-import { authSetUser } from 'fm3/actions/authActions';
-import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { RootState } from 'fm3/reducers';
-import { LoginResponse } from 'fm3/types/common';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
+import { authSetUser } from '../actions/authActions.js';
+import { removeAds, setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { RootState } from '../store.js';
+import { LoginResponse } from '../types/common.js';
 
 export async function handleLoginResponse(
   res: Response,

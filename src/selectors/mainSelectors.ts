@@ -1,10 +1,10 @@
-import { Tool } from 'fm3/actions/mainActions';
-import { PickMode } from 'fm3/actions/routePlannerActions';
-import marker from 'fm3/images/cursors/marker.svg';
-import pencil from 'fm3/images/cursors/pencil.svg';
-import { RootState } from 'fm3/reducers';
-import { Track } from 'fm3/types/trackingTypes';
 import { createSelector } from 'reselect';
+import { Tool } from '../actions/mainActions.js';
+import { PickMode } from '../actions/routePlannerActions.js';
+import marker from '../images/cursors/marker.svg';
+import pencil from '../images/cursors/pencil.svg';
+import { RootState } from '../store.js';
+import { Track } from '../types/trackingTypes.js';
 
 export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 

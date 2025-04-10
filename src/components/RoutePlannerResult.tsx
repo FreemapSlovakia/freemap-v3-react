@@ -1,27 +1,6 @@
 import along from '@turf/along';
 import { lineString } from '@turf/helpers';
 import length from '@turf/length';
-import { setTool } from 'fm3/actions/mainActions';
-import {
-  Alternative,
-  RouteAlternativeExtra,
-  routePlannerAddMidpoint,
-  routePlannerRemoveMidpoint,
-  routePlannerSetActiveAlternativeIndex,
-  routePlannerSetFinish,
-  routePlannerSetMidpoint,
-  routePlannerSetPickMode,
-  routePlannerSetStart,
-  Step,
-} from 'fm3/actions/routePlannerActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { isSpecial, transportTypeDefs } from 'fm3/transportTypeDefs';
 import { Feature, Point } from 'geojson';
 import {
   divIcon,
@@ -49,6 +28,27 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { setTool } from '../actions/mainActions.js';
+import {
+  Alternative,
+  RouteAlternativeExtra,
+  routePlannerAddMidpoint,
+  routePlannerRemoveMidpoint,
+  routePlannerSetActiveAlternativeIndex,
+  routePlannerSetFinish,
+  routePlannerSetMidpoint,
+  routePlannerSetPickMode,
+  routePlannerSetStart,
+  Step,
+} from '../actions/routePlannerActions.js';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { RichMarker } from '../components/RichMarker.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
+import { Messages } from '../translations/messagesInterface.js';
+import { isSpecial, transportTypeDefs } from '../transportTypeDefs.js';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],

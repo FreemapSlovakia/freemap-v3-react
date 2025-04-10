@@ -1,10 +1,10 @@
-import { exportMap } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { exportMap } from '../actions/mainActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const exportMapProcessor: Processor<typeof exportMap> = {
   actionCreator: exportMap,
   errorKey: 'mapExport.exportError',
   id: 'mapExport.export',
   handle: async (...params) =>
-    (await import('./mapExportProcessorHandler')).default(...params),
+    (await import('./mapExportProcessorHandler.js')).default(...params),
 };

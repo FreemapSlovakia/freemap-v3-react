@@ -1,7 +1,5 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Dropdown } from 'react-bootstrap';
 import {
   FaDrawPolygon,
   FaMapMarkerAlt,
@@ -9,7 +7,9 @@ import {
   FaPencilRuler,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { SubmenuHeader } from './SubmenuHeader';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function DrawingSubmenu(): ReactElement {
   const m = useMessages();

@@ -1,24 +1,22 @@
-import { RootAction } from 'fm3/actions';
-import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
-import { RootState } from 'fm3/reducers';
-import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { Dispatch, Middleware } from 'redux';
-import { isActionOf } from 'typesafe-actions';
 import { is } from 'typia';
+import { rpcCall, rpcResponse } from '../actions/rpcActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { wsClose, wsOpen } from '../actions/websocketActions.js';
+import { RootState } from '../store.js';
+import { TrackedDevice } from '../types/trackingTypes.js';
 
 export function createTrackingMiddleware(): Middleware<
-  unknown,
+  {},
   RootState,
   Dispatch
 > {
   let reopenTs: number | undefined;
 
   return ({ dispatch, getState }) =>
-    (next: Dispatch) =>
-    (action: RootAction): unknown => {
-      if (isActionOf(rpcResponse, action)) {
+    (next) =>
+    (action) => {
+      if (rpcResponse.match(action)) {
         const { payload } = action;
 
         if (

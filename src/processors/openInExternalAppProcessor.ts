@@ -1,9 +1,10 @@
 import bbox from '@turf/bbox';
 import buffer from '@turf/buffer';
 import { point } from '@turf/helpers';
-import { openInExternalApp } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { copyToClipboard } from 'fm3/clipboardUtils';
+import popupCentered from 'popup-centered';
+import { openInExternalApp } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { copyToClipboard } from '../clipboardUtils.js';
 import {
   getF4mapUrl,
   getGoogleUrl,
@@ -18,11 +19,10 @@ import {
   getTwitterUrl,
   getWazeUrl,
   getZbgisUrl,
-} from 'fm3/externalUrlUtils';
-import { loadFb } from 'fm3/fbLoader';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import popupCentered from 'popup-centered';
+} from '../externalUrlUtils.js';
+import { loadFb } from '../fbLoader.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   actionCreator: openInExternalApp,
@@ -67,7 +67,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'twitter':
-        popupCentered(getTwitterUrl(), 'twitter', 575, 280);
+        popupCentered.default(getTwitterUrl(), 'twitter', 575, 280);
 
         break;
 

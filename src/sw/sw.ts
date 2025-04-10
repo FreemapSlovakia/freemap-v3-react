@@ -2,8 +2,8 @@
 
 declare const self: ServiceWorkerGlobalScope;
 
-import { CacheMode, SwCacheAction } from 'fm3/types/common';
 import { get, set } from 'idb-keyval';
+import { CacheMode, SwCacheAction } from '../types/common.js';
 
 const resources = self.__WB_MANIFEST;
 

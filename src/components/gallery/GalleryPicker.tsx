@@ -1,11 +1,11 @@
-import { galleryRequestImages } from 'fm3/actions/galleryActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { isEventOnMap } from 'fm3/mapUtils';
-import { LatLon } from 'fm3/types/common';
 import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { galleryRequestImages } from '../../actions/galleryActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { isEventOnMap } from '../../mapUtils.js';
+import { LatLon } from '../../types/common.js';
 
 export function GalleryPicker(): ReactElement | null {
   const zoom = useAppSelector((state) => state.map.zoom);

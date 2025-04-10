@@ -1,14 +1,8 @@
 import {
-  BaseLayerLetters,
-  baseLayers,
-  overlayLayers,
-  OverlayLetters,
-} from 'fm3/mapDefinitions';
-import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
-} from './actions/drawingLineActions';
-import { elevationChartClose } from './actions/elevationChartActions';
+} from './actions/drawingLineActions.js';
+import { elevationChartClose } from './actions/elevationChartActions.js';
 import {
   galleryCancelShowOnTheMap,
   galleryClear,
@@ -17,7 +11,7 @@ import {
   galleryRequestImage,
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
-} from './actions/galleryActions';
+} from './actions/galleryActions.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -26,13 +20,18 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
   setTool,
-} from './actions/mainActions';
-import { mapRefocus } from './actions/mapActions';
-import { history } from './historyHolder';
-import { RootState } from './reducers';
-import { showGalleryViewerSelector } from './selectors/mainSelectors';
-import { MyStore } from './storeCreator';
-import { toolDefinitions } from './toolDefinitions';
+} from './actions/mainActions.js';
+import { mapRefocus } from './actions/mapActions.js';
+import { history } from './historyHolder.js';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  overlayLayers,
+  OverlayLetters,
+} from './mapDefinitions.js';
+import { showGalleryViewerSelector } from './selectors/mainSelectors.js';
+import { MyStore, RootState } from './store.js';
+import { toolDefinitions } from './toolDefinitions.js';
 
 let keyTimer: number | null = null;
 

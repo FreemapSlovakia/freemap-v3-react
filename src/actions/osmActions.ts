@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
 type Detail = {
   id: number;
@@ -6,10 +6,10 @@ type Detail = {
   showToast?: boolean;
 };
 
-export const osmLoadNode = createAction('OSM_LOAD_NODE')<Detail>();
+export const osmLoadNode = createAction<Detail>('OSM_LOAD_NODE');
 
-export const osmLoadWay = createAction('OSM_LOAD_WAY')<Detail>();
+export const osmLoadWay = createAction<Detail>('OSM_LOAD_WAY');
 
-export const osmLoadRelation = createAction('OSM_LOAD_RELATION')<Detail>();
+export const osmLoadRelation = createAction<Detail>('OSM_LOAD_RELATION');
 
-export const osmClear = createAction('OSM_CLEAR')();
+export const osmClear = createAction('OSM_CLEAR');

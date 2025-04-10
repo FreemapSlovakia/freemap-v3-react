@@ -1,5 +1,5 @@
 import { assert } from 'typia';
-import { LatLon } from './types/common';
+import { LatLon } from './types/common.js';
 
 // TODO publish as npm package
 

@@ -1,11 +1,11 @@
-import { Point, drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
-import { drawingMeasure } from 'fm3/actions/drawingPointActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { isEventOnMap } from 'fm3/mapUtils';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { Point, drawingLineAddPoint } from '../actions/drawingLineActions.js';
+import { drawingMeasure } from '../actions/drawingPointActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { isEventOnMap } from '../mapUtils.js';
 
 export default DrawingLinesTool;
 

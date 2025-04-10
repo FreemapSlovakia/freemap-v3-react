@@ -1,9 +1,9 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { getGenericNameFromOsmElement } from 'fm3/osm/osmNameResolver';
-import 'fm3/styles/search.scss';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { getGenericNameFromOsmElement } from '../osm/osmNameResolver.js';
+import '../styles/search.scss';
 
 export function useOsmNameResolver(
   osmType: 'node' | 'way' | 'relation',

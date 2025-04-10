@@ -1,8 +1,8 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { selectFeature } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 
 export function SelectionTool(): null {
   const dispatch = useDispatch();

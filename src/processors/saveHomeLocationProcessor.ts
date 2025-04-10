@@ -1,6 +1,6 @@
-import { saveHomeLocation } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { saveHomeLocation } from '../actions/mainActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const saveHomeLocationProcessor: Processor<typeof saveHomeLocation> = {
   actionCreator: saveHomeLocation,

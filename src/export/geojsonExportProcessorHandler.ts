@@ -5,13 +5,13 @@ import {
   point,
   polygon,
 } from '@turf/helpers';
-import { exportMapFeatures, setActiveModal } from 'fm3/actions/mainActions';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { fetchPictures, Picture } from './fetchPictures';
-import { licenseNotice, upload } from './upload';
 import { FeatureCollection } from 'geojson';
+import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
+import { TrackingState } from '../reducers/trackingReducer.js';
+import { fetchPictures, Picture } from './fetchPictures.js';
+import { licenseNotice, upload } from './upload.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,

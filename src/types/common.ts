@@ -1,8 +1,8 @@
-import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { PathOptions } from 'leaflet';
 import type * as Sentry from '@sentry/browser';
+import { PathOptions } from 'leaflet';
 import { Action } from 'redux';
+import { CustomLayer, LayerSettings } from '../actions/mapActions.js';
+import { Messages } from '../translations/messagesInterface.js';
 
 export interface LatLon {
   lat: number;

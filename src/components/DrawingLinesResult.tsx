@@ -1,9 +1,9 @@
 import Color from 'color';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { ReactElement, useEffect } from 'react';
-import { DrawingLineResult } from './DrawingLineResult';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { DrawingLineResult } from './DrawingLineResult.js';
 
 function useLinePointColor() {
   const color =

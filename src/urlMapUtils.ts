@@ -1,15 +1,15 @@
+import { Location } from 'history';
+import { is } from 'typia';
+import { MapViewState } from './actions/mapActions.js';
 import {
   BaseLayerLetters,
   OverlayLetters,
   overlayLetters,
-} from 'fm3/mapDefinitions';
+} from './mapDefinitions.js';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getTrasformedParamsIfIsOldFreemapUrl,
-} from 'fm3/oldFreemapUtils';
-import { Location } from 'history';
-import { is } from 'typia';
-import { MapViewState } from './actions/mapActions';
+} from './oldFreemapUtils.js';
 
 export function getMapStateFromUrl(
   location: Location,

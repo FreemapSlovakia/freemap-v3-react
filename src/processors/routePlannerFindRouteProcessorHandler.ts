@@ -1,4 +1,7 @@
-import { clearMapFeatures, setTool } from 'fm3/actions/mainActions';
+import { isAnyOf } from '@reduxjs/toolkit';
+import { Feature, LineString, Polygon } from 'geojson';
+import { assert } from 'typia';
+import { clearMapFeatures, setTool } from '../actions/mainActions.js';
 import {
   Alternative,
   Leg,
@@ -9,16 +12,13 @@ import {
   routePlannerSetStart,
   Step,
   Waypoint,
-} from 'fm3/actions/routePlannerActions';
-import { ToastAction, toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import { isActionOf } from 'typesafe-actions';
-import { assert } from 'typia';
-import { updateRouteTypes } from './routePlannerFindRouteProcessor';
-import { Feature, LineString, Polygon } from 'geojson';
+} from '../actions/routePlannerActions.js';
+import { ToastAction, toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
+import { transportTypeDefs } from '../transportTypeDefs.js';
+import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
 
@@ -407,11 +407,16 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     );
   }
 
+  const isStartOrFinishAction = isAnyOf(
+    routePlannerSetStart,
+    routePlannerSetFinish,
+  );
+
   const showHint =
     !(ttDef.api === 'gh' && mode !== 'route') &&
     !getState().routePlanner.preventHint &&
     !midpoints.length &&
-    isActionOf([routePlannerSetStart, routePlannerSetFinish], action);
+    isStartOrFinishAction(action);
 
   if (showHint) {
     const actions: ToastAction[] = [{ nameKey: 'general.ok' }];

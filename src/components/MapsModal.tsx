@@ -1,23 +1,19 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { Form } from 'react-bootstrap';
+import { setActiveModal } from '../actions/mainActions.js';
 import {
   mapsDelete,
   mapsDisconnect,
   mapsLoad,
   mapsSave,
-} from 'fm3/actions/mapsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useOnline } from 'fm3/hooks/useOnline';
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import Form from 'react-bootstrap/Form';
+} from '../actions/mapsActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
+import { useOnline } from '../hooks/useOnline.js';
+import { useMessages } from '../l10nInjector.js';
 
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import Table from 'react-bootstrap/Table';
+import { Button, Card, InputGroup, Modal, Table } from 'react-bootstrap';
 import {
   FaCloudDownloadAlt,
   FaFilter,

@@ -1,18 +1,22 @@
-import { searchSelectResult } from 'fm3/actions/searchActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import {
-  getGenericNameFromOsmElement,
-  getNameFromOsmElement,
-  resolveGenericName,
-} from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { escapeHtml } from 'fm3/stringUtils';
+import { Feature } from 'geojson';
 import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
-import { Feature } from 'geojson';
+import { searchSelectResult } from '../actions/searchActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import {
+  getGenericNameFromOsmElement,
+  getNameFromOsmElement,
+  resolveGenericName,
+} from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { escapeHtml } from '../stringUtils.js';
+import {
+  MarkerIcon,
+  markerIconOptions,
+  MarkerLeafletIcon,
+} from './RichMarker.js';
 
 function pointToLayer(feature: Feature, latLng: LatLng) {
   const img = resolveGenericName(osmTagToIconMapping, feature.properties ?? {});

@@ -1,13 +1,13 @@
 import {
   drawingLineDelete,
   drawingLineDeletePoint,
-} from 'fm3/actions/drawingLineActions';
-import { drawingPointDelete } from 'fm3/actions/drawingPointActions';
-import { deleteFeature } from 'fm3/actions/mainActions';
-import { routePlannerDelete } from 'fm3/actions/routePlannerActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { trackViewerDelete } from 'fm3/actions/trackViewerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/drawingLineActions.js';
+import { drawingPointDelete } from '../actions/drawingPointActions.js';
+import { deleteFeature } from '../actions/mainActions.js';
+import { routePlannerDelete } from '../actions/routePlannerActions.js';
+import { trackingActions } from '../actions/trackingActions.js';
+import { trackViewerDelete } from '../actions/trackViewerActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const deleteProcessor: Processor = {
   actionCreator: deleteFeature,

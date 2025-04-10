@@ -1,16 +1,3 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import {
-  BaseLayerLetters,
-  baseLayers,
-  defaultMenuLayerLetters,
-  defaultToolbarLayerLetters,
-  NoncustomLayerLetters,
-  overlayLayers,
-  OverlayLetters,
-} from 'fm3/mapDefinitions';
 import {
   MouseEvent,
   ReactElement,
@@ -18,9 +5,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import {
   FaCog,
   FaEllipsisV,
@@ -34,9 +19,22 @@ import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
-import { Checkbox } from './Checkbox';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { fixedPopperConfig } from 'fm3/fixedPopperConfig';
+import { setActiveModal } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  defaultMenuLayerLetters,
+  defaultToolbarLayerLetters,
+  NoncustomLayerLetters,
+  overlayLayers,
+  OverlayLetters,
+} from '../mapDefinitions.js';
+import { Checkbox } from './Checkbox.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
   return (

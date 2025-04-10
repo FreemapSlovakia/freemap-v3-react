@@ -1,13 +1,12 @@
+import { assert } from 'typia';
 import {
   galleryEditPicture,
   gallerySetTags,
   GalleryTag,
-} from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { isActionOf } from 'typesafe-actions';
-import { assert } from 'typia';
+} from '../actions/galleryActions.js';
+import { setActiveModal } from '../actions/mainActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],
@@ -15,9 +14,8 @@ export const galleryUploadModalProcessor: Processor = {
   handle: async ({ getState, dispatch, action }) => {
     if (
       // don't load tags when canceling editing
-      (isActionOf(galleryEditPicture, action) &&
-        !getState().gallery.editModel) ||
-      (isActionOf(setActiveModal, action) &&
+      (galleryEditPicture.match(action) && !getState().gallery.editModel) ||
+      (setActiveModal.match(action) &&
         action.payload !== 'gallery-filter' &&
         action.payload !== 'gallery-upload')
     ) {

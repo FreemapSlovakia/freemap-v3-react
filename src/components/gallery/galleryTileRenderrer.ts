@@ -1,7 +1,7 @@
 import color from 'color';
-import { GalleryColorizeBy } from 'fm3/actions/galleryActions';
-import { LatLon } from 'fm3/types/common';
 import { LatLng } from 'leaflet';
+import { GalleryColorizeBy } from '../../actions/galleryActions.js';
+import { LatLon } from '../../types/common.js';
 
 type Marble = LatLon & {
   rating: number;
@@ -55,7 +55,7 @@ export function renderGalleryTile({
   const ctx = tile.getContext('2d');
 
   if (!ctx) {
-    throw Error('no context');
+    throw new Error('no context');
   }
 
   const zk = Math.min(1, 1.1 ** zoom / 3);

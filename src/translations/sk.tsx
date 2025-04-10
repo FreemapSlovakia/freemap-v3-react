@@ -1,20 +1,20 @@
-import { Attribution } from 'fm3/components/Attribution';
-import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { CookieConsent } from 'fm3/components/CookieConsent';
-import { ElevationInfo } from 'fm3/components/ElevationInfo';
-import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
+import { Fragment } from 'react';
+import { AlertLink } from 'react-bootstrap';
+import { FaKey } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { documentShow } from '../actions/mainActions.js';
+import { Attribution } from '../components/Attribution.js';
+import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { CookieConsent } from '../components/CookieConsent.js';
+import { ElevationInfo } from '../components/ElevationInfo.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
-} from 'fm3/components/ObjectDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { Fragment } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import { FaKey } from 'react-icons/fa';
-import { Messages, addError } from './messagesInterface';
-import shared from './sk-shared.json';
-import { useDispatch } from 'react-redux';
-import { documentShow } from 'fm3/actions/mainActions';
+} from '../components/ObjectDetails.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { Messages, addError } from './messagesInterface.js';
+import shared from './sk-shared.js';
 
 const nf33 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 3,
@@ -1421,9 +1421,9 @@ const messages: Messages = {
     exported: ({ url }) => (
       <>
         Export mapy je dokončený.{' '}
-        <Alert.Link href={url} target="_blank">
+        <AlertLink href={url} target="_blank">
           Otvoriť.
-        </Alert.Link>
+        </AlertLink>
       </>
     ),
     area: 'Exportovať oblasť:',
@@ -1458,29 +1458,29 @@ const messages: Messages = {
             <br />
             <em>
               mapa ©{' '}
-              <Alert.Link
+              <AlertLink
                 href="https://www.freemap.sk/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Freemap Slovakia
-              </Alert.Link>
+              </AlertLink>
               , dáta{' '}
-              <Alert.Link
+              <AlertLink
                 href="https://osm.org/copyright"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 © prispievatelia OpenStreetMap
-              </Alert.Link>
+              </AlertLink>
               {', SRTM, '}
-              <Alert.Link
+              <AlertLink
                 href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 LLS: ÚGKK SR
-              </Alert.Link>
+              </AlertLink>
             </em>
           </li>
         </ul>{' '}

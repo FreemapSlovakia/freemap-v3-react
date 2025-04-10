@@ -1,9 +1,9 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { FaLanguage } from 'react-icons/fa';
-import { SubmenuHeader } from './SubmenuHeader';
 import { JSX } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { FaLanguage } from 'react-icons/fa';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();

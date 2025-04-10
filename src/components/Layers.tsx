@@ -1,19 +1,20 @@
-import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { ReactElement } from 'react';
+import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import missingTile from '../images/missing-tile-256x256.png';
 import {
   BaseLayerLetters,
   baseLayers,
   LayerDef,
   overlayLayers,
   OverlayLetters,
-} from 'fm3/mapDefinitions';
-import { ReactElement } from 'react';
-import missingTile from '../images/missing-tile-256x256.png';
-import { AsyncComponent } from './AsyncComponent';
+} from '../mapDefinitions.js';
+import { AsyncComponent } from './AsyncComponent.js';
 
-const galleryLayerFactory = () => import('fm3/components/gallery/GalleryLayer');
+const galleryLayerFactory = () =>
+  import('../components/gallery/GalleryLayer.js');
 
-const maplibreLayerFactory = () => import('./MaplibreLayer');
+const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 
 export function Layers(): ReactElement | null {
   const overlays = useAppSelector((state) => state.map.overlays);

@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
 export interface WikiPoint {
   id: string;
@@ -16,10 +16,10 @@ export interface WikiPreview {
   langTitle: string; // TODO maybe it is same as title
 }
 
-export const wikiSetPoints = createAction('WIKI_SET_POINTS')<WikiPoint[]>();
+export const wikiSetPoints = createAction<WikiPoint[]>('WIKI_SET_POINTS');
 
-export const wikiSetPreview = createAction(
+export const wikiSetPreview = createAction<WikiPreview | null>(
   'WIKI_SET_PREVIEW',
-)<WikiPreview | null>();
+);
 
-export const wikiLoadPreview = createAction('WIKI_LOAD_PREVIEW')<string>();
+export const wikiLoadPreview = createAction<string>('WIKI_LOAD_PREVIEW');

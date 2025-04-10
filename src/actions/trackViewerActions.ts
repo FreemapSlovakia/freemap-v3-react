@@ -1,6 +1,6 @@
-import { LatLon } from 'fm3/types/common';
+import { createAction } from '@reduxjs/toolkit';
 import { FeatureCollection } from 'geojson';
-import { createAction } from 'typesafe-actions';
+import { LatLon } from '../types/common.js';
 
 export type ColorizingMode = 'elevation' | 'steepness';
 
@@ -10,34 +10,30 @@ export interface TrackPoint extends LatLon {
   lengthInKm: number;
 }
 
-export const trackViewerSetData = createAction('TRACK_VIEWER_SET_TRACK_DATA')<{
+export const trackViewerSetData = createAction<{
   trackGpx?: string;
   trackGeojson?: FeatureCollection;
   focus?: boolean;
-}>();
+}>('TRACK_VIEWER_SET_TRACK_DATA');
 
-export const trackViewerSetTrackUID = createAction(
+export const trackViewerSetTrackUID = createAction<string | null>(
   'TRACK_VIEWER_SET_TRACK_UID',
-)<string | null>();
+);
 
-export const trackViewerDownloadTrack = createAction(
+export const trackViewerDownloadTrack = createAction<string>(
   'TRACK_VIEWER_DOWNLOAD_TRACK',
-)<string>();
+);
 
-export const trackViewerUploadTrack = createAction(
-  'TRACK_VIEWER_UPLOAD_TRACK',
-)();
+export const trackViewerUploadTrack = createAction('TRACK_VIEWER_UPLOAD_TRACK');
 
-export const trackViewerColorizeTrackBy = createAction(
+export const trackViewerColorizeTrackBy = createAction<ColorizingMode | null>(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
-)<ColorizingMode | null>();
+);
 
 export const trackViewerToggleElevationChart = createAction(
   'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
-)();
+);
 
-export const trackViewerGpxLoad = createAction(
-  'TRACK_VIEWER_GPX_LOAD',
-)<string>();
+export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
 
-export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE')();
+export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE');

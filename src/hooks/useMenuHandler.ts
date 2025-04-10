@@ -1,9 +1,13 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { is } from 'typia';
 import {
   GalleryColorizeBy,
   GalleryListOrder,
   galleryColorizeBy,
   galleryList,
-} from 'fm3/actions/galleryActions';
+} from '../actions/galleryActions.js';
+import { l10nSetChosenLanguage } from '../actions/l10nActions.js';
 import {
   ExternalTargets,
   Modal,
@@ -13,15 +17,11 @@ import {
   openInExternalApp,
   setActiveModal,
   setTool,
-} from 'fm3/actions/mainActions';
-import { Submenu } from 'fm3/components/mainMenu/submenu';
-import { DocumentKey } from 'fm3/documents';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { useAppSelector } from './reduxSelectHook';
-import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
+} from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { Submenu } from '../components/mainMenu/submenu.js';
+import { DocumentKey } from '../documents/index.js';
+import { useAppSelector } from './reduxSelectHook.js';
 
 export function useMenuHandler({
   pointTitle,

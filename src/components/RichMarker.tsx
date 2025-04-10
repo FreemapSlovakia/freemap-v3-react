@@ -1,10 +1,10 @@
-import { MarkerType } from 'fm3/actions/objectsActions';
-import { colors } from 'fm3/constants';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
 import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { assertGuard } from 'typia';
+import { MarkerType } from '../actions/objectsActions.js';
+import { colors } from '../constants.js';
 
 const textStyle: CSSProperties = {
   fill: 'rgba(0, 0, 0, 0.5)',

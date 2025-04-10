@@ -1,19 +1,3 @@
-import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
-import { CustomLayer } from 'fm3/actions/mapActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import {
-  BaseLayerLetters,
-  baseLayers,
-  defaultMenuLayerLetters,
-  defaultToolbarLayerLetters,
-  NoncustomLayerLetters,
-  overlayLayers,
-  OverlayLetters,
-  overlayLetters,
-} from 'fm3/mapDefinitions';
 import {
   FormEvent,
   Fragment,
@@ -23,12 +7,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
+import {
+  Accordion,
+  Button,
+  Dropdown,
+  DropdownButton,
+  Form,
+  Modal,
+} from 'react-bootstrap';
 import {
   FaCheck,
   FaCog,
@@ -40,6 +26,22 @@ import {
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
+import { saveSettings, setActiveModal } from '../actions/mainActions.js';
+import { CustomLayer } from '../actions/mapActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  defaultMenuLayerLetters,
+  defaultToolbarLayerLetters,
+  NoncustomLayerLetters,
+  overlayLayers,
+  OverlayLetters,
+  overlayLetters,
+} from '../mapDefinitions.js';
 
 type Props = { show: boolean };
 

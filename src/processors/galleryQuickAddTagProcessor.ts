@@ -2,10 +2,10 @@ import {
   galleryQuickAddTag,
   galleryRequestImage,
   gallerySetLayerDirty,
-} from 'fm3/actions/galleryActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/galleryActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryQuickAddTagProcessor: Processor<typeof galleryQuickAddTag> =
   {

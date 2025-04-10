@@ -1,11 +1,11 @@
-import { RichMarker } from 'fm3/components/RichMarker';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useMessages } from 'fm3/l10nInjector';
 import { Point } from 'leaflet';
 import { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
+import { RichMarker } from '../components/RichMarker.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
 
 export function ElevationChartActivePoint(): ReactElement | null {
   const m = useMessages();

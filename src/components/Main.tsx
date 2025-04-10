@@ -1,47 +1,3 @@
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
-import {
-  galleryAddItem,
-  GalleryItem,
-  galleryMergeItem,
-} from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import {
-  trackViewerSetData,
-  trackViewerSetTrackUID,
-  trackViewerToggleElevationChart,
-} from 'fm3/actions/trackViewerActions';
-import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
-import { CopyrightButton } from 'fm3/components/CopyrightButton';
-import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
-import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
-import { Layers } from 'fm3/components/Layers';
-import { LocationResult } from 'fm3/components/LocationResult';
-import { MapControls } from 'fm3/components/MapControls';
-import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
-import { ObjectsResult } from 'fm3/components/ObjectsResult';
-import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
-import { SearchMenu } from 'fm3/components/SearchMenu';
-import { SearchResults } from 'fm3/components/SearchResults';
-import { Toasts } from 'fm3/components/Toasts';
-import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useGpxDropHandler } from 'fm3/hooks/useGpxDropHandler';
-import { useMouseCursor } from 'fm3/hooks/useMouseCursor';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useShareFile } from 'fm3/hooks/useShareFile';
-import { useMessages } from 'fm3/l10nInjector';
-import { setMapLeafletElement } from 'fm3/leafletElementHolder';
-import {
-  drawingLinePolys,
-  selectingModeSelector,
-  showGalleryPickerSelector,
-  trackGeojsonIsSuitableForElevationChart,
-} from 'fm3/selectors/mainSelectors';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -51,106 +7,145 @@ import {
   useEffect,
   useState,
 } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Card from 'react-bootstrap/Card';
+import { Button, ButtonToolbar, Card } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { usePictureDropHandler } from '../hooks/usePictureDropHandler';
+import { elevationChartClose } from '../actions/elevationChartActions.js';
+import {
+  galleryAddItem,
+  GalleryItem,
+  galleryMergeItem,
+} from '../actions/galleryActions.js';
+import { setActiveModal } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { routePlannerToggleElevationChart } from '../actions/routePlannerActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import {
+  trackViewerSetData,
+  trackViewerSetTrackUID,
+  trackViewerToggleElevationChart,
+} from '../actions/trackViewerActions.js';
+import { ChangesetsResult } from '../components/ChangesetsResult.js';
+import { CopyrightButton } from '../components/CopyrightButton.js';
+import { DrawingLinesResult } from '../components/DrawingLinesResult.js';
+import { DrawingPointsResult } from '../components/DrawingPointsResult.js';
+import { GalleryPicker } from '../components/gallery/GalleryPicker.js';
+import { GalleryResult } from '../components/gallery/GalleryResult.js';
+import { Layers } from '../components/Layers.js';
+import { LocationResult } from '../components/LocationResult.js';
+import { MapControls } from '../components/MapControls.js';
+import { MapDetailsMenu } from '../components/MapDetailsMenu.js';
+import { ObjectsResult } from '../components/ObjectsResult.js';
+import { RoutePlannerResult } from '../components/RoutePlannerResult.js';
+import { SearchMenu } from '../components/SearchMenu.js';
+import { SearchResults } from '../components/SearchResults.js';
+import { Toasts } from '../components/Toasts.js';
+import { TrackingResult } from '../components/tracking/TrackingResult.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
+import { useMouseCursor } from '../hooks/useMouseCursor.js';
+import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
-import { AsyncComponent } from './AsyncComponent';
-import { AsyncModal } from './AsyncModal';
-import { DrawingPointsTool } from './DrawingPointsTool';
-import { GalleryModals } from './gallery/GalleryModals';
-import { HomeLocationPickingResult } from './HomeLocationPickingResult';
-import { InfoBar } from './InfoBar';
-import { MainMenuButton } from './mainMenu/MainMenuButton';
-import { MapContextMenu } from './MapContextMenu';
-import { MapDetailsTool } from './MapDetailsTool';
-import { MapsMenu } from './MapsMenu';
-import { SelectionTool } from './SelectionTool';
-import { ToolMenu } from './ToolMenu';
-import { TrackingSelection } from './TrackingSelection';
-import { useHtmlMeta } from './useHtmlMeta';
-import { WikiLayer } from './WikiLayer';
+import { useMessages } from '../l10nInjector.js';
+import { setMapLeafletElement } from '../leafletElementHolder.js';
+import {
+  drawingLinePolys,
+  selectingModeSelector,
+  showGalleryPickerSelector,
+  trackGeojsonIsSuitableForElevationChart,
+} from '../selectors/mainSelectors.js';
+import { AsyncComponent } from './AsyncComponent.js';
+import { AsyncModal } from './AsyncModal.js';
+import { DrawingPointsTool } from './DrawingPointsTool.js';
+import { GalleryModals } from './gallery/GalleryModals.js';
+import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
+import { InfoBar } from './InfoBar.js';
+import { MainMenuButton } from './mainMenu/MainMenuButton.js';
+import { MapContextMenu } from './MapContextMenu.js';
+import { MapDetailsTool } from './MapDetailsTool.js';
+import { MapsMenu } from './MapsMenu.js';
+import { SelectionTool } from './SelectionTool.js';
+import { ToolMenu } from './ToolMenu.js';
+import { TrackingSelection } from './TrackingSelection.js';
+import { useHtmlMeta } from './useHtmlMeta.js';
+import { WikiLayer } from './WikiLayer.js';
 
-const objectsMenuFactory = () => import('fm3/components/ObjectsMenu');
+const objectsMenuFactory = () => import('./ObjectsMenu.js');
 
-const routePlannerMenuFactory = () => import('fm3/components/RoutePlannerMenu');
+const routePlannerMenuFactory = () => import('./RoutePlannerMenu.js');
 
-const trackViewerMenuFactory = () => import('fm3/components/TrackViewerMenu');
+const trackViewerMenuFactory = () => import('./TrackViewerMenu.js');
 
-const changesetsMenuFactory = () => import('fm3/components/ChangesetsMenu');
+const changesetsMenuFactory = () => import('./ChangesetsMenu.js');
 
-const drawingLineSelectionFactory = () => import('./DrawingLineSelection');
+const drawingLineSelectionFactory = () => import('./DrawingLineSelection.js');
 
 const drawingLinePointSelectionFactory = () =>
-  import('./DrawingLinePointSelection');
+  import('./DrawingLinePointSelection.js');
 
-const drawingPointSelectionFactory = () => import('./DrawingPointSelection');
+const drawingPointSelectionFactory = () => import('./DrawingPointSelection.js');
 
-const objectSelectionFactory = () => import('./ObjectSelection');
+const objectSelectionFactory = () => import('./ObjectSelection.js');
 
 const galleryPositionPickingMenuFactory = () =>
-  import('./gallery/GalleryPositionPickingMenu');
+  import('./gallery/GalleryPositionPickingMenu.js');
 
 const galleryShowPositionMenuFactory = () =>
-  import('./gallery/GalleryShowPositionMenu');
+  import('./gallery/GalleryShowPositionMenu.js');
 
 const homeLocationPickingMenuFactory = () =>
-  import('./HomeLocationPickingMenu');
+  import('./HomeLocationPickingMenu.js');
 
-const adFactory = () => import('./Ad');
+const adFactory = () => import('./Ad.js');
 
-const elevationChartFactory = () => import('fm3/components/ElevationChart');
+const elevationChartFactory = () => import('./ElevationChart.js');
 
-const drawingLinesToolFactory = () => import('./DrawingLinesTool');
+const drawingLinesToolFactory = () => import('./DrawingLinesTool.js');
 
-const trackingModalFactory = () =>
-  import('fm3/components/tracking/TrackingModal');
+const trackingModalFactory = () => import('./tracking/TrackingModal.js');
 
-const accountModalFactory = () => import('fm3/components/AccountModal');
+const accountModalFactory = () => import('./AccountModal.js');
 
-const mapSettingsModalFactory = () => import('./MapSettingsModal');
+const mapSettingsModalFactory = () => import('./MapSettingsModal.js');
 
-const embedMapModalFactory = () => import('fm3/components/EmbedMapModal');
+const embedMapModalFactory = () => import('./EmbedMapModal.js');
 
-const exportGpxModalFactory = () =>
-  import('fm3/components/ExportMapFeaturesModal');
+const exportGpxModalFactory = () => import('./ExportMapFeaturesModal.js');
 
-const exportMapModalFactory = () => import('fm3/components/ExportMapModal');
+const exportMapModalFactory = () => import('./ExportMapModal.js');
 
-const documentModalFactory = () => import('fm3/components/DocumentModal');
+const documentModalFactory = () => import('./DocumentModal.js');
 
-const aboutModalFactory = () => import('fm3/components/AboutModal');
+const aboutModalFactory = () => import('./AboutModal.js');
 
 const supportUsModalFactory = () =>
-  import('fm3/components/supportUsModal/SupportUsModal');
+  import('./supportUsModal/SupportUsModal.js');
 
-const legendOutdoorModalFactory = () =>
-  import('fm3/components/LegendOutdoorModal');
+const legendOutdoorModalFactory = () => import('./LegendOutdoorModal.js');
 
-const legendModalFactory = () => import('fm3/components/LegendModal');
+const legendModalFactory = () => import('./LegendModal.js');
 
 const drawingPropertiesModalFactory = () =>
-  import('fm3/components/DrawingPropertiesModal');
+  import('./DrawingPropertiesModal.js');
 
 const trackViewerUploadModalFactory = () =>
-  import('fm3/components/TrackViewerUploadModal');
+  import('./TrackViewerUploadModal.js');
 
-const loginModalFactory = () => import('fm3/components/LoginModal');
+const loginModalFactory = () => import('./LoginModal.js');
 
-const mapsModalFactory = () => import('./MapsModal');
+const mapsModalFactory = () => import('./MapsModal.js');
 
-const removeAdsModalFactory = () => import('./RemoveAdsModal');
+const removeAdsModalFactory = () => import('./RemoveAdsModal.js');
 
 const galleryFilterModalFactory = () =>
-  import('fm3/components/gallery/GalleryFilterModal');
+  import('./gallery/GalleryFilterModal.js');
 
 const currentDrawingPropertiesModalFactory = () =>
-  import('fm3/components/CurrentDrawingPropertiesModal');
+  import('./CurrentDrawingPropertiesModal.js');
 
 export function Main(): ReactElement {
   const m = useMessages();
@@ -637,9 +632,7 @@ export function Main(): ReactElement {
                     <LocationResult />
                     {trackGeojson && (
                       <AsyncComponent
-                        factory={() =>
-                          import('fm3/components/TrackViewerResult')
-                        }
+                        factory={() => import('./TrackViewerResult.js')}
                         trackGeojson={trackGeojson}
                       />
                     )}

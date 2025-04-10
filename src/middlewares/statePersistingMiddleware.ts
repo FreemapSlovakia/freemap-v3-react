@@ -1,16 +1,11 @@
-import { RootAction } from 'fm3/actions';
-import { RootState } from 'fm3/reducers';
+import { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
-import { Dispatch, Middleware } from 'redux';
+import { RootState } from '../store.js';
 
-export const statePersistingMiddleware: Middleware<
-  RootAction | null,
-  RootState,
-  Dispatch<RootAction>
-> =
+export const statePersistingMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>
-  (next: Dispatch) =>
-  (action: RootAction): RootAction | null => {
+  (next) =>
+  (action) => {
     const result = next(action);
 
     const state = getState();

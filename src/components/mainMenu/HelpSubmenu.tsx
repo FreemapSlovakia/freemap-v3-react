@@ -1,10 +1,10 @@
-import { documents } from 'fm3/documents';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
-import { SubmenuHeader } from './SubmenuHeader';
 import { JSX } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
+import { documents } from '../../documents/index.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {
   const m = useMessages();

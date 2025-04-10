@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { Middleware } from '@reduxjs/toolkit';
 import {
   wsClose,
   wsInvalidState,
@@ -6,16 +6,10 @@ import {
   wsReceived,
   wsSend,
   wsStateChanged,
-} from 'fm3/actions/websocketActions';
-import { RootState } from 'fm3/reducers';
-import { Dispatch, Middleware } from 'redux';
-import { isActionOf } from 'typesafe-actions';
+} from '../actions/websocketActions.js';
+import { RootState } from '../store.js';
 
-export function createWebsocketMiddleware(): Middleware<
-  unknown,
-  RootState,
-  Dispatch
-> {
+export function createWebsocketMiddleware(): Middleware<{}, RootState> {
   let ws: WebSocket | null = null;
 
   let restarter: number | null = null;
@@ -33,9 +27,9 @@ export function createWebsocketMiddleware(): Middleware<
   }
 
   return ({ dispatch, getState }) =>
-    (next: Dispatch) =>
-    (action: RootAction): unknown => {
-      if (isActionOf(wsOpen, action)) {
+    (next) =>
+    (action) => {
+      if (wsOpen.match(action)) {
         if (ws && ws.readyState !== WebSocket.CLOSED) {
           dispatch(wsInvalidState(action.payload));
 
@@ -97,7 +91,7 @@ export function createWebsocketMiddleware(): Middleware<
             }
           }
         });
-      } else if (isActionOf(wsSend, action)) {
+      } else if (wsSend.match(action)) {
         if (ws?.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify(action.payload.message));
         } else {
@@ -105,7 +99,7 @@ export function createWebsocketMiddleware(): Middleware<
 
           return undefined;
         }
-      } else if (isActionOf(wsClose, action)) {
+      } else if (wsClose.match(action)) {
         if (ws && ws.readyState !== WebSocket.CLOSED) {
           ws.close();
         } else {
