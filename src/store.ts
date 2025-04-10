@@ -22,9 +22,7 @@ export function createReduxStore() {
       getDefaultMiddleware({
         serializableCheck: {
           isSerializable: (value: unknown) =>
-            typeof value === 'object' && value instanceof Date
-              ? true
-              : isPlain(value),
+            value instanceof Date || value instanceof File || isPlain(value),
         },
       }).concat(
         errorHandlingMiddleware,

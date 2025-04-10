@@ -6,9 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { fileURLToPath } from 'node:url';
 import path from 'path';
 import process from 'process';
-import reactRefreshBabel from 'react-refresh/babel';
 import type SassLoader from 'sass-loader';
-import type StringReplaceLoader from 'string-replace-loader';
 import type { Configuration } from 'webpack';
 import webpack from 'webpack';
 import { InjectManifest } from 'workbox-webpack-plugin';
@@ -68,33 +66,6 @@ const config: Configuration = {
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
-      {
-        // babelify some too modern libraries
-        test: /\bnode_modules\/.*\/?(exifreader|strict-uri-encode|split-on-first|leaflet|@?react-leaflet)\/.*\.js$/,
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            [
-              '@babel/preset-env',
-              {
-                targets: {
-                  browsers: ['> 0.5%'],
-                },
-              },
-            ],
-          ],
-          plugins: [!prod && reactRefreshBabel].filter(Boolean),
-        },
-      },
-      // see https://github.com/mattiasw/ExifReader/issues/248
-      {
-        test: /\/exifreader\/src\/tags\.js$/,
-        loader: 'string-replace-loader',
-        options: {
-          search: 'Constants.USE_THUMBNAIL',
-          replace: 'false',
-        } satisfies StringReplaceLoader.Options,
-      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
