@@ -1487,16 +1487,20 @@ const en: Messages = {
     secretary: 'Secretary',
   },
 
-  removeAds: {
-    title: 'Remove ads',
+  premium: {
+    title: 'Get full access',
     info: (
       <>
         <p>
           <strong>Support the volunteers who create this map!</strong>
         </p>
         <p>
-          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
-          <b>remove ads</b> from freemap for a year.
+          For <b>5 hours</b> of your volunteer work or <b>5 €</b> you will have
+          a year of access with:
+          <ul>
+            <li>removed ad banner</li>
+            <li>access to premium map layers</li>
+          </ul>
         </p>
         <p>
           You can prove your volunteer work by creating work reports in the{' '}
@@ -1513,7 +1517,9 @@ const en: Messages = {
       </>
     ),
     continue: 'Continue',
-    success: 'Congratulations, you have become a premium member!',
+    success: 'Congratulations, you have now acces to all features!',
+    becomePremium: 'Get full access',
+    youArePremium: 'You have access to all features',
   },
 
   offline: {

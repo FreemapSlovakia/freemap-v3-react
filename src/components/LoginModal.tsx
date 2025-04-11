@@ -39,9 +39,7 @@ export function LoginModal({ show }: Props): ReactElement {
           </Alert>
         )}
 
-        {removeAds ? (
-          <Alert variant="primary">{m?.removeAds.info}</Alert>
-        ) : null}
+        {removeAds ? <Alert variant="primary">{m?.premium.info}</Alert> : null}
 
         <p>{m?.auth.logIn.with}:</p>
 

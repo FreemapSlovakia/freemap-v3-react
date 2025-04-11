@@ -1521,17 +1521,21 @@ const messages: Messages = {
     secretary: 'Tajemník',
   },
 
-  removeAds: {
-    title: 'Odstranit reklamy',
+  premium: {
+    title: 'Získat plný přístup',
     info: (
       <>
         <p>
           <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
         <p>
-          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> vám na rok{' '}
-          <b>odstraníme reklamy</b>.
+          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> získáte na
+          rok:
         </p>
+        <ul>
+          <li>odstranění reklamního banneru</li>
+          <li>přístup k prémiovým mapovým vrstvám</li>
+        </ul>
         <p>
           Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
           v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
@@ -1547,7 +1551,9 @@ const messages: Messages = {
       </>
     ),
     continue: 'Pokračovat',
-    success: 'Gratulujeme, stali jste se prémiovým členem!',
+    success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
+    becomePremium: 'Získat plný přístup',
+    youArePremium: 'Máte přístup ke všem funkcím',
   },
 
   offline: {

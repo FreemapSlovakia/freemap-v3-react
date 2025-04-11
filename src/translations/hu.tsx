@@ -1522,36 +1522,38 @@ const hu: Messages = {
     secretary: 'Titkár',
   },
 
-  removeAds: {
-    title: 'Remove ads', // TODO translate
-    // TODO translate
+  premium: {
+    title: 'Teljes hozzáférés',
     info: (
       <>
         <p>
-          <strong>Support the volunteers who create this map!</strong>
+          <strong>
+            Támogasd az önkénteseket, akik ezt a térképet készítik!
+          </strong>
         </p>
         <p>
-          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
-          <b>remove ads</b> from freemap for a year.
+          <b>5 óra</b> önkéntes munkáért vagy <b>5 €</b>-ért{' '}
+          <b>eltávolítjuk a hirdetéseket</b> a freemap felületéről egy évre.
         </p>
         <p>
-          You can prove your volunteer work by creating work reports in the{' '}
-          <a href="https://rovas.app/">Rovas</a> application. If you are a
-          volunteer in the OSM project and are using the JOSM application, we
-          recommend enabling the{' '}
+          Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
+          <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM
+          projekt önkéntese vagy, és a JOSM alkalmazást használod, javasoljuk a{' '}
           <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-            Rovas Connector plugin
+            Rovas Connector bővítmény
           </a>
-          , which can create reports for you. After a report is verified by two
-          users, you will receive community currency <i>Chron</i>, which you can
-          use to remove ads from www.freemap.sk.
+          engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
+          jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
+          kapsz, amit felhasználhatsz a hirdetések eltávolítására a
+          www.freemap.sk oldalon.
         </p>
       </>
-    ), // TODO translate
-    continue: 'Continue', // TODO translate
-    success: 'Congratulations, you have become a premium member!', // TODO translate
+    ),
+    continue: 'Folytatás',
+    success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
+    becomePremium: 'Teljes hozzáférés',
+    youArePremium: 'Ön hozzáfér minden funkcióhoz',
   },
-
   // TODO translate
   offline: {
     offlineMode: 'Offline mode',

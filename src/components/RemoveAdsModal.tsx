@@ -21,11 +21,11 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <SiAdblock /> {m?.removeAds.title}
+          <SiAdblock /> {m?.premium.title}
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light">{m?.removeAds.info}</Modal.Body>
+      <Modal.Body className="bg-light">{m?.premium.info}</Modal.Body>
 
       <Modal.Footer>
         <Button
@@ -36,7 +36,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
             dispatch(removeAds());
           }}
         >
-          <SiAdblock /> {m?.removeAds.continue}
+          <SiAdblock /> {m?.premium.continue}
         </Button>
 
         <Button variant="dark" onClick={close}>

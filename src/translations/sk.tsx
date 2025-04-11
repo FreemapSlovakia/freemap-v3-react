@@ -1130,12 +1130,12 @@ const messages: Messages = {
       garmin: 'Garmin',
     },
     connect: {
-      label: 'Connect', // TODO translate
-      success: 'Connected', // TODO translate
+      label: 'Pripojiť',
+      success: 'Pripojené',
     },
     disconnect: {
-      label: 'Disconnect', // TODO translate
-      success: 'Disconnected', // TODO translate
+      label: 'Odpojiť',
+      success: 'Odpojené',
     },
     logIn: {
       with: 'Vyberte poskytovateľa prihlásenia',
@@ -1554,22 +1554,30 @@ const messages: Messages = {
     secretary: 'Tajomník',
   },
 
-  removeAds: {
-    title: 'Odstrániť reklamy',
+  premium: {
+    title: 'Získať plný prístup',
     info: (
       <>
         <p>
-          <strong>Podporte dobrovoľníkov tvoriacich túto mapu!</strong>
+          Za <b>5 hodín</b> vašej dobrovoľníckej práce alebo <b>5 €</b> získate
+          na rok:
         </p>
-        <p>
-          Za <b>5 hodín</b> vašej dobrovoľníckej práce alebo <b>5 €</b> vám na
-          rok <b>odstránime reklamy</b>.
-        </p>
+        <ul>
+          <li>odstránenie reklamného banneru</li>
+          <li>prístup k prémiovým mapovým vrstvám</li>
+        </ul>
         <p>
           Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v
-          aplikácii <a href="https://rovas.app/">Rovas</a>. Ak ste dobrovoľníkom
-          v projekte OSM a používate aplikáciu JOSM, odporúčame zapnúť{' '}
-          <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
+          aplikácii{' '}
+          <a href="https://rovas.app/" target="rovas">
+            Rovas
+          </a>
+          . Ak ste dobrovoľníkom v projekte OSM a používate aplikáciu JOSM,
+          odporúčame zapnúť{' '}
+          <a
+            href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector"
+            target="rovas_connector"
+          >
             doplnok Rovas Connector
           </a>
           , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
@@ -1579,7 +1587,9 @@ const messages: Messages = {
       </>
     ),
     continue: 'Pokračovať',
-    success: 'Gratulujeme, stali ste sa prémiovým členom!',
+    success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
+    becomePremium: 'Získať plný prístup',
+    youArePremium: 'Máte prístup k všetkým funkciám',
   },
 
   offline: {

@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "start": "tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
+    "start": "NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
     "lint": "node node_modules/eslint/bin/eslint.js src",
     "lint:fix": "node node_modules/eslint/bin/eslint.js src --fix",
     "prepare": "ts-patch install",

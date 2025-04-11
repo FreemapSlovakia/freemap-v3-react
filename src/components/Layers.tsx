@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import missingTile from '../images/missing-tile-256x256.png';
+import { useMessages } from '../l10nInjector.js';
 import {
   BaseLayerLetters,
   baseLayers,
@@ -32,6 +33,8 @@ export function Layers(): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const m = useMessages();
 
   const getTileLayer = (
     {
@@ -107,7 +110,15 @@ export function Layers(): ReactElement | null {
     return (
       !!url && (
         <ScaledTileLayer
-          key={type + '-' + opacity + '-' + (effPremiumFromZoom ?? 99)}
+          key={
+            type +
+            '-' +
+            opacity +
+            '-' +
+            (effPremiumFromZoom ?? 99) +
+            '-' +
+            (effPremiumFromZoom ? m?.general.premiumOnly : '')
+          }
           url={url}
           minZoom={minZoom}
           maxZoom={20}
@@ -128,6 +139,7 @@ export function Layers(): ReactElement | null {
           zoomOffset={isHdpi ? 1 : 0}
           cors={cors}
           premiumFromZoom={effPremiumFromZoom}
+          premiumOnlyText={m?.general.premiumOnly}
           className={`fm-${kind}-layer`}
         />
       )

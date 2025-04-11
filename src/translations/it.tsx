@@ -1516,16 +1516,20 @@ const messages: Messages = {
     secretary: 'Segretario',
   },
 
-  removeAds: {
-    title: 'Rimuovi la pubblicità',
+  premium: {
+    title: 'Accesso completo',
     info: (
       <>
         <p>
           <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          Per <b>5 ore</b> del tuo lavoro di volontariato o <b>5 €</b>, noi{' '}
-          <b>rimuoveremo gli annunci pubblicitari</b> da freemap per un anno.
+          Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
+          anno di accesso con:
+          <ul>
+            <li>rimozione del banner pubblicitario</li>
+            <li>accesso ai livelli mappa premium</li>
+          </ul>
         </p>
         <p>
           Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro
@@ -1543,7 +1547,9 @@ const messages: Messages = {
       </>
     ),
     continue: 'Continua',
-    success: 'Congratulazioni, sei diventato un membro premium !',
+    success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
+    becomePremium: 'Accesso completo',
+    youArePremium: 'Hai accesso a tutte le funzionalità',
   },
 
   offline: {

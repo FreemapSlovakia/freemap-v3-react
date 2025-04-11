@@ -85,14 +85,8 @@ a.leaflet-control-layers-toggle {
 
 .fm-nonpremium-tile {
   background-color: #aaa8;
-  text-shadow:
-    rgb(255, 255, 255) 1px 0px 0px,
-    rgb(255, 255, 255) 0.540302px 0.841471px 0px,
-    rgb(255, 255, 255) -0.416147px 0.909297px 0px,
-    rgb(255, 255, 255) -0.989992px 0.14112px 0px,
-    rgb(255, 255, 255) -0.653644px -0.756802px 0px,
-    rgb(255, 255, 255) 0.283662px -0.958924px 3px,
-    rgb(255, 255, 255) 0.96017px -0.279415px 0px;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px #fff;
   color: #000a;
   font-size: 1.5em;
   display: flex;

@@ -6,18 +6,21 @@ type Props = TileLayerProps & {
   extraScales?: number[];
   cors?: boolean;
   premiumFromZoom?: number;
+  premiumOnlyText?: string;
 };
 
 class LScaledTileLayer extends TileLayer {
   extraScales;
   cors;
   premiumFromZoom;
+  premiumOnlyText;
 
   constructor(
     urlTemplate: string,
     extraScales?: number[],
     cors = true,
     premiumFromZoom?: number,
+    premiumOnlyText?: string,
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
@@ -27,6 +30,8 @@ class LScaledTileLayer extends TileLayer {
     this.cors = cors;
 
     this.premiumFromZoom = premiumFromZoom;
+
+    this.premiumOnlyText = premiumOnlyText;
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -38,10 +43,11 @@ class LScaledTileLayer extends TileLayer {
 
       div.className = 'fm-nonpremium-tile';
 
-      div.innerHTML =
-        '<div>' + window.translations?.general.premiumOnly + '</div>';
+      if (this.premiumOnlyText) {
+        div.innerHTML = '<div>' + this.premiumOnlyText + '</div>';
+      }
 
-      super.createTile(coords, done) as HTMLImageElement;
+      setTimeout(() => done(undefined, div));
 
       return div;
     }
@@ -101,7 +107,14 @@ class LScaledTileLayer extends TileLayer {
 
 export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   (props, context) => {
-    const { url, extraScales, cors = true, premiumFromZoom, ...rest } = props;
+    const {
+      url,
+      extraScales,
+      cors = true,
+      premiumFromZoom,
+      premiumOnlyText,
+      ...rest
+    } = props;
 
     return {
       instance: new LScaledTileLayer(
@@ -109,6 +122,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         extraScales,
         cors,
         premiumFromZoom,
+        premiumOnlyText,
         rest,
       ),
       context,

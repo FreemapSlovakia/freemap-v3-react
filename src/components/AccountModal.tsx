@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import {
   FaCheck,
   FaCog,
@@ -7,11 +7,13 @@ import {
   FaSignOutAlt,
   FaTimes,
 } from 'react-icons/fa';
+import { MdWorkspacePremium } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { authDeleteAccount, authStartLogout } from '../actions/authActions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useMessages } from '../l10nInjector.js';
 import { AuthProviders } from './AuthProviders.js';
 
@@ -31,6 +33,8 @@ export function AccountModal({ show }: Props): ReactElement | null {
   const [sendGalleryEmails, setSendGalleryEmails] = useState(
     user?.sendGalleryEmails ?? true,
   );
+
+  const becomePremium = useBecomePremium();
 
   const dispatch = useDispatch();
 
@@ -91,6 +95,20 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body>
+          <Form.Group className="mb-3">
+            {becomePremium ? (
+              <Button onClick={becomePremium}>
+                <MdWorkspacePremium /> {m?.premium.becomePremium}
+              </Button>
+            ) : (
+              <Alert variant="success">
+                <MdWorkspacePremium /> {m?.premium.youArePremium}
+              </Alert>
+            )}
+          </Form.Group>
+
+          {becomePremium && <hr />}
+
           <Form.Group className="mb-3">
             <Form.Label>{m?.settings.account.name}</Form.Label>
 
@@ -167,7 +185,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
           </Button>
 
           <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </Form>

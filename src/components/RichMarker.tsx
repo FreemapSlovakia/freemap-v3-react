@@ -58,7 +58,9 @@ export function RichMarker({
             ? [12, 12]
             : markerIconOptions.iconAnchor,
         tooltipAnchor:
-          markerType === 'ring' || markerType === 'square' ? [0, 0] : [0, -35],
+          markerType === 'ring' || markerType === 'square'
+            ? [0, -10]
+            : [0, -35],
         iconSize: markerIconOptions.iconSize,
         icon: <MarkerIcon markerType={markerType} {...restProps} />,
       }),

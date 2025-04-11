@@ -1,9 +1,11 @@
 import { ReactElement, useCallback } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
+import { MdWorkspacePremium } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../../actions/mainActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { useLocalMessages, useMessages } from '../../l10nInjector.js';
 import { navigate } from '../../navigationUtils.js';
 import { SupportUsMessages } from './translations/SupportUsMessages.js';
@@ -11,6 +13,8 @@ import { SupportUsMessages } from './translations/SupportUsMessages.js';
 type Props = { show: boolean };
 
 export function SupportUsModal({ show }: Props): ReactElement {
+  const becomePremium = useBecomePremium();
+
   const language = useAppSelector((state) => state.l10n.language);
 
   const lm = useLocalMessages<SupportUsMessages>(
@@ -35,39 +39,30 @@ export function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <p>{lm?.explanation}</p>
+        {lm?.explanation}
 
         <hr />
 
-        <p>
-          {lm?.account} VÚB 2746389453/0200
-          <br />
-          IBAN: SK33 0200 0000 0027 4638 9453
-        </p>
+        <div className="d-flex flex-wrap justify-content-between">
+          <div>
+            <p>
+              <b>{lm?.account}</b>
+              <br /> VÚB 2746389453/0200
+            </p>
+            <p>
+              <b>IBAN</b>
+              <br />
+              SK33 0200 0000 0027 4638 9453
+            </p>
+          </div>
 
-        <div>
           <img
-            className="d-block mx-auto w-50 mt-2"
+            className="ms-2"
+            style={{ width: '14em' }}
             src="/pay_by_square.png"
             alt=""
           />
         </div>
-
-        <hr />
-
-        <Form
-          action="https://www.paypal.com/cgi-bin/webscr"
-          method="post"
-          target="_blank"
-        >
-          <input name="cmd" value="_s-xclick" type="hidden" />
-
-          <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
-
-          <Button className="d-block mx-auto" type="submit">
-            <FaPaypal /> {lm?.paypal}
-          </Button>
-        </Form>
 
         <hr />
 
@@ -94,7 +89,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
         <p>{lm?.thanks}</p>
 
-        <p>
+        <p className="text-end">
           <a
             href="#show=about"
             onClick={(e) => {
@@ -109,11 +104,25 @@ export function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        {(language === 'sk' || language === 'cs') && (
-          <Button variant="link" href="https://oz.freemap.sk/">
-            Ako sa stať členom?
+        {becomePremium && (
+          <Button onClick={becomePremium}>
+            <MdWorkspacePremium /> {m?.premium.becomePremium}
           </Button>
         )}
+
+        <Form
+          action="https://www.paypal.com/cgi-bin/webscr"
+          method="post"
+          target="_blank"
+        >
+          <input name="cmd" value="_s-xclick" type="hidden" />
+
+          <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
+
+          <Button type="submit">
+            <FaPaypal /> {lm?.paypal}
+          </Button>
+        </Form>
 
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>

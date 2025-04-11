@@ -827,11 +827,13 @@ export type Messages = {
     finishRoute: string;
     showPhotos: string;
   };
-  removeAds: {
+  premium: {
     title: string;
     info: ReactNode;
     continue: string;
     success: string;
+    becomePremium: string;
+    youArePremium: string;
   };
   offline: {
     offlineMode: string;

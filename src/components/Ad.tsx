@@ -1,8 +1,6 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { removeAdsOnLogin, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import fallback from '../images/rovas_reklama.svg';
 import { useMessages } from '../l10nInjector.js';
 
@@ -97,11 +95,9 @@ export function Ad(): ReactElement | null {
     };
   }, [visible, closed]);
 
-  const dispatch = useDispatch();
-
   const m = useMessages();
 
-  const isLoggedIn = useAppSelector((state) => !!state.auth.user);
+  const becomePremium = useBecomePremium();
 
   const [closeTime, setCloseTime] = useState(0);
 
@@ -149,15 +145,7 @@ export function Ad(): ReactElement | null {
           style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
           variant="warning"
           size="sm"
-          onClick={() => {
-            if (isLoggedIn) {
-              dispatch(setActiveModal('remove-ads'));
-            } else {
-              dispatch(setActiveModal('login'));
-
-              dispatch(removeAdsOnLogin());
-            }
-          }}
+          onClick={becomePremium}
         >
           {m?.general.remove}
         </Button>

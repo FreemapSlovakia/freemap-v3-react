@@ -29,6 +29,7 @@ export function AboutModal({ show }: Props): ReactElement {
 
       <Modal.Body>
         <h3>{m?.contacts.ngo}</h3>
+
         <address>
           Freemap Slovakia
           <br />
@@ -37,7 +38,9 @@ export function AboutModal({ show }: Props): ReactElement {
           972 32 Chrenovec-Brusno
           <br />
         </address>
+
         <p>{m?.contacts.registered}</p>
+
         <p>
           {'IČO: '}
           <a
@@ -50,17 +53,20 @@ export function AboutModal({ show }: Props): ReactElement {
           <br />
           DIČ: 2022912870
         </p>
+
         <p>
           {m?.contacts.bankAccount}: VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
+
         <p>
           {'E-mail: '}
           <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
         <h3>{m?.contacts.generalContact}</h3>
+
         <ul>
           <li>
             {m?.contacts.board}: <a href="oz@freemap.sk">oz@freemap.sk</a>
@@ -68,6 +74,7 @@ export function AboutModal({ show }: Props): ReactElement {
         </ul>
 
         <h3>{m?.contacts.boardMemebers}</h3>
+
         <ul>
           <li>
             {m?.contacts.president}
@@ -75,12 +82,14 @@ export function AboutModal({ show }: Props): ReactElement {
             <a href="mailto:michal.bellovic@freemap.sk">Michal Bellovič</a>{' '}
             (Prievidza)
           </li>
+
           <li>
             {m?.contacts.vicepresident}
             {': '}
             <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
             (Košice)
           </li>
+
           <li>
             {m?.contacts.secretary}
             {': '}
