@@ -160,7 +160,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(documentShow, (state, action) => {
       state.documentKey = action.payload;
 
-      state.activeModal = action.payload === null ? 'tips' : null;
+      if (action.payload) {
+        state.activeModal = null;
+      }
     })
     .addCase(enableUpdatingUrl, (state) => {
       state.urlUpdatingEnabled = true;

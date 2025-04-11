@@ -119,7 +119,7 @@ export const removeAdsProcessor: Processor = {
       dispatch(
         toastsAdd({
           style: 'success',
-          messageKey: 'removeAds.success',
+          messageKey: 'premium.success',
           timeout: 5000,
         }),
       );

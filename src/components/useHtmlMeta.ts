@@ -20,7 +20,7 @@ const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   maps: 'tools.maps',
   'edit-label': 'drawing.edit.title',
   login: 'mainMenu.logIn',
-  'remove-ads': 'removeAds.title',
+  'remove-ads': 'premium.title',
   'gallery-filter': 'gallery.filterModal.title',
   'gallery-upload': 'gallery.uploadModal.title',
   'drawing-properties': 'drawing.defProps.menuItem',

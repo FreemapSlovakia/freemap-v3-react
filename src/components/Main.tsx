@@ -653,104 +653,98 @@ export function Main(): ReactElement {
             <GalleryResult />
           </MapContainer>
         </div>
-
-        <AsyncModal
-          show={
-            !!activeModal &&
-            [
-              ...(isUserValidated ? ['tracking-my'] : []),
-              'tracking-watched',
-            ].includes(activeModal)
-          }
-          factory={trackingModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'account'}
-          factory={accountModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'mapSettings'}
-          factory={mapSettingsModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'embed'}
-          factory={embedMapModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'export-map-features'}
-          factory={exportGpxModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'export-map'}
-          factory={exportMapModalFactory}
-        />
-
-        <AsyncModal
-          show={!activeModal && documentKey !== null}
-          factory={documentModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'about'}
-          factory={aboutModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'supportUs'}
-          factory={supportUsModalFactory}
-        />
-
-        {mapType === 'X' ? (
-          <AsyncModal
-            show={activeModal === 'legend'}
-            factory={legendOutdoorModalFactory}
-          />
-        ) : (
-          <AsyncModal
-            show={activeModal === 'legend'}
-            factory={legendModalFactory}
-          />
-        )}
-
-        <AsyncModal
-          show={activeModal === 'edit-label'}
-          factory={drawingPropertiesModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'upload-track'}
-          factory={trackViewerUploadModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'login'}
-          factory={loginModalFactory}
-        />
-
-        <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
-
-        <AsyncModal
-          show={activeModal === 'remove-ads'}
-          factory={removeAdsModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'gallery-filter'}
-          factory={galleryFilterModalFactory}
-        />
-
-        <AsyncModal
-          show={activeModal === 'drawing-properties'}
-          factory={currentDrawingPropertiesModalFactory}
-        />
-
-        <GalleryModals />
       </div>
+
+      <AsyncModal
+        show={
+          !!activeModal &&
+          [
+            ...(isUserValidated ? ['tracking-my'] : []),
+            'tracking-watched',
+          ].includes(activeModal)
+        }
+        factory={trackingModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'account'}
+        factory={accountModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'mapSettings'}
+        factory={mapSettingsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'embed'}
+        factory={embedMapModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'export-map-features'}
+        factory={exportGpxModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'export-map'}
+        factory={exportMapModalFactory}
+      />
+
+      <AsyncModal
+        show={!activeModal && documentKey !== null}
+        factory={documentModalFactory}
+      />
+
+      <AsyncModal show={activeModal === 'about'} factory={aboutModalFactory} />
+
+      <AsyncModal
+        show={activeModal === 'supportUs'}
+        factory={supportUsModalFactory}
+      />
+
+      {mapType === 'X' ? (
+        <AsyncModal
+          show={activeModal === 'legend'}
+          factory={legendOutdoorModalFactory}
+        />
+      ) : (
+        <AsyncModal
+          show={activeModal === 'legend'}
+          factory={legendModalFactory}
+        />
+      )}
+
+      <AsyncModal
+        show={activeModal === 'edit-label'}
+        factory={drawingPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'upload-track'}
+        factory={trackViewerUploadModalFactory}
+      />
+
+      <AsyncModal show={activeModal === 'login'} factory={loginModalFactory} />
+
+      <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
+
+      <AsyncModal
+        show={activeModal === 'remove-ads'}
+        factory={removeAdsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'gallery-filter'}
+        factory={galleryFilterModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'drawing-properties'}
+        factory={currentDrawingPropertiesModalFactory}
+      />
+
+      <GalleryModals />
     </>
   );
 }
