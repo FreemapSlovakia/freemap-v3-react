@@ -145,6 +145,7 @@ export interface LayerDef {
   errorTileUrl?: string;
   scaleWithDpi?: boolean;
   cors?: boolean;
+  premiumFromZoom?: number;
 }
 
 export interface BaseLayerDef extends LayerDef {
@@ -190,6 +191,7 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 6,
     maxNativeZoom: 19,
     key: ['KeyX', false],
+    premiumFromZoom: 19,
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
@@ -447,19 +449,23 @@ export const overlayLayers: OverlayLayerDef[] = [
       ['s3', 'water'],
       ['s4', 'winter'],
     ] as const
-  ).map(([type, stravaType]) => ({
-    type,
-    icon: <FaStrava />,
-    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
-    attribution: [STRAVA_ATTR],
-    minZoom: 0,
-    maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
-    key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
-      | [string, boolean]
-      | undefined,
-    zIndex: 3,
-    errorTileUrl: transparent1x1,
-  })),
+  ).map(
+    ([type, stravaType]) =>
+      ({
+        type,
+        icon: <FaStrava />,
+        url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
+        attribution: [STRAVA_ATTR],
+        minZoom: 0,
+        maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
+        key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
+          | [string, boolean]
+          | undefined,
+        zIndex: 3,
+        errorTileUrl: transparent1x1,
+        premiumFromZoom: 13,
+      }) satisfies OverlayLayerDef,
+  ),
   {
     type: 't',
     icon: <FaHiking />,

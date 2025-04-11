@@ -67,6 +67,7 @@ export type Messages = {
     areYouSure: string;
     export: string;
     success: string;
+    premiumOnly: string;
   };
   selections: {
     objects: string;

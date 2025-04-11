@@ -33,31 +33,36 @@ export function Layers(): ReactElement | null {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const getTileLayer = ({
-    type,
-    url,
-    minZoom,
-    maxNativeZoom,
-    zIndex = 1,
-    subdomains = 'abc',
-    extraScales,
-    tms,
-    errorTileUrl = missingTile,
-    scaleWithDpi = false,
-    cors = true,
-  }: Pick<
-    LayerDef,
-    | 'url'
-    | 'minZoom'
-    | 'maxNativeZoom'
-    | 'zIndex'
-    | 'subdomains'
-    | 'extraScales'
-    | 'tms'
-    | 'errorTileUrl'
-    | 'cors'
-    | 'scaleWithDpi'
-  > & { type: BaseLayerLetters | OverlayLetters }) => {
+  const getTileLayer = (
+    {
+      type,
+      url,
+      minZoom,
+      maxNativeZoom,
+      zIndex = 1,
+      subdomains = 'abc',
+      extraScales,
+      tms,
+      errorTileUrl = missingTile,
+      scaleWithDpi = false,
+      cors = true,
+      premiumFromZoom,
+    }: Pick<
+      LayerDef,
+      | 'url'
+      | 'minZoom'
+      | 'maxNativeZoom'
+      | 'zIndex'
+      | 'subdomains'
+      | 'extraScales'
+      | 'tms'
+      | 'errorTileUrl'
+      | 'cors'
+      | 'scaleWithDpi'
+      | 'premiumFromZoom'
+    > & { type: BaseLayerLetters | OverlayLetters },
+    kind: 'base' | 'overlay',
+  ) => {
     const opacity = layersSettings[type]?.opacity ?? 1;
 
     if (type === 'I') {
@@ -97,10 +102,12 @@ export function Layers(): ReactElement | null {
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
+    const effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
+
     return (
       !!url && (
         <ScaledTileLayer
-          key={type + '-' + opacity}
+          key={type + '-' + opacity + '-' + (effPremiumFromZoom ?? 99)}
           url={url}
           minZoom={minZoom}
           maxZoom={20}
@@ -120,6 +127,8 @@ export function Layers(): ReactElement | null {
           tileSize={isHdpi ? 128 : 256}
           zoomOffset={isHdpi ? 1 : 0}
           cors={cors}
+          premiumFromZoom={effPremiumFromZoom}
+          className={`fm-${kind}-layer`}
         />
       )
     );
@@ -132,19 +141,19 @@ export function Layers(): ReactElement | null {
       {baseLayers
         .filter(({ type }) => type === mapType)
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
-        .map((item) => getTileLayer(item))}
+        .map((item) => getTileLayer(item, 'base'))}
       {customLayers
         .filter(({ type }) => type === mapType)
-        .map((cm) => getTileLayer(cm))}
+        .map((cm) => getTileLayer(cm, 'base'))}
       {overlayLayers
         .filter(({ type }) => overlays.includes(type))
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
-        .map((item) => getTileLayer(item))}
+        .map((item) => getTileLayer(item, 'overlay'))}
       {customLayers
         .filter(({ type }) =>
           overlays.includes(type as (typeof overlays)[number]),
         )
-        .map((cm) => getTileLayer(cm))}
+        .map((cm) => getTileLayer(cm, 'overlay'))}
     </>
   );
 }

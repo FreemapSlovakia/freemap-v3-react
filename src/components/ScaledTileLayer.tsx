@@ -2,16 +2,22 @@ import { createTileLayerComponent } from '@react-leaflet/core';
 import { Coords, DoneCallback, TileLayer, TileLayerOptions } from 'leaflet';
 import { TileLayerProps } from 'react-leaflet';
 
-type Props = TileLayerProps & { extraScales?: number[]; cors?: boolean };
+type Props = TileLayerProps & {
+  extraScales?: number[];
+  cors?: boolean;
+  premiumFromZoom?: number;
+};
 
 class LScaledTileLayer extends TileLayer {
   extraScales;
   cors;
+  premiumFromZoom;
 
   constructor(
     urlTemplate: string,
     extraScales?: number[],
     cors = true,
+    premiumFromZoom?: number,
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
@@ -19,10 +25,30 @@ class LScaledTileLayer extends TileLayer {
     this.extraScales = extraScales;
 
     this.cors = cors;
+
+    this.premiumFromZoom = premiumFromZoom;
   }
 
   createTile(coords: Coords, done: DoneCallback) {
+    const onPremiumZoom =
+      this.premiumFromZoom !== undefined && coords.z >= this.premiumFromZoom;
+
+    if (onPremiumZoom && (coords.x + coords.y * 2) % 4) {
+      const div = document.createElement('div');
+
+      div.className = 'fm-nonpremium-tile';
+
+      div.innerHTML =
+        '<div>' + window.translations?.general.premiumOnly + '</div>';
+
+      super.createTile(coords, done) as HTMLImageElement;
+
+      return div;
+    }
+
     const img = super.createTile(coords, done) as HTMLImageElement;
+
+    img.classList.toggle('fm-demo-tile', onPremiumZoom);
 
     if (this.cors) {
       img.crossOrigin = 'anonymous';
@@ -75,10 +101,16 @@ class LScaledTileLayer extends TileLayer {
 
 export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   (props, context) => {
-    const { url, extraScales, cors = true, ...rest } = props;
+    const { url, extraScales, cors = true, premiumFromZoom, ...rest } = props;
 
     return {
-      instance: new LScaledTileLayer(url, extraScales, cors, rest),
+      instance: new LScaledTileLayer(
+        url,
+        extraScales,
+        cors,
+        premiumFromZoom,
+        rest,
+      ),
       context,
     };
   },

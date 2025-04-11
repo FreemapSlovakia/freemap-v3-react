@@ -78,3 +78,30 @@ a.leaflet-control-layers-toggle {
     margin-bottom: 7.5rem !important;
   }
 }
+
+.fm-base-layer .fm-demo-tile {
+  box-shadow: 5px 5px 8px #0004;
+}
+
+.fm-nonpremium-tile {
+  background-color: #aaa8;
+  text-shadow:
+    rgb(255, 255, 255) 1px 0px 0px,
+    rgb(255, 255, 255) 0.540302px 0.841471px 0px,
+    rgb(255, 255, 255) -0.416147px 0.909297px 0px,
+    rgb(255, 255, 255) -0.989992px 0.14112px 0px,
+    rgb(255, 255, 255) -0.653644px -0.756802px 0px,
+    rgb(255, 255, 255) 0.283662px -0.958924px 3px,
+    rgb(255, 255, 255) 0.96017px -0.279415px 0px;
+  color: #000a;
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > div {
+    transform: rotate(45deg);
+    max-width: 200px;
+    text-align: center;
+  }
+}

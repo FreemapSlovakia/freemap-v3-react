@@ -103,6 +103,7 @@ const messages: Messages = {
     areYouSure: 'Are you sure?', // TODO translate
     export: 'Esporta',
     success: 'Success!', // TODO translate
+    premiumOnly: 'Supportaci per accedere a questa funzionalità.',
   },
 
   selections: {

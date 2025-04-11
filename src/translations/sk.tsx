@@ -105,6 +105,7 @@ const messages: Messages = {
     areYouSure: 'Ste si istí?',
     export: 'Exportovať',
     success: 'Hotovo!',
+    premiumOnly: 'Podporte nás, aby ste získali prístup k tejto funkcii.',
   },
 
   selections: {
