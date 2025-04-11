@@ -109,7 +109,9 @@ export function useMenuHandler({
           ),
         );
       } else if (eventKey.startsWith('lang-')) {
-        dispatch(l10nSetChosenLanguage({ language: eventKey.slice(5) }));
+        dispatch(
+          l10nSetChosenLanguage({ language: eventKey.slice(5) || null }),
+        );
 
         setShow(false);
       } else if (eventKey.startsWith('open-')) {
