@@ -49,7 +49,7 @@ export function Attribution({ unknown }: Props): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  if (a.url?.startsWith('?tip=')) {
+                  if (a.url?.startsWith('?document=')) {
                     const docKey = a.url.slice(5);
 
                     if (is<DocumentKey>(docKey)) {

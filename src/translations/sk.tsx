@@ -422,7 +422,7 @@ const messages: Messages = {
               potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
             </span>{' '}
             <a
-              href="/#tip=dvePercenta"
+              href="/#document=dvePercenta"
               onClick={(e) => {
                 e.preventDefault();
 

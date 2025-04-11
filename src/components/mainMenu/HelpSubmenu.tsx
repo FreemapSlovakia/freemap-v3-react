@@ -51,7 +51,7 @@ export function HelpSubmenu(): JSX.Element {
             hidden ? null : (
               <Dropdown.Item
                 key={key}
-                href={`?tip=${key}`}
+                href={`?document=${key}`}
                 eventKey={'document-' + key}
               >
                 {icon} {name}

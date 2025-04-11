@@ -185,7 +185,7 @@ export const baseLayers: BaseLayerDef[] = [
       {
         type: 'data',
         nameKey: 'outdoorShadingAttribution',
-        url: '?tip=outdoorShadingAttribution',
+        url: '?document=outdoorShadingAttribution',
       },
     ],
     minZoom: 6,

@@ -130,7 +130,7 @@ export function MainMenu(): ReactElement {
         <FaDownload /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd> <kbd>g</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="document-exports" href="#tip=exports">
+      <Dropdown.Item eventKey="document-exports" href="#document=exports">
         <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
 

@@ -60,7 +60,7 @@ export function CopyrightButton(): ReactElement {
 
           <Dropdown.Item
             key="privacyPolicy"
-            href="#tip=privacyPolicy"
+            href="#document=privacyPolicy"
             onClick={(e) => {
               e.preventDefault();
 
