@@ -44,27 +44,23 @@ export const trackViewerReducer = createReducer(
         ...trackViewerInitialState,
         colorizeTrackBy: state.colorizeTrackBy,
       }))
-      .addCase(trackViewerSetData, (state, action) => ({
-        ...state,
-        trackGpx: action.payload.trackGpx ?? state.trackGpx,
-        trackGeojson: action.payload.trackGeojson ?? state.trackGeojson,
-      }))
-      .addCase(trackViewerSetTrackUID, (state, action) => ({
-        ...state,
-        trackUID: action.payload,
-      }))
-      .addCase(trackViewerDownloadTrack, (state, action) => ({
-        ...state,
-        trackUID: action.payload,
-      }))
-      .addCase(trackViewerColorizeTrackBy, (state, action) => ({
-        ...state,
-        colorizeTrackBy: action.payload,
-      }))
-      .addCase(trackViewerGpxLoad, (state, action) => ({
-        ...state,
-        gpxUrl: action.payload,
-      }))
+      .addCase(trackViewerSetData, (state, action) => {
+        state.trackGpx = action.payload.trackGpx ?? state.trackGpx;
+
+        state.trackGeojson = action.payload.trackGeojson ?? state.trackGeojson;
+      })
+      .addCase(trackViewerSetTrackUID, (state, action) => {
+        state.trackUID = action.payload;
+      })
+      .addCase(trackViewerDownloadTrack, (state, action) => {
+        state.trackUID = action.payload;
+      })
+      .addCase(trackViewerColorizeTrackBy, (state, action) => {
+        state.colorizeTrackBy = action.payload;
+      })
+      .addCase(trackViewerGpxLoad, (state, action) => {
+        state.gpxUrl = action.payload;
+      })
       .addCase(osmClear, () => trackViewerInitialState)
       .addCase(
         mapsLoaded,
@@ -75,8 +71,6 @@ export const trackViewerReducer = createReducer(
               data: { trackViewer },
             },
           },
-        ) => {
-          return trackViewer ?? trackViewerInitialState;
-        },
+        ) => trackViewer ?? trackViewerInitialState,
       ),
 );

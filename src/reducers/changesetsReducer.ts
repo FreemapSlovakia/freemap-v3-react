@@ -25,12 +25,10 @@ export const changesetReducer = createReducer(initialState, (builder) =>
       ...initialState,
       days: action.payload === 'changesets' ? 3 : null,
     }))
-    .addCase(changesetsSet, (state, action) => ({
-      ...state,
-      changesets: action.payload,
-    }))
-    .addCase(changesetsSetParams, (state, action) => ({
-      ...state,
-      ...action.payload,
-    })),
+    .addCase(changesetsSet, (state, action) => {
+      state.changesets = action.payload;
+    })
+    .addCase(changesetsSetParams, (state, action) => {
+      Object.assign(state, action.payload);
+    }),
 );

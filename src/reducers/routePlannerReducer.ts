@@ -1,6 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { Feature, Polygon } from 'geojson';
-import { produce } from 'immer';
 import {
   clearMapFeatures,
   selectFeature,
@@ -246,21 +245,16 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(
         routePlannerAddMidpoint,
-        (state, { payload: { position, midpoint } }) =>
-          produce(state, (draft) => {
-            draft.midpoints.splice(position, 0, midpoint);
-          }),
+        (state, { payload: { position, midpoint } }) => {
+          state.midpoints.splice(position, 0, midpoint);
+        },
       )
-      .addCase(routePlannerSetMidpoint, (state, action) =>
-        produce(state, (draft) => {
-          draft.midpoints[action.payload.position] = action.payload.midpoint;
-        }),
-      )
-      .addCase(routePlannerRemoveMidpoint, (state, action) =>
-        produce(state, (draft) => {
-          draft.midpoints.splice(action.payload, 1);
-        }),
-      )
+      .addCase(routePlannerSetMidpoint, (state, action) => {
+        state.midpoints[action.payload.position] = action.payload.midpoint;
+      })
+      .addCase(routePlannerRemoveMidpoint, (state, action) => {
+        state.midpoints.splice(action.payload, 1);
+      })
       .addCase(
         routePlannerSetTransportType,
         (state, { payload: transportType }) => ({

@@ -40,88 +40,75 @@ export const mapInitialState: MapState = {
 export const mapReducer = createReducer(mapInitialState, (builder) =>
   builder
     .addCase(mapSuppressLegacyMapWarning, (state, action) => {
-      const key = action.payload.forever
-        ? 'legacyMapWarningSuppressions'
-        : 'tempLegacyMapWarningSuppressions';
-
-      return {
-        ...state,
-        [key]: [...state[key], state.mapType],
-      };
+      state[
+        action.payload.forever
+          ? 'legacyMapWarningSuppressions'
+          : 'tempLegacyMapWarningSuppressions'
+      ].push(state.mapType);
     })
     .addCase(applySettings, (state, action) => {
-      const newState = { ...state };
-
       if (action.payload.layersSettings) {
-        newState.layersSettings = action.payload.layersSettings;
+        state.layersSettings = action.payload.layersSettings;
       }
 
       if (action.payload.overlayPaneOpacity) {
-        newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
+        state.overlayPaneOpacity = action.payload.overlayPaneOpacity;
       }
 
       if (action.payload.customLayers) {
-        newState.customLayers = action.payload.customLayers;
+        state.customLayers = action.payload.customLayers;
       }
-
-      return newState;
     })
     .addCase(gallerySetFilter, (state) => {
-      return {
-        ...state,
-        overlays: state.overlays.includes('I')
-          ? state.overlays
-          : [...state.overlays, 'I'],
-      };
+      if (!state.overlays.includes('I')) {
+        state.overlays.push('I');
+      }
     })
     .addCase(mapRefocus, (state, action) => {
-      const newState: MapState = { ...state };
-
       const { zoom, lat, lon, mapType, overlays } = action.payload;
 
       if (zoom) {
-        newState.zoom = zoom;
+        state.zoom = zoom;
       }
 
       if (lat !== undefined) {
-        newState.lat = lat;
+        state.lat = lat;
       }
 
       if (lon !== undefined) {
-        newState.lon = lon;
+        state.lon = lon;
       }
 
       if (mapType) {
-        newState.mapType = mapType;
+        state.mapType = mapType;
       }
 
       if (overlays) {
-        newState.overlays = overlays;
+        state.overlays = overlays;
       }
 
       if (
         action.payload.gpsTracked !== undefined ||
         (lat !== undefined && lon !== undefined)
       ) {
-        newState.gpsTracked = !!action.payload.gpsTracked;
+        state.gpsTracked = !!action.payload.gpsTracked;
       }
-
-      return newState;
     })
     .addCase(authSetUser, (state, action) => {
       const settings = action.payload?.settings;
 
-      return settings
-        ? {
-            ...state,
-            layersSettings: settings.layersSettings ?? state.layersSettings,
-            overlayPaneOpacity:
-              settings.overlayPaneOpacity ?? state.overlayPaneOpacity,
-            customLayers: settings.customLayers?.length
-              ? settings.customLayers
-              : state.customLayers,
-          }
-        : state;
+      if (!settings) {
+        return;
+      }
+
+      state.layersSettings = settings.layersSettings ?? state.layersSettings;
+
+      state.overlayPaneOpacity =
+        settings.overlayPaneOpacity ?? state.overlayPaneOpacity;
+
+      state.customLayers = settings.customLayers?.length
+        ? settings.customLayers
+        : state.customLayers;
     })
     .addCase(
       mapsLoaded,
@@ -142,12 +129,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         customLayers: map?.customLayers ?? state.customLayers,
       }),
     )
-    .addCase(mapSetCustomLayers, (state, action) => ({
-      ...state,
-      customLayers: action.payload,
-    }))
-    .addCase(mapSetEsriAttribution, (state, action) => ({
-      ...state,
-      esriAttribution: action.payload,
-    })),
+    .addCase(mapSetCustomLayers, (state, action) => {
+      state.customLayers = action.payload;
+    })
+    .addCase(mapSetEsriAttribution, (state, action) => {
+      state.esriAttribution = action.payload;
+    }),
 );

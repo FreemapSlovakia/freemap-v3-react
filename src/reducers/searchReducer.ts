@@ -1,5 +1,4 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { produce } from 'immer';
 import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   osmLoadNode,
@@ -44,11 +43,11 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => searchInitialState)
     .addCase(searchClear, () => searchInitialState)
-    .addCase(searchSetResults, (state, action) => ({
-      ...state,
-      results: action.payload,
-      searchSeq: state.searchSeq + 1,
-    }))
+    .addCase(searchSetResults, (state, action) => {
+      state.results = action.payload;
+
+      state.searchSeq = state.searchSeq + 1;
+    })
     .addCase(osmLoadNode, (state, action) => ({
       ...state,
       ...searchInitialState0,
@@ -64,44 +63,42 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
       ...searchInitialState0,
       osmRelationId: action.payload.id,
     }))
-    .addCase(searchSelectResult, (state, action) =>
-      produce(state, (draft) => {
-        if (action.payload?.storeResult === false) {
-          return;
+    .addCase(searchSelectResult, (state, action) => {
+      if (action.payload?.storeResult === false) {
+        return;
+      }
+
+      state.osmNodeId = null;
+
+      state.osmWayId = null;
+
+      state.osmRelationId = null;
+
+      const { payload } = action;
+
+      const result = payload?.result;
+
+      state.selectedResult = result ?? null;
+
+      state.searchResultSeq = state.searchResultSeq + 1;
+
+      if (result) {
+        switch (result.osmType) {
+          case 'node':
+            state.osmNodeId = result.id;
+
+            break;
+
+          case 'way':
+            state.osmWayId = result.id;
+
+            break;
+
+          case 'relation':
+            state.osmRelationId = result.id;
+
+            break;
         }
-
-        draft.osmNodeId = null;
-
-        draft.osmWayId = null;
-
-        draft.osmRelationId = null;
-
-        const { payload } = action;
-
-        const result = payload?.result;
-
-        draft.selectedResult = result ?? null;
-
-        draft.searchResultSeq = draft.searchResultSeq + 1;
-
-        if (result) {
-          switch (result.osmType) {
-            case 'node':
-              draft.osmNodeId = result.id;
-
-              break;
-
-            case 'way':
-              draft.osmWayId = result.id;
-
-              break;
-
-            case 'relation':
-              draft.osmRelationId = result.id;
-
-              break;
-          }
-        }
-      }),
-    ),
+      }
+    }),
 );

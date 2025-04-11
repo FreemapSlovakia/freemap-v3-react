@@ -24,28 +24,20 @@ export const objectInitialState: ObjectsState = {
 export const objectsReducer = createReducer(objectInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => objectInitialState)
-    .addCase(objectsSetFilter, (state, action) => ({
-      ...state,
-      active: action.payload,
-    }))
+    .addCase(objectsSetFilter, (state, action) => {
+      state.active = action.payload;
+    })
     .addCase(objectsSetResult, (state, action) => {
-      return {
-        ...state,
-        objects: action.payload,
-      };
+      state.objects = action.payload;
     })
     .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
-      return {
-        ...state,
-        active: !merge
-          ? (data.objectsV2?.active ?? [])
-          : data.objectsV2
-            ? [...new Set([...state.active, ...(data.objectsV2?.active ?? {})])]
-            : state.active,
-      };
+      state.active = !merge
+        ? (data.objectsV2?.active ?? [])
+        : data.objectsV2
+          ? [...new Set([...state.active, ...(data.objectsV2?.active ?? {})])]
+          : state.active;
     })
-    .addCase(setSelectedIcon, (state, action) => ({
-      ...state,
-      selectedIcon: action.payload,
-    })),
+    .addCase(setSelectedIcon, (state, action) => {
+      state.selectedIcon = action.payload;
+    }),
 );

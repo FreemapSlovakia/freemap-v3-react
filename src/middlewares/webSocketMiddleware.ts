@@ -38,14 +38,13 @@ export function createWebsocketMiddleware(): Middleware<{}, RootState> {
 
         const { user } = getState().auth;
 
-        ws = new WebSocket(
-          `${process.env['API_URL']?.replace(
-            /^http/,
-            'ws',
-          )}/ws?pingInterval=30000${
-            user ? `&authToken=${encodeURIComponent(user.authToken)}` : ''
-          }`,
-        );
+        const url = process.env['API_URL']?.replace(/^http/, 'ws');
+
+        const authTokenQ = user
+          ? `&authToken=${encodeURIComponent(user.authToken)}`
+          : '';
+
+        ws = new WebSocket(url + '/ws?pingInterval=30000' + authTokenQ);
 
         dispatch(
           wsStateChanged({ timestamp: Date.now(), state: ws.readyState }),

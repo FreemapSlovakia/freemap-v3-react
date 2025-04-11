@@ -1,5 +1,4 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { produce } from 'immer';
 import {
   DrawingPoint,
   drawingPointAdd,
@@ -28,40 +27,33 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
       ...state,
       points: state.points.filter((_, i) => i !== payload.index),
     }))
-    .addCase(applySettings, (state, { payload }) =>
-      produce(state, (draft) => {
-        if (payload.drawingApplyAll) {
-          for (const point of draft.points) {
-            if (payload.drawingColor) {
-              point.color = payload.drawingColor;
-            }
+    .addCase(applySettings, (state, { payload }) => {
+      if (payload.drawingApplyAll) {
+        for (const point of state.points) {
+          if (payload.drawingColor) {
+            point.color = payload.drawingColor;
           }
         }
-      }),
-    )
-    .addCase(drawingPointAdd, (state, { payload }) => ({
-      ...state,
-      points: [...state.points, payload],
-      change: state.change + 1,
-    }))
-    .addCase(drawingPointChangeProperties, (state, { payload }) =>
-      produce(state, (draft) => {
-        Object.assign(draft.points[payload.index], payload.properties);
-      }),
-    )
-    .addCase(drawingPointChangePosition, (state, { payload }) =>
-      produce(state, (draft) => {
-        const point = draft.points[payload.index];
+      }
+    })
+    .addCase(drawingPointAdd, (state, { payload }) => {
+      state.points.push(payload);
 
-        point.lat = payload.lat;
+      state.change++;
+    })
+    .addCase(drawingPointChangeProperties, (state, { payload }) => {
+      Object.assign(state.points[payload.index], payload.properties);
+    })
+    .addCase(drawingPointChangePosition, (state, { payload }) => {
+      const point = state.points[payload.index];
 
-        point.lon = payload.lon;
-      }),
-    )
-    .addCase(drawingPointSetAll, (state, { payload }) => ({
-      ...state,
-      points: payload,
-    }))
+      point.lat = payload.lat;
+
+      point.lon = payload.lon;
+    })
+    .addCase(drawingPointSetAll, (state, { payload }) => {
+      state.points = payload;
+    })
     .addCase(mapsLoaded, (state, { payload }) => {
       return {
         ...initialState,

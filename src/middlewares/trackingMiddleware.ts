@@ -83,16 +83,18 @@ export function createTrackingMiddleware(): Middleware<
         // TODO prevent concurrent subscribe/unsubscribe of the same id and keep their order
         // TODO ignore if only label changed
         for (const td of prevTrackedDevices) {
-          if (!trackedDevices.includes(td)) {
-            const { token, deviceId } = mangle(td);
-
-            dispatch(
-              rpcCall({
-                method: 'tracking.unsubscribe',
-                params: { token, deviceId },
-              }),
-            );
+          if (trackedDevices.includes(td)) {
+            continue;
           }
+
+          const { token, deviceId } = mangle(td);
+
+          dispatch(
+            rpcCall({
+              method: 'tracking.unsubscribe',
+              params: { token, deviceId },
+            }),
+          );
         }
 
         for (const td of trackedDevices) {
@@ -113,15 +115,15 @@ function mangle(td: TrackedDevice) {
 
   const isDeviceId = /^\d+$/.test(id.toString());
 
-  const xxx = isDeviceId
+  const deviceId = isDeviceId
     ? typeof id === 'number'
       ? id
       : Number.parseInt(id, 10)
     : id;
 
   return {
-    deviceId: isDeviceId ? xxx : undefined,
-    token: isDeviceId ? undefined : xxx,
+    deviceId: isDeviceId ? deviceId : undefined,
+    token: isDeviceId ? undefined : deviceId,
     ...rest,
   };
 }

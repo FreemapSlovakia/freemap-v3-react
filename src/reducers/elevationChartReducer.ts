@@ -34,14 +34,12 @@ const initialState: ElevationChartState = {
 export const elevationChartReducer = createReducer(initialState, (builder) =>
   builder
     .addCase(elevationChartSetTrackGeojson, () => initialState)
-    .addCase(elevationChartSetActivePoint, (state, action) => ({
-      ...state,
-      activePoint: action.payload,
-    }))
-    .addCase(elevationChartSetElevationProfile, (state, action) => ({
-      ...state,
-      elevationProfilePoints: action.payload,
-    }))
+    .addCase(elevationChartSetActivePoint, (state, action) => {
+      state.activePoint = action.payload;
+    })
+    .addCase(elevationChartSetElevationProfile, (state, action) => {
+      state.elevationProfilePoints = action.payload;
+    })
     .addCase(setTool, setInitialState)
     .addCase(selectFeature, setInitialState)
     .addCase(routePlannerSetResult, setInitialState)

@@ -1,5 +1,4 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { produce } from 'immer';
 import { is } from 'typia';
 import { clearMapFeatures, setActiveModal } from '../actions/mainActions.js';
 import { mapsLoaded } from '../actions/mapsActions.js';
@@ -167,23 +166,21 @@ export const trackingReducer = createReducer(initialState, (builder) =>
       ) {
         const { token, ts, ...rest } = params;
 
-        return produce(state, (draft) => {
-          if (token === undefined) {
-            return;
-          }
+        if (token === undefined) {
+          return;
+        }
 
-          let track = draft.tracks.find((t) => t.token === token);
+        let track = state.tracks.find((t) => t.token === token);
 
-          if (!track) {
-            track = { token, trackPoints: [] };
+        if (!track) {
+          track = { token, trackPoints: [] };
 
-            draft.tracks.push(track);
-          }
+          state.tracks.push(track);
+        }
 
-          track.trackPoints.push({ ts: new Date(ts), ...rest });
+        track.trackPoints.push({ ts: new Date(ts), ...rest });
 
-          // TODO apply limits from trackedDevices
-        });
+        // TODO apply limits from trackedDevices
       }
 
       return state;

@@ -24,29 +24,23 @@ const initialState: MapsState = {
 
 export const mapsReducer = createReducer(initialState, (builder) =>
   builder
-    .addCase(mapsSetList, (state, { payload }) => ({
-      ...state,
-      maps: payload,
-    }))
-    .addCase(mapsLoaded, (state, { payload }) => ({
-      ...state,
-      activeMap: payload.meta,
-      loadMeta: undefined,
-    }))
-    .addCase(mapsLoad, (state, { payload }) => ({
-      ...state,
-      loadMeta: payload,
-    }))
-    .addCase(mapsDisconnect, (state) => ({
-      ...state,
-      activeMap: undefined,
-    }))
-    .addCase(mapsSetMeta, (state, { payload }) => ({
-      ...state,
-      activeMap: state.activeMap
-        ? Object.assign({}, state.activeMap, payload)
-        : payload,
-    }))
+    .addCase(mapsSetList, (state, { payload }) => {
+      state.maps = payload;
+    })
+    .addCase(mapsLoaded, (state, { payload }) => {
+      state.activeMap = payload.meta;
+
+      state.loadMeta = undefined;
+    })
+    .addCase(mapsLoad, (state, { payload }) => {
+      state.loadMeta = payload;
+    })
+    .addCase(mapsDisconnect, (state) => {
+      state.activeMap = undefined;
+    })
+    .addCase(mapsSetMeta, (state, { payload }) => {
+      state.activeMap = { ...(state.activeMap ?? {}), ...payload };
+    })
     .addCase(authLogout, (state) => ({
       ...initialState,
       activeMap: state.activeMap?.public

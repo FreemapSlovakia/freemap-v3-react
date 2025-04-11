@@ -32,9 +32,10 @@ export const authReducer = createReducer(authInitialState, (builder) =>
       },
       validated: true,
     }))
-    .addCase(authSetPremium, (state) => ({
-      ...state,
-      user: state.user && { ...state.user, isPremium: true },
-    }))
+    .addCase(authSetPremium, (state) => {
+      if (state.user) {
+        state.user.isPremium = true;
+      }
+    })
     .addCase(authLogout, () => authInitialState),
 );

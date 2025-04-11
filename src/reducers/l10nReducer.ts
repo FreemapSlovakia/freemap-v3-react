@@ -19,17 +19,15 @@ export const l10nInitialState: L10nState = {
 
 export const l10nReducer = createReducer(l10nInitialState, (builder) =>
   builder
-    .addCase(authSetUser, (state, action) => ({
-      ...state,
-      chosenLanguage: action.payload?.language ?? state.chosenLanguage,
-    }))
-    .addCase(l10nSetChosenLanguage, (state, action) => ({
-      ...state,
-      chosenLanguage: action.payload.language,
-    }))
-    .addCase(l10nSetLanguage, (state, action) => ({
-      ...state,
-      language: action.payload,
-      counter: state.counter + 1,
-    })),
+    .addCase(authSetUser, (state, action) => {
+      state.chosenLanguage = action.payload?.language ?? state.chosenLanguage;
+    })
+    .addCase(l10nSetChosenLanguage, (state, action) => {
+      state.chosenLanguage = action.payload.language;
+    })
+    .addCase(l10nSetLanguage, (state, action) => {
+      state.language = action.payload;
+
+      state.counter = state.counter + 1;
+    }),
 );

@@ -21,18 +21,17 @@ const initialState: WikiState = {
 
 export const wikiReducer = createReducer(initialState, (builder) =>
   builder
-    .addCase(wikiSetPoints, (state, { payload }) => ({
-      ...state,
-      points: payload,
-    }))
-    .addCase(wikiSetPreview, (state, { payload }) => ({
-      ...state,
-      loading: null,
-      preview: payload,
-    }))
-    .addCase(wikiLoadPreview, (state, { payload }) => ({
-      ...state,
-      loading: payload,
-      preview: null,
-    })),
+    .addCase(wikiSetPoints, (state, { payload }) => {
+      state.points = payload;
+    })
+    .addCase(wikiSetPreview, (state, { payload }) => {
+      state.loading = null;
+
+      state.preview = payload;
+    })
+    .addCase(wikiLoadPreview, (state, { payload }) => {
+      state.loading = payload;
+
+      state.preview = null;
+    }),
 );
