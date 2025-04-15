@@ -41,7 +41,7 @@ export const authStartLogout = createAction('AUTH_START_LOGOUT');
 
 export const authSetUser = createAction<User | null>('AUTH_SET_USER');
 
-export const authInit = createAction('AUTH_INIT');
+export const authInit = createAction<{ becamePremium?: boolean }>('AUTH_INIT');
 
 export const authSetPremium = createAction('AUTH_SET_PREMIUM');
 

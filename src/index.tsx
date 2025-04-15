@@ -61,7 +61,7 @@ store.dispatch(
   }),
 );
 
-store.dispatch(authInit());
+store.dispatch(authInit({}));
 
 const { location } = history;
 

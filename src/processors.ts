@@ -57,7 +57,7 @@ import { openInExternalAppProcessor } from './processors/openInExternalAppProces
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor.js';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor.js';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor.js';
-import { removeAdsProcessor } from './processors/removeAdsProcessor.js';
+import { purchaseProcessor } from './processors/purchaseProcessor.js';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor.js';
 import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor.js';
@@ -170,6 +170,6 @@ export const processors = [
   authWithOsm2Processor,
   authWithGarminProcessor,
   authWithGarmin2Processor,
-  removeAdsProcessor,
+  purchaseProcessor,
   urlProcessor,
 ];

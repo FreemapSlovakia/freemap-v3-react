@@ -1,6 +1,7 @@
 import { get } from 'idb-keyval';
 import { assert } from 'typia';
 import { authInit, authSetUser } from '../actions/authActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import { Processor } from '../middlewares/processorMiddleware.js';
 import { User } from '../types/common.js';
@@ -22,11 +23,11 @@ export const authTrackProcessor: Processor = {
   },
 };
 
-export const authInitProcessor: Processor = {
+export const authInitProcessor: Processor<typeof authInit> = {
   actionCreator: authInit,
   id: 'lcd',
   errorKey: 'auth.logIn.verifyError',
-  async handle({ getState, dispatch }) {
+  async handle({ getState, dispatch, action }) {
     const { user } = getState().auth;
 
     track(user?.id);
@@ -41,11 +42,19 @@ export const authInitProcessor: Processor = {
           cancelActions: [],
         });
 
-        dispatch(
-          authSetUser(
-            res.status === 200 ? assert<User>(await res.json()) : null,
-          ),
-        );
+        const ok = res.status === 200;
+
+        dispatch(authSetUser(ok ? assert<User>(await res.json()) : null));
+
+        if (ok && action.payload.becamePremium) {
+          dispatch(
+            toastsAdd({
+              style: 'success',
+              messageKey: 'premium.success',
+              timeout: 5000,
+            }),
+          );
+        }
       } catch (err) {
         if (typeof err !== 'object' || !err || 'status' in err) {
           throw err;
