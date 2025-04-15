@@ -52,7 +52,7 @@ export function GallerySubmenu(): JSX.Element {
         active={overlays.includes('I')}
       >
         <Checkbox value={overlays.includes('I')} /> {m?.gallery.showLayer}{' '}
-        <kbd>shift + p</kbd>
+        <kbd>⇧f</kbd>
       </Dropdown.Item>
 
       <Dropdown.Divider />

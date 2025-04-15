@@ -1155,6 +1155,7 @@ const messages: Messages = {
       '4': 'Světlé stínování terénu (SK)',
       '5': 'Stínování terénu (SK)',
       '6': 'Stínování povrchu (SK)',
+      '7': 'Detailní stínování povrchu (SK)',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',

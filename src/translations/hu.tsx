@@ -1146,9 +1146,10 @@ const hu: Messages = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
-      '4': 'Light Terrain Hillshading (SK)', // TODO translate
-      '5': 'Terrain Hillshading (SK)', // TODO translate
-      '6': 'Surface Hillshading (SK)', // TODO translate
+      '4': 'Light terrain hillshading (SK)', // TODO translate
+      '5': 'Terrain hillshading (SK)', // TODO translate
+      '6': 'Surface hillshading (SK)', // TODO translate
+      '7': 'Detailed surface hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
       VD: 'Dataviz Vector', // TODO translate
