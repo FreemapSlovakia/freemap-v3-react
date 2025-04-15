@@ -38,11 +38,10 @@ export const purchaseProcessor: Processor = {
 
     const w = window.open(
       process.env['ROVAS_URL_PREFIX'] +
+        '&token=' +
+        encodeURIComponent(token) +
         '&callbackurl=' +
-        encodeURIComponent(
-          process.env['BASE_URL'] +
-            `/purchase.html?token=${encodeURIComponent(token)}`,
-        ),
+        encodeURIComponent(process.env['BASE_URL'] + '/purchase.html'),
       'rovas',
       `width=800,height=680,left=${window.screen.width / 2 - 800 / 2},top=${
         window.screen.height / 2 - 680 / 2
