@@ -46,7 +46,11 @@ export const authInitProcessor: Processor<typeof authInit> = {
 
         dispatch(authSetUser(ok ? assert<User>(await res.json()) : null));
 
-        if (ok && action.payload.becamePremium) {
+        if (
+          ok &&
+          action.payload.becamePremium &&
+          getState().auth.user?.isPremium // TODO else show error
+        ) {
           dispatch(
             toastsAdd({
               style: 'success',

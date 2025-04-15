@@ -4,7 +4,6 @@ import { removeAds } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import { Processor } from '../middlewares/processorMiddleware.js';
-import { removeAdsProcessor } from './removeAdsProcessor.js';
 
 type CallbackData = {
   freemap: {
@@ -22,10 +21,6 @@ export const purchaseProcessor: Processor = {
       return;
     }
 
-    if (user.name !== 'New Payment Test') {
-      return removeAdsProcessor.handle!({ getState, dispatch } as any);
-    }
-
     const res = await httpRequest({
       getState,
       url: '/auth/purchaseToken',
@@ -37,11 +32,11 @@ export const purchaseProcessor: Processor = {
     const token = assert<{ token: string }>(await res.json()).token;
 
     const w = window.open(
-      process.env['ROVAS_URL_PREFIX'] +
+      process.env['PURCHASE_URL_PREFIX'] +
         '&token=' +
         encodeURIComponent(token) +
         '&callbackurl=' +
-        encodeURIComponent(process.env['BASE_URL'] + '/purchase.html'),
+        encodeURIComponent(process.env['BASE_URL'] + '/purchaseCallback.html'),
       'rovas',
       `width=800,height=680,left=${window.screen.width / 2 - 800 / 2},top=${
         window.screen.height / 2 - 680 / 2
