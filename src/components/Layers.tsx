@@ -15,6 +15,9 @@ import { AsyncComponent } from './AsyncComponent.js';
 const galleryLayerFactory = () =>
   import('../components/gallery/GalleryLayer.js');
 
+const shadingLayerFactory = () =>
+  import('../components/gallery/ShadingLayer.js');
+
 const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 
 export function Layers(): ReactElement | null {
@@ -82,6 +85,16 @@ export function Layers(): ReactElement | null {
           zIndex={zIndex}
           myUserId={user?.id}
           authToken={user?.authToken}
+        />
+      );
+    }
+
+    if (type === 'H') {
+      return (
+        <AsyncComponent
+          factory={shadingLayerFactory}
+          opacity={opacity}
+          zIndex={zIndex}
         />
       );
     }

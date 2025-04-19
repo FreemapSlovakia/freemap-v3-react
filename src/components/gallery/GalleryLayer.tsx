@@ -95,12 +95,12 @@ function runNextJob() {
   }
 }
 
-let supportsOffscreen: boolean | undefined = undefined;
-
 class LGalleryLayer extends LGridLayer {
   private _options?: GalleryLayerOptions;
 
   private _acm = new Map<string, AbortController>();
+
+  private supportsOffscreen: boolean;
 
   constructor(options?: GalleryLayerOptions) {
     super(options);
@@ -118,6 +118,14 @@ class LGalleryLayer extends LGridLayer {
         this._acm.delete(key);
       }
     });
+
+    try {
+      document.createElement('canvas').transferControlToOffscreen();
+
+      this.supportsOffscreen = true;
+    } catch {
+      this.supportsOffscreen = false;
+    }
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -156,16 +164,6 @@ class LGalleryLayer extends LGridLayer {
     const colorizeBy = this._options?.colorizeBy ?? null;
 
     const myUserId = this._options?.myUserId ?? null;
-
-    if (supportsOffscreen === undefined) {
-      try {
-        document.createElement('canvas').transferControlToOffscreen();
-
-        supportsOffscreen = true;
-      } catch {
-        supportsOffscreen = false;
-      }
-    }
 
     const controller = new AbortController();
 
@@ -229,7 +227,7 @@ class LGalleryLayer extends LGridLayer {
           tile,
         };
 
-        if (!supportsOffscreen) {
+        if (!this.supportsOffscreen) {
           renderGalleryTile(ctx);
 
           return undefined;

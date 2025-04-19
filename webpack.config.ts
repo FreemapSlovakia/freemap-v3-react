@@ -144,6 +144,10 @@ const config: Configuration = {
         include: /node_modules/,
         type: 'javascript/auto',
       },
+      {
+        test: /zstd\.wasm/,
+        type: 'asset/resource',
+      },
     ],
   },
   plugins: [
