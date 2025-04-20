@@ -421,7 +421,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'H',
-    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
+    url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
     icon: <FaMap />,
     key: ['KeyN', false],
     scaleWithDpi: true,

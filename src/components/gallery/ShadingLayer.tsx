@@ -308,9 +308,9 @@ class LShadingLayer extends LGridLayer {
 
     const canvas = document.createElement('canvas');
 
-    canvas.width = size.x * 2;
+    canvas.width = size.x * (1 << (this._options.zoomOffset ?? 0));
 
-    canvas.height = size.y * 2;
+    canvas.height = size.y * (1 << (this._options.zoomOffset ?? 0));
 
     canvas.style.width = size.x + 'px';
 

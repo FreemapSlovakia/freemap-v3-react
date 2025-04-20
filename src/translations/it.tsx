@@ -1155,7 +1155,7 @@ const messages: Messages = {
       VS: 'Streets Vector', // TODO translate
       VD: 'Dataviz Vector', // TODO translate
       VT: 'Outdoor Vector', // TODO translate
-      H: 'Parametric shading (SK)', // TODO translate
+      H: 'Parametric shading (SK) ⚠', // TODO translate
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',
