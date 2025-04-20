@@ -2,6 +2,7 @@ export type Work = () => [payload: unknown, transferable: Transferable[]];
 
 export type WorkerPool = {
   addJob: <T>(work: Work) => Promise<T>;
+  destroy: () => void;
 };
 
 export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
@@ -109,5 +110,11 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
     });
   }
 
-  return { addJob };
+  function destroy() {
+    while (workerPool.length) {
+      workerPool.pop()?.terminate();
+    }
+  }
+
+  return { addJob, destroy };
 }

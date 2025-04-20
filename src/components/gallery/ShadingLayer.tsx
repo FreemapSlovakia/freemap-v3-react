@@ -4,6 +4,8 @@ import {
   Coords,
   DoneCallback,
   GridLayerOptions,
+  Map as LeafletMap,
+  LeafletMouseEvent,
   GridLayer as LGridLayer,
   Util,
 } from 'leaflet';
@@ -25,6 +27,8 @@ class LShadingLayer extends LGridLayer {
 
   private _workerPool: WorkerPool;
 
+  private _light: [number, number, number];
+
   constructor(options: ShadingLayerOptions) {
     super(options);
 
@@ -33,6 +37,8 @@ class LShadingLayer extends LGridLayer {
     if (!navigator.gpu) {
       throw new Error('WebGPU not supported');
     }
+
+    this._light = [0, 0, 1];
 
     this._workerPool = createWorkerPool(
       () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
@@ -130,12 +136,38 @@ class LShadingLayer extends LGridLayer {
 
       return [device, pipeline, sampler];
     })();
+
+    this.handleMove = this.handleMove.bind(this);
+  }
+
+  handleMove(e: LeafletMouseEvent) {
+    const size = this._map.getSize();
+
+    this.setLight([
+      2 * e.containerPoint.x - size.x,
+      2 * e.containerPoint.y - size.y,
+      size.x / 4,
+    ]);
+  }
+
+  onAdd(map: LeafletMap): this {
+    map.on('mousemove', this.handleMove);
+
+    return super.onAdd(map);
+  }
+
+  onRemove(map: LeafletMap): this {
+    this._workerPool.destroy();
+
+    map.off('mousemove', this.handleMove);
+
+    return super.onRemove(map);
   }
 
   async createTileAsync(
     coords: Coords,
     canvas: HTMLCanvasElement,
-  ): Promise<HTMLElement> {
+  ): Promise<void> {
     const [device, pipeline, sampler] = await this._gpuPromise;
 
     const context = canvas.getContext('webgpu');
@@ -202,14 +234,10 @@ class LShadingLayer extends LGridLayer {
       { width: tileSize, height: tileSize },
     );
 
-    const configData = new Uint32Array([coords.z]);
-
     const configBuffer = device.createBuffer({
-      size: 4, // u32 = 4 bytes
+      size: 4 * 4,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-
-    device.queue.writeBuffer(configBuffer, 0, configData);
 
     const bindGroup = device.createBindGroup({
       layout: pipeline.getBindGroupLayout(0),
@@ -220,32 +248,48 @@ class LShadingLayer extends LGridLayer {
       ],
     });
 
-    const encoder = device.createCommandEncoder();
+    (canvas as any).render = (light: [number, number, number]) => {
+      const configData = new ArrayBuffer(4 * 4);
 
-    const pass = encoder.beginRenderPass({
-      colorAttachments: [
-        {
-          view: context.getCurrentTexture().createView(),
-          loadOp: 'clear',
-          storeOp: 'store',
-          clearValue: { r: 0, g: 0, b: 0, a: 1 },
-        },
-      ],
-    });
+      const configView = new DataView(configData);
 
-    pass.setPipeline(pipeline);
+      let i = 0;
 
-    pass.setBindGroup(0, bindGroup);
+      for (const v of light) {
+        configView.setFloat32(i * 4, v, true);
 
-    pass.draw(6, 1, 0, 0);
+        i++;
+      }
 
-    pass.end();
+      configView.setUint32(i * 4, z, true);
 
-    device.queue.submit([encoder.finish()]);
+      device.queue.writeBuffer(configBuffer, 0, configData);
 
-    await device.queue.onSubmittedWorkDone();
+      const encoder = device.createCommandEncoder();
 
-    return canvas;
+      const pass = encoder.beginRenderPass({
+        colorAttachments: [
+          {
+            view: context.getCurrentTexture().createView(),
+            loadOp: 'clear',
+            storeOp: 'store',
+            clearValue: { r: 0, g: 0, b: 0, a: 1 },
+          },
+        ],
+      });
+
+      pass.setPipeline(pipeline);
+
+      pass.setBindGroup(0, bindGroup);
+
+      pass.draw(6, 1, 0, 0);
+
+      pass.end();
+
+      device.queue.submit([encoder.finish()]);
+
+      // await device.queue.onSubmittedWorkDone();
+    };
 
     // })
     // .catch((err) => {
@@ -272,11 +316,21 @@ class LShadingLayer extends LGridLayer {
 
     canvas.style.height = size.x + 'px';
 
-    this.createTileAsync(coords, canvas).then((element) => {
-      done(undefined, element);
+    this.createTileAsync(coords, canvas).then(() => {
+      (canvas as any).render(this._light);
+
+      done(undefined, canvas);
     }, done);
 
     return canvas;
+  }
+
+  setLight(light: [number, number, number]) {
+    this._light = light;
+
+    for (const tile in this._tiles) {
+      (this._tiles[tile] as any).el.render?.(light);
+    }
   }
 }
 
@@ -289,13 +343,13 @@ export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
   }),
 
   // (instance, props, prevProps) => {
-  //   if (
-  //     (['dirtySeq', 'filter', 'colorizeBy', 'myUserId'] as const).some(
-  //       (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
-  //     )
-  //   ) {
-  //     instance.redraw();
-  //   }
+  // if (
+  //   (['dirtySeq', 'filter', 'colorizeBy', 'myUserId'] as const).some(
+  //     (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
+  //   )
+  // ) {
+  //   instance.redraw();
+  // }
   // },
 );
 

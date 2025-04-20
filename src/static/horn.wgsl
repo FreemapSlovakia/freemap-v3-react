@@ -15,7 +15,8 @@ fn vs_main(@builtin(vertex_index) i: u32) -> @builtin(position) vec4<f32> {
 }
 
 struct Config {
-  zoom: u32,
+  light: vec3<f32>,
+  zoom: u32
 }
 
 @group(0) @binding(2)
@@ -38,8 +39,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
   let scale = f32(1 << config.zoom) / 200000.0;
   let normal = normalize(vec3(-dzdx * scale, -dzdy * scale, 1.0));
 
-  let light = normalize(vec3(0.0, 0.0, 1.0));
-  let shade = dot(normal, light);
+  let shade = dot(normal, normalize(config.light));
 
   return vec4<f32>(vec3(shade * 0.5 + 0.5), 1.0);
 }

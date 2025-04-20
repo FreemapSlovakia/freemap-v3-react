@@ -3,6 +3,7 @@ import {
   Coords,
   DoneCallback,
   GridLayerOptions,
+  Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
 import {
@@ -184,6 +185,12 @@ class LGalleryLayer extends LGridLayer {
       });
 
     return tile;
+  }
+
+  onRemove(map: LeafletMap): this {
+    this._workerPool.destroy();
+
+    return super.onRemove(map);
   }
 }
 
