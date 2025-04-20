@@ -421,9 +421,11 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'H',
-    url: 'http://localhost:3033/tiles/',
+    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <FaMap />,
     key: ['KeyN', false],
+    scaleWithDpi: true,
+    maxNativeZoom: 20,
     attribution: [
       FM_ATTR,
       {

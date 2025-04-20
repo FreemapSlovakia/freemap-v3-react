@@ -1,16 +1,21 @@
-import { decompress, init } from '@bokuweb/zstd-wasm';
-import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
+import { init } from '@bokuweb/zstd-wasm';
+import { createTileLayerComponent } from '@react-leaflet/core';
 import {
   Coords,
   DoneCallback,
   GridLayerOptions,
   GridLayer as LGridLayer,
+  Util,
 } from 'leaflet';
+import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 
-type ShadingLayerOptions = GridLayerOptions & {};
+type ShadingLayerOptions = GridLayerOptions & {
+  url: string;
+  zoomOffset?: number;
+};
 
 class LShadingLayer extends LGridLayer {
-  private _options?: ShadingLayerOptions;
+  private _options: ShadingLayerOptions;
 
   private _acm = new Map<string, AbortController>();
 
@@ -18,7 +23,9 @@ class LShadingLayer extends LGridLayer {
 
   private format: GPUTextureFormat;
 
-  constructor(options?: ShadingLayerOptions) {
+  private _workerPool: WorkerPool;
+
+  constructor(options: ShadingLayerOptions) {
     super(options);
 
     this._options = options;
@@ -26,6 +33,10 @@ class LShadingLayer extends LGridLayer {
     if (!navigator.gpu) {
       throw new Error('WebGPU not supported');
     }
+
+    this._workerPool = createWorkerPool(
+      () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
+    );
 
     const format = navigator.gpu.getPreferredCanvasFormat();
 
@@ -133,25 +144,27 @@ class LShadingLayer extends LGridLayer {
       throw new Error('error getting context');
     }
 
-    context.configure({ device, format: this.format, alphaMode: 'opaque' });
+    context.configure({
+      device,
+      format: this.format,
+      alphaMode: 'opaque',
+    });
 
     const controller = new AbortController();
 
-    const key = `${coords.x}/${coords.y}/${coords.z}`;
+    const { x, y } = coords;
+
+    const z = coords.z + (this._options.zoomOffset ?? 0);
+
+    const key = `${x}/${y}/${z}`;
 
     this._acm.set(key, controller);
 
     const { signal } = controller;
 
-    const res = await fetch(
-      'http://localhost:3033/tiles/' +
-        coords.z +
-        '/' +
-        coords.x +
-        '/' +
-        coords.y,
-      { signal },
-    );
+    const res = await fetch(Util.template(this._options.url, { x, y, z }), {
+      signal,
+    });
 
     this._acm.delete(key);
 
@@ -161,7 +174,9 @@ class LShadingLayer extends LGridLayer {
 
     const compressed = new Uint8Array(await res.arrayBuffer());
 
-    const raw = decompress(compressed);
+    const raw = await this._workerPool.addJob<Uint8Array<ArrayBufferLike>>(
+      () => [compressed, [compressed.buffer]],
+    );
 
     const f32data = new Float32Array(raw.buffer);
 
@@ -228,6 +243,8 @@ class LShadingLayer extends LGridLayer {
 
     device.queue.submit([encoder.finish()]);
 
+    await device.queue.onSubmittedWorkDone();
+
     return canvas;
 
     // })
@@ -247,15 +264,13 @@ class LShadingLayer extends LGridLayer {
 
     const canvas = document.createElement('canvas');
 
-    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size.x * 2;
 
-    canvas.width = size.x;
+    canvas.height = size.y * 2;
 
-    canvas.height = size.y;
+    canvas.style.width = size.x + 'px';
 
-    canvas.style.width = size.x * dpr + 'px';
-
-    canvas.style.height = size.x * dpr + 'px';
+    canvas.style.height = size.x + 'px';
 
     this.createTileAsync(coords, canvas).then((element) => {
       done(undefined, element);
@@ -265,10 +280,7 @@ class LShadingLayer extends LGridLayer {
   }
 }
 
-interface Props extends LayerProps {
-  opacity?: number;
-  zIndex?: number;
-}
+type Props = ShadingLayerOptions;
 
 export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
   (props, context) => ({

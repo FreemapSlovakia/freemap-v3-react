@@ -20,6 +20,8 @@ const shadingLayerFactory = () =>
 
 const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 
+const MAX_ZOOM = 20;
+
 export function Layers(): ReactElement | null {
   const overlays = useAppSelector((state) => state.map.overlays);
 
@@ -89,12 +91,26 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    if (type === 'H') {
+    const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
+
+    if (type === 'H' && url) {
       return (
         <AsyncComponent
+          url={url}
           factory={shadingLayerFactory}
           opacity={opacity}
           zIndex={zIndex}
+          tileSize={isHdpi ? 128 : 256}
+          minZoom={minZoom}
+          maxZoom={MAX_ZOOM}
+          maxNativeZoom={
+            maxNativeZoom === undefined
+              ? undefined
+              : isHdpi
+                ? maxNativeZoom - 1
+                : maxNativeZoom
+          }
+          zoomOffset={isHdpi ? 1 : 0}
         />
       );
     }
@@ -109,14 +125,12 @@ export function Layers(): ReactElement | null {
           factory={maplibreLayerFactory}
           key={type}
           style={url}
-          maxZoom={20}
+          maxZoom={MAX_ZOOM}
           minZoom={minZoom}
           language={language}
         />
       );
     }
-
-    const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
     const effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
 
@@ -134,7 +148,7 @@ export function Layers(): ReactElement | null {
           }
           url={url}
           minZoom={minZoom}
-          maxZoom={20}
+          maxZoom={MAX_ZOOM}
           maxNativeZoom={
             maxNativeZoom === undefined
               ? undefined
