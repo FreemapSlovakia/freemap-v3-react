@@ -11,6 +11,7 @@ import {
 import {
   FaDownload,
   FaDrawPolygon,
+  FaFlask,
   FaPrint,
   FaRegQuestionCircle,
   FaTimes,
@@ -56,8 +57,6 @@ export function ExportMapModal({ show }: Props): ReactElement {
   const [plannedRoute, setPlannedRoute] = useState(true);
 
   const [track, setTrack] = useState(true);
-
-  const isAdmin = useAppSelector((state) => state.auth.user?.isAdmin);
 
   const [style, setStyle] = useState(`<Style name="custom-polygons">
   <Rule>
@@ -217,25 +216,29 @@ export function ExportMapModal({ show }: Props): ReactElement {
             PNG
           </Button>
 
-          {isAdmin && (
-            <>
-              <Button
-                variant="secondary"
-                onClick={() => setFormat('pdf')}
-                active={format === 'pdf'}
-              >
-                PDF
-              </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('pdf')}
+            active={format === 'pdf'}
+          >
+            PDF{' '}
+            <FaFlask
+              title={m?.general.experimentalFunction}
+              className="text-warning"
+            />
+          </Button>
 
-              <Button
-                variant="secondary"
-                onClick={() => setFormat('svg')}
-                active={format === 'svg'}
-              >
-                SVG
-              </Button>
-            </>
-          )}
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('svg')}
+            active={format === 'svg'}
+          >
+            SVG{' '}
+            <FaFlask
+              title={m?.general.experimentalFunction}
+              className="text-warning"
+            />
+          </Button>
         </ButtonGroup>
 
         <hr />
