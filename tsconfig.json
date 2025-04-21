@@ -25,7 +25,8 @@
       "gapi.auth2",
       "facebook-js-sdk",
       "facebook-pixel",
-      "google.picker"
+      "google.picker",
+      "@webgpu/types"
     ]
   },
   "include": ["src", "typings"]

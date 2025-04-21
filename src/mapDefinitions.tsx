@@ -104,6 +104,7 @@ export const baseLayerLetters = [
   'VS',
   'VD',
   'VT',
+  'H',
 ] as const;
 
 export const overlayLetters = [
@@ -415,6 +416,22 @@ export const baseLayers: BaseLayerDef[] = [
       {
         type: 'map',
         nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'H',
+    url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
+    icon: <FaMap />,
+    key: ['KeyN', false],
+    scaleWithDpi: true,
+    maxNativeZoom: 20,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: 'LLS DMR: ©\xa0ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
   },

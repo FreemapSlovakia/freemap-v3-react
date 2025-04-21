@@ -1191,6 +1191,7 @@ const messages: Messages = {
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
+      H: 'Parametrické tieňovanie (SK) ⚠',
     },
     customBase: 'Vlastná mapa',
     customOverlay: 'Vlastné prekrytie mapy',

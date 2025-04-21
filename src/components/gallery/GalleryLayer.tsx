@@ -1,8 +1,9 @@
-import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
+import { createTileLayerComponent } from '@react-leaflet/core';
 import {
   Coords,
   DoneCallback,
   GridLayerOptions,
+  Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
 import {
@@ -10,6 +11,7 @@ import {
   GalleryFilter,
 } from '../../actions/galleryActions.js';
 import { createFilter } from '../../galleryUtils.js';
+import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
 
 type GalleryLayerOptions = GridLayerOptions & {
@@ -19,88 +21,14 @@ type GalleryLayerOptions = GridLayerOptions & {
   authToken?: string;
 };
 
-const jobMap = new Map<
-  number,
-  {
-    reject: (e: unknown) => void;
-    resolve: () => void;
-    run: (w: Worker) => void;
-    started?: true;
-  }
->();
-
-function createWorker() {
-  const w = new Worker(new URL('./galleryLayerWorker', import.meta.url));
-
-  w.onmessage = (evt) => {
-    // console.log('OK', evt.data.id, resMap.has(evt.data.id));
-
-    const job = jobMap.get(evt.data.id);
-
-    if (job) {
-      if (evt.data.error) {
-        job.reject(evt.data.error);
-      } else {
-        job.resolve();
-      }
-
-      jobMap.delete(evt.data.id);
-    } else {
-      console.error('no such job', evt.data.id);
-    }
-
-    workerPool.push(w);
-
-    runNextJob();
-  };
-
-  w.onerror = (err) => {
-    console.error('worker error');
-
-    console.error(err);
-  };
-
-  w.onmessageerror = (err) => {
-    console.error('worker message error');
-
-    console.error(err);
-  };
-
-  return w;
-}
-
-const workerPool: Worker[] = [];
-
-let id = 0;
-
-function runNextJob() {
-  const job = [...jobMap.values()].find((v) => !v.started);
-
-  if (job) {
-    const w = workerPool.pop();
-
-    if (w) {
-      job.started = true;
-
-      job.run(w);
-    } else if (
-      workerPool.length < Math.min(window.navigator.hardwareConcurrency, 8)
-    ) {
-      const w1 = createWorker();
-
-      job.started = true;
-
-      job.run(w1);
-    }
-  }
-}
-
-let supportsOffscreen: boolean | undefined = undefined;
-
 class LGalleryLayer extends LGridLayer {
   private _options?: GalleryLayerOptions;
 
   private _acm = new Map<string, AbortController>();
+
+  private supportsOffscreen: boolean;
+
+  private _workerPool: WorkerPool;
 
   constructor(options?: GalleryLayerOptions) {
     super(options);
@@ -118,6 +46,18 @@ class LGalleryLayer extends LGridLayer {
         this._acm.delete(key);
       }
     });
+
+    try {
+      document.createElement('canvas').transferControlToOffscreen();
+
+      this.supportsOffscreen = true;
+    } catch {
+      this.supportsOffscreen = false;
+    }
+
+    this._workerPool = createWorkerPool(
+      () => new Worker(new URL('./galleryLayerWorker.js', import.meta.url)),
+    );
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -156,16 +96,6 @@ class LGalleryLayer extends LGridLayer {
     const colorizeBy = this._options?.colorizeBy ?? null;
 
     const myUserId = this._options?.myUserId ?? null;
-
-    if (supportsOffscreen === undefined) {
-      try {
-        document.createElement('canvas').transferControlToOffscreen();
-
-        supportsOffscreen = true;
-      } catch {
-        supportsOffscreen = false;
-      }
-    }
 
     const controller = new AbortController();
 
@@ -229,27 +159,17 @@ class LGalleryLayer extends LGridLayer {
           tile,
         };
 
-        if (!supportsOffscreen) {
-          renderGalleryTile(ctx);
+        if (this.supportsOffscreen) {
+          return this._workerPool.addJob(() => {
+            const offscreen = tile.transferControlToOffscreen();
 
-          return undefined;
+            return [{ ...ctx, tile: offscreen }, [offscreen]];
+          });
         }
 
-        return new Promise<void>((resolve, reject) => {
-          const myId = id++;
+        renderGalleryTile(ctx);
 
-          jobMap.set(myId, {
-            resolve,
-            reject,
-            run(w) {
-              const offscreen = tile.transferControlToOffscreen();
-
-              w.postMessage({ ...ctx, id: myId, tile: offscreen }, [offscreen]);
-            },
-          });
-
-          runNextJob();
-        });
+        return undefined;
       })
       .then(() => {
         done(undefined, tile);
@@ -266,17 +186,17 @@ class LGalleryLayer extends LGridLayer {
 
     return tile;
   }
+
+  onRemove(map: LeafletMap): this {
+    this._workerPool.destroy();
+
+    return super.onRemove(map);
+  }
 }
 
-interface Props extends LayerProps {
-  filter: GalleryFilter;
-  colorizeBy: GalleryColorizeBy | null;
-  myUserId?: number;
-  opacity?: number;
-  zIndex?: number;
-  dirtySeq?: number; // probably unused
-  authToken?: string;
-}
+type Props = GalleryLayerOptions & {
+  dirtySeq?: number; // probably unused?
+};
 
 export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
   (props, context) => ({

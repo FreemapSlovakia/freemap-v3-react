@@ -32,7 +32,9 @@ export const purchaseProcessor: Processor = {
     const token = assert<{ token: string }>(await res.json()).token;
 
     const w = window.open(
-      process.env['PURCHASE_URL_PREFIX'] +
+      (user.name === 'New Payment Test'
+        ? 'https://dev.rovas.app/rewpro?paytype=project&recipient=35384'
+        : process.env['PURCHASE_URL_PREFIX']) +
         '&token=' +
         encodeURIComponent(token) +
         '&callbackurl=' +
