@@ -122,6 +122,9 @@ importers:
       leaflet-hotline:
         specifier: ^0.4.0
         version: 0.4.0
+      lerc:
+        specifier: ^4.0.4
+        version: 4.0.4
       local-storage-fallback:
         specifier: ^5.0.0
         version: 5.0.0
@@ -342,6 +345,9 @@ importers:
       source-map-loader:
         specifier: ^5.0.0
         version: 5.0.0(webpack@5.99.6)
+      string-replace-loader:
+        specifier: ^3.1.0
+        version: 3.1.0(webpack@5.99.6)
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.99.6)
@@ -1912,6 +1918,11 @@ packages:
       ajv:
         optional: true
 
+  ajv-keywords@3.5.2:
+    resolution: {integrity: sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ==}
+    peerDependencies:
+      ajv: ^6.9.1
+
   ajv-keywords@5.1.0:
     resolution: {integrity: sha512-YCS/JNFAUyr5vAuhk1DWm1CBxRHW9LbJ2ozWeemrIqpbsqKjHVxYPyi5GC0rjZIT5JxJ3virVTS8wk4i/Z+krw==}
     peerDependencies:
@@ -3408,6 +3419,9 @@ packages:
   leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
 
+  lerc@4.0.4:
+    resolution: {integrity: sha512-nHZH+ffiGPkgKUQtiZrljGUGV2GddvPcVTV5E345ZFncbKz+/rBIjDPrSxkiqW0EAtg1Jw7qAgRdaCwV+95Fow==}
+
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
@@ -4362,6 +4376,10 @@ packages:
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
 
+  schema-utils@3.3.0:
+    resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}
+    engines: {node: '>= 10.13.0'}
+
   schema-utils@4.3.0:
     resolution: {integrity: sha512-Gf9qqc58SpCA/xdziiHz35F4GNIWYWZrEshUc/G/r5BnLph6xpKuLeoJoQuj5WfBIx/eQLf+hmVPYHaxJu7V2g==}
     engines: {node: '>= 10.13.0'}
@@ -4508,6 +4526,11 @@ packages:
   statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
+
+  string-replace-loader@3.1.0:
+    resolution: {integrity: sha512-5AOMUZeX5HE/ylKDnEa/KKBqvlnFmRZudSOjVJHxhoJg9QYTwl1rECx7SLR8BBH7tfxb4Rp7EM2XVfQFxIhsbQ==}
+    peerDependencies:
+      webpack: ^5
 
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
@@ -6830,6 +6853,10 @@ snapshots:
     optionalDependencies:
       ajv: 8.17.1
 
+  ajv-keywords@3.5.2(ajv@6.12.6):
+    dependencies:
+      ajv: 6.12.6
+
   ajv-keywords@5.1.0(ajv@8.17.1):
     dependencies:
       ajv: 8.17.1
@@ -8494,6 +8521,8 @@ snapshots:
 
   leaflet@1.9.4: {}
 
+  lerc@4.0.4: {}
+
   leven@3.1.0: {}
 
   levn@0.4.1:
@@ -9437,6 +9466,12 @@ snapshots:
 
   scheduler@0.26.0: {}
 
+  schema-utils@3.3.0:
+    dependencies:
+      '@types/json-schema': 7.0.15
+      ajv: 6.12.6
+      ajv-keywords: 3.5.2(ajv@6.12.6)
+
   schema-utils@4.3.0:
     dependencies:
       '@types/json-schema': 7.0.15
@@ -9627,6 +9662,12 @@ snapshots:
   statuses@1.5.0: {}
 
   statuses@2.0.1: {}
+
+  string-replace-loader@3.1.0(webpack@5.99.6):
+    dependencies:
+      loader-utils: 2.0.4
+      schema-utils: 3.3.0
+      webpack: 5.99.6(webpack-cli@6.0.1)
 
   string-width@4.2.3:
     dependencies:

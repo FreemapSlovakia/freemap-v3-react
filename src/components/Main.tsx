@@ -552,9 +552,9 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
 
-              {showAds && !askingCookieConsent && (
+              {/* {showAds && !askingCookieConsent && (
                 <AsyncComponent factory={adFactory} />
-              )}
+              )} */}
             </div>
 
             {showElevationChart && (

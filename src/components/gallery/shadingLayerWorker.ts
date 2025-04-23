@@ -1,6 +1,13 @@
 import { decompress, init } from '@bokuweb/zstd-wasm';
+import * as Lerc from 'lerc';
+import lercWasm from 'lerc/lerc-wasm.wasm';
 
-const initPromise = init();
+const initPromise = Promise.all([
+  init(),
+  Lerc.load({
+    locateFile: () => lercWasm,
+  }),
+]);
 
 self.onmessage = async (evt) => {
   const id = evt.data.id;
@@ -8,9 +15,23 @@ self.onmessage = async (evt) => {
   try {
     await initPromise;
 
-    const raw = decompress(evt.data.payload);
+    const pixelBlock = Lerc.decode(decompress(evt.data.payload).buffer);
 
-    self.postMessage({ id, payload: raw }, [raw.buffer]);
+    const arrays: Float32Array[] = pixelBlock.pixels as Float32Array[];
+
+    const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
+
+    const flat = new Float32Array(totalLength);
+
+    let offset = 0;
+
+    for (const arr of arrays) {
+      flat.set(arr, offset);
+
+      offset += arr.length;
+    }
+
+    self.postMessage({ id, payload: flat }, [flat.buffer]);
   } catch (err) {
     console.error('error in shading tile worker');
 

@@ -206,11 +206,10 @@ class LShadingLayer extends LGridLayer {
 
     const compressed = new Uint8Array(await res.arrayBuffer());
 
-    const raw = await this._workerPool.addJob<Uint8Array<ArrayBufferLike>>(
-      () => [compressed, [compressed.buffer]],
-    );
-
-    const f32data = new Float32Array(raw.buffer);
+    const f32data = await this._workerPool.addJob<Float32Array>(() => [
+      compressed,
+      [compressed.buffer],
+    ]);
 
     const tileSize = Math.sqrt(f32data.length);
 

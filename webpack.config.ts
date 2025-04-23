@@ -148,6 +148,10 @@ const config: Configuration = {
         test: /zstd\.wasm/,
         type: 'asset/resource',
       },
+      {
+        test: /lerc-wasm\.wasm/,
+        type: 'asset/resource',
+      },
     ],
   },
   plugins: [
