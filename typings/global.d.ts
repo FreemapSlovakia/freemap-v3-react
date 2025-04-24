@@ -18,6 +18,11 @@ declare module '*.overpass' {
   export default value;
 }
 
+declare module '*.wasm' {
+  const value: any;
+  export default value;
+}
+
 declare module '@mapbox/togeojson';
 
 declare module 'pannellum';

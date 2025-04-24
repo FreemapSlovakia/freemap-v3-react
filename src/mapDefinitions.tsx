@@ -1,24 +1,19 @@
 import { ReactElement } from 'react';
-import { AiFillBank } from 'react-icons/ai';
-import { BsPencilSquare } from 'react-icons/bs';
 import {
   FaBicycle,
   FaBus,
   FaCamera,
   FaCar,
-  FaFont,
   FaHiking,
   FaMap,
   FaPencilAlt,
   FaPlane,
   FaSkiingNordic,
-  FaSnowflake,
   FaStrava,
   FaTractor,
-  FaTree,
   FaWikipediaW,
 } from 'react-icons/fa';
-import { GiHills, GiPathDistance, GiTreasureMap } from 'react-icons/gi';
+import { GiHills, GiTreasureMap } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
@@ -27,7 +22,12 @@ import white1x1 from './images/1x1-white.png';
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
   name?: string;
-  nameKey?: 'osmData' | 'freemap' | 'srtm' | 'maptiler';
+  nameKey?:
+    | 'osmData'
+    | 'freemap'
+    | 'srtm'
+    | 'maptiler'
+    | 'outdoorShadingAttribution';
   url?: string;
 }
 
@@ -94,29 +94,25 @@ export const baseLayerLetters = [
   'J',
   'O',
   'M',
-  'p',
   'd',
-  'h',
   'X',
   '4',
   '5',
   '6',
+  '7',
   'VO',
   'VS',
+  'VD',
+  'VT',
+  'H',
 ] as const;
 
 export const overlayLetters = [
   'i',
   'I',
   'l',
-  'n1',
-  'n2',
-  'n3',
-  'g',
   't',
   'c',
-  'q',
-  'r',
   's0',
   's1',
   's2',
@@ -151,11 +147,12 @@ export interface LayerDef {
   errorTileUrl?: string;
   scaleWithDpi?: boolean;
   cors?: boolean;
+  premiumFromZoom?: number;
 }
 
 export interface BaseLayerDef extends LayerDef {
   type: BaseLayerLetters;
-  key: [code: string, shift: boolean];
+  key?: [code: string, shift: boolean];
 }
 
 export interface OverlayLayerDef extends LayerDef {
@@ -187,16 +184,16 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      SRTM_ATTR,
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        nameKey: 'outdoorShadingAttribution',
+        url: '?document=outdoorShadingAttribution',
       },
     ],
     minZoom: 6,
     maxNativeZoom: 19,
     key: ['KeyX', false],
+    premiumFromZoom: 19,
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
@@ -230,9 +227,9 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'Z',
-    url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
-    maxNativeZoom: 19,
+    maxNativeZoom: 20,
     scaleWithDpi: true,
     icon: <FaPlane />,
     attribution: [
@@ -240,6 +237,11 @@ export const baseLayers: BaseLayerDef[] = [
         type: 'map',
         name: '©\xa0GKÚ, NLC',
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+      },
+      {
+        type: 'map',
+        name: '©\xa0ČÚZK',
+        url: 'https://geoportal.cuzk.cz/',
       },
     ],
     key: ['KeyZ', false],
@@ -268,7 +270,6 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 3,
     maxNativeZoom: 18,
     icon: <FaBicycle />,
-
     attribution: [
       {
         type: 'map',
@@ -281,31 +282,12 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyQ', false],
   },
   {
-    type: 'p',
-    url: '//tile.opentopomap.org/{z}/{x}/{y}.png',
-    minZoom: 3,
-    maxNativeZoom: 17,
-    icon: <FaTree />,
-
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0OpenTopoMap',
-        url: 'https://tile.opentopomap.org/about#verwendung',
-      },
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ],
-    key: ['KeyN', false],
-  },
-  {
     type: 'd',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <FaBus />,
     cors: false,
-
     attribution: [
       {
         type: 'map',
@@ -317,16 +299,6 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyQ', false],
   },
   {
-    type: 'h',
-    url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
-    minZoom: 8,
-    maxNativeZoom: 12,
-    icon: <AiFillBank />,
-
-    attribution: [],
-    key: ['KeyH', false],
-  },
-  {
     type: '4',
     url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
@@ -335,13 +307,31 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMR 5.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
     key: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
+  },
+  {
+    type: '7',
+    url: 'https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minZoom: 0,
+    maxNativeZoom: 20,
+    icon: <GiHills />,
+    attribution: [
+      {
+        type: 'data',
+        name: 'LLS DMR: ©\xa0ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    key: ['KeyH', false],
+    errorTileUrl: white1x1,
+    scaleWithDpi: true,
+    premiumFromZoom: 17,
   },
   {
     type: '5',
@@ -352,7 +342,7 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMR 5.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
@@ -369,7 +359,7 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [
       {
         type: 'data',
-        name: 'LLS: ÚGKK SR',
+        name: 'DMP 1.0: ©\xa0ÚGKK SR',
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
@@ -400,6 +390,49 @@ export const baseLayers: BaseLayerDef[] = [
       {
         type: 'map',
         nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'VD',
+    url: 'https://api.maptiler.com/maps/dataviz-dark/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    key: ['KeyM', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'VT',
+    url: 'https://api.maptiler.com/maps/outdoor-v2/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    key: ['KeyU', false],
+    icon: <FaMap />,
+    attribution: [
+      OSM_DATA_ATTR,
+      {
+        type: 'map',
+        nameKey: 'maptiler',
+      },
+    ],
+  },
+  {
+    type: 'H',
+    // url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
+    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
+    icon: <FaMap />,
+    key: ['KeyN', false],
+    scaleWithDpi: true,
+    maxNativeZoom: 20,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: 'LLS DMR: ©\xa0ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
   },
@@ -453,30 +486,23 @@ export const overlayLayers: OverlayLayerDef[] = [
       ['s3', 'water'],
       ['s4', 'winter'],
     ] as const
-  ).map(([type, stravaType]) => ({
-    type,
-    icon: <FaStrava />,
-    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
-    attribution: [STRAVA_ATTR],
-    minZoom: 0,
-    maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
-    key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
-      | [string, boolean]
-      | undefined,
-    zIndex: 3,
-    errorTileUrl: transparent1x1,
-  })),
-  {
-    type: 'g',
-    icon: <GiPathDistance />,
-    url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
-    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    minZoom: 0,
-    maxNativeZoom: 20,
-    key: ['KeyG', true],
-
-    zIndex: 3,
-  },
+  ).map(
+    ([type, stravaType]) =>
+      ({
+        type,
+        icon: <FaStrava />,
+        url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
+        attribution: [STRAVA_ATTR],
+        minZoom: 0,
+        maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
+        key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
+          | [string, boolean]
+          | undefined,
+        zIndex: 3,
+        errorTileUrl: transparent1x1,
+        premiumFromZoom: 13,
+      }) satisfies OverlayLayerDef,
+  ),
   {
     type: 't',
     icon: <FaHiking />,
@@ -484,8 +510,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: ['KeyT', true],
-
     zIndex: 3,
   },
   {
@@ -495,50 +519,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: ['KeyC', true],
-
     zIndex: 3,
-  },
-  {
-    type: 'q',
-    icon: <FaSnowflake />,
-    url: '//www.opensnowmap.org/pistes/{z}/{x}/{y}.png',
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0OpenSnowMap.org',
-      },
-      OSM_DATA_ATTR,
-    ],
-    minZoom: 0,
-    maxNativeZoom: 18,
-    key: ['KeyS', true],
-
-    zIndex: 3,
-  },
-  ...(
-    [
-      ['n1', ''],
-      ['n2', 'h'],
-      ['n3', 'c'],
-    ] as const
-  ).map(([type, suffix]) => ({
-    type,
-    icon: <FaFont />,
-    url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
-    attribution: [FM_ATTR, OSM_DATA_ATTR],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    zIndex: 3,
-  })),
-  {
-    type: 'r',
-    icon: <BsPencilSquare />,
-    url: '//dev.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
-    minZoom: 8,
-    maxNativeZoom: 12,
-    key: ['KeyR', true],
-    zIndex: 5,
-    attribution: [FM_ATTR],
   },
 ];

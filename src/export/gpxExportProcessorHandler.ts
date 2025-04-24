@@ -1,15 +1,16 @@
-import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { colors } from 'fm3/constants';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
-import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
-import { ObjectsState } from 'fm3/reducers/objectsReducer';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { escapeHtml } from 'fm3/stringUtils';
-import { LatLon } from 'fm3/types/common';
-import { fetchPictures, Picture } from './fetchPictures';
+import { Feature, FeatureCollection } from 'geojson';
+import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { colors } from '../constants.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { DrawingLinesState } from '../reducers/drawingLinesReducer.js';
+import { DrawingPointsState } from '../reducers/drawingPointsReducer.js';
+import { ObjectsState } from '../reducers/objectsReducer.js';
+import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
+import { TrackingState } from '../reducers/trackingReducer.js';
+import { TrackViewerState } from '../reducers/trackViewerReducer.js';
+import { escapeHtml } from '../stringUtils.js';
+import { LatLon } from '../types/common.js';
+import { fetchPictures, Picture } from './fetchPictures.js';
 import {
   addAttribute,
   createElement,
@@ -17,12 +18,12 @@ import {
   GPX_NS,
   GPX_STYLE_NS,
   LOCUS_NS,
-} from './gpxExporter';
-import { upload } from './upload';
+} from './gpxExporter.js';
+import { upload } from './upload.js';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
-const handle: ProcessorHandler<typeof exportGpx> = async ({
+const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
   action,
   dispatch,
@@ -87,6 +88,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     routePlanner,
     tracking,
     trackViewer,
+    search,
     l10n: { language },
   } = getState();
 
@@ -124,6 +126,14 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     addGpx(doc, trackViewer);
   }
 
+  if (set.has('search')) {
+    const geojson = search.selectedResult?.geojson;
+
+    if (geojson) {
+      addGeojson(doc, geojson);
+    }
+  }
+
   // order nodes
 
   const r = getSupportedGpxElements(doc);
@@ -146,18 +156,18 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     }
   }
 
-  const { destination } = action.payload;
+  const { target } = action.payload;
 
   if (
     await upload(
       'gpx',
       new Blob([new XMLSerializer().serializeToString(doc)], {
         type:
-          destination === 'dropbox'
+          target === 'dropbox'
             ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
             : 'application/gpx+xml',
       }),
-      destination,
+      target,
       getState,
       dispatch,
     )
@@ -572,20 +582,61 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
       doc.documentElement.appendChild(node);
     }
   } else if (trackGeojson) {
-    for (const pass of ['wpt', 'trk'] as const) {
-      for (const feature of trackGeojson.features) {
-        const g = feature.geometry;
+    addGeojson(doc, trackGeojson);
+  }
+}
 
-        switch (g.type) {
-          case 'Point':
-            if (pass === 'wpt') {
+function getSupportedGpxElements(doc: Document) {
+  return doc.evaluate(
+    '/gpx:gpx/gpx:wpt | /gpx:gpx/gpx:rte | /gpx:gpx/gpx:trk',
+    doc,
+    (prefix) => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
+    XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
+    null,
+  );
+}
+
+function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
+  for (const pass of ['wpt', 'trk'] as const) {
+    for (const feature of geojson.type === 'FeatureCollection'
+      ? geojson.features
+      : [geojson]) {
+      const g = feature.geometry;
+
+      switch (g.type) {
+        case 'Point':
+          if (pass === 'wpt') {
+            const wptEle = createElement(
+              doc.documentElement,
+              'wpt',
+              undefined,
+              toLatLon({
+                lat: g.coordinates[1],
+                lon: g.coordinates[0],
+              }),
+            );
+
+            if (feature.properties?.['ele']) {
+              createElement(wptEle, 'ele', feature.properties['ele']);
+            }
+
+            if (feature.properties?.['name']) {
+              createElement(wptEle, 'name', feature.properties['name']);
+            }
+          }
+
+          break;
+
+        case 'MultiPoint': {
+          if (pass === 'wpt') {
+            for (const pt of g.coordinates) {
               const wptEle = createElement(
                 doc.documentElement,
                 'wpt',
                 undefined,
                 toLatLon({
-                  lat: g.coordinates[1],
-                  lon: g.coordinates[0],
+                  lat: pt[1],
+                  lon: pt[0],
                 }),
               );
 
@@ -597,46 +648,49 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 createElement(wptEle, 'name', feature.properties['name']);
               }
             }
-
-            break;
-
-          case 'MultiPoint': {
-            if (pass === 'wpt') {
-              for (const pt of g.coordinates) {
-                const wptEle = createElement(
-                  doc.documentElement,
-                  'wpt',
-                  undefined,
-                  toLatLon({
-                    lat: pt[1],
-                    lon: pt[0],
-                  }),
-                );
-
-                if (feature.properties?.['ele']) {
-                  createElement(wptEle, 'ele', feature.properties['ele']);
-                }
-
-                if (feature.properties?.['name']) {
-                  createElement(wptEle, 'name', feature.properties['name']);
-                }
-              }
-            }
-
-            break;
           }
 
-          case 'LineString': {
-            if (pass === 'trk') {
-              const trkEle = createElement(doc.documentElement, 'trk');
+          break;
+        }
 
-              if (feature.properties?.['name']) {
-                createElement(trkEle, 'name', feature.properties['name']);
-              }
+        case 'LineString': {
+          if (pass === 'trk') {
+            const trkEle = createElement(doc.documentElement, 'trk');
 
+            if (feature.properties?.['name']) {
+              createElement(trkEle, 'name', feature.properties['name']);
+            }
+
+            const trksegEle = createElement(trkEle, 'trkseg');
+
+            for (const pt of g.coordinates) {
+              createElement(
+                trksegEle,
+                'trkpt',
+                undefined,
+                toLatLon({ lat: pt[1], lon: pt[0] }),
+              );
+            }
+          }
+
+          break;
+        }
+
+        case 'Polygon':
+
+        // eslint-disable-next-line no-fallthrough
+        case 'MultiLineString':
+          if (pass === 'trk') {
+            const trkEle = createElement(doc.documentElement, 'trk');
+
+            if (feature.properties?.['name']) {
+              createElement(trkEle, 'name', feature.properties['name']);
+            }
+
+            for (const seg of g.coordinates) {
               const trksegEle = createElement(trkEle, 'trkseg');
 
-              for (const pt of g.coordinates) {
+              for (const pt of seg) {
                 createElement(
                   trksegEle,
                   'trkpt',
@@ -645,21 +699,20 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 );
               }
             }
-
-            break;
           }
 
-          case 'Polygon':
+          break;
 
-          case 'MultiLineString':
-            if (pass === 'trk') {
-              const trkEle = createElement(doc.documentElement, 'trk');
+        case 'MultiPolygon':
+          if (pass === 'trk') {
+            const trkEle = createElement(doc.documentElement, 'trk');
 
-              if (feature.properties?.['name']) {
-                createElement(trkEle, 'name', feature.properties['name']);
-              }
+            if (feature.properties?.['name']) {
+              createElement(trkEle, 'name', feature.properties['name']);
+            }
 
-              for (const seg of g.coordinates) {
+            for (const seg0 of g.coordinates) {
+              for (const seg of seg0) {
                 const trksegEle = createElement(trkEle, 'trkseg');
 
                 for (const pt of seg) {
@@ -672,46 +725,10 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 }
               }
             }
+          }
 
-            break;
-
-          case 'MultiPolygon':
-            if (pass === 'trk') {
-              const trkEle = createElement(doc.documentElement, 'trk');
-
-              if (feature.properties?.['name']) {
-                createElement(trkEle, 'name', feature.properties['name']);
-              }
-
-              for (const seg0 of g.coordinates) {
-                for (const seg of seg0) {
-                  const trksegEle = createElement(trkEle, 'trkseg');
-
-                  for (const pt of seg) {
-                    createElement(
-                      trksegEle,
-                      'trkpt',
-                      undefined,
-                      toLatLon({ lat: pt[1], lon: pt[0] }),
-                    );
-                  }
-                }
-              }
-            }
-
-            break;
-        }
+          break;
       }
     }
   }
-}
-
-function getSupportedGpxElements(doc: Document) {
-  return doc.evaluate(
-    '/gpx:gpx/gpx:wpt | /gpx:gpx/gpx:rte | /gpx:gpx/gpx:trk',
-    doc,
-    (prefix) => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
-    XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
-    null,
-  );
 }

@@ -1,17 +1,14 @@
-import { toggleLocate } from 'fm3/actions/mainActions';
-import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Map } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Card from 'react-bootstrap/Card';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
-import { MapSwitchButton } from './MapSwitchButton';
+import { toggleLocate } from '../actions/mainActions.js';
+import { mapRefocus, MapViewState } from '../actions/mapActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMap } from '../hooks/useMap.js';
+import { useMessages } from '../l10nInjector.js';
+import { MapSwitchButton } from './MapSwitchButton.js';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();
@@ -33,11 +30,7 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  const [map, setMap] = useState<Map>();
-
-  useEffect(() => {
-    mapPromise.then(setMap);
-  }, []);
+  const map = useMap();
 
   const handleFullscreenClick = useCallback(() => {
     if (!document.exitFullscreen) {
@@ -63,16 +56,13 @@ export function MapControls(): ReactElement | null {
     };
   }, [forceUpdate, setForceUpdate]);
 
-  if (!map) {
-    return null;
-  }
-
-  return (
-    <Card className="fm-toolbar mx-2 mb-2">
+  return !map ? null : (
+    <div className="card fm-toolbar mx-2 mb-2">
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />
       )}
-      <ButtonGroup className="ml-1">
+
+      <ButtonGroup className="ms-1">
         <Button
           variant="secondary"
           onClick={() => {
@@ -83,6 +73,7 @@ export function MapControls(): ReactElement | null {
         >
           <FaPlus />
         </Button>
+
         <Button
           variant="secondary"
           onClick={() => {
@@ -94,9 +85,10 @@ export function MapControls(): ReactElement | null {
           <FaMinus />
         </Button>
       </ButtonGroup>
+
       {(!window.fmEmbedded || !embedFeatures.includes('noLocateMe')) && (
         <Button
-          className="ml-1"
+          className="ms-1"
           onClick={() => {
             dispatch(toggleLocate(undefined));
           }}
@@ -107,9 +99,10 @@ export function MapControls(): ReactElement | null {
           <FaRegDotCircle />
         </Button>
       )}
+
       {'exitFullscreen' in document && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={handleFullscreenClick}
           title={
@@ -125,6 +118,6 @@ export function MapControls(): ReactElement | null {
           )}
         </Button>
       )}
-    </Card>
+    </div>
   );
 }

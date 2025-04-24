@@ -1,5 +1,4 @@
 import { CRS } from 'leaflet';
-import qs, { StringifiableRecord } from 'query-string';
 
 export function getOsmUrl(
   lat: number,
@@ -15,7 +14,7 @@ export function getOsmUrl(
 }
 
 export function getZbgisUrl(lat: number, lon: number, zoom: number): string {
-  return `https://zbgis.skgeodesy.sk/mkzbgis?pos=${lat},${lon},${zoom}`;
+  return `https://zbgis.skgeodesy.sk/mapka/sk/zakladna-mapa?pos=${lat},${lon},${zoom}`;
 }
 
 // TODO to separate file
@@ -27,20 +26,20 @@ export function getHikingSkUrl(
 ): string {
   const point = CRS.EPSG3857.project({ lat, lng: lon });
 
-  const params: StringifiableRecord = {
-    zoom: zoom > 15 ? 15 : zoom,
-    lon: point.x,
-    lat: point.y,
+  const params: Record<string, string> = {
+    zoom: String(zoom > 15 ? 15 : zoom),
+    lon: String(point.x),
+    lat: String(point.y),
     layers: '00B00FFFTTFTTTTFFFFFFTTT',
   };
 
   if (includePoint) {
-    params['x'] = lon;
+    params['x'] = String(lon);
 
-    params['y'] = lat;
+    params['y'] = String(lat);
   }
 
-  return `https://mapy.hiking.sk/?${qs.stringify(params)}`;
+  return `https://mapy.hiking.sk/?${new URLSearchParams(params).toString()}`;
 }
 
 export function getPeakfinderUrl(lat: number, lon: number): string {

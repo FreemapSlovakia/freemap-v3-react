@@ -1,4 +1,4 @@
-import { Node, OsmMapping } from './types';
+import { Node, OsmMapping } from './types.js';
 
 type Part = { text: string; tags: Record<string, string>; case: string };
 
@@ -125,7 +125,7 @@ export function resolveGenericName(
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
   return import(
     `./osmTagToNameMapping-${
-      ['sk', 'cs', 'it'].includes(lang) ? lang : 'en'
+      ['sk', 'cs', 'it', 'hu'].includes(lang) ? lang : 'en'
     }.ts`
   );
 }

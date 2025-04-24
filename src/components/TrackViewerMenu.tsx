@@ -1,23 +1,5 @@
-import {
-  clearMap,
-  convertToDrawing,
-  setActiveModal,
-} from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import {
-  ColorizingMode,
-  trackViewerColorizeTrackBy,
-  trackViewerSetData,
-  trackViewerToggleElevationChart,
-  trackViewerUploadTrack,
-} from 'fm3/actions/trackViewerActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { trackGeojsonIsSuitableForElevationChart } from 'fm3/selectors/mainSelectors';
-import 'fm3/styles/trackViewer.scss';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCloudUploadAlt,
@@ -27,10 +9,27 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
-import { DeleteButton } from './DeleteButton';
-import { ToolMenu } from './ToolMenu';
+import {
+  clearMapFeatures,
+  convertToDrawing,
+  setActiveModal,
+} from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import {
+  ColorizingMode,
+  trackViewerColorizeTrackBy,
+  trackViewerSetData,
+  trackViewerToggleElevationChart,
+  trackViewerUploadTrack,
+} from '../actions/trackViewerActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { trackGeojsonIsSuitableForElevationChart } from '../selectors/mainSelectors.js';
+import '../styles/trackViewer.scss';
+import { DeleteButton } from './DeleteButton.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export default TrackViewerMenu;
 
@@ -71,7 +70,7 @@ export function TrackViewerMenu(): ReactElement {
   return (
     <ToolMenu>
       <Button
-        className="ml-1"
+        className="ms-1"
         variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('upload-track'));
@@ -83,7 +82,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {enableElevationChart && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           active={elevationChartActive}
           onClick={() => {
@@ -100,7 +99,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {enableElevationChart && (
         <Dropdown
-          className="ml-1"
+          className="ms-1"
           onSelect={(approach) => {
             dispatch(
               trackViewerColorizeTrackBy(
@@ -114,7 +113,7 @@ export function TrackViewerMenu(): ReactElement {
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
               <Dropdown.Item
                 eventKey={mode}
@@ -130,14 +129,14 @@ export function TrackViewerMenu(): ReactElement {
 
       {enableElevationChart && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => {
             dispatch(
               toastsAdd({
                 id: 'trackViewer.trackInfo',
                 messageKey: 'trackViewer.info',
-                cancelType: [getType(clearMap), getType(trackViewerSetData)],
+                cancelType: [clearMapFeatures.type, trackViewerSetData.type],
                 style: 'info',
               }),
             );
@@ -150,7 +149,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {canUpload && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => {
             dispatch(trackViewerUploadTrack());
@@ -163,7 +162,7 @@ export function TrackViewerMenu(): ReactElement {
 
       {hasTrack && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={handleConvertToDrawing}
           title={m?.general.convertToDrawing}

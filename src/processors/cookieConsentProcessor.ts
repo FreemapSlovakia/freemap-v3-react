@@ -1,17 +1,12 @@
-import { applyCookieConsent } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { applyCookieConsent } from '../actions/mainActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const cookieConsentProcessor: Processor = {
   actionCreator: applyCookieConsent,
   statePredicate: (state) => !!state.main.cookieConsentResult,
   async handle() {
-    window.gtag('consent', 'update', {
-      ad_storage: 'granted',
-      analytics_storage: 'granted',
-    });
+    window._paq.push(['setCookieConsentGiven']);
 
-    // FB PIXEL
-
-    window?.fbq('consent', 'grant');
+    window.fbq('consent', 'grant');
   },
 };

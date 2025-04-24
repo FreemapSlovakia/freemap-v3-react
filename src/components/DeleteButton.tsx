@@ -1,9 +1,9 @@
-import { deleteFeature } from 'fm3/actions/mainActions';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { deleteFeature } from '../actions/mainActions.js';
+import { useMessages } from '../l10nInjector.js';
 
 export function DeleteButton(): ReactElement {
   const m = useMessages();
@@ -12,7 +12,7 @@ export function DeleteButton(): ReactElement {
 
   return (
     <Button
-      className="ml-1"
+      className="ms-1"
       variant="danger"
       title={m?.general.delete}
       onClick={() => {

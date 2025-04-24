@@ -1,5 +1,5 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { setActiveModal } from '../actions/mainActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const legendProcessor: Processor<typeof setActiveModal> = {
   actionCreator: setActiveModal,

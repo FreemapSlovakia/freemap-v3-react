@@ -1,14 +1,12 @@
-import { changesetsSetParams } from 'fm3/actions/changesetsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
 import { FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { ToolMenu } from './ToolMenu';
+import { changesetsSetParams } from '../actions/changesetsActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export default ChangesetsMenu;
 
@@ -26,7 +24,7 @@ export function ChangesetsMenu(): ReactElement {
   return (
     <ToolMenu>
       <Dropdown
-        className="ml-1"
+        className="ms-1"
         onSelect={(d) => {
           dispatch(changesetsSetParams({ days: Number(d) }));
         }}
@@ -35,7 +33,7 @@ export function ChangesetsMenu(): ReactElement {
           {m?.changesets.olderThanFull({ days }) ?? '…'}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
           {[3, 7, 14, 30].map((d) => (
             <Dropdown.Item key={d} eventKey={String(d)} active={d === days}>
               {m?.changesets.olderThan({ days: d })}
@@ -45,8 +43,7 @@ export function ChangesetsMenu(): ReactElement {
       </Dropdown>
 
       <Form
-        className="ml-1 d-flex flex-nowrap"
-        inline
+        className="ms-1 d-flex flex-nowrap"
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -64,19 +61,17 @@ export function ChangesetsMenu(): ReactElement {
             value={authorName ?? ''}
           />
 
-          <InputGroup.Append>
-            <Button
-              variant="secondary"
-              disabled={!authorName}
-              onClick={() => {
-                setAuthorName(null);
+          <Button
+            variant="secondary"
+            disabled={!authorName}
+            onClick={() => {
+              setAuthorName(null);
 
-                dispatch(changesetsSetParams({ days, authorName: null }));
-              }}
-            >
-              <FaEraser />
-            </Button>
-          </InputGroup.Append>
+              dispatch(changesetsSetParams({ days, authorName: null }));
+            }}
+          >
+            <FaEraser />
+          </Button>
         </InputGroup>
       </Form>
     </ToolMenu>

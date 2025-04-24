@@ -1,13 +1,10 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import FormGroup from 'react-bootstrap/FormGroup';
-import Modal from 'react-bootstrap/Modal';
+import { setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { useMessages } from '../l10nInjector.js';
+
+import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaRegMap, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
@@ -84,45 +81,39 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
 
         <Accordion>
           {[...legend].map((c: Item, i: number) => (
-            <Card key={c.name}>
-              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
-                {c.name}
-              </Accordion.Toggle>
+            <Accordion.Item key={c.name} eventKey={String(i)}>
+              <Accordion.Header>{c.name}</Accordion.Header>
 
-              <Accordion.Collapse eventKey={String(i)}>
-                <Card.Body>
-                  {c.items.map(({ id, name }) => (
-                    <div key={id} className="legend-item">
-                      <div>
-                        <img
-                          src={`${fmMapserverUrl}/legend-image/${id}`}
-                          srcSet={[1, 2, 3]
-                            .map(
-                              (s) =>
-                                `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
-                                  s > 1 ? ` ${s}x` : ''
-                                }`,
-                            )
-                            .join(', ')}
-                        />
-                      </div>
-
-                      <div>{name}</div>
+              <Accordion.Body>
+                {c.items.map(({ id, name }) => (
+                  <div key={id} className="legend-item">
+                    <div>
+                      <img
+                        src={`${fmMapserverUrl}/legend-image/${id}`}
+                        srcSet={[1, 2, 3]
+                          .map(
+                            (s) =>
+                              `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
+                                s > 1 ? ` ${s}x` : ''
+                              }`,
+                          )
+                          .join(', ')}
+                      />
                     </div>
-                  ))}
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
+
+                    <div>{name}</div>
+                  </div>
+                ))}
+              </Accordion.Body>
+            </Accordion.Item>
           ))}
         </Accordion>
       </Modal.Body>
 
       <Modal.Footer>
-        <FormGroup>
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close}
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FaTimes /> {m?.general.close}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

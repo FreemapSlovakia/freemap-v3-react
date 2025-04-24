@@ -1,87 +1,104 @@
-import { authDeleteAccountProcessor } from './processors/authDeleteAccountProcessor';
-import { authInitProcessor } from './processors/authInitProcessor';
-import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
-import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
-import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
-import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
-import { authLogoutProcessor } from './processors/authLogoutProcessor';
-import { cancelProcessor } from './processors/cancelProcessor';
-import { changesetsProcessor } from './processors/changesetsProcessor';
-import { cookieConsentProcessor } from './processors/cookieConsentProcessor';
-import { elevationChartProcessor } from './processors/elevationChartProcessor';
-import { errorProcessor } from './processors/errorProcessor';
-import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
-import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor';
-import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor';
-import { galleryQuickAddTagProcessor } from './processors/galleryQuickAddTagProcessor';
-import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor';
-import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor';
-import { galleryRequestImagesByRadiusProcessor } from './processors/galleryRequestImagesByRadiusProcessor';
-import { gallerySavePictureProcessor } from './processors/gallerySavePictureProcessor';
-import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
-import { galleryShowImageGaProcessor } from './processors/galleryShowImageGaProcessor';
-import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapProcessor';
-import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor';
-import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
-import { galleryUploadModalProcessor } from './processors/galleryUploadModalProcessor';
-import { gpxExportProcessor } from './processors/gpxExportProcessor';
-import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
-import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor';
-import { legendProcessor } from './processors/legendProcessor';
-import { locateProcessor } from './processors/locateProcessor';
-import { mapDetailsProcessor } from './processors/mapDetailsProcessor';
-import { mapRefocusProcessor } from './processors/mapRefocusProcessor';
-import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
-import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
-import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
-import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
-import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
-import { measurementProcessor } from './processors/measurementProcessor';
-import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
-import { openInExternalAppProcessor } from './processors/openInExternalAppProcessor';
-import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
-import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
-import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
-import { exportPdfProcessor } from './processors/pdfExportProcessor';
-import { removeAdsProcessor } from './processors/removeAdsProcessor';
-import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
-import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
-import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
-import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
-import * as rpcProcessors from './processors/rpcProcessors';
-import { saveHomeLocationProcessor } from './processors/saveHomeLocationProcessor';
-import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
+import { authDeleteAccountProcessor } from './processors/authDeleteAccountProcessor.js';
+import { authDisconnectProcessor } from './processors/authDisconnectProcessor.js';
+import {
+  authInitProcessor,
+  authTrackProcessor,
+} from './processors/authInitProcessor.js';
+import { authLogoutProcessor } from './processors/authLogoutProcessor.js';
+import { authWithFacebookProcessor } from './processors/authWithFacebookProcessor.js';
+import { authWithGarmin2Processor } from './processors/authWithGarmin2Processor.js';
+import { authWithGarminProcessor } from './processors/authWithGarminProcessor.js';
+import { authWithGoogleProcessor } from './processors/authWithGoogleProcessor.js';
+import { authWithOsm2Processor } from './processors/authWithOsm2Processor.js';
+import { authWithOsmProcessor } from './processors/authWithOsmProcessor.js';
+import { cancelProcessor } from './processors/cancelProcessor.js';
+import {
+  changesetsProcessor,
+  changesetsTrackProcessor,
+} from './processors/changesetsProcessor.js';
+import { convertToDrawingProcessor } from './processors/convertToDrawingProcessor.js';
+import { cookieConsentProcessor } from './processors/cookieConsentProcessor.js';
+import { deleteProcessor } from './processors/deleteProcessor.js';
+import { elevationChartProcessor } from './processors/elevationChartProcessor.js';
+import { errorProcessor } from './processors/errorProcessor.js';
+import { exportMapFeaturesProcessor } from './processors/exportMapFeaturesProcessor.js';
+import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor.js';
+import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor.js';
+import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor.js';
+import { galleryQuickAddTagProcessor } from './processors/galleryQuickAddTagProcessor.js';
+import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor.js';
+import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor.js';
+import { galleryRequestImagesByRadiusProcessor } from './processors/galleryRequestImagesByRadiusProcessor.js';
+import { gallerySavePictureProcessor } from './processors/gallerySavePictureProcessor.js';
+import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor.js';
+import { galleryShowImageGaProcessor } from './processors/galleryShowImageGaProcessor.js';
+import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapProcessor.js';
+import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor.js';
+import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor.js';
+import { galleryUploadModalProcessor } from './processors/galleryUploadModalProcessor.js';
+import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor.js';
+import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor.js';
+import { legendProcessor } from './processors/legendProcessor.js';
+import { locateProcessor } from './processors/locateProcessor.js';
+import { mapDetailsProcessor } from './processors/mapDetailsProcessor.js';
+import { exportMapProcessor } from './processors/mapExportProcessor.js';
+import { mapRefocusProcessor } from './processors/mapRefocusProcessor.js';
+import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor.js';
+import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor.js';
+import { mapsLoadProcessor } from './processors/mapsLoadProcessor.js';
+import { mapsSaveProcessor } from './processors/mapsSaveProcessor.js';
+import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor.js';
+import { measurementProcessor } from './processors/measurementProcessor.js';
+import {
+  objectsChangePredicateProcessor,
+  objectsFetchProcessor,
+} from './processors/objectsFetchProcessor.js';
+import { openInExternalAppProcessor } from './processors/openInExternalAppProcessor.js';
+import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor.js';
+import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor.js';
+import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor.js';
+import { purchaseProcessor } from './processors/purchaseProcessor.js';
+import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor.js';
+import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor.js';
+import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor.js';
+import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor.js';
+import * as rpcProcessors from './processors/rpcProcessors.js';
+import { saveHomeLocationProcessor } from './processors/saveHomeLocationProcessor.js';
+import { saveSettingsProcessor } from './processors/saveSettingsProcessor.js';
 import {
   searchHighlightProcessor,
   searchHighlightTrafo,
-} from './processors/searchHighlightProcessor';
-import { searchProcessor } from './processors/searchProcessor';
-import { setActiveModalTransformer } from './processors/setActiveModalProcessor';
-import { setToolProcessor } from './processors/setToolProcessor';
-import { toastsAddProcessor } from './processors/toastsAddProcessor';
-import { toastsCancelTypeProcessor } from './processors/toastsCancelTypeProcessor';
-import { toastsRemoveProcessor } from './processors/toastsRemoveProcessor';
-import { toastsRestartTimeoutProcessor } from './processors/toastsRestartTimeoutProcessor';
-import { toastsStopTimeoutProcessor } from './processors/toastsStopTimeoutProcessor';
-import * as trackingAccessTokenProcessors from './processors/trackingAccessTokenProcessors';
-import * as trackingDeviceProcessors from './processors/trackingDeviceProcessors';
-import { trackingFollowProcessor } from './processors/trackingFollowProcessors';
-import { trackViewerDownloadTrackProcessor } from './processors/trackViewerDownloadTrackProcessor';
-import { trackViewerGpxLoadProcessor } from './processors/trackViewerGpxLoadProcessor';
-import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTrackDataProcessor';
-import { trackViewerToggleElevationChartProcessor } from './processors/trackViewerToggleElevationChartProcessor';
-import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadTrackProcessor';
-import { urlProcessor } from './processors/urlProcessor';
-import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
-import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
+} from './processors/searchHighlightProcessor.js';
+import { searchProcessor } from './processors/searchProcessor.js';
+import { setActiveModalTransformer } from './processors/setActiveModalProcessor.js';
+import { setToolProcessor } from './processors/setToolProcessor.js';
+import { toastsAddProcessor } from './processors/toastsAddProcessor.js';
+import { toastsCancelTypeProcessor } from './processors/toastsCancelTypeProcessor.js';
+import { toastsRemoveProcessor } from './processors/toastsRemoveProcessor.js';
+import { toastsRestartTimeoutProcessor } from './processors/toastsRestartTimeoutProcessor.js';
+import { toastsStopTimeoutProcessor } from './processors/toastsStopTimeoutProcessor.js';
+import * as trackingAccessTokenProcessors from './processors/trackingAccessTokenProcessors.js';
+import * as trackingDeviceProcessors from './processors/trackingDeviceProcessors.js';
+import { trackingFollowProcessor } from './processors/trackingFollowProcessors.js';
+import { trackViewerDownloadTrackProcessor } from './processors/trackViewerDownloadTrackProcessor.js';
+import { trackViewerGpxLoadProcessor } from './processors/trackViewerGpxLoadProcessor.js';
+import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTrackDataProcessor.js';
+import { trackViewerToggleElevationChartProcessor } from './processors/trackViewerToggleElevationChartProcessor.js';
+import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadTrackProcessor.js';
+import { urlProcessor } from './processors/urlProcessor.js';
+import { wikiLayerProcessor } from './processors/wikiLayerProcessor.js';
+import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor.js';
 
 export const processors = [
   errorProcessor,
   toastsCancelTypeProcessor,
   cancelProcessor,
   setToolProcessor,
+  deleteProcessor,
+  convertToDrawingProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
+  authDisconnectProcessor,
   authDeleteAccountProcessor,
   mapRefocusProcessor,
   searchProcessor,
@@ -93,10 +110,13 @@ export const processors = [
   measurementProcessor,
   mapDetailsProcessor,
   changesetsProcessor,
+  changesetsTrackProcessor,
   authInitProcessor,
+  authTrackProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
   objectsFetchProcessor,
+  objectsChangePredicateProcessor,
   osmLoadNodeProcessor,
   osmLoadWayProcessor,
   osmLoadRelationProcessor,
@@ -142,12 +162,14 @@ export const processors = [
   legacyMapWarningProcessor,
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
-  gpxExportProcessor,
-  exportPdfProcessor,
-  authLoginWithFacebookProcessor,
-  authLoginWithGoogleProcessor,
-  authLoginWithOsmProcessor,
-  authLoginWithOsm2Processor,
-  removeAdsProcessor,
+  exportMapFeaturesProcessor,
+  exportMapProcessor,
+  authWithFacebookProcessor,
+  authWithGoogleProcessor,
+  authWithOsmProcessor,
+  authWithOsm2Processor,
+  authWithGarminProcessor,
+  authWithGarmin2Processor,
+  purchaseProcessor,
   urlProcessor,
 ];

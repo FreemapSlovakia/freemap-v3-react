@@ -1,7 +1,11 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import {
+  drawingLineAdd,
   drawingLineAddPoint,
+  drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineDelete,
+  drawingLineDeletePoint,
   drawingLineJoinFinish,
   drawingLineJoinStart,
   drawingLineRemovePoint,
@@ -11,16 +15,14 @@ import {
   drawingLineUpdatePoint,
   Line,
   Point,
-} from 'fm3/actions/drawingLineActions';
+} from '../actions/drawingLineActions.js';
 import {
   applySettings,
-  clearMap,
+  clearMapFeatures,
   selectFeature,
   setTool,
-} from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface DrawingLinesState {
   drawing: boolean;
@@ -34,25 +36,34 @@ export const initialState: DrawingLinesState = {
   joinWith: undefined,
 };
 
-export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
-  initialState,
-)
-  .handleAction(clearMap, () => initialState)
-  .handleAction([setTool, drawingLineStopDrawing], (state) => ({
-    ...state,
-    drawing: false,
-    joinWith: undefined,
-  }))
-  .handleAction(selectFeature, (state) => ({
-    ...state,
-    lines: state.lines.filter(linefilter),
-    drawing: false,
-    joinWith: undefined,
-  }))
-  .handleAction(applySettings, (state, { payload }) =>
-    produce(state, (draft) => {
+export const drawingLinesReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => initialState)
+    .addCase(drawingLineAdd, (state, { payload }) => ({
+      ...state,
+      lines: [...state.lines, payload],
+    }))
+    .addCase(drawingLineChangeProperties, (state, { payload }) => {
+      Object.assign(state.lines[payload.index], payload.properties);
+    })
+    .addCase(drawingLineDelete, (state, { payload }) => ({
+      ...state,
+      lines: state.lines.filter((_, i) => i !== payload.lineIndex),
+    }))
+    .addCase(drawingLineDeletePoint, (state, { payload }) => {
+      const line = state.lines[payload.lineIndex];
+
+      line.points = line.points.filter((point) => point.id !== payload.pointId);
+    })
+    .addCase(selectFeature, (state) => ({
+      ...state,
+      lines: state.lines.filter(linefilter),
+      drawing: false,
+      joinWith: undefined,
+    }))
+    .addCase(applySettings, (state, { payload }) => {
       if (payload.drawingApplyAll) {
-        for (const line of draft.lines) {
+        for (const line of state.lines) {
           if (payload.drawingColor) {
             line.color = payload.drawingColor;
           }
@@ -62,12 +73,9 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
           }
         }
       }
-    }),
-  )
-
-  .handleAction(drawingLineAddPoint, (state, action) =>
-    produce(state, (draft) => {
-      let line: Line;
+    })
+    .addCase(drawingLineAddPoint, (state, action) => {
+      let line;
 
       if (action.payload.index === undefined) {
         if (action.payload.type === undefined) {
@@ -81,9 +89,9 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
           points: [],
         };
 
-        draft.lines.push(line);
+        state.lines.push(line);
       } else {
-        line = draft.lines[action.payload.index];
+        line = state.lines[action.payload.index];
       }
 
       line.points.splice(
@@ -93,108 +101,99 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         0,
         action.payload.point,
       );
-    }),
-  )
-  .handleAction(
-    drawingLineUpdatePoint,
-    (state, { payload: { index, point } }) =>
-      produce(state, (draft) => {
-        const p = draft.lines[index].points.find((pt) => pt.id === point.id);
+    })
+    .addCase(drawingLineUpdatePoint, (state, { payload: { index, point } }) => {
+      const p = state.lines[index].points.find((pt) => pt.id === point.id);
 
-        if (p) {
-          Object.assign(p, point);
-        }
-      }),
-  )
-  .handleAction(drawingLineRemovePoint, (state, action) =>
-    produce(state, (draft) => {
-      const line = draft.lines[action.payload.index];
+      if (p) {
+        Object.assign(p, point);
+      }
+    })
+    .addCase(drawingLineRemovePoint, (state, action) => {
+      const line = state.lines[action.payload.index];
 
       line.points = line.points.filter(
         (point) => point.id !== action.payload.id,
       );
-    }),
-  )
-  .handleAction(drawingLineSplit, (state, action) => {
-    const { lineIndex, pointId } = action.payload;
+    })
+    .addCase(drawingLineSplit, (state, action) => {
+      const { lineIndex, pointId } = action.payload;
 
-    const line = state.lines[lineIndex];
+      const line = state.lines[lineIndex];
 
-    const pos = line.points.findIndex((pt) => pt.id === pointId);
+      const pos = line.points.findIndex((pt) => pt.id === pointId);
 
-    return {
+      return {
+        ...state,
+        lines: [
+          ...state.lines.slice(0, lineIndex),
+          {
+            ...line,
+            points: line.points.slice(0, pos + 1),
+          },
+          { ...line, points: line.points.slice(pos) },
+          ...state.lines.slice(lineIndex + 1),
+        ],
+      };
+    })
+    .addCase(drawingLineSetLines, (state, action) => ({
       ...state,
-      lines: [
-        ...state.lines.slice(0, lineIndex),
-        {
-          ...line,
-          points: line.points.slice(0, pos + 1),
-        },
-        { ...line, points: line.points.slice(pos) },
-        ...state.lines.slice(lineIndex + 1),
-      ],
-    };
-  })
-  .handleAction(drawingLineSetLines, (state, action) => ({
-    ...state,
-    lines: action.payload.filter(linefilter),
-  }))
-  .handleAction(
-    drawingLineContinue,
-    (state, { payload: { pointId, lineIndex } }) =>
-      produce(state, (draft) => {
-        draft.drawing = true;
+      lines: action.payload.filter(linefilter),
+    }))
+    .addCase(
+      drawingLineContinue,
+      (state, { payload: { pointId, lineIndex } }) => {
+        state.drawing = true;
 
-        const { points } = draft.lines[lineIndex];
+        const { points } = state.lines[lineIndex];
 
         if (points[0].id === pointId) {
           reverse(points);
         }
-      }),
-  )
-  .handleAction(mapsLoaded, (state, { payload }) => ({
-    ...state,
-    joinWith: undefined,
-    drawing: false,
-    lines: [
-      ...(payload.merge ? state.lines : []),
-      ...(payload.data.lines ?? initialState.lines).map((line) => ({
-        ...line,
-        type:
-          // compatibility
-          (line.type as string) === 'area'
-            ? 'polygon'
-            : (line.type as string) === 'distance'
-            ? 'line'
-            : line.type,
-      })),
-    ],
-  }))
-  .handleAction(drawingLineJoinStart, (state, action) => ({
-    ...state,
-    joinWith: action.payload,
-  }))
-  .handleAction(drawingLineJoinFinish, (state, action) =>
-    produce(state, (draft) => {
-      const { joinWith } = draft;
+      },
+    )
+    .addCase(mapsLoaded, (state, { payload }) => ({
+      ...state,
+      joinWith: undefined,
+      drawing: false,
+      lines: [
+        ...(payload.merge ? state.lines : []),
+        ...(payload.data.lines ?? initialState.lines).map((line) => ({
+          ...line,
+          type:
+            // compatibility
+            (line.type as string) === 'area'
+              ? 'polygon'
+              : (line.type as string) === 'distance'
+                ? 'line'
+                : line.type,
+        })),
+      ],
+    }))
+    .addCase(drawingLineJoinStart, (state, action) => ({
+      ...state,
+      joinWith: action.payload,
+    }))
+    .addCase(drawingLineJoinFinish, (state, action) => {
+      const { joinWith } = state;
 
       if (!joinWith) {
         return;
       }
 
-      const line1 = draft.lines[joinWith.lineIndex];
+      const line1 = state.lines[joinWith.lineIndex];
 
       if (line1.points[0].id === joinWith.pointId) {
         reverse(line1.points);
       }
 
-      const line2 = draft.lines[action.payload.lineIndex];
+      const line2 = state.lines[action.payload.lineIndex];
 
       if (line2.points[0].id !== action.payload.pointId) {
         reverse(line2.points);
       }
 
-      draft.lines[joinWith.lineIndex].label = [line1.label, line2.label]
+      state.lines[joinWith.lineIndex].label = [line1.label, line2.label]
         .filter((l) => l)
         .join(', ');
 
@@ -204,11 +203,16 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         ...line2.points.map((pt) => ({ ...pt, id: pt.id + maxId })),
       );
 
-      draft.lines.splice(action.payload.lineIndex, 1);
+      state.lines.splice(action.payload.lineIndex, 1);
 
-      draft.joinWith = undefined;
-    }),
-  );
+      state.joinWith = undefined;
+    })
+    .addMatcher(isAnyOf(setTool, drawingLineStopDrawing), (state) => ({
+      ...state,
+      drawing: false,
+      joinWith: undefined,
+    })),
+);
 
 function linefilter(line: Line) {
   return (

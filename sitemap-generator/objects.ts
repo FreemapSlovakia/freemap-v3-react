@@ -170,37 +170,46 @@ export async function objects(sitemapNames: string[]) {
                           >${value}</a
                         >`
                       : ['contact:website', 'website', 'url', 'image'].includes(
-                          key,
-                        )
-                      ? html`<a
-                          href=${/^https?:\/\//.test(value)
-                            ? value
-                            : `http://${value}`}
-                          >${value}</a
-                        >`
-                      : ['contact:email', 'email'].includes(key)
-                      ? html`<a href=${'mailto:' + value}>${value}</a>`
-                      : ['contact:phone', 'contact:mobile', 'phone'].includes(
-                          key,
-                        )
-                      ? html`<a href=${'tel:' + value.replace(/ /g, '')}
-                          >${value}</a
-                        >`
-                      : key === 'wikipedia'
-                      ? html`<a
-                          href=${`https://sk.wikipedia.org/wiki/${encodeURIComponent(
                             key,
-                          )}`}
-                          >${value}</a
-                        >`
-                      : categoryKeys.has(key)
-                      ? html`<a
-                          href=${`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
-                            key,
-                          )}=${encodeURIComponent(value)}`}
-                          >${value}</a
-                        >`
-                      : value}
+                          )
+                        ? html`<a
+                            href=${/^https?:\/\//.test(value)
+                              ? value
+                              : `http://${value}`}
+                            >${value}</a
+                          >`
+                        : ['contact:email', 'email'].includes(key)
+                          ? html`<a href=${'mailto:' + value}>${value}</a>`
+                          : [
+                                'contact:phone',
+                                'contact:mobile',
+                                'phone',
+                              ].includes(key)
+                            ? html`<a href=${'tel:' + value.replace(/ /g, '')}
+                                >${value}</a
+                              >`
+                            : key === 'wikipedia'
+                              ? html`<a
+                                  href=${`https://wikipedia.org/wiki/${encodeURIComponent(
+                                    value.replace(/ /g, '_'),
+                                  )}`}
+                                  >${value}</a
+                                >`
+                              : key === 'wikimedia_commons'
+                                ? html`<a
+                                    href=${`https://commons.wikimedia.org/wiki/${encodeURIComponent(
+                                      value.replace(/ /g, '_'),
+                                    )}`}
+                                    >${value}</a
+                                  >`
+                                : categoryKeys.has(key)
+                                  ? html`<a
+                                      href=${`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
+                                        key,
+                                      )}=${encodeURIComponent(value)}`}
+                                      >${value}</a
+                                    >`
+                                  : value}
                   </dd>
                 `,
               )}

@@ -1,13 +1,16 @@
+import { Location } from 'history';
+import { Dispatch } from 'redux';
+import { assert, is } from 'typia';
 import {
   ChangesetParams,
   changesetsSet,
   changesetsSetParams,
-} from 'fm3/actions/changesetsActions';
-import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
+} from './actions/changesetsActions.js';
+import { drawingLineSetLines, Line } from './actions/drawingLineActions.js';
 import {
   drawingPointAdd,
   drawingPointSetAll,
-} from 'fm3/actions/drawingPointActions';
+} from './actions/drawingPointActions.js';
 import {
   galleryClear,
   galleryColorizeBy,
@@ -15,7 +18,9 @@ import {
   GalleryFilter,
   galleryRequestImage,
   gallerySetFilter,
-} from 'fm3/actions/galleryActions';
+} from './actions/galleryActions.js';
+import { RootAction } from './actions/index.js';
+import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
   documentShow,
   selectFeature,
@@ -24,65 +29,73 @@ import {
   setTool,
   ShowModal,
   Tool,
-} from 'fm3/actions/mainActions';
+} from './actions/mainActions.js';
 import {
   CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
-} from 'fm3/actions/mapActions';
+} from './actions/mapActions.js';
+import { mapsLoad } from './actions/mapsActions.js';
+import { objectsSetFilter } from './actions/objectsActions.js';
 import {
   osmClear,
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from 'fm3/actions/osmActions';
+} from './actions/osmActions.js';
 import {
   routePlannerSetParams,
   Weighting,
-} from 'fm3/actions/routePlannerActions';
+} from './actions/routePlannerActions.js';
+import { searchSetQuery } from './actions/searchActions.js';
+import { trackingActions } from './actions/trackingActions.js';
 import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
-} from 'fm3/actions/trackViewerActions';
-import { DocumentKey } from 'fm3/documents';
-import { history } from 'fm3/historyHolder';
+} from './actions/trackViewerActions.js';
+import { tools } from './constants.js';
+import { DocumentKey } from './documents/index.js';
+import { history } from './historyHolder.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
-} from 'fm3/oldFreemapUtils';
-import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
-import { Location } from 'history';
-import queryString, { ParsedQuery } from 'query-string';
-import { Dispatch } from 'redux';
-import { assert, is } from 'typia';
-import { RootAction } from './actions';
-import { l10nSetChosenLanguage } from './actions/l10nActions';
-import { mapsLoad } from './actions/mapsActions';
-import { objectsSetFilter } from './actions/objectsActions';
-import { searchSetQuery } from './actions/searchActions';
-import { trackingActions } from './actions/trackingActions';
-import { basicModals, tools } from './constants';
-import { RootState } from './reducers';
-import { MyStore } from './storeCreator';
-import { TransportType, transportTypeDefs } from './transportTypeDefs';
-import { LatLon } from './types/common';
-import { TrackedDevice } from './types/trackingTypes';
+} from './oldFreemapUtils.js';
+import { MyStore, RootState } from './store.js';
+import { TransportType } from './transportTypeDefs.js';
+import { LatLon } from './types/common.js';
+import { TrackedDevice } from './types/trackingTypes.js';
+import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
-export const handleLocationChange = (
-  store: MyStore,
-  location: Location,
-): void => {
+function parseQuery(search: string) {
+  const q: Record<string, string | string[]> = {};
+
+  for (const [k, v] of new URLSearchParams(search)) {
+    const e = q[k];
+
+    if (Array.isArray(e)) {
+      e.push(v);
+    } else if (e === undefined) {
+      q[k] = v;
+    } else {
+      q[k] = [e, v];
+    }
+  }
+
+  return q;
+}
+
+export function handleLocationChange(store: MyStore, location: Location): void {
   const { getState, dispatch } = store;
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.location.state as any) ?? {
+  const { sq } = (history.location.state as { sq: string }) ?? {
     sq: undefined,
   };
 
-  const parsedQuery = queryString.parse(search);
+  const parsedQuery = parseQuery(search);
 
   const id =
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
@@ -102,33 +115,24 @@ export const handleLocationChange = (
   }
 
   const query =
-    id === undefined
-      ? parsedQuery
-      : {
-          ...parsedQuery,
-          ...queryString.parse(sq),
-        };
+    id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
 
   const tool =
     !query['tool'] || typeof query['tool'] !== 'string'
       ? null
       : query['tool'] === 'info-point'
-      ? 'draw-points'
-      : query['tool'] === 'measure-area'
-      ? 'draw-polygons'
-      : query['tool'] === 'measure-dist'
-      ? 'draw-lines'
-      : tools.includes(query['tool'] as Tool)
-      ? (query['tool'] as Tool)
-      : null;
+        ? 'draw-points'
+        : query['tool'] === 'measure-area'
+          ? 'draw-polygons'
+          : query['tool'] === 'measure-dist'
+            ? 'draw-lines'
+            : tools.includes(query['tool'] as Tool)
+              ? (query['tool'] as Tool)
+              : null;
 
   if (getState().main.tool !== tool) {
     dispatch(setTool(tool));
   }
-
-  const params = new URLSearchParams(
-    id === undefined ? search : sq,
-  ) as URLSearchParams & Map<string, string>;
 
   {
     const points =
@@ -157,14 +161,10 @@ export const handleLocationChange = (
       qMilestones === '1' || qMilestones === 'abs'
         ? 'abs'
         : qMilestones === 'rel'
-        ? 'rel'
-        : false;
+          ? 'rel'
+          : false;
 
-    if (
-      transportTypeDefs[query['transport'] as TransportType] && // for dev
-      is<TransportType>(query['transport']) && // for prod
-      pointsOk
-    ) {
+    if (is<TransportType>(query['transport']) && pointsOk) {
       const {
         start,
         finish,
@@ -325,13 +325,16 @@ export const handleLocationChange = (
 
   const lines: Line[] = [];
 
-  for (const [key, value] of params) {
+  for (const [key, value] of new URLSearchParams(
+    id === undefined ? search : sq,
+  )) {
     if (
       key === 'distance-measurement-points' ||
       key === 'area-measurement-points' ||
       key === 'line' ||
       key === 'polygon'
     ) {
+      // eslint-disable-next-line no-control-regex
       const m = /([^;\x1e]*)([;\x1e].*)?/.exec(value);
 
       if (!m) {
@@ -374,7 +377,9 @@ export const handleLocationChange = (
   if (transformed) {
     const { lat, lon } = transformed;
 
-    dispatch(drawingPointAdd({ lat, lon }));
+    dispatch(
+      drawingPointAdd({ lat, lon, id: getState().drawingPoints.points.length }),
+    );
   }
 
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
@@ -382,7 +387,14 @@ export const handleLocationChange = (
   if (f2) {
     const { lat, lon, label } = f2;
 
-    dispatch(drawingPointAdd({ lat, lon, label }));
+    dispatch(
+      drawingPointAdd({
+        lat,
+        lon,
+        label,
+        id: getState().drawingPoints.points.length,
+      }),
+    );
   }
 
   const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */
@@ -451,7 +463,7 @@ export const handleLocationChange = (
 
       if (newCls.length) {
         for (const cm of newCls) {
-          if ((cm as any).tileSize) {
+          if ('tileSize' in cm && cm.tileSize) {
             cm.scaleWithDpi = true;
           }
         }
@@ -474,21 +486,28 @@ export const handleLocationChange = (
 
   const activeModal = getState().main.activeModal;
 
-  const { show } = query;
+  let { show } = query;
 
-  if (is<ShowModal>(show) && show) {
+  // support legacy
+  if (show === 'export-gpx') {
+    show = 'export-map-features';
+  } else if (show === 'export-pdf') {
+    show = 'export-map';
+  }
+
+  if (is<ShowModal>(show)) {
     if (show !== activeModal) {
       dispatch(setActiveModal(show));
     }
-  } else if (is<ShowModal>(activeModal) && basicModals.includes(activeModal)) {
+  } else if (is<ShowModal>(activeModal)) {
     dispatch(setActiveModal(null));
   }
 
-  const tip = query['tip'];
+  const doc = query['document'] ?? query['tip'];
 
-  if (typeof tip === 'string' && is<DocumentKey>(tip)) {
-    if (getState().main.documentKey !== tip) {
-      dispatch(documentShow(tip));
+  if (is<DocumentKey>(doc)) {
+    if (getState().main.documentKey !== doc) {
+      dispatch(documentShow(doc));
     }
   } else if (getState().main.documentKey) {
     dispatch(documentShow(null));
@@ -625,7 +644,6 @@ export const handleLocationChange = (
     break;
   }
 
-  // eslint-disable-next-line
   const fq = query['follow'];
 
   if (typeof fq === 'string') {
@@ -639,7 +657,7 @@ export const handleLocationChange = (
       dispatch(selectFeature({ type: 'tracking', id: follow }));
     }
   }
-};
+}
 
 // TODO use some generic deep compare fn
 function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
@@ -655,7 +673,7 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
 function handleGallery(
   getState: () => RootState,
   dispatch: Dispatch<RootAction>,
-  query: ParsedQuery<string>,
+  query: Record<string, string | string[]>,
 ) {
   let a = query['gallery-user-id'];
 
@@ -777,7 +795,7 @@ function handleGallery(
 
   const cb = query['gallery-cb'];
 
-  if (cb && is<GalleryColorizeBy>(cb)) {
+  if (is<GalleryColorizeBy>(cb)) {
     dispatch(galleryColorizeBy(cb));
   }
 }
@@ -816,7 +834,7 @@ function parseColorAndLabel(m: string) {
 function handleInfoPoint(
   getState: () => RootState,
   dispatch: Dispatch,
-  query: queryString.ParsedQuery<string>,
+  query: Record<string, string | string[]>,
 ) {
   const drawingPoint =
     query['point'] || query['info-point']; /* compatibility */
@@ -827,8 +845,8 @@ function handleInfoPoint(
     !drawingPoint
       ? []
       : Array.isArray(drawingPoint)
-      ? drawingPoint
-      : [drawingPoint]
+        ? drawingPoint
+        : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
     .map((ip) =>
@@ -837,7 +855,6 @@ function handleInfoPoint(
     .filter((ipMatch) => ipMatch)
     .map((ipMatch) => {
       // see https://github.com/microsoft/TypeScript/issues/29642
-      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       const m = ipMatch!;
 
       return {
@@ -871,7 +888,6 @@ function handleInfoPoint(
       .sort()
       .join('\n')
   ) {
-    // console.log({ ips });
     dispatch(drawingPointSetAll(ips));
   }
 

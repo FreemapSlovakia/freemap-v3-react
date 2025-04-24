@@ -1,11 +1,11 @@
-import { convertToDrawing } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 import { FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { Selection } from './Selection';
+import { convertToDrawing } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { Selection } from './Selection.js';
 
 export default ObjectSelection;
 
@@ -19,7 +19,7 @@ export function ObjectSelection(): ReactElement {
   return (
     <Selection icon={<FaMapMarkerAlt />} title={m?.selections.objects}>
       <Button
-        className="ml-1"
+        className="ms-1"
         variant="secondary"
         onClick={() => {
           if (selection?.type === 'objects') {

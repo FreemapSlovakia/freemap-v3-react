@@ -1,17 +1,17 @@
-import { RootAction } from 'fm3/actions';
+import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { RootAction } from '../actions/index.js';
 import {
   ToastAction,
   toastsRemove,
   toastsRestartTimeout,
   toastsStopTimeout,
-} from 'fm3/actions/toastsActions';
-import { Toast } from 'fm3/components/Toast';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/toasts.scss';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+} from '../actions/toastsActions.js';
+import { Toast } from '../components/Toast.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { getMessageByKey, useMessages } from '../l10nInjector.js';
+import '../styles/toasts.scss';
+import { Messages } from '../translations/messagesInterface.js';
 
 function tx(m: Messages | undefined, { name, nameKey }: ToastAction) {
   if (name !== undefined) {

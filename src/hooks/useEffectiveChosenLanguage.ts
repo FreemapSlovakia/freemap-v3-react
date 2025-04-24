@@ -1,5 +1,5 @@
-import { getEffectiveChosenLanguage } from 'fm3/langUtils';
-import { useAppSelector } from './reduxSelectHook';
+import { getEffectiveChosenLanguage } from '../langUtils.js';
+import { useAppSelector } from './reduxSelectHook.js';
 
 export function useEffectiveChosenLanguage() {
   return getEffectiveChosenLanguage(

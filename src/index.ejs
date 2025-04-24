@@ -16,7 +16,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
     />
-    <meta property="fb:pages" content="2532592376985525" />
+    <meta property="fb:pages" content="146029225443232" />
     <meta
       property="article:author"
       content="https://www.facebook.com/FreemapSlovakia/"
@@ -125,64 +125,48 @@
     <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
-    <!-- prettier-ignore -->
-    <% if (process.env['NODE_ENV'] === 'production') { %>
-    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
-    <% } %>
-
     <script>
       fmEmbedded = window.self !== window.top;
 
       isRobot = window.navigator.userAgent.match(
         /\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b/,
       );
-
-      if (window.TrackJS && !fmEmbedded && !isRobot) {
-        TrackJS.install({
-          token: '47a813b67baf4f97bace2d8359f76833',
-          network: { error: false },
-          onError: function (payload) {
-            return !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker|flatMap is not a function/.test(
-              payload.message,
-            );
-          },
-        });
-      }
     </script>
 
-    <% if (process.env['GA_MEASUREMENT_ID']) { %>
-
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=<%= process.env['GA_MEASUREMENT_ID'] %>"
-    ></script>
+    <% if (process.env['SENTRY_DSN']) { %>
+    <script src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js" crossorigin="anonymous"></script>
 
     <script>
-      window.dataLayer = window.dataLayer || [];
-
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-
-      gtag('js', new Date());
-
-      gtag('consent', 'default', {
-        ad_storage: 'denied',
-        analytics_storage: 'denied',
+      Sentry.init({
+        dsn: '<%= process.env["SENTRY_DSN"] %>',
+        tracesSampleRate: 0.01,
       });
-
-      gtag('config', '<%= process.env["GA_MEASUREMENT_ID"] %>');
     </script>
-
-    <% } else { %>
-
-    <script>
-      function gtag() {}
-    </script>
-
     <% } %>
 
-    <!-- -->
+    <script src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js" crossorigin="anonymous"></script>
+
+    <% if (process.env['MATOMO_SITE_ID']) { %>
+    <script>
+      var _paq = window._paq = window._paq || [];
+      _paq.push(['requireCookieConsent']);
+      _paq.push(['setCustomUrl', '/']);
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="//matomo.freemap.sk/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '<%= process.env["MATOMO_SITE_ID"] %>']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+    <% } else { %>
+      <script>
+        var _paq = window._paq = window._paq || [];
+      </script>
+    <% } %>
+
 
     <% if (process.env['FB_APP_ID']) { %>
 
@@ -305,7 +289,7 @@
         ) {
           console.error('Startup error.', e);
 
-          app.innerHTML =
+          (app || document.body).innerHTML =
             '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
         }
       };

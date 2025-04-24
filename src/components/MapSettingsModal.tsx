@@ -1,19 +1,3 @@
-import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
-import { CustomLayer } from 'fm3/actions/mapActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import {
-  BaseLayerLetters,
-  baseLayers,
-  defaultMenuLayerLetters,
-  defaultToolbarLayerLetters,
-  NoncustomLayerLetters,
-  overlayLayers,
-  OverlayLetters,
-  overlayLetters,
-} from 'fm3/mapDefinitions';
 import {
   FormEvent,
   Fragment,
@@ -25,16 +9,12 @@ import {
 } from 'react';
 import {
   Accordion,
-  Card,
-  FormControl,
-  FormGroup,
-  FormLabel,
+  Button,
+  Dropdown,
+  DropdownButton,
+  Form,
+  Modal,
 } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
 import {
   FaCheck,
   FaCog,
@@ -46,6 +26,22 @@ import {
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
+import { saveSettings, setActiveModal } from '../actions/mainActions.js';
+import { CustomLayer } from '../actions/mapActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  defaultMenuLayerLetters,
+  defaultToolbarLayerLetters,
+  NoncustomLayerLetters,
+  overlayLayers,
+  OverlayLetters,
+  overlayLetters,
+} from '../mapDefinitions.js';
 
 type Props = { show: boolean };
 
@@ -163,8 +159,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     return type.startsWith('.')
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
-      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-      : m?.mapLayers.letters[type as NoncustomLayerLetters];
+        ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+        : m?.mapLayers.letters[type as NoncustomLayerLetters];
   }
 
   const handleSubmit = (e: FormEvent) => {
@@ -213,16 +209,14 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>
               {m?.settings.map.overlayPaneOpacity}{' '}
               {nf.format(overlayPaneOpacity * 100)}
               {' %'}
             </Form.Label>
 
-            <Form.Control
-              type="range"
-              custom
+            <Form.Range
               value={overlayPaneOpacity}
               min={0}
               max={1}
@@ -237,7 +231,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
             <>
               <hr />
 
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>{m?.settings.layer}</Form.Label>
 
                 <DropdownButton
@@ -282,16 +276,16 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                         )}{' '}
                         <FaEllipsisH
                           color={
-                            layersSettings[type]?.showInToolbar ??
-                            defaultToolbarLayerLetters.includes(type)
+                            (layersSettings[type]?.showInToolbar ??
+                            defaultToolbarLayerLetters.includes(type))
                               ? ''
                               : '#ddd'
                           }
                         />{' '}
                         <FaRegListAlt
                           color={
-                            layersSettings[type]?.showInMenu ??
-                            defaultMenuLayerLetters.includes(type)
+                            (layersSettings[type]?.showInMenu ??
+                            defaultMenuLayerLetters.includes(type))
                               ? ''
                               : '#ddd'
                           }
@@ -354,14 +348,14 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 }}
               />
 
-              {(overlayLetters.includes(selectedLayer as any) ||
+              {(overlayLetters.includes(
+                selectedLayer as (typeof overlayLetters)[number],
+              ) ||
                 selectedLayer.charAt(0) === ':') && (
                 <Form.Group className="mt-2">
                   <Form.Label>{m?.settings.overlayOpacity}</Form.Label>
 
-                  <Form.Control
-                    type="range"
-                    custom
+                  <Form.Range
                     value={layersSettings[selectedLayer]?.opacity ?? 1}
                     min={0.1}
                     max={1.0}
@@ -384,29 +378,22 @@ export function MapSettingsModal({ show }: Props): ReactElement {
           <hr />
 
           <Accordion>
-            <Card>
-              <Card.Header>
-                <Accordion.Toggle
-                  as={Button}
-                  eventKey="0"
-                  variant="link"
-                  className="text-left w-100"
-                >
-                  {m?.pdfExport.advancedSettings}
-                </Accordion.Toggle>
-              </Card.Header>
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                {m?.mapExport.advancedSettings}
+              </Accordion.Header>
 
-              <Accordion.Collapse eventKey="0" className="p-2">
-                <FormGroup>
-                  <FormLabel>
+              <Accordion.Body>
+                <Form.Group className="mb-3">
+                  <Form.Label>
                     {m?.settings.customLayersDef}{' '}
                     <FaFlask
                       title={m?.general.experimentalFunction}
                       className="text-warning"
                     />
-                  </FormLabel>
+                  </Form.Label>
 
-                  <FormControl
+                  <Form.Control
                     as="textarea"
                     value={customLayersDef}
                     onChange={(e) => setCustomLayersDef(e.target.value)}
@@ -415,9 +402,9 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     onFocus={handleCustomLayersDefFocus}
                     placeholder={customLayersHelp}
                   />
-                </FormGroup>
-              </Accordion.Collapse>
-            </Card>
+                </Form.Group>
+              </Accordion.Body>
+            </Accordion.Item>
           </Accordion>
         </Modal.Body>
 

@@ -2,11 +2,11 @@ import {
   galleryRequestImage,
   gallerySavePicture,
   gallerySetLayerDirty,
-} from 'fm3/actions/galleryActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/galleryActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { parseCoordinates } from '../coordinatesParser.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,

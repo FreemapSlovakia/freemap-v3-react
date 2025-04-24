@@ -1,19 +1,20 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { RichMarker } from 'fm3/components/RichMarker';
-import {
-  tooltipText,
-  TrackingPoint,
-} from 'fm3/components/tracking/TrackingPoint';
-import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { TrackPoint } from 'fm3/types/trackingTypes';
+import distance from '@turf/distance';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { selectFeature } from '../../actions/mainActions.js';
+import { RichMarker } from '../../components/RichMarker.js';
+import {
+  tooltipText,
+  TrackingPoint,
+} from '../../components/tracking/TrackingPoint.js';
+import { toLatLng, toLatLngArr } from '../../geoutils.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '../../hooks/useNumberFormat.js';
+import { selectingModeSelector } from '../../selectors/mainSelectors.js';
+import { TrackPoint } from '../../types/trackingTypes.js';
 
 // TODO functional component with hooks was causing massive re-rendering
 export function TrackingResult(): ReactElement {
@@ -92,8 +93,9 @@ export function TrackingResult(): ReactElement {
           if (
             prevTp &&
             ((typeof track.splitDistance === 'number' &&
-              distance(tp.lat, tp.lon, prevTp.lat, prevTp.lon) >
-                track.splitDistance) ||
+              distance([tp.lon, tp.lat], [prevTp.lon, prevTp.lat], {
+                units: 'meters',
+              }) > track.splitDistance) ||
               (typeof track.splitDuration === 'number' &&
                 tp.ts.getTime() - prevTp.ts.getTime() >
                   track.splitDuration * 60000))
@@ -183,7 +185,7 @@ export function TrackingResult(): ReactElement {
                     )
                   }
                 >
-                  <Tooltip direction="top" offset={[0, -36]} permanent>
+                  <Tooltip direction="top" permanent>
                     {tooltipText(df, nf, tp, track.label)}
                   </Tooltip>
                 </RichMarker>

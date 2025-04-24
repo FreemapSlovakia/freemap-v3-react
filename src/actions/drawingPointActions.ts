@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
 export interface DrawingPoint {
   lat: number;
@@ -7,29 +7,35 @@ export interface DrawingPoint {
   color?: string;
 }
 
-export const drawingPointAdd =
-  createAction('DRAWING_POINT_ADD')<DrawingPoint>();
+export const drawingPointAdd = createAction<DrawingPoint & { id: number }>(
+  'DRAWING_POINT_ADD',
+);
 
-export const drawingPointChangePosition = createAction(
-  'DRAWING_POINT_CHANGE_POSITION',
-)<{ index: number; lat: number; lon: number }>();
+export const drawingPointChangePosition = createAction<{
+  index: number;
+  lat: number;
+  lon: number;
+}>('DRAWING_POINT_CHANGE_POSITION');
 
-export const drawingChangeProperties = createAction(
-  'DRAWING_CHANGE_PROPERTIES',
-)<{
-  label: string | undefined;
-  color: string | undefined;
-  width: number | undefined;
-  type: 'line' | 'polygon';
-}>();
+export const drawingPointChangeProperties = createAction<{
+  index: number;
+  properties: {
+    label: string | undefined;
+    color: string | undefined;
+  };
+}>('DRAWING_POINT_CHANGE_PROPERTIES');
 
-export const drawingPointSetAll = createAction('DRAWING_POINT_SET_ALL')<
-  DrawingPoint[]
->();
+export const drawingPointSetAll = createAction<DrawingPoint[]>(
+  'DRAWING_POINT_SET_ALL',
+);
 
 // NOTE used also for lines and polygons
 
-export const drawingMeasure = createAction('DRAWING_MEASURE')<{
+export const drawingMeasure = createAction<{
   elevation?: boolean;
   position?: { lat: number; lon: number };
-}>();
+}>('DRAWING_MEASURE');
+
+export const drawingPointDelete = createAction<{
+  index: number;
+}>('DRAWING_POINT_DELETE');

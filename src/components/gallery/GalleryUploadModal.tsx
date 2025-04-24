@@ -1,3 +1,8 @@
+import { ReactElement, useCallback } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
+import { useDropzone } from 'react-dropzone';
+import { FaTimes, FaUpload } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import {
   galleryAddItem,
   GalleryItem,
@@ -6,22 +11,15 @@ import {
   gallerySetItemForPositionPicking,
   galleryToggleShowPreview,
   galleryUpload,
-} from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import FormCheck from 'react-bootstrap/FormCheck';
-import Modal from 'react-bootstrap/Modal';
-import { useDropzone } from 'react-dropzone';
-import { FaTimes, FaUpload } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { usePictureDropHandler } from '../../hooks/usePictureDropHandler';
-import { PictureModel } from './GalleryEditForm';
+} from '../../actions/galleryActions.js';
+import { setActiveModal } from '../../actions/mainActions.js';
+import { toastsAdd } from '../../actions/toastsActions.js';
+import { GalleryUploadItem } from '../../components/gallery/GalleryUploadItem.js';
+import { toDatetimeLocal } from '../../dateUtils.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { usePictureDropHandler } from '../../hooks/usePictureDropHandler.js';
+import { useMessages } from '../../l10nInjector.js';
+import { PictureModel } from './GalleryEditForm.js';
 
 type Props = { show: boolean };
 
@@ -120,6 +118,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         {items.map(
           ({
@@ -158,7 +157,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
         )}
         {!uploading && (
           <>
-            <FormCheck
+            <Form.Check
               id="chk-preview"
               type="checkbox"
               onChange={() => {
@@ -185,6 +184,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
           </>
         )}
       </Modal.Body>
+
       <Modal.Footer>
         <Button
           onClick={() => {
@@ -197,6 +197,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
+
         <Button onClick={handleClose} variant="dark">
           <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>

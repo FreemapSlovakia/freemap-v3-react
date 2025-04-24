@@ -1,13 +1,12 @@
-import { documentShow } from 'fm3/actions/mainActions';
-import { documents } from 'fm3/documents';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { navigate } from 'fm3/navigationUtils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { FaRegLightbulb, FaTimes } from 'react-icons/fa';
+import { Button, Modal } from 'react-bootstrap';
+import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { documentShow } from '../actions/mainActions.js';
+import { documents } from '../documents/index.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { navigate } from '../navigationUtils.js';
 
 type Props = { show: boolean };
 
@@ -29,20 +28,20 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   useEffect(() => {
     setLoading(true);
 
-    import(`fm3/documents/${documentKey}.${language}.md`)
-      .catch(() => import(`fm3/documents/${documentKey}.md`))
+    import(`../documents/${documentKey}.${language}.md`)
+      .catch(() => import(`../documents/${documentKey}.md`))
       .then(({ default: content }) => {
         setContent(content);
       })
       .catch(() => {
-        setContent(m?.tips.errorLoading ?? null);
+        setContent(m?.documents.errorLoading ?? null);
       })
       .then(() => {
         setLoading(false);
       });
   }, [documentKey, m, language]);
 
-  const tip = useMemo(
+  const document = useMemo(
     () => documents.find(([key]) => key === documentKey),
     [documentKey],
   );
@@ -59,7 +58,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
   useEffect(() => {
     if (loaded) {
       for (const elem of Array.from(
-        ref?.querySelectorAll('a[href^="/"]') ?? [],
+        ref?.querySelectorAll('a[href^="#"]') ?? [],
       )) {
         const a = elem as HTMLAnchorElement;
 
@@ -75,39 +74,31 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
           e.preventDefault();
 
-          navigate(new URL(href).searchParams);
+          const i = href.lastIndexOf('#');
+
+          navigate(href.slice(i + 1));
         };
       }
     }
   }, [loaded, ref]);
 
-  // useEffect(() => {
-  //   fetch(
-  //     'https://wiki.openstreetmap.org/w/api.php?action=parse&page=Main_Page&format=json&prop=text',
-  //   )
-  //     .then((response) => response.json())
-  //     .then((json) => {
-  //       setTipText(json.parse.text['*']);
-  //     });
-  // }, [tip]);
-
-  if (!tip) {
+  if (!document) {
     return null;
   }
 
-  const [, title, icon, hidden] = tip;
+  const [, title, icon] = document;
 
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          {!hidden && (
+          {/* {!hidden && (
             <>
               <FaRegLightbulb />
               {m?.mainMenu.tips}
               {'\u00A0 | \u00A0'}
             </>
-          )}
+          )} */}
           {title && icon ? (
             <>
               {icon} {title}

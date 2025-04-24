@@ -1,9 +1,17 @@
-export function navigate(searchParams: URLSearchParams) {
+export function navigate(query: string) {
   const url = new URL(document.location.href);
 
-  const sp = url.searchParams;
+  const sp = new URLSearchParams(url.hash.slice(1));
 
-  searchParams.forEach((value, key) => {
+  new URLSearchParams(query).forEach((value, key) => {
+    if (['show', 'tip', 'document'].includes(key)) {
+      sp.delete('show');
+
+      sp.delete('tip');
+
+      sp.delete('document');
+    }
+
     if (value) {
       sp.set(key, value);
     } else {
@@ -11,7 +19,7 @@ export function navigate(searchParams: URLSearchParams) {
     }
   });
 
-  url.search = sp.toString();
+  url.hash = sp.toString();
 
   const stringUrl = url.toString();
 

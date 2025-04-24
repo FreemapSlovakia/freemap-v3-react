@@ -1,29 +1,33 @@
-import { feature, Geometries, GeometryCollection, point } from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
+import { tileToGeoJSON } from '@mapbox/tilebelt';
+import bboxPolygon from '@turf/bbox-polygon';
+import { feature, point } from '@turf/helpers';
+import { BBox, Geometry } from 'geojson';
+import { CRS, Point } from 'leaflet';
+import { assert } from 'typia';
+import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
-} from 'fm3/actions/searchActions';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { LatLon } from 'fm3/types/common';
-import { assert } from 'typia';
+} from '../actions/searchActions.js';
+import { parseCoordinates } from '../coordinatesParser.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
+import { LatLon } from '../types/common.js';
 
 interface NominatimResult {
   osm_id?: number;
   osm_type?: 'node' | 'way' | 'relation';
-  geojson?: Geometries | GeometryCollection;
+  geojson?: Geometry;
   lat: string;
   lon: string;
   display_name: string;
   class: string;
   type: string;
-  extratags?: Record<string, string>;
+  extratags?: null | Record<string, string>;
 }
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
@@ -31,20 +35,116 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
   errorKey: 'search.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
     const { query } = action.payload;
-    // const {
-    //   search: { query },
-    //   // l10n: { language },
-    // } = getState();
 
     if (!query) {
       return;
     }
 
+    window._paq.push(['trackEvent', 'Search', 'search', query.slice(64)]);
+
+    // try GeoJSON
+
+    try {
+      const geojson = JSON.parse(query);
+
+      if (
+        !geojson ||
+        typeof geojson !== 'object' ||
+        typeof geojson.type !== 'string'
+      ) {
+        throw 1;
+      }
+
+      dispatch(
+        searchSetResults([
+          {
+            id: -1,
+            geojson,
+            osmType: 'relation',
+            tags: { name: 'GeoJSON' },
+            detailed: true,
+          },
+        ]),
+      );
+
+      return;
+    } catch {
+      // ignore
+    }
+
+    // try BBox
+
+    const parts = query.split(/\s*,\s*|\s+/).map((n) => parseFloat(n));
+
+    if (parts.length === 4 && parts.every((part) => !isNaN(part))) {
+      const tags = { name: 'BBox ' + parts.join(', ') };
+
+      const reproj = () => {
+        const p1 = CRS.EPSG3857.unproject(new Point(parts[0], parts[1]));
+
+        const p2 = CRS.EPSG3857.unproject(new Point(parts[2], parts[3]));
+
+        console.log(p1, p2);
+
+        return [p1.lng, p1.lat, p2.lng, p2.lat] as BBox;
+      };
+
+      dispatch(
+        searchSetResults([
+          {
+            id: -1,
+            geojson: bboxPolygon(
+              parts.some((p) => Math.abs(p) > 180) ? reproj() : (parts as BBox),
+              {
+                properties: tags,
+              },
+            ),
+            osmType: 'relation',
+            tags,
+            detailed: true,
+          },
+        ]),
+      );
+
+      return;
+    }
+
+    // try tile
+
+    const m = /^\s*(\d+)\/(\d+)\/(\d+)\s*$/.exec(query);
+
+    if (m) {
+      const poly = tileToGeoJSON([Number(m[2]), Number(m[3]), Number(m[1])]);
+
+      if (poly) {
+        const tags = {
+          name: query.trim(),
+        };
+
+        dispatch(
+          searchSetResults([
+            {
+              id: -1,
+              geojson: feature(poly, tags),
+              osmType: 'relation',
+              tags,
+              detailed: true,
+              zoom: Number(m[1]),
+            },
+          ]),
+        );
+
+        return;
+      }
+    }
+
+    // try human-readable GPS coordinates
+
     let coords: LatLon | undefined;
 
     try {
       coords = parseCoordinates(query);
-    } catch (e) {
+    } catch {
       // bad format
     }
 
@@ -68,6 +168,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       return;
     }
 
+    // do geocoding
+
     const res = await httpRequest({
       getState,
       url:
@@ -85,7 +187,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             : (await mapPromise).getBounds().toBBoxString(),
         }),
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSetQuery],
+      cancelActions: [clearMapFeatures, searchSetQuery],
     });
 
     const results = assert<NominatimResult[]>(await res.json())
@@ -101,11 +203,8 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         };
 
         return {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: item.osm_id!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           geojson: feature(item.geojson!, tags),
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           osmType: item.osm_type!,
           tags,
         };

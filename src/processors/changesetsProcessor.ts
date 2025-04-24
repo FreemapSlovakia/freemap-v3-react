@@ -2,15 +2,38 @@ import {
   Changeset,
   changesetsSet,
   changesetsSetParams,
-} from 'fm3/actions/changesetsActions';
-import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { getType } from 'typesafe-actions';
+} from '../actions/changesetsActions.js';
+import {
+  clearMapFeatures,
+  selectFeature,
+  setTool,
+} from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { toastsAdd, toastsRemove } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
+
+export const changesetsTrackProcessor: Processor = {
+  stateChangePredicate: (state) =>
+    [state.changesets.days, state.changesets.authorName].join(','),
+  handle: ({ getState }) => {
+    const { changesets } = getState();
+
+    const sp = new URLSearchParams();
+
+    if (changesets.days) {
+      sp.append('days', String(changesets.days));
+    }
+
+    if (changesets.authorName) {
+      sp.append('authorName', changesets.authorName);
+    }
+
+    window._paq.push(['trackEvent', 'Changesets', 'set', sp.toString()]);
+  },
+};
 
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
@@ -43,10 +66,10 @@ export const changesetsProcessor: Processor = {
           id: 'changeset.detail',
           messageKey: 'changesets.tooBig',
           cancelType: [
-            getType(selectFeature),
-            getType(changesetsSetParams),
-            getType(setTool),
-            getType(clearMap),
+            selectFeature.type,
+            changesetsSetParams.type,
+            setTool.type,
+            clearMapFeatures.type,
           ],
           timeout: 5000,
           style: 'warning',
@@ -81,7 +104,6 @@ export const changesetsProcessor: Processor = {
           objectToURLSearchParams({
             bbox,
             time: fromTime + (toTime0 ? `,${toTime0}` : ''),
-            // eslint-disable-next-line
             display_name: state.changesets.authorName ?? undefined,
           }),
         expectedStatus: [200, 404],
@@ -89,7 +111,7 @@ export const changesetsProcessor: Processor = {
           changesetsSetParams,
           mapRefocus,
           selectFeature,
-          clearMap,
+          clearMapFeatures,
           setTool,
         ],
       });
@@ -163,11 +185,11 @@ export const changesetsProcessor: Processor = {
             id: 'changeset.detail',
             messageKey: 'changesets.notFound',
             cancelType: [
-              getType(selectFeature),
-              getType(changesetsSetParams),
-              getType(setTool),
-              getType(clearMap),
-              getType(mapRefocus),
+              selectFeature.type,
+              changesetsSetParams.type,
+              setTool.type,
+              clearMapFeatures.type,
+              mapRefocus.type,
             ],
             timeout: 5000,
             style: 'info',

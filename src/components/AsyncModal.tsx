@@ -1,6 +1,6 @@
-import { useLazy } from 'fm3/hooks/useLazy';
-import { ShowProps, useShow } from 'fm3/hooks/useShow';
 import { ComponentType, ReactElement, useMemo } from 'react';
+import { useLazy } from '../hooks/useLazy.js';
+import { ShowProps, useShow } from '../hooks/useShow.js';
 
 type Props<T extends ComponentType<ShowProps>> = {
   show: boolean;

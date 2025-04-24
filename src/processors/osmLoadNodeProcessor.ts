@@ -1,11 +1,11 @@
 import { point } from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
-import { osmLoadNode } from 'fm3/actions/osmActions';
-import { searchSelectResult } from 'fm3/actions/searchActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { OsmNode, OsmResult } from 'fm3/types/common';
 import { assert } from 'typia';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { osmLoadNode } from '../actions/osmActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { OsmNode, OsmResult } from '../types/common.js';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,
@@ -17,7 +17,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       getState,
       url: `//api.openstreetmap.org/api/0.6/node/${id}.json`,
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSelectResult],
+      cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
     const { elements } = assert<OsmResult>(await res.json());

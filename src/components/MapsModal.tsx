@@ -1,25 +1,19 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { Form } from 'react-bootstrap';
+import { setActiveModal } from '../actions/mainActions.js';
 import {
   mapsDelete,
   mapsDisconnect,
   mapsLoad,
   mapsSave,
-} from 'fm3/actions/mapsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useOnline } from 'fm3/hooks/useOnline';
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import FormCheck from 'react-bootstrap/FormCheck';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import Table from 'react-bootstrap/Table';
+} from '../actions/mapsActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
+import { useOnline } from '../hooks/useOnline.js';
+import { useMessages } from '../l10nInjector.js';
+
+import { Button, Card, InputGroup, Modal, Table } from 'react-bootstrap';
 import {
   FaCloudDownloadAlt,
   FaFilter,
@@ -171,22 +165,22 @@ export function MapsModal({ show }: Props): ReactElement {
               )}
             </Card.Title>
 
-            <form>
+            <Form>
               {(isOwnMap || !activeMap) && (
-                <FormGroup>
-                  <FormLabel>{m?.general.name}</FormLabel>
+                <Form.Group className="mb-3">
+                  <Form.Label>{m?.general.name}</Form.Label>
 
-                  <FormControl
+                  <Form.Control
                     disabled={!online}
                     value={name}
                     onChange={(e) => setName(e.currentTarget.value)}
                   />
-                </FormGroup>
+                </Form.Group>
               )}
 
               {(isOwnMap || !activeMap) && (
-                <FormGroup>
-                  <FormLabel>{m?.maps.writers}</FormLabel>
+                <Form.Group className="mb-3">
+                  <Form.Label>{m?.maps.writers}</Form.Label>
 
                   <ReactTags
                     selected={writers?.map((id) => ({
@@ -208,14 +202,14 @@ export function MapsModal({ show }: Props): ReactElement {
                     onDelete={handleWriterDelete}
                     collapseOnSelect
                   />
-                </FormGroup>
+                </Form.Group>
               )}
 
               <div className="d-flex flex-row flex-wrap align-items-baseline">
                 {(!activeMap || activeMap?.canWrite) && (
                   <Button
                     type="button"
-                    className="mb-1 mr-1"
+                    className="mb-1 me-1"
                     onClick={() =>
                       dispatch(
                         mapsSave({
@@ -240,7 +234,7 @@ export function MapsModal({ show }: Props): ReactElement {
                   </Button>
                 )}
               </div>
-            </form>
+            </Form>
           </Card.Body>
         </Card>
 
@@ -258,13 +252,11 @@ export function MapsModal({ show }: Props): ReactElement {
                     <th>
                       <div className="form-row mb-2">
                         <InputGroup className="col-auto">
-                          <InputGroup.Prepend>
-                            <InputGroup.Text>
-                              <FaFilter />
-                            </InputGroup.Text>
-                          </InputGroup.Prepend>
+                          <InputGroup.Text>
+                            <FaFilter />
+                          </InputGroup.Text>
 
-                          <FormControl
+                          <Form.Control
                             value={filter}
                             onChange={(e) => setFilter(e.currentTarget.value)}
                           />
@@ -289,8 +281,8 @@ export function MapsModal({ show }: Props): ReactElement {
                             map === selectedMap
                               ? 'table-active'
                               : map.id === activeMap?.id
-                              ? 'table-success'
-                              : undefined
+                                ? 'table-success'
+                                : undefined
                           }
                           onClick={() =>
                             setSelected((s) =>
@@ -310,7 +302,8 @@ export function MapsModal({ show }: Props): ReactElement {
               </Table>
             </div>
 
-            <FormCheck
+            <Form.Check
+              className="mb-3"
               id="clear"
               type="checkbox"
               checked={clear}
@@ -318,7 +311,8 @@ export function MapsModal({ show }: Props): ReactElement {
               label={m?.maps.loadToEmpty}
             />
 
-            <FormCheck
+            <Form.Check
+              className="mb-3"
               id="inclPosition"
               type="checkbox"
               checked={inclPosition}
@@ -345,7 +339,7 @@ export function MapsModal({ show }: Props): ReactElement {
               </Button>
 
               <Button
-                className="ml-1"
+                className="ms-1"
                 variant="danger"
                 disabled={
                   !myUserId ||

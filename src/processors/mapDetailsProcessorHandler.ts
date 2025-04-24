@@ -1,26 +1,25 @@
+import distance from '@turf/distance';
+import { assert } from 'typia';
 import {
-  clearMap,
+  clearMapFeatures,
   deleteFeature,
   selectFeature,
   setTool,
-} from 'fm3/actions/mainActions';
-import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
-import { SearchResult, searchSetResults } from 'fm3/actions/searchActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { distance } from 'fm3/geoutils';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { OverpassElement } from 'fm3/types/common';
-import { getType } from 'typesafe-actions';
-import { assert } from 'typia';
+} from '../actions/mainActions.js';
+import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import { SearchResult, searchSetResults } from '../actions/searchActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { OverpassElement } from '../types/common.js';
 
 const cancelType = [
-  getType(clearMap),
-  getType(selectFeature),
-  getType(deleteFeature),
-  getType(setTool),
+  clearMapFeatures.type,
+  selectFeature.type,
+  deleteFeature.type,
+  setTool.type,
 
-  getType(mapDetailsSetUserSelectedPosition),
+  mapDetailsSetUserSelectedPosition.type,
 ];
 
 interface SimpleOverpassElement {
@@ -36,6 +35,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     return;
   }
 
+  window._paq.push(['trackEvent', 'MapDetails', 'search']);
+
   const kvFilter =
     '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
 
@@ -43,8 +44,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     httpRequest({
       getState,
       method: 'POST',
-      // url: 'https://overpass.freemap.sk/api/interpreter',
-      url: 'https://overpass-api.de/api/interpreter',
+      url: 'https://overpass.freemap.sk/api/interpreter',
+      // url: 'https://overpass-api.de/api/interpreter',
       headers: { 'Content-Type': 'text/plain' },
       body:
         '[out:json];(' +
@@ -74,16 +75,20 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   oRes.elements.sort((a, b) => {
     return (
       distance(
-        userSelectedLat,
-        userSelectedLon,
-        a.type === 'node' ? a.lat : a.center.lat,
-        a.type === 'node' ? a.lon : a.center.lon,
+        [userSelectedLon, userSelectedLat],
+        [
+          a.type === 'node' ? a.lon : a.center.lon,
+          a.type === 'node' ? a.lat : a.center.lat,
+        ],
+        { units: 'meters' },
       ) -
       distance(
-        userSelectedLat,
-        userSelectedLon,
-        b.type === 'node' ? b.lat : b.center.lat,
-        b.type === 'node' ? b.lon : b.center.lon,
+        [userSelectedLon, userSelectedLat],
+        [
+          b.type === 'node' ? b.lon : b.center.lon,
+          b.type === 'node' ? b.lat : b.center.lat,
+        ],
+        { units: 'meters' },
       )
     );
   });

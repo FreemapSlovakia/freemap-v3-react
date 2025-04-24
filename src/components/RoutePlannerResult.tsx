@@ -1,27 +1,7 @@
 import along from '@turf/along';
-import { Feature, lineString, Point, Properties } from '@turf/helpers';
+import { lineString } from '@turf/helpers';
 import length from '@turf/length';
-import { setTool } from 'fm3/actions/mainActions';
-import {
-  Alternative,
-  RouteAlternativeExtra,
-  routePlannerAddMidpoint,
-  routePlannerRemoveMidpoint,
-  routePlannerSetActiveAlternativeIndex,
-  routePlannerSetFinish,
-  routePlannerSetMidpoint,
-  routePlannerSetPickMode,
-  routePlannerSetStart,
-  Step,
-} from 'fm3/actions/routePlannerActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { isSpecial, transportTypeDefs } from 'fm3/transportTypeDefs';
+import { Feature, Point } from 'geojson';
 import {
   divIcon,
   DragEndEvent,
@@ -48,6 +28,27 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { setTool } from '../actions/mainActions.js';
+import {
+  Alternative,
+  RouteAlternativeExtra,
+  routePlannerAddMidpoint,
+  routePlannerRemoveMidpoint,
+  routePlannerSetActiveAlternativeIndex,
+  routePlannerSetFinish,
+  routePlannerSetMidpoint,
+  routePlannerSetPickMode,
+  routePlannerSetStart,
+  Step,
+} from '../actions/routePlannerActions.js';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { RichMarker } from '../components/RichMarker.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
+import { Messages } from '../translations/messagesInterface.js';
+import { isSpecial, transportTypeDefs } from '../transportTypeDefs.js';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
@@ -94,9 +95,9 @@ export function RoutePlannerResult(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const tRef = useRef<number>();
+  const tRef = useRef<number>(undefined);
 
-  const draggingRef = useRef<boolean>();
+  const draggingRef = useRef<boolean>(undefined);
 
   const [dragLat, setDragLat] = useState<number>();
 
@@ -220,23 +221,23 @@ export function RoutePlannerResult(): ReactElement {
 
     const len = length(line);
 
-    const milestones: Feature<Point, Properties>[] = [];
+    const milestones: Feature<Point>[] = [];
 
     if (milestonesMode === 'abs') {
       const step =
         zoom > 13
           ? 1
           : zoom > 12
-          ? 2
-          : zoom > 10
-          ? 5
-          : zoom > 9
-          ? 10
-          : zoom > 8
-          ? 20
-          : zoom > 7
-          ? 25
-          : 50;
+            ? 2
+            : zoom > 10
+              ? 5
+              : zoom > 9
+                ? 10
+                : zoom > 8
+                  ? 20
+                  : zoom > 7
+                    ? 25
+                    : 50;
 
       for (let d = step; d < len; d += step) {
         const milestone = along(line, d);
@@ -256,14 +257,14 @@ export function RoutePlannerResult(): ReactElement {
         pxLen < q
           ? pctSeq(50)
           : pxLen < q * 2
-          ? pctSeq(25)
-          : pxLen < q * 5
-          ? pctSeq(10)
-          : pxLen < q * 10
-          ? pctSeq(5)
-          : pxLen < q * 25
-          ? pctSeq(2)
-          : pctSeq(1);
+            ? pctSeq(25)
+            : pxLen < q * 5
+              ? pctSeq(10)
+              : pxLen < q * 10
+                ? pctSeq(5)
+                : pxLen < q * 25
+                  ? pctSeq(2)
+                  : pctSeq(1);
 
       for (const pct of steps) {
         const milestone = along(line, (len / 100) * pct);
@@ -324,11 +325,11 @@ export function RoutePlannerResult(): ReactElement {
       } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
       return isSpecial(transportType) && extra?.numbers ? (
-        <Tooltip direction="top" offset={[0, -36]} permanent>
+        <Tooltip direction="top" permanent>
           <div>{imhdSummary(m, language, extra)}</div>
         </Tooltip>
       ) : distance && duration ? (
-        <Tooltip direction="top" offset={[0, -36]} permanent>
+        <Tooltip direction="top" permanent>
           {/* <div>{getPointDetails2(distance, duration)}</div> */}
           <div>
             {getPointDetails(
@@ -661,7 +662,7 @@ export function RoutePlannerResult(): ReactElement {
           {!dragging && mode !== 'roundtrip' && getSummary(endPointHovering)}
 
           {!dragging && mode === 'roundtrip' && (
-            <Tooltip direction="top" offset={[0, -36]}>
+            <Tooltip direction="top">
               {getPointDetails(midpoints.length)}
             </Tooltip>
           )}
@@ -763,8 +764,8 @@ export function RoutePlannerResult(): ReactElement {
                         alt !== activeAlternativeIndex
                           ? '#868e96'
                           : !special && routeSlice.legIndex % 2
-                          ? 'hsl(211, 100%, 66%)'
-                          : 'hsl(211, 100%, 50%)',
+                            ? 'hsl(211, 100%, 66%)'
+                            : 'hsl(211, 100%, 50%)',
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={
@@ -827,11 +828,7 @@ export function RoutePlannerResult(): ReactElement {
           label={mode === 'route' ? i + 1 : waypoints[i + 1]?.waypoint_index}
           position={{ lat, lng: lon }}
         >
-          {!dragging && (
-            <Tooltip direction="top" offset={[0, -36]}>
-              {getPointDetails(i)}
-            </Tooltip>
-          )}
+          {!dragging && <Tooltip direction="top">{getPointDetails(i)}</Tooltip>}
         </RichMarker>
       )),
     [
@@ -922,8 +919,6 @@ export function RoutePlannerResult(): ReactElement {
 function reverse(c: [number, number]) {
   return [c[1], c[0]] as [number, number];
 }
-
-// TODO instead of calling dispatch(setTool('route-planner')) implement selecting feature in globalReducer
 
 // TODO do it in processor so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)

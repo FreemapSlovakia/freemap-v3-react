@@ -1,5 +1,7 @@
-import { Feature, LineString, Polygon } from '@turf/helpers';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { isAnyOf } from '@reduxjs/toolkit';
+import { Feature, LineString, Polygon } from 'geojson';
+import { assert } from 'typia';
+import { clearMapFeatures, setTool } from '../actions/mainActions.js';
 import {
   Alternative,
   Leg,
@@ -10,18 +12,15 @@ import {
   routePlannerSetStart,
   Step,
   Waypoint,
-} from 'fm3/actions/routePlannerActions';
-import { ToastAction, toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { objectToURLSearchParams } from 'fm3/stringUtils';
-import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import { hasProperty } from 'fm3/typeUtils';
-import { isActionOf } from 'typesafe-actions';
-import { assert } from 'typia';
-import { updateRouteTypes } from './routePlannerFindRouteProcessor';
+} from '../actions/routePlannerActions.js';
+import { ToastAction, toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
+import { transportTypeDefs } from '../transportTypeDefs.js';
+import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';
 
-const cancelTypes = [...updateRouteTypes, clearMap, setTool];
+const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -117,6 +116,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
+  window._paq.push([
+    'trackEvent',
+    'RoutePlanner',
+    'search',
+    new URLSearchParams({ transportType, mode }).toString(),
+  ]);
+
   const clearResultAction = routePlannerSetResult({
     timestamp: Date.now(),
     transportType,
@@ -181,8 +187,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             mode === 'roundtrip'
               ? 'round_trip'
               : midpoints.length > 0
-              ? undefined
-              : 'alternative_route',
+                ? undefined
+                : 'alternative_route',
 
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,
@@ -231,7 +237,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
         let err: string | undefined;
 
-        if (hasProperty(data, 'message')) {
+        if (data && typeof data === 'object' && 'message' in data) {
           const msg = String(data['message']);
 
           if (
@@ -401,11 +407,16 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     );
   }
 
+  const isStartOrFinishAction = isAnyOf(
+    routePlannerSetStart,
+    routePlannerSetFinish,
+  );
+
   const showHint =
     !(ttDef.api === 'gh' && mode !== 'route') &&
     !getState().routePlanner.preventHint &&
     !midpoints.length &&
-    isActionOf([routePlannerSetStart, routePlannerSetFinish], action);
+    isStartOrFinishAction(action);
 
   if (showHint) {
     const actions: ToastAction[] = [{ nameKey: 'general.ok' }];

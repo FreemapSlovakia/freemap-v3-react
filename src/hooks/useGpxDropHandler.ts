@@ -1,6 +1,6 @@
-import { Messages } from 'fm3/translations/messagesInterface';
 import { useCallback } from 'react';
 import { FileRejection } from 'react-dropzone';
+import { Messages } from '../translations/messagesInterface.js';
 
 export function useGpxDropHandler(
   onDrop: (gpx: string) => void,

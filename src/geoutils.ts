@@ -1,9 +1,7 @@
 import booleanContains from '@turf/boolean-contains';
-import { Feature, Geometries, Position, Properties } from '@turf/helpers';
+import { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 import { LatLngLiteral } from 'leaflet';
-import { LatLon } from './types/common';
-
-const PI2 = 2 * Math.PI;
+import { LatLon } from './types/common.js';
 
 export type GpsCoordStyle = 'DMS' | 'DM' | 'D';
 
@@ -59,41 +57,6 @@ export function formatGpsCoord(
       throw new Error('unknown GPS coords style');
     }
   }
-}
-
-// distance in meters
-export function distance(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number,
-): number {
-  const a =
-    0.5 -
-    Math.cos(toRad(lat2 - lat1)) / 2 +
-    (Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      (1 - Math.cos(toRad(lon2 - lon1)))) /
-      2;
-
-  return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
-}
-
-export function bearing(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number,
-): number {
-  const dLon = lon2 - lon1;
-
-  const y = Math.sin(dLon) * Math.cos(lat2);
-
-  const x =
-    Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-
-  return PI2 - ((Math.atan2(y, x) + PI2) % PI2);
 }
 
 export function toRad(deg: number): number {
@@ -189,10 +152,9 @@ export function positionsEqual(pt1: Position, pt2: Position): boolean {
   return pt1[0] === pt2[0] && pt1[1] === pt2[1];
 }
 
-// TODO so far unused
-export function mergeLines<T extends Geometries>(
+export function mergeLines<T extends Geometry>(
   features: Feature<T>[],
-  properties: Properties = {},
+  properties: GeoJsonProperties = {},
 ): void {
   restart: for (;;) {
     for (let i = 0; i < features.length - 1; i++) {
@@ -323,20 +285,9 @@ export function mergeLines<T extends Geometries>(
   }
 }
 
-export function shouldBeArea(tags?: Properties): boolean {
+export function shouldBeArea(tags?: GeoJsonProperties): boolean {
   return (
     // taken from https://wiki.openstreetmap.org/wiki/Key:area
     !!tags && tags['area'] !== 'no' && !tags['barrier'] && !tags['highway']
   );
-}
-
-export function toXY(lat: number, lon: number, zoom: number) {
-  const x = Math.floor(2 ** zoom * ((lon + 180) / 360));
-
-  const y = Math.floor(
-    2 ** zoom *
-      ((1 - Math.asinh(Math.tan((lat * Math.PI) / 180.0)) / Math.PI) / 2),
-  );
-
-  return { x, y };
 }

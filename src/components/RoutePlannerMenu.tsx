@@ -1,44 +1,23 @@
 import {
-  convertToDrawing,
-  setSelectingHomeLocation,
-} from 'fm3/actions/mainActions';
-import {
-  routePlannerSetFinish,
-  routePlannerSetFromCurrentPosition,
-  routePlannerSetIsochroneParams,
-  routePlannerSetMode,
-  routePlannerSetPickMode,
-  routePlannerSetRoundtripParams,
-  routePlannerSetStart,
-  routePlannerSetTransportType,
-  routePlannerSetWeighting,
-  routePlannerSwapEnds,
-  // routePlannerToggleItineraryVisibility,
-  routePlannerToggleElevationChart,
-  routePlannerToggleMilestones,
-  RoutingMode,
-  Weighting,
-} from 'fm3/actions/routePlannerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
-import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
-import {
   ChangeEvent,
   Children,
+  CSSProperties,
   FormEvent,
   forwardRef,
   Fragment,
   ReactElement,
+  ReactNode,
   SyntheticEvent,
   useCallback,
   useState,
 } from 'react';
-import { FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+} from 'react-bootstrap';
 import {
   FaBullseye,
   FaChartArea,
@@ -57,8 +36,35 @@ import {
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
-import { DeleteButton } from './DeleteButton';
-import { ToolMenu } from './ToolMenu';
+import {
+  convertToDrawing,
+  setSelectingHomeLocation,
+} from '../actions/mainActions.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetFromCurrentPosition,
+  routePlannerSetIsochroneParams,
+  routePlannerSetMode,
+  routePlannerSetPickMode,
+  routePlannerSetRoundtripParams,
+  routePlannerSetStart,
+  routePlannerSetTransportType,
+  routePlannerSetWeighting,
+  routePlannerSwapEnds,
+  // routePlannerToggleItineraryVisibility,
+  routePlannerToggleElevationChart,
+  routePlannerToggleMilestones,
+  RoutingMode,
+  Weighting,
+} from '../actions/routePlannerActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
+import { DeleteButton } from './DeleteButton.js';
+import { ToolMenu } from './ToolMenu.js';
 
 export default RoutePlannerMenu;
 
@@ -141,11 +147,11 @@ function TripSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.tripParameters}</legend>
 
-        <FormGroup as="form" onSubmit={handleDistanceSubmit}>
-          <FormLabel>{ghParams?.distance}</FormLabel>
+        <Form.Group as="form" onSubmit={handleDistanceSubmit}>
+          <Form.Label>{ghParams?.distance}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={distance}
               onChange={handleDistanceChange}
@@ -154,41 +160,37 @@ function TripSettings() {
               max={1000}
             />
 
-            <InputGroup.Append>
-              <InputGroup.Text>㎞</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroup.Text>㎞</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup as="form" onSubmit={handleSeedSubmit}>
-          <FormLabel className="mt-2">{ghParams?.seed}</FormLabel>
+        <Form.Group as="form" onSubmit={handleSeedSubmit}>
+          <Form.Label className="mt-2">{ghParams?.seed}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={seed}
               onChange={handleSeedChange}
             />
 
-            <InputGroup.Append>
-              <Button
-                onClick={() => {
-                  const seed = Math.floor(Math.random() * 100000);
+            <Button
+              onClick={() => {
+                const seed = Math.floor(Math.random() * 100000);
 
-                  setSeed(String(seed));
+                setSeed(String(seed));
 
-                  return dispatch(
-                    routePlannerSetRoundtripParams({
-                      seed,
-                    }),
-                  );
-                }}
-              >
-                <FaDiceThree />
-              </Button>
-            </InputGroup.Append>
+                return dispatch(
+                  routePlannerSetRoundtripParams({
+                    seed,
+                  }),
+                );
+              }}
+            >
+              <FaDiceThree />
+            </Button>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
       </fieldset>
     </>
   );
@@ -250,11 +252,11 @@ function IsochroneSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.isochroneParameters}</legend>
 
-        <FormGroup as="form" onSubmit={handleTimeLimitSubmit}>
-          <FormLabel>{ghParams?.timeLimit}</FormLabel>
+        <Form.Group as="form" onSubmit={handleTimeLimitSubmit}>
+          <Form.Label>{ghParams?.timeLimit}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={timeLimit}
               onChange={handleTimeLimitChange}
@@ -264,17 +266,15 @@ function IsochroneSettings() {
               disabled={distanceLimit !== '0'}
             />
 
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup as="form" onSubmit={handleDistanceLimitSubmit}>
-          <FormLabel className="mt-2">{ghParams?.distanceLimit}</FormLabel>
+        <Form.Group as="form" onSubmit={handleDistanceLimitSubmit}>
+          <Form.Label className="mt-2">{ghParams?.distanceLimit}</Form.Label>
 
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               value={distanceLimit === '0' ? '' : distanceLimit}
               onChange={handleDistanceLimitChange}
@@ -283,16 +283,14 @@ function IsochroneSettings() {
               max={1000}
             />
 
-            <InputGroup.Append>
-              <InputGroup.Text>㎞</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroup.Text>㎞</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
 
-        <FormGroup as="form" onSubmit={handleBucketsSubmit}>
-          <FormLabel className="mt-2">{ghParams?.buckets}</FormLabel>
+        <Form.Group as="form" onSubmit={handleBucketsSubmit}>
+          <Form.Label className="mt-2">{ghParams?.buckets}</Form.Label>
 
-          <FormControl
+          <Form.Control
             type="number"
             value={buckets}
             onChange={handleBucketsChange}
@@ -300,31 +298,40 @@ function IsochroneSettings() {
             step={1}
             max={5}
           />
-        </FormGroup>
+        </Form.Group>
       </fieldset>
     </>
   );
 }
 
-const GraphopperModeMenu = forwardRef<HTMLDivElement, any>(
-  ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+type Props = { children: ReactNode; style: CSSProperties; className: string };
+
+const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
+  ({ children, style, className }, ref) => {
     return (
-      <div
-        ref={ref}
-        style={style}
-        className={className}
-        aria-labelledby={labeledBy}
-      >
+      <div ref={ref} style={style} className={className}>
         {children}
 
         {Children.toArray(children)
-          .filter((item) => (item as any).props.active)
+          .filter(
+            (
+              item,
+            ): item is ReactElement & { props: { eventKey: string | null } } =>
+              typeof item === 'object' &&
+              item !== null &&
+              'props' in item &&
+              typeof item.props === 'object' &&
+              item.props !== null &&
+              'active' in item.props &&
+              typeof item.props.active === 'boolean' &&
+              item.props.active,
+          )
           .map((item) => {
             return (
-              <Fragment key={'m-' + (item as any).props.eventKey}>
-                {(item as any).props.eventKey === 'roundtrip' ? (
+              <Fragment key={'m-' + item.props.eventKey}>
+                {item.props.eventKey === 'roundtrip' ? (
                   <TripSettings />
-                ) : (item as any).props.eventKey === 'isochrone' ? (
+                ) : item.props.eventKey === 'isochrone' ? (
                   <IsochroneSettings />
                 ) : null}
               </Fragment>
@@ -383,6 +390,40 @@ export function RoutePlannerMenu(): ReactElement {
       ),
   );
 
+  const handleMoreSelect = (eventKey: string | null) => {
+    switch (eventKey) {
+      case 'toggle-elevation-chart':
+        dispatch(routePlannerToggleElevationChart());
+
+        break;
+
+      case 'convert-to-drawing': {
+        const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+
+        if (tolerance !== null) {
+          dispatch(
+            convertToDrawing({
+              type: 'planned-route',
+              tolerance: Number(tolerance || '0') / 100000,
+            }),
+          );
+        }
+
+        break;
+      }
+
+      case 'toggle-milestones-km':
+        dispatch(routePlannerToggleMilestones({ type: 'abs', toggle: true }));
+
+        break;
+
+      case 'toggle-milestones-%':
+        dispatch(routePlannerToggleMilestones({ type: 'rel', toggle: true }));
+
+        break;
+    }
+  };
+
   function setFromHomeLocation(
     pointType: string | null,
     e: SyntheticEvent<unknown>,
@@ -417,23 +458,6 @@ export function RoutePlannerMenu(): ReactElement {
 
   const activeTTDef = transportTypeDefs[activeTransportType];
 
-  // const stopPropagation = useCallback((e: MouseEvent) => {
-  //   e.stopPropagation();
-  // }, []);
-
-  const handleConvertToDrawing = useCallback(() => {
-    const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
-
-    if (tolerance !== null) {
-      dispatch(
-        convertToDrawing({
-          type: 'planned-route',
-          tolerance: Number(tolerance || '0') / 100000,
-        }),
-      );
-    }
-  }, [dispatch, m]);
-
   const sc = useScrollClasses('vertical');
 
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
@@ -442,7 +466,7 @@ export function RoutePlannerMenu(): ReactElement {
   return (
     <ToolMenu>
       <Dropdown
-        className="ml-1"
+        className="ms-1"
         id="transport-type"
         onSelect={(transportType) => {
           if (is<TransportType>(transportType)) {
@@ -473,7 +497,7 @@ export function RoutePlannerMenu(): ReactElement {
           )}
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
           <div className="dropdown-long" ref={sc}>
             <div />
 
@@ -498,19 +522,6 @@ export function RoutePlannerMenu(): ReactElement {
                         <FaMoneyBill />
                       )}{' '}
                       {m?.routePlanner.transportType[key] ?? '…'}
-                      {/* {type === 'bikesharing' && (
-                    <>
-                      {' '}
-                      <a
-                        href="http://routing.epsilon.sk/bikesharing.php"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={stopPropagation}
-                      >
-                        <FaInfoCircle />
-                      </a>
-                    </>
-                  )} */}
                     </Dropdown.Item>
                   ))}
               </Fragment>
@@ -521,7 +532,7 @@ export function RoutePlannerMenu(): ReactElement {
 
       {activeTTDef?.api === 'gh' && (
         <Dropdown
-          className="ml-1"
+          className="ms-1"
           onSelect={(weighting) => {
             dispatch(routePlannerSetWeighting(weighting as Weighting));
           }}
@@ -530,33 +541,33 @@ export function RoutePlannerMenu(): ReactElement {
             {m?.routePlanner.weighting[activeWeighting] ?? '…'}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
-            {(['fastest', 'short_fastest', 'shortest'] as const).map(
-              (weighting) => (
-                <Dropdown.Item
-                  eventKey={weighting}
-                  key={weighting}
-                  title={m?.routePlanner.weighting[weighting] ?? '…'}
-                  active={activeWeighting === weighting}
-                >
-                  {m?.routePlanner.weighting[weighting] ?? '…'}
-                </Dropdown.Item>
-              ),
-            )}
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            {(
+              ['fastest', 'short_fastest', 'shortest'] satisfies Weighting[]
+            ).map((weighting) => (
+              <Dropdown.Item
+                eventKey={weighting}
+                key={weighting}
+                title={m?.routePlanner.weighting[weighting] ?? '…'}
+                active={activeWeighting === weighting}
+              >
+                {m?.routePlanner.weighting[weighting] ?? '…'}
+              </Dropdown.Item>
+            ))}
           </Dropdown.Menu>
         </Dropdown>
       )}
 
       {activeTTDef?.api === 'gh' && (
         <Dropdown
-          className="ml-1"
+          className="ms-1"
           onSelect={(mode) => {
             dispatch(routePlannerSetMode(mode as RoutingMode));
           }}
           show={routePlannerDropdownOpen}
-          onToggle={(isOpen, _event, { source }) => {
+          onToggle={(nextShow, { source }) => {
             if (source !== 'select') {
-              setRoutePlannerDropdownOpen(isOpen);
+              setRoutePlannerDropdownOpen(nextShow);
             }
           }}
         >
@@ -567,28 +578,30 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu
-            popperConfig={{ strategy: 'fixed' }}
+            popperConfig={fixedPopperConfig}
             as={GraphopperModeMenu}
           >
-            {(['route', 'roundtrip', 'isochrone'] as const).map((mode) => (
-              <Dropdown.Item
-                eventKey={mode}
-                key={mode}
-                title={m?.routePlanner.mode[mode] ?? '…'}
-                active={activeMode === mode}
-              >
-                {m?.routePlanner.mode[
-                  mode === 'roundtrip' ? 'routndtrip-gh' : mode
-                ] ?? '…'}
-              </Dropdown.Item>
-            ))}
+            {(['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]).map(
+              (mode) => (
+                <Dropdown.Item
+                  eventKey={mode}
+                  key={mode}
+                  title={m?.routePlanner.mode[mode] ?? '…'}
+                  active={activeMode === mode}
+                >
+                  {m?.routePlanner.mode[
+                    mode === 'roundtrip' ? 'routndtrip-gh' : mode
+                  ] ?? '…'}
+                </Dropdown.Item>
+              ),
+            )}
           </Dropdown.Menu>
         </Dropdown>
       )}
 
       {activeTTDef?.api === 'osrm' && (
         <Dropdown
-          className="ml-1"
+          className="ms-1"
           onSelect={(mode) => {
             dispatch(routePlannerSetMode(mode as RoutingMode));
           }}
@@ -603,26 +616,36 @@ export function RoutePlannerMenu(): ReactElement {
             {m?.routePlanner.mode[activeMode] ?? '…'}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
-            {(['route', 'trip', 'roundtrip'] as const).map((mode) => (
-              <Dropdown.Item
-                eventKey={mode}
-                key={mode}
-                title={m?.routePlanner.mode[mode] ?? '…'}
-                active={activeMode === mode}
-              >
-                {m?.routePlanner.mode[mode] ?? '…'}
-              </Dropdown.Item>
-            ))}
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            {(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
+              (mode) => (
+                <Dropdown.Item
+                  eventKey={mode}
+                  key={mode}
+                  title={m?.routePlanner.mode[mode] ?? '…'}
+                  active={activeMode === mode}
+                >
+                  {m?.routePlanner.mode[mode] ?? '…'}
+                </Dropdown.Item>
+              ),
+            )}
           </Dropdown.Menu>
         </Dropdown>
       )}
 
-      <ButtonGroup className="ml-1">
+      <ButtonGroup className="ms-1">
         <Dropdown
-          as={ButtonGroup}
+          className="btn-group"
           id="set-start-dropdown"
-          onSelect={() => dispatch(routePlannerSetPickMode('start'))}
+          onSelect={(eventKey, e) => {
+            if (eventKey === 'pick') {
+              dispatch(routePlannerSetPickMode('start'));
+            } else if (eventKey === 'current') {
+              dispatch(routePlannerSetFromCurrentPosition('start'));
+            } else if (eventKey === 'home') {
+              setFromHomeLocation('start', e);
+            }
+          }}
         >
           <Dropdown.Toggle
             variant="secondary"
@@ -636,32 +659,27 @@ export function RoutePlannerMenu(): ReactElement {
             </span>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
-            <Dropdown.Item>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            <Dropdown.Item eventKey="pick">
               <FaMapMarkerAlt />
               &nbsp;{m?.routePlanner.point.pick ?? '…'}
             </Dropdown.Item>
 
-            <Dropdown.Item
-              onSelect={() => {
-                dispatch(routePlannerSetFromCurrentPosition('start'));
-              }}
-            >
+            <Dropdown.Item eventKey="current">
               <FaBullseye />
               &nbsp;{m?.routePlanner.point.current ?? '…'}
             </Dropdown.Item>
 
             <Dropdown.Item
               className="d-flex align-items-center justify-content-between"
-              eventKey="start"
-              onSelect={setFromHomeLocation}
+              eventKey="home"
             >
               <FaHome />
               &nbsp;{m?.routePlanner.point.home ?? '…'}
               <Button
                 size="sm"
                 variant="secondary"
-                className="my-n1 ml-2"
+                className="my-n1 ms-2"
                 title={m?.settings.map.homeLocation.select}
               >
                 <FaCrosshairs className="pe-none" />
@@ -673,7 +691,6 @@ export function RoutePlannerMenu(): ReactElement {
         {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
           <>
             <Button
-              as={ButtonGroup}
               variant="secondary"
               onClick={() => dispatch(routePlannerSwapEnds())}
               disabled={!canSwap}
@@ -683,10 +700,17 @@ export function RoutePlannerMenu(): ReactElement {
             </Button>
 
             <Dropdown
-              as={ButtonGroup}
-              variant="secondary"
               id="set-finish-dropdown"
-              onSelect={() => dispatch(routePlannerSetPickMode('finish'))}
+              className="btn-group"
+              onSelect={(eventKey, e) => {
+                if (eventKey === 'pick') {
+                  dispatch(routePlannerSetPickMode('finish'));
+                } else if (eventKey === 'current') {
+                  dispatch(routePlannerSetFromCurrentPosition('finish'));
+                } else if (eventKey === 'home') {
+                  setFromHomeLocation('finish', e);
+                }
+              }}
             >
               <Dropdown.Toggle
                 variant="secondary"
@@ -700,18 +724,14 @@ export function RoutePlannerMenu(): ReactElement {
                 </span>
               </Dropdown.Toggle>
 
-              <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
-                <Dropdown.Item>
+              <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                <Dropdown.Item eventKey="pick">
                   <FaMapMarkerAlt />
                   &nbsp;
                   {m?.routePlanner.point.pick ?? '…'}
                 </Dropdown.Item>
 
-                <Dropdown.Item
-                  onSelect={() =>
-                    dispatch(routePlannerSetFromCurrentPosition('finish'))
-                  }
-                >
+                <Dropdown.Item eventKey="current">
                   <FaBullseye />
                   &nbsp;
                   {m?.routePlanner.point.current ?? '…'}
@@ -719,15 +739,14 @@ export function RoutePlannerMenu(): ReactElement {
 
                 <Dropdown.Item
                   className="d-flex align-items-center justify-content-between"
-                  eventKey="finish"
-                  onSelect={setFromHomeLocation}
+                  eventKey="home"
                 >
                   <FaHome />
                   &nbsp;{m?.routePlanner.point.home ?? '…'}
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="my-n1 ml-2"
+                    className="my-n1 ms-2"
                     title={m?.settings.map.homeLocation.select}
                   >
                     <FaCrosshairs className="pe-none" />
@@ -740,45 +759,33 @@ export function RoutePlannerMenu(): ReactElement {
       </ButtonGroup>
 
       {routeFound && (
-        <Dropdown className="ml-1" id="more">
+        <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
           <Dropdown.Toggle variant="secondary">
             <FaEllipsisV />
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item
               active={elevationProfileIsVisible}
-              onSelect={() => dispatch(routePlannerToggleElevationChart())}
+              eventKey="toggle-elevation-chart"
             >
               <FaChartArea />
               &nbsp;{m?.general.elevationProfile ?? '…'}
             </Dropdown.Item>
 
-            <Dropdown.Item onSelect={handleConvertToDrawing}>
+            <Dropdown.Item eventKey="convert-to-drawing">
               <FaPencilAlt />
               &nbsp;{m?.general.convertToDrawing ?? '…'}
             </Dropdown.Item>
 
             <Dropdown.Divider />
 
-            <Dropdown.Item
-              onSelect={() =>
-                dispatch(
-                  routePlannerToggleMilestones({ type: 'abs', toggle: true }),
-                )
-              }
-            >
+            <Dropdown.Item eventKey="toggle-milestones-km">
               {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
               &nbsp;{m?.routePlanner.milestones ?? '…'} (km)
             </Dropdown.Item>
 
-            <Dropdown.Item
-              onSelect={() =>
-                dispatch(
-                  routePlannerToggleMilestones({ type: 'rel', toggle: true }),
-                )
-              }
-            >
+            <Dropdown.Item eventKey="toggle-milestones-%">
               {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
               &nbsp;{m?.routePlanner.milestones ?? '…'} (%)
             </Dropdown.Item>

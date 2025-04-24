@@ -1,20 +1,15 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { DateTime } from 'fm3/components/DateTime';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useTextInputState } from 'fm3/hooks/useTextInputState';
-import { useMessages } from 'fm3/l10nInjector';
-import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { FormEvent, ReactElement, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
+import { selectFeature } from '../../actions/mainActions.js';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { DateTime } from '../../components/DateTime.js';
+import { toDatetimeLocal } from '../../dateUtils.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useTextInputState } from '../../hooks/useTextInputState.js';
+import { useMessages } from '../../l10nInjector.js';
+import { TrackedDevice } from '../../types/trackingTypes.js';
 
 export function TrackedDeviceForm(): ReactElement {
   const m = useMessages();
@@ -97,7 +92,7 @@ export function TrackedDeviceForm(): ReactElement {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
@@ -110,98 +105,110 @@ export function TrackedDeviceForm(): ReactElement {
               )}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
-        <FormGroup className="required">
+        <Form.Group className="mb-3 required">
           {/* TODD: or ID */}
-          <FormLabel>{m?.tracking.trackedDevice.token}</FormLabel>
-          <FormControl value={id} onChange={setId} required />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.label}</FormLabel>
-          <FormControl value={label} onChange={setLabel} />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.color}</FormLabel>
+          <Form.Label>{m?.tracking.trackedDevice.token}</Form.Label>
+
+          <Form.Control value={id} onChange={setId} required />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.label}</Form.Label>
+          <Form.Control value={label} onChange={setLabel} />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.color}</Form.Label>
           <InputGroup>
-            <FormControl type="color" value={color} onChange={setColor} />
+            <Form.Control type="color" value={color} onChange={setColor} />
           </InputGroup>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.width}</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.width}</Form.Label>
+
           <InputGroup>
-            <FormControl
+            <Form.Control
               value={width}
               onChange={setWidth}
               type="number"
               min="1"
             />
-            <InputGroup.Append>
-              <InputGroup.Text>px</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroup.Text>px</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.fromTime}</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.fromTime}</Form.Label>
+
           <DateTime value={fromTime} onChange={setFromTime} />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.maxAge}</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.maxAge}</Form.Label>
+
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.maxCount}</FormLabel>
-          <FormControl
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.maxCount}</Form.Label>
+
+          <Form.Control
             type="number"
             min="0"
             step="1"
             value={maxCount}
             onChange={setMaxCount}
           />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.splitDistance}</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.splitDistance}</Form.Label>
+
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
               value={splitDistance}
               onChange={setSplitDistance}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.trackedDevice.splitDuration}</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.trackedDevice.splitDuration}</Form.Label>
+
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
               value={splitDuration}
               onChange={setSplitDuration}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
       </Modal.Body>
+
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
+
         <Button
           variant="dark"
           type="button"
@@ -212,6 +219,6 @@ export function TrackedDeviceForm(): ReactElement {
           {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
-    </form>
+    </Form>
   );
 }

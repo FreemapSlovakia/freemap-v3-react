@@ -1,20 +1,28 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import {
-  authLoginWithFacebook,
-  authLoginWithGoogle,
-  authLoginWithOsm,
   authLogout,
   authSetUser,
-} from 'fm3/actions/authActions';
+  authWithFacebook,
+  authWithGarmin,
+  authWithGoogle,
+  authWithOsm,
+} from '../actions/authActions.js';
 import {
+  drawingLineAddPoint,
+  drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineJoinFinish,
   drawingLineSetLines,
   drawingLineStopDrawing,
-} from 'fm3/actions/drawingLineActions';
+} from '../actions/drawingLineActions.js';
+import {
+  drawingPointAdd,
+  drawingPointChangeProperties,
+} from '../actions/drawingPointActions.js';
 import {
   applyCookieConsent,
   applySettings,
-  clearMap,
+  clearMapFeatures,
   convertToDrawing,
   deleteFeature,
   documentShow,
@@ -36,10 +44,9 @@ import {
   stopProgress,
   toggleLocate,
   Tool,
-} from 'fm3/actions/mainActions';
-import { DocumentKey } from 'fm3/documents';
-import { LatLon } from 'fm3/types/common';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/mainActions.js';
+import { DocumentKey } from '../documents/index.js';
+import { LatLon } from '../types/common.js';
 
 interface Location extends LatLon {
   accuracy: number;
@@ -89,181 +96,182 @@ export const mainInitialState: MainState = {
   drawingRecentColors: [],
 };
 
-export const mainReducer = createReducer<MainState, RootAction>(
-  mainInitialState,
-)
-  .handleAction(setTool, (state, action) => {
-    return window.fmEmbedded
-      ? state
-      : {
-          ...state,
-          tool: action.payload,
-          selection:
-            action.payload === state.tool || action.payload === null
-              ? state.selection
-              : null,
+export const mainReducer = createReducer(mainInitialState, (builder) => {
+  builder
+    .addCase(setTool, (state, action) => {
+      if (!window.fmEmbedded) {
+        state.tool = action.payload;
+
+        state.selection =
+          action.payload === state.tool || action.payload === null
+            ? state.selection
+            : null;
+      }
+    })
+    .addCase(drawingLineStopDrawing, (state) => {
+      state.tool = null;
+    })
+    .addCase(clearMapFeatures, (state) => {
+      state.selection = null;
+    })
+    .addCase(authSetUser, (state, action) => {
+      if (action.payload?.lat != null && action.payload?.lon != null) {
+        state.homeLocation = {
+          lat: action.payload?.lat,
+          lon: action.payload?.lon,
         };
-  })
-  .handleAction(drawingLineStopDrawing, (state) => {
-    return {
-      ...state,
-      tool: null,
-    };
-  })
-  .handleAction(clearMap, (state) => {
-    return {
-      ...state,
-      selection: null,
-    };
-  })
-  .handleAction(authSetUser, (state, action) => {
-    const p = action.payload;
+      }
+    })
+    .addCase(authLogout, (state) => ({ ...state, homeLocation: null }))
+    .addCase(setActiveModal, (state, action) => {
+      state.activeModal = action.payload;
 
-    return {
-      ...state,
-      homeLocation: !p
-        ? state.homeLocation
-        : p.lat && p.lon
-        ? { lat: p.lat, lon: p.lon }
-        : null,
-    };
-  })
-  .handleAction(authLogout, (state) => ({ ...state, homeLocation: null }))
-  .handleAction(setActiveModal, (state, action) => ({
-    ...state,
-    activeModal: action.payload,
-    removeAdsOnLogin: action.payload ? state.removeAdsOnLogin : false,
-  }))
-  .handleAction(authSetUser, (state, action) => ({
-    ...state,
-    homeLocation:
-      action.payload?.lat != null && action.payload?.lon != null
-        ? { lat: action.payload?.lat, lon: action.payload?.lon }
-        : state.homeLocation,
-  }))
-  .handleAction(startProgress, (state, action) => ({
-    ...state,
-    progress: [...state.progress, action.payload],
-  }))
-  .handleAction(stopProgress, (state, action) => ({
-    ...state,
-    progress: state.progress.filter((pid) => pid !== action.payload),
-  }))
-  .handleAction(setLocation, (state, action) => ({
-    ...state,
-    location: {
-      lat: action.payload.lat,
-      lon: action.payload.lon,
-      accuracy: action.payload.accuracy,
-    },
-  }))
-  .handleAction(toggleLocate, (state, action) => ({
-    ...state,
-    locate: action.payload ?? !state.locate,
-    location: null,
-  }))
-  .handleAction(setSelectingHomeLocation, (state, action) => ({
-    ...state,
-    selectingHomeLocation:
-      action.payload === true ? state.homeLocation : action.payload,
-  }))
-  .handleAction(saveHomeLocation, (state) => ({
-    ...state,
-    selectingHomeLocation: false,
-    homeLocation: state.selectingHomeLocation || null,
-  }))
-  .handleAction(documentShow, (state) => ({
-    ...state,
-    activeModal: 'tips',
-  }))
-  .handleAction(enableUpdatingUrl, (state) => ({
-    ...state,
-    urlUpdatingEnabled: true,
-  }))
-  .handleAction(setErrorTicketId, (state, action) => ({
-    ...state,
-    errorTicketId: action.payload,
-  }))
-  .handleAction(setEmbedFeatures, (state, action) => ({
-    ...state,
-    embedFeatures: action.payload,
-  }))
-  .handleAction(drawingLineContinue, (state, action) => ({
-    ...state,
-    selection: { type: 'draw-line-poly', id: action.payload.lineIndex },
-  }))
-  .handleAction(selectFeature, (state, action) =>
-    window.fmEmbedded
-      ? state
-      : {
-          ...state,
-          selection: action.payload,
-          tool:
-            state.tool === 'objects' ||
-            state.tool === 'changesets' ||
-            state.tool === 'track-viewer' ||
-            (action.payload === null && state.tool !== 'route-planner')
-              ? /* && state.tool !== 'track-viewer' */
-                state.tool
-              : null,
-        },
-  )
-  .handleAction(convertToDrawing, (state) => ({
-    ...state,
-    tool: null,
-  }))
-  .handleAction(applyCookieConsent, (state) => ({
-    ...state,
-    cookieConsentResult: state.analyticCookiesAllowed,
-  }))
-  .handleAction(setAnalyticCookiesAllowed, (state, action) => ({
-    ...state,
-    analyticCookiesAllowed: action.payload,
-  }))
-  .handleAction(removeAdsOnLogin, (state) => ({
-    ...state,
-    removeAdsOnLogin: true,
-  }))
-  .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
-    ...state,
-    selection:
-      state.selection?.type === 'line-point'
-        ? { type: 'draw-line-poly', id: state.selection.lineIndex }
-        : null,
-  }))
-  .handleAction(
-    [authLoginWithFacebook, authLoginWithGoogle, authLoginWithOsm],
-    (state) => ({
-      ...state,
-      activeModal: null,
-    }),
-  )
-  .handleAction(documentShow, (state, action) => {
-    return {
-      ...state,
-      documentKey: action.payload === null ? null : action.payload,
-      activeModal: action.payload === null ? state.activeModal : null,
-    };
-  })
-  .handleAction(hideInfoBar, (state, action) => {
-    return {
-      ...state,
-      hiddenInfoBars: {
-        ...state.hiddenInfoBars,
-        [action.payload.key]: action.payload.ts,
+      if (!action.payload) {
+        state.removeAdsOnLogin = false;
+      }
+    })
+    .addCase(startProgress, (state, action) => {
+      state.progress.push(action.payload);
+    })
+    .addCase(stopProgress, (state, action) => {
+      state.progress = state.progress.filter((pid) => pid !== action.payload);
+    })
+    .addCase(setLocation, (state, action) => {
+      state.location = {
+        lat: action.payload.lat,
+        lon: action.payload.lon,
+        accuracy: action.payload.accuracy,
+      };
+    })
+    .addCase(toggleLocate, (state, action) => {
+      state.locate = action.payload ?? !state.locate;
+
+      state.location = null;
+    })
+    .addCase(setSelectingHomeLocation, (state, action) => {
+      state.selectingHomeLocation =
+        action.payload === true ? state.homeLocation : action.payload;
+    })
+    .addCase(saveHomeLocation, (state) => {
+      state.selectingHomeLocation = false;
+
+      state.homeLocation = state.selectingHomeLocation || null;
+    })
+    .addCase(documentShow, (state, action) => {
+      state.documentKey = action.payload;
+
+      if (action.payload) {
+        state.activeModal = null;
+      }
+    })
+    .addCase(enableUpdatingUrl, (state) => {
+      state.urlUpdatingEnabled = true;
+    })
+    .addCase(setErrorTicketId, (state, action) => {
+      state.errorTicketId = action.payload;
+    })
+    .addCase(setEmbedFeatures, (state, action) => {
+      state.embedFeatures = action.payload;
+    })
+    .addCase(drawingLineContinue, (state, action) => {
+      state.selection = {
+        type: 'draw-line-poly',
+        id: action.payload.lineIndex,
+      };
+    })
+    .addCase(selectFeature, (state, action) => {
+      if (!window.fmEmbedded) {
+        state.selection = action.payload;
+
+        state.tool =
+          state.tool === 'objects' ||
+          state.tool === 'changesets' ||
+          state.tool === 'track-viewer' ||
+          (action.payload === null && state.tool !== 'route-planner')
+            ? /* && state.tool !== 'track-viewer' */
+              state.tool
+            : null;
+      }
+    })
+    .addCase(convertToDrawing, (state) => {
+      state.tool = null;
+    })
+    .addCase(drawingLineJoinFinish, (state, { payload }) => {
+      state.selection = payload.selection;
+    })
+    .addCase(drawingLineAddPoint, (state, { payload }) => {
+      state.selection = {
+        type: 'draw-line-poly',
+        id: payload.id,
+      };
+    })
+    .addCase(drawingPointAdd, (state, { payload }) => {
+      state.selection = {
+        type: 'draw-points',
+        id: payload.id,
+      };
+    })
+    .addCase(applyCookieConsent, (state) => {
+      state.cookieConsentResult = state.analyticCookiesAllowed;
+    })
+    .addCase(setAnalyticCookiesAllowed, (state, action) => {
+      state.analyticCookiesAllowed = action.payload;
+    })
+    .addCase(removeAdsOnLogin, (state) => {
+      state.removeAdsOnLogin = true;
+    })
+    .addCase(drawingLineSetLines, (state) => {
+      state.selection =
+        state.selection?.type === 'line-point'
+          ? { type: 'draw-line-poly', id: state.selection.lineIndex }
+          : null;
+    })
+    .addCase(hideInfoBar, (state, action) => {
+      state.hiddenInfoBars[action.payload.key] = action.payload.ts;
+    })
+    .addCase(applySettings, (state, action) => {
+      const newState = { ...state };
+
+      const color = action.payload.drawingColor;
+
+      if (action.payload.drawingColor) {
+        newState.drawingColor = action.payload.drawingColor;
+      }
+
+      if (action.payload.drawingWidth) {
+        newState.drawingWidth = action.payload.drawingWidth;
+      }
+
+      return color ? updateRecentDrawingColors(newState, color) : newState;
+    })
+    .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
+      state.selection =
+        state.selection?.type === 'line-point'
+          ? { type: 'draw-line-poly', id: state.selection.lineIndex }
+          : null;
+    })
+    .addMatcher(
+      isAnyOf(authWithFacebook, authWithGoogle, authWithOsm, authWithGarmin),
+      (state) => {
+        state.activeModal = null; // state.activeModal === 'login' ? null : state.activeModal
       },
-    };
-  })
-  .handleAction(applySettings, (state, action) => {
-    const newState = { ...state };
+    )
+    .addMatcher(
+      isAnyOf(drawingLineChangeProperties, drawingPointChangeProperties),
+      (state, { payload }) => {
+        const color = payload.properties.color;
 
-    if (action.payload.drawingColor) {
-      newState.drawingColor = action.payload.drawingColor;
-    }
+        return color ? updateRecentDrawingColors(state, color) : state;
+      },
+    );
+});
 
-    if (action.payload.drawingWidth) {
-      newState.drawingWidth = action.payload.drawingWidth;
-    }
+function updateRecentDrawingColors(state: MainState, drawingColor: string) {
+  state.drawingRecentColors = state.drawingRecentColors.filter(
+    (color) => color !== drawingColor,
+  );
 
-    return newState;
-  });
+  state.drawingRecentColors.unshift(drawingColor);
+
+  state.drawingRecentColors.splice(12, Infinity);
+}

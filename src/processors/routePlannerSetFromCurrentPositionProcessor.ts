@@ -2,9 +2,9 @@ import {
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetStart,
-} from 'fm3/actions/routePlannerActions';
-import { getCurrentPosition } from 'fm3/geoutils';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/routePlannerActions.js';
+import { getCurrentPosition } from '../geoutils.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const routePlannerSetFromCurrentPositionProcessor: Processor<
   typeof routePlannerSetFromCurrentPosition

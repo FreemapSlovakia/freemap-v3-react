@@ -1,18 +1,33 @@
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { OverpassResult } from 'fm3/types/common';
-import { getType } from 'typesafe-actions';
 import { assert } from 'typia';
+import { clearMapFeatures, selectFeature } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import {
+  objectsSetFilter,
+  objectsSetResult,
+} from '../actions/objectsActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { OverpassResult } from '../types/common.js';
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;
 
 const minZoom = 10;
+
+export const objectsChangePredicateProcessor: Processor = {
+  actionCreator: objectsSetFilter,
+  stateChangePredicate: (state) => state.objects.active.join('\n'),
+  handle: ({ getState }) => {
+    window._paq.push([
+      'trackEvent',
+      'Objects',
+      'search',
+      getState().objects.active.join('|'),
+    ]);
+  },
+};
 
 export const objectsFetchProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -51,9 +66,9 @@ export const objectsFetchProcessor: Processor = {
               },
             ],
             cancelType: [
-              getType(clearMap),
-              getType(mapRefocus),
-              getType(objectsSetFilter),
+              clearMapFeatures.type,
+              mapRefocus.type,
+              objectsSetFilter.type,
             ],
           }),
         );
@@ -79,8 +94,8 @@ export const objectsFetchProcessor: Processor = {
                 key.startsWith('!')
                   ? `[!"${key.slice(1)}"]`
                   : value
-                  ? `["${key}"="${value}"]`
-                  : `["${key}"]`,
+                    ? `["${key}"="${value}"]`
+                    : `["${key}"]`,
               )
               .join('') +
             bb +
@@ -96,18 +111,23 @@ export const objectsFetchProcessor: Processor = {
       // url: 'https://overpass-api.de/api/interpreter',
       body: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
-      cancelActions: [objectsSetFilter, clearMap, selectFeature, mapRefocus],
+      cancelActions: [
+        objectsSetFilter,
+        clearMapFeatures,
+        selectFeature,
+        mapRefocus,
+      ],
     });
 
-    const result = assert<OverpassResult>(await res.json()).elements.map(
-      (e) => ({
+    const result = assert<OverpassResult>(await res.json())
+      .elements.filter((e) => e.tags)
+      .map((e) => ({
         id: e.id,
         lat: e.type === 'node' ? e.lat : e.center.lat,
         lon: e.type === 'node' ? e.lon : e.center.lon,
-        tags: e.tags,
+        tags: e.tags ?? {},
         type: e.type,
-      }),
-    );
+      }));
 
     if (result.length >= limit) {
       dispatch(
@@ -119,9 +139,9 @@ export const objectsFetchProcessor: Processor = {
           },
           style: 'warning',
           cancelType: [
-            getType(clearMap),
-            getType(mapRefocus),
-            getType(objectsSetFilter),
+            clearMapFeatures.type,
+            mapRefocus.type,
+            objectsSetFilter.type,
           ],
         }),
       );

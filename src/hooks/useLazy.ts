@@ -1,7 +1,7 @@
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { startProgress, stopProgress } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
 
 export function useLazy<T>(
   factory: () => Promise<{ default: T }>,

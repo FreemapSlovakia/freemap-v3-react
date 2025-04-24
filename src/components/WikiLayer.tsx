@@ -1,10 +1,3 @@
-import {
-  wikiLoadPreview,
-  WikiPreview,
-  wikiSetPreview,
-} from 'fm3/actions/wikiActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { Icon } from 'leaflet';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
@@ -12,6 +5,14 @@ import { createRoot } from 'react-dom/client';
 import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { assertGuard } from 'typia';
+import {
+  wikiLoadPreview,
+  WikiPreview,
+  wikiSetPreview,
+} from '../actions/wikiActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 class WikiIcon extends Icon {
   static template: ChildNode | undefined;
@@ -21,7 +22,11 @@ class WikiIcon extends Icon {
 
     const div = oldIcon && reuse ? oldIcon : document.createElement('div');
 
-    (this as any)._setIconStyles(div, 'icon');
+    assertGuard<{ _setIconStyles: (el: HTMLElement, str: string) => void }>(
+      this,
+    );
+
+    this._setIconStyles(div, 'icon');
 
     if (WikiIcon.template) {
       div.appendChild(WikiIcon.template.cloneNode());
@@ -37,7 +42,7 @@ class WikiIcon extends Icon {
   }
 
   createShadow(oldIcon?: HTMLElement) {
-    return oldIcon || (null as any as HTMLElement);
+    return oldIcon ?? document.createElement('div');
   }
 }
 

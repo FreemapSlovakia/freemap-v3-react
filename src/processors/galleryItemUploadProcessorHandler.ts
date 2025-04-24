@@ -3,12 +3,12 @@ import {
   gallerySetItemError,
   gallerySetLayerDirty,
   galleryUpload,
-} from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/galleryActions.js';
+import { setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { parseCoordinates } from '../coordinatesParser.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   const { items, uploadingId } = getState().gallery;

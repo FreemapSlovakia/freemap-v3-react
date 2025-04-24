@@ -1,4 +1,4 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import {
   galleryAddItem,
   galleryAddTag,
@@ -32,18 +32,16 @@ import {
   galleryUpload,
   GalleryUser,
   Picture,
-} from 'fm3/actions/galleryActions';
-import { l10nSetLanguage } from 'fm3/actions/l10nActions';
-import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { latLonToString } from 'fm3/geoutils';
-import { LatLon } from 'fm3/types/common';
-import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/galleryActions.js';
+import { l10nSetLanguage } from '../actions/l10nActions.js';
+import { clearMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
+import { PictureModel } from '../components/gallery/GalleryEditForm.js';
+import { parseCoordinates } from '../coordinatesParser.js';
+import { toDatetimeLocal } from '../dateUtils.js';
+import { latLonToString } from '../geoutils.js';
+import { LatLon } from '../types/common.js';
 
 export interface GalleryState {
   imageIds: number[] | null;
@@ -103,41 +101,37 @@ export const galleryInitialState: GalleryState = {
   recentTags: [],
 };
 
-export const galleryReducer = createReducer<GalleryState, RootAction>(
-  galleryInitialState,
-)
-  .handleAction(mapRefocus, (state, action) => ({
-    ...state,
-    filter:
-      action.payload.overlays && !action.payload.overlays.includes('I')
-        ? galleryInitialState.filter
-        : state.filter,
-  }))
-  .handleAction(clearMap, (state) => ({
-    ...galleryInitialState,
-    dirtySeq: state.dirtySeq,
-    colorizeBy: state.colorizeBy,
-  }))
-  .handleAction(gallerySetImageIds, (state, action) => ({
-    ...state,
-    imageIds: action.payload,
-  }))
-  .handleAction(galleryClear, (state) => ({
-    ...state,
-    imageIds: null,
-    image: null,
-    activeImageId: null,
-    editModel: null,
-  }))
-  .handleAction(gallerySetImage, (state, action) => ({
-    ...state,
-    image: action.payload,
-    editModel: null,
-  }))
-  .handleAction(galleryRequestImage, (state, action) =>
-    produce(state, (draft) => {
+export const galleryReducer = createReducer(galleryInitialState, (builder) =>
+  builder
+    .addCase(mapRefocus, (state, action) => {
+      if (action.payload.overlays && !action.payload.overlays.includes('I')) {
+        state.filter = galleryInitialState.filter;
+      }
+    })
+    .addCase(clearMapFeatures, (state) => ({
+      ...galleryInitialState,
+      dirtySeq: state.dirtySeq,
+      colorizeBy: state.colorizeBy,
+    }))
+    .addCase(gallerySetImageIds, (state, action) => ({
+      ...state,
+      imageIds: action.payload,
+    }))
+    .addCase(galleryClear, (state) => ({
+      ...state,
+      imageIds: null,
+      image: null,
+      activeImageId: null,
+      editModel: null,
+    }))
+    .addCase(gallerySetImage, (state, action) => ({
+      ...state,
+      image: action.payload,
+      editModel: null,
+    }))
+    .addCase(galleryRequestImage, (state, action) => {
       const set = (activeImageId: number) => {
-        Object.assign(draft, {
+        Object.assign(state, {
           activeImageId,
           comment: '',
           editModel: null,
@@ -145,7 +139,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       };
 
       if (action.payload === 'next') {
-        const { imageIds, activeImageId } = draft;
+        const { imageIds, activeImageId } = state;
 
         if (imageIds) {
           const index = imageIds.findIndex((id) => id === activeImageId);
@@ -155,7 +149,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
           }
         }
       } else if (action.payload === 'prev') {
-        const { imageIds, activeImageId } = draft;
+        const { imageIds, activeImageId } = state;
 
         if (imageIds) {
           const index = imageIds.findIndex((id) => id === activeImageId);
@@ -167,137 +161,112 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       } else {
         set(action.payload);
       }
-    }),
-  )
-  .handleAction(galleryAddItem, (state, action) => ({
-    ...state,
-    items: [...state.items, action.payload],
-  }))
-  .handleAction(galleryRemoveItem, (state, action) => ({
-    ...state,
-    items: state.items.filter(({ id }) => action.payload !== id),
-  }))
-  .handleAction(galleryMergeItem, (state, action) => ({
-    ...state,
-    items: state.items.map((item) =>
-      item.id === action.payload.id ? { ...item, ...action.payload } : item,
-    ),
-  }))
-  .handleAction(gallerySetItemError, (state, action) => ({
-    ...state,
-    items: state.items.map((item) =>
-      item.id === action.payload.id
-        ? { ...item, errors: [action.payload.error] }
-        : item,
-    ),
-  }))
-  .handleAction(gallerySetPickingPosition, (state, action) => ({
-    ...state,
-    pickingPosition: action.payload,
-  }))
-  .handleAction(galleryConfirmPickedPosition, (state) => {
-    const s = {
-      ...state,
-      pickingPositionForId: null,
-      pickingPosition: null,
-    };
+    })
+    .addCase(galleryAddItem, (state, action) => {
+      state.items.push(action.payload);
+    })
+    .addCase(galleryRemoveItem, (state, action) => {
+      state.items = state.items.filter(({ id }) => action.payload !== id);
+    })
+    .addCase(galleryMergeItem, (state, action) => {
+      state.items = state.items.map((item) =>
+        item.id === action.payload.id ? { ...item, ...action.payload } : item,
+      );
+    })
+    .addCase(gallerySetItemError, (state, action) => {
+      const item = state.items.find((item) => item.id === action.payload.id);
 
-    if (state.pickingPositionForId === -1) {
-      if (!state.editModel) {
-        throw new Error('editModel is null');
+      if (item) {
+        item.errors = [action.payload.error];
+      }
+    })
+    .addCase(gallerySetPickingPosition, (state, action) => {
+      state.pickingPosition = action.payload;
+    })
+    .addCase(galleryConfirmPickedPosition, (state) => {
+      if (state.pickingPositionForId === -1) {
+        if (!state.editModel) {
+          throw new Error('editModel is null');
+        }
+
+        state.editModel.dirtyPosition = state.pickingPosition
+          ? latLonToString(state.pickingPosition, state.language)
+          : state.editModel.dirtyPosition; // TODO language
+      } else {
+        const item = state.items.find(
+          (item) => item.id === state.pickingPositionForId,
+        );
+
+        if (item) {
+          item.dirtyPosition = state.pickingPosition
+            ? latLonToString(state.pickingPosition, state.language)
+            : '';
+        }
       }
 
-      s.editModel = {
-        ...state.editModel,
-        dirtyPosition: state.pickingPosition
-          ? latLonToString(state.pickingPosition, state.language)
-          : state.editModel.dirtyPosition, // TODO language
-      };
-    } else {
-      s.items = state.items.map((item) =>
-        item.id === state.pickingPositionForId
-          ? {
-              ...item,
-              position: state.pickingPosition,
-              dirtyPosition: state.pickingPosition
-                ? latLonToString(state.pickingPosition, state.language)
-                : '',
-            }
-          : item,
-      );
-    }
+      state.pickingPositionForId = null;
 
-    return s;
-  })
-  .handleAction(gallerySetItemForPositionPicking, (state, action) => {
-    let x: GalleryItem | undefined;
+      state.pickingPosition = null;
+    })
+    .addCase(gallerySetItemForPositionPicking, (state, action) => {
+      state.pickingPositionForId = action.payload;
 
-    return {
-      ...state,
-      pickingPositionForId: action.payload,
-      pickingPosition:
+      let x;
+
+      state.pickingPosition =
         action.payload === -1
           ? state.editModel
             ? safeParseCoordinates(state.editModel.dirtyPosition)
             : null
           : typeof action.payload === 'number'
-          ? (x = state.items.find(({ id }) => id === action.payload))
-            ? safeParseCoordinates(x.dirtyPosition)
-            : null
-          : null,
-    };
-  })
-  .handleAction(galleryUpload, (state) => {
-    const items =
-      state.uploadingId === null
-        ? state.items.map((item) => ({ ...item, errors: getErrors(item) }))
-        : state.items;
+            ? // eslint-disable-next-line no-cond-assign
+              (x = state.items.find(({ id }) => id === action.payload))
+              ? safeParseCoordinates(x.dirtyPosition)
+              : null
+            : null;
+    })
+    .addCase(galleryUpload, (state) => {
+      const items =
+        state.uploadingId === null
+          ? state.items.map((item) => ({ ...item, errors: getErrors(item) }))
+          : state.items;
 
-    const next = items.find((item) => !item.errors || item.errors.length === 0);
+      const next = items.find(
+        (item) => !item.errors || item.errors.length === 0,
+      );
 
-    return {
-      ...state,
-      items,
-      uploadingId: next ? next.id : null,
-    };
-  })
-  .handleAction(gallerySetTags, (state, action) => ({
-    ...state,
-    tags: action.payload,
-  }))
-  .handleAction(gallerySetUsers, (state, action) => ({
-    ...state,
-    users: action.payload,
-  }))
-  .handleAction(gallerySetLayerDirty, (state) => ({
-    ...state,
-    dirtySeq: state.dirtySeq + 1,
-  }))
-  .handleAction(gallerySetComment, (state, action) => ({
-    ...state,
-    comment: action.payload,
-  }))
-  .handleAction(gallerySetFilter, (state, action) => ({
-    ...state,
-    filter: action.payload,
-  }))
-  .handleAction(setActiveModal, (state, action) => ({
-    ...state,
-    ...(action.payload === null
-      ? {
-          items: [],
-          pickingPositionForId: null,
-        }
-      : {}),
-  }))
-  .handleAction(galleryEditPicture, (state) => {
-    const position = state.image
-      ? { lat: state.image.lat, lon: state.image.lon }
-      : null;
+      state.items = items;
 
-    return {
-      ...state,
-      editModel: state.editModel
+      state.uploadingId = next ? next.id : null;
+    })
+    .addCase(gallerySetTags, (state, action) => {
+      state.tags = action.payload;
+    })
+    .addCase(gallerySetUsers, (state, action) => {
+      state.users = action.payload;
+    })
+    .addCase(gallerySetLayerDirty, (state) => {
+      state.dirtySeq = state.dirtySeq + 1;
+    })
+    .addCase(gallerySetComment, (state, action) => {
+      state.comment = action.payload;
+    })
+    .addCase(gallerySetFilter, (state, action) => {
+      state.filter = action.payload;
+    })
+    .addCase(setActiveModal, (state, action) => {
+      if (action.payload === null) {
+        state.items = [];
+
+        state.pickingPositionForId = null;
+      }
+    })
+    .addCase(galleryEditPicture, (state) => {
+      const position = state.image
+        ? { lat: state.image.lat, lon: state.image.lon }
+        : null;
+
+      state.editModel = state.editModel
         ? null
         : {
             title: state.image?.title ?? '',
@@ -305,66 +274,54 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
             takenAt: !state.image
               ? ''
               : state.image.takenAt
-              ? toDatetimeLocal(state.image.takenAt)
-              : '',
+                ? toDatetimeLocal(state.image.takenAt)
+                : '',
             tags: state.image ? [...state.image.tags] : [],
-            position,
             dirtyPosition: position
               ? latLonToString(position, state.language)
               : '',
-          },
-    };
-  })
-  .handleAction(gallerySetEditModel, (state, action) => ({
-    ...state,
-    editModel: action.payload,
-  }))
-  .handleAction(galleryShowOnTheMap, (state) => ({
-    ...state,
-    showPosition: true,
-  }))
-  .handleAction(galleryCancelShowOnTheMap, (state) => ({
-    ...state,
-    showPosition: false,
-  }))
-  .handleAction(galleryToggleShowPreview, (state) => ({
-    ...state,
-    showPreview: !state.showPreview,
-  }))
-  .handleAction(l10nSetLanguage, (state, action) => ({
-    ...state,
-    language: action.payload,
-  }))
-  .handleAction(gallerySavePicture, (state) => ({
-    ...state,
-    saveErrors: state.editModel ? getErrors(state.editModel) : [],
-  }))
-  .handleAction(galleryColorizeBy, (state, action) => ({
-    ...state,
-    colorizeBy: action.payload,
-  }))
-  .handleAction([galleryAddTag, galleryQuickAddTag], (state, { payload }) => {
-    const recentTags = [...state.recentTags];
+          };
+    })
+    .addCase(gallerySetEditModel, (state, action) => {
+      state.editModel = action.payload;
+    })
+    .addCase(galleryShowOnTheMap, (state) => {
+      state.showPosition = true;
+    })
+    .addCase(galleryCancelShowOnTheMap, (state) => {
+      state.showPosition = false;
+    })
+    .addCase(galleryToggleShowPreview, (state) => {
+      state.showPreview = !state.showPreview;
+    })
+    .addCase(l10nSetLanguage, (state, action) => {
+      state.language = action.payload;
+    })
+    .addCase(gallerySavePicture, (state) => {
+      state.saveErrors = state.editModel ? getErrors(state.editModel) : [];
+    })
+    .addCase(galleryColorizeBy, (state, action) => {
+      state.colorizeBy = action.payload;
+    })
+    .addCase(mapsLoaded, (state, action) => {
+      state.filter =
+        action.payload.data.galleryFilter ?? galleryInitialState.filter;
+    })
+    .addMatcher(
+      isAnyOf(galleryAddTag, galleryQuickAddTag),
+      (state, { payload }) => {
+        const i = state.recentTags.indexOf(payload);
 
-    const i = recentTags.indexOf(payload);
+        if (i > -1) {
+          state.recentTags.splice(i, 1);
+        }
 
-    if (i > -1) {
-      recentTags.splice(i, 1);
-    }
+        state.recentTags.unshift(payload);
 
-    recentTags.unshift(payload);
-
-    return {
-      ...state,
-      recentTags: recentTags.slice(0, 8),
-    };
-  })
-  .handleAction(mapsLoaded, (state, action) => {
-    return {
-      ...state,
-      filter: action.payload.data.galleryFilter ?? galleryInitialState.filter,
-    };
-  });
+        state.recentTags.splice(8);
+      },
+    ),
+);
 
 function getErrors(item: GalleryItem | PictureModel) {
   const errors: string[] = [];
@@ -374,7 +331,7 @@ function getErrors(item: GalleryItem | PictureModel) {
   } else {
     try {
       parseCoordinates(item.dirtyPosition);
-    } catch (err) {
+    } catch {
       errors.push('gallery.invalidPositionError');
     }
   }
@@ -394,7 +351,7 @@ function getErrors(item: GalleryItem | PictureModel) {
 function safeParseCoordinates(coords: string) {
   try {
     return parseCoordinates(coords);
-  } catch (err) {
+  } catch {
     return null;
   }
 }

@@ -1,9 +1,7 @@
-import { authLoginWithOsm2 } from 'fm3/actions/authActions';
-import qs from 'query-string';
-import { MyStore } from './storeCreator';
+import { authWithOsm2 } from './actions/authActions.js';
+import { MyStore } from './store.js';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
-  // OSM Login handler
   window.addEventListener('message', (e) => {
     if (
       e.origin !== window.location.origin ||
@@ -14,12 +12,17 @@ export function attachOsmLoginMessageHandler(store: MyStore): void {
       return;
     }
 
-    const { oauth_token: token, oauth_verifier: verifier } = qs.parse(
-      e.data.freemap.payload,
-    );
+    const sp = new URLSearchParams(e.data.freemap.payload);
 
-    if (typeof token === 'string' && typeof verifier === 'string') {
-      store.dispatch(authLoginWithOsm2({ token, verifier }));
+    const code = sp.get('code');
+
+    if (code) {
+      store.dispatch(
+        authWithOsm2({
+          code,
+          connect: sp.get('state') === 'true',
+        }),
+      );
     }
   });
 }

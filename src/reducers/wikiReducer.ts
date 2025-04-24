@@ -1,12 +1,11 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   wikiLoadPreview,
   WikiPoint,
   WikiPreview,
   wikiSetPoints,
   wikiSetPreview,
-} from 'fm3/actions/wikiActions';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/wikiActions.js';
 
 export interface WikiState {
   points: WikiPoint[];
@@ -20,18 +19,19 @@ const initialState: WikiState = {
   loading: null,
 };
 
-export const wikiReducer = createReducer<WikiState, RootAction>(initialState)
-  .handleAction(wikiSetPoints, (state, { payload }) => ({
-    ...state,
-    points: payload,
-  }))
-  .handleAction(wikiSetPreview, (state, { payload }) => ({
-    ...state,
-    loading: null,
-    preview: payload,
-  }))
-  .handleAction(wikiLoadPreview, (state, { payload }) => ({
-    ...state,
-    loading: payload,
-    preview: null,
-  }));
+export const wikiReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(wikiSetPoints, (state, { payload }) => {
+      state.points = payload;
+    })
+    .addCase(wikiSetPreview, (state, { payload }) => {
+      state.loading = null;
+
+      state.preview = payload;
+    })
+    .addCase(wikiLoadPreview, (state, { payload }) => {
+      state.loading = payload;
+
+      state.preview = null;
+    }),
+);

@@ -1,24 +1,16 @@
-import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
-import 'fm3/styles/gallery.scss';
-import { LeafletMouseEvent, Map } from 'leaflet';
-import {
-  ReactElement,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { LeafletMouseEvent } from 'leaflet';
+import { ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { AsyncModal } from '../AsyncModal';
+import { gallerySetPickingPosition } from '../../actions/galleryActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMap } from '../../hooks/useMap.js';
+import { showGalleryViewerSelector } from '../../selectors/mainSelectors.js';
+import '../../styles/gallery.scss';
+import { AsyncModal } from '../AsyncModal.js';
 
-const galleryViewerModalFactory = () =>
-  import('fm3/components/gallery/GalleryViewerModal');
+const galleryViewerModalFactory = () => import('./GalleryViewerModal.js');
 
-const galleryUploadModalFactory = () =>
-  import('fm3/components/gallery/GalleryUploadModal');
+const galleryUploadModalFactory = () => import('./GalleryUploadModal.js');
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
@@ -35,11 +27,7 @@ export function GalleryModals(): ReactElement {
       state.gallery.pickingPositionForId === null,
   );
 
-  const [map, setMap] = useState<Map>();
-
-  useEffect(() => {
-    mapPromise.then(setMap);
-  }, []);
+  const map = useMap();
 
   useEffect(() => {
     if (!map) {

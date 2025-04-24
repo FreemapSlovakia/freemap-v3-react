@@ -1,12 +1,11 @@
 import FileSaver from 'file-saver';
-import { Destination } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getAuth2, loadGapi } from 'fm3/gapiLoader';
-import { httpRequest } from 'fm3/httpRequest';
-import { RootState } from 'fm3/reducers';
-import { hasProperty } from 'fm3/typeUtils';
-import qs from 'query-string';
 import { Dispatch } from 'redux';
+import { ExportTarget } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { getAuth2, loadGapi } from '../gapiLoader.js';
+import { httpRequest } from '../httpRequest.js';
+import { RootState } from '../store.js';
+import { hasProperty } from '../typeUtils.js';
 
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
@@ -14,11 +13,11 @@ export const licenseNotice =
 export async function upload(
   type: 'gpx' | 'geojson',
   data: Blob,
-  destination: Destination,
+  target: ExportTarget,
   getState: () => RootState,
   dispatch: Dispatch,
 ): Promise<boolean> {
-  switch (destination) {
+  switch (target) {
     case 'dropbox': {
       const redirUri = encodeURIComponent(
         `${location.protocol}//${location.host}/dropboxAuthCallback.html`,
@@ -51,16 +50,14 @@ export async function upload(
             typeof e.data?.freemap === 'object' &&
             e.data.freemap.action === 'dropboxAuth'
           ) {
-            const { access_token: accessToken, error } = qs.parse(
-              e.data.freemap.payload.slice(1),
-            );
+            const sp = new URLSearchParams(e.data.freemap.payload.slice(1));
 
-            const at = Array.isArray(accessToken)
-              ? accessToken[0]
-              : accessToken;
+            const accessToken = sp.get('access_token');
 
-            if (at) {
-              resolve(at);
+            const error = sp.get('error');
+
+            if (accessToken) {
+              resolve(accessToken);
             } else {
               reject(new Error(`OAuth: ${error}`));
             }
@@ -105,10 +102,10 @@ export async function upload(
 
       dispatch(
         toastsAdd({
-          id: 'gpxExport',
+          id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
-          messageKey: 'gpxExport.exportedToDropbox',
+          messageKey: 'exportMapFeatures.exportedToDropbox',
         }),
       );
 
@@ -156,7 +153,9 @@ export async function upload(
 
         const ar = result.getAuthResponse();
 
-        const folder = await new Promise<any>((resolve) => {
+        const folder = await new Promise<
+          google.picker.DocumentObject | undefined
+        >((resolve) => {
           const pkr = google.picker;
 
           new pkr.PickerBuilder()
@@ -170,10 +169,10 @@ export async function upload(
             .build()
             .setVisible(true);
 
-          function pickerCallback(data: any) {
+          function pickerCallback(data: google.picker.ResponseObject) {
             switch (data[pkr.Response.ACTION]) {
               case pkr.Action.PICKED:
-                resolve(data[pkr.Response.DOCUMENTS][0]);
+                resolve(data[pkr.Response.DOCUMENTS]?.[0]);
 
                 break;
 
@@ -222,10 +221,10 @@ export async function upload(
 
       dispatch(
         toastsAdd({
-          id: 'gpxExport',
+          id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
-          messageKey: 'gpxExport.exportedToGdrive',
+          messageKey: 'exportMapFeatures.exportedToGdrive',
         }),
       );
 

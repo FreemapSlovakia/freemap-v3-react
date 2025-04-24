@@ -1,52 +1,60 @@
 import storage from 'local-storage-fallback';
-import reduceReducers from 'reduce-reducers';
-import { combineReducers } from 'redux';
-import { StateType } from 'typesafe-actions';
 import { is } from 'typia';
-import { GalleryColorizeBy } from './actions/galleryActions';
+import { GalleryColorizeBy } from './actions/galleryActions.js';
 import {
   authInitialState,
   authReducer,
   AuthState,
-} from './reducers/authReducer';
-import { changesetReducer } from './reducers/changesetsReducer';
-import { drawingLinesReducer } from './reducers/drawingLinesReducer';
-import { drawingPointsReducer } from './reducers/drawingPointsReducer';
-import { elevationChartReducer } from './reducers/elevationChartReducer';
-import { galleryInitialState, galleryReducer } from './reducers/galleryReducer';
-import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
+} from './reducers/authReducer.js';
+import { changesetReducer } from './reducers/changesetsReducer.js';
+import { drawingLinesReducer } from './reducers/drawingLinesReducer.js';
+import { drawingPointsReducer } from './reducers/drawingPointsReducer.js';
+import { elevationChartReducer } from './reducers/elevationChartReducer.js';
+import {
+  galleryInitialState,
+  galleryReducer,
+} from './reducers/galleryReducer.js';
 import {
   l10nInitialState,
   l10nReducer,
   L10nState,
-} from './reducers/l10nReducer';
+} from './reducers/l10nReducer.js';
 import {
   mainInitialState,
   mainReducer,
   MainState,
-} from './reducers/mainReducer';
-import { mapDetailsReducer } from './reducers/mapDetailsReducer';
-import { mapInitialState, mapReducer, MapState } from './reducers/mapReducer';
-import { mapsReducer } from './reducers/mapsReducer';
-import { objectsReducer } from './reducers/objectsReducer';
+} from './reducers/mainReducer.js';
+import { mapDetailsReducer } from './reducers/mapDetailsReducer.js';
+import {
+  mapInitialState,
+  mapReducer,
+  MapState,
+} from './reducers/mapReducer.js';
+import { mapsReducer } from './reducers/mapsReducer.js';
+import {
+  objectInitialState,
+  objectsReducer,
+  ObjectsState,
+} from './reducers/objectsReducer.js';
 import {
   routePlannerInitialState,
   routePlannerReducer,
   RoutePlannerState,
-} from './reducers/routePlannerReducer';
-import { searchReducer } from './reducers/searchReducer';
-import { toastsReducer } from './reducers/toastsReducer';
-import { trackingReducer } from './reducers/trackingReducer';
+} from './reducers/routePlannerReducer.js';
+import { searchReducer } from './reducers/searchReducer.js';
+import { toastsReducer } from './reducers/toastsReducer.js';
+import { trackingReducer } from './reducers/trackingReducer.js';
 import {
   trackViewerInitialState,
   trackViewerReducer,
   TrackViewerState,
-} from './reducers/trackViewerReducer';
-import { websocketReducer } from './reducers/websocketReducer';
-import { wikiReducer } from './reducers/wikiReducer';
-import { transportTypeDefs } from './transportTypeDefs';
+} from './reducers/trackViewerReducer.js';
+import { websocketReducer } from './reducers/websocketReducer.js';
+import { wikiReducer } from './reducers/wikiReducer.js';
+import { RootState } from './store.js';
+import { transportTypeDefs } from './transportTypeDefs.js';
 
-const reducers = {
+export const reducers = {
   auth: authReducer,
   changesets: changesetReducer,
   drawingLines: drawingLinesReducer,
@@ -67,18 +75,6 @@ const reducers = {
   maps: mapsReducer,
   wiki: wikiReducer,
 };
-
-const combinedReducers = combineReducers(reducers);
-
-export type CombinedReducers = typeof combinedReducers;
-
-export type RootState = StateType<CombinedReducers>;
-
-export const rootReducer = reduceReducers<RootState>(
-  preGlobalReducer,
-  combinedReducers,
-  postGlobalReducer,
-);
 
 export function getInitialState() {
   let persisted: Partial<Record<keyof RootState, unknown>>;
@@ -105,6 +101,10 @@ export function getInitialState() {
 
   if (is<Partial<MainState>>(persisted.main)) {
     initial.main = { ...mainInitialState, ...persisted.main };
+  }
+
+  if (is<Partial<ObjectsState>>(persisted.objects)) {
+    initial.objects = { ...objectInitialState, ...persisted.objects };
   }
 
   if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {

@@ -1,39 +1,32 @@
 {
   "compilerOptions": {
-    "outDir": "dist", // path to output directory
-    "sourceMap": true, // allow sourcemap support
-    "strictNullChecks": true, // enable strict null checks as a best practice
-    "module": "esnext", // specify module code generation
-    "jsx": "react-jsx", // use typescript to transpile jsx to js
-    "target": "ES2018", // specify ECMAScript target version
-    "moduleResolution": "node",
-    "lib": ["ES2020", "dom"],
+    "allowJs": true, // because of maplibre-language.js; TODO rewrite to TS
     "allowSyntheticDefaultImports": true,
-    // "noUncheckedIndexedAccess": true, // TODO one day
-    "noPropertyAccessFromIndexSignature": true,
     "baseUrl": "src",
-    "paths": {
-      "fm3/*": ["./*"]
-    },
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "dom", "dom.iterable", "WebWorker"],
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "noPropertyAccessFromIndexSignature": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strict": true,
-    "downlevelIteration": true,
+    "outDir": "dist",
+    "plugins": [{ "transform": "typia/lib/transform" }],
     "resolveJsonModule": true,
-    "allowJs": true, // because of maplibre-language.js; TODO rewrite to TS
-    "plugins": [
-      {
-        "transform": "typia/lib/transform"
-      }
-    ],
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ES2022",
     "types": [
+      // "noUncheckedIndexedAccess": true, // TODO one day
       "gapi",
       "gapi.auth2",
-      "gtag.js",
       "facebook-js-sdk",
       "facebook-pixel",
       "google.picker",
-      "trackjs"
+      "@webgpu/types"
     ]
   },
   "include": ["src", "typings"]

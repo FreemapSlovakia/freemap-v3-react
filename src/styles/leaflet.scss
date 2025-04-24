@@ -78,3 +78,24 @@ a.leaflet-control-layers-toggle {
     margin-bottom: 7.5rem !important;
   }
 }
+
+.fm-base-layer .fm-demo-tile {
+  box-shadow: 5px 5px 8px #0004;
+}
+
+.fm-nonpremium-tile {
+  background-color: #aaa8;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px #fff;
+  color: #000a;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > div {
+    transform: rotate(45deg);
+    max-width: 200px;
+    text-align: center;
+  }
+}

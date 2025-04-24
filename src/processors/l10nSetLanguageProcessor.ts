@@ -1,12 +1,11 @@
-import { authSetUser } from 'fm3/actions/authActions';
+import { authSetUser } from '../actions/authActions.js';
 import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
-} from 'fm3/actions/l10nActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { getEffectiveChosenLanguage } from 'fm3/langUtils';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { isActionOf } from 'typesafe-actions';
+} from '../actions/l10nActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { getEffectiveChosenLanguage } from '../langUtils.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const l10nSetLanguageProcessor: Processor = {
   actionCreator: [l10nSetChosenLanguage, authSetUser],
@@ -17,7 +16,7 @@ export const l10nSetLanguageProcessor: Processor = {
     const language = getEffectiveChosenLanguage(chosenLanguage);
 
     window.translations = (
-      await import(`fm3/translations/${language}.tsx`)
+      await import(`../translations/${language}.tsx`)
     ).default;
 
     dispatch(l10nSetLanguage(language));
@@ -25,7 +24,7 @@ export const l10nSetLanguageProcessor: Processor = {
     document.documentElement.lang = language;
 
     if (
-      isActionOf(l10nSetChosenLanguage, action) &&
+      l10nSetChosenLanguage.match(action) &&
       getState().auth.user &&
       !action.payload.noSave
     ) {

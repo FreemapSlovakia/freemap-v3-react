@@ -1,33 +1,24 @@
 import {
-  FeatureCollection,
   featureCollection,
-  Geometry,
-  GeometryCollection,
   lineString,
   multiLineString,
   point,
   polygon,
 } from '@turf/helpers';
-import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { fetchPictures, Picture } from './fetchPictures';
-import { licenseNotice, upload } from './upload';
+import { FeatureCollection } from 'geojson';
+import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
+import { TrackingState } from '../reducers/trackingReducer.js';
+import { fetchPictures, Picture } from './fetchPictures.js';
+import { licenseNotice, upload } from './upload.js';
 
-const handle: ProcessorHandler<typeof exportGpx> = async ({
+const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
   action,
   dispatch,
 }) => {
-  const fc = featureCollection<Geometry | GeometryCollection>([]);
-
-  (fc as any).metadata = {
-    description: 'Exported from https://www.freemap.sk/',
-    licenseNotice,
-    time: new Date().toISOString(),
-    content: action.payload.exportables,
-  };
+  const fc = featureCollection([]);
 
   const {
     drawingLines,
@@ -36,6 +27,7 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     routePlanner,
     tracking,
     trackViewer,
+    search,
   } = getState();
 
   const set = new Set(action.payload.exportables);
@@ -98,18 +90,49 @@ const handle: ProcessorHandler<typeof exportGpx> = async ({
     }
   }
 
-  const { destination } = action.payload;
+  if (set.has('search')) {
+    const geojson = search.selectedResult?.geojson;
+
+    switch (geojson?.type) {
+      case 'FeatureCollection':
+        fc.features.push(...geojson.features);
+
+        break;
+
+      case 'Feature':
+        fc.features.push(geojson);
+
+        break;
+    }
+  }
+
+  const { target } = action.payload;
 
   if (
     await upload(
       'geojson',
-      new Blob([JSON.stringify(fc)], {
-        type:
-          destination === 'dropbox'
-            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-            : 'application/geo+json',
-      }),
-      destination,
+      new Blob(
+        [
+          JSON.stringify({
+            ...fc,
+            ...{
+              metadata: {
+                description: 'Exported from https://www.freemap.sk/',
+                licenseNotice,
+                time: new Date().toISOString(),
+                content: action.payload.exportables,
+              },
+            },
+          }),
+        ],
+        {
+          type:
+            target === 'dropbox'
+              ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
+              : 'application/geo+json',
+        },
+      ),
+      target,
       getState,
       dispatch,
     )

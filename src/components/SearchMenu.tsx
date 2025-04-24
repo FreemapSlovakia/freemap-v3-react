@@ -1,26 +1,4 @@
 import center from '@turf/center';
-import { convertToDrawing, setTool } from 'fm3/actions/mainActions';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from 'fm3/actions/routePlannerActions';
-import {
-  SearchResult,
-  searchSelectResult,
-  searchSetQuery,
-  searchSetResults,
-} from 'fm3/actions/searchActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
-import {
-  getNameFromOsmElement,
-  resolveGenericName,
-} from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
-import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
   forwardRef,
@@ -32,14 +10,39 @@ import {
   useRef,
   useState,
 } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
-import InputGroup from 'react-bootstrap/InputGroup';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+  type DropdownProps,
+} from 'react-bootstrap';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { convertToDrawing, setTool } from '../actions/mainActions.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetStart,
+} from '../actions/routePlannerActions.js';
+import {
+  SearchResult,
+  searchSelectResult,
+  searchSetQuery,
+  searchSetResults,
+} from '../actions/searchActions.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  getNameFromOsmElement,
+  resolveGenericName,
+} from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
+import '../styles/search.scss';
 
 type Props = {
   hidden?: boolean;
@@ -72,8 +75,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const results = useAppSelector((state) => state.search.results);
 
   const selectedResult = useAppSelector((state) => state.search.selectedResult);
-
-  const searchSeq = useAppSelector((state) => state.search.searchSeq);
 
   // const inProgress = useAppSelector((state) => state.search.inProgress);
 
@@ -166,7 +167,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   }, [hidden, preventShortcut]);
 
   const handleClearClick = useCallback(
-    (e: MouseEvent<HTMLInputElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
 
       dispatch(searchSelectResult(null));
@@ -193,9 +194,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   return (
     <>
       <Form
-        inline
         onSubmit={handleSearch}
         style={{ display: hidden ? 'none' : '' }}
+        className="ms-1"
       >
         <Dropdown
           as={ButtonGroup}
@@ -205,7 +206,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         >
           <Dropdown.Toggle as={HideArrow}>
             <InputGroup className="flex-nowrap">
-              <FormControl
+              <Form.Control
                 type="search"
                 className="fm-search-input"
                 onChange={handleChange}
@@ -215,34 +216,32 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 onFocus={handleInputFocus}
               />
 
-              <InputGroup.Append className="w-auto">
-                {!!selectedResult && (
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    title={m?.general.clear}
-                    onClick={handleClearClick}
-                  >
-                    <FaTimes />
-                  </Button>
-                )}
-
+              {!!selectedResult && (
                 <Button
+                  className="w-auto"
                   variant="secondary"
-                  type="submit"
-                  title={m?.search.buttonTitle}
-                  disabled={!value}
+                  type="button"
+                  title={m?.general.clear}
+                  onClick={handleClearClick}
                 >
-                  <FaSearch />
+                  <FaTimes />
                 </Button>
-              </InputGroup.Append>
+              )}
+
+              <Button
+                variant="secondary"
+                type="submit"
+                title={m?.search.buttonTitle}
+                disabled={!value}
+              >
+                <FaSearch />
+              </Button>
             </InputGroup>
           </Dropdown.Toggle>
 
           <Dropdown.Menu
-            key={searchSeq}
             className="fm-search-dropdown"
-            popperConfig={{ strategy: 'fixed' }}
+            popperConfig={fixedPopperConfig}
           >
             <div className="dropdown-long" ref={sc}>
               <div />
@@ -263,7 +262,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
-          <ButtonGroup className="ml-1">
+          <ButtonGroup className="ms-1">
             <Button
               variant="secondary"
               title={m?.search.routeFrom}
@@ -312,17 +311,29 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </ButtonGroup>
 
           <Button
-            className="ml-1"
+            className="ms-1"
             title={m?.general.convertToDrawing}
             variant="secondary"
             onClick={() => {
-              const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+              console.log(selectedResult.geojson);
+
+              const ask =
+                (selectedResult.geojson?.type === 'FeatureCollection' &&
+                  selectedResult.geojson.features.some(
+                    (feature) => !feature.geometry.type.endsWith('Point'),
+                  )) ||
+                (selectedResult.geojson?.type === 'Feature' &&
+                  !selectedResult.geojson.geometry.type.endsWith('Point'));
+
+              const tolerance = ask
+                ? window.prompt(m?.general.simplifyPrompt, '50')
+                : '50';
 
               if (tolerance !== null) {
                 dispatch(
                   convertToDrawing({
                     type: 'search-result',
-                    tolerance: Number(tolerance || '0') / 100000,
+                    tolerance: Number(tolerance || '0') / 100_000,
                   }),
                 );
               }
@@ -380,7 +391,7 @@ function Result({ value }: { value: SearchResult }) {
         </div>
       </div>
 
-      {name && <small className="ml-4 text-truncate">{name}</small>}
+      {name && <small className="ms-4 text-truncate">{name}</small>}
     </div>
   );
 }

@@ -1,12 +1,15 @@
-import { BaseLayerLetters, overlayLetters } from 'fm3/mapDefinitions';
+import { Location } from 'history';
+import { is } from 'typia';
+import { MapViewState } from './actions/mapActions.js';
+import {
+  BaseLayerLetters,
+  OverlayLetters,
+  overlayLetters,
+} from './mapDefinitions.js';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getTrasformedParamsIfIsOldFreemapUrl,
-} from 'fm3/oldFreemapUtils';
-import { Location } from 'history';
-import queryString from 'query-string';
-import { is } from 'typia';
-import { MapViewState } from './actions/mapActions';
+} from './oldFreemapUtils.js';
 
 export function getMapStateFromUrl(
   location: Location,
@@ -28,11 +31,11 @@ export function getMapStateFromUrl(
     }
   }
 
-  const query = queryString.parse((location.hash || location.search).slice(1));
+  const query = new URLSearchParams(
+    (location.hash || location.search).slice(1),
+  );
 
-  const [zoomFrag, latFrag, lonFrag] = (
-    typeof query['map'] === 'string' ? query['map'] : ''
-  ).split('/');
+  const [zoomFrag, latFrag, lonFrag] = query.get('map')?.split('/') ?? [];
 
   const lat = undefineNaN(parseFloat(latFrag));
 
@@ -40,7 +43,7 @@ export function getMapStateFromUrl(
 
   const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
-  const layers = typeof query['layers'] === 'string' ? query['layers'] : '';
+  const layers = query.get('layers') ?? '';
 
   let base = layers.charAt(0);
 
@@ -54,7 +57,11 @@ export function getMapStateFromUrl(
 
   const ovl = layers.slice(isTwoChar ? 2 : 1);
 
-  const overlays = overlayLetters.filter((x) => ovl.includes(x));
+  const overlays: OverlayLetters[] = overlayLetters.filter((x) =>
+    ovl.includes(x),
+  );
+
+  overlays.push(...((ovl.match(/:\d+/g) ?? []) as OverlayLetters[]));
 
   return { lat, lon, zoom, mapType, overlays };
 }

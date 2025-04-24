@@ -1,15 +1,11 @@
-import { documentShow, setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement, useRef, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Overlay from 'react-bootstrap/Overlay';
-import Popover from 'react-bootstrap/Popover';
+import { ReactElement } from 'react';
+import { Card, Dropdown } from 'react-bootstrap';
 import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { useAttributionInfo } from './useAttributionInfo';
+import { documentShow, setActiveModal } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { useAttributionInfo } from './useAttributionInfo.js';
 
 export function CopyrightButton(): ReactElement {
   const m = useMessages();
@@ -23,78 +19,58 @@ export function CopyrightButton(): ReactElement {
     ).includes(state.map.mapType),
   );
 
-  const [show, setShow] = useState<undefined | 'menu'>();
-
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
   const showAttribution = useAttributionInfo();
 
   return (
-    <Card className="fm-toolbar mr-2 mb-2">
-      <Button
-        ref={buttonRef}
-        onClick={() => setShow('menu')}
-        title={m?.mainMenu.mapLegend + ', Privacy policy'}
-        variant="secondary"
-      >
-        <FaQuestion />
-      </Button>
+    <Card className="fm-toolbar me-2 mb-2">
+      <Dropdown>
+        <Dropdown.Toggle
+          bsPrefix="fm-dropdown-toggle-nocaret"
+          id="dropdown-basic"
+          title={m?.mainMenu.mapLegend + ', Privacy policy'}
+          variant="secondary"
+        >
+          <FaQuestion />
+        </Dropdown.Toggle>
 
-      <Overlay
-        rootClose
-        placement="top"
-        show={show === 'menu'}
-        onHide={() => setShow(undefined)}
-        target={buttonRef.current}
-      >
-        <Popover id="popover-copyright" className="fm-menu">
-          <Popover.Content>
+        <Dropdown.Menu>
+          <Dropdown.Item
+            key="attribution"
+            as="button"
+            onClick={() => {
+              showAttribution();
+            }}
+          >
+            <FaRegCopyright /> {m?.main.copyright}
+          </Dropdown.Item>
+
+          {showLegendButton && (
             <Dropdown.Item
-              key="attribution"
-              as="button"
-              onSelect={(_, e) => {
+              key="legend"
+              href="#show=legend"
+              onClick={(e) => {
                 e.preventDefault();
 
-                setShow(undefined);
-
-                showAttribution();
+                dispatch(setActiveModal('legend'));
               }}
             >
-              <FaRegCopyright /> {m?.main.copyright}
+              <FaRegMap /> {m?.mainMenu.mapLegend}
             </Dropdown.Item>
+          )}
 
-            {showLegendButton && (
-              <Dropdown.Item
-                key="legend"
-                href="?show=legend"
-                onSelect={(_, e) => {
-                  e.preventDefault();
+          <Dropdown.Item
+            key="privacyPolicy"
+            href="#document=privacyPolicy"
+            onClick={(e) => {
+              e.preventDefault();
 
-                  setShow(undefined);
-
-                  dispatch(setActiveModal('legend'));
-                }}
-              >
-                <FaRegMap /> {m?.mainMenu.mapLegend}
-              </Dropdown.Item>
-            )}
-
-            <Dropdown.Item
-              key="privacyPolicy"
-              href="?tip=privacyPolicy"
-              onSelect={(_, e) => {
-                e.preventDefault();
-
-                setShow(undefined);
-
-                dispatch(documentShow('privacyPolicy'));
-              }}
-            >
-              <FaLock /> Privacy policy
-            </Dropdown.Item>
-          </Popover.Content>
-        </Popover>
-      </Overlay>
+              dispatch(documentShow('privacyPolicy'));
+            }}
+          >
+            <FaLock /> Privacy policy
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
     </Card>
   );
 }

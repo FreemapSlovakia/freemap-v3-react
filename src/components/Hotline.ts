@@ -1,8 +1,9 @@
 import { createPathComponent, PathProps } from '@react-leaflet/core';
+import { LatLngExpression, Polyline } from 'leaflet';
 import 'leaflet-hotline';
 
 interface Props extends PathProps {
-  positions: (readonly [number, number, number])[];
+  positions: LatLngExpression[];
   outlineWidth: number;
   outlineColor?: string;
   palette: Record<number, string>;
@@ -11,17 +12,17 @@ interface Props extends PathProps {
   weight?: number; // TODO inherited from PathProps; should we actually extend from Path?
 }
 
-export const Hotline = createPathComponent<any, Props>(
+export const Hotline = createPathComponent<Polyline, Props>(
   (props, context) => {
     return {
-      instance: (window['L'] as any).hotline(props.positions, props),
+      instance: (window.L as any).hotline(props.positions, props),
       context,
     };
   },
 
   (instance, props, prevProps) => {
     if (props.positions !== prevProps.positions) {
-      (instance as any).setLatLngs(props.positions);
+      instance.setLatLngs(props.positions);
     }
   },
 );

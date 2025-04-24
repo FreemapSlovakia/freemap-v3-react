@@ -1,10 +1,8 @@
-import { removeAdsOnLogin, setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import fallback from 'fm3/images/rovas_reklama.svg';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect, useRef, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import { useDispatch } from 'react-redux';
+import { Button } from 'react-bootstrap';
+import { useBecomePremium } from '../hooks/useBecomePremium.js';
+import fallback from '../images/rovas_reklama.svg';
+import { useMessages } from '../l10nInjector.js';
 
 const dims: [number, number][] = [
   // [1024, 768],
@@ -97,11 +95,9 @@ export function Ad(): ReactElement | null {
     };
   }, [visible, closed]);
 
-  const dispatch = useDispatch();
-
   const m = useMessages();
 
-  const isLoggedIn = useAppSelector((state) => !!state.auth.user);
+  const becomePremium = useBecomePremium();
 
   const [closeTime, setCloseTime] = useState(0);
 
@@ -133,7 +129,7 @@ export function Ad(): ReactElement | null {
       <div className="align-self-end d-flex">
         {window.innerHeight < 600 && (
           <Button
-            className="py-0 rounded-bottom mr-1"
+            className="py-0 rounded-bottom me-1"
             style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
             variant="warning"
             size="sm"
@@ -149,15 +145,7 @@ export function Ad(): ReactElement | null {
           style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
           variant="warning"
           size="sm"
-          onClick={() => {
-            if (isLoggedIn) {
-              dispatch(setActiveModal('remove-ads'));
-            } else {
-              dispatch(setActiveModal('login'));
-
-              dispatch(removeAdsOnLogin());
-            }
-          }}
+          onClick={becomePremium}
         >
           {m?.general.remove}
         </Button>

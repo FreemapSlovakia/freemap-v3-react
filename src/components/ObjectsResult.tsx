@@ -1,28 +1,33 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { searchSelectResult } from 'fm3/actions/searchActions';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useEffectiveChosenLanguage } from 'fm3/hooks/useEffectiveChosenLanguage';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useEffect, useState } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFeature } from '../actions/mainActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
   getOsmMapping,
   resolveGenericName,
-} from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { OsmMapping } from 'fm3/osm/types';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { ReactElement, useEffect, useState } from 'react';
-import { Tooltip } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
+} from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { OsmMapping } from '../osm/types.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
+import { RootState } from '../store.js';
+import { RichMarker } from './RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
+  const selectedIconValue = useSelector(
+    (state: RootState) => state.objects.selectedIcon,
+  );
 
   const interactive = useAppSelector(selectingModeSelector);
 
@@ -32,7 +37,7 @@ export function ObjectsResult(): ReactElement | null {
 
   const activeId = useAppSelector((state) =>
     state.main.selection?.type === 'objects'
-      ? state.main.selection.id ?? null
+      ? (state.main.selection.id ?? null)
       : null,
   );
 
@@ -47,11 +52,11 @@ export function ObjectsResult(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  if (!osmMapping) {
-    return null;
-  }
+  const markerType = useSelector(
+    (state: RootState) => state.objects.selectedIcon,
+  );
 
-  return (
+  return !osmMapping ? null : (
     <>
       {objects.map(({ id, lat, lon, tags, type }) => {
         const name = getNameFromOsmElement(tags, language);
@@ -76,6 +81,8 @@ export function ObjectsResult(): ReactElement | null {
             position={{ lat, lng: lon }}
             image={img[0]}
             imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
+            color={activeId === id ? colors.selected : undefined}
+            markerType={markerType}
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));
@@ -90,9 +97,8 @@ export function ObjectsResult(): ReactElement | null {
                 );
               },
             }}
-            color={activeId === id ? colors.selected : undefined}
           >
-            <Tooltip direction="top" offset={[0, -36]}>
+            <Tooltip key={selectedIconValue} direction="top">
               <span>
                 {/* {m?.objects.subcategories[pt.id]} */}
                 {gn} <i>{name}</i>

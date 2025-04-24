@@ -1,5 +1,5 @@
-import { gallerySetImage } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { gallerySetImage } from '../actions/galleryActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryShowImageGaProcessor: Processor = {
   actionCreator: gallerySetImage,
@@ -9,10 +9,12 @@ export const galleryShowImageGaProcessor: Processor = {
     } = getState();
 
     if (image) {
-      window.gtag('event', 'showPhoto', {
-        event_category: 'Gallery',
-        value: image.id,
-      });
+      window._paq.push([
+        'trackEvent',
+        'Gallery',
+        'showPhoto',
+        image.id.toString(),
+      ]);
     }
   },
 };

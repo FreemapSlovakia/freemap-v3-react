@@ -1,15 +1,36 @@
-import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { User } from 'fm3/types/common';
 import { get } from 'idb-keyval';
 import { assert } from 'typia';
+import { authInit, authSetUser } from '../actions/authActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { User } from '../types/common.js';
 
-export const authInitProcessor: Processor = {
+function track(id: number | undefined) {
+  window._paq.push(
+    id === undefined ? ['resetUserId'] : ['setUserId', String(id)],
+  );
+
+  window._paq.push(['trackPageView']);
+
+  window._paq.push(['appendToTrackingUrl', '']);
+}
+
+export const authTrackProcessor: Processor = {
+  stateChangePredicate: (state) => state.auth.user?.id,
+  handle({ getState }) {
+    track(getState().auth.user?.id);
+  },
+};
+
+export const authInitProcessor: Processor<typeof authInit> = {
   actionCreator: authInit,
-  errorKey: 'logIn.verifyError',
-  async handle({ getState, dispatch }) {
+  id: 'lcd',
+  errorKey: 'auth.logIn.verifyError',
+  async handle({ getState, dispatch, action }) {
     const { user } = getState().auth;
+
+    track(user?.id);
 
     if (user) {
       try {
@@ -21,11 +42,23 @@ export const authInitProcessor: Processor = {
           cancelActions: [],
         });
 
-        dispatch(
-          authSetUser(
-            res.status === 200 ? assert<User>(await res.json()) : null,
-          ),
-        );
+        const ok = res.status === 200;
+
+        dispatch(authSetUser(ok ? assert<User>(await res.json()) : null));
+
+        if (
+          ok &&
+          action.payload.becamePremium &&
+          getState().auth.user?.isPremium // TODO else show error
+        ) {
+          dispatch(
+            toastsAdd({
+              style: 'success',
+              messageKey: 'premium.success',
+              timeout: 5000,
+            }),
+          );
+        }
       } catch (err) {
         if (typeof err !== 'object' || !err || 'status' in err) {
           throw err;

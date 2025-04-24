@@ -1,28 +1,27 @@
 import area from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import length from '@turf/length';
-import { drawingMeasure } from 'fm3/actions/drawingPointActions';
+import { assert } from 'typia';
+import { drawingMeasure } from '../actions/drawingPointActions.js';
 import {
-  clearMap,
+  clearMapFeatures,
   deleteFeature,
   selectFeature,
   setTool,
-} from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { LatLon } from 'fm3/types/common';
-import { getType } from 'typesafe-actions';
-import { assert } from 'typia';
+} from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { LatLon } from '../types/common.js';
 
 const cancelType = [
-  getType(clearMap),
-  getType(selectFeature),
-  getType(deleteFeature),
-  getType(setTool),
-  getType(mapRefocus),
+  clearMapFeatures.type,
+  selectFeature.type,
+  deleteFeature.type,
+  setTool.type,
+  mapRefocus.type,
 ];
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
@@ -34,6 +33,8 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
     } = getState();
 
     let id;
+
+    window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
 
     async function measurePoint(point: LatLon) {
       let elevation;
@@ -57,7 +58,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         const res = await httpRequest({
           getState,
           url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
-          cancelActions: [drawingMeasure, clearMap],
+          cancelActions: [drawingMeasure, clearMapFeatures],
         });
 
         elevation = assert<[number]>(await res.json())[0];

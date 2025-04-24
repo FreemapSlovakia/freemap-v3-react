@@ -1,15 +1,15 @@
-import { RootAction } from 'fm3/actions';
-import { authSetUser } from 'fm3/actions/authActions';
-import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { applySettings, Selection } from 'fm3/actions/mainActions';
+import { createReducer } from '@reduxjs/toolkit';
+import { authSetUser } from '../actions/authActions.js';
+import { gallerySetFilter } from '../actions/galleryActions.js';
+import { applySettings, Selection } from '../actions/mainActions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
+  mapSetEsriAttribution,
   MapStateBase,
   mapSuppressLegacyMapWarning,
-} from 'fm3/actions/mapActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/mapActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;
@@ -17,6 +17,7 @@ export interface MapState extends MapStateBase {
   gpsTracked: boolean;
   legacyMapWarningSuppressions: string[];
   tempLegacyMapWarningSuppressions: string[];
+  esriAttribution: string[];
 }
 
 export const mapInitialState: MapState = {
@@ -33,113 +34,105 @@ export const mapInitialState: MapState = {
   customLayers: [],
   legacyMapWarningSuppressions: [],
   tempLegacyMapWarningSuppressions: [],
+  esriAttribution: [],
 };
 
-export const mapReducer = createReducer<MapState, RootAction>(mapInitialState)
-  .handleAction(mapSuppressLegacyMapWarning, (state, action) => {
-    const key = action.payload.forever
-      ? 'legacyMapWarningSuppressions'
-      : 'tempLegacyMapWarningSuppressions';
+export const mapReducer = createReducer(mapInitialState, (builder) =>
+  builder
+    .addCase(mapSuppressLegacyMapWarning, (state, action) => {
+      state[
+        action.payload.forever
+          ? 'legacyMapWarningSuppressions'
+          : 'tempLegacyMapWarningSuppressions'
+      ].push(state.mapType);
+    })
+    .addCase(applySettings, (state, action) => {
+      if (action.payload.layersSettings) {
+        state.layersSettings = action.payload.layersSettings;
+      }
 
-    return {
-      ...state,
-      [key]: [...state[key], state.mapType],
-    };
-  })
-  .handleAction(applySettings, (state, action) => {
-    const newState = { ...state };
+      if (action.payload.overlayPaneOpacity) {
+        state.overlayPaneOpacity = action.payload.overlayPaneOpacity;
+      }
 
-    if (action.payload.layersSettings) {
-      newState.layersSettings = action.payload.layersSettings;
-    }
+      if (action.payload.customLayers) {
+        state.customLayers = action.payload.customLayers;
+      }
+    })
+    .addCase(gallerySetFilter, (state) => {
+      if (!state.overlays.includes('I')) {
+        state.overlays.push('I');
+      }
+    })
+    .addCase(mapRefocus, (state, action) => {
+      const { zoom, lat, lon, mapType, overlays } = action.payload;
 
-    if (action.payload.overlayPaneOpacity) {
-      newState.overlayPaneOpacity = action.payload.overlayPaneOpacity;
-    }
+      if (zoom) {
+        state.zoom = zoom;
+      }
 
-    if (action.payload.customLayers) {
-      newState.customLayers = action.payload.customLayers;
-    }
+      if (lat !== undefined) {
+        state.lat = lat;
+      }
 
-    return newState;
-  })
-  .handleAction(gallerySetFilter, (state) => {
-    return {
-      ...state,
-      overlays: state.overlays.includes('I')
-        ? state.overlays
-        : [...state.overlays, 'I'],
-    };
-  })
-  .handleAction(mapRefocus, (state, action) => {
-    const newState: MapState = { ...state };
+      if (lon !== undefined) {
+        state.lon = lon;
+      }
 
-    const { zoom, lat, lon, mapType, overlays } = action.payload;
+      if (mapType) {
+        state.mapType = mapType;
+      }
 
-    if (zoom) {
-      newState.zoom = zoom;
-    }
+      if (overlays) {
+        state.overlays = overlays;
+      }
 
-    if (lat !== undefined) {
-      newState.lat = lat;
-    }
+      if (
+        action.payload.gpsTracked !== undefined ||
+        (lat !== undefined && lon !== undefined)
+      ) {
+        state.gpsTracked = !!action.payload.gpsTracked;
+      }
+    })
+    .addCase(authSetUser, (state, action) => {
+      const settings = action.payload?.settings;
 
-    if (lon !== undefined) {
-      newState.lon = lon;
-    }
+      if (!settings) {
+        return;
+      }
 
-    if (mapType) {
-      newState.mapType = mapType;
-    }
+      state.layersSettings = settings.layersSettings ?? state.layersSettings;
 
-    if (overlays) {
-      newState.overlays = overlays;
-    }
+      state.overlayPaneOpacity =
+        settings.overlayPaneOpacity ?? state.overlayPaneOpacity;
 
-    if (
-      action.payload.gpsTracked !== undefined ||
-      (lat !== undefined && lon !== undefined)
-    ) {
-      newState.gpsTracked = !!action.payload.gpsTracked;
-    }
-
-    return newState;
-  })
-  .handleAction(authSetUser, (state, action) => {
-    const settings = action.payload?.settings;
-
-    return settings
-      ? {
-          ...state,
-          layersSettings: settings.layersSettings ?? state.layersSettings,
-          overlayPaneOpacity:
-            settings.overlayPaneOpacity ?? state.overlayPaneOpacity,
-          customLayers: settings.customLayers?.length
-            ? settings.customLayers
-            : state.customLayers,
-        }
-      : state;
-  })
-  .handleAction(
-    mapsLoaded,
-    (
-      state,
-      {
-        payload: {
-          data: { map },
+      state.customLayers = settings.customLayers?.length
+        ? settings.customLayers
+        : state.customLayers;
+    })
+    .addCase(
+      mapsLoaded,
+      (
+        state,
+        {
+          payload: {
+            data: { map },
+          },
         },
-      },
-    ) => ({
-      ...state,
-      lat: map?.lat ?? state.lat,
-      lon: map?.lon ?? state.lon,
-      zoom: map?.zoom ?? state.zoom,
-      mapType: map?.mapType ?? state.mapType,
-      overlays: map?.overlays ?? state.overlays,
-      customLayers: map?.customLayers ?? state.customLayers,
+      ) => ({
+        ...state,
+        lat: map?.lat ?? state.lat,
+        lon: map?.lon ?? state.lon,
+        zoom: map?.zoom ?? state.zoom,
+        mapType: map?.mapType ?? state.mapType,
+        overlays: map?.overlays ?? state.overlays,
+        customLayers: map?.customLayers ?? state.customLayers,
+      }),
+    )
+    .addCase(mapSetCustomLayers, (state, action) => {
+      state.customLayers = action.payload;
+    })
+    .addCase(mapSetEsriAttribution, (state, action) => {
+      state.esriAttribution = action.payload;
     }),
-  )
-  .handleAction(mapSetCustomLayers, (state, action) => ({
-    ...state,
-    customLayers: action.payload,
-  }));
+);

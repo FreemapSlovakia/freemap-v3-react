@@ -1,35 +1,30 @@
-import {
-  Feature,
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-  Properties,
-} from '@turf/helpers';
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
+import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 
 export interface SearchResult {
   id: number;
-  geojson?:
-    | Feature<Geometries | GeometryCollection>
-    | FeatureCollection<Geometries | GeometryCollection>;
+  geojson?: Feature | FeatureCollection;
   osmType: 'node' | 'way' | 'relation';
-  tags: Properties;
+  tags: GeoJsonProperties;
   detailed?: true;
   showToast?: true;
+  zoom?: number;
 }
 
-export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
+export const searchSetQuery = createAction<{
   query: string;
   fromUrl?: boolean;
-}>();
+}>('SEARCH_SET_QUERY');
 
 export const searchSetResults =
-  createAction('SEARCH_SET_RESULTS')<SearchResult[]>();
+  createAction<SearchResult[]>('SEARCH_SET_RESULTS');
 
-export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<{
+export const searchClear = createAction('SEARCH_CLEAR');
+
+export const searchSelectResult = createAction<{
   result: SearchResult;
   showToast?: boolean;
   focus?: boolean;
   storeResult?: boolean;
   // TODO refactor to: actions?: ('showToast' | 'focus' | 'storeResult')[];
-} | null>();
+} | null>('SEARCH_SELECT_RESULT');

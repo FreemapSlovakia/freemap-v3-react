@@ -1,14 +1,14 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   DrawingPoint,
   drawingPointAdd,
   drawingPointChangePosition,
+  drawingPointChangeProperties,
+  drawingPointDelete,
   drawingPointSetAll,
-} from 'fm3/actions/drawingPointActions';
-import { applySettings, clearMap } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
-import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/drawingPointActions.js';
+import { applySettings, clearMapFeatures } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];
@@ -20,46 +20,47 @@ const initialState: DrawingPointsState = {
   change: 0,
 };
 
-export const drawingPointsReducer = createReducer<
-  DrawingPointsState,
-  RootAction
->(initialState)
-  .handleAction(clearMap, () => initialState)
-  .handleAction(applySettings, (state, { payload }) =>
-    produce(state, (draft) => {
+export const drawingPointsReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => initialState)
+    .addCase(drawingPointDelete, (state, { payload }) => ({
+      ...state,
+      points: state.points.filter((_, i) => i !== payload.index),
+    }))
+    .addCase(applySettings, (state, { payload }) => {
       if (payload.drawingApplyAll) {
-        for (const point of draft.points) {
+        for (const point of state.points) {
           if (payload.drawingColor) {
             point.color = payload.drawingColor;
           }
         }
       }
-    }),
-  )
-  .handleAction(drawingPointAdd, (state, { payload }) => ({
-    ...state,
-    points: [...state.points, payload],
-    change: state.change + 1,
-  }))
-  .handleAction(drawingPointChangePosition, (state, { payload }) =>
-    produce(state, (draft) => {
-      const point = draft.points[payload.index];
+    })
+    .addCase(drawingPointAdd, (state, { payload }) => {
+      state.points.push(payload);
+
+      state.change++;
+    })
+    .addCase(drawingPointChangeProperties, (state, { payload }) => {
+      Object.assign(state.points[payload.index], payload.properties);
+    })
+    .addCase(drawingPointChangePosition, (state, { payload }) => {
+      const point = state.points[payload.index];
 
       point.lat = payload.lat;
 
       point.lon = payload.lon;
+    })
+    .addCase(drawingPointSetAll, (state, { payload }) => {
+      state.points = payload;
+    })
+    .addCase(mapsLoaded, (state, { payload }) => {
+      return {
+        ...initialState,
+        points: [
+          ...(payload.merge ? state.points : []),
+          ...(payload.data.points ?? initialState.points),
+        ],
+      };
     }),
-  )
-  .handleAction(drawingPointSetAll, (state, { payload }) => ({
-    ...state,
-    points: payload,
-  }))
-  .handleAction(mapsLoaded, (state, { payload }) => {
-    return {
-      ...initialState,
-      points: [
-        ...(payload.merge ? state.points : []),
-        ...(payload.data.points ?? initialState.points),
-      ],
-    };
-  });
+);

@@ -1,6 +1,6 @@
-import { mouseCursorSelector } from 'fm3/selectors/mainSelectors';
 import { useEffect, useState } from 'react';
-import { useAppSelector } from './reduxSelectHook';
+import { mouseCursorSelector } from '../selectors/mainSelectors.js';
+import { useAppSelector } from './reduxSelectHook.js';
 
 // TODO handle also dropdown menus (.dropdown-menu.show)
 
@@ -9,17 +9,14 @@ export function useMouseCursor(element?: HTMLElement): void {
 
   useEffect(() => {
     const mo = new MutationObserver(() => {
-      setOpen(
-        document.querySelector('*[data-popper-reference-hidden=false]') !==
-          null,
-      );
+      setOpen(document.querySelector('*[aria-expanded=true]') !== null);
     });
 
     mo.observe(document.body, {
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: ['data-popper-reference-hidden'],
+      attributeFilter: ['aria-expanded'],
     });
 
     return () => {

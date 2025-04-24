@@ -25,7 +25,7 @@ export function loadGapi(): Promise<void> {
     const fjs = document.getElementsByTagName('script')[0];
 
     if (!fjs || !fjs.parentNode) {
-      reject(Error('no script'));
+      reject(new Error('no script'));
     } else {
       fjs.parentNode.insertBefore(js, fjs);
     }
@@ -48,6 +48,7 @@ export async function getAuth2(
   });
 
   gapi.client.init({
+    plugin_name: 'freemap.sk',
     apiKey: 'AIzaSyC90lMoeLp_Rbfpv-eEOoNVpOe25CNXhFc',
     clientId:
       '120698260366-tt592mqhut3931ct83667sfihdkv69jj.apps.googleusercontent.com',

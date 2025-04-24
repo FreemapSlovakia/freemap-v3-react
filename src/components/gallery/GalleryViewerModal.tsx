@@ -1,3 +1,27 @@
+import 'pannellum';
+import 'pannellum/build/pannellum.css';
+import {
+  ChangeEvent,
+  FormEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  FaExternalLinkAlt,
+  FaPencilAlt,
+  FaRegDotCircle,
+  FaSave,
+  FaTimes,
+  FaTrash,
+} from 'react-icons/fa';
+import { RiFullscreenLine } from 'react-icons/ri';
+import { useDispatch } from 'react-redux';
+import { Rating } from 'react-simple-star-rating';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -11,48 +35,18 @@ import {
   galleryShowOnTheMap,
   gallerySubmitComment,
   gallerySubmitStars,
-} from 'fm3/actions/galleryActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+} from '../../actions/galleryActions.js';
+import { toastsAdd } from '../../actions/toastsActions.js';
 import {
   GalleryEditForm,
   PictureModel,
-} from 'fm3/components/gallery/GalleryEditForm';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/gallery.scss';
-import 'pannellum';
-import 'pannellum/build/pannellum.css';
-import {
-  ChangeEvent,
-  FormEvent,
-  Fragment,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
-import {
-  FaExternalLinkAlt,
-  FaPencilAlt,
-  FaRegDotCircle,
-  FaSave,
-  FaTimes,
-  FaTrash,
-} from 'react-icons/fa';
-import { RiFullscreenLine } from 'react-icons/ri';
-import { useDispatch } from 'react-redux';
-import ReactStars from 'react-stars';
-import { getType } from 'typesafe-actions';
-import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
-import { RecentTags } from './RecentTags';
+} from '../../components/gallery/GalleryEditForm.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
+import { useMessages } from '../../l10nInjector.js';
+import '../../styles/gallery.scss';
+import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton.js';
+import { RecentTags } from './RecentTags.js';
 
 type Props = { show: boolean };
 
@@ -89,7 +83,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
 
-  const imageElement = useRef<HTMLImageElement>();
+  const imageElement = useRef<HTMLImageElement>(undefined);
 
   const fullscreenElement = useRef<HTMLDivElement | null>(null);
 
@@ -173,22 +167,24 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const panoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (p) {
-      const v = window.pannellum.viewer(panoRef.current, {
-        panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
-        type: 'equirectangular',
-        autoLoad: true,
-        showControls: false,
-        autoRotate: 15,
-        autoRotateInactivityDelay: 60000,
-        // compass: true,
-        // title: 'panorama',
-      });
-
-      return () => {
-        v.destroy();
-      };
+    if (!p || !panoRef.current) {
+      return;
     }
+
+    const v = window.pannellum.viewer(panoRef.current, {
+      panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
+      type: 'equirectangular',
+      autoLoad: true,
+      showControls: false,
+      autoRotate: 15,
+      autoRotateInactivityDelay: 60000,
+      // compass: true,
+      // title: 'panorama',
+    });
+
+    return () => {
+      v.destroy();
+    };
   }, [p, activeImageId]);
 
   const handleFullscreen = useCallback(() => {
@@ -207,7 +203,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         id: 'gallery.deletePicture',
         messageKey: 'gallery.viewer.deletePrompt',
         style: 'warning',
-        cancelType: [getType(galleryClear), getType(galleryRequestImage)],
+        cancelType: [galleryClear.type, galleryRequestImage.type],
         actions: [
           {
             nameKey: 'general.yes',
@@ -282,10 +278,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         (isFullscreen
           ? window.innerWidth
           : window.matchMedia('(min-width: 1200px)').matches
-          ? 1110
-          : window.matchMedia('(min-width: 992px)').matches
-          ? 770
-          : 470),
+            ? 1110
+            : window.matchMedia('(min-width: 992px)').matches
+              ? 770
+              : 470),
     )}`;
 
   const handlePositionPick = useCallback(() => {
@@ -319,8 +315,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         <Modal.Title>
           {m?.gallery.viewer.title}{' '}
           {imageIds && (
-            <FormControl
-              as="select"
+            <Form.Select
               value={index}
               onChange={handleIndexChange}
               className="w-auto d-inline-block"
@@ -330,7 +325,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   {i + 1}
                 </option>
               ))}
-            </FormControl>
+            </Form.Select>
           )}
           {imageIds ? ` / ${imageIds.length} ` : ''}
           {title && `- ${title}`}
@@ -360,9 +355,9 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                               (window.matchMedia('(min-width: 1200px)').matches
                                 ? 1110
                                 : window.matchMedia('(min-width: 992px)')
-                                    .matches
-                                ? 770
-                                : 470) + 'px',
+                                      .matches
+                                  ? 770
+                                  : 470) + 'px',
                           }
                     }
                   />
@@ -398,43 +393,27 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
             {imageIds && (
               <button
+                type="button"
                 className={`carousel-control-prev ${
                   index < 1 ? 'carousel-control-disabled' : ''
                 } ${pano ? 'carousel-control-short' : ''}`}
-                onClick={(e) => {
-                  e?.preventDefault();
-
-                  dispatch(galleryRequestImage('prev'));
-                }}
+                onClick={() => dispatch(galleryRequestImage('prev'))}
               >
-                <span
-                  className="carousel-control-prev-icon"
-                  aria-hidden="true"
-                />
-
-                <span className="sr-only">Previous</span>
+                <span className="carousel-control-prev-icon" />
               </button>
             )}
 
             {imageIds && (
               <button
+                type="button"
                 className={`carousel-control-next ${
                   index >= imageIds.length - 1
                     ? 'carousel-control-disabled'
                     : ''
                 }`}
-                onClick={(e) => {
-                  e?.preventDefault();
-
-                  dispatch(galleryRequestImage('next'));
-                }}
+                onClick={() => dispatch(galleryRequestImage('next'))}
               >
-                <span
-                  className="carousel-control-next-icon"
-                  aria-hidden="true"
-                />
-
-                <span className="sr-only">Next</span>
+                <span className="carousel-control-next-icon" />
               </button>
             )}
           </div>
@@ -471,11 +450,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
               {' ｜ '}
 
-              <ReactStars
+              <Rating
                 className="stars"
                 size={22}
-                value={rating}
-                edit={false}
+                initialValue={rating}
+                readonly
               />
 
               {description && ` ｜ ${description}`}
@@ -486,12 +465,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 tags.map((tag) => (
                   <Fragment key={tag}>
                     {' '}
-                    <Badge variant="secondary">{tag}</Badge>
+                    <Badge bg="secondary">{tag}</Badge>
                   </Fragment>
                 ))}
 
               {!isFullscreen && editModel && (
-                <form onSubmit={handleSave}>
+                <Form onSubmit={handleSave}>
                   <hr />
 
                   <h5>{m?.gallery.viewer.modify}</h5>
@@ -507,7 +486,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   <Button variant="primary" type="submit">
                     <FaSave /> {m?.general.save}
                   </Button>
-                </form>
+                </Form>
               )}
 
               {!isFullscreen && (
@@ -525,10 +504,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     ))}
 
                   {user && (
-                    <form onSubmit={handleCommentFormSubmit}>
-                      <FormGroup>
+                    <Form onSubmit={handleCommentFormSubmit}>
+                      <Form.Group className="mb-3">
                         <InputGroup>
-                          <FormControl
+                          <Form.Control
                             type="text"
                             placeholder={m?.gallery.viewer.newComment}
                             value={comment}
@@ -540,32 +519,30 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                             maxLength={4096}
                           />
 
-                          <InputGroup.Append>
-                            <Button
-                              variant="secondary"
-                              type="submit"
-                              disabled={comment.length < 1}
-                            >
-                              {m?.gallery.viewer.addComment}
-                            </Button>
-                          </InputGroup.Append>
+                          <Button
+                            variant="secondary"
+                            type="submit"
+                            disabled={comment.length < 1}
+                          >
+                            {m?.gallery.viewer.addComment}
+                          </Button>
                         </InputGroup>
-                      </FormGroup>
-                    </form>
+                      </Form.Group>
+                    </Form>
                   )}
 
                   {user && (
-                    <div className="d-flex f-gap-1 align-items-center">
-                      <div className="flex-shrink-0">
+                    <div className="d-flex f-gap-1 align-items-center mb-3">
+                      <span className="flex-shrink-0">
                         {m?.gallery.viewer.yourRating}
-                      </div>
+                      </span>
 
-                      <ReactStars
-                        className="stars ml-1  flex-shrink-0"
+                      <Rating
+                        className="stars ms-1 flex-shrink-0"
                         size={22}
-                        half={false}
-                        value={myStars ?? 0}
-                        onChange={handleStarsChange}
+                        allowFraction={false}
+                        initialValue={myStars ?? 0}
+                        onClick={handleStarsChange}
                       />
 
                       {editModel === null && tags && canEdit && (

@@ -1,19 +1,10 @@
-import { documentShow, Modal, setActiveModal } from 'fm3/actions/mainActions';
-import { DocumentKey, documents } from 'fm3/documents';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { SyntheticEvent, useCallback } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
-import {
-  FaBook,
-  FaRegAddressCard,
-  FaRegLightbulb,
-  FaRegMap,
-  FaUsers,
-} from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
+import { JSX } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
+import { documents } from '../../documents/index.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {
   const m = useMessages();
@@ -24,36 +15,6 @@ export function HelpSubmenu(): JSX.Element {
 
   const mapType = useAppSelector((state) => state.map.mapType);
 
-  const dispatch = useDispatch();
-
-  const closeMenu = useMenuClose();
-
-  const showModal = useCallback(
-    (modal: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      closeMenu();
-
-      if (is<Modal>(modal)) {
-        dispatch(setActiveModal(modal));
-      }
-    },
-    [closeMenu, dispatch],
-  );
-
-  const handleTipSelect = useCallback(
-    (tip: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      closeMenu();
-
-      if (is<DocumentKey>(tip)) {
-        dispatch(documentShow(tip));
-      }
-    },
-    [closeMenu, dispatch],
-  );
-
   return (
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
@@ -61,24 +22,16 @@ export function HelpSubmenu(): JSX.Element {
       {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
         mapType,
       ) && (
-        <Dropdown.Item
-          href="?show=legend"
-          eventKey="legend"
-          onSelect={showModal}
-        >
+        <Dropdown.Item href="#show=legend" eventKey="modal-legend">
           <FaRegMap /> {m?.mainMenu.mapLegend}
         </Dropdown.Item>
       )}
 
-      <Dropdown.Item eventKey="about" href="?show=about" onSelect={showModal}>
+      <Dropdown.Item eventKey="modal-about" href="#show=about">
         <FaRegAddressCard /> {m?.mainMenu.contacts}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        href={m?.mainMenu.wikiLink}
-        onSelect={closeMenu}
-        target="_blank"
-      >
+      <Dropdown.Item href={m?.mainMenu.wikiLink} eventKey="url" target="_blank">
         <FaBook /> {m?.mainMenu.osmWiki}
       </Dropdown.Item>
 
@@ -86,7 +39,7 @@ export function HelpSubmenu(): JSX.Element {
         <>
           <Dropdown.Item
             href="https://groups.google.com/forum/#!forum/osm_sk"
-            onSelect={closeMenu}
+            eventKey="url"
             target="_blank"
           >
             <FaUsers /> Fórum slovenskej OSM komunity
@@ -94,17 +47,12 @@ export function HelpSubmenu(): JSX.Element {
 
           <Dropdown.Divider />
 
-          <Dropdown.Header>
-            <FaRegLightbulb /> {m?.mainMenu.tips}
-          </Dropdown.Header>
-
           {documents.map(([key, name, icon, hidden]) =>
             hidden ? null : (
               <Dropdown.Item
                 key={key}
-                href={`?tip=${key}`}
-                onSelect={handleTipSelect}
-                eventKey={key}
+                href={`?document=${key}`}
+                eventKey={'document-' + key}
               >
                 {icon} {name}
               </Dropdown.Item>

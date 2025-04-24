@@ -1,7 +1,15 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { AttributionDef, baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
+import { is } from 'typia';
+import { documentShow } from '../actions/mainActions.js';
+import { DocumentKey } from '../documents/index.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import {
+  AttributionDef,
+  baseLayers,
+  overlayLayers,
+} from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 
@@ -21,10 +29,14 @@ export function Attribution({ unknown }: Props): ReactElement {
     ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
   );
 
+  const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
+
+  const dispatch = useDispatch();
+
   return categorized.length === 0 ? (
     <div>{unknown}</div>
   ) : (
-    <ul className="m-0 ml-n4 mr-n4">
+    <ul className="m-0 ms-n4 me-n4">
       {categorized.map(({ type, attributions }) => (
         <li key={type}>
           {m?.mapLayers.type[type]}{' '}
@@ -36,13 +48,27 @@ export function Attribution({ unknown }: Props): ReactElement {
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (a.url?.startsWith('?document=')) {
+                    const docKey = a.url.slice(5);
+
+                    if (is<DocumentKey>(docKey)) {
+                      e.preventDefault();
+
+                      dispatch(documentShow(docKey));
+                    }
+                  }
+                }}
               >
                 {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
               </a>
             ) : (
-              a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])
+              <Fragment key={a.type}>
+                {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
+              </Fragment>
             ),
           ])}
+          {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
         </li>
       ))}
       {/* {imhd && (

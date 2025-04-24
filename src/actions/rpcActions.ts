@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
 interface RpcResponseBase {
   method: string;
@@ -20,17 +20,17 @@ export interface RpcErrorResponse extends RpcResponseBase {
   };
 }
 
-export const rpcCall = createAction('RPC_CALL')<{
+export const rpcCall = createAction<{
   method: string;
   params: unknown;
   tag?: unknown;
-}>();
+}>('RPC_CALL');
 
-export const rpcResponse = createAction('RPC_RESPONSE')<
-  RpcResultResponse | RpcErrorResponse
->();
+export const rpcResponse = createAction<RpcResultResponse | RpcErrorResponse>(
+  'RPC_RESPONSE',
+);
 
-export const rpcEvent = createAction('RPC_EVENT')<{
+export const rpcEvent = createAction<{
   method: string;
   params: unknown;
-}>();
+}>('RPC_EVENT');

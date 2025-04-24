@@ -1,21 +1,30 @@
-import turfAlong from '@turf/along';
-import { Feature, Geometries, LineString } from '@turf/helpers';
+import along from '@turf/along';
+import distance from '@turf/distance';
 import { getCoord, getCoords } from '@turf/invariant';
-import turfLength from '@turf/length';
-import { RootAction } from 'fm3/actions';
+import length from '@turf/length';
+import {
+  Feature,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from 'geojson';
+import { Dispatch } from 'redux';
+import { assert } from 'typia';
 import {
   elevationChartClose,
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
-import { containsElevations, distance } from 'fm3/geoutils';
-import { httpRequest } from 'fm3/httpRequest';
-import { ProcessorHandler } from 'fm3/middlewares/processorMiddleware';
-import { RootState } from 'fm3/reducers';
-import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
-import { Dispatch } from 'redux';
-import { assert } from 'typia';
+} from '../actions/elevationChartActions.js';
+import { RootAction } from '../actions/index.js';
+import { clearMapFeatures, selectFeature } from '../actions/mainActions.js';
+import { containsElevations } from '../geoutils.js';
+import { httpRequest } from '../httpRequest.js';
+import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { ElevationProfilePoint } from '../reducers/elevationChartReducer.js';
+import { RootState } from '../store.js';
 
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch,
@@ -34,7 +43,9 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
 export default handle;
 
 function resolveElevationProfilePointsLocally(
-  trackGeojson: Feature<Geometries>,
+  trackGeojson: Feature<
+    Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon
+  >,
   dispatch: Dispatch<RootAction>,
 ) {
   let dist = 0;
@@ -47,7 +58,7 @@ function resolveElevationProfilePointsLocally(
     const [lon, lat, ele] = pt;
 
     if (prevPt) {
-      dist += distance(lat, lon, prevPt[1], prevPt[0]);
+      dist += distance([lon, lat], prevPt, { units: 'meters' });
     }
 
     elevationProfilePoints.push({
@@ -68,7 +79,7 @@ async function resolveElevationProfilePointsViaApi(
   trackGeojson: Feature<LineString>,
   dispatch: Dispatch<RootAction>,
 ) {
-  const totalDistanceInKm = turfLength(trackGeojson);
+  const totalDistanceInKm = length(trackGeojson);
 
   const delta = Math.min(0.1, totalDistanceInKm / (window.innerWidth / 2));
 
@@ -80,7 +91,7 @@ async function resolveElevationProfilePointsViaApi(
   }[] = [];
 
   for (let dist = 0; dist <= totalDistanceInKm; dist += delta) {
-    const [lon, lat] = getCoord(turfAlong(trackGeojson, dist));
+    const [lon, lat] = getCoord(along(trackGeojson, dist));
 
     elevationProfilePoints.push({
       lat,
@@ -100,7 +111,7 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartSetTrackGeojson,
       selectFeature,
       elevationChartClose,
-      clearMap,
+      clearMapFeatures,
     ],
   });
 

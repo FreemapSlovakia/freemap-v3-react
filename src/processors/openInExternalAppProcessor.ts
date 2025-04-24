@@ -1,9 +1,10 @@
 import bbox from '@turf/bbox';
 import buffer from '@turf/buffer';
 import { point } from '@turf/helpers';
-import { openInExternalApp } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { copyToClipboard } from 'fm3/clipboardUtils';
+import popupCentered from 'popup-centered';
+import { openInExternalApp } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { copyToClipboard } from '../clipboardUtils.js';
 import {
   getF4mapUrl,
   getGoogleUrl,
@@ -18,11 +19,10 @@ import {
   getTwitterUrl,
   getWazeUrl,
   getZbgisUrl,
-} from 'fm3/externalUrlUtils';
-import { loadFb } from 'fm3/fbLoader';
-import { mapPromise } from 'fm3/leafletElementHolder';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import popupCentered from 'popup-centered';
+} from '../externalUrlUtils.js';
+import { loadFb } from '../fbLoader.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   actionCreator: openInExternalApp,
@@ -47,6 +47,8 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
     const mapType = mapType0 ?? getState().map.mapType;
 
+    window._paq.push(['trackEvent', 'Main', 'openInExternalApp', where]);
+
     switch (where) {
       case 'window':
         window.open(url);
@@ -65,7 +67,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'twitter':
-        popupCentered(getTwitterUrl(), 'twitter', 575, 280);
+        popupCentered.default(getTwitterUrl(), 'twitter', 575, 280);
 
         break;
 
@@ -85,18 +87,25 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'josm': {
-        let left: number;
+        let left;
 
-        let right: number;
+        let right;
 
-        let top: number;
+        let top;
 
-        let bottom: number;
+        let bottom;
 
         if (includePoint) {
-          [left, bottom, right, top] = bbox(
-            buffer(point([lon, lat]), 100, { units: 'meters', steps: 10 }),
-          );
+          const buffered = buffer(point([lon, lat]), 100, {
+            units: 'meters',
+            steps: 10,
+          });
+
+          if (!buffered) {
+            throw new Error('empty buffer');
+          }
+
+          [left, bottom, right, top] = bbox(buffered);
         } else {
           const bounds = (await mapPromise).getBounds();
 
@@ -210,6 +219,8 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
       case 'f4map':
         window.open(getF4mapUrl(lat, lon, zoom));
+
+        break;
 
       case 'url':
         window.navigator

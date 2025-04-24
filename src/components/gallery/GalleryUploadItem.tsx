@@ -1,13 +1,13 @@
-import { GalleryTag } from 'fm3/actions/galleryActions';
+import { Fragment, ReactElement, useCallback } from 'react';
+import { Button } from 'react-bootstrap';
+import { FaTimes } from 'react-icons/fa';
+import { GalleryTag } from '../../actions/galleryActions.js';
 import {
   GalleryEditForm,
   PictureModel,
-} from 'fm3/components/gallery/GalleryEditForm';
-import spinnerbar from 'fm3/images/spinnerbar.gif';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { Fragment, ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import { FaTimes } from 'react-icons/fa';
+} from '../../components/gallery/GalleryEditForm.js';
+import spinnerbar from '../../images/spinnerbar.gif';
+import { Messages } from '../../translations/messagesInterface.js';
 
 interface Props {
   id: number;

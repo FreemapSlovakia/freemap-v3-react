@@ -1,13 +1,15 @@
-import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
-import { drawingMeasure } from 'fm3/actions/drawingPointActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { isEventOnMap } from 'fm3/mapUtils';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { Point, drawingLineAddPoint } from '../actions/drawingLineActions.js';
+import { drawingMeasure } from '../actions/drawingPointActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { isEventOnMap } from '../mapUtils.js';
 
 export default DrawingLinesTool;
+
+const EMPTY: Point[] = [];
 
 export function DrawingLinesTool(): null {
   const selection = useAppSelector((state) => state.main.selection);
@@ -17,7 +19,7 @@ export function DrawingLinesTool(): null {
   const linePoints = useAppSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'
       ? state.drawingLines.lines[state.main.selection.id].points
-      : [],
+      : EMPTY,
   );
 
   const dispatch = useDispatch();
@@ -25,6 +27,10 @@ export function DrawingLinesTool(): null {
   const color = useAppSelector((state) => state.main.drawingColor);
 
   const width = useAppSelector((state) => state.main.drawingWidth);
+
+  const linesLength = useAppSelector(
+    (state) => state.drawingLines.lines.length,
+  );
 
   const handleMapClick = useCallback(
     ({ latlng, originalEvent }: LeafletMouseEvent) => {
@@ -38,7 +44,7 @@ export function DrawingLinesTool(): null {
 
       const pos = linePoints.length;
 
-      let id: number;
+      let id;
 
       if (pos === 0) {
         id = linePoints.length ? linePoints[pos].id - 1 : 0;
@@ -48,21 +54,24 @@ export function DrawingLinesTool(): null {
         id = (linePoints[pos - 1].id + linePoints[pos].id) / 2;
       }
 
+      const index =
+        selection?.type === 'draw-line-poly' ? selection.id : undefined;
+
       dispatch(
         drawingLineAddPoint({
-          index:
-            selection?.type === 'draw-line-poly' ? selection.id : undefined,
+          index,
           color,
           width,
           point: { lat: latlng.lat, lon: latlng.lng, id },
           position: pos,
           type: tool === 'draw-lines' ? 'line' : 'polygon',
+          id: index ?? linesLength,
         }),
       );
 
       dispatch(drawingMeasure({}));
     },
-    [linePoints, dispatch, selection, tool, color, width],
+    [linePoints, dispatch, selection, tool, color, width, linesLength],
   );
 
   useMapEvent('click', handleMapClick);

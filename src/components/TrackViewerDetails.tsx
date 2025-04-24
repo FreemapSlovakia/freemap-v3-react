@@ -1,12 +1,13 @@
-import { Geometries, GeometryCollection } from '@turf/helpers';
-import { distance, smoothElevations } from 'fm3/geoutils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
-import { useMessages } from 'fm3/l10nInjector';
-import { Messages } from 'fm3/translations/messagesInterface';
+import distance from '@turf/distance';
+import { Geometry } from 'geojson';
 import { ReactElement } from 'react';
+import { smoothElevations } from '../geoutils.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { useMessages } from '../l10nInjector.js';
+import { Messages } from '../translations/messagesInterface.js';
 
 export function TrackViewerDetails(): ReactElement | null {
   const trackGeojson = useAppSelector(
@@ -21,7 +22,7 @@ export function TrackViewerDetails(): ReactElement | null {
 export function TrackViewerDetailsInt({
   geometry,
 }: {
-  geometry: Geometries | GeometryCollection;
+  geometry: Geometry;
 }): ReactElement | null {
   const m = useMessages();
 
@@ -116,12 +117,9 @@ export function TrackViewerDetailsInt({
   let [prevCoord] = smoothed;
 
   for (const coord of smoothed) {
-    const distanceFromPrevPointInMeters = distance(
-      coord[1],
-      coord[0],
-      prevCoord[1],
-      prevCoord[0],
-    );
+    const distanceFromPrevPointInMeters = distance(coord, prevCoord, {
+      units: 'meters',
+    });
 
     if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
       // otherwise the ele sums are very high

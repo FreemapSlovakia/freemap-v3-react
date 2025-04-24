@@ -1,15 +1,12 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Table from 'react-bootstrap/Table';
+import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { TrackedDevice } from './TrackedDevice';
+import { setActiveModal } from '../../actions/mainActions.js';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { TrackedDevice } from './TrackedDevice.js';
 
 export function TrackedDevices(): ReactElement {
   const m = useMessages();
@@ -25,11 +22,14 @@ export function TrackedDevices(): ReactElement {
           <FaBullseye /> {m?.tracking.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <p>{m?.tracking.trackedDevices.desc}</p>
+
         <Alert variant="warning">
           {m?.tracking.trackedDevices.storageWarning}
         </Alert>
+
         <Table striped bordered responsive>
           <thead>
             <tr>
@@ -43,6 +43,7 @@ export function TrackedDevices(): ReactElement {
               <th>{m?.general.actions}</th>
             </tr>
           </thead>
+
           <tbody>
             {devices.map((device) => (
               <TrackedDevice key={device.token} device={device} />
@@ -50,6 +51,7 @@ export function TrackedDevices(): ReactElement {
           </tbody>
         </Table>
       </Modal.Body>
+
       <Modal.Footer>
         <Button
           type="button"
@@ -59,6 +61,7 @@ export function TrackedDevices(): ReactElement {
         >
           {m?.general.add}
         </Button>
+
         <Button
           variant="dark"
           type="button"

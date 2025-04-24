@@ -1,4 +1,5 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
+import { Selection } from './mainActions.js';
 
 export interface Point {
   lat: number;
@@ -14,50 +15,73 @@ export interface Line {
   width?: number;
 }
 
-export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{
+export const drawingLineAdd = createAction<Line>('DRAWING_LINE_ADD');
+
+export const drawingLineAddPoint = createAction<{
   type?: 'polygon' | 'line';
   index?: number;
   color?: string;
   width?: number;
   point: Point;
   position?: number;
-}>();
+  id: number;
+}>('DRAWING_LINE_ADD_POINT');
 
-export const drawingLineUpdatePoint = createAction(
-  'DRAWING_LINE_UPDATE_POINT',
-)<{ index: number; point: Point }>();
+export const drawingLineChangeProperties = createAction<{
+  index: number;
+  properties: {
+    label: string | undefined;
+    color: string | undefined;
+    width: number | undefined;
+    type: 'line' | 'polygon';
+  };
+}>('DRAWING_LINE_CHANGE_PROPERTIES');
 
-export const drawingLineRemovePoint = createAction(
-  'DRAWING_LINE_REMOVE_POINT',
-)<{ index: number; id: number }>();
+export const drawingLineUpdatePoint = createAction<{
+  index: number;
+  point: Point;
+}>('DRAWING_LINE_UPDATE_POINT');
 
-export const drawingLineSetLines = createAction('DRAWING_LINE_SET_LINES')<
-  Line[]
->();
+export const drawingLineRemovePoint = createAction<{
+  index: number;
+  id: number;
+}>('DRAWING_LINE_REMOVE_POINT');
 
-export const drawingLineSplit = createAction('DRAWING_LINE_SPLIT')<{
+export const drawingLineSetLines = createAction<Line[]>(
+  'DRAWING_LINE_SET_LINES',
+);
+
+export const drawingLineSplit = createAction<{
   lineIndex: number;
   pointId: number;
-}>();
+}>('DRAWING_LINE_SPLIT');
 
-export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<
+export const drawingLineJoinStart = createAction<
   | undefined
   | {
       lineIndex: number;
       pointId: number;
     }
->();
+>('DRAWING_LINE_JOIN_START');
 
-export const drawingLineJoinFinish = createAction('DRAWING_LINE_JOIN_FINISH')<{
+export const drawingLineJoinFinish = createAction<{
   lineIndex: number;
   pointId: number;
-}>();
+  selection: Selection;
+}>('DRAWING_LINE_JOIN_FINISH');
 
-export const drawingLineContinue = createAction('DRAWING_LINE_CONTINUE')<{
+export const drawingLineContinue = createAction<{
   lineIndex: number;
   pointId: number;
-}>();
+}>('DRAWING_LINE_CONTINUE');
 
-export const drawingLineStopDrawing = createAction(
-  'DRAWING_LINE_STOP_DRAWING',
-)();
+export const drawingLineStopDrawing = createAction('DRAWING_LINE_STOP_DRAWING');
+
+export const drawingLineDelete = createAction<{
+  lineIndex: number;
+}>('DRAWING_LINE_DELETE');
+
+export const drawingLineDeletePoint = createAction<{
+  lineIndex: number;
+  pointId: number;
+}>('DRAWING_LINE_DELETE_POINT');

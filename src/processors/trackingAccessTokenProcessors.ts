@@ -1,10 +1,10 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { StringDates } from 'fm3/types/common';
-import { AccessToken } from 'fm3/types/trackingTypes';
 import { assert } from 'typia';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { trackingActions } from '../actions/trackingActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { StringDates } from '../types/common.js';
+import { AccessToken } from '../types/trackingTypes.js';
 
 export const saveAccessTokenProcessor: Processor<
   typeof trackingActions.saveAccessToken
@@ -13,6 +13,13 @@ export const saveAccessTokenProcessor: Processor<
   errorKey: 'general.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const { modifiedAccessTokenId } = getState().tracking;
+
+    window._paq.push([
+      'trackEvent',
+      'Tracking',
+      'saveAccessToken',
+      modifiedAccessTokenId ? 'modify' : 'create',
+    ]);
 
     if (modifiedAccessTokenId) {
       await httpRequest({

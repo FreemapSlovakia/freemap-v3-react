@@ -1,7 +1,7 @@
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import { FaBullseye } from 'react-icons/fa';
-import { Selection } from './Selection';
+import { useMessages } from '../l10nInjector.js';
+import { Selection } from './Selection.js';
 
 export function TrackingSelection(): ReactElement {
   const m = useMessages();

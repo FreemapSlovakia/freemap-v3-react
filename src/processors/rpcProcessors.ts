@@ -1,7 +1,7 @@
-import { rpcCall, rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
-import { wsReceived, wsSend } from 'fm3/actions/websocketActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { is } from 'typia';
+import { rpcCall, rpcEvent, rpcResponse } from '../actions/rpcActions.js';
+import { wsReceived, wsSend } from '../actions/websocketActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 // TODO implement call timeout
 
@@ -96,11 +96,7 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
       // ignore
     }
 
-    if (
-      is<JsonRpcRequest>(object) &&
-      'method' in object /* for dev */ &&
-      object.id === undefined
-    ) {
+    if (is<JsonRpcRequest>(object) && object.id === undefined) {
       dispatch(rpcEvent({ method: object.method, params: object.params }));
     } else if (
       is<JsonRpcOkResponse | JsonRpcErrorResponse>(object) &&

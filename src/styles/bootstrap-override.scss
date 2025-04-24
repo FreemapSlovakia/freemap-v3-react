@@ -1,22 +1,3 @@
-.popover-body {
-  // max-width: 290px;
-  max-height: calc(
-    var(--vh, 100vh) - 120px
-  ); // hack to prevent popovers go outside view on mobiles
-  overflow-y: auto;
-}
-
-.popover {
-  max-width: 350px;
-
-  & .dropdown-item {
-    font-size: 1rem;
-
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
-
 .dropdown-menu {
   z-index: 10000;
 }
@@ -116,4 +97,12 @@ legend {
 
 .text-pre {
   white-space: pre;
+}
+
+.btn-group {
+  // Reset rounded corners
+  > .btn:not(:last-child).fm-dropdown-toggle-nocaret {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
 }

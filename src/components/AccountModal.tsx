@@ -1,12 +1,5 @@
-import { authDeleteAccount, authStartLogout } from 'fm3/actions/authActions';
-import { saveSettings, setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import {
   FaCheck,
   FaCog,
@@ -14,7 +7,15 @@ import {
   FaSignOutAlt,
   FaTimes,
 } from 'react-icons/fa';
+import { MdWorkspacePremium } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
+import { authDeleteAccount, authStartLogout } from '../actions/authActions.js';
+import { saveSettings, setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useBecomePremium } from '../hooks/useBecomePremium.js';
+import { useMessages } from '../l10nInjector.js';
+import { AuthProviders } from './AuthProviders.js';
 
 type Props = { show: boolean };
 
@@ -32,6 +33,8 @@ export function AccountModal({ show }: Props): ReactElement | null {
   const [sendGalleryEmails, setSendGalleryEmails] = useState(
     user?.sendGalleryEmails ?? true,
   );
+
+  const becomePremium = useBecomePremium();
 
   const dispatch = useDispatch();
 
@@ -68,11 +71,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
     );
   };
 
-  if (!user) {
-    return null;
-  }
-
-  return (
+  return !user ? null : (
     <Modal show={show} onHide={close}>
       <Form
         onSubmit={(e) => {
@@ -96,7 +95,21 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group>
+          <Form.Group className="mb-3">
+            {becomePremium ? (
+              <Button onClick={becomePremium}>
+                <MdWorkspacePremium /> {m?.premium.becomePremium}
+              </Button>
+            ) : (
+              <Alert variant="success">
+                <MdWorkspacePremium /> {m?.premium.youArePremium}
+              </Alert>
+            )}
+          </Form.Group>
+
+          {becomePremium && <hr />}
+
+          <Form.Group className="mb-3">
             <Form.Label>{m?.settings.account.name}</Form.Label>
 
             <Form.Control
@@ -109,7 +122,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
             />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>{m?.settings.account.email}</Form.Label>
 
             <Form.Control
@@ -123,6 +136,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
           </Form.Group>
 
           <Form.Check
+            className="mb-3"
             id="chk-galEmails"
             type="checkbox"
             onChange={(e) => {
@@ -131,6 +145,22 @@ export function AccountModal({ show }: Props): ReactElement | null {
             checked={sendGalleryEmails}
             label={m?.settings.account.sendGalleryEmails}
           />
+
+          {user.authProviders.length < 4 && (
+            <>
+              <hr />
+
+              <p>{m?.auth.connect.label}</p>
+
+              <AuthProviders mode="connect" />
+            </>
+          )}
+
+          <hr />
+
+          <p>{m?.auth.disconnect.label}</p>
+
+          <AuthProviders mode="disconnect" />
         </Modal.Body>
 
         <Modal.Footer>
@@ -155,7 +185,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
           </Button>
 
           <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </Form>

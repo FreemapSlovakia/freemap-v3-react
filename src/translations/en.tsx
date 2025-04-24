@@ -1,20 +1,18 @@
-/* eslint-disable */
-
-import { Attribution } from 'fm3/components/Attribution';
-import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { CookieConsent } from 'fm3/components/CookieConsent';
-import { ElevationInfo } from 'fm3/components/ElevationInfo';
-import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
+import { Fragment } from 'react';
+import { Alert } from 'react-bootstrap';
+import { FaKey } from 'react-icons/fa';
+import { Attribution } from '../components/Attribution.js';
+import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { CookieConsent } from '../components/CookieConsent.js';
+import { ElevationInfo } from '../components/ElevationInfo.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
-} from 'fm3/components/ObjectDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { Fragment } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import { FaKey } from 'react-icons/fa';
-import shared from './en-shared.json';
-import { Messages } from './messagesInterface';
+} from '../components/ObjectDetails.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import shared from './en-shared.js';
+import { Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 3,
@@ -63,7 +61,7 @@ const en: Messages = {
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => `Application error: ${err}`,
+    processorError: ({ err }) => addError(en, 'Application error', err),
     seconds: 'seconds',
     minutes: 'minutes',
     meters: 'meters',
@@ -77,10 +75,10 @@ const en: Messages = {
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',
     copyPageUrl: 'Copy page URL',
-    savingError: ({ err }) => `Save error: ${err}`,
-    loadError: ({ err }) => `Loading error: ${err}`,
-    deleteError: ({ err }) => `Deleting error: ${err}`,
-    operationError: ({ err }) => `Operation error: ${err}`,
+    savingError: ({ err }) => addError(en, 'Save error', err),
+    loadError: ({ err }) => addError(en, 'Loading error', err),
+    deleteError: ({ err }) => addError(en, 'Deleting error', err),
+    operationError: ({ err }) => addError(en, 'Operation error', err),
     deleted: 'Deleted.',
     saved: 'Saved.',
     visual: 'Display',
@@ -97,6 +95,10 @@ const en: Messages = {
     experimentalFunction: 'Experimental function',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
+    areYouSure: 'Are you sure?',
+    export: 'Export',
+    success: 'Success!',
+    premiumOnly: 'Support us to access this feature.',
   },
 
   selections: {
@@ -175,7 +177,6 @@ const en: Messages = {
       isochrone: 'Isochrones',
     },
     alternative: 'Alternative',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Distance:{' '}
@@ -184,7 +185,6 @@ const en: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Duration:{' '}
@@ -193,7 +193,6 @@ const en: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Distance: <b>{distance} km</b> | Duration:{' '}
@@ -210,7 +209,7 @@ const en: Messages = {
     gpsError: 'Error getting your current location.',
     routeNotFound:
       'No route found. Try to change parameters or move the route points.',
-    fetchingError: ({ err }) => `Error finding the route: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error finding the route', err),
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} on ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -252,7 +251,6 @@ const en: Messages = {
     },
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -264,7 +262,6 @@ const en: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -288,7 +285,6 @@ const en: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             at <b>{departure}</b> walk{' '}
@@ -306,7 +302,6 @@ const en: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
@@ -322,7 +317,6 @@ const en: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             walk{' '}
@@ -340,7 +334,6 @@ const en: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             bicycle{' '}
@@ -362,7 +355,7 @@ const en: Messages = {
     logOut: 'Log out',
     logIn: 'Log in',
     account: 'Account',
-    gpxExport: 'Export to GPX / GeoJSON',
+    mapFeaturesExport: 'Export map features',
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
@@ -370,13 +363,12 @@ const en: Messages = {
     back: 'Back',
     mapLegend: 'Map legend',
     contacts: 'Contacts',
-    tips: 'Tips',
     facebook: 'Freemap on Facebook',
     twitter: 'Freemap on Twitter',
     youtube: 'Freemap on YouTube',
     github: 'Freemap on GitHub',
     automaticLanguage: 'Automatic',
-    pdfExport: 'Export map',
+    mapExport: 'Export map',
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
@@ -499,13 +491,15 @@ const en: Messages = {
     locationPicking: {
       title: 'Select photo location',
     },
-    deletingError: ({ err }) => `Error deleting photo: ${err}`,
-    tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
-    pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,
-    picturesFetchingError: ({ err }) => `Error fetching photos: ${err}`,
-    savingError: ({ err }) => `Error saving photo: ${err}`,
-    commentAddingError: ({ err }) => `Error adding comment: ${err}`,
-    ratingError: ({ err }) => `Error rating photo: ${err}`,
+    deletingError: ({ err }) => addError(en, 'Error deleting photo', err),
+    tagsFetchingError: ({ err }) => addError(en, 'Error fetching tags', err),
+    pictureFetchingError: ({ err }) =>
+      addError(en, 'Error fetching photo', err),
+    picturesFetchingError: ({ err }) =>
+      addError(en, 'Error fetching photos', err),
+    savingError: ({ err }) => addError(en, 'Error saving photo', err),
+    commentAddingError: ({ err }) => addError(en, 'Error adding comment', err),
+    ratingError: ({ err }) => addError(en, 'Error rating photo', err),
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
     invalidTakenAt: 'Invalid capture date and time.',
@@ -528,7 +522,8 @@ const en: Messages = {
     distance: 'Line',
     elevation: 'Point',
     area: 'Polygon',
-    elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
+    elevationFetchError: ({ err }) =>
+      addError(en, 'Error fetching point elevation', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -586,8 +581,8 @@ const en: Messages = {
     },
     shareToast:
       'The track has been saved to the server and can be shared by copying page URL.',
-    fetchingError: ({ err }) => `Error fetching track data: ${err}`,
-    savingError: ({ err }) => `Error saving the track: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error fetching track data', err),
+    savingError: ({ err }) => addError(en, 'Error saving the track', err),
     loadingError: 'Error loading file.',
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
@@ -642,7 +637,7 @@ const en: Messages = {
     showInMenu: 'Show in menu',
     showInToolbar: 'Show in toolbar',
     saveSuccess: 'Settings have been saved.',
-    savingError: ({ err }) => `Error saving settings: ${err}`,
+    savingError: ({ err }) => addError(en, 'Error saving settings', err),
     customLayersDef: 'Custom map layers definition',
     customLayersDefError: 'Invalid definition of custom map layers.',
   },
@@ -654,7 +649,7 @@ const en: Messages = {
     olderThan: ({ days }) => `${days} days`,
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
-    fetchError: ({ err }) => `Error fetching changesets: ${err}`,
+    fetchError: ({ err }) => addError(en, 'Error fetching changesets', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Author:',
@@ -671,7 +666,7 @@ const en: Messages = {
 
   mapDetails: {
     notFound: 'Nothing found here.',
-    fetchingError: ({ err }) => `Error fetching details: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error fetching details', err),
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -690,7 +685,13 @@ const en: Messages = {
       zoom: 'Zoom-in',
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,
-    fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
+    fetchingError: ({ err }) =>
+      addError(en, 'Error fetching objects (POIs)', err),
+    icon: {
+      pin: 'Pin',
+      ring: 'Ring',
+      square: 'Square',
+    },
     // categories: {
     //   1: 'Nature',
     //   2: 'Services',
@@ -1000,7 +1001,7 @@ const en: Messages = {
     prompt: 'Enter the place',
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
-    fetchingError: ({ err }) => `Searching error: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Searching error', err),
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
   },
@@ -1017,19 +1018,18 @@ const en: Messages = {
     enableLocateMe: 'find me',
   },
 
-  tips: {
-    errorLoading: 'Error loading tip.',
+  documents: {
+    errorLoading: 'Error loading document.',
   },
 
-  gpxExport: {
-    export: 'Download',
+  exportMapFeatures: {
+    download: 'Download',
     format: 'Format',
-    exportToDrive: 'Save to Google Drive',
-    exportToDropbox: 'Save to Dropbox',
-    exportError: ({ err }) => `Error exporting: ${err}`,
+    target: 'Target',
+    exportError: ({ err }) => addError(en, 'Error exporting', err),
     what: {
       plannedRoute: 'found route',
-      plannedRouteWithStops: 'found route including stops',
+      plannedRouteWithStops: 'include stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
       drawingLines: 'drawing - lines',
@@ -1037,6 +1037,7 @@ const en: Messages = {
       drawingPoints: 'drawing - points',
       tracking: 'live tracking',
       gpx: 'GPX track',
+      search: 'highlighted map feature',
     },
     disabledAlert:
       'Only checkboxes having anything in the map to export are enabled.',
@@ -1044,23 +1045,54 @@ const en: Messages = {
       'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
     exportedToDropbox: 'File has been saved to Dropboxu.',
     exportedToGdrive: 'File has been saved to Google Drive.',
-  },
-
-  logIn: {
-    with: {
-      facebook: 'Log in with Facebook',
-      google: 'Log in with Google',
-      osm: 'Log in with OpenStreetMap',
+    garmin: {
+      courseName: 'Course name',
+      description: 'Description',
+      activityType: 'Activity type',
+      at: {
+        running: 'Running',
+        hiking: 'Hiking',
+        other: 'Other',
+        mountain_biking: 'Mountain biking',
+        trailRunning: 'Trail running',
+        roadCycling: 'Road cycling',
+        gravelCycling: 'Gravel cycling',
+      },
+      revoked: 'Exporting course to Garmin has been revoked.',
+      connectPrompt:
+        "You don't have your Garmin account connected yet. Do you wish to do it now?",
+      authPrompt:
+        'You are not authenticated with Garmin yet. Do you wish to do it now?',
     },
-    success: 'You have been successfully logged in.',
-    logInError: ({ err }) => `Error logging in: ${err}`,
-    logInError2: 'Error logging in.',
-    logOutError: ({ err }) => `Error logging out: ${err}`,
-    verifyError: ({ err }) => `Error verifying authentication: ${err}`,
   },
 
-  logOut: {
-    success: 'You have been successfully logged out.',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
+    },
+    connect: {
+      label: 'Connect',
+      success: 'Connected',
+    },
+    disconnect: {
+      label: 'Disconnect',
+      success: 'Disconnected',
+    },
+    logIn: {
+      with: 'Choose a login provider',
+      success: 'You have been successfully logged in.',
+      logInError: ({ err }) => addError(en, 'Error logging in', err),
+      logInError2: 'Error logging in.',
+      verifyError: ({ err }) =>
+        addError(en, 'Error verifying authentication', err),
+    },
+    logOut: {
+      success: 'You have been successfully logged out.',
+      error: ({ err }) => addError(en, 'Error logging out', err),
+    },
   },
 
   mapLayers: {
@@ -1072,41 +1104,37 @@ const en: Messages = {
     interactiveLayerWarning: 'Interactive layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
-      A: 'Car',
-      T: 'Hiking',
-      C: 'Bicycle',
-      K: 'Crosscountry Ski',
+      A: 'Car (legacy)',
+      T: 'Hiking (legacy)',
+      C: 'Bicycle (legacy)',
+      K: 'Crosscountry Ski (legacy)',
       S: 'Aerial',
-      Z: 'Ortofotomozaika SR (Aerial, SK)',
+      Z: 'Ortofoto ČR+SR (Aerial, CZ+SK)',
       J: 'Old Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Public transport (ÖPNV)',
-      h: 'Historic',
       X: outdoorMap,
       i: 'Interactive layer',
       I: 'Photos',
       l: 'Forest tracks NLC (SK)',
-      n1: 'Names (car)',
-      n2: 'Names (hiking)',
-      n3: 'Names (bicycle)',
-      g: 'OSM GPS traces',
       t: 'Hiking trails',
       c: 'Bicycle trails',
-      q: 'OpenSnowMap',
-      r: 'Rendering clients',
       s0: 'Strava (all)',
       s1: 'Strava (rides)',
       s2: 'Strava (runs)',
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
-      '4': 'Light Terrain Hillshading (SK)',
-      '5': 'Terrain Hillshading (SK)',
-      '6': 'Surface Hillshading (SK)',
+      '4': 'Light terrain shading (SK)',
+      '5': 'Terrain shading (SK)',
+      '6': 'Surface shading (SK)',
+      '7': 'Detailed surface shading (SK)',
       VO: 'OpenStreetMap Vector',
       VS: 'Streets Vector',
+      VD: 'Dataviz Vector',
+      VT: 'Outdoor Vector',
+      H: 'Parametric shading (SK) ⚠',
     },
     customBase: 'Custom map',
     customOverlay: 'Custom map overlay',
@@ -1119,6 +1147,7 @@ const en: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DTM providers…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vector tiles from"
@@ -1133,7 +1162,8 @@ const en: Messages = {
   elevationChart: {
     distance: 'Distance [km]',
     ele: `Elevation [${masl}]`,
-    fetchError: ({ err }) => `Error fetching elevation profile data: ${err}`,
+    fetchError: ({ err }) =>
+      addError(en, 'Error fetching elevation profile data', err),
   },
 
   errorCatcher: {
@@ -1144,13 +1174,13 @@ const en: Messages = {
       <ul>
         <li><a href="">reload last page</a></li>
         <li><a href="/">load initial page</a></li>
-        <li><a href="/?reset-local-storage">clear local data and load initial page</a></li>
+        <li><a href="/#reset-local-storage">clear local data and load initial page</a></li>
       </ul>
     `,
   },
 
   osm: {
-    fetchingError: ({ err }) => `Error fetching OSM data: ${err}`,
+    fetchingError: ({ err }) => addError(en, 'Error fetching OSM data', err),
   },
 
   tracking: {
@@ -1324,11 +1354,10 @@ const en: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Advanced options',
     styles: 'Interactive layer styles',
-    export: 'Export',
-    exportError: ({ err }) => `Error exporting map: ${err}`,
+    exportError: ({ err }) => addError(en, 'Error exporting map', err),
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
       <>
@@ -1409,12 +1438,12 @@ const en: Messages = {
     delete: 'Delete',
     disconnect: 'Disconnect',
     deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
-    fetchError: ({ err }) => `Error loading map: ${err}`,
-    fetchListError: ({ err }) => `Error loading maps: ${err}`,
-    deleteError: ({ err }) => `Error deleting map: ${err}`,
-    renameError: ({ err }) => `Error renaming map: ${err}`,
-    createError: ({ err }) => `Error saving map: ${err}`,
-    saveError: ({ err }) => `Error saving map: ${err}`,
+    fetchError: ({ err }) => addError(en, 'Error loading map', err),
+    fetchListError: ({ err }) => addError(en, 'Error loading maps', err),
+    deleteError: ({ err }) => addError(en, 'Error deleting map', err),
+    renameError: ({ err }) => addError(en, 'Error renaming map', err),
+    createError: ({ err }) => addError(en, 'Error saving map', err),
+    saveError: ({ err }) => addError(en, 'Error saving map', err),
     loadToEmpty: 'Load to empty map',
     loadInclMapAndPosition:
       'Load including saved background map and its position',
@@ -1460,16 +1489,20 @@ const en: Messages = {
     secretary: 'Secretary',
   },
 
-  removeAds: {
-    title: 'Remove ads',
+  premium: {
+    title: 'Get full access',
     info: (
       <>
         <p>
           <strong>Support the volunteers who create this map!</strong>
         </p>
         <p>
-          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
-          <b>remove ads</b> from freemap for a year.
+          For <b>5 hours</b> of your volunteer work or <b>5 €</b> you will have
+          a year of access with:
+          <ul>
+            <li>removed ad banner</li>
+            <li>access to premium map layers</li>
+          </ul>
         </p>
         <p>
           You can prove your volunteer work by creating work reports in the{' '}
@@ -1486,7 +1519,9 @@ const en: Messages = {
       </>
     ),
     continue: 'Continue',
-    success: 'Congratulations, you have become a premium member!',
+    success: 'Congratulations, you have now acces to all features!',
+    becomePremium: 'Get full access',
+    youArePremium: 'You have access to all features',
   },
 
   offline: {
@@ -1498,6 +1533,72 @@ const en: Messages = {
     networkFirst: 'Network first',
     cacheFirst: 'Cache first',
     cacheOnly: 'Cache only',
+  },
+
+  errorStatus: {
+    100: 'Continue',
+    101: 'Switching Protocols',
+    102: 'Processing',
+    103: 'Early Hints',
+    200: 'OK',
+    201: 'Created',
+    202: 'Accepted',
+    203: 'Non-Authoritative Information',
+    204: 'No Content',
+    205: 'Reset Content',
+    206: 'Partial Content',
+    207: 'Multi-Status',
+    208: 'Already Reported',
+    226: 'IM Used',
+    300: 'Multiple Choices',
+    301: 'Moved Permanently',
+    302: 'Found',
+    303: 'See Other',
+    304: 'Not Modified',
+    305: 'Use Proxy',
+    306: 'Switch Proxy',
+    307: 'Temporary Redirect',
+    308: 'Permanent Redirect',
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    402: 'Payment Required',
+    403: 'Forbidden',
+    404: 'Not Found',
+    405: 'Method Not Allowed',
+    406: 'Not Acceptable',
+    407: 'Proxy Authentication Required',
+    408: 'Request Timeout',
+    409: 'Conflict',
+    410: 'Gone',
+    411: 'Length Required',
+    412: 'Precondition Failed',
+    413: 'Payload Too Large',
+    414: 'URI Too Long',
+    415: 'Unsupported Media Type',
+    416: 'Range Not Satisfiable',
+    417: 'Expectation Failed',
+    418: "I'm a teapot",
+    421: 'Misdirected Request',
+    422: 'Unprocessable Entity',
+    423: 'Locked',
+    424: 'Failed Dependency',
+    425: 'Too Early',
+    426: 'Upgrade Required',
+    428: 'Precondition Required',
+    429: 'Too Many Requests',
+    431: 'Request Header Fields Too Large',
+    451: 'Unavailable For Legal Reasons',
+    500: 'Internal Server Error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout',
+    505: 'HTTP Version Not Supported',
+    506: 'Variant Also Negotiates',
+    507: 'Insufficient Storage',
+    508: 'Loop Detected',
+    510: 'Not Extended',
+    511: 'Network Authentication Required',
   },
 };
 

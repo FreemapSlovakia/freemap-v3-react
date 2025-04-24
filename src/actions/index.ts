@@ -1,25 +1,24 @@
-import * as auth from 'fm3/actions/authActions';
-import * as changesets from 'fm3/actions/changesetsActions';
-import * as drawing from 'fm3/actions/drawingLineActions';
-import * as drawingPoints from 'fm3/actions/drawingPointActions';
-import * as elevationChart from 'fm3/actions/elevationChartActions';
-import * as gallery from 'fm3/actions/galleryActions';
-import * as l10n from 'fm3/actions/l10nActions';
-import * as main from 'fm3/actions/mainActions';
-import * as map from 'fm3/actions/mapActions';
-import * as mapDetails from 'fm3/actions/mapDetailsActions';
-import * as maps from 'fm3/actions/mapsActions';
-import * as objects from 'fm3/actions/objectsActions';
-import * as osm from 'fm3/actions/osmActions';
-import * as routePlanner from 'fm3/actions/routePlannerActions';
-import * as rpc from 'fm3/actions/rpcActions';
-import * as search from 'fm3/actions/searchActions';
-import * as toasts from 'fm3/actions/toastsActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import * as trackViewer from 'fm3/actions/trackViewerActions';
-import * as ws from 'fm3/actions/websocketActions';
-import * as wiki from 'fm3/actions/wikiActions';
-import { Action } from 'typesafe-actions';
+import * as auth from './authActions.js';
+import * as changesets from './changesetsActions.js';
+import * as drawing from './drawingLineActions.js';
+import * as drawingPoints from './drawingPointActions.js';
+import * as elevationChart from './elevationChartActions.js';
+import * as gallery from './galleryActions.js';
+import * as l10n from './l10nActions.js';
+import * as main from './mainActions.js';
+import * as map from './mapActions.js';
+import * as mapDetails from './mapDetailsActions.js';
+import * as maps from './mapsActions.js';
+import * as objects from './objectsActions.js';
+import * as osm from './osmActions.js';
+import * as routePlanner from './routePlannerActions.js';
+import * as rpc from './rpcActions.js';
+import * as search from './searchActions.js';
+import * as toasts from './toastsActions.js';
+import { trackingActions } from './trackingActions.js';
+import * as trackViewer from './trackViewerActions.js';
+import * as ws from './websocketActions.js';
+import * as wiki from './wikiActions.js';
 
 export const actions = {
   tracking: trackingActions,
@@ -43,12 +42,16 @@ export const actions = {
   trackViewer,
   maps,
   wiki,
-};
+} as const;
 
-export type RootAction = Action; // much slower but typesafe:  ActionType<typeof actions>;
+type ActionGroups = typeof actions;
 
-declare module 'typesafe-actions' {
-  interface Types {
-    RootAction: RootAction;
-  }
-}
+type ExtractActionCreators<T> =
+  T extends Record<string, (...args: any[]) => any> ? T[keyof T] : never;
+
+type AllActionCreators = ExtractActionCreators<
+  ActionGroups[keyof ActionGroups]
+>;
+
+// TODO we should not need such type
+export type RootAction = ReturnType<AllActionCreators>;

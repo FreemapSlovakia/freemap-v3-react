@@ -1,4 +1,4 @@
-import { OsmTagToNameMapping } from './osmTagToNameMappingType';
+import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
   aeroway: {
@@ -137,7 +137,37 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     university: 'University',
     vacuum_cleaner: 'Vacuum cleaner',
     vehicle_inspection: 'Vehicle inspection',
-    vending_machine: 'Vending machine',
+    vending_machine: {
+      '*': 'Vending machine',
+      vending: {
+        bicycle_tube: 'Bicycle tube vending machine',
+        bread: 'Bread vending machine',
+        bottle_return: 'Deposit bottle return machine',
+        candles: 'Candle vending machine',
+        chewing_gums: 'Chewing gum vending machine',
+        cigarettes: 'Cigarette vending machine',
+        coffee: 'Coffee vending machine',
+        condoms: 'Condom vending machine',
+        drinks: 'Drink vending machine',
+        elongated_coin: 'Elongated coin machine',
+        eggs: 'Egg vending machine',
+        excrement_bags: 'Excrement bag vending machine',
+        food: 'Food vending machine',
+        fuel: 'Fuel vending machine',
+        gas: 'Gas vending machine',
+        ice_cream: 'Ice cream vending machine',
+        ice_cubes: 'Ice cube vending machine',
+        milk: 'Milk vending machine',
+        movies: 'Movie vending machine',
+        newspapers: 'Newspaper vending machine',
+        parking_tickets: 'Parking ticket machine',
+        pizza: 'Pizza vending machine',
+        public_transport_tickets: 'Public transport ticket machine',
+        stamps: 'Stamp vending machine',
+        sweets: 'Sweets vending machine',
+        water: 'Water vending machine',
+      },
+    },
     veterinary: 'Veterinary',
     waste_basket: 'Trash bin',
     waste_disposal: 'Waste disposal',

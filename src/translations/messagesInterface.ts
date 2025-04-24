@@ -1,9 +1,11 @@
-import { RoutingMode, Weighting } from 'fm3/actions/routePlannerActions';
-import { ElevationInfoBaseProps } from 'fm3/components/ElevationInfo';
-import { AttributionDef, NoncustomLayerLetters } from 'fm3/mapDefinitions';
-import type { TransportTypeMsgKey } from 'fm3/transportTypeDefs';
-import { ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
+import { Changeset } from '../actions/changesetsActions.js';
+import { RoutingMode, Weighting } from '../actions/routePlannerActions.js';
+import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+import { HttpError } from '../httpRequest.js';
+import { AttributionDef, NoncustomLayerLetters } from '../mapDefinitions.js';
+import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
 
@@ -62,6 +64,10 @@ export type Messages = {
     experimentalFunction: string;
     attribution: () => JSX.Element;
     unauthenticatedError: string;
+    areYouSure: string;
+    export: string;
+    success: string;
+    premiumOnly: string;
   };
   selections: {
     objects: string;
@@ -283,7 +289,7 @@ export type Messages = {
     logOut: string;
     logIn: string;
     account: string;
-    gpxExport: string;
+    mapFeaturesExport: string;
     mapExports: string;
     embedMap: string;
     supportUs: string;
@@ -291,13 +297,12 @@ export type Messages = {
     back: string;
     mapLegend: string;
     contacts: string;
-    tips: string;
     facebook: string;
     twitter: string;
     youtube: string;
     github: string;
     automaticLanguage: string;
-    pdfExport: string;
+    mapExport: string;
     osmWiki: string;
     wikiLink: string;
   };
@@ -506,7 +511,7 @@ export type Messages = {
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;
     fetchError: ({ err }: Err) => string;
-    detail: ({ changeset }: { changeset: any }) => JSX.Element;
+    detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
     details: {
       author: string;
       description: string;
@@ -544,6 +549,11 @@ export type Messages = {
     fetchingError: ({ err }: Err) => string;
     // categories: Record<number, string>;
     // subcategories: Record<number, string>;
+    icon: {
+      pin: string;
+      ring: string;
+      square: string;
+    };
   };
   external: {
     openInExternal: string;
@@ -580,14 +590,13 @@ export type Messages = {
     enableMapSwitch: string;
     enableLocateMe: string;
   };
-  tips: {
+  documents: {
     errorLoading: string;
   };
-  gpxExport: {
-    export: string;
+  exportMapFeatures: {
+    download: string;
     format: string;
-    exportToDrive: string;
-    exportToDropbox: string;
+    target: string;
     exportError: ({ err }: Err) => string;
     what: {
       plannedRoute: string;
@@ -599,26 +608,56 @@ export type Messages = {
       drawingPoints: string;
       tracking: string;
       gpx: string;
+      search: string;
     };
     disabledAlert: string;
     licenseAlert: string;
     exportedToDropbox: string;
     exportedToGdrive: string;
+    garmin: {
+      courseName: string;
+      description: string;
+      activityType: string;
+      at: {
+        running: string;
+        hiking: string;
+        other: string;
+        mountain_biking: string;
+        trailRunning: string;
+        roadCycling: string;
+        gravelCycling: string;
+      };
+      revoked: string;
+      connectPrompt: string;
+      authPrompt: string;
+    };
   };
-  logIn: {
-    with: {
+  auth: {
+    connect: {
+      label: string;
+      success: string;
+    };
+    disconnect: {
+      label: string;
+      success: string;
+    };
+    provider: {
       facebook: string;
       google: string;
       osm: string;
+      garmin: string;
     };
-    success: string;
-    logInError: ({ err }: Err) => string;
-    logInError2: string;
-    logOutError: ({ err }: Err) => string;
-    verifyError: ({ err }: Err) => string;
-  };
-  logOut: {
-    success: string;
+    logIn: {
+      with: string;
+      success: string;
+      logInError: ({ err }: Err) => string;
+      logInError2: string;
+      verifyError: ({ err }: Err) => string;
+    };
+    logOut: {
+      success: string;
+      error: ({ err }: Err) => string;
+    };
   };
   mapLayers: {
     showAll: string;
@@ -716,8 +755,7 @@ export type Messages = {
     subscribeNotFound: ({ id }: { id: string | number }) => JSX.Element;
     subscribeError: ({ id }: { id: string | number }) => JSX.Element;
   };
-  pdfExport: {
-    export: string;
+  mapExport: {
     exportError: ({ err }: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;
@@ -789,11 +827,13 @@ export type Messages = {
     finishRoute: string;
     showPhotos: string;
   };
-  removeAds: {
+  premium: {
     title: string;
     info: ReactNode;
     continue: string;
     success: string;
+    becomePremium: string;
+    youArePremium: string;
   };
   offline: {
     offlineMode: string;
@@ -805,4 +845,26 @@ export type Messages = {
     cacheFirst: string;
     cacheOnly: string;
   };
+  errorStatus: Record<number, string>;
 };
+
+export function addError(
+  messages: Messages,
+  message: string,
+  err: unknown,
+): string {
+  return (
+    message +
+    ': ' +
+    (err instanceof HttpError
+      ? (messages.errorStatus[err.status] ?? err.status) +
+        (err.body ? ': ' + err.body : '')
+      : !(err instanceof Error)
+        ? String(err)
+        : (err as Error & { _fm_fetchError: boolean })._fm_fetchError
+          ? ((window.navigator.onLine === false
+              ? messages.general.offline
+              : messages.general.connectionError) ?? err.message)
+          : err.message)
+  );
+}

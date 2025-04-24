@@ -1,29 +1,14 @@
-import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
-import { useCallback } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { JSX } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { FaLanguage } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { SubmenuHeader, useMenuClose } from './SubmenuHeader';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
+import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();
 
   const chosenLanguage = useAppSelector((state) => state.l10n.chosenLanguage);
-
-  const dispatch = useDispatch();
-
-  const closeMenu = useMenuClose();
-
-  const handleLanguageClick = useCallback(
-    (language: string | null) => {
-      closeMenu();
-
-      dispatch(l10nSetChosenLanguage({ language }));
-    },
-    [closeMenu, dispatch],
-  );
 
   return (
     <>
@@ -34,7 +19,7 @@ export function LanguageSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        onSelect={handleLanguageClick}
+        eventKey="lang-"
         active={chosenLanguage === null}
       >
         {m?.mainMenu.automaticLanguage}
@@ -42,47 +27,42 @@ export function LanguageSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        eventKey="en"
-        onSelect={handleLanguageClick}
+        eventKey="lang-en"
         active={chosenLanguage === 'en'}
       >
-        English
+        🇬🇧 English
       </Dropdown.Item>
 
       <Dropdown.Item
         as="button"
-        eventKey="sk"
-        onSelect={handleLanguageClick}
+        eventKey="lang-sk"
         active={chosenLanguage === 'sk'}
       >
-        Slovensky
+        🇸🇰 Slovensky
       </Dropdown.Item>
 
       <Dropdown.Item
         as="button"
-        eventKey="cs"
-        onSelect={handleLanguageClick}
+        eventKey="lang-cs"
         active={chosenLanguage === 'cs'}
       >
-        Česky
+        🇨🇿 Česky
       </Dropdown.Item>
 
       <Dropdown.Item
         as="button"
-        onSelect={handleLanguageClick}
-        eventKey="hu"
+        eventKey="lang-hu"
         active={chosenLanguage === 'hu'}
       >
-        Magyar
+        🇭🇺 Magyar
       </Dropdown.Item>
 
       <Dropdown.Item
         as="button"
-        onSelect={handleLanguageClick}
-        eventKey="it"
+        eventKey="lang-it"
         active={chosenLanguage === 'it'}
       >
-        Italiano
+        🇮🇹 Italiano
       </Dropdown.Item>
     </>
   );

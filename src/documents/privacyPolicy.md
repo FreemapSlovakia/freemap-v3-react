@@ -187,7 +187,7 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
 
 # Account removal
 
-To remove your account please visit _[Account](/?show=account)_ from the menu and take an _Delete account_ action. This will then delete all the data associated with it and stored on our server, like uploaded pictures, picture comments, picture ratings, tracked devices and own maps.
+To remove your account please visit _[Account](#show=account)_ from the menu and take an _Delete account_ action. This will then delete all the data associated with it and stored on our server, like uploaded pictures, picture comments, picture ratings, tracked devices and own maps.
 
 # Contact Us
 

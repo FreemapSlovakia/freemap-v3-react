@@ -1,7 +1,8 @@
 import '@maplibre/maplibre-gl-leaflet';
 import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
-import 'fm3/maplibre-language';
 import * as L from 'leaflet';
+import { Map } from 'maplibre-gl';
+import '../maplibre-language.js';
 
 class MaplibreWithLang extends L.MaplibreGL {
   _language?: string | null;
@@ -17,7 +18,9 @@ class MaplibreWithLang extends L.MaplibreGL {
   setLanguage(lang: string) {
     // this._language = lang; // unnnecessary
 
-    (this.getMaplibreMap() as any).setLanguage(lang);
+    (
+      this.getMaplibreMap() as Map & { setLanguage: (lang: string) => void }
+    ).setLanguage(lang);
   }
 
   onAdd(map: L.Map) {

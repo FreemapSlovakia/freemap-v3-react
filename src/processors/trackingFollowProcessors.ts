@@ -1,8 +1,7 @@
-import { selectFeature } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { trackingTrackSelector } from 'fm3/selectors/mainSelectors';
-import { isActionOf } from 'typesafe-actions';
+import { selectFeature } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { trackingTrackSelector } from '../selectors/mainSelectors.js';
 
 export const trackingFollowProcessor: Processor = {
   async handle({ dispatch, getState, action, prevState }) {
@@ -14,8 +13,7 @@ export const trackingFollowProcessor: Processor = {
 
     if (
       track &&
-      (!isActionOf(selectFeature, action) ||
-        action.payload?.type !== 'tracking') &&
+      (!selectFeature.match(action) || action.payload?.type !== 'tracking') &&
       differs &&
       (tp = track.trackPoints[track.trackPoints.length - 1])
     ) {

@@ -1,16 +1,15 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { Fragment, ReactElement } from 'react';
+import { Button, Table } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import {
   categoryKeys,
   getNameFromOsmElement,
   resolveGenericName,
-} from 'fm3/osm/osmNameResolver';
-import { osmTagToIconMapping } from 'fm3/osm/osmTagToIconMapping';
-import { useOsmNameResolver } from 'fm3/osm/useOsmNameResolver';
-import { Fragment, ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table';
-import { useDispatch } from 'react-redux';
+} from '../osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
+import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
 
 export type ObjectDetailBasicProps = {
   id: number;
@@ -121,7 +120,11 @@ export function ObjectDetails({
                 </a>
               </th>
               <td>
-                {k === 'wikidata' ? (
+                {/^https?:\/\//.test(v) ? (
+                  <a target="_blank" rel="noreferrer" href={v}>
+                    {v}
+                  </a>
+                ) : k === 'wikidata' ? (
                   <a
                     target="_blank"
                     rel="noreferrer"
@@ -136,15 +139,19 @@ export function ObjectDetails({
                     target="_blank"
                     rel="noreferrer"
                     href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-                      v,
+                      v.replace(/ /g, '_'),
                     )}`}
                   >
                     {v}
                   </a>
-                ) : ['contact:website', 'website', 'url', 'image'].includes(
-                    k,
-                  ) ? (
-                  <a target="_blank" rel="noreferrer" href={v}>
+                ) : k === 'wikimedia_commons' ? (
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
+                      v.replace(/ /g, '_'),
+                    )}`}
+                  >
                     {v}
                   </a>
                 ) : ['contact:email', 'email'].includes(k) ? (

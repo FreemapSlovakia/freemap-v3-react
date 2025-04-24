@@ -1,15 +1,15 @@
-import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
-import { ShowModal } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { basicModals } from 'fm3/constants';
-import { documents as allTips } from 'fm3/documents';
-import { history } from 'fm3/historyHolder';
-import { OverlayLetters } from 'fm3/mapDefinitions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import { LatLon } from 'fm3/types/common';
-import { isActionOf } from 'typesafe-actions';
+import { isAnyOf } from '@reduxjs/toolkit';
 import { is } from 'typia';
+import { drawingLineUpdatePoint } from '../actions/drawingLineActions.js';
+import { ShowModal } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { basicModals } from '../constants.js';
+import { DocumentKey } from '../documents/index.js';
+import { history } from '../historyHolder.js';
+import { OverlayLetters } from '../mapDefinitions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { transportTypeDefs } from '../transportTypeDefs.js';
+import { LatLon } from '../types/common.js';
 
 let lastActionType: string | undefined;
 
@@ -192,11 +192,11 @@ export const urlProcessor: Processor = {
       historyParts.push(['osm-node', search.osmNodeId]);
     }
 
-    if (search.osmWayId) {
+    if (search.osmWayId && search.osmWayId > 0) {
       historyParts.push(['osm-way', search.osmWayId]);
     }
 
-    if (search.osmRelationId) {
+    if (search.osmRelationId && search.osmRelationId > 0) {
       historyParts.push(['osm-relation', search.osmRelationId]);
     }
 
@@ -297,8 +297,8 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (main.documentKey && is<(typeof allTips)[number][0]>(main.documentKey)) {
-      queryParts.push(['tip', main.documentKey]);
+    if (is<DocumentKey>(main.documentKey)) {
+      queryParts.push(['document', main.documentKey]);
     }
 
     if (main.embedFeatures.length) {
@@ -365,14 +365,13 @@ export const urlProcessor: Processor = {
     const urlSearch = serializeQuery(queryParts);
 
     if (
-      (mapId && sq !== (history.location.state as any)?.sq) ||
+      (mapId && sq !== (history.location.state as { sq: string })?.sq) ||
       urlSearch !== window.location.hash.slice(1)
     ) {
+      const isReplaceAction = isAnyOf(mapRefocus, drawingLineUpdatePoint);
+
       const method =
-        lastActionType &&
-        isActionOf([mapRefocus, drawingLineUpdatePoint], action)
-          ? 'replace'
-          : 'push';
+        lastActionType && isReplaceAction(action) ? 'replace' : 'push';
 
       history[method](
         {

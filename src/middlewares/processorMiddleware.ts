@@ -1,56 +1,64 @@
-import { RootAction } from 'fm3/actions';
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { sendError } from 'fm3/globalErrorHandler';
-import { RootState } from 'fm3/reducers';
-import { MessagePaths } from 'fm3/types/common';
-import { Dispatch, Middleware } from 'redux';
-import {
-  Action,
-  ActionCreator,
-  ActionType,
-  isActionOf,
-} from 'typesafe-actions';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { Action, Dispatch, Middleware } from 'redux';
+import { startProgress, stopProgress } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { sendError } from '../globalErrorHandler.js';
+import { RootState } from '../store.js';
+import { MessagePaths } from '../types/common.js';
 
-export type ProcessorHandler<T extends ActionCreator = ActionCreator> =
+type BaseActionCreator<P = any, T extends string = string> = {
+  (payload: P): PayloadAction<P, T>;
+  type: T;
+  match: (action: unknown) => action is PayloadAction<P, T>;
+};
+
+type ActionOf<T extends BaseActionCreator> = ReturnType<T>;
+
+type ActionOfUnion<T extends BaseActionCreator[]> = ReturnType<T[number]>;
+
+type ActionFrom<T> = T extends BaseActionCreator
+  ? ActionOf<T>
+  : T extends BaseActionCreator[]
+    ? ActionOfUnion<T>
+    : Action;
+
+export type ProcessorHandler<T extends BaseActionCreator = BaseActionCreator> =
   (params: {
     prevState: RootState;
     getState: () => RootState;
     dispatch: Dispatch;
-    action: ActionType<T>;
+    action: ActionFrom<T>;
   }) => void | Promise<void>;
 
-export interface Processor<T extends ActionCreator = ActionCreator> {
+export interface Processor<T extends BaseActionCreator = BaseActionCreator> {
   transform?: (params: {
     prevState: RootState;
     getState: () => RootState;
     dispatch: Dispatch;
-    action: ActionType<T>;
-  }) => Action | null | undefined | void;
+    action: ActionFrom<T>;
+  }) => unknown;
   handle?: ProcessorHandler<T>;
   actionCreator?: T | T[];
-  actionPredicate?: (action: ActionType<T>) => boolean;
+  actionPredicate?: (action: ActionFrom<T>) => boolean;
   statePredicate?: (state: RootState) => boolean;
   stateChangePredicate?: (state: RootState) => unknown;
   errorKey?: MessagePaths;
-  id?: string; // toast collapse key
+  id?: string;
   predicatesOperation?: 'AND' | 'OR';
 }
 
-type MW = Middleware<unknown, RootState, Dispatch<RootAction>> & {
-  processors: Processor[];
-};
-
-export function createProcessorMiddleware(): MW {
+export function createProcessorMiddleware() {
   const processors: Processor[] = [];
 
-  const processorMiddleware: MW =
+  const processorMiddleware: Middleware<{}, RootState> & {
+    processors: Processor[];
+  } =
     ({ getState, dispatch }) =>
-    (next: Dispatch) =>
-    (action: Action): unknown => {
+    (next) =>
+    (action) => {
       const prevState = getState();
 
-      let a: Action = action;
+      let a = action;
 
       for (const {
         actionCreator: actionType,
@@ -61,13 +69,18 @@ export function createProcessorMiddleware(): MW {
         if (
           transform &&
           (!actionType ||
-            (Array.isArray(actionType) &&
-              actionType.some((ac) => isActionOf(ac, a))) ||
-            isActionOf(actionType, a)) &&
+            (Array.isArray(actionType)
+              ? actionType.some((ac) => ac.match(a))
+              : actionType.match(a))) &&
           (!statePredicate || statePredicate(getState())) &&
-          (!actionPredicate || actionPredicate(action))
+          (!actionPredicate || actionPredicate(action as any))
         ) {
-          const a1 = transform({ getState, dispatch, action: a, prevState });
+          const a1 = transform({
+            getState,
+            dispatch,
+            action: a as any,
+            prevState,
+          });
 
           if (!a1) {
             return undefined;
@@ -98,23 +111,23 @@ export function createProcessorMiddleware(): MW {
             handle &&
             (predicatesOperation === 'OR'
               ? (actionType &&
-                  ((Array.isArray(actionType) &&
-                    actionType.some((ac) => isActionOf(ac, a))) ||
-                    isActionOf(actionType, a))) ||
+                  (Array.isArray(actionType)
+                    ? actionType.some((ac) => ac.match(a))
+                    : actionType.match(a))) ||
                 statePredicate?.(getState()) ||
                 (stateChangePredicate &&
                   stateChangePredicate(getState()) !==
                     stateChangePredicate(prevState)) ||
-                actionPredicate?.(action)
+                actionPredicate?.(action as any)
               : (!actionType ||
-                  (Array.isArray(actionType) &&
-                    actionType.some((ac) => isActionOf(ac, a))) ||
-                  isActionOf(actionType, a)) &&
+                  (Array.isArray(actionType)
+                    ? actionType.some((ac) => ac.match(a))
+                    : actionType.match(a))) &&
                 (!statePredicate || statePredicate(getState())) &&
                 (!stateChangePredicate ||
                   stateChangePredicate(getState()) !==
                     stateChangePredicate(prevState)) &&
-                (!actionPredicate || actionPredicate(action)))
+                (!actionPredicate || actionPredicate(action as any)))
           ) {
             const handleError = (err: unknown) => {
               if (err instanceof DOMException && err.name === 'AbortError') {
@@ -128,19 +141,7 @@ export function createProcessorMiddleware(): MW {
                   toastsAdd({
                     id: id ?? Math.random().toString(36).slice(2),
                     messageKey: errorKey,
-                    messageParams: !(err instanceof Error)
-                      ? { err: String(err) }
-                      : (err as any)._fm_fetchError
-                      ? {
-                          err:
-                            (window.navigator.onLine === false
-                              ? window.translations?.general.offline
-                              : window.translations?.general.connectionError) ??
-                            err.message,
-                        }
-                      : {
-                          err: err.message,
-                        },
+                    messageParams: { err },
                     style: 'danger',
                   }),
                 );
@@ -150,7 +151,12 @@ export function createProcessorMiddleware(): MW {
             let promise;
 
             try {
-              promise = handle({ getState, dispatch, action: a, prevState });
+              promise = handle({
+                getState,
+                dispatch,
+                action: a as ActionFrom<BaseActionCreator>,
+                prevState,
+              });
             } catch (err) {
               handleError(err);
             }

@@ -1,4 +1,4 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 
 type Props = {
   tilesFrom: string;

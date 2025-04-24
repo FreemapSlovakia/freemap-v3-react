@@ -1,14 +1,11 @@
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { mapsDisconnect, mapsSave } from 'fm3/actions/mapsActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useScrollClasses } from 'fm3/hooks/useScrollClasses';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import ButtonToolbar from 'react-bootstrap/esm/ButtonToolbar';
+import { Button, ButtonToolbar, Card } from 'react-bootstrap';
 import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../actions/mainActions.js';
+import { mapsDisconnect, mapsSave } from '../actions/mapsActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -17,47 +14,41 @@ export function MapsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const sc = useScrollClasses('horizontal');
-
   return (
-    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
-      <div />
+    <Card className="fm-toolbar mx-2 mt-2">
+      <ButtonToolbar>
+        <Button
+          variant="primary"
+          onClick={() => dispatch(setActiveModal('maps'))}
+          title={m?.tools.maps}
+        >
+          <FaRegMap />
+        </Button>
 
-      <Card className="fm-toolbar mx-2 mt-2">
-        <ButtonToolbar>
+        <span className="align-self-center ms-1 me-2">
+          {activeMap?.name ?? '???'}
+        </span>
+
+        {activeMap?.canWrite && (
           <Button
-            variant="primary"
-            onClick={() => dispatch(setActiveModal('maps'))}
-            title={m?.tools.maps}
-          >
-            <FaRegMap />
-          </Button>
-
-          <span className="align-self-center ml-1 mr-2">
-            {activeMap?.name ?? '???'}
-          </span>
-
-          {activeMap?.canWrite && (
-            <Button
-              className="ml-1"
-              variant="secondary"
-              onClick={() => dispatch(mapsSave(undefined))}
-              title={m?.maps.save}
-            >
-              <FaSave />
-            </Button>
-          )}
-
-          <Button
-            className="ml-1"
+            className="ms-1"
             variant="secondary"
-            onClick={() => dispatch(mapsDisconnect())}
-            title={m?.maps.disconnect}
+            onClick={() => dispatch(mapsSave(undefined))}
+            title={m?.maps.save}
           >
-            <FaUnlink />
+            <FaSave />
           </Button>
-        </ButtonToolbar>
-      </Card>
-    </div>
+        )}
+
+        <Button
+          className="ms-1"
+          variant="secondary"
+          onClick={() => dispatch(mapsDisconnect())}
+          title={m?.maps.disconnect}
+        >
+          <FaUnlink />
+        </Button>
+      </ButtonToolbar>
+    </Card>
   );
 }

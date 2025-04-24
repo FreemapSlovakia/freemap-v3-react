@@ -1,20 +1,18 @@
-/* eslint-disable */
-
-import { Attribution } from 'fm3/components/Attribution';
-import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { CookieConsent } from 'fm3/components/CookieConsent';
-import { ElevationInfo } from 'fm3/components/ElevationInfo';
-import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
+import { Fragment } from 'react';
+import { Alert } from 'react-bootstrap';
+import { FaKey } from 'react-icons/fa';
+import { Attribution } from '../components/Attribution.js';
+import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { CookieConsent } from '../components/CookieConsent.js';
+import { ElevationInfo } from '../components/ElevationInfo.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
-} from 'fm3/components/ObjectDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { Fragment } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import { FaKey } from 'react-icons/fa';
-import shared from './hu-shared.json';
-import { Messages } from './messagesInterface';
+} from '../components/ObjectDetails.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import shared from './hu-shared.js';
+import { Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 3,
@@ -64,7 +62,7 @@ const hu: Messages = {
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => `Alkalmazáshiba: ${err}`,
+    processorError: ({ err }) => addError(hu, 'Alkalmazáshiba', err),
     seconds: 'másodperc',
     minutes: 'perc',
     meters: 'méter',
@@ -78,10 +76,10 @@ const hu: Messages = {
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',
     copyPageUrl: 'URL másolása', // TODO update
-    savingError: ({ err }) => `Mentési hiba: ${err}`,
-    loadError: ({ err }) => `Betöltési hiba: ${err}`,
-    deleteError: ({ err }) => `Törlési hiba: ${err}`,
-    operationError: ({ err }) => `Operation error: ${err}`, // TODO translate
+    savingError: ({ err }) => addError(hu, 'Mentési hiba', err),
+    loadError: ({ err }) => addError(hu, 'Betöltési hiba', err),
+    deleteError: ({ err }) => addError(hu, 'Törlési hiba', err),
+    operationError: ({ err }) => addError(hu, 'Operation error', err), // TODO translate
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
@@ -99,6 +97,10 @@ const hu: Messages = {
     experimentalFunction: 'Experimental function', // TODO translate
     attribution: () => <Attribution unknown="Map licence is not specified" />, // TODO translate
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
+    areYouSure: 'Are you sure?', // TODO translate
+    export: 'Exportálás',
+    success: 'Success!', // TODO translate
+    premiumOnly: 'Támogass minket, hogy hozzáférhess ehhez a funkcióhoz.',
   },
 
   selections: {
@@ -179,7 +181,6 @@ const hu: Messages = {
       shortest: 'Shortest',
     },
     alternative: 'Alternatíva',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Távolság:{' '}
@@ -188,7 +189,6 @@ const hu: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Időtartam:{' '}
@@ -197,7 +197,6 @@ const hu: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Távolság: <b>{distance} km</b> | Időtartam:{' '}
@@ -214,7 +213,8 @@ const hu: Messages = {
     gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
     routeNotFound:
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
-    fetchingError: ({ err }) => `Hiba történt az útvonaltervezésnél: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(hu, 'Hiba történt az útvonaltervezésnél', err),
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} itt: ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -256,7 +256,6 @@ const hu: Messages = {
     },
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
@@ -268,7 +267,6 @@ const hu: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
@@ -292,7 +290,6 @@ const hu: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             <b>{departure}</b> sétáljon{' '}
@@ -310,7 +307,6 @@ const hu: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             <b>{departure}</b> {type} <b>{number}</b> erre: <b>{destination}</b>
@@ -326,7 +322,6 @@ const hu: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             sétáljon{' '}
@@ -344,7 +339,6 @@ const hu: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             kerékpározzon{' '}
@@ -366,7 +360,7 @@ const hu: Messages = {
     logOut: 'Kijelentkezés',
     logIn: 'Bejelentkezés',
     account: 'Fiók',
-    gpxExport: 'Exportálás GPX / GeoJSON-be',
+    mapFeaturesExport: 'A térkép jellemzőinek exportálása',
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
@@ -374,13 +368,12 @@ const hu: Messages = {
     back: 'Vissza',
     mapLegend: 'Jelmagyarázat',
     contacts: 'Kapcsolat',
-    tips: 'Tippek',
     facebook: 'Freemap a Facebookon',
     twitter: 'Freemap a Twitteren',
     youtube: 'Freemap a YouTubeon',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
-    pdfExport: 'Térkép exportálása',
+    mapExport: 'Térkép exportálása',
     osmWiki: 'OpenStreetMap documentation', // TODO translate
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
   },
@@ -492,7 +485,7 @@ const hu: Messages = {
           <li>Ne töltsön fel túl kicsi fényképeket (bélyegképek/thumbnails). A fénykép legnagyobb mérete nincs korlátozva. A legnagyobb fájlméret 10MB, a nagyobb fájlok elutasíttatnak.</li>
           <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>
           <li>Kérjük, csak a saját fényképeit töltse fel.</li>
-          <li>Azok a feliratok vagy megjegyzések, amelyek nem kapcsolódnak közvetlenül a feltöltött fotók tartalmához, vagy ellentmondanak a civilizált együttélés általánosan elfogadott elveinek, eltávolításra kerülnek. A szabály megsértőit ​​figyelmeztetjük, ismételt megsértése esetén az alkalmazásban lévő fiókjukat törölhetjük.</li>
+          <li>Azok a feliratok vagy megjegyzések, amelyek nem kapcsolódnak közvetlenül a feltöltött fotók tartalmához, vagy ellentmondanak a civilizált együttélés általánosan elfogadott elveinek, eltávolításra kerülnek. A szabály megsértőit figyelmeztetjük, ismételt megsértése esetén az alkalmazásban lévő fiókjukat törölhetjük.</li>
           <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC-BY-SA 4.0 licenc alapján terjesszék.</li>
           <li>Az üzemeltető (Freemap.sk) minden kötelezettséget elhárít, és nem vállal felelősséget a fénykép galériában történő közzétételéből eredő közvetlen vagy közvetett károkért. A fényképért teljes mértékben az azt a kiszolgálóra feltöltő személy felel.</li>
           <li>Az üzemeltető fenntartja a jogot, hogy a fénykép leírását, nevét, pozíciójáőt és címkéit szerkesszt, illetve hogy a fényképet törölje, ha annak tartalma nem megfelelő (megszegi ezeket a szabályokat).</li>
@@ -506,17 +499,20 @@ const hu: Messages = {
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
     },
-    deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
+    deletingError: ({ err }) =>
+      addError(hu, 'Hiba történt a fénykép törlésénél', err),
     tagsFetchingError: ({ err }) =>
-      `Hiba történt a címkék beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt a címkék beolvasásánál', err),
     pictureFetchingError: ({ err }) =>
-      `Hiba történt a fénykép beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt a fénykép beolvasásánál', err),
     picturesFetchingError: ({ err }) =>
-      `Hiba történt a fényképek beolvasásánál: ${err}`,
-    savingError: ({ err }) => `Hiba történt a fénykép mentésénél: ${err}`,
+      addError(hu, 'Hiba történt a fényképek beolvasásánál', err),
+    savingError: ({ err }) =>
+      addError(hu, 'Hiba történt a fénykép mentésénél', err),
     commentAddingError: ({ err }) =>
-      `Hiba történt a hozzászólás hozzáadásánál: ${err}`,
-    ratingError: ({ err }) => `Hiba történt a fénykép értékelésénél: ${err}`,
+      addError(hu, 'Hiba történt a hozzászólás hozzáadásánál', err),
+    ratingError: ({ err }) =>
+      addError(hu, 'Hiba történt a fénykép értékelésénél', err),
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
@@ -540,7 +536,7 @@ const hu: Messages = {
     elevation: 'Magasság',
     area: 'Terület',
     elevationFetchError: ({ err }) =>
-      `Hiba történt a pont magasságának beolvasásakor: ${err}`,
+      addError(hu, 'Hiba történt a pont magasságának beolvasásakor', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -598,8 +594,9 @@ const hu: Messages = {
     },
     shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.', // TODO update translation
     fetchingError: ({ err }) =>
-      `Hiba történt a nyomvonal adatainak beolvasásakor: ${err}`,
-    savingError: ({ err }) => `Hiba történt a nyomvonal mentésekor: ${err}`,
+      addError(hu, 'Hiba történt a nyomvonal adatainak beolvasásakor', err),
+    savingError: ({ err }) =>
+      addError(hu, 'Hiba történt a nyomvonal mentésekor', err),
     loadingError: 'Hiba történt a fájl betöltésekor.',
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
@@ -655,7 +652,8 @@ const hu: Messages = {
     showInMenu: 'Show in menu', // TODO translate
     showInToolbar: 'Show in toolbar', // TODO translate
     saveSuccess: 'A beállítások el lettek mentve.',
-    savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
+    savingError: ({ err }) =>
+      addError(hu, 'Hiba történt a beállítások mentésénél', err),
     customLayersDef: 'Custom map layers definition', // TODO translate
     customLayersDefError: 'Invalid definition of custom map layers.', // TODO translate
   },
@@ -668,7 +666,7 @@ const hu: Messages = {
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
     fetchError: ({ err }) =>
-      `Hiba történt a módosításkészletek beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt a módosításkészletek beolvasásánál', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Szerző:',
@@ -685,7 +683,8 @@ const hu: Messages = {
 
   mapDetails: {
     notFound: 'Itt nem találtunk semmit.', // TODO google translated
-    fetchingError: ({ err }) => `Hiba történt a részletek lekérésekor: ${err}`, // TODO google translated
+    fetchingError: ({ err }) =>
+      addError(hu, 'Hiba történt a részletek lekérésekor', err), // TODO google translated
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -705,7 +704,12 @@ const hu: Messages = {
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`, // TODO translate
     fetchingError: ({ err }) =>
-      `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
+      addError(hu, 'Hiba történt az objektumok (POI-k) beolvasásánál', err),
+    icon: {
+      pin: 'Tű',
+      ring: 'Gyűrű',
+      square: 'Négyzet',
+    }, // TODO translated with google translate
     // categories: {
     //   1: 'Természet',
     //   2: 'Szolgáltatások',
@@ -1015,7 +1019,7 @@ const hu: Messages = {
     prompt: 'Adja meg a helyet',
     routeFrom: 'Útvonal innen',
     routeTo: 'Útvonal ide',
-    fetchingError: ({ err }) => `Keresési hiba: ${err}`,
+    fetchingError: ({ err }) => addError(hu, 'Keresési hiba', err),
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
   },
@@ -1032,51 +1036,83 @@ const hu: Messages = {
     enableLocateMe: 'saját hely megtalálása',
   },
 
-  tips: {
-    errorLoading: 'Hiba történt a tipp betöltésekor.',
+  documents: {
+    errorLoading: 'Hiba történt a dokumentum betöltésekor.',
   },
 
-  gpxExport: {
-    export: 'Letöltés',
+  exportMapFeatures: {
+    download: 'Letöltés',
     format: 'Type', // TODO translate
-    exportToDrive: 'Mentés Google Drive-ra',
-    exportToDropbox: 'Mentés Dropbox-ba',
-    exportError: ({ err }) => `Hiba a exportálásakor: ${err}`,
+    target: 'Target', // TODO translate
+    exportError: ({ err }) => addError(hu, 'Hiba a exportálásakor', err),
     what: {
       plannedRoute: 'útvonal',
-      plannedRouteWithStops: 'útvonal (megállásokkal)',
+      plannedRouteWithStops: 'megállásokkal',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
-      drawingLines: 'rajzolás – vonalak',
-      drawingAreas: 'rajzolás – sokszögek',
-      drawingPoints: 'rajzolás – pontok',
+      drawingLines: 'rajzolás - vonalak',
+      drawingAreas: 'rajzolás - sokszögek',
+      drawingPoints: 'rajzolás - pontok',
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
+      search: 'kiemelt térképelem', // TODO google-translated
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
     licenseAlert:
-      'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.', // TODO translate
+      'Különféle licencek vonatkozhatnak - például az OpenStreetMap. Kérjük, adja hozzá a hiányzó forrásokat az exportált fájl megosztásakor.', // TODO google-translated
     exportedToDropbox: 'Fájl elmentve a Dropboxba.',
     exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
-  },
-
-  logIn: {
-    with: {
-      facebook: 'Belépés Facebook-fiókkal',
-      google: 'Belépés Google-fiókkal',
-      osm: 'Belépés OpenStreetMap-fiókkal',
+    garmin: {
+      // TODO chatgpt translated
+      courseName: 'Tanfolyam neve',
+      description: 'Leírás',
+      activityType: 'Tevékenység típusa',
+      at: {
+        running: 'Futás',
+        hiking: 'Túrázás',
+        other: 'Egyéb',
+        mountain_biking: 'Hegyi kerékpározás',
+        trailRunning: 'Terepfutás',
+        roadCycling: 'Országúti kerékpározás',
+        gravelCycling: 'Murvás kerékpározás',
+      },
+      revoked: 'A kurzus Garmin-ba való exportálása vissza lett vonva.',
+      connectPrompt:
+        'Még nincs csatlakoztatva Garmin fiókod. Szeretné most csatlakoztatni?',
+      authPrompt:
+        'Még nem vagy bejelentkezve a Garminonba. Szeretnél ez alkalommal bejelentkezni?',
     },
-    success: 'Sikeresen bejelentkezett.',
-    logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
-    logInError2: 'Hiba történt a bejelentkezésnél.',
-    logOutError: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
-    verifyError: ({ err }) =>
-      `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
   },
 
-  logOut: {
-    success: 'Sikeresen kijelentkezett.',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
+    },
+    connect: {
+      label: 'Connect', // TODO translate
+      success: 'Connected', // TODO translate
+    },
+    disconnect: {
+      label: 'Disconnect', // TODO translate
+      success: 'Disconnected', // TODO translate
+    },
+    logIn: {
+      with: 'Válasszon bejelentkezési szolgáltatót', // TODO google translated
+      success: 'Sikeresen bejelentkezett.',
+      logInError: ({ err }) =>
+        addError(hu, 'Hiba történt a bejelentkezésnél', err),
+      logInError2: 'Hiba történt a bejelentkezésnél.',
+      verifyError: ({ err }) =>
+        addError(hu, 'Hiba történt a hitelesítés ellenőrzésénél', err),
+    },
+    logOut: {
+      success: 'Sikeresen kijelentkezett.',
+      error: ({ err }) => addError(hu, 'Hiba történt a kijelentkezésnél', err),
+    },
   },
 
   mapLayers: {
@@ -1088,41 +1124,37 @@ const hu: Messages = {
     interactiveLayerWarning: 'Interactive layer is hidden', // TODO translate
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     letters: {
-      A: 'Autó',
-      T: 'Túrázás',
-      C: 'Kerékpározás',
-      K: 'Síelés',
+      A: 'Autó (elavult)',
+      T: 'Túrázás (elavult)',
+      C: 'Kerékpározás (elavult)',
+      K: 'Síelés (elavult)',
       S: 'Légifelvétel',
       Z: 'Ortofotó (Szlovákia)',
       J: 'Régi Ortofotó (Szlovákia)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Tömegközlekedés',
-      h: 'Történelmi térkép',
       X: outdoorMap,
       i: 'Interaktív réteg',
       I: 'Fényképek',
       l: 'Erdészeti utak (Szlovákia)',
-      n1: 'Nevek (autó)',
-      n2: 'Nevek (túrázás)',
-      n3: 'Nevek (kerékpározás)',
-      g: 'OSM GPS nyomvonalak',
       t: 'Turistautak',
       c: 'Kerékpáros útvonalak',
-      q: 'OpenSnowMap',
-      r: 'Megjelenítőkliensek',
       s0: 'Strava (minden)',
       s1: 'Strava (lovaglás)',
       s2: 'Strava (futás)',
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
-      '4': 'Light Terrain Hillshading (SK)', // TODO translate
-      '5': 'Terrain Hillshading (SK)', // TODO translate
-      '6': 'Surface Hillshading (SK)', // TODO translate
+      '4': 'Light terrain hillshading (SK)', // TODO translate
+      '5': 'Terrain hillshading (SK)', // TODO translate
+      '6': 'Surface hillshading (SK)', // TODO translate
+      '7': 'Detailed surface hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
+      VD: 'Dataviz Vector', // TODO translate
+      VT: 'Outdoor Vector', // TODO translate
+      H: 'Parametric shading (SK) ⚠', // TODO translate
     },
     customBase: 'Custom map', // TODO translate
     customOverlay: 'Custom map overlay', // TODO translate
@@ -1135,6 +1167,7 @@ const hu: Messages = {
       freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DTM providers…', // TODO translate
       maptiler: (
         // TODO translate
         <MaptilerAttribution
@@ -1151,7 +1184,7 @@ const hu: Messages = {
     distance: 'Távolság [km]',
     ele: `Magasság [${masl}]`,
     fetchError: ({ err }) =>
-      `Hiba történt a magasságiprofil-adatok lekérésénél: ${err}`,
+      addError(hu, 'Hiba történt a magasságiprofil-adatok lekérésénél', err),
   },
 
   errorCatcher: {
@@ -1162,14 +1195,14 @@ const hu: Messages = {
       <ul>
         <li><a href="">újra betölti a legutóbbi oldalt</a></li>
         <li><a href="/">betölti a kezdőoldalt</a></li>
-        <li><a href="/?reset-local-storage">törli a helyi adatokat és betölti a kezdőoldalt</a></li>
+        <li><a href="/#reset-local-storage">törli a helyi adatokat és betölti a kezdőoldalt</a></li>
       </ul>
     `,
   },
 
   osm: {
     fetchingError: ({ err }) =>
-      `Hiba történt az OSM-adatok lekérésénél: ${err}`,
+      addError(hu, 'Hiba történt az OSM-adatok lekérésénél', err),
   },
 
   tracking: {
@@ -1347,11 +1380,11 @@ const hu: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Advanced options', // TODO translate
     styles: 'Interactive layer styles', // TODO translate
-    export: 'Exportálás',
-    exportError: ({ err }) => `Hiba történt a térkép exportálásakor: ${err}`,
+    exportError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép exportálásakor', err),
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
     exported: ({ url }) => (
       <>
@@ -1432,12 +1465,18 @@ const hu: Messages = {
     delete: 'Törlés',
     disconnect: 'Disconnect', // TODO translate
     deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`, // TODO translate
-    fetchError: ({ err }) => `Hiba történt a térkép betöltéskor: ${err}`,
-    fetchListError: ({ err }) => `Hiba történt a térképek betöltéskor: ${err}`,
-    deleteError: ({ err }) => `Hiba történt a térkép törlésekor: ${err}`,
-    renameError: ({ err }) => `Hiba történt a térkép átnevezésekor: ${err}`,
-    createError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
-    saveError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
+    fetchError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép betöltéskor', err),
+    fetchListError: ({ err }) =>
+      addError(hu, 'Hiba történt a térképek betöltéskor', err),
+    deleteError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép törlésekor', err),
+    renameError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép átnevezésekor', err),
+    createError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép mentésekor', err),
+    saveError: ({ err }) =>
+      addError(hu, 'Hiba történt a térkép mentésekor', err),
     loadToEmpty: 'Load to empty map',
     loadInclMapAndPosition:
       'Load including saved background map and its position',
@@ -1485,36 +1524,38 @@ const hu: Messages = {
     secretary: 'Titkár',
   },
 
-  removeAds: {
-    title: 'Remove ads', // TODO translate
-    // TODO translate
+  premium: {
+    title: 'Teljes hozzáférés',
     info: (
       <>
         <p>
-          <strong>Support the volunteers who create this map!</strong>
+          <strong>
+            Támogasd az önkénteseket, akik ezt a térképet készítik!
+          </strong>
         </p>
         <p>
-          For <b>5 hours</b> of your volunteer work or <b>5 €</b>, we will{' '}
-          <b>remove ads</b> from freemap for a year.
+          <b>5 óra</b> önkéntes munkáért vagy <b>5 €</b>-ért{' '}
+          <b>eltávolítjuk a hirdetéseket</b> a freemap felületéről egy évre.
         </p>
         <p>
-          You can prove your volunteer work by creating work reports in the{' '}
-          <a href="https://rovas.app/">Rovas</a> application. If you are a
-          volunteer in the OSM project and are using the JOSM application, we
-          recommend enabling the{' '}
+          Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
+          <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM
+          projekt önkéntese vagy, és a JOSM alkalmazást használod, javasoljuk a{' '}
           <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-            Rovas Connector plugin
+            Rovas Connector bővítmény
           </a>
-          , which can create reports for you. After a report is verified by two
-          users, you will receive community currency <i>Chron</i>, which you can
-          use to remove ads from www.freemap.sk.
+          engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
+          jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
+          kapsz, amit felhasználhatsz a hirdetések eltávolítására a
+          www.freemap.sk oldalon.
         </p>
       </>
-    ), // TODO translate
-    continue: 'Continue', // TODO translate
-    success: 'Congratulations, you have become a premium member!', // TODO translate
+    ),
+    continue: 'Folytatás',
+    success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
+    becomePremium: 'Teljes hozzáférés',
+    youArePremium: 'Ön hozzáfér minden funkcióhoz',
   },
-
   // TODO translate
   offline: {
     offlineMode: 'Offline mode',
@@ -1525,6 +1566,72 @@ const hu: Messages = {
     networkFirst: 'Network first',
     cacheFirst: 'Cache first',
     cacheOnly: 'Cache only',
+  },
+
+  errorStatus: {
+    100: 'Folytatás',
+    101: 'Protokollok váltása',
+    102: 'Feldolgozás',
+    103: 'Előzetes válasz',
+    200: 'OK',
+    201: 'Létrehozva',
+    202: 'Elfogadva',
+    203: 'Nem hitelesített információ',
+    204: 'Nincs tartalom',
+    205: 'Tartalom visszaállítása',
+    206: 'Részleges tartalom',
+    207: 'Több állapotú',
+    208: 'Már jelentett',
+    226: 'IM használt',
+    300: 'Több választás',
+    301: 'Állandóan átirányítva',
+    302: 'Találat',
+    303: 'Másikra mutat',
+    304: 'Nem módosult',
+    305: 'Proxy használata szükséges',
+    306: 'Proxy váltás',
+    307: 'Ideiglenes átirányítás',
+    308: 'Végleges átirányítás',
+    400: 'Rossz kérés',
+    401: 'Hitelesítés szükséges',
+    402: 'Fizetés szükséges',
+    403: 'Tiltott',
+    404: 'Nem található',
+    405: 'Nem engedélyezett módszer',
+    406: 'Nem elfogadható',
+    407: 'Proxy hitelesítés szükséges',
+    408: 'Kérés időtúllépése',
+    409: 'Ütközés',
+    410: 'Elveszett',
+    411: 'Hossz szükséges',
+    412: 'Előfeltétel sikertelen',
+    413: 'Túl nagy terhelés',
+    414: 'URI túl hosszú',
+    415: 'Nem támogatott médium típus',
+    416: 'Kérelmezett tartomány nem elérhető',
+    417: 'Elvárás sikertelen',
+    418: 'Én egy teáskanna vagyok',
+    421: 'Rosszul irányított kérés',
+    422: 'Feldolgozhatatlan entitás',
+    423: 'Zárolva',
+    424: 'Függőség hibája',
+    425: 'Túl korai',
+    426: 'Frissítés szükséges',
+    428: 'Előfeltétel szükséges',
+    429: 'Túl sok kérés',
+    431: 'Túl nagy kérés fejléc',
+    451: 'Jogi okok miatt nem elérhető',
+    500: 'Szerver belső hibája',
+    501: 'Nem implementált',
+    502: 'Rossz átjáró',
+    503: 'Szolgáltatás nem elérhető',
+    504: 'Átjáró időtúllépése',
+    505: 'HTTP verzió nem támogatott',
+    506: 'Változat tárgyalás',
+    507: 'Nem elegendő tárolókapacitás',
+    508: 'Végtelen hurok észlelve',
+    510: 'Nem bővített',
+    511: 'Hálózati hitelesítés szükséges',
   },
 };
 

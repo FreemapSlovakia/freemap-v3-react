@@ -1,15 +1,15 @@
-import { authLogout, authSetUser } from 'fm3/actions/authActions';
-import { Line, Point } from 'fm3/actions/drawingLineActions';
+import { assert } from 'typia';
+import { authLogout, authSetUser } from '../actions/authActions.js';
+import { Line, Point } from '../actions/drawingLineActions.js';
 import {
   MapData,
   MapMeta,
   mapsLoad,
   mapsLoaded,
-} from 'fm3/actions/mapsActions';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { StringDates } from 'fm3/types/common';
-import { assert } from 'typia';
+} from '../actions/mapsActions.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { StringDates } from '../types/common.js';
 
 interface CompatLine {
   type: 'polygon' | 'line' | 'area' | 'distance';
@@ -122,8 +122,8 @@ export const mapsLoadProcessor: Processor = {
               line.type === 'area'
                 ? 'polygon'
                 : line.type === 'distance'
-                ? 'line'
-                : line.type,
+                  ? 'line'
+                  : line.type,
           })),
           points: mapData.points?.map((point) => ({
             ...point,

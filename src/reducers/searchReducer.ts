@@ -1,17 +1,16 @@
-import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { createReducer } from '@reduxjs/toolkit';
+import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from 'fm3/actions/osmActions';
+} from '../actions/osmActions.js';
 import {
+  searchClear,
   SearchResult,
   searchSelectResult,
   searchSetResults,
-} from 'fm3/actions/searchActions';
-import { produce } from 'immer';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/searchActions.js';
 
 export interface SearchState {
   results: SearchResult[];
@@ -40,67 +39,66 @@ export const searchInitialState: SearchState = {
   selectedResult: null,
 };
 
-export const searchReducer = createReducer<SearchState, RootAction>(
-  searchInitialState,
-)
-  .handleAction(clearMap, () => searchInitialState)
-  .handleAction(searchSetResults, (state, action) => ({
-    ...state,
-    results: action.payload,
-    searchSeq: state.searchSeq + 1,
-  }))
-  .handleAction(osmLoadNode, (state, action) => ({
-    ...state,
-    ...searchInitialState0,
-    osmNodeId: action.payload.id,
-  }))
-  .handleAction(osmLoadWay, (state, action) => ({
-    ...state,
-    ...searchInitialState0,
-    osmWayId: action.payload.id,
-  }))
-  .handleAction(osmLoadRelation, (state, action) => ({
-    ...state,
-    ...searchInitialState0,
-    osmRelationId: action.payload.id,
-  }))
-  .handleAction(searchSelectResult, (state, action) =>
-    produce(state, (draft) => {
+export const searchReducer = createReducer(searchInitialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => searchInitialState)
+    .addCase(searchClear, () => searchInitialState)
+    .addCase(searchSetResults, (state, action) => {
+      state.results = action.payload;
+
+      state.searchSeq = state.searchSeq + 1;
+    })
+    .addCase(osmLoadNode, (state, action) => ({
+      ...state,
+      ...searchInitialState0,
+      osmNodeId: action.payload.id,
+    }))
+    .addCase(osmLoadWay, (state, action) => ({
+      ...state,
+      ...searchInitialState0,
+      osmWayId: action.payload.id,
+    }))
+    .addCase(osmLoadRelation, (state, action) => ({
+      ...state,
+      ...searchInitialState0,
+      osmRelationId: action.payload.id,
+    }))
+    .addCase(searchSelectResult, (state, action) => {
       if (action.payload?.storeResult === false) {
         return;
       }
 
-      draft.osmNodeId = null;
+      state.osmNodeId = null;
 
-      draft.osmWayId = null;
+      state.osmWayId = null;
 
-      draft.osmRelationId = null;
+      state.osmRelationId = null;
 
       const { payload } = action;
 
       const result = payload?.result;
 
-      draft.selectedResult = result ?? null;
+      state.selectedResult = result ?? null;
 
-      draft.searchResultSeq = draft.searchResultSeq + 1;
+      state.searchResultSeq = state.searchResultSeq + 1;
 
       if (result) {
         switch (result.osmType) {
           case 'node':
-            draft.osmNodeId = result.id;
+            state.osmNodeId = result.id;
 
             break;
 
           case 'way':
-            draft.osmWayId = result.id;
+            state.osmWayId = result.id;
 
             break;
 
           case 'relation':
-            draft.osmRelationId = result.id;
+            state.osmRelationId = result.id;
 
             break;
         }
       }
     }),
-  );
+);

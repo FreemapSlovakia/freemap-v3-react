@@ -1,11 +1,15 @@
-import { CustomLayer, LayerSettings } from 'fm3/actions/mapActions';
-import { Messages } from 'fm3/translations/messagesInterface';
+import type * as Sentry from '@sentry/browser';
 import { PathOptions } from 'leaflet';
+import { Action } from 'redux';
+import { CustomLayer, LayerSettings } from '../actions/mapActions.js';
+import { Messages } from '../translations/messagesInterface.js';
 
 export interface LatLon {
   lat: number;
   lon: number;
 }
+
+export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
 export interface User {
   name: string;
@@ -23,7 +27,14 @@ export interface User {
   lon?: number | null;
   language?: string | null;
   isPremium: boolean;
+  authProviders: AuthProvider[];
 }
+
+export type LoginResponse = {
+  user: User;
+  connect: boolean;
+  clientData?: { successAction?: Action };
+};
 
 declare global {
   interface Window {
@@ -35,11 +46,31 @@ declare global {
     fmHeadless?: {
       searchResultStyle?: PathOptions;
     };
-    pannellum: any;
+    Sentry: typeof Sentry;
   }
 
   interface ServiceWorkerGlobalScope {
     __WB_MANIFEST: { revision: string; url: string }[];
+  }
+
+  interface Window {
+    _paq: {
+      push: (
+        args:
+          | [
+              'trackEvent',
+              category: string,
+              action: string,
+              name?: string | number,
+              value?: string | number,
+            ]
+          | ['setCookieConsentGiven']
+          | ['setUserId', userId: string]
+          | ['resetUserId']
+          | ['trackPageView']
+          | ['appendToTrackingUrl', appendToUrl: string],
+      ) => void;
+    };
   }
 }
 
@@ -47,12 +78,12 @@ export type StringDates<T> = {
   [K in keyof T]: T[K] extends Date
     ? string
     : T[K] extends Date | null
-    ? string | null
-    : T[K] extends Date | undefined
-    ? string | undefined
-    : T[K] extends Date | null | undefined
-    ? string | null | undefined
-    : StringDates<T[K]>;
+      ? string | null
+      : T[K] extends Date | undefined
+        ? string | undefined
+        : T[K] extends Date | null | undefined
+          ? string | null | undefined
+          : StringDates<T[K]>;
 };
 
 interface OsmElement {
@@ -80,7 +111,7 @@ export interface OsmResult {
 
 interface OverpassElementBase {
   id: number;
-  tags: Record<string, string>;
+  tags?: Record<string, string>; // probably bug in overpass, but it returned node without tags
 }
 
 interface OverpassNodeElement extends OverpassElementBase, LatLon {
@@ -137,8 +168,8 @@ type Join<K, P> = K extends string | number
 type Leaves<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends Record<string, unknown>
-  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
-  : '';
+    ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+    : '';
 
 export type MessagePaths = Leaves<Messages>;
 

@@ -1,7 +1,6 @@
-import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
-import { mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
-import { createReducer } from 'typesafe-actions';
+import { createReducer } from '@reduxjs/toolkit';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
 
 export interface MapDetailsState {
   userSelectedLat: number | null;
@@ -13,12 +12,12 @@ const initialState: MapDetailsState = {
   userSelectedLon: null,
 };
 
-export const mapDetailsReducer = createReducer<MapDetailsState, RootAction>(
-  initialState,
-)
-  .handleAction(clearMap, () => initialState)
-  .handleAction(mapDetailsSetUserSelectedPosition, (state, action) => ({
-    ...state,
-    userSelectedLat: action.payload.lat,
-    userSelectedLon: action.payload.lon,
-  }));
+export const mapDetailsReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => initialState)
+    .addCase(mapDetailsSetUserSelectedPosition, (state, action) => {
+      state.userSelectedLat = action.payload.lat;
+
+      state.userSelectedLon = action.payload.lon;
+    }),
+);

@@ -1,10 +1,10 @@
-import { renderGalleryTile } from './galleryTileRenderrer';
+import { renderGalleryTile } from './galleryTileRenderrer.js';
 
 self.onmessage = (evt) => {
   const id = evt.data.id;
 
   try {
-    renderGalleryTile(evt.data);
+    renderGalleryTile(evt.data.payload);
 
     self.postMessage({ id }, []);
   } catch (err) {

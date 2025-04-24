@@ -1,7 +1,7 @@
 import color from 'color';
-import { GalleryColorizeBy } from 'fm3/actions/galleryActions';
-import { LatLon } from 'fm3/types/common';
 import { LatLng } from 'leaflet';
+import { GalleryColorizeBy } from '../../actions/galleryActions.js';
+import { LatLon } from '../../types/common.js';
 
 type Marble = LatLon & {
   rating: number;
@@ -52,10 +52,10 @@ export function renderGalleryTile({
   pointB,
   pointA,
 }: Props): void {
-  const ctx = (tile as any).getContext('2d');
+  const ctx = tile.getContext('2d');
 
   if (!ctx) {
-    throw Error('no context');
+    throw new Error('no context');
   }
 
   const zk = Math.min(1, 1.1 ** zoom / 3);
@@ -76,12 +76,12 @@ export function renderGalleryTile({
     colorizeBy === 'userId'
       ? sort(data, () => Math.random())
       : colorizeBy === 'takenAt' ||
-        colorizeBy === 'createdAt' ||
-        colorizeBy === 'rating'
-      ? sort(data, (a) => Number(a[colorizeBy]))
-      : colorizeBy === 'mine'
-      ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
-      : sort(data, () => 0);
+          colorizeBy === 'createdAt' ||
+          colorizeBy === 'rating'
+        ? sort(data, (a) => Number(a[colorizeBy]))
+        : colorizeBy === 'mine'
+          ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
+          : sort(data, () => 0);
 
   // remove "dense" pictures
   const marbles: Marble[] = items

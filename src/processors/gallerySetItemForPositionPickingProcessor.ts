@@ -1,6 +1,6 @@
-import { gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { gallerySetItemForPositionPicking } from '../actions/galleryActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const gallerySetItemForPositionPickingProcessor: Processor = {
   actionCreator: gallerySetItemForPositionPicking,

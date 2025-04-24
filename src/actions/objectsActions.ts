@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction } from '@reduxjs/toolkit';
 
 export interface ObjectsResult {
   id: number;
@@ -8,7 +8,11 @@ export interface ObjectsResult {
   type: 'node' | 'way' | 'relation';
 }
 
-export const objectsSetFilter = createAction('OBJECTS_SET_FILTER')<string[]>();
+export type MarkerType = 'pin' | 'square' | 'ring';
+
+export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 
 export const objectsSetResult =
-  createAction('OBJECTS_SET_RESULT')<ObjectsResult[]>();
+  createAction<ObjectsResult[]>('OBJECTS_SET_RESULT');
+
+export const setSelectedIcon = createAction<MarkerType>('SET_SELECTED_ICON');

@@ -1,6 +1,6 @@
-import { enableUpdatingUrl } from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { enableUpdatingUrl } from '../actions/mainActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 let prevMapType: string | undefined;
 
@@ -14,23 +14,15 @@ export const mapTypeGaProcessor: Processor = {
     } = getState();
 
     if (prevMapType !== mapType) {
-      window.gtag('set', {
-        mapType: 'mapType',
-      });
-
-      window.gtag('event', 'setMapType', {
-        event_category: 'Map',
-        value: mapType,
-      });
+      window._paq.push(['trackEvent', 'Map', 'setMapType', mapType]);
 
       prevMapType = mapType;
     }
 
-    if ([...prevOverlays].sort().join(',') !== [...overlays].sort().join(',')) {
-      window.gtag('event', 'setOverlays', {
-        event_category: 'Map',
-        value: overlays,
-      });
+    const joinedOverlays = [...overlays].sort().join(',');
+
+    if ([...prevOverlays].sort().join(',') !== joinedOverlays) {
+      window._paq.push(['trackEvent', 'Map', 'setOverlays', joinedOverlays]);
 
       prevOverlays = overlays;
     }

@@ -8,8 +8,8 @@ import {
   FaRoad,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { Tool } from './actions/mainActions';
-import { Messages } from './translations/messagesInterface';
+import { Tool } from './actions/mainActions.js';
+import { Messages } from './translations/messagesInterface.js';
 
 export interface ToolDefinition {
   tool: Tool;

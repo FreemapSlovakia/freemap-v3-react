@@ -1,22 +1,5 @@
+import distance from '@turf/distance';
 import Color from 'color';
-import {
-  drawingLineAddPoint,
-  drawingLineJoinFinish,
-  drawingLineUpdatePoint,
-  Point,
-} from 'fm3/actions/drawingLineActions';
-import { drawingMeasure } from 'fm3/actions/drawingPointActions';
-import { selectFeature } from 'fm3/actions/mainActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { colors } from 'fm3/constants';
-import { distance } from 'fm3/geoutils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { isEventOnMap } from 'fm3/mapUtils';
-import {
-  drawingLinePolys,
-  selectingModeSelector,
-} from 'fm3/selectors/mainSelectors';
-import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
 import { Fragment, ReactElement, useEffect, useMemo, useState } from 'react';
 import {
@@ -28,6 +11,23 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import {
+  drawingLineAddPoint,
+  drawingLineJoinFinish,
+  drawingLineUpdatePoint,
+  Point,
+} from '../actions/drawingLineActions.js';
+import { drawingMeasure } from '../actions/drawingPointActions.js';
+import { selectFeature } from '../actions/mainActions.js';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { isEventOnMap } from '../mapUtils.js';
+import {
+  drawingLinePolys,
+  selectingModeSelector,
+} from '../selectors/mainSelectors.js';
+import { LatLon } from '../types/common.js';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
@@ -157,6 +157,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         index,
         point: { lat, lon, id },
         position: pos,
+        id: index,
       }),
     );
 
@@ -315,7 +316,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         ps.map((p, i) => {
           if (i % 2 === 0) {
             if (prev) {
-              dist += distance(p.lat, p.lon, prev.lat, prev.lon);
+              dist += distance([p.lon, p.lat], [prev.lon, prev.lat], {
+                units: 'kilometers',
+              });
             }
 
             prev = p;
@@ -359,6 +362,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                       drawingLineJoinFinish({
                         lineIndex: index,
                         pointId: p.id,
+                        selection: {
+                          type: 'draw-line-poly',
+                          id:
+                            joinWith.lineIndex -
+                            (index > joinWith.lineIndex ? 0 : 1),
+                        },
                       }),
                     );
 
@@ -379,7 +388,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
             >
               {line.type === 'line' && !joinWith && (
                 <Tooltip className="compact" offset={[-4, 0]} direction="right">
-                  <span>{nf.format(dist / 1000)} km</span>
+                  <span>{nf.format(dist)} km</span>
                 </Tooltip>
               )}
             </Marker>

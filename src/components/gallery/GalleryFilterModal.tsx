@@ -1,7 +1,3 @@
-import { gallerySetFilter } from 'fm3/actions/galleryActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
   FormEvent,
@@ -10,15 +6,13 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Form } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { gallerySetFilter } from '../../actions/galleryActions.js';
+import { setActiveModal } from '../../actions/mainActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
 
 type Props = { show: boolean };
 
@@ -30,6 +24,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const filter = useAppSelector((state) => state.gallery.filter);
+
+  const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
   const users = useAppSelector((state) => state.gallery.users);
 
@@ -54,7 +50,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   const [pano, setPano] = useState<boolean>();
 
   useEffect(() => {
-    setTag(filter.tag === '' ? '⌘' : filter.tag ?? '');
+    setTag(filter.tag === '' ? '⌘' : (filter.tag ?? ''));
 
     setUserId(
       typeof filter.userId === 'number' ? filter.userId.toString() : '',
@@ -226,12 +222,12 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
         <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
       </Modal.Header>
 
-      <form onSubmit={handleFormSubmit}>
+      <Form onSubmit={handleFormSubmit}>
         <Modal.Body>
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.tag}</FormLabel>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
 
-            <FormControl as="select" value={tag} onChange={handleTagChange}>
+            <Form.Select value={tag} onChange={handleTagChange}>
               <option value="" />
 
               <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
@@ -240,76 +236,84 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                   {name} ({count})
                 </option>
               ))}
-            </FormControl>
-          </FormGroup>
+            </Form.Select>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.author}</FormLabel>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
 
-            <FormControl
-              as="select"
-              value={userId}
-              onChange={handleUserIdChange}
-            >
+            <Form.Select value={userId} onChange={handleUserIdChange}>
               <option value="" />
 
-              {users.map(({ id, name, count }) => (
-                <option key={id} value={id}>
-                  {name} ({count})
-                </option>
-              ))}
-            </FormControl>
-          </FormGroup>
+              {currentUserId ? (
+                <>
+                  {users
+                    .filter(({ id }) => currentUserId === id)
+                    .map(({ id, name, count }) => (
+                      <option key={id} value={id}>
+                        {name} ({count})
+                      </option>
+                    ))}
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.createdAt}</FormLabel>
+                  <option disabled>──────────</option>
+                </>
+              ) : null}
+
+              {users
+                .filter(({ id }) => currentUserId !== id)
+                .map(({ id, name, count }) => (
+                  <option key={id} value={id}>
+                    {name} ({count})
+                  </option>
+                ))}
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
 
             <InputGroup>
-              <FormControl
+              <Form.Control
                 type="date"
                 value={createdAtFrom}
                 onChange={handleCreatedAtFromChange}
               />
 
-              <InputGroup.Append>
-                <InputGroup.Text> - </InputGroup.Text>
-              </InputGroup.Append>
+              <InputGroup.Text> - </InputGroup.Text>
 
-              <FormControl
+              <Form.Control
                 type="date"
                 value={createdAtTo}
                 onChange={handleCreatedAtToChange}
               />
             </InputGroup>
-          </FormGroup>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.takenAt}</FormLabel>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
 
             <InputGroup>
-              <FormControl
+              <Form.Control
                 type="date"
                 value={takenAtFrom}
                 onChange={handleTakenAtFromChange}
               />
 
-              <InputGroup.Append>
-                <InputGroup.Text> - </InputGroup.Text>
-              </InputGroup.Append>
+              <InputGroup.Text> - </InputGroup.Text>
 
-              <FormControl
+              <Form.Control
                 type="date"
                 value={takenAtTo}
                 onChange={handleTakenAtToChange}
               />
             </InputGroup>
-          </FormGroup>
+          </Form.Group>
 
-          <FormGroup>
-            <FormLabel>{m?.gallery.filterModal.rating}</FormLabel>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
 
             <InputGroup>
-              <FormControl
+              <Form.Control
                 type="number"
                 min={1}
                 max={ratingTo || 5}
@@ -318,11 +322,9 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleRatingFromChange}
               />
 
-              <InputGroup.Append>
-                <InputGroup.Text> - </InputGroup.Text>
-              </InputGroup.Append>
+              <InputGroup.Text> - </InputGroup.Text>
 
-              <FormControl
+              <Form.Control
                 type="number"
                 min={ratingFrom || 1}
                 max={5}
@@ -331,9 +333,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 onChange={handleRatingToChange}
               />
             </InputGroup>
-          </FormGroup>
+          </Form.Group>
 
           <Form.Check
+            className="mb-3"
             id="filt-pano"
             checked={!!pano}
             onChange={handlePanoChange}
@@ -355,7 +358,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             <FaTimes /> {m?.general.cancel}
           </Button>
         </Modal.Footer>
-      </form>
+      </Form>
     </Modal>
   );
 }

@@ -1,12 +1,12 @@
 import { lineString, polygon } from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
-import { osmLoadWay } from 'fm3/actions/osmActions';
-import { searchSelectResult } from 'fm3/actions/searchActions';
-import { positionsEqual, shouldBeArea } from 'fm3/geoutils';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { OsmResult } from 'fm3/types/common';
 import { assert } from 'typia';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { osmLoadWay } from '../actions/osmActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
+import { positionsEqual, shouldBeArea } from '../geoutils.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { OsmResult } from '../types/common.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
@@ -18,7 +18,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       getState,
       url: `//api.openstreetmap.org/api/0.6/way/${id}/full.json`,
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSelectResult],
+      cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
     const nodes: Record<string, [number, number]> = {};

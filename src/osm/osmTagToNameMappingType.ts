@@ -137,7 +137,37 @@ export type OsmTagToNameMapping = {
     university: string;
     vacuum_cleaner: string;
     vehicle_inspection: string;
-    vending_machine: string;
+    vending_machine: {
+      '*': string;
+      vending: {
+        bicycle_tube: string;
+        bread: string;
+        bottle_return: string;
+        candles: string;
+        chewing_gums: string;
+        cigarettes: string;
+        coffee: string;
+        condoms: string;
+        drinks: string;
+        elongated_coin: string;
+        eggs: string;
+        excrement_bags: string;
+        food: string;
+        fuel: string;
+        gas: string;
+        ice_cream: string;
+        ice_cubes: string;
+        milk: string;
+        movies: string;
+        newspapers: string;
+        parking_tickets: string;
+        pizza: string;
+        public_transport_tickets: string;
+        stamps: string;
+        sweets: string;
+        water: string;
+      };
+    };
     veterinary: string;
     waste_basket: string;
     waste_disposal: string;

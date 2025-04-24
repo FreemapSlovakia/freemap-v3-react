@@ -1,8 +1,8 @@
-import { setAnalyticCookiesAllowed } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
 import { ReactElement } from 'react';
-import FormCheck from 'react-bootstrap/FormCheck';
+import { Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { setAnalyticCookiesAllowed } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
 
 type Props = { prompt: string; local: string; analytics: string };
 
@@ -21,7 +21,7 @@ export function CookieConsent({
     <>
       <p>{prompt}</p>
 
-      <FormCheck
+      <Form.Check
         id="chkCookieSocialLogin"
         type="checkbox"
         label={local}
@@ -29,7 +29,7 @@ export function CookieConsent({
         disabled
       />
 
-      <FormCheck
+      <Form.Check
         id="chkCookieAnalytics"
         type="checkbox"
         label={analytics}

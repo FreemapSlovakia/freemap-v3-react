@@ -1,7 +1,7 @@
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, ReactNode } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
 
 export interface PictureModel {
   title: string;
@@ -46,7 +46,7 @@ export function RecentTags({
             onClick={() => onAdd(tag)}
             variant="secondary"
             size="sm"
-            className="py-0 ml-1"
+            className="py-0 ms-1"
           >
             {tag}
           </Button>

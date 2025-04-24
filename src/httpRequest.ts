@@ -1,14 +1,30 @@
-import { ActionCreator } from 'typesafe-actions';
-import { clearMap } from './actions/mainActions';
-import { CancelItem, cancelRegister } from './cancelRegister';
-import { RootState } from './reducers';
+import { clearMapFeatures } from './actions/mainActions.js';
+import {
+  ActionCreatorMatchable,
+  CancelItem,
+  cancelRegister,
+} from './cancelRegister.js';
+import { RootState } from './store.js';
+
+export class HttpError extends Error {
+  status: number;
+  body: string;
+
+  constructor(status: number, body: string) {
+    super('Unexpected HTTP response ' + status + ': ' + body);
+
+    this.status = status;
+
+    this.body = body;
+  }
+}
 
 interface HttpRequestParams extends Omit<RequestInit, 'signal'> {
   url: string;
   data?: unknown;
   getState: () => RootState;
-  expectedStatus?: number | number[];
-  cancelActions?: ActionCreator<string>[];
+  expectedStatus?: number | number[] | null;
+  cancelActions?: ActionCreatorMatchable[];
 }
 
 export function addHeader(
@@ -36,7 +52,7 @@ export async function httpRequest({
   getState,
   expectedStatus,
   cancelActions = [
-    clearMap,
+    clearMapFeatures,
     // selectFeature,
     // setActiveModal -- TODO we should maybe cancel only if closing modal
   ],
@@ -67,11 +83,11 @@ export async function httpRequest({
       }
     : rest;
 
-  const urlIsFull = /^(https?:)?\/\//.test(url);
+  const urlIsRelative = !/^(https?:)?\/\//.test(url);
 
   const { user } = getState().auth;
 
-  if (!urlIsFull && user) {
+  if (urlIsRelative && user) {
     const authorization = `Bearer ${user.authToken}`;
 
     init.headers = addHeader(init.headers, 'Authorization', authorization);
@@ -86,15 +102,15 @@ export async function httpRequest({
   }
 
   try {
-    let response: Response;
+    let response;
 
     try {
       response = await fetch(
-        urlIsFull ? url : process.env['API_URL'] + url,
+        urlIsRelative ? process.env['API_URL'] + url : url,
         init,
       );
     } catch (err) {
-      (err as any)._fm_fetchError = true;
+      (err as { _fm_fetchError: boolean })._fm_fetchError = true;
 
       throw err;
     }
@@ -102,13 +118,14 @@ export async function httpRequest({
     const { status } = response;
 
     if (
-      expectedStatus === undefined
+      expectedStatus !== null &&
+      (expectedStatus === undefined
         ? !response.ok
         : typeof expectedStatus === 'number'
-        ? status !== expectedStatus
-        : !expectedStatus.includes(status)
+          ? status !== expectedStatus
+          : !expectedStatus.includes(status))
     ) {
-      throw new Error('Unexpected status ' + status);
+      throw new HttpError(status, await response.text());
     }
 
     return response;

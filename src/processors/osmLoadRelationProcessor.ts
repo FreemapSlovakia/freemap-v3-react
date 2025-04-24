@@ -1,20 +1,13 @@
-import {
-  Feature,
-  featureCollection,
-  lineString,
-  LineString,
-  point,
-  Point,
-  Polygon,
-} from '@turf/helpers';
-import { clearMap } from 'fm3/actions/mainActions';
-import { osmLoadRelation } from 'fm3/actions/osmActions';
-import { searchSelectResult } from 'fm3/actions/searchActions';
-import { mergeLines } from 'fm3/geoutils';
-import { httpRequest } from 'fm3/httpRequest';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { OsmNode, OsmRelation, OsmResult, OsmWay } from 'fm3/types/common';
+import { featureCollection, lineString, point } from '@turf/helpers';
+import { Feature, LineString, Point, Polygon } from 'geojson';
 import { assert } from 'typia';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { osmLoadRelation } from '../actions/osmActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
+import { mergeLines } from '../geoutils.js';
+import { httpRequest } from '../httpRequest.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
+import { OsmNode, OsmRelation, OsmResult, OsmWay } from '../types/common.js';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
@@ -26,7 +19,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       getState,
       url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,
       expectedStatus: 200,
-      cancelActions: [clearMap, searchSelectResult],
+      cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
     const data = assert<OsmResult>(await res.json());
@@ -63,7 +56,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       const { ref, type } = member;
 
       switch (type) {
-        case 'node':
+        case 'node': {
           const n = nodes[ref];
 
           if (n) {
@@ -71,8 +64,9 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           }
 
           break;
+        }
 
-        case 'way':
+        case 'way': {
           const w = ways[ref];
 
           if (w) {
@@ -88,10 +82,12 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
           }
 
           break;
+        }
 
         case 'relation':
+          // TODO add support for relations in relation
+          break;
 
-        // TODO add support for relations in relation
         default:
           break;
       }

@@ -1,20 +1,18 @@
-/* eslint-disable */
-
-import { Attribution } from 'fm3/components/Attribution';
-import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { CookieConsent } from 'fm3/components/CookieConsent';
-import { ElevationInfo } from 'fm3/components/ElevationInfo';
-import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
+import { Fragment } from 'react';
+import { Alert } from 'react-bootstrap';
+import { FaKey } from 'react-icons/fa';
+import { Attribution } from '../components/Attribution.js';
+import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { CookieConsent } from '../components/CookieConsent.js';
+import { ElevationInfo } from '../components/ElevationInfo.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
-} from 'fm3/components/ObjectDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { Fragment } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import { FaKey } from 'react-icons/fa';
-import shared from './cs-shared.json';
-import { Messages } from './messagesInterface';
+} from '../components/ObjectDetails.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import shared from './cs-shared.js';
+import { Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 3,
@@ -42,7 +40,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 
 const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
 
-const cs: Messages = {
+const messages: Messages = {
   general: {
     iso: 'cs_CZ',
     elevationProfile: 'Výškový profil',
@@ -65,7 +63,7 @@ const cs: Messages = {
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     back: 'Zpět',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => `Chyba aplikace: ${err}`,
+    processorError: ({ err }) => addError(messages, 'Chyba aplikace', err),
     seconds: 'sekundy',
     minutes: 'minuty',
     meters: 'metre',
@@ -79,10 +77,10 @@ const cs: Messages = {
       'Prosím zadejte faktor zjednodušení. Zadejte nulu pro vynechání zjednodušení.',
     copyUrl: 'Kopírovat URL',
     copyPageUrl: 'Kopírovat URL stránky',
-    savingError: ({ err }) => `Chyba ukládání: ${err}`,
-    loadError: ({ err }) => `Chyba nahrávání: ${err}`,
-    deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
-    operationError: ({ err }) => `Operation error: ${err}`,
+    savingError: ({ err }) => addError(messages, 'Chyba ukládání', err),
+    loadError: ({ err }) => addError(messages, 'Chyba nahrávání', err),
+    deleteError: ({ err }) => addError(messages, 'Chyba pří mazání', err),
+    operationError: ({ err }) => addError(messages, 'Operation error', err),
     deleted: 'Smazané.',
     saved: 'Uložené.',
     visual: 'Zobrazení',
@@ -102,6 +100,10 @@ const cs: Messages = {
     ),
     unauthenticatedError:
       'Pro přístup k této funkci se nejprve prosím přihlašte.',
+    areYouSure: 'Jste si jisti?',
+    export: 'Exportovat',
+    success: 'Hotovo!',
+    premiumOnly: 'Podpořte nás, abyste získali přístup k této funkci.',
   },
 
   selections: {
@@ -181,7 +183,6 @@ const cs: Messages = {
       isochrone: 'Izochróny',
     },
     alternative: 'Alternativa',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Vzdálenost:{' '}
@@ -190,7 +191,6 @@ const cs: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Trvání:{' '}
@@ -199,7 +199,6 @@ const cs: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Vzdálenost: <b>{distance} km</b> | Trvání:{' '}
@@ -217,7 +216,8 @@ const cs: Messages = {
     gpsError: 'Nelze získat aktuální polohu.',
     routeNotFound:
       'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
-    fetchingError: ({ err }) => `Nastala chyba při hledání trasy: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při hledání trasy', err),
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} na ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -260,7 +260,6 @@ const cs: Messages = {
 
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Příjezd: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
@@ -272,7 +271,6 @@ const cs: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Příjezd: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
@@ -296,7 +294,6 @@ const cs: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             v <b>{departure}</b> pěšky{' '}
@@ -314,7 +311,6 @@ const cs: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             v <b>{departure}</b> {type} <b>{number}</b> do <b>{destination}</b>
@@ -330,7 +326,6 @@ const cs: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             pěšky{' '}
@@ -348,7 +343,6 @@ const cs: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             kolem{' '}
@@ -370,7 +364,7 @@ const cs: Messages = {
     logOut: 'Odhlásit',
     logIn: 'Přihlášení',
     account: 'Účet',
-    gpxExport: 'Exportovat do GPX / GeoJSON',
+    mapFeaturesExport: 'Exportovat mapové prvky',
     mapExports: 'Mapa pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
     supportUs: 'Podpořit Freemap',
@@ -378,13 +372,12 @@ const cs: Messages = {
     back: 'Zpět',
     mapLegend: 'Legenda mapy',
     contacts: 'Kontakty',
-    tips: 'Tipy',
     facebook: 'Freemap na Facebooku',
     twitter: 'Freemap na Twitteru',
     youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHub-u',
     automaticLanguage: 'Automaticky',
-    pdfExport: 'Exportovat mapu',
+    mapExport: 'Exportovat mapu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
   },
@@ -418,11 +411,11 @@ const cs: Messages = {
         <>
           🇺🇦 Stojíme za Ukrajinou.{' '}
           <a
-            href="https://bank.gov.ua/en/about/support-the-armed-forces"
+            href="https://donio.cz/pomocukrajine"
             target="_blank"
             rel="noopener"
           >
-            Přispějte ukrajinské armádě ›
+            Pomozte Ukrajině ›
           </a>{' '}
           🇺🇦
         </>
@@ -507,16 +500,20 @@ const cs: Messages = {
     locationPicking: {
       title: 'Zvolte pozici fotografie',
     },
-    deletingError: ({ err }) => `Nastala chyba při mazání obrázku: ${err}`,
-    tagsFetchingError: ({ err }) => `Nastala chyba při nahrávání tagů: ${err}`,
+    deletingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při mazání obrázku', err),
+    tagsFetchingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při nahrávání tagů', err),
     pictureFetchingError: ({ err }) =>
-      `Nastala chyba při nahrávání fotky: ${err}`,
+      addError(messages, 'Nastala chyba při nahrávání fotky', err),
     picturesFetchingError: ({ err }) =>
-      `Nastala chyba při nahrávání fotek: ${err}`,
-    savingError: ({ err }) => `Nastala chyba při ukládání fotky: ${err}`,
+      addError(messages, 'Nastala chyba při nahrávání fotek', err),
+    savingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při ukládání fotky', err),
     commentAddingError: ({ err }) =>
-      `Nastala chyba při přidávání komentáře: ${err}`,
-    ratingError: ({ err }) => `Nastala chyba při hodnocení ${err}`,
+      addError(messages, 'Nastala chyba při přidávání komentáře', err),
+    ratingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při hodnocení', err),
     missingPositionError: 'Chyba pozice.',
     invalidPositionError: 'Nesprávný formát souřadnic.',
     invalidTakenAt: 'Nevalidní datum a čas focení.',
@@ -540,7 +537,7 @@ const cs: Messages = {
     elevation: 'Bod',
     area: 'Polygon',
     elevationFetchError: ({ err }) =>
-      `Nastala chyba při získávání výšky bodu: ${err}`,
+      addError(messages, 'Nastala chyba při získávání výšky bodu', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -599,8 +596,9 @@ const cs: Messages = {
     shareToast:
       'Trasa byla uložena na server a můžete ji sdílet zkopírovaním URL stránky.',
     fetchingError: ({ err }) =>
-      `Nastala chyba při získávání záznamu trasy: ${err}`,
-    savingError: ({ err }) => `Nepodařilo se uložit trasu: ${err}`,
+      addError(messages, 'Nastala chyba při získávání záznamu trasy', err),
+    savingError: ({ err }) =>
+      addError(messages, 'Nepodařilo se uložit trasu', err),
     loadingError: 'Soubor se nepodařilo načíst.',
     onlyOne: 'Očekává se pouze jeden GPX soubor.',
     wrongFormat: 'Nahraný soubor musí mít příponu .gpx',
@@ -655,7 +653,8 @@ const cs: Messages = {
     showInMenu: 'Zobrazit v menu',
     showInToolbar: 'Zobrazit v liště',
     saveSuccess: 'Změny byly uloženy.',
-    savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
+    savingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při ukládání nastavení', err),
     customLayersDef: 'Definice vlastních mapových vrstev',
     customLayersDefError: 'Chybný formát definice vlasových mapových vrstev.',
   },
@@ -668,7 +667,8 @@ const cs: Messages = {
     olderThanFull: ({ days }) =>
       `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
     notFound: 'Nebyly nalezeny žádné změny.',
-    fetchError: ({ err }) => `Nastala chyba při získávání změn: ${err}`,
+    fetchError: ({ err }) =>
+      addError(messages, 'Nastala chyba při získávání změn', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Autor:',
@@ -685,7 +685,8 @@ const cs: Messages = {
 
   mapDetails: {
     notFound: 'Nic se zde nenašlo.',
-    fetchingError: ({ err }) => `Nastala chyba při získávání detailů: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při získávání detailů', err),
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -704,7 +705,13 @@ const cs: Messages = {
       zoom: 'Přiblíž',
     },
     tooManyPoints: ({ limit }) => `Výsledek byl omezen na ${limit} objektů.`,
-    fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při získávání objektů', err),
+    icon: {
+      pin: 'Špendlík',
+      ring: 'Kruhová',
+      square: 'Čtvercová',
+    },
     // categories: {
     //   1: 'Příroda',
     //   2: 'Služby',
@@ -1015,7 +1022,11 @@ const cs: Messages = {
     routeFrom: 'Navigovat odsud',
     routeTo: 'Navigovat sem',
     fetchingError: ({ err }) =>
-      `Nastala chyba při zpracování výsledků vyhledávání: ${err}`,
+      addError(
+        messages,
+        'Nastala chyba při zpracování výsledků vyhledávání:',
+        err,
+      ),
     buttonTitle: 'Hledat',
     placeholder: 'Hledat v mapě',
   },
@@ -1032,19 +1043,18 @@ const cs: Messages = {
     enableLocateMe: 'nalezení vlastní pozice',
   },
 
-  tips: {
-    errorLoading: 'Tip se nepodařilo načíst.',
+  documents: {
+    errorLoading: 'Dokument se nepodařilo načíst.',
   },
 
-  gpxExport: {
-    export: 'Stáhnout',
+  exportMapFeatures: {
+    download: 'Stáhnout',
     format: 'Formát',
-    exportToDrive: 'Uložit do Google Drive',
-    exportToDropbox: 'Uložit do Dropboxu',
-    exportError: ({ err }) => `Chyba exportu: ${err}`,
+    target: 'Cíl',
+    exportError: ({ err }) => addError(messages, 'Chyba exportu', err),
     what: {
       plannedRoute: 'vyhledanou trasu',
-      plannedRouteWithStops: 'vyhledanou trasu se zastávkami',
+      plannedRouteWithStops: 'se zastávkami',
       objects: 'objekty (POI)',
       pictures: 'fotografie (ve viditelné části mapy)',
       drawingLines: 'kreslení - čáry',
@@ -1052,6 +1062,7 @@ const cs: Messages = {
       drawingPoints: 'kreslení - body',
       tracking: 'sledování',
       gpx: 'GPX trasu',
+      search: 'zvýrazněný prvek mapy',
     },
     disabledAlert:
       'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
@@ -1059,23 +1070,55 @@ const cs: Messages = {
       'Exportovaný soubor může podléhat různým licencím, například licenci OpenStreetMap. Prosím dodržte podmínky těchto licencí při sdílení vyexportovaného souboru.',
     exportedToDropbox: 'Soubor byl uložen do Dropboxu.',
     exportedToGdrive: 'Soubor byl uložen do Google Drive.',
-  },
-
-  logIn: {
-    with: {
-      facebook: 'Přihlásit se pomocí Facebooku',
-      google: 'Přihlásit se pomocí Googlu',
-      osm: 'Přihlásit se pomocí OpenStreetMap',
+    garmin: {
+      courseName: 'Název kurzu',
+      description: 'Popis',
+      activityType: 'Typ aktivity',
+      at: {
+        running: 'Běh',
+        hiking: 'Turistika',
+        other: 'Jiné',
+        mountain_biking: 'Horská cyklistika',
+        trailRunning: 'Trailový běh',
+        roadCycling: 'Silniční cyklistika',
+        gravelCycling: 'Štěrková cyklistika',
+      },
+      revoked: 'Export kurzu do Garminu byl zrušen.',
+      connectPrompt:
+        'Garmin účet ještě nemáte připojen. Chcete jej připojit nyní?',
+      authPrompt:
+        'Nejste ještě přihlášen Garminon. Přejete se přihlásit tetaz?',
     },
-    success: 'Byli jste úspěšně přihlášen.',
-    logInError: ({ err }) => `Nepodařilo se přihlásit: ${err}`,
-    logInError2: 'Nepodařilo se přihlásit.',
-    logOutError: ({ err }) => `Nepodařilo se odhlásit: ${err}`,
-    verifyError: ({ err }) => `Nepodařilo se ověřit přihlášení: ${err}`,
   },
 
-  logOut: {
-    success: 'Byli jste úspěšně odhlášen.',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
+    },
+    logIn: {
+      with: 'Vyberte poskytovatele přihlášení',
+      success: 'Byli jste úspěšně přihlášen.',
+      logInError: ({ err }) =>
+        addError(messages, 'Nepodařilo se přihlásit', err),
+      logInError2: 'Nepodařilo se přihlásit.',
+      verifyError: ({ err }) =>
+        addError(messages, 'Nepodařilo se ověřit přihlášení', err),
+    },
+    logOut: {
+      success: 'Byli jste úspěšně odhlášen.',
+      error: ({ err }) => addError(messages, 'Nepodařilo se odhlásit', err),
+    },
+    connect: {
+      label: 'Pripojit',
+      success: 'Pripojené',
+    },
+    disconnect: {
+      label: 'Odpojit',
+      success: 'Odpojené',
+    },
   },
 
   mapLayers: {
@@ -1087,30 +1130,22 @@ const cs: Messages = {
     interactiveLayerWarning: 'Interaktivní vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
-      A: 'Automapa',
-      T: 'Turistická',
-      C: 'Cyklomapa',
-      K: 'Běžkárska',
+      A: 'Automapa (zastaraná)',
+      T: 'Turistická (zastaraná)',
+      C: 'Cyklomapa (zastaraná)',
+      K: 'Běžkárska (zastaraná)',
       S: 'Z letadla',
-      Z: 'Ortofotomozaika SR (Z letadla, SK)',
+      Z: 'Ortofoto ČR+SR (Z letadla, CZ+SK)',
       J: 'Stará Ortofotomozaika SR (Z letadla, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Veřejná doprava (ÖPNV)',
-      h: 'Historická',
       X: outdoorMap,
       i: 'Interaktivní vrstva',
       I: 'Fotografie',
       l: 'Lesní cesty NLC (SK)',
-      n1: 'Názvy (auto)',
-      n2: 'Názvy (turistika)',
-      n3: 'Názvy (cyklo)',
-      g: 'OSM GPS stopy',
       t: 'Turistické trasy',
       c: 'Cyklotrasy',
-      q: 'OpenSnowMap',
-      r: 'Render. klienti ',
       s0: 'Strava (Vše)',
       s1: 'Strava (Cyklojízdy)',
       s2: 'Strava (Běh)',
@@ -1120,8 +1155,12 @@ const cs: Messages = {
       '4': 'Světlé stínování terénu (SK)',
       '5': 'Stínování terénu (SK)',
       '6': 'Stínování povrchu (SK)',
+      '7': 'Detailní stínování povrchu (SK)',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
+      VD: 'Dataviz Vektorová',
+      VT: 'Outdoor Vektorová',
+      H: ' Parametrické stínování (SK) ⚠', // TODO translate
     },
     customBase: 'Vlastní mapa',
     customOverlay: 'Vlastní překrytí mapy',
@@ -1134,6 +1173,7 @@ const cs: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0přispěvatelé OpenStreetMap',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'poskytovatelé DMR…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
@@ -1149,7 +1189,7 @@ const cs: Messages = {
     distance: 'Vzdálenost [km]',
     ele: 'Nadm. výška [m.n.m.] ',
     fetchError: ({ err }) =>
-      `Nastala chyba při získávání výškového profilu: ${err}`,
+      addError(messages, 'Nastala chyba při získávání výškového profilu', err),
   },
 
   errorCatcher: {
@@ -1160,12 +1200,13 @@ const cs: Messages = {
       <ul>
         <li><a href="">znovu načíst poslední stránku</a></li>
         <li><a href="/">znovu načíst úvodní stránku</a></li>
-        <li><a href="/?reset-local-storage">smazat lokální data a znovunačíst úvodní stránku</a></li>
+        <li><a href="/#reset-local-storage">smazat lokální data a znovunačíst úvodní stránku</a></li>
       </ul>
     `,
   },
   osm: {
-    fetchingError: ({ err }) => `Nastala chyba při získávání OSM dat: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(messages, 'Nastala chyba při získávání OSM dat', err),
   },
 
   tracking: {
@@ -1341,11 +1382,10 @@ const cs: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Rozšířená nastavení',
     styles: 'Styly interaktivní vrstvy',
-    export: 'Exportovat',
-    exportError: ({ err }) => `Chyba exportu mapy: ${err}`,
+    exportError: ({ err }) => addError(messages, 'Chyba exportu mapy', err),
     exporting: 'Prosím počkejte, mapa se exportuje…',
     exported: ({ url }) => (
       <>
@@ -1425,12 +1465,18 @@ const cs: Messages = {
     delete: 'Smazat',
     disconnect: 'Odpojit',
     deleteConfirm: (name) => `Opravdu si přejete smazat mapu ${name}?`,
-    fetchError: ({ err }) => `Nastala chyba při nahrávání mapy: ${err}`,
-    fetchListError: ({ err }) => `Nastala chyba při nahrávání map: ${err}`,
-    deleteError: ({ err }) => `Nastala chyba při mazání mapy: ${err}`,
-    renameError: ({ err }) => `Nastala chyba při přejmenování mapy: ${err}`,
-    createError: ({ err }) => `Nastala chyba při ukládání mapy: ${err}`,
-    saveError: ({ err }) => `Nastala chyba při ukládání mapy: ${err}`,
+    fetchError: ({ err }) =>
+      addError(messages, 'Nastala chyba při nahrávání mapy', err),
+    fetchListError: ({ err }) =>
+      addError(messages, 'Nastala chyba při nahrávání map', err),
+    deleteError: ({ err }) =>
+      addError(messages, 'Nastala chyba při mazání mapy', err),
+    renameError: ({ err }) =>
+      addError(messages, 'Nastala chyba při přejmenování mapy', err),
+    createError: ({ err }) =>
+      addError(messages, 'Nastala chyba při ukládání mapy', err),
+    saveError: ({ err }) =>
+      addError(messages, 'Nastala chyba při ukládání mapy', err),
     loadToEmpty: 'Načíst do čisté mapy',
     loadInclMapAndPosition:
       'Načíst včetně uložené podkladové mapy a její pozice',
@@ -1477,17 +1523,21 @@ const cs: Messages = {
     secretary: 'Tajemník',
   },
 
-  removeAds: {
-    title: 'Odstranit reklamy',
+  premium: {
+    title: 'Získat plný přístup',
     info: (
       <>
         <p>
           <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
         <p>
-          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> vám na rok{' '}
-          <b>odstraníme reklamy</b>.
+          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> získáte na
+          rok:
         </p>
+        <ul>
+          <li>odstranění reklamního banneru</li>
+          <li>přístup k prémiovým mapovým vrstvám</li>
+        </ul>
         <p>
           Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
           v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
@@ -1503,7 +1553,9 @@ const cs: Messages = {
       </>
     ),
     continue: 'Pokračovat',
-    success: 'Gratulujeme, stali jste se prémiovým členem!',
+    success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
+    becomePremium: 'Získat plný přístup',
+    youArePremium: 'Máte přístup ke všem funkcím',
   },
 
   offline: {
@@ -1516,10 +1568,76 @@ const cs: Messages = {
     cacheFirst: 'Nejdřív cache',
     cacheOnly: 'Pouze cache',
   },
+
+  errorStatus: {
+    100: 'Pokračovat',
+    101: 'Přepínání protokolů',
+    102: 'Zpracovává se',
+    103: 'Předběžné hlavičky',
+    200: 'OK',
+    201: 'Vytvořeno',
+    202: 'Přijato',
+    203: 'Neoficiální informace',
+    204: 'Žádný obsah',
+    205: 'Reset obsahu',
+    206: 'Částečný obsah',
+    207: 'Vícestavový',
+    208: 'Již oznámeno',
+    226: 'IM použito',
+    300: 'Více možností',
+    301: 'Trvale přesunuto',
+    302: 'Nalezeno',
+    303: 'Přesměruj jinam',
+    304: 'Neměněno',
+    305: 'Použij proxy',
+    306: 'Přepněte proxy',
+    307: 'Dočasné přesměrování',
+    308: 'Trvalé přesměrování',
+    400: 'Špatný požadavek',
+    401: 'Neautorizováno',
+    402: 'Platba vyžadována',
+    403: 'Zakázáno',
+    404: 'Nenalezeno',
+    405: 'Metoda není povolena',
+    406: 'Nepřijatelné',
+    407: 'Požadována proxy autentizace',
+    408: 'Vypršel čas požadavku',
+    409: 'Konflikt',
+    410: 'Zánik',
+    411: 'Vyžadována délka',
+    412: 'Předpoklad selhal',
+    413: 'Náklad příliš velký',
+    414: 'URI příliš dlouhé',
+    415: 'Nepodporovaný typ média',
+    416: 'Požadovaný rozsah není dostupný',
+    417: 'Očekávání selhalo',
+    418: 'Jsem čajová konvice',
+    421: 'Nesprávně směrovaná požadavka',
+    422: 'Nezpracovatelná entita',
+    423: 'Uzamčeno',
+    424: 'Selhání závislosti',
+    425: 'Příliš brzy',
+    426: 'Vyžaduje upgrade',
+    428: 'Vyžadován předpoklad',
+    429: 'Příliš mnoho požadavků',
+    431: 'Pole hlavičky požadavku jsou příliš velká',
+    451: 'Nedostupné z právních důvodů',
+    500: 'Interní chyba serveru',
+    501: 'Není implementováno',
+    502: 'Špatná brána',
+    503: 'Služba není dostupná',
+    504: 'Vypršel čas brány',
+    505: 'HTTP verze není podporována',
+    506: 'Varianty se vyjednávají',
+    507: 'Nedostatečné úložiště',
+    508: 'Zjištěná smyčka',
+    510: 'Nerozšířeno',
+    511: 'Vyžadována síťová autentizace',
+  },
 };
 
 function numberize(n: number, words: [string, string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : n < 5 ? words[2] : words[0];
 }
 
-export default cs;
+export default messages;

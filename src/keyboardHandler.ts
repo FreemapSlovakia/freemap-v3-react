@@ -1,14 +1,8 @@
 import {
-  BaseLayerLetters,
-  baseLayers,
-  overlayLayers,
-  OverlayLetters,
-} from 'fm3/mapDefinitions';
-import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
-} from './actions/drawingLineActions';
-import { elevationChartClose } from './actions/elevationChartActions';
+} from './actions/drawingLineActions.js';
+import { elevationChartClose } from './actions/elevationChartActions.js';
 import {
   galleryCancelShowOnTheMap,
   galleryClear,
@@ -17,22 +11,27 @@ import {
   galleryRequestImage,
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
-} from './actions/galleryActions';
+} from './actions/galleryActions.js';
 import {
-  clearMap,
+  clearMapFeatures,
   deleteFeature,
   openInExternalApp,
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
   setTool,
-} from './actions/mainActions';
-import { mapRefocus } from './actions/mapActions';
-import { history } from './historyHolder';
-import { RootState } from './reducers';
-import { showGalleryViewerSelector } from './selectors/mainSelectors';
-import { MyStore } from './storeCreator';
-import { toolDefinitions } from './toolDefinitions';
+} from './actions/mainActions.js';
+import { mapRefocus } from './actions/mapActions.js';
+import { history } from './historyHolder.js';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  overlayLayers,
+  OverlayLetters,
+} from './mapDefinitions.js';
+import { showGalleryViewerSelector } from './selectors/mainSelectors.js';
+import { MyStore, RootState } from './store.js';
+import { toolDefinitions } from './toolDefinitions.js';
 
 let keyTimer: number | null = null;
 
@@ -57,9 +56,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   // state.gallery.showPosition;
 
   if (!withModifiers && event.code === 'Escape') {
-    if (
-      document.querySelector('*[data-popper-reference-hidden=false]') !== null
-    ) {
+    if (document.querySelector('*[aria-expanded=true]') !== null) {
       return undefined;
     }
 
@@ -173,8 +170,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       event.code.startsWith('Digit') && !event.shiftKey
         ? '.' + event.code.slice(5)
         : baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)
-        ? baseLayer.type
-        : null
+          ? baseLayer.type
+          : null
     ) as BaseLayerLetters;
 
     if (
@@ -193,8 +190,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       event.code.startsWith('Digit') && event.shiftKey
         ? ':' + event.code.slice(5)
         : overlayLayer && (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
-        ? overlayLayer.type
-        : null
+          ? overlayLayer.type
+          : null
     ) as OverlayLetters;
 
     if (
@@ -264,7 +261,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   if (keyTimer) {
     if (initCode === 'KeyG') {
       if (event.code === 'KeyC') {
-        return clearMap();
+        return clearMapFeatures();
       }
 
       if (event.code === 'KeyM') {
@@ -350,10 +347,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return setActiveModal('account');
 
         case 'KeyG':
-          return setActiveModal('export-gpx');
+          return setActiveModal('export-map-features');
 
         case 'KeyP':
-          return setActiveModal('export-pdf');
+          return setActiveModal('export-map');
 
         case 'KeyE':
           return setActiveModal('embed');

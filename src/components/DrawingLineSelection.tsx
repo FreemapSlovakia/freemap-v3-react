@@ -1,14 +1,6 @@
 import { lineString } from '@turf/helpers';
-import { drawingLineStopDrawing } from 'fm3/actions/drawingLineActions';
-import {
-  elevationChartClose,
-  elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 import {
   FaChartArea,
   FaDrawPolygon,
@@ -17,7 +9,15 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { Selection } from './Selection';
+import { drawingLineStopDrawing } from '../actions/drawingLineActions.js';
+import {
+  elevationChartClose,
+  elevationChartSetTrackGeojson,
+} from '../actions/elevationChartActions.js';
+import { setActiveModal } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { Selection } from './Selection.js';
 
 export default DrawingLineSelection;
 
@@ -52,11 +52,7 @@ export function DrawingLineSelection(): ReactElement | null {
     }
   }, [line, showElevationChart, dispatch]);
 
-  if (!line) {
-    return null;
-  }
-
-  return (
+  return !line ? null : (
     <Selection
       icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
       title={
@@ -68,7 +64,7 @@ export function DrawingLineSelection(): ReactElement | null {
     >
       {drawing && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineStopDrawing())}
         >
@@ -81,7 +77,7 @@ export function DrawingLineSelection(): ReactElement | null {
       )}
 
       <Button
-        className="ml-1"
+        className="ms-1"
         variant="secondary"
         onClick={() => dispatch(setActiveModal('edit-label'))}
       >
@@ -91,7 +87,7 @@ export function DrawingLineSelection(): ReactElement | null {
 
       {line.type === 'line' && line.points.length > 1 && (
         <Button
-          className="ml-1"
+          className="ms-1"
           variant="secondary"
           active={showElevationChart}
           onClick={toggleElevationChart}

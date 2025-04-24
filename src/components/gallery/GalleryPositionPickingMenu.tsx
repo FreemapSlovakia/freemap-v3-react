@@ -1,13 +1,12 @@
+import { ReactElement } from 'react';
+import { Button, Card } from 'react-bootstrap';
+import { FaCheck, FaTimes } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import {
   galleryConfirmPickedPosition,
   gallerySetItemForPositionPicking,
-} from 'fm3/actions/galleryActions';
-import { useMessages } from 'fm3/l10nInjector';
-import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import { FaCheck, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+} from '../../actions/galleryActions.js';
+import { useMessages } from '../../l10nInjector.js';
 
 export default GalleryPositionPickingMenu;
 
@@ -20,8 +19,9 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
     <div>
       <Card className="fm-toolbar mx-2 mt-2">
         <div className="m-2">{m?.gallery.locationPicking.title}</div>
+
         <Button
-          className="mr-1"
+          className="me-1"
           onClick={() => {
             dispatch(galleryConfirmPickedPosition());
           }}
@@ -29,6 +29,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
           <FaCheck />
           <span className="d-none d-sm-inline"> {m?.general.ok}</span>
         </Button>
+
         <Button
           onClick={() => {
             dispatch(gallerySetItemForPositionPicking(null));

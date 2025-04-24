@@ -1,4 +1,4 @@
-import { OsmTagToNameMapping } from './osmTagToNameMappingType';
+import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
   aeroway: {
@@ -137,7 +137,38 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     university: 'Università',
     vacuum_cleaner: 'Aspirapolvere',
     vehicle_inspection: 'Controllo veicolo',
-    vending_machine: 'Distributore automatico',
+    vending_machine: {
+      '*': 'Distributore Automatico',
+      vending: {
+        bicycle_tube: "Distributore di camere d'aria per biciclette",
+        bread: 'Distributore di pane',
+        bottle_return: 'Macchina per il reso delle bottiglie',
+        candles: 'Distributore di candele',
+        chewing_gums: 'Distributore di gomme da masticare',
+        cigarettes: 'Distributore di sigarette',
+        coffee: 'Distributore di caffè',
+        condoms: 'Distributore di preservativi',
+        drinks: 'Distributore di bevande',
+        elongated_coin: 'Macchina per monete souvenir',
+        eggs: 'Distributore di uova',
+        excrement_bags: 'Dispenser di sacchetti per escrementi',
+        food: 'Distributore di cibo',
+        fuel: 'Distributore di carburante',
+        gas: 'Distributore di carburante',
+        ice_cream: 'Distributore di gelati',
+        ice_cubes: 'Distributore di cubetti di ghiaccio',
+        milk: 'Distributore di latte',
+        movies: 'Distributore di film',
+        newspapers: 'Distributore di giornali',
+        parking_tickets: 'Parcometro',
+        pizza: 'Distributore di pizza',
+        public_transport_tickets:
+          'Distributore di biglietti per i trasporti pubblici',
+        stamps: 'Distributore di francobolli',
+        sweets: 'Distributore di dolci',
+        water: 'Distributore di acqua',
+      },
+    },
     veterinary: 'Veterinario',
     waste_basket: 'Cassonetto',
     waste_disposal: 'Smaltimento rifiuti',

@@ -1,5 +1,3 @@
-import { galleryAddTag, GalleryTag } from 'fm3/actions/galleryActions';
-import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
   ReactElement,
@@ -7,17 +5,15 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
-import { DateTime } from '../DateTime';
-import { RecentTags } from './RecentTags';
+import { galleryAddTag, GalleryTag } from '../../actions/galleryActions.js';
+import { getMessageByKey, useMessages } from '../../l10nInjector.js';
+import { DateTime } from '../DateTime.js';
+import { RecentTags } from './RecentTags.js';
 
 export interface PictureModel {
   title: string;
@@ -45,7 +41,7 @@ export function GalleryEditForm({
   const m = useMessages();
 
   const changeModel = useCallback(
-    (key: keyof PictureModel, value: any) => {
+    (key: keyof PictureModel, value: unknown) => {
       onModelChange({ ...model, [key]: value });
     },
     [model, onModelChange],
@@ -126,28 +122,28 @@ export function GalleryEditForm({
         </Alert>
       ))}
 
-      <FormGroup>
-        <FormControl
+      <Form.Group className="mb-3">
+        <Form.Control
           placeholder={m?.gallery.editForm.name}
           type="text"
           value={model.title}
           onChange={handleTitleChange}
           maxLength={255}
         />
-      </FormGroup>
+      </Form.Group>
 
-      <FormGroup>
-        <FormControl
+      <Form.Group className="mb-3">
+        <Form.Control
           placeholder={m?.gallery.editForm.description}
           as="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
           maxLength={4096}
         />
-      </FormGroup>
+      </Form.Group>
 
       {m && (
-        <FormGroup>
+        <Form.Group className="mb-3">
           <DateTime
             value={model.takenAt}
             onChange={handleTakenAtChange}
@@ -157,27 +153,25 @@ export function GalleryEditForm({
               datetime: m.gallery.editForm.takenAt.datetime,
             }}
           />
-        </FormGroup>
+        </Form.Group>
       )}
 
-      <FormGroup>
+      <Form.Group className="mb-3">
         <InputGroup>
-          <FormControl
+          <Form.Control
             type="text"
             placeholder={m?.gallery.editForm.location}
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
 
-          <InputGroup.Append>
-            <Button onClick={onPositionPick}>
-              <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
-            </Button>
-          </InputGroup.Append>
+          <Button onClick={onPositionPick}>
+            <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
+          </Button>
         </InputGroup>
-      </FormGroup>
+      </Form.Group>
 
-      <FormGroup key={key}>
+      <Form.Group className="mb-3" key={key}>
         <ReactTags
           placeholderText={m?.gallery.editForm.tags}
           selected={model.tags.map((tag) => ({ label: tag, value: tag }))}
@@ -196,7 +190,7 @@ export function GalleryEditForm({
           existingTags={model.tags}
           onAdd={(tag) => handleTagAddition({ label: tag, value: tag })}
         />
-      </FormGroup>
+      </Form.Group>
     </div>
   );
 }

@@ -2,8 +2,8 @@
 
 declare const self: ServiceWorkerGlobalScope;
 
-import { CacheMode, SwCacheAction } from 'fm3/types/common';
 import { get, set } from 'idb-keyval';
+import { CacheMode, SwCacheAction } from '../types/common.js';
 
 const resources = self.__WB_MANIFEST;
 
@@ -140,8 +140,8 @@ async function serveFromNetwork(event: FetchEvent) {
       url.pathname === '/'
         ? FALLBACK_HTML_URL
         : url?.pathname === FALLBACK_LOGO_URL
-        ? FALLBACK_LOGO_URL
-        : undefined;
+          ? FALLBACK_LOGO_URL
+          : undefined;
 
     return path && (await cache.match(path));
   }
@@ -196,6 +196,8 @@ async function handleCacheAction(action: SwCacheAction) {
 
     case 'setCacheMode':
       await set('cacheMode', action.payload);
+
+      break;
 
     default:
       break;

@@ -2,13 +2,12 @@ import { lineString } from '@turf/helpers';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
-} from 'fm3/actions/elevationChartActions';
+} from '../actions/elevationChartActions.js';
 import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerToggleElevationChart,
-} from 'fm3/actions/routePlannerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { isActionOf } from 'typesafe-actions';
+} from '../actions/routePlannerActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const routePlannerToggleElevationChartProcessor: Processor<
   | typeof routePlannerToggleElevationChart
@@ -21,12 +20,14 @@ export const routePlannerToggleElevationChartProcessor: Processor<
   handle: async ({ dispatch, getState, action }) => {
     const shown = !!getState().elevationChart.elevationProfilePoints;
 
-    const toggling = isActionOf(routePlannerToggleElevationChart, action);
+    const toggling = routePlannerToggleElevationChart.match(action);
 
     if (toggling && shown) {
       dispatch(elevationChartClose());
     } else if ((!shown && toggling) || (shown && !toggling)) {
       const { alternatives, activeAlternativeIndex } = getState().routePlanner;
+
+      window._paq.push(['trackEvent', 'RoutePlanner', 'toggleElevationChart']);
 
       dispatch(
         elevationChartSetTrackGeojson(

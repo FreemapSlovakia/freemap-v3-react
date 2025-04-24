@@ -1,14 +1,11 @@
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { AccessToken } from 'fm3/components/tracking/AccessToken';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useEffect } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Table from 'react-bootstrap/Table';
+import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { AccessToken } from '../../components/tracking/AccessToken.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useMessages } from '../../l10nInjector.js';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();

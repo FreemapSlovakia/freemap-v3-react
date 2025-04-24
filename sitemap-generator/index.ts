@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile } from 'fs/promises';
 import htm from 'htm';
 import { marked } from 'marked';
 import vhtml from 'vhtml';
-import { objects } from './objects';
+import { objects } from './objects.js';
 
 const html = htm.bind(vhtml);
 
@@ -74,10 +74,12 @@ async function gen() {
               >
             </li>
             <li>
-              <a href="/?layers=X&show=export-gpx&lang=sk">export do GPX</a>
+              <a href="/?layers=X&show=export-map-features&lang=sk"
+                >export do GPX / GeoJSON / Garmin</a
+              >
             </li>
             <li>
-              <a href="/?layers=X&show=export-pdf&lang=sk"
+              <a href="/?layers=X&show=export-map&lang=sk"
                 >export mapy do PDF, SVG, PNG a JPEG</a
               >
             </li>
@@ -103,8 +105,8 @@ async function gen() {
   //     'legend',
   //     'upload-track',
   //     'about',
-  //     'export-gpx',
-  //     'export-pdf',
+  //     'export-map-features',
+  //     'export-map',
   //     'account',
   //     'embed',
   //     'supportUs',
@@ -116,14 +118,14 @@ async function gen() {
 
   const documentsDir = '../src/documents';
 
-  for (const tip of await readdir(documentsDir)) {
-    if (tip.endsWith('.md')) {
+  for (const document of await readdir(documentsDir)) {
+    if (document.endsWith('.md')) {
       await writeFile(
-        `../sitemap/layers=X&tip=${tip.slice(0, -3)}&lang=sk`,
+        `../sitemap/layers=X&document=${document.slice(0, -3)}&lang=sk`,
         '<!doctype html>\n' +
           html`<html lang="sk">
             <head>
-              <title>Tip - freemap.sk</title>
+              <title>freemap.sk</title>
 
               <description
                 >Detailná turistická mapa, cyklistická mapa, bežkárska mapa a
@@ -146,14 +148,16 @@ async function gen() {
 
             <body>
               ${raw(
-                marked.parse(await readFile(documentsDir + '/' + tip, 'utf-8')),
+                marked.parse(
+                  await readFile(documentsDir + '/' + document, 'utf-8'),
+                ),
               )}
             </body>
           </html>`,
       );
 
       out.push(
-        `https://www.freemap.sk/?layers=X&tip=${tip.slice(0, -3)}&lang=sk`,
+        `https://www.freemap.sk/?layers=X&document=${document.slice(0, -3)}&lang=sk`,
       );
     }
   }
@@ -172,9 +176,10 @@ async function gen() {
       html`
         <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
           ${sitemapNames.map(
-            (name) => html`<sitemap>
-              <loc>https://www.freemap.sk/${name}</loc>
-            </sitemap>`,
+            (name) =>
+              html`<sitemap>
+                <loc>https://www.freemap.sk/${name}</loc>
+              </sitemap>`,
           )}
         </sitemapindex>
       `,

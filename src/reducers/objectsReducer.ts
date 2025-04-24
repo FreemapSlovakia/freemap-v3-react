@@ -1,44 +1,43 @@
-import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
-import { mapsLoaded } from 'fm3/actions/mapsActions';
+import { createReducer } from '@reduxjs/toolkit';
+import { clearMapFeatures } from '../actions/mainActions.js';
+import { mapsLoaded } from '../actions/mapsActions.js';
 import {
+  MarkerType,
   ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
-} from 'fm3/actions/objectsActions';
-import { createReducer } from 'typesafe-actions';
+  setSelectedIcon,
+} from '../actions/objectsActions.js';
 
 export interface ObjectsState {
   objects: ObjectsResult[];
   active: string[];
+  selectedIcon: MarkerType;
 }
 
-const initialState: ObjectsState = {
+export const objectInitialState: ObjectsState = {
   objects: [],
   active: [],
+  selectedIcon: 'pin',
 };
 
-export const objectsReducer = createReducer<ObjectsState, RootAction>(
-  initialState,
-)
-  .handleAction(clearMap, () => initialState)
-  .handleAction(objectsSetFilter, (state, action) => ({
-    ...state,
-    active: action.payload,
-  }))
-  .handleAction(objectsSetResult, (state, action) => {
-    return {
-      ...state,
-      objects: action.payload,
-    };
-  })
-  .handleAction(mapsLoaded, (state, { payload: { merge, data } }) => {
-    return {
-      ...state,
-      active: !merge
-        ? data.objectsV2?.active ?? []
+export const objectsReducer = createReducer(objectInitialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => objectInitialState)
+    .addCase(objectsSetFilter, (state, action) => {
+      state.active = action.payload;
+    })
+    .addCase(objectsSetResult, (state, action) => {
+      state.objects = action.payload;
+    })
+    .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
+      state.active = !merge
+        ? (data.objectsV2?.active ?? [])
         : data.objectsV2
-        ? [...new Set([...state.active, ...data.objectsV2?.active])]
-        : state.active,
-    };
-  });
+          ? [...new Set([...state.active, ...(data.objectsV2?.active ?? {})])]
+          : state.active;
+    })
+    .addCase(setSelectedIcon, (state, action) => {
+      state.selectedIcon = action.payload;
+    }),
+);

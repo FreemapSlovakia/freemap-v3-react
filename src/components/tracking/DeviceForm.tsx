@@ -1,16 +1,17 @@
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useTextInputState } from 'fm3/hooks/useTextInputState';
-import { useMessages } from 'fm3/l10nInjector';
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Modal from 'react-bootstrap/Modal';
+import { Form } from 'react-bootstrap';
+import { trackingActions } from '../../actions/trackingActions.js';
+import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useTextInputState } from '../../hooks/useTextInputState.js';
+import { useMessages } from '../../l10nInjector.js';
+
+import {
+  Button,
+  Dropdown,
+  DropdownButton,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
 import { FaBullseye, FaSync } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -85,7 +86,7 @@ export function DeviceForm(): ReactElement {
   }, [setRegenerateToken]);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
@@ -96,10 +97,11 @@ export function DeviceForm(): ReactElement {
             : m?.tracking.devices.createTitle}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
-        <FormGroup className="required">
-          <FormLabel>{m?.tracking.device.name}</FormLabel>
-          <FormControl
+        <Form.Group className="mb-3 required">
+          <Form.Label>{m?.tracking.device.name}</Form.Label>
+          <Form.Control
             type="text"
             value={name}
             onChange={setName}
@@ -107,13 +109,13 @@ export function DeviceForm(): ReactElement {
             pattern=".*\w.*"
             maxLength={255}
           />
-        </FormGroup>
-        <FormGroup className="required">
-          <FormLabel>Token</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3 required">
+          <Form.Label>Token</Form.Label>
           <InputGroup>
             <DropdownButton
               variant="secondary"
-              as={InputGroup.Append}
               id="input-dropdown-addon"
               title={types[type]}
               onSelect={onSelect}
@@ -125,14 +127,15 @@ export function DeviceForm(): ReactElement {
                 </Dropdown.Item>
               ))}
             </DropdownButton>
-            <FormControl
+
+            <Form.Control
               type="text"
               pattern={
                 type === 'imei'
                   ? '[0-9]{15}'
                   : type === 'did'
-                  ? '[0-9]*'
-                  : undefined
+                    ? '[0-9]*'
+                    : undefined
               }
               disabled={type === 'url' || !!device?.id}
               value={
@@ -142,46 +145,50 @@ export function DeviceForm(): ReactElement {
               }
               onChange={setToken}
             />
+
             {type === 'url' && !!device?.id && (
-              <InputGroup.Append>
-                <Button
-                  active={regenerateToken}
-                  onClick={handleRegenerateTokenClick}
-                >
-                  <FaSync /> Regenerate
-                </Button>
-              </InputGroup.Append>
+              <Button
+                active={regenerateToken}
+                onClick={handleRegenerateTokenClick}
+              >
+                <FaSync /> Regenerate
+              </Button>
             )}
           </InputGroup>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.device.maxCount}</FormLabel>
-          <FormControl
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.device.maxCount}</Form.Label>
+
+          <Form.Control
             type="number"
             min="0"
             step="1"
             value={maxCount}
             onChange={setMaxCount}
           />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>{m?.tracking.device.maxAge}</FormLabel>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>{m?.tracking.device.maxAge}</Form.Label>
+
           <InputGroup>
-            <FormControl
+            <Form.Control
               type="number"
               min="0"
               step="1"
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Append>
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
-            </InputGroup.Append>
+
+            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
           </InputGroup>
-        </FormGroup>
+        </Form.Group>
       </Modal.Body>
+
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
+
         <Button
           type="button"
           variant="dark"
@@ -192,6 +199,6 @@ export function DeviceForm(): ReactElement {
           {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
-    </form>
+    </Form>
   );
 }

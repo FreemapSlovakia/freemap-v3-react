@@ -1,11 +1,10 @@
-import { removeAds, setActiveModal } from 'fm3/actions/mainActions';
-import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { SiAdblock } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
+import { removeAds, setActiveModal } from '../actions/mainActions.js';
+import { useMessages } from '../l10nInjector.js';
 
 type Props = { show: boolean };
 
@@ -22,11 +21,11 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <SiAdblock /> {m?.removeAds.title}
+          <SiAdblock /> {m?.premium.title}
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light">{m?.removeAds.info}</Modal.Body>
+      <Modal.Body className="bg-light">{m?.premium.info}</Modal.Body>
 
       <Modal.Footer>
         <Button
@@ -37,7 +36,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
             dispatch(removeAds());
           }}
         >
-          <SiAdblock /> {m?.removeAds.continue}
+          <SiAdblock /> {m?.premium.continue}
         </Button>
 
         <Button variant="dark" onClick={close}>

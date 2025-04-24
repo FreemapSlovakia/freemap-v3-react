@@ -1,36 +1,29 @@
 // import turfLineSlice from '@turf/line-slice';
 // import turfLength from '@turf/length';
+import distance from '@turf/distance';
 import turfFlatten from '@turf/flatten';
-import {
-  Feature,
-  FeatureCollection,
-  Geometries,
-  GeometryCollection,
-  LineString,
-  Point,
-  Properties,
-} from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
-import { setTool } from 'fm3/actions/mainActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { Hotline } from 'fm3/components/Hotline';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { colors } from 'fm3/constants';
-import { distance, smoothElevations } from 'fm3/geoutils';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useDateTimeFormat } from 'fm3/hooks/useDateTimeFormat';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useStartFinishPoints } from 'fm3/hooks/useStartFinishPoints';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
-import { Point as LPoint } from 'leaflet';
+import { Feature, FeatureCollection, LineString, Point } from 'geojson';
+import { LatLngExpression, Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { setTool } from '../actions/mainActions.js';
+import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
+import { Hotline } from '../components/Hotline.js';
+import { RichMarker } from '../components/RichMarker.js';
+import { colors } from '../constants.js';
+import { smoothElevations } from '../geoutils.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { selectingModeSelector } from '../selectors/mainSelectors.js';
 
 interface GetFeatures {
-  (type: 'LineString'): Feature<LineString, Properties>[];
-  (type: 'Point'): Feature<Point, Properties>[];
+  (type: 'LineString'): Feature<LineString>[];
+  (type: 'Point'): Feature<Point>[];
 }
 
 export default TrackViewerResult;
@@ -38,7 +31,7 @@ export default TrackViewerResult;
 export function TrackViewerResult({
   trackGeojson,
 }: {
-  trackGeojson: FeatureCollection<Geometries | GeometryCollection, Properties>;
+  trackGeojson: FeatureCollection;
 }): ReactElement | null {
   const [startPoints, finishPoints] = useStartFinishPoints();
 
@@ -59,9 +52,7 @@ export function TrackViewerResult({
   const [infoDistanceKm] = useState<number>();
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
-    turfFlatten(trackGeojson as any).features.filter(
-      (f) => f.geometry?.type === type,
-    ) as any;
+    turfFlatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
   const getColorLineDataForElevation = () =>
     getFeatures('LineString').map((feature) => {
@@ -73,10 +64,10 @@ export function TrackViewerResult({
 
       const minEle = Math.min(...eles);
 
-      return smoothed.map((coord) => {
+      return smoothed.map((coord): LatLngExpression => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
 
-        return [coord[1], coord[0], color || 0] as const;
+        return [coord[1], coord[0], color || 0];
       });
     });
 
@@ -86,10 +77,10 @@ export function TrackViewerResult({
 
       let prevCoord = smoothed[0];
 
-      return smoothed.map((coord) => {
+      return smoothed.map((coord): LatLngExpression => {
         const [lon, lat, ele] = coord;
 
-        const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
+        const d = distance([lon, lat], prevCoord, { units: 'meters' });
 
         let angle = 0;
 
@@ -101,7 +92,7 @@ export function TrackViewerResult({
 
         const color = angle / 0.5 + 0.5;
 
-        return [lat, lon, color || 0] as const;
+        return [lat, lon, color || 0];
       });
     });
 
@@ -260,7 +251,7 @@ export function TrackViewerResult({
           {properties?.['name'] && (
             <Tooltip
               className="compact"
-              offset={new LPoint(10, -25)}
+              offset={new LPoint(10, 10)}
               direction="right"
               permanent
             >
@@ -284,7 +275,7 @@ export function TrackViewerResult({
           {p.startTime && !isNaN(new Date(p.startTime).getTime()) && (
             <Tooltip
               className="compact"
-              offset={new LPoint(10, -25)}
+              offset={new LPoint(10, 10)}
               direction="right"
               permanent
             >
@@ -307,7 +298,7 @@ export function TrackViewerResult({
         >
           <Tooltip
             className="compact"
-            offset={new LPoint(10, -25)}
+            offset={new LPoint(10, 10)}
             direction="right"
             permanent
           >
@@ -339,7 +330,7 @@ export function TrackViewerResult({
         >
           <Tooltip
             className="compact"
-            offset={new LPoint(10, -25)}
+            offset={new LPoint(10, 10)}
             direction="right"
             permanent
           >

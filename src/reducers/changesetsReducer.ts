@@ -1,11 +1,10 @@
-import { RootAction } from 'fm3/actions';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   Changeset,
   changesetsSet,
   changesetsSetParams,
-} from 'fm3/actions/changesetsActions';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
-import { createReducer } from 'typesafe-actions';
+} from '../actions/changesetsActions.js';
+import { clearMapFeatures, setTool } from '../actions/mainActions.js';
 
 export interface ChangesetsState {
   changesets: Changeset[];
@@ -19,19 +18,17 @@ export const initialState: ChangesetsState = {
   authorName: null,
 };
 
-export const changesetReducer = createReducer<ChangesetsState, RootAction>(
-  initialState,
-)
-  .handleAction(clearMap, () => initialState)
-  .handleAction(setTool, (_state, action) => ({
-    ...initialState,
-    days: action.payload === 'changesets' ? 3 : null,
-  }))
-  .handleAction(changesetsSet, (state, action) => ({
-    ...state,
-    changesets: action.payload,
-  }))
-  .handleAction(changesetsSetParams, (state, action) => ({
-    ...state,
-    ...action.payload,
-  }));
+export const changesetReducer = createReducer(initialState, (builder) =>
+  builder
+    .addCase(clearMapFeatures, () => initialState)
+    .addCase(setTool, (_state, action) => ({
+      ...initialState,
+      days: action.payload === 'changesets' ? 3 : null,
+    }))
+    .addCase(changesetsSet, (state, action) => {
+      state.changesets = action.payload;
+    })
+    .addCase(changesetsSetParams, (state, action) => {
+      Object.assign(state, action.payload);
+    }),
+);

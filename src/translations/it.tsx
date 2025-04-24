@@ -1,20 +1,18 @@
-/* eslint-disable */
-
-import { Attribution } from 'fm3/components/Attribution';
-import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { CookieConsent } from 'fm3/components/CookieConsent';
-import { ElevationInfo } from 'fm3/components/ElevationInfo';
-import { MaptilerAttribution } from 'fm3/components/MaptilerAttribution';
+import { Fragment } from 'react';
+import { Alert } from 'react-bootstrap';
+import { FaKey } from 'react-icons/fa';
+import { Attribution } from '../components/Attribution.js';
+import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { CookieConsent } from '../components/CookieConsent.js';
+import { ElevationInfo } from '../components/ElevationInfo.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
-} from 'fm3/components/ObjectDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
-import { Fragment } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import { FaKey } from 'react-icons/fa';
-import shared from './it-shared.json';
-import { Messages } from './messagesInterface';
+} from '../components/ObjectDetails.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import shared from './it-shared.js';
+import { Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 3,
@@ -40,7 +38,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
-const it: Messages = {
+const messages: Messages = {
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -63,7 +61,8 @@ const it: Messages = {
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
     back: 'Indietro',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => `Errore dell'applicazione: ${err}`,
+    processorError: ({ err }) =>
+      addError(messages, "Errore dell'applicazione:", err),
     seconds: 'secondi',
     minutes: 'minuti',
     meters: 'metri',
@@ -77,10 +76,12 @@ const it: Messages = {
       'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
     copyUrl: 'Copia URL',
     copyPageUrl: 'Copia URL della pagina',
-    savingError: ({ err }) => `Salva l'errore: ${err}`,
-    loadError: ({ err }) => `Caricamento dell'errore: ${err}`,
-    deleteError: ({ err }) => `Eliminazione dell'errore: ${err}`,
-    operationError: ({ err }) => `Errore dell'operazione: ${err}`,
+    savingError: ({ err }) => addError(messages, "Salva l'errore:", err),
+    loadError: ({ err }) => addError(messages, "Caricamento dell'errore:", err),
+    deleteError: ({ err }) =>
+      addError(messages, "Eliminazione dell'errore:", err),
+    operationError: ({ err }) =>
+      addError(messages, "Errore dell'operazione:", err),
     deleted: 'Eliminato.',
     saved: 'Salvato.',
     visual: 'Visualizza',
@@ -99,6 +100,10 @@ const it: Messages = {
       <Attribution unknown="Licenza della mappa non specificata." />
     ),
     unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
+    areYouSure: 'Are you sure?', // TODO translate
+    export: 'Esporta',
+    success: 'Success!', // TODO translate
+    premiumOnly: 'Supportaci per accedere a questa funzionalità.',
   },
 
   selections: {
@@ -177,7 +182,6 @@ const it: Messages = {
       isochrone: 'Isocrono',
     },
     alternative: 'Alternativo',
-    // eslint-disable-next-line
     distance: ({ value, diff }) => (
       <>
         Distance:{' '}
@@ -186,7 +190,6 @@ const it: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     duration: ({ h, m, diff }) => (
       <>
         Durata:{' '}
@@ -195,7 +198,6 @@ const it: Messages = {
         </b>
       </>
     ),
-    // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
       <>
         Distanza: <b>{distance} km</b> | Durata:{' '}
@@ -213,7 +215,8 @@ const it: Messages = {
     gpsError: 'Errore nel determinare la tua posizione corrente.',
     routeNotFound:
       'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
-    fetchingError: ({ err }) => `Error finding the route: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(messages, 'Error finding the route:', err),
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} on ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -255,7 +258,6 @@ const it: Messages = {
     },
     imhd: {
       total: {
-        // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -267,7 +269,6 @@ const it: Messages = {
             ))}
           </>
         ),
-        // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
@@ -291,7 +292,6 @@ const it: Messages = {
         ),
       },
       step: {
-        // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <>
             at <b>{departure}</b> walk{' '}
@@ -309,7 +309,6 @@ const it: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <>
             at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
@@ -325,7 +324,6 @@ const it: Messages = {
     },
     bikesharing: {
       step: {
-        // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <>
             walk{' '}
@@ -343,7 +341,6 @@ const it: Messages = {
             )}
           </>
         ),
-        // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
             bicycle{' '}
@@ -365,7 +362,7 @@ const it: Messages = {
     logOut: 'Esci',
     logIn: 'Accedi',
     account: 'Account',
-    gpxExport: 'Esporta in GPX / GeoJSON',
+    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa', // TODO google translatted
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
@@ -373,13 +370,12 @@ const it: Messages = {
     back: 'Indietro',
     mapLegend: 'Legenda',
     contacts: 'Contatti',
-    tips: 'Consigli',
     facebook: 'Freemap su Facebook',
     twitter: 'Freemap su Twitter',
     youtube: 'Freemap su YouTube',
     github: 'Freemap su GitHub',
     automaticLanguage: 'Automatico',
-    pdfExport: 'Esporta la mappa',
+    mapExport: 'Esporta la mappa',
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
@@ -417,7 +413,7 @@ const it: Messages = {
             target="_blank"
             rel="noopener"
           >
-            Fai una donazione all'esercito ucraino ›
+            Fai una donazione all\'esercito ucraino ›
           </a>{' '}
           🇺🇦
         </>
@@ -502,13 +498,18 @@ const it: Messages = {
     locationPicking: {
       title: "Selezione l'ubicazione della foto",
     },
-    deletingError: ({ err }) => `Error deleting photo: ${err}`,
-    tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
-    pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,
-    picturesFetchingError: ({ err }) => `Error fetching photos: ${err}`,
-    savingError: ({ err }) => `Error saving photo: ${err}`,
-    commentAddingError: ({ err }) => `Error adding comment: ${err}`,
-    ratingError: ({ err }) => `Error rating photo: ${err}`,
+    deletingError: ({ err }) =>
+      addError(messages, 'Error deleting photo:', err),
+    tagsFetchingError: ({ err }) =>
+      addError(messages, 'Error fetching tags:', err),
+    pictureFetchingError: ({ err }) =>
+      addError(messages, 'Error fetching photo:', err),
+    picturesFetchingError: ({ err }) =>
+      addError(messages, 'Error fetching photos:', err),
+    savingError: ({ err }) => addError(messages, 'Error saving photo:', err),
+    commentAddingError: ({ err }) =>
+      addError(messages, 'Error adding comment:', err),
+    ratingError: ({ err }) => addError(messages, 'Error rating photo:', err),
     missingPositionError: 'Luogo mancante.',
     invalidPositionError: 'Formato coordinate di posizione non valide.',
     invalidTakenAt: 'Data e orario di scatto non valide.',
@@ -531,7 +532,8 @@ const it: Messages = {
     distance: 'Linea',
     elevation: 'Punto',
     area: 'Poligono',
-    elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
+    elevationFetchError: ({ err }) =>
+      addError(messages, 'Error fetching point elevation:', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -590,8 +592,13 @@ const it: Messages = {
     shareToast:
       "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",
     fetchingError: ({ err }) =>
-      `Errore durante il recupero dei dati della traccia: ${err}`,
-    savingError: ({ err }) => `Errore nel salvataggio della traccia: ${err}`,
+      addError(
+        messages,
+        'Errore durante il recupero dei dati della traccia:',
+        err,
+      ),
+    savingError: ({ err }) =>
+      addError(messages, 'Errore nel salvataggio della traccia:', err),
     loadingError: 'Errore nel caricamento del file.',
     onlyOne: "E' atteso un singolo file GPX.",
     wrongFormat: 'Il file deve avere estensione .GPX.',
@@ -648,7 +655,7 @@ const it: Messages = {
     showInToolbar: 'Mostra nella barra degli strumenti',
     saveSuccess: 'Impostazioni salvate.',
     savingError: ({ err }) =>
-      `Errore nel salvataggio delle impostazioni: ${err}`,
+      addError(messages, 'Errore nel salvataggio delle impostazioni:', err),
     customLayersDef: 'Definizione di livelli mappa personalizzati',
     customLayersDefError:
       'Definizione di livelli mappa personalizzati non valida.',
@@ -661,7 +668,8 @@ const it: Messages = {
     olderThan: ({ days }) => `${days} giorni`,
     olderThanFull: ({ days }) => `Changeset degli ultimi ${days} giorni`,
     notFound: 'Nessun changeset trovato.',
-    fetchError: ({ err }) => `Errore nel recupero dei changeset: ${err}`,
+    fetchError: ({ err }) =>
+      addError(messages, 'Errore nel recupero dei changeset:', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Autore:',
@@ -679,7 +687,7 @@ const it: Messages = {
   mapDetails: {
     notFound: 'Niente trovato qui.', // TODO google translated
     fetchingError: ({ err }) =>
-      `Errore durante il recupero dei dettagli: ${err}`, // TODO google translated
+      addError(messages, 'Errore durante il recupero dei dettagli', err), // TODO google translated
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -699,7 +707,12 @@ const it: Messages = {
     },
     tooManyPoints: ({ limit }) => `Risultato limitato a ${limit} oggetti.`,
     fetchingError: ({ err }) =>
-      `Errore nel recupero degli oggetti (POI): ${err}`,
+      addError(messages, 'Errore nel recupero degli oggetti (POI):', err),
+    icon: {
+      pin: 'Segnaposto',
+      ring: "Dell'anello",
+      square: 'Quadrata',
+    }, // TODO translated with google translate
     // categorie: {
     //   1: 'Natura',
     //   2: 'Servizi',
@@ -1009,7 +1022,7 @@ const it: Messages = {
     prompt: 'Inserisci il luogo',
     routeFrom: 'Percorso da qui',
     routeTo: 'Percorso fino a qui',
-    fetchingError: ({ err }) => `Searching error: ${err}`,
+    fetchingError: ({ err }) => addError(messages, 'Searching error:', err),
     buttonTitle: 'Cerca',
     placeholder: 'Cerca sulla mappa',
   },
@@ -1026,19 +1039,18 @@ const it: Messages = {
     enableLocateMe: 'trovami',
   },
 
-  tips: {
-    errorLoading: 'Errore caricamento consigli.',
+  documents: {
+    errorLoading: 'Errore caricamento documento.',
   },
 
-  gpxExport: {
-    export: 'Download',
+  exportMapFeatures: {
+    download: 'Download',
     format: 'Formato',
-    exportToDrive: 'Salva su Google Drive',
-    exportToDropbox: 'Salva su Dropbox',
-    exportError: ({ err }) => `Error exporting: ${err}`,
+    target: 'Target', // TODO translate
+    exportError: ({ err }) => addError(messages, 'Error exporting:', err),
     what: {
       plannedRoute: 'trova percorso',
-      plannedRouteWithStops: 'trova percorso incluse fermate',
+      plannedRouteWithStops: 'incluse fermate',
       objects: 'oggetti (POI)',
       pictures: 'foto (area di mappa visibile)',
       drawingLines: 'disegno - linee',
@@ -1046,6 +1058,7 @@ const it: Messages = {
       drawingPoints: 'disegno - punti',
       tracking: 'tracciamento in tempo reale',
       gpx: 'traccia GPX',
+      search: 'highlighted map feature', // TODO translate
     },
     disabledAlert:
       'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
@@ -1053,23 +1066,54 @@ const it: Messages = {
       'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
     exportedToDropbox: 'Il file è stato salvato su Dropbox.',
     exportedToGdrive: 'Il file è stato salvato su Google Drive.',
-  },
-
-  logIn: {
-    with: {
-      facebook: 'Accedi con Facebook',
-      google: 'Accedi con Google',
-      osm: 'Accedi con OpenStreetMap',
+    garmin: {
+      courseName: 'Nome del corso',
+      description: 'Descrizione',
+      activityType: 'Tipo di attività',
+      at: {
+        running: 'Corsa',
+        hiking: 'Escursionismo',
+        other: 'Altro',
+        mountain_biking: 'Mountain bike',
+        trailRunning: 'Corsa su sentiero',
+        roadCycling: 'Ciclismo su strada',
+        gravelCycling: 'Ciclismo su ghiaia',
+      },
+      revoked: "L'esportazione del corso su Garmin è stata revocata.",
+      connectPrompt:
+        'Non hai ancora collegato il tuo account Garmin. Vuoi collegarlo ora?',
+      authPrompt:
+        "Non hai ancora effettuato l'accesso a Garminon. Vuoi accedere questa volta?",
     },
-    success: 'Accesso eseguito correttamente.',
-    logInError: ({ err }) => `Error logging in: ${err}`,
-    logInError2: 'Error logging in.',
-    logOutError: ({ err }) => `Error logging out: ${err}`,
-    verifyError: ({ err }) => `Error verifying authentication: ${err}`,
   },
 
-  logOut: {
-    success: 'Disconnessione avvenuta correttamente.',
+  auth: {
+    provider: {
+      facebook: 'Facebook',
+      google: 'Google',
+      osm: 'OpenStreetMap',
+      garmin: 'Garmin',
+    },
+    logIn: {
+      with: 'Scegli un provider di accesso', // TODO google-translated
+      success: 'Accesso eseguito correttamente.',
+      logInError: ({ err }) => addError(messages, 'Error logging in:', err),
+      logInError2: 'Error logging in.',
+      verifyError: ({ err }) =>
+        addError(messages, 'Error verifying authentication:', err),
+    },
+    logOut: {
+      success: 'Disconnessione avvenuta correttamente.',
+      error: ({ err }) => addError(messages, 'Error logging out:', err),
+    },
+    connect: {
+      label: 'Connect', // TODO translate
+      success: 'Connected', // TODO translate
+    },
+    disconnect: {
+      label: 'Disconnect', // TODO translate
+      success: 'Disconnected', // TODO translate
+    },
   },
 
   mapLayers: {
@@ -1081,41 +1125,37 @@ const it: Messages = {
     interactiveLayerWarning: 'Il livello interattivo è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
-      A: 'Auto',
-      T: 'Escursione',
-      C: 'Bici',
-      K: 'Sci di fondo',
+      A: 'Auto (obsoleta)',
+      T: 'Escursione (obsoleta)',
+      C: 'Bici (obsoleta)',
+      K: 'Sci di fondo (obsoleta)',
       S: 'Aereo',
-      Z: 'Ortofotomozaika SR (Aerial, SK)',
+      Z: 'Ortofoto ČR+SR (Aerial, CZ+SK)',
       J: 'Vecchia Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
-      p: 'OpenTopoMap',
       d: 'Trasporti pubblici (ÖPNV)',
-      h: 'Storica',
       X: outdoorMap,
       i: 'Livello interattivo',
       I: 'Foto',
       l: 'Forest tracks NLC (SK)',
-      n1: 'Nomi (auto)',
-      n2: 'Nomi (escursione)',
-      n3: 'Nomi (bici)',
-      g: 'Tracce GPS OSM',
       t: 'Percorsi escursionistici',
       c: 'Percorsi ciclistici',
-      q: 'OpenSnowMap',
-      r: 'Client di Rendering',
       s0: 'Strava (tutti)',
       s1: 'Strava (bici)',
       s2: 'Strava (corsa)',
       s3: 'Strava (sport acquatici)',
       s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
-      '4': 'Light Terrain Hillshading (SK)', // TODO translate
-      '5': 'Terrain Hillshading (SK)', // TODO translate
-      '6': 'Surface Hillshading (SK)', // TODO translate
+      '4': 'Light terrain hillshading (SK)', // TODO translate
+      '5': 'Terrain hillshading (SK)', // TODO translate
+      '6': 'Surface hillshading (SK)', // TODO translate
+      '7': 'Detailed surface hillshading (SK)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
+      VD: 'Dataviz Vector', // TODO translate
+      VT: 'Outdoor Vector', // TODO translate
+      H: 'Parametric shading (SK) ⚠', // TODO translate
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',
@@ -1128,6 +1168,7 @@ const it: Messages = {
       freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DTM providers…', // TODO translate
       maptiler: (
         // TODO translate
         <MaptilerAttribution
@@ -1143,7 +1184,8 @@ const it: Messages = {
   elevationChart: {
     distance: 'Distanza [km]',
     ele: `Elevation [${masl}]`,
-    fetchError: ({ err }) => `Error fetching elevation profile data: ${err}`,
+    fetchError: ({ err }) =>
+      addError(messages, 'Error fetching elevation profile data:', err),
   },
 
   errorCatcher: {
@@ -1154,13 +1196,14 @@ const it: Messages = {
       <ul>
         <li><a href="">ricaricare ultima pagina</a></li>
         <li><a href="/">caricare pagina iniziale</a></li>
-        <li><a href="/?reset-local-storage">pulire dati locali e caricare pagina iniziale</a></li>
+        <li><a href="/#reset-local-storage">pulire dati locali e caricare pagina iniziale</a></li>
       </ul>
     `,
   },
 
   osm: {
-    fetchingError: ({ err }) => `Error fetching OSM data: ${err}`,
+    fetchingError: ({ err }) =>
+      addError(messages, 'Error fetching OSM data:', err),
   },
 
   tracking: {
@@ -1255,7 +1298,7 @@ const it: Messages = {
             dove <i>token</i> è elencato nella tabella sotto.
           </p>
           <p>
-            L'endpoint supporta HTTP<code>GET</code> o <code>POST</code>
+            L\'endpoint supporta HTTP<code>GET</code> o <code>POST</code>
             con i parametri codificati URL:
           </p>
           <ul>
@@ -1334,11 +1377,10 @@ const it: Messages = {
       </>
     ),
   },
-  pdfExport: {
+  mapExport: {
     advancedSettings: 'Opzioni avanzate',
     styles: 'Stili livelli interattivi',
-    export: 'Esporta',
-    exportError: ({ err }) => `Error exporting map: ${err}`,
+    exportError: ({ err }) => addError(messages, 'Error exporting map:', err),
     exporting: 'Attendere prego, esportazione in corso…',
     exported: ({ url }) => (
       <>
@@ -1374,7 +1416,7 @@ const it: Messages = {
           <li>
             Sarà esportata la mappa <i>{outdoorMap}</i> .
           </li>
-          <li>L'esportazione della mappa potrebbe durare diversi secondi.</li>
+          <li>L\'esportazione della mappa potrebbe durare diversi secondi.</li>
           <li>
             Prima di condividere la mappa esportata, aggiungi la seguente
             attribuzione:
@@ -1419,12 +1461,18 @@ const it: Messages = {
     delete: 'Elimina',
     disconnect: 'Disconnetti',
     deleteConfirm: (name) => `Sicuro di cancellare la mappa ${name}?`,
-    fetchError: ({ err }) => `Errore caricando la mappa: ${err}`,
-    fetchListError: ({ err }) => `Errore caricando le mappe: ${err}`,
-    deleteError: ({ err }) => `Errore eliminando la mappa: ${err}`,
-    renameError: ({ err }) => `Errore rinominando la mappa: ${err}`,
-    createError: ({ err }) => `Errore salvando la mappa: ${err}`,
-    saveError: ({ err }) => `Errore salvando la mappa: ${err}`,
+    fetchError: ({ err }) =>
+      addError(messages, 'Errore caricando la mappa:', err),
+    fetchListError: ({ err }) =>
+      addError(messages, 'Errore caricando le mappe:', err),
+    deleteError: ({ err }) =>
+      addError(messages, 'Errore eliminando la mappa:', err),
+    renameError: ({ err }) =>
+      addError(messages, 'Errore rinominando la mappa:', err),
+    createError: ({ err }) =>
+      addError(messages, 'Errore salvando la mappa:', err),
+    saveError: ({ err }) =>
+      addError(messages, 'Errore salvando la mappa:', err),
     loadToEmpty: 'Carica su mappa vuota',
     loadInclMapAndPosition:
       'Carica inclusa la mappa di sfondo salvata e la sua posizione',
@@ -1444,7 +1492,7 @@ const it: Messages = {
     measurePosition: 'Trova coordinate e altitudine',
     addPoint: 'Aggiungi un punto qui',
     startLine: 'Inizia qui a disegnare una linea o misurazione',
-    queryFeatures: 'Interroga le funzioni vicine',
+    queryFeatures: 'Interroga le caratteristiche nelle vicinanze',
     startRoute: 'Pianifica una rotta da qui',
     finishRoute: 'Pianifica una rotta fino qui',
     showPhotos: 'Mostra le foto vicine',
@@ -1470,16 +1518,20 @@ const it: Messages = {
     secretary: 'Segretario',
   },
 
-  removeAds: {
-    title: 'Rimuovi la pubblicità',
+  premium: {
+    title: 'Accesso completo',
     info: (
       <>
         <p>
           <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          Per <b>5 ore</b> del tuo lavoro di volontariato o <b>5 €</b>, noi{' '}
-          <b>rimuoveremo gli annunci pubblicitari</b> da freemap per un anno.
+          Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
+          anno di accesso con:
+          <ul>
+            <li>rimozione del banner pubblicitario</li>
+            <li>accesso ai livelli mappa premium</li>
+          </ul>
         </p>
         <p>
           Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro
@@ -1497,7 +1549,9 @@ const it: Messages = {
       </>
     ),
     continue: 'Continua',
-    success: 'Congratulazioni, sei diventato un membro premium !',
+    success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
+    becomePremium: 'Accesso completo',
+    youArePremium: 'Hai accesso a tutte le funzionalità',
   },
 
   offline: {
@@ -1510,10 +1564,76 @@ const it: Messages = {
     cacheFirst: 'Prima la cache',
     cacheOnly: 'Solo cache',
   },
+
+  errorStatus: {
+    100: 'Continua',
+    101: 'Cambio Protocollo',
+    102: 'Elaborazione',
+    103: 'Anteprima informazioni',
+    200: 'OK',
+    201: 'Creato',
+    202: 'Accettato',
+    203: 'Informazioni non autorevoli',
+    204: 'Nessun contenuto',
+    205: 'Reset contenuto',
+    206: 'Contenuto parziale',
+    207: 'Stato multiplo',
+    208: 'Già segnalato',
+    226: 'IM usato',
+    300: 'Multiple scelte',
+    301: 'Spostato permanentemente',
+    302: 'Trovato',
+    303: 'Vedi altro',
+    304: 'Non modificato',
+    305: 'Usa proxy',
+    306: 'Cambia proxy',
+    307: 'Reindirizzamento temporaneo',
+    308: 'Reindirizzamento permanente',
+    400: 'Richiesta errata',
+    401: 'Non autorizzato',
+    402: 'Pagamento richiesto',
+    403: 'Vietato',
+    404: 'Non trovato',
+    405: 'Metodo non consentito',
+    406: 'Non accettabile',
+    407: 'Autenticazione proxy richiesta',
+    408: 'Timeout della richiesta',
+    409: 'Conflitto',
+    410: 'Gone',
+    411: 'Lunghezza richiesta',
+    412: 'Precondizione fallita',
+    413: 'Payload troppo grande',
+    414: 'URI troppo lungo',
+    415: 'Tipo di media non supportato',
+    416: 'Intervallo non soddisfacente',
+    417: 'Aspettativa fallita',
+    418: 'Sono una teiera',
+    421: 'Richiesta mal indirizzata',
+    422: 'Entità non elaborabile',
+    423: 'Bloccato',
+    424: 'Fallimento della dipendenza',
+    425: 'Troppo presto',
+    426: "È necessario l'aggiornamento",
+    428: 'Precondizione richiesta',
+    429: 'Troppe richieste',
+    431: 'Intestazioni di richiesta troppo grandi',
+    451: 'Non disponibile per motivi legali',
+    500: 'Errore interno del server',
+    501: 'Non implementato',
+    502: 'Bad Gateway',
+    503: 'Servizio non disponibile',
+    504: 'Gateway Timeout',
+    505: 'Versione HTTP non supportata',
+    506: 'Negoziazione Variante',
+    507: 'Archiviazione insufficiente',
+    508: 'Rilevato loop',
+    510: 'Non esteso',
+    511: 'Autenticazione di rete necessaria',
+  },
 };
 
 function numberize(n: number, words: [string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
 }
 
-export default it;
+export default messages;

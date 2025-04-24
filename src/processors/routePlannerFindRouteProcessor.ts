@@ -1,4 +1,4 @@
-import { mapsLoaded } from 'fm3/actions/mapsActions';
+import { mapsLoaded } from '../actions/mapsActions.js';
 import {
   routePlannerAddMidpoint,
   routePlannerRemoveMidpoint,
@@ -12,8 +12,8 @@ import {
   routePlannerSetTransportType,
   routePlannerSetWeighting,
   routePlannerSwapEnds,
-} from 'fm3/actions/routePlannerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+} from '../actions/routePlannerActions.js';
+import { Processor } from '../middlewares/processorMiddleware.js';
 
 export const updateRouteTypes = [
   routePlannerSetStart,
@@ -36,7 +36,7 @@ export const routePlannerFindRouteProcessor: Processor = {
   id: 'routePlanner',
   errorKey: 'routePlanner.fetchingError',
   handle: async (...params) =>
-    (await import('./routePlannerFindRouteProcessorHandler')).default(
+    (await import('./routePlannerFindRouteProcessorHandler.js')).default(
       ...params,
     ),
 };

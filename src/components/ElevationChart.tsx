@@ -1,23 +1,23 @@
 import {
-  elevationChartClose,
-  elevationChartSetActivePoint,
-} from 'fm3/actions/elevationChartActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useNumberFormat } from 'fm3/hooks/useNumberFormat';
-import { useMessages } from 'fm3/l10nInjector';
-import 'fm3/styles/elevationChart.scss';
-import {
   Fragment,
-  MouseEvent as ReactMouseEvent,
   ReactElement,
+  MouseEvent as ReactMouseEvent,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import {
+  elevationChartClose,
+  elevationChartSetActivePoint,
+} from '../actions/elevationChartActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
+import '../styles/elevationChart.scss';
 
 const ml = 50,
   mr = 30,
@@ -145,7 +145,7 @@ export function ElevationChart(): ReactElement | null {
     };
   }, [ref, ref2]);
 
-  const startPosRef = useRef<[number, number]>();
+  const startPosRef = useRef<[number, number]>(undefined);
 
   const posRef = useRef([0, 0]);
 

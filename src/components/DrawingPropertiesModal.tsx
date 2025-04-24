@@ -1,10 +1,4 @@
 import { polygon } from '@turf/helpers';
-import { drawingChangeProperties } from 'fm3/actions/drawingPointActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { colors } from 'fm3/constants';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { useMessages } from 'fm3/l10nInjector';
 import {
   ChangeEvent,
   FormEvent,
@@ -12,15 +6,17 @@ import {
   useCallback,
   useState,
 } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import FormControl from 'react-bootstrap/FormControl';
-import FormGroup from 'react-bootstrap/FormGroup';
-import FormLabel from 'react-bootstrap/FormLabel';
-import Modal from 'react-bootstrap/Modal';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { DrawingRecentColors } from './DrawingRecentColors';
+import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
+import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
+import { setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { colors } from '../constants.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMessages } from '../l10nInjector.js';
+import { DrawingRecentColors } from './DrawingRecentColors.js';
 
 type Props = { show: boolean };
 
@@ -31,10 +27,10 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     const { selection } = state.main;
 
     return selection?.type === 'draw-points' && selection.id !== undefined
-      ? state.drawingPoints.points[selection.id]?.label ?? ''
+      ? (state.drawingPoints.points[selection.id]?.label ?? '')
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
-      ? state.drawingLines.lines[selection.id]?.label ?? ''
-      : '???';
+        ? (state.drawingLines.lines[selection.id]?.label ?? '')
+        : '???';
   });
 
   const color = useAppSelector((state) => {
@@ -43,8 +39,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     return selection?.type === 'draw-points' && selection.id !== undefined
       ? state.drawingPoints.points[selection.id]?.color
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
-      ? state.drawingLines.lines[selection.id]?.color
-      : '???';
+        ? state.drawingLines.lines[selection.id]?.color
+        : '???';
   });
 
   const width = useAppSelector((state) => {
@@ -73,6 +69,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   const drawType = useAppSelector((state) => state.main.selection?.type);
 
+  const selection = useAppSelector((state) => state.main.selection);
+
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
@@ -91,9 +89,22 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
+      if (
+        selection?.type !== 'draw-line-poly' &&
+        selection?.type !== 'draw-points'
+      ) {
+        return;
+      }
+
       e.preventDefault();
 
       if (polyPoints && editedLabel === 'cry me a river') {
+        const pixelSize = window.prompt('Pixel size?');
+
+        if (pixelSize == null) {
+          return;
+        }
+
         const threshold = window.prompt('Stream threshold?', '20000');
 
         if (!threshold) {
@@ -126,8 +137,15 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
             ]),
           ),
-          'to-osm': toOsm ? '1' : '',
         });
+
+        if (pixelSize) {
+          q.append('pixel-size', pixelSize);
+        }
+
+        if (toOsm) {
+          q.append('to-osm', '1');
+        }
 
         if (inJosm) {
           fetch(
@@ -220,12 +238,23 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       }
 
       dispatch(
-        drawingChangeProperties({
-          label: editedLabel || undefined,
-          color: editedColor,
-          width: Number(editedWidth) || undefined,
-          type: editedType,
-        }),
+        selection.type === 'draw-line-poly'
+          ? drawingLineChangeProperties({
+              index: selection.id,
+              properties: {
+                label: editedLabel || undefined,
+                color: editedColor,
+                width: Number(editedWidth) || undefined,
+                type: editedType,
+              },
+            })
+          : drawingPointChangeProperties({
+              index: selection.id,
+              properties: {
+                label: editedLabel || undefined,
+                color: editedColor,
+              },
+            }),
       );
 
       close();
@@ -238,6 +267,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       editedWidth,
       editedType,
       close,
+      selection,
     ],
   );
 
@@ -264,43 +294,45 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   return (
     <Modal show={show} onHide={close}>
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <FormGroup>
-            <FormLabel>{m?.drawing.edit.label}</FormLabel>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.drawing.edit.label}</Form.Label>
 
-            <FormControl
+            <Form.Control
               autoFocus
               type="text"
               value={editedLabel ?? ''}
               onChange={handleLocalLabelChange}
             />
-          </FormGroup>
+          </Form.Group>
 
-          <Alert variant="secondary">{m?.drawing.edit.hint}</Alert>
+          <Alert variant="secondary" className="mb-3">
+            {m?.drawing.edit.hint}
+          </Alert>
 
-          <FormGroup>
-            <FormLabel>{m?.drawing.edit.color}</FormLabel>
+          <Form.Group className="mb-3">
+            <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
-            <FormControl
+            <Form.Control
               type="color"
               value={editedColor || colors.normal}
               onChange={handleLocalColorChange}
             />
 
             <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
-          </FormGroup>
+          </Form.Group>
 
           {drawType === 'draw-line-poly' && (
             <>
-              <FormGroup>
-                <FormLabel>{m?.drawing.edit.width}</FormLabel>
+              <Form.Group className="mb-3">
+                <Form.Label>{m?.drawing.edit.width}</Form.Label>
 
-                <FormControl
+                <Form.Control
                   type="number"
                   value={editedWidth}
                   min={1}
@@ -308,20 +340,22 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
                   step={0.1}
                   onChange={handleLocalWidthChange}
                 />
-              </FormGroup>
+              </Form.Group>
 
-              <FormGroup>
-                <FormLabel>{m?.drawing.edit.type}:</FormLabel>
+              <Form.Group className="mb-3">
+                <Form.Label>{m?.drawing.edit.type}:</Form.Label>
 
-                <FormControl
+                <Form.Control
                   as="select"
                   value={editedType}
-                  onChange={(e) => setEditedType(e.currentTarget.value as any)}
+                  onChange={(e) =>
+                    setEditedType(e.currentTarget.value as 'polygon' | 'line')
+                  }
                 >
                   <option value="line">{m?.selections.drawLines}</option>
                   <option value="polygon">{m?.selections.drawPolygons}</option>
-                </FormControl>
-              </FormGroup>
+                </Form.Control>
+              </Form.Group>
             </>
           )}
         </Modal.Body>
@@ -335,7 +369,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
-      </form>
+      </Form>
     </Modal>
   );
 }

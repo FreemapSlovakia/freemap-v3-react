@@ -1,15 +1,16 @@
-import { Modal } from 'fm3/actions/mainActions';
-import { useAppSelector } from 'fm3/hooks/reduxSelectHook';
-import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
-import { MessagePaths } from 'fm3/types/common';
 import { useEffect } from 'react';
+import { Modal } from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { getMessageByKey, useMessages } from '../l10nInjector.js';
+import { MessagePaths } from '../types/common.js';
 
-const modalTitleKeys: Record<Modal, MessagePaths> = {
+// TODO Partiel because of missing documents (formerly tips)
+const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   legend: 'mainMenu.mapLegend',
   'upload-track': 'trackViewer.uploadModal.title',
   about: 'mainMenu.contacts',
-  'export-gpx': 'mainMenu.gpxExport',
-  'export-pdf': 'mainMenu.pdfExport',
+  'export-map-features': 'mainMenu.mapFeaturesExport',
+  'export-map': 'mainMenu.mapExport',
   account: 'mainMenu.account',
   mapSettings: 'mapLayers.layers',
   embed: 'mainMenu.embedMap',
@@ -17,10 +18,9 @@ const modalTitleKeys: Record<Modal, MessagePaths> = {
   'tracking-watched': 'tracking.trackedDevices.modalTitle',
   'tracking-my': 'tracking.devices.modalTitle',
   maps: 'tools.maps',
-  tips: 'mainMenu.tips',
   'edit-label': 'drawing.edit.title',
   login: 'mainMenu.logIn',
-  'remove-ads': 'removeAds.title',
+  'remove-ads': 'premium.title',
   'gallery-filter': 'gallery.filterModal.title',
   'gallery-upload': 'gallery.uploadModal.title',
   'drawing-properties': 'drawing.defProps.menuItem',
