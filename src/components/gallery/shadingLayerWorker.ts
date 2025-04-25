@@ -31,7 +31,17 @@ self.onmessage = async (evt) => {
       offset += arr.length;
     }
 
-    self.postMessage({ id, payload: flat }, [flat.buffer]);
+    const payload = flat;
+
+    // const flat = decompress(evt.data.payload);
+
+    // const payload = new Float32Array(
+    //   flat.buffer,
+    //   flat.byteOffset,
+    //   flat.byteLength / 4,
+    // );
+
+    self.postMessage({ id, payload }, [payload.buffer]);
   } catch (err) {
     console.error('error in shading tile worker');
 
