@@ -57,6 +57,11 @@ const config: Configuration = {
     alias: {
       pica: 'pica/dist/pica.js',
     },
+    fallback: {
+      url: false,
+      fs: false,
+      path: false,
+    },
   },
   optimization: {
     // moduleIds: 'deterministic',
@@ -166,6 +171,7 @@ const config: Configuration = {
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: 'true',
+      PREVENT_ADS: 'PREVENT_ADS' in process.env,
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
