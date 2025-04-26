@@ -1503,7 +1503,7 @@ const en: Messages = {
           a year of access with:
           <ul>
             <li>removed ad banner</li>
-            <li>access to <Gem strokeWidth={2.5} size={15} className="text-primary me-1" /> premium map layers</li>
+            <li>access to <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />premium map layers</li>
           </ul>
 		<div className="fw-bold">Procedure</div>
 		<div className="mb-3">
