@@ -1503,17 +1503,17 @@ const en: Messages = {
           a year of access with:
           <ul>
             <li>removed ad banner</li>
-            <li>access to premium map layers</li>
+            <li>access to <Gem strokeWidth={2.5} size={15} className="text-primary me-1" /> premium map layers</li>
           </ul>
-					<div className="fw-bold">Procedure</div>
-					<div className="mb-3">
-						<p className="mb-1 ms-3">
-							<span className="fw-semibold">Step 1</span> - create an account here in Freemap (below)
-						</p>
-						<p className="mb-1 ms-3">
-							<span className="fw-semibold">Step 2</span> - in the Rovas application, where we'll direct you after registration, send us the payment.
-						</p>
-					</div>
+		<div className="fw-bold">Procedure</div>
+		<div className="mb-3">
+			<p className="mb-1 ms-3">
+				<span className="fw-semibold">Step 1</span> - create an account here in Freemap (below)
+			</p>
+			<p className="mb-1 ms-3">
+				<span className="fw-semibold">Step 2</span> - in the Rovas application, where we'll direct you after registration, send us the payment.
+			</p>
+		</div>
         </p>
         <p className="small">
           * You can prove your volunteer work by creating work reports in the{' '}
