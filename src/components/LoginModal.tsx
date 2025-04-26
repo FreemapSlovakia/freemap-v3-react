@@ -22,7 +22,8 @@ export function LoginModal({ show }: Props): ReactElement {
   );
   
   const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
-  const isLoggedIn = useAppSelector((state) => !!state.auth.user); 
+  const isLoggedIn = useAppSelector((state) => !!state.auth.user);
+  const infoText = isLoggedIn ? m?.premium.infoRegistered : m?.premium.infoAnonymous;
   
   return (
     <Modal show={show} onHide={close}>
@@ -39,7 +40,7 @@ export function LoginModal({ show }: Props): ReactElement {
         )}
         {removeAds ? (
           <Alert variant="primary">
-            {m?.premium.info(isLoggedIn)}
+            {infoText}
           </Alert>
         ) : null}
         <p>{m?.auth.logIn.with}:</p>
