@@ -1527,30 +1527,68 @@ const hu: Messages = {
 
   premium: {
     title: 'Teljes hozzáférés',
-    info: (
+    infoAnonymous: (
       <>
         <p>
           <strong>
             Támogasd az önkénteseket, akik ezt a térképet készítik!
           </strong>
         </p>
-				<p className="mb-1">
-					<b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap
-					egy évre:
-				</p>
-				<ul>
-					<li>reklámszalag eltávolítása</li>
-					<li>hozzáférés a <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémium térképrétegekhez</li>
-				</ul>
-				<div className="fw-bold">Eljárás</div>
-				<div className="mb-3">
-					<p className="mb-1 ms-3">
-						<span className="fw-semibold">1. lépés</span> - hozzon létre fiókot itt a Freemapben (lent)
-					</p>
-					<p className="mb-1 ms-3">
-						<span className="fw-semibold">2. lépés</span> - a Rovas alkalmazásban, ahová a regisztráció után irányítjuk, küldje el nekünk a fizetést.
-					</p>
-				</div>
+	<p className="mb-1">
+		<b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap
+		egy évre:
+	</p>
+	<ul>
+		<li>reklámszalag eltávolítása</li>
+		<li>hozzáférés a <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémium térképrétegekhez</li>
+	</ul>
+	<div className="fw-bold">Eljárás</div>
+	<div className="mb-3">
+		<p className="mb-1 ms-3">
+			<span className="fw-semibold">1. lépés</span> - hozzon létre fiókot itt a Freemapben (lent)
+		</p>
+		<p className="mb-1 ms-3">
+			<span className="fw-semibold">2. lépés</span> - a Rovas alkalmazásban, ahová a regisztráció után irányítjuk, küldje el nekünk a fizetést.
+		</p>
+	</div>
+        <p className="small">
+          * Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
+          <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM
+          projekt önkéntese vagy, és a JOSM alkalmazást használod, javasoljuk a{' '}
+          <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
+            Rovas Connector bővítmény
+          </a>
+          engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
+          jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
+          kapsz, amit felhasználhatsz a hirdetések eltávolítására a
+          www.freemap.sk oldalon.
+        </p>
+      </>
+    ),
+    infoRegistered: (
+      <>
+        <p>
+          <strong>
+            Támogasd az önkénteseket, akik ezt a térképet készítik!
+          </strong>
+        </p>
+	<p className="mb-1">
+		<b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap
+		egy évre:
+	</p>
+	<ul>
+		<li>reklámszalag eltávolítása</li>
+		<li>hozzáférés a <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémium térképrétegekhez</li>
+	</ul>
+	<div className="fw-bold">Eljárás</div>
+	<div className="mb-3">
+		<p className="mb-1 ms-3">
+			<span className="fw-semibold">1. lépés</span> - hozzon létre fiókot itt a Freemapben (lent)
+		</p>
+		<p className="mb-1 ms-3">
+			<span className="fw-semibold">2. lépés</span> - a Rovas alkalmazásban, ahová a regisztráció után irányítjuk, küldje el nekünk a fizetést.
+		</p>
+	</div>
         <p className="small">
           * Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
           <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM
@@ -1570,18 +1608,17 @@ const hu: Messages = {
     becomePremium: 'Teljes hozzáférés',
     youArePremium: 'Ön hozzáfér minden funkcióhoz',
   },
-  // TODO translate
-  offline: {
-    offlineMode: 'Offline mode',
-    cachingActive: 'Caching active',
-    clearCache: 'Clear cache',
-    dataSource: 'Data source',
-    networkOnly: 'Network only',
-    networkFirst: 'Network first',
-    cacheFirst: 'Cache first',
-    cacheOnly: 'Cache only',
-  },
 
+offline: {
+	offlineMode: 'Offline mód',
+	cachingActive: 'Aktív gyorsítótárazás',
+	clearCache: 'Gyorsítótár törlése',
+	dataSource: 'Adatforrás',
+	networkOnly: 'Csak hálózat',
+	networkFirst: 'Először hálózat',
+	cacheFirst: 'Először gyorsítótár',
+	cacheOnly: 'Csak gyorsítótár',
+},
   errorStatus: {
     100: 'Folytatás',
     101: 'Protokollok váltása',
