@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { Gem } from 'lucide-react';
-import { FaGem } from 'react-icons/fa';
 import { FaKey } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow } from '../actions/mainActions.js';
@@ -1571,7 +1570,7 @@ const messages: Messages = {
       </p>
       <ul>
 	<li>odstránenie reklamného baneru</li>
-	<li>prístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" /><FaGem className="text-primary me-1" /> prémiovým mapovým vrstvám</li>
+	<li>prístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémiovým mapovým vrstvám</li>
       </ul>
       <div className="fw-bold">Postup</div>
       <div className="mb-3">
@@ -1613,7 +1612,7 @@ const messages: Messages = {
       </p>
       <ul>
 	<li>odstránenie reklamného baneru</li>
-	<li>prístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" /><FaGem className="text-primary me-1" /> prémiovým mapovým vrstvám</li>
+	<li>prístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémiovým mapovým vrstvám</li>
       </ul>
       <p className="small">
 	* Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v
