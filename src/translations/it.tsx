@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { Alert } from 'react-bootstrap';
+import { Gem } from 'lucide-react';
 import { FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
@@ -1530,7 +1531,7 @@ const messages: Messages = {
           anno di accesso con:
           <ul>
             <li>rimozione del banner pubblicitario</li>
-            <li>accesso ai livelli mappa premium</li>
+            <li>accesso ai livelli mappa <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />premium</li>
           </ul>
         </p>
         <p>
