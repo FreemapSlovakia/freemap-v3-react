@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true, // because of maplibre-language.js; TODO rewrite to TS
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
     "downlevelIteration": true,
@@ -15,6 +14,7 @@
     "outDir": "dist",
     "plugins": [{ "transform": "typia/lib/transform" }],
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": true,
