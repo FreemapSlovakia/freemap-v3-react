@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { Alert } from 'react-bootstrap';
+import { Gem } from 'lucide-react';
 import { FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
@@ -1530,17 +1531,26 @@ const messages: Messages = {
         <p>
           <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
-        <p>
-          Za <b>5 hodin</b> vaší dobrovolnické práce nebo <b>5 €</b> získáte na
+        <p className="mb-1">
+          Za <b>5 hodin</b> vaší dobrovolnické* práce nebo <b>5 €</b> získáte na
           rok:
         </p>
         <ul>
-          <li>odstranění reklamního banneru</li>
-          <li>přístup k prémiovým mapovým vrstvám</li>
+          <li>odstranění reklamního baneru</li>
+          <li>přístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémiovým mapovým vrstvám</li>
         </ul>
-        <p>
-          Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
-          v aplikaci <a href="https://rovas.app/">Rovas</a>. Pokud jste
+				<div className="fw-bold">Postup</div>
+				<div className="mb-3">
+					<p className="mb-1 ms-3">
+						<span className="fw-semibold">Krok 1</span> - vytvořte si účet zde ve Freemapu (níže)
+					</p>
+					<p className="mb-1 ms-3">
+						<span className="fw-semibold">Krok 2</span> - v aplikaci Rováš, kam vás nasměrujeme po registraci, nám pošlete platbu.
+					</p>
+				</div>
+        <p className="small">
+          * Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
+          v aplikaci <a href="https://rovas.app/">Rováš</a>. Pokud jste
           dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
           zapnout{' '}
           <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
