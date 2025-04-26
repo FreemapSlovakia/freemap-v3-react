@@ -1635,7 +1635,6 @@ const messages: Messages = {
       </p>
     </>
   ),
-  info: (isLoggedIn) => isLoggedIn ? premium.infoRegistered : premium.infoAnonymous,
   continue: 'Pokračovať',
   success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
   becomePremium: 'Získať plný prístup',
