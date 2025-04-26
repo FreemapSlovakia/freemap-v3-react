@@ -23,8 +23,7 @@ export function LoginModal({ show }: Props): ReactElement {
   
   const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
   const isLoggedIn = useAppSelector((state) => !!state.auth.user);
-//  const infoText = isLoggedIn ? m?.premium.infoRegistered : m?.premium.infoAnonymous;
-  const infoText = m?.premium.infoRegistered;
+  const infoText = isLoggedIn ? m?.premium.infoRegistered : m?.premium.infoAnonymous;
   
   return (
     <Modal show={show} onHide={close}>
