@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Alert } from 'react-bootstrap';
 import { Gem } from 'lucide-react';
-import { FaGem } from 'react-icons/fa';
 import { FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
@@ -1493,7 +1492,43 @@ const en: Messages = {
 
   premium: {
     title: 'Get full access',
-    info: (
+    infoAnonymous: (
+      <>
+        <p>
+          <strong>Support the volunteers who create this map!</strong>
+        </p>
+        <p className="mb-1">
+          For <b>5 hours</b> of your volunteer* work or <b>5 €</b> you will have
+          a year of access with:
+          <ul>
+            <li>removed ad banner</li>
+            <li>access to <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />premium map layers</li>
+          </ul>
+		<div className="fw-bold">Procedure</div>
+		<div className="mb-3">
+			<p className="mb-1 ms-3">
+				<span className="fw-semibold">Step 1</span> - create an account here in Freemap (below)
+			</p>
+			<p className="mb-1 ms-3">
+				<span className="fw-semibold">Step 2</span> - in the Rovas application, where we'll direct you after registration, send us the payment.
+			</p>
+		</div>
+        </p>
+        <p className="small">
+          * You can prove your volunteer work by creating work reports in the{' '}
+          <a href="https://rovas.app/">Rovas</a> application. If you are a
+          volunteer in the OSM project and are using the JOSM application, we
+          recommend enabling the{' '}
+          <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
+            Rovas Connector plugin
+          </a>
+          , which can create reports for you. After a report is verified by two
+          users, you will receive community currency <i>Chron</i>, which you can
+          use to remove ads from www.freemap.sk.
+        </p>
+      </>
+    ),
+    infoRegistered: (
       <>
         <p>
           <strong>Support the volunteers who create this map!</strong>
