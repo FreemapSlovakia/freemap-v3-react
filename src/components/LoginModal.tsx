@@ -23,7 +23,18 @@ export function LoginModal({ show }: Props): ReactElement {
   
   const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
   const isLoggedIn = useAppSelector((state) => !!state.auth.user);
-  const infoText = isLoggedIn ? m?.premium.infoRegistered : m?.premium.infoAnonymous;
+  
+  const renderPremiumInfo = () => {
+    if (!removeAds) return null;
+    
+    return (
+      <Alert variant="primary">
+        {m?.premium.commonHeader}
+        {!isLoggedIn && m?.premium.stepsForAnonymous}
+        {m?.premium.commonFooter}
+      </Alert>
+    );
+  };
   
   return (
     <Modal show={show} onHide={close}>
@@ -38,11 +49,7 @@ export function LoginModal({ show }: Props): ReactElement {
             <FaExclamationTriangle /> {m?.general.noCookies}
           </Alert>
         )}
-        {removeAds ? (
-          <Alert variant="primary">
-            {infoText}
-          </Alert>
-        ) : null}
+        {renderPremiumInfo()}
         <p>{m?.auth.logIn.with}:</p>
         <AuthProviders mode="login" />
       </Modal.Body>
