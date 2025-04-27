@@ -22,7 +22,6 @@ export function LoginModal({ show }: Props): ReactElement {
   );
   
   const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
-  const isLoggedIn = useAppSelector((state) => !!state.auth.user);
   
   const renderPremiumInfo = () => {
     if (!removeAds) return null;
@@ -30,7 +29,7 @@ export function LoginModal({ show }: Props): ReactElement {
     return (
       <Alert variant="primary">
         {m?.premium.commonHeader}
-        {!isLoggedIn && m?.premium.stepsForAnonymous}
+        {m?.premium.stepsForAnonymous}
         {m?.premium.commonFooter}
       </Alert>
     );
