@@ -11,19 +11,30 @@ type Props = { show: boolean };
 
 export function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
-
   const dispatch = useDispatch();
-
+  
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
-
+  
   const cookieConsentResult = useAppSelector(
     (state) => state.main.cookieConsentResult,
   );
-
+  
   const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
-
+  
+  const renderPremiumInfo = () => {
+    if (!removeAds) return null;
+    
+    return (
+      <Alert variant="primary">
+        {m?.premium.commonHeader}
+        {m?.premium.stepsForAnonymous}
+        {m?.premium.commonFooter}
+      </Alert>
+    );
+  };
+  
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -31,21 +42,16 @@ export function LoginModal({ show }: Props): ReactElement {
           <FaSignInAlt /> {m?.mainMenu.logIn}
         </Modal.Title>
       </Modal.Header>
-
       <Modal.Body>
         {cookieConsentResult === null && (
           <Alert variant="warning">
             <FaExclamationTriangle /> {m?.general.noCookies}
           </Alert>
         )}
-
-        {removeAds ? <Alert variant="primary">{m?.premium.info}</Alert> : null}
-
+        {renderPremiumInfo()}
         <p>{m?.auth.logIn.with}:</p>
-
         <AuthProviders mode="login" />
       </Modal.Body>
-
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>

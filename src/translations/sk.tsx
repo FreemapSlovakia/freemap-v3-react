@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { AlertLink } from 'react-bootstrap';
+import { Gem } from 'lucide-react';
 import { FaKey } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow } from '../actions/mainActions.js';
@@ -1556,43 +1557,61 @@ const messages: Messages = {
     secretary: 'Tajomník',
   },
 
-  premium: {
-    title: 'Získať plný prístup',
-    info: (
-      <>
-        <p>
-          Za <b>5 hodín</b> vašej dobrovoľníckej práce alebo <b>5 €</b> získate
-          na rok:
+premium: {
+  title: 'Získať plný prístup',
+  commonHeader: (
+    <>
+      <p>
+        <strong>Podporte dobrovoľníkov vytvárajúcich túto mapu!</strong>
+      </p>
+      <p className="mb-1">
+        Za <b>5 hodín</b> vašej dobrovoľníckej práce* alebo <b>5 €</b> získate
+        na rok:
+      </p>
+      <ul>
+        <li>odstránenie reklamného baneru</li>
+        <li>prístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémiovým mapovým vrstvám</li>
+      </ul>
+    </>
+  ),
+  stepsForAnonymous: (
+    <>
+      <div className="fw-bold">Postup</div>
+      <div className="mb-3">
+        <p className="mb-1 ms-3">
+          <span className="fw-semibold">Krok 1</span> - vytvorte si účet tu vo Freemape (nižšie)
         </p>
-        <ul>
-          <li>odstránenie reklamného banneru</li>
-          <li>prístup k prémiovým mapovým vrstvám</li>
-        </ul>
-        <p>
-          Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v
-          aplikácii{' '}
-          <a href="https://rovas.app/" target="rovas">
-            Rovas
-          </a>
-          . Ak ste dobrovoľníkom v projekte OSM a používate aplikáciu JOSM,
-          odporúčame zapnúť{' '}
-          <a
-            href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector"
-            target="rovas_connector"
-          >
-            doplnok Rovas Connector
-          </a>
-          , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
-          získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
-          odstránenie reklám na www.freemap.sk.
+        <p className="mb-1 ms-3">
+          <span className="fw-semibold">Krok 2</span> - v aplikácii Rováš, kam vás usmerníme po registrácii, nám pošlite platbu.
         </p>
-      </>
-    ),
-    continue: 'Pokračovať',
-    success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
-    becomePremium: 'Získať plný prístup',
-    youArePremium: 'Máte prístup k všetkým funkciám',
-  },
+      </div>
+    </>
+  ),
+  commonFooter: (
+    <p className="small">
+      * Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v
+      aplikácii{' '}
+      <a href="https://rovas.app/" target="rovas">
+        Rováš
+      </a>
+      . Ak ste dobrovoľníkom v projekte OSM a používate aplikáciu JOSM,
+      odporúčame zapnúť{' '}
+      <a
+        href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector"
+        target="rovas_connector"
+      >
+        doplnok Rovas Connector
+      </a>
+      , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
+      získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
+      odstránenie reklám na www.freemap.sk.
+    </p>
+  ),
+  continue: 'Pokračovať',
+  success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
+  becomePremium: 'Získať plný prístup',
+  youArePremium: 'Máte prístup k všetkým funkciám',
+},
 
   offline: {
     offlineMode: 'Režim offline',
