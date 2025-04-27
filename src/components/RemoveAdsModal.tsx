@@ -17,6 +17,15 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
+  const renderPremiumInfo = () => {
+    return (
+      <>
+        {m?.premium.commonHeader}
+        {m?.premium.commonFooter}
+      </>
+    );
+  };
+  
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -25,8 +34,10 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light">{m?.premium.info}</Modal.Body>
-
+      <Modal.Body className="bg-light">
+        {renderPremiumInfo()}
+      </Modal.Body>
+      
       <Modal.Footer>
         <Button
           variant="primary"
