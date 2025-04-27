@@ -4,10 +4,10 @@ import {
   FaCheck,
   FaCog,
   FaEraser,
+  FaGem,
   FaSignOutAlt,
   FaTimes,
 } from 'react-icons/fa';
-import { MdWorkspacePremium } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { authDeleteAccount, authStartLogout } from '../actions/authActions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
@@ -95,19 +95,17 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group className="mb-3">
-            {becomePremium ? (
-              <Button onClick={becomePremium}>
-                <MdWorkspacePremium /> {m?.premium.becomePremium}
-              </Button>
-            ) : (
-              <Alert variant="success">
-                <MdWorkspacePremium /> {m?.premium.youArePremium}
-              </Alert>
-            )}
-          </Form.Group>
+          {!becomePremium && (
+            <>
+              <Form.Group className="mb-3">
+                <Alert variant="success">
+                  <FaGem /> {m?.premium.youArePremium}
+                </Alert>
+              </Form.Group>
 
-          {becomePremium && <hr />}
+              <hr />
+            </>
+          )}
 
           <Form.Group className="mb-3">
             <Form.Label>{m?.settings.account.name}</Form.Label>
@@ -167,6 +165,16 @@ export function AccountModal({ show }: Props): ReactElement | null {
           <Button variant="primary" type="submit" disabled={!userMadeChanges}>
             <FaCheck /> {m?.general.save}
           </Button>
+
+          {becomePremium && (
+            <>
+              <Button onClick={becomePremium}>
+                <FaGem /> {m?.premium.becomePremium}
+              </Button>
+
+              <div style={{ flexBasis: '100%' }} />
+            </>
+          )}
 
           <Button
             variant="secondary"

@@ -103,7 +103,7 @@ const messages: Messages = {
     areYouSure: 'Jste si jisti?',
     export: 'Exportovat',
     success: 'Hotovo!',
-    premiumOnly: 'Podpořte nás, abyste získali přístup k této funkci.',
+    premiumOnly: 'Dostupné pouze s plným přístupem.',
   },
 
   selections: {

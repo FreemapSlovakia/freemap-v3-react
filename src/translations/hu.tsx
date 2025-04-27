@@ -100,7 +100,7 @@ const hu: Messages = {
     areYouSure: 'Are you sure?', // TODO translate
     export: 'Exportálás',
     success: 'Success!', // TODO translate
-    premiumOnly: 'Támogass minket, hogy hozzáférhess ehhez a funkcióhoz.',
+    premiumOnly: 'Csak teljes hozzáféréssel érhető el.', // TODO google translated
   },
 
   selections: {

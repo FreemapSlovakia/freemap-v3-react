@@ -1,7 +1,6 @@
 import { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
-import { SiAdblock } from 'react-icons/si';
+import { FaGem, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { removeAds, setActiveModal } from '../actions/mainActions.js';
 import { useMessages } from '../l10nInjector.js';
@@ -30,7 +29,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <SiAdblock /> {m?.premium.title}
+          <FaGem /> {m?.premium.title}
         </Modal.Title>
       </Modal.Header>
 
@@ -45,7 +44,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
             dispatch(removeAds());
           }}
         >
-          <SiAdblock /> {m?.premium.continue}
+          <FaGem /> {m?.premium.continue}
         </Button>
 
         <Button variant="dark" onClick={close}>

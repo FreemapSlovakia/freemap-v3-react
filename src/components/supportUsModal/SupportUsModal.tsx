@@ -1,7 +1,6 @@
 import { ReactElement, useCallback } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
-import { MdWorkspacePremium } from 'react-icons/md';
+import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../../actions/mainActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
@@ -106,7 +105,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
       <Modal.Footer>
         {becomePremium && (
           <Button onClick={becomePremium}>
-            <MdWorkspacePremium /> {m?.premium.becomePremium}
+            <FaGem /> {m?.premium.becomePremium}
           </Button>
         )}
 

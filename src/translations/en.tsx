@@ -98,7 +98,7 @@ const en: Messages = {
     areYouSure: 'Are you sure?',
     export: 'Export',
     success: 'Success!',
-    premiumOnly: 'Support us to access this feature.',
+    premiumOnly: 'Only available with full access.',
   },
 
   selections: {
