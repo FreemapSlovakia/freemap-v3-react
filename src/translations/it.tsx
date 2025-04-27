@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Alert } from 'react-bootstrap';
-import { Gem } from 'lucide-react';
-import { FaKey } from 'react-icons/fa';
+import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
@@ -1519,56 +1518,60 @@ const messages: Messages = {
     secretary: 'Segretario',
   },
 
-premium: {
-  title: 'Accesso completo',
-  commonHeader: (
-    <>
+  premium: {
+    title: 'Accesso completo',
+    commonHeader: (
+      <>
+        <p>
+          <strong>Sostieni i volontari che creano questa mappa!</strong>
+        </p>
+        <p>
+          Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
+          anno di accesso con:
+        </p>
+        <ul>
+          <li>rimozione del banner pubblicitario</li>
+          <li>
+            accesso ai livelli mappa <FaGem /> premium
+          </li>
+        </ul>
+      </>
+    ),
+    stepsForAnonymous: (
+      <>
+        <div className="fw-bold">Procedura</div>
+        <div className="mb-3">
+          <p className="mb-1 ms-3">
+            <span className="fw-semibold">Passo 1</span> - crea un account qui
+            in Freemap (sotto)
+          </p>
+          <p className="mb-1 ms-3">
+            <span className="fw-semibold">Passo 2</span> - nell'applicazione
+            Rovas, dove ti indirizzeremo dopo la registrazione, inviaci il
+            pagamento.
+          </p>
+        </div>
+      </>
+    ),
+    commonFooter: (
       <p>
-        <strong>Sostieni i volontari che creano questa mappa!</strong>
+        Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro
+        con l'applicazione <a href="https://rovas.app/">Rovas</a>. Se sei un
+        volontario nel progetto OSM e stai utilizzando JOSM, ti raccomandiamo di
+        abilitare il{' '}
+        <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
+          plugin Rovas Connector
+        </a>
+        , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato
+        verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>,
+        che potrai usare per rimuovere gli annunci da www.freemap.sk.
       </p>
-      <p>
-        Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
-        anno di accesso con:
-      </p>
-      <ul>
-        <li>rimozione del banner pubblicitario</li>
-        <li>accesso ai livelli mappa <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />premium</li>
-      </ul>
-    </>
-  ),
-stepsForAnonymous: (
-  <>
-    <div className="fw-bold">Procedura</div>
-    <div className="mb-3">
-      <p className="mb-1 ms-3">
-        <span className="fw-semibold">Passo 1</span> - crea un account qui in Freemap (sotto)
-      </p>
-      <p className="mb-1 ms-3">
-        <span className="fw-semibold">Passo 2</span> - nell'applicazione Rovas, dove ti indirizzeremo dopo la registrazione, inviaci il pagamento.
-      </p>
-    </div>
-  </>
-),
-  commonFooter: (
-    <p>
-      Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro
-      con l'applicazione <a href="https://rovas.app/">Rovas</a>. Se sei un
-      volontario nel progetto OSM e stai utilizzando JOSM, ti raccomandiamo
-      di abilitare il{' '}
-      <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-        plugin Rovas Connector
-      </a>
-      , che può creare rapporti di lavoro per te. Dopo che un rapporto è
-      stato verificato da due utenti, riceverai la valuta comunitaria{' '}
-      <i>Chron</i>, che potrai usare per rimuovere gli annunci da
-      www.freemap.sk.
-    </p>
-  ),
-  continue: 'Continua',
-  success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
-  becomePremium: 'Accesso completo',
-  youArePremium: 'Hai accesso a tutte le funzionalità',
-},
+    ),
+    continue: 'Continua',
+    success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
+    becomePremium: 'Accesso completo',
+    youArePremium: 'Hai accesso a tutte le funzionalità',
+  },
 
   offline: {
     offlineMode: 'Modalità Offline',

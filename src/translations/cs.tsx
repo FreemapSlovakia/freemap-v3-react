@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Alert } from 'react-bootstrap';
-import { Gem } from 'lucide-react';
-import { FaKey } from 'react-icons/fa';
+import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
@@ -1524,56 +1523,60 @@ const messages: Messages = {
     secretary: 'Tajemník',
   },
 
-// Refactored Czech translations
-premium: {
-  title: 'Získat plný přístup',
-  commonHeader: (
-    <>
-      <p>
-        <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
-      </p>
-      <p className="mb-1">
-        Za <b>5 hodin</b> vaší dobrovolnické* práce nebo <b>5 €</b> získáte na
-        rok:
-      </p>
-      <ul>
-        <li>odstranění reklamního baneru</li>
-        <li>přístup k <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémiovým mapovým vrstvám</li>
-      </ul>
-    </>
-  ),
-  stepsForAnonymous: (
-    <>
-      <div className="fw-bold">Postup</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 1</span> - vytvořte si účet zde ve Freemapu (níže)
+  // Refactored Czech translations
+  premium: {
+    title: 'Získat plný přístup',
+    commonHeader: (
+      <>
+        <p>
+          <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 2</span> - v aplikaci Rováš, kam vás nasměrujeme po registraci, nám pošlete platbu.
+        <p className="mb-1">
+          Za <b>5 hodin</b> vaší dobrovolnické* práce nebo <b>5 €</b> získáte na
+          rok:
         </p>
-      </div>
-    </>
-  ),
-  commonFooter: (
-    <p className="small">
-      * Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
-      v aplikaci <a href="https://rovas.app/">Rováš</a>. Pokud jste
-      dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
-      zapnout{' '}
-      <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
-        doplněk Rovas Connector
-      </a>
-      , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli
-      získáte odměnu v komunitní měně <i>chron</i> a tu můžete použít k
-      odstranění reklam na www.freemap.sk.
-    </p>
-  ),
-  continue: 'Pokračovat',
-  success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
-  becomePremium: 'Získat plný přístup',
-  youArePremium: 'Máte přístup ke všem funkcím',
-},
+        <ul>
+          <li>odstranění reklamního baneru</li>
+          <li>
+            přístup k <FaGem /> prémiovým mapovým vrstvám
+          </li>
+        </ul>
+      </>
+    ),
+    stepsForAnonymous: (
+      <>
+        <div className="fw-bold">Postup</div>
+        <div className="mb-3">
+          <p className="mb-1 ms-3">
+            <span className="fw-semibold">Krok 1</span> - vytvořte si účet zde
+            ve Freemapu (níže)
+          </p>
+          <p className="mb-1 ms-3">
+            <span className="fw-semibold">Krok 2</span> - v aplikaci Rováš, kam
+            vás nasměrujeme po registraci, nám pošlete platbu.
+          </p>
+        </div>
+      </>
+    ),
+    commonFooter: (
+      <p className="small">
+        * Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
+        v aplikaci <a href="https://rovas.app/">Rováš</a>. Pokud jste
+        dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
+        zapnout{' '}
+        <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
+          doplněk Rovas Connector
+        </a>
+        , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli získáte
+        odměnu v komunitní měně <i>chron</i> a tu můžete použít k odstranění
+        reklam na www.freemap.sk.
+      </p>
+    ),
+    continue: 'Pokračovat',
+    success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
+    becomePremium: 'Získat plný přístup',
+    youArePremium: 'Máte přístup ke všem funkcím',
+  },
 
   offline: {
     offlineMode: 'Režim offline',

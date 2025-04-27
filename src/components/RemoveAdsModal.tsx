@@ -25,7 +25,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
       </>
     );
   };
-  
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -34,10 +34,8 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light">
-        {renderPremiumInfo()}
-      </Modal.Body>
-      
+      <Modal.Body className="bg-light">{renderPremiumInfo()}</Modal.Body>
+
       <Modal.Footer>
         <Button
           variant="primary"

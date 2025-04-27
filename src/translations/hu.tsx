@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Alert } from 'react-bootstrap';
-import { Gem } from 'lucide-react';
-import { FaKey } from 'react-icons/fa';
+import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
@@ -1525,68 +1524,73 @@ const hu: Messages = {
     secretary: 'Titkár',
   },
 
-premium: {
-  title: 'Teljes hozzáférés',
-  commonHeader: (
-    <>
-      <p>
-        <strong>
-          Támogasd az önkénteseket, akik ezt a térképet készítik!
-        </strong>
-      </p>
-      <p className="mb-1">
-        <b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap
-        egy évre:
-      </p>
-      <ul>
-        <li>reklámszalag eltávolítása</li>
-        <li>hozzáférés a <Gem strokeWidth={2.5} size={15} className="text-primary me-1" />prémium térképrétegekhez</li>
-      </ul>
-    </>
-  ),
-  stepsForAnonymous: (
-    <>
-      <div className="fw-bold">Eljárás</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">1. lépés</span> - hozzon létre fiókot itt a Freemapben (lent)
+  premium: {
+    title: 'Teljes hozzáférés',
+    commonHeader: (
+      <>
+        <p>
+          <strong>
+            Támogasd az önkénteseket, akik ezt a térképet készítik!
+          </strong>
         </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">2. lépés</span> - a Rovas alkalmazásban, ahová a regisztráció után irányítjuk, küldje el nekünk a fizetést.
+        <p className="mb-1">
+          <b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap egy
+          évre:
         </p>
-      </div>
-    </>
-  ),
-  commonFooter: (
-    <p className="small">
-      * Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
-      <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM
-      projekt önkéntese vagy, és a JOSM alkalmazást használod, javasoljuk a{' '}
-      <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-        Rovas Connector bővítmény
-      </a>
-      engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
-      jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
-      kapsz, amit felhasználhatsz a hirdetések eltávolítására a
-      www.freemap.sk oldalon.
-    </p>
-  ),
-  continue: 'Folytatás',
-  success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
-  becomePremium: 'Teljes hozzáférés',
-  youArePremium: 'Ön hozzáfér minden funkcióhoz',
-},
+        <ul>
+          <li>reklámszalag eltávolítása</li>
+          <li>
+            hozzáférés a <FaGem /> prémium térképrétegekhez
+          </li>
+        </ul>
+      </>
+    ),
+    stepsForAnonymous: (
+      <>
+        <div className="fw-bold">Eljárás</div>
+        <div className="mb-3">
+          <p className="mb-1 ms-3">
+            <span className="fw-semibold">1. lépés</span> - hozzon létre fiókot
+            itt a Freemapben (lent)
+          </p>
+          <p className="mb-1 ms-3">
+            <span className="fw-semibold">2. lépés</span> - a Rovas
+            alkalmazásban, ahová a regisztráció után irányítjuk, küldje el
+            nekünk a fizetést.
+          </p>
+        </div>
+      </>
+    ),
+    commonFooter: (
+      <p className="small">
+        * Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
+        <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM projekt
+        önkéntese vagy, és a JOSM alkalmazást használod, javasoljuk a{' '}
+        <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
+          Rovas Connector bővítmény
+        </a>
+        engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
+        jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
+        kapsz, amit felhasználhatsz a hirdetések eltávolítására a www.freemap.sk
+        oldalon.
+      </p>
+    ),
+    continue: 'Folytatás',
+    success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
+    becomePremium: 'Teljes hozzáférés',
+    youArePremium: 'Ön hozzáfér minden funkcióhoz',
+  },
 
-offline: {
-	offlineMode: 'Offline mód',
-	cachingActive: 'Aktív gyorsítótárazás',
-	clearCache: 'Gyorsítótár törlése',
-	dataSource: 'Adatforrás',
-	networkOnly: 'Csak hálózat',
-	networkFirst: 'Először hálózat',
-	cacheFirst: 'Először gyorsítótár',
-	cacheOnly: 'Csak gyorsítótár',
-},
+  offline: {
+    offlineMode: 'Offline mód',
+    cachingActive: 'Aktív gyorsítótárazás',
+    clearCache: 'Gyorsítótár törlése',
+    dataSource: 'Adatforrás',
+    networkOnly: 'Csak hálózat',
+    networkFirst: 'Először hálózat',
+    cacheFirst: 'Először gyorsítótár',
+    cacheOnly: 'Csak gyorsítótár',
+  },
   errorStatus: {
     100: 'Folytatás',
     101: 'Protokollok váltása',
