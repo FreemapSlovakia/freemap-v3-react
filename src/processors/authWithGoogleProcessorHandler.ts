@@ -1,5 +1,5 @@
 import { authWithGoogle } from '../actions/authActions.js';
-import { getAuth2 } from '../gapiLoader.js';
+import { startGoogleAuth } from '../gapiLoader.js';
 import { httpRequest } from '../httpRequest.js';
 import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { hasProperty } from '../typeUtils.js';
@@ -11,15 +11,11 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
   getState,
 }) => {
   try {
-    await getAuth2({ scope: 'profile email' });
+    const tokenResponse = await startGoogleAuth('profile email');
 
-    const auth2 = gapi.auth2.getAuthInstance();
-
-    const googleUser = await auth2.signIn();
-
-    const idToken = googleUser.getAuthResponse().id_token;
-
-    const { connect } = action.payload;
+    if (!tokenResponse.access_token) {
+      throw new Error(tokenResponse.error_description);
+    }
 
     const res = await httpRequest({
       getState,
@@ -28,8 +24,8 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
       cancelActions: [],
       expectedStatus: 200,
       data: {
-        connect,
-        idToken,
+        connect: action.payload,
+        accessToken: tokenResponse.access_token,
         language: getState().l10n.chosenLanguage,
         // homeLocation: getState().main.homeLocation,
       },
@@ -37,10 +33,7 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
 
     await handleLoginResponse(res, getState, dispatch);
   } catch (err) {
-    if (
-      !hasProperty(err, 'error') ||
-      !['popup_closed_by_user', 'access_denied'].includes(String(err['error']))
-    ) {
+    if (!hasProperty(err, 'type') || String(err['type']) !== 'popup_closed') {
       throw err;
     }
   }

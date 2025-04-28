@@ -22,10 +22,10 @@
     "types": [
       // "noUncheckedIndexedAccess": true, // TODO one day
       "gapi",
-      "gapi.auth2",
       "facebook-js-sdk",
       "facebook-pixel",
       "google.picker",
+      "google.accounts",
       "@webgpu/types"
     ]
   },

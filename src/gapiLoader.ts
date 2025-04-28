@@ -1,18 +1,20 @@
-let gapiPromise: Promise<void>;
+const gapiPromise: Record<string, Promise<void> | undefined> = {};
 
-export function loadGapi(): Promise<void> {
-  if (gapiPromise) {
-    return gapiPromise;
+export function loadGapi(
+  src = 'https://apis.google.com/js/api.js',
+): Promise<void> {
+  if (gapiPromise[src]) {
+    return gapiPromise[src];
   }
 
-  gapiPromise = new Promise<void>((resolve, reject) => {
+  gapiPromise[src] = new Promise<void>((resolve, reject) => {
     const js = document.createElement('script');
 
     js.async = true;
 
     js.defer = true;
 
-    js.src = 'https://apis.google.com/js/api.js';
+    js.src = src;
 
     js.onload = () => {
       resolve();
@@ -31,27 +33,27 @@ export function loadGapi(): Promise<void> {
     }
   });
 
-  return gapiPromise;
+  return gapiPromise[src];
 }
 
-export async function getAuth2(
-  cfg: {
-    scope?: string;
-  } = {},
-): Promise<void> {
-  await loadGapi();
+export async function startGoogleAuth(
+  scope: string,
+): Promise<google.accounts.oauth2.TokenResponse> {
+  await loadGapi('https://accounts.google.com/gsi/client');
 
-  await new Promise<void>((resolve) => {
-    gapi.load('client:auth2', () => {
-      resolve();
+  return new Promise((resolve, reject) => {
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id:
+        '120698260366-tt592mqhut3931ct83667sfihdkv69jj.apps.googleusercontent.com',
+      scope,
+      error_callback(e) {
+        reject(e);
+      },
+      callback(tokenResponse) {
+        resolve(tokenResponse);
+      },
     });
-  });
 
-  gapi.client.init({
-    plugin_name: 'freemap.sk',
-    apiKey: 'AIzaSyC90lMoeLp_Rbfpv-eEOoNVpOe25CNXhFc',
-    clientId:
-      '120698260366-tt592mqhut3931ct83667sfihdkv69jj.apps.googleusercontent.com',
-    ...cfg,
+    tokenClient.requestAccessToken();
   });
 }

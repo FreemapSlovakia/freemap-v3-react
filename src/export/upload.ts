@@ -2,7 +2,7 @@ import FileSaver from 'file-saver';
 import { Dispatch } from 'redux';
 import { ExportTarget } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { getAuth2, loadGapi } from '../gapiLoader.js';
+import { loadGapi, startGoogleAuth } from '../gapiLoader.js';
 import { httpRequest } from '../httpRequest.js';
 import { RootState } from '../store.js';
 import { hasProperty } from '../typeUtils.js';
@@ -122,28 +122,14 @@ export async function upload(
           });
         });
 
-        // await new Promise(resolve => {
-        //   gapi.client.load('drive', 'v3', resolve);
-        // });
-
-        await getAuth2({
-          scope: 'https://www.googleapis.com/auth/drive.file',
-        });
-
-        const auth2 = gapi.auth2.getAuthInstance();
-
-        let result: gapi.auth2.GoogleUser;
-
         try {
-          result = await auth2.signIn({
-            scope: 'https://www.googleapis.com/auth/drive.file',
-          });
+          const tokenResponse = await startGoogleAuth(
+            'https://www.googleapis.com/auth/drive.file',
+          );
         } catch (err) {
           if (
-            hasProperty(err, 'error') &&
-            ['popup_closed_by_user', 'access_denied'].includes(
-              String(err['error']),
-            )
+            hasProperty(err, 'type') &&
+            String(err['type']) === 'popup_closed'
           ) {
             return false;
           }
@@ -151,7 +137,9 @@ export async function upload(
           throw err;
         }
 
-        const ar = result.getAuthResponse();
+        if (!tokenResponse.access_token) {
+          throw new Error(tokenResponse.error_description);
+        }
 
         const folder = await new Promise<
           google.picker.DocumentObject | undefined
@@ -162,7 +150,7 @@ export async function upload(
             .addView(
               new pkr.DocsView(pkr.ViewId.FOLDERS).setSelectFolderEnabled(true),
             )
-            .setOAuthToken(ar.access_token)
+            .setOAuthToken(tokenResponse.access_token)
             .setDeveloperKey('AIzaSyC90lMoeLp_Rbfpv-eEOoNVpOe25CNXhFc')
             .setCallback(pickerCallback)
             .setTitle('Select a folder')
@@ -213,7 +201,7 @@ export async function upload(
           getState,
           method: 'POST',
           url: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
-          headers: { Authorization: `Bearer ${ar.access_token}` },
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
           body: formData,
           expectedStatus: 200,
         });
