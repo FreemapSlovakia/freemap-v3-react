@@ -140,7 +140,6 @@ export interface LayerDef {
   minZoom?: number;
   maxNativeZoom?: number;
   adminOnly?: boolean;
-  zIndex?: number; // TODO only overlays
   subdomains?: string | string[];
   tms?: boolean;
   extraScales?: number[];
@@ -148,6 +147,7 @@ export interface LayerDef {
   scaleWithDpi?: boolean;
   cors?: boolean;
   premiumFromZoom?: number;
+  experimental?: boolean;
 }
 
 export interface BaseLayerDef extends LayerDef {
@@ -156,6 +156,7 @@ export interface BaseLayerDef extends LayerDef {
 }
 
 export interface OverlayLayerDef extends LayerDef {
+  zIndex?: number;
   type: OverlayLetters;
   key?: [code: string, shift: boolean];
 }
@@ -421,9 +422,9 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'H',
-    // url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
-    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
-    icon: <FaMap />,
+    url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
+    // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
+    icon: <GiHills />,
     key: ['KeyN', false],
     scaleWithDpi: true,
     maxNativeZoom: 20,
@@ -435,6 +436,7 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
       },
     ],
+    experimental: true,
   },
 ];
 

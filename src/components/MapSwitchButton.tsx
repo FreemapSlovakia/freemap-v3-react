@@ -11,6 +11,7 @@ import {
   FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
+  FaGem,
   FaRegCheckCircle,
   FaRegCircle,
   FaRegMap,
@@ -20,9 +21,14 @@ import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
 import { setActiveModal } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
+import {
+  CustomBaseLayer,
+  CustomOverlayLayer,
+  mapRefocus,
+} from '../actions/mapActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import {
@@ -61,6 +67,10 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
+
+  const isPremium = useAppSelector((state) => !!state.auth.user?.isPremium);
+
+  const becomePremium = useBecomePremium();
 
   const dispatch = useDispatch();
 
@@ -171,24 +181,26 @@ export function MapSwitchButton(): ReactElement {
   const bases = [
     ...baseLayers,
     ...customLayers
-      .filter((cl) => cl.type.startsWith('.'))
+      .filter((cl): cl is CustomBaseLayer => cl.type.startsWith('.'))
       .map((cl) => ({
         ...cl,
         adminOnly: false,
         icon: <MdDashboardCustomize />,
         key: ['Digit' + cl.type.slice(1), false] as const,
+        premiumFromZoom: undefined,
       })),
   ];
 
   const ovls = [
     ...overlayLayers,
     ...customLayers
-      .filter((cl) => cl.type.startsWith(':'))
+      .filter((cl): cl is CustomOverlayLayer => cl.type.startsWith(':'))
       .map((cl) => ({
         ...cl,
         adminOnly: false,
         icon: <MdDashboardCustomize />,
         key: ['Digit' + cl.type.slice(1), true] as const,
+        premiumFromZoom: undefined,
       })),
   ];
 
@@ -204,8 +216,9 @@ export function MapSwitchButton(): ReactElement {
         {(isWide ? bases : [])
           .filter(
             ({ type }) =>
-              layersSettings[type]?.showInToolbar ??
-              defaultToolbarLayerLetters.includes(type),
+              (layersSettings[type]?.showInToolbar ??
+                defaultToolbarLayerLetters.includes(type)) ||
+              mapType === type,
           )
           .map(({ type, icon }) => (
             <Button
@@ -230,9 +243,10 @@ export function MapSwitchButton(): ReactElement {
               (l.type === 'i' && overlays.includes('i')) ||
               (l.type === 'I' && pictureFilterIsActive) ||
               (layersSettings[l.type]?.showInToolbar ??
-                defaultToolbarLayerLetters.includes(l.type)),
+                defaultToolbarLayerLetters.includes(l.type)) ||
+              overlays.includes(l.type),
           )
-          .map(({ type, icon }) => (
+          .map(({ type, icon, premiumFromZoom }) => (
             <Button
               variant="secondary"
               title={
@@ -246,6 +260,16 @@ export function MapSwitchButton(): ReactElement {
               onClick={handleOverlayClick}
             >
               {icon}
+
+              {premiumFromZoom !== undefined && zoom >= premiumFromZoom ? (
+                <FaGem
+                  className={
+                    'ms-1 ' + (isPremium ? 'text-success' : 'text-warning')
+                  }
+                  title={isPremium ? undefined : m?.premium.premiumOnly}
+                  onClick={isPremium ? undefined : becomePremium}
+                />
+              ) : null}
 
               {pictureFilterIsActive && type === 'I' && (
                 <FaFilter
@@ -307,7 +331,7 @@ export function MapSwitchButton(): ReactElement {
                       (layersSettings[l.type]?.showInMenu ??
                         defaultMenuLayerLetters.includes(l.type)),
                   )
-                  .map(({ type, icon, minZoom, key }) => (
+                  .map(({ type, icon, minZoom, key, premiumFromZoom }) => (
                     <Dropdown.Item
                       href={`?layers=${type}`}
                       key={type}
@@ -341,6 +365,17 @@ export function MapSwitchButton(): ReactElement {
                           : m?.mapLayers.letters[type as NoncustomLayerLetters]}
                       </span>
                       {getKbdShortcut(key)}
+                      {premiumFromZoom !== undefined &&
+                      zoom >= premiumFromZoom ? (
+                        <FaGem
+                          className={
+                            'ms-1 ' +
+                            (isPremium ? 'text-success' : 'text-warning')
+                          }
+                          title={isPremium ? undefined : m?.premium.premiumOnly}
+                          onClickCapture={isPremium ? undefined : becomePremium}
+                        />
+                      ) : null}
                       {minZoom !== undefined && zoom < minZoom && (
                         <FaExclamationTriangle
                           title={m?.mapLayers.minZoomWarning(minZoom)}
@@ -362,7 +397,7 @@ export function MapSwitchButton(): ReactElement {
                     (layersSettings[l.type]?.showInMenu ??
                       defaultMenuLayerLetters.includes(l.type)),
                 )
-                .map(({ type, icon, minZoom, key }) => {
+                .map(({ type, icon, minZoom, key, premiumFromZoom }) => {
                   const active =
                     (type === 'i') !==
                     overlays.includes(type as OverlayLetters);
@@ -397,6 +432,17 @@ export function MapSwitchButton(): ReactElement {
                           : m?.mapLayers.letters[type as NoncustomLayerLetters]}
                       </span>
                       {getKbdShortcut(key)}
+                      {premiumFromZoom !== undefined &&
+                      zoom >= premiumFromZoom ? (
+                        <FaGem
+                          className={
+                            'ms-1 ' +
+                            (isPremium ? 'text-success' : 'text-warning')
+                          }
+                          title={isPremium ? undefined : m?.premium.premiumOnly}
+                          onClickCapture={isPremium ? undefined : becomePremium}
+                        />
+                      ) : null}
                       {minZoom !== undefined && zoom < minZoom && (
                         <FaExclamationTriangle
                           title={m?.mapLayers.minZoomWarning(minZoom)}

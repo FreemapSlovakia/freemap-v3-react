@@ -103,7 +103,6 @@ const messages: Messages = {
     areYouSure: 'Jste si jisti?',
     export: 'Exportovat',
     success: 'Hotovo!',
-    premiumOnly: 'Dostupné pouze s plným přístupem.',
   },
 
   selections: {
@@ -1576,6 +1575,7 @@ const messages: Messages = {
     success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
     becomePremium: 'Získat plný přístup',
     youArePremium: 'Máte přístup ke všem funkcím',
+    premiumOnly: 'Dostupné pouze s plným přístupem.',
   },
 
   offline: {

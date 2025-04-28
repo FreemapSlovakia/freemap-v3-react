@@ -98,7 +98,6 @@ const en: Messages = {
     areYouSure: 'Are you sure?',
     export: 'Export',
     success: 'Success!',
-    premiumOnly: 'Only available with full access.',
   },
 
   selections: {
@@ -1542,6 +1541,7 @@ const en: Messages = {
     success: 'Congratulations, you have now acces to all features!',
     becomePremium: 'Get full access',
     youArePremium: 'You have access to all features',
+    premiumOnly: 'Only available with full access.',
   },
 
   offline: {

@@ -249,8 +249,6 @@ export function RoutePlannerResult(): ReactElement {
     } else {
       const pxLen = (len * Math.pow(2, zoom)) / 1000;
 
-      console.log({ pxLen });
-
       const q = 50;
 
       const steps =

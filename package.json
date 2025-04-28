@@ -30,6 +30,7 @@
     "@popperjs/core": "^2.11.8",
     "@react-leaflet/core": "^3.0.0",
     "@reduxjs/toolkit": "^2.7.0",
+    "@restart/ui": "^1.9.4",
     "@samchon/openapi": "^4.2.0",
     "@sentry/browser": "^9.14.0",
     "@tmcw/togeojson": "^7.1.1",

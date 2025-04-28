@@ -67,7 +67,6 @@ export type Messages = {
     areYouSure: string;
     export: string;
     success: string;
-    premiumOnly: string;
   };
   selections: {
     objects: string;
@@ -836,6 +835,7 @@ export type Messages = {
     success: string;
     becomePremium: string;
     youArePremium: string;
+    premiumOnly: string;
   };
   offline: {
     offlineMode: string;

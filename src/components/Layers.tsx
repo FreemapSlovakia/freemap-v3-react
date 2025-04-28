@@ -4,9 +4,10 @@ import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import missingTile from '../images/missing-tile-256x256.png';
 import { useMessages } from '../l10nInjector.js';
 import {
+  BaseLayerDef,
   BaseLayerLetters,
   baseLayers,
-  LayerDef,
+  OverlayLayerDef,
   overlayLayers,
   OverlayLetters,
 } from '../mapDefinitions.js';
@@ -56,7 +57,7 @@ export function Layers(): ReactElement | null {
       cors = true,
       premiumFromZoom,
     }: Pick<
-      LayerDef,
+      (BaseLayerDef & { zIndex: undefined }) | OverlayLayerDef,
       | 'url'
       | 'minZoom'
       | 'maxNativeZoom'
@@ -144,7 +145,7 @@ export function Layers(): ReactElement | null {
             '-' +
             (effPremiumFromZoom ?? 99) +
             '-' +
-            (effPremiumFromZoom ? m?.general.premiumOnly : '')
+            (effPremiumFromZoom ? m?.premium.premiumOnly : '')
           }
           url={url}
           minZoom={minZoom}
@@ -166,7 +167,7 @@ export function Layers(): ReactElement | null {
           zoomOffset={isHdpi ? 1 : 0}
           cors={cors}
           premiumFromZoom={effPremiumFromZoom}
-          premiumOnlyText={m?.general.premiumOnly}
+          premiumOnlyText={m?.premium.premiumOnly}
           className={`fm-${kind}-layer`}
         />
       )

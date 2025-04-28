@@ -315,8 +315,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             title={m?.general.convertToDrawing}
             variant="secondary"
             onClick={() => {
-              console.log(selectedResult.geojson);
-
               const ask =
                 (selectedResult.geojson?.type === 'FeatureCollection' &&
                   selectedResult.geojson.features.some(

@@ -84,8 +84,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
         const p2 = CRS.EPSG3857.unproject(new Point(parts[2], parts[3]));
 
-        console.log(p1, p2);
-
         return [p1.lng, p1.lat, p2.lng, p2.lat] as BBox;
       };
 

@@ -1,8 +1,9 @@
 import { createAction } from '@reduxjs/toolkit';
 import {
+  BaseLayerDef,
   BaseLayerLetters,
   LayerDef,
-  Num1digit,
+  OverlayLayerDef,
   OverlayLetters,
 } from '../mapDefinitions.js';
 
@@ -20,23 +21,29 @@ export type LayerSettings = {
   showInToolbar?: boolean;
 };
 
-export type CustomLayer = Pick<
+type CustomLayerBase = Pick<
   LayerDef,
   | 'url'
   | 'minZoom'
   | 'maxNativeZoom'
-  | 'zIndex'
   | 'subdomains'
   | 'tms'
   | 'extraScales'
   | 'scaleWithDpi'
   | 'cors'
-> & { type: `.${Num1digit}` | `:${Num1digit}`; url: string };
+>;
+
+export type CustomBaseLayer = CustomLayerBase & Pick<BaseLayerDef, 'type'>;
+
+export type CustomOverlayLayer = CustomLayerBase &
+  Pick<OverlayLayerDef, 'type' | 'zIndex'>;
+
+export type CustomLayer = CustomBaseLayer | CustomOverlayLayer;
 
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   overlayPaneOpacity: number;
-  customLayers: CustomLayer[]; // URL is mandatory here
+  customLayers: (CustomBaseLayer | CustomOverlayLayer)[]; // URL is mandatory here
 }
 
 export const mapRefocus = createAction<

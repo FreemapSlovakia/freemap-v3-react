@@ -6,10 +6,6 @@ import { objects } from './objects.js';
 
 const html = htm.bind(vhtml);
 
-// console.log(marked);
-// console.log(Markup);
-// console.log(h);
-
 const raw = (html: string) =>
   vhtml(null, {
     dangerouslySetInnerHTML: { __html: html },

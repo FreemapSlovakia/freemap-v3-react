@@ -103,7 +103,6 @@ const messages: Messages = {
     areYouSure: 'Are you sure?', // TODO translate
     export: 'Esporta',
     success: 'Success!', // TODO translate
-    premiumOnly: 'Disponibile solo con accesso completo.', // TODO google translated
   },
 
   selections: {
@@ -1571,6 +1570,7 @@ const messages: Messages = {
     success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
     becomePremium: 'Accesso completo',
     youArePremium: 'Hai accesso a tutte le funzionalità',
+    premiumOnly: 'Disponibile solo con accesso completo.', // TODO google translated
   },
 
   offline: {
