@@ -220,7 +220,7 @@ export function MapSwitchButton(): ReactElement {
                 defaultToolbarLayerLetters.includes(type)) ||
               mapType === type,
           )
-          .map(({ type, icon }) => (
+          .map(({ type, icon, premiumFromZoom }) => (
             <Button
               variant="secondary"
               title={
@@ -234,6 +234,16 @@ export function MapSwitchButton(): ReactElement {
               onClick={handleBaseClick}
             >
               {icon}
+
+              {!isPremium &&
+              premiumFromZoom !== undefined &&
+              zoom >= premiumFromZoom ? (
+                <FaGem
+                  className="ms-1 text-warning"
+                  title={isPremium ? undefined : m?.premium.premiumOnly}
+                  onClick={isPremium ? undefined : becomePremium}
+                />
+              ) : null}
             </Button>
           ))}
 
@@ -261,11 +271,11 @@ export function MapSwitchButton(): ReactElement {
             >
               {icon}
 
-              {premiumFromZoom !== undefined && zoom >= premiumFromZoom ? (
+              {!isPremium &&
+              premiumFromZoom !== undefined &&
+              zoom >= premiumFromZoom ? (
                 <FaGem
-                  className={
-                    'ms-1 ' + (isPremium ? 'text-success' : 'text-warning')
-                  }
+                  className="ms-1 text-warning"
                   title={isPremium ? undefined : m?.premium.premiumOnly}
                   onClick={isPremium ? undefined : becomePremium}
                 />
@@ -290,7 +300,6 @@ export function MapSwitchButton(): ReactElement {
           ))}
 
         <Dropdown
-          title={m?.mapLayers.layers}
           show={!!show}
           drop="up-centered"
           onSelect={handleSelect}
@@ -299,6 +308,7 @@ export function MapSwitchButton(): ReactElement {
           as={ButtonGroup}
         >
           <Dropdown.Toggle
+            title={m?.mapLayers.layers}
             bsPrefix="fm-dropdown-toggle-nocaret"
             variant={isWide ? 'secondary' : 'primary'}
           >
