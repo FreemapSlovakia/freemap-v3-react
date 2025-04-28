@@ -122,8 +122,10 @@ export async function upload(
           });
         });
 
+        let tokenResponse: google.accounts.oauth2.TokenResponse;
+
         try {
-          const tokenResponse = await startGoogleAuth(
+          tokenResponse = await startGoogleAuth(
             'https://www.googleapis.com/auth/drive.file',
           );
         } catch (err) {
