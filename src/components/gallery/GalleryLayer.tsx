@@ -47,13 +47,7 @@ class LGalleryLayer extends LGridLayer {
       }
     });
 
-    try {
-      document.createElement('canvas').transferControlToOffscreen();
-
-      this.supportsOffscreen = true;
-    } catch {
-      this.supportsOffscreen = false;
-    }
+    this.supportsOffscreen = typeof window.OffscreenCanvas !== 'undefined';
 
     this._workerPool = createWorkerPool(
       () => new Worker(new URL('./galleryLayerWorker.js', import.meta.url)),
@@ -97,14 +91,6 @@ class LGalleryLayer extends LGridLayer {
 
     const myUserId = this._options?.myUserId ?? null;
 
-    const controller = new AbortController();
-
-    const key = `${coords.x}/${coords.y}/${coords.z}`;
-
-    this._acm.set(key, controller);
-
-    const { signal } = controller;
-
     const sp = new URLSearchParams({
       by: 'bbox',
       bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
@@ -130,59 +116,76 @@ class LGalleryLayer extends LGridLayer {
       );
     }
 
-    // https://backend.freemap.sk/gallery/pictures
-    fetch(process.env['API_URL'] + '/gallery/pictures?' + sp.toString(), {
-      signal,
-      headers: this._options?.authToken
-        ? { Authorization: 'Bearer ' + this._options?.authToken }
-        : {},
-    })
-      .then((response) => {
-        if (response.status !== 200) {
-          throw new Error('unexpected status ' + response.status);
+    const processTile = async () => {
+      const controller = new AbortController();
+
+      const key = `${coords.x}/${coords.y}/${coords.z}`;
+
+      const { signal } = controller;
+
+      this._acm.set(key, controller);
+
+      let response: Response;
+
+      try {
+        response = await fetch(
+          process.env['API_URL'] + '/gallery/pictures?' + sp.toString(),
+          {
+            signal,
+            headers: this._options?.authToken
+              ? { Authorization: 'Bearer ' + this._options?.authToken }
+              : {},
+          },
+        );
+      } catch (err) {
+        if (String(err).includes('abort')) {
+          return;
         }
 
-        return response.json();
-      })
-      .then((data) => {
+        throw err;
+      } finally {
         this._acm.delete(key);
+      }
 
-        const ctx = {
-          data,
-          dpr,
-          zoom: coords.z,
-          colorizeBy,
-          pointA,
-          pointB,
-          myUserId,
-          size,
-          tile,
-        };
+      if (response.status !== 200) {
+        throw new Error('unexpected status ' + response.status);
+      }
 
-        if (this.supportsOffscreen) {
-          return this._workerPool.addJob(() => {
-            const offscreen = tile.transferControlToOffscreen();
+      const data = await response.json();
 
-            return [{ ...ctx, tile: offscreen }, [offscreen]];
-          });
-        }
+      const ctx = {
+        data,
+        dpr,
+        zoom: coords.z,
+        colorizeBy,
+        pointA,
+        pointB,
+        myUserId,
+        size,
+      };
 
-        renderGalleryTile(ctx);
+      if (this.supportsOffscreen) {
+        const imageBitmap = await this._workerPool.addJob<ImageBitmap>(() => [
+          ctx,
+          [],
+        ]);
 
-        return undefined;
-      })
-      .then(() => {
+        tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
+      }
+
+      renderGalleryTile({ ...ctx, tile });
+    };
+
+    processTile().then(
+      () => {
         done(undefined, tile);
-      })
-      .catch((err) => {
-        if (!String(err).includes('abort')) {
-          console.error(err);
-        }
+      },
+      (err) => {
+        // console.error('Error rendering tile:', err);
 
         done(err);
-
-        this._acm.delete(key);
-      });
+      },
+    );
 
     return tile;
   }

@@ -4,9 +4,16 @@ self.onmessage = (evt) => {
   const id = evt.data.id;
 
   try {
-    renderGalleryTile(evt.data.payload);
+    const tile = new OffscreenCanvas(256, 256);
 
-    self.postMessage({ id }, []);
+    renderGalleryTile({
+      ...evt.data.payload,
+      tile,
+    });
+
+    const imageBitmap = tile.transferToImageBitmap();
+
+    self.postMessage({ id, payload: imageBitmap }, [imageBitmap]);
   } catch (err) {
     console.error('error in gallery tile worker');
 
