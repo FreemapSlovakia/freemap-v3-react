@@ -437,6 +437,7 @@ export const baseLayers: BaseLayerDef[] = [
       },
     ],
     experimental: true,
+    adminOnly: true,
   },
 ];
 
