@@ -77,21 +77,19 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
     .addCase(drawingLineAddPoint, (state, action) => {
       let line;
 
-      if (action.payload.index === undefined) {
-        if (action.payload.type === undefined) {
-          throw new Error();
-        }
+      if ('lineProps' in action.payload) {
+        const { lineProps } = action.payload;
 
         line = {
-          type: action.payload.type,
-          color: action.payload.color,
-          width: action.payload.width,
+          type: lineProps.type,
+          color: lineProps.color,
+          width: lineProps.width,
           points: [],
         };
 
         state.lines.push(line);
       } else {
-        line = state.lines[action.payload.index];
+        line = state.lines[action.payload.lineIndex];
       }
 
       line.points.splice(

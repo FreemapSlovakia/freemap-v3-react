@@ -230,7 +230,8 @@ export function EmbedMapModal({ show }: Props): ReactElement {
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
           <FaClipboard /> {m?.general.copyCode}
-        </Button>{' '}
+        </Button>
+
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>

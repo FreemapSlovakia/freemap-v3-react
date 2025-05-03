@@ -626,6 +626,11 @@ const messages: Messages = {
       title: 'Drawing style settings',
       applyToAll: 'Save and apply to all',
     },
+    projection: {
+      projectPoint: 'Proietta punto',
+      distance: 'Distanza',
+      azimuth: 'Azimut',
+    },
   },
 
   settings: {

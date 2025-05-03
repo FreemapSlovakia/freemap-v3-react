@@ -655,6 +655,11 @@ const messages: Messages = {
       title: 'Nastavenie štýlu kreslenia',
       applyToAll: 'Uložiť a aplikovať na všetko',
     },
+    projection: {
+      projectPoint: 'Zameraj bod',
+      distance: 'Vzdialenosť',
+      azimuth: 'Azimut',
+    },
   },
 
   settings: {

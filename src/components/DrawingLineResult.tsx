@@ -44,27 +44,27 @@ const selectedCircularIcon = divIcon({
 });
 
 type Props = {
-  index: number;
+  lineIndex: number;
 };
 
-export function DrawingLineResult({ index }: Props): ReactElement {
+export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const drawing = useAppSelector(drawingLinePolys);
 
-  const line = useAppSelector((state) => state.drawingLines.lines[index]);
+  const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
 
   const language = useAppSelector((state) => state.l10n.language);
 
   const selected = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
-      index === state.main.selection.id,
+      lineIndex === state.main.selection.id,
   );
 
   const selectedPointId = useAppSelector((state) =>
     state.main.selection?.type === 'line-point' &&
-    index === state.main.selection.lineIndex
+    lineIndex === state.main.selection.lineIndex
       ? state.main.selection.pointId
       : undefined,
   );
@@ -96,7 +96,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   const map = useMap();
 
   useMapEvent('mousemove', ({ latlng, originalEvent }: LeafletMouseEvent) => {
-    if (!touching && (selected || joinWith?.lineIndex === index)) {
+    if (!touching && (selected || joinWith?.lineIndex === lineIndex)) {
       setCoords(
         joinWith || isEventOnMap(originalEvent)
           ? { lat: latlng.lat, lon: latlng.lng }
@@ -154,10 +154,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
     dispatch(
       drawingLineAddPoint({
-        index,
+        lineIndex,
         point: { lat, lon, id },
         position: pos,
-        id: index,
+        indexOfLineToSelect: lineIndex,
       }),
     );
 
@@ -181,7 +181,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     dispatch(
       selectFeature({
         type: 'draw-line-poly',
-        id: index,
+        id: lineIndex,
       }),
     );
 
@@ -220,7 +220,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     ps.length > 0 &&
     coords !== undefined &&
     !window.preventMapClick && [
-      joinWith?.lineIndex === index
+      joinWith?.lineIndex === lineIndex
         ? ((x = points.find((pt) => pt.id === joinWith.pointId)),
           {
             lat: x?.lat ?? -1,
@@ -237,7 +237,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     ];
 
   return (
-    <Fragment key={[line.type, line.width, index].join(',')}>
+    <Fragment key={[line.type, line.width, lineIndex].join(',')}>
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
@@ -328,7 +328,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
             joinWith !== undefined &&
             (line.type !== 'line' ||
               (i !== 0 && i !== ps.length - 1) ||
-              joinWith.lineIndex === index)
+              joinWith.lineIndex === lineIndex)
           ) {
             return null;
           }
@@ -349,7 +349,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
                   dispatch(
                     drawingLineUpdatePoint({
-                      index,
+                      index: lineIndex,
                       point: { lat: coord.lat, lon: coord.lng, id: p.id },
                     }),
                   );
@@ -360,13 +360,13 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                   if (joinWith) {
                     dispatch(
                       drawingLineJoinFinish({
-                        lineIndex: index,
+                        lineIndex,
                         pointId: p.id,
                         selection: {
                           type: 'draw-line-poly',
                           id:
                             joinWith.lineIndex -
-                            (index > joinWith.lineIndex ? 0 : 1),
+                            (lineIndex > joinWith.lineIndex ? 0 : 1),
                         },
                       }),
                     );
@@ -376,7 +376,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                     dispatch(
                       selectFeature({
                         type: 'line-point',
-                        lineIndex: index,
+                        lineIndex,
                         pointId: p.id,
                       }),
                     );

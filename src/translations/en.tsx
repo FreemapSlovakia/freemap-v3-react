@@ -609,6 +609,11 @@ const en: Messages = {
       title: 'Default drawing style settings',
       applyToAll: 'Save and apply to all',
     },
+    projection: {
+      projectPoint: 'Project point',
+      azimuth: 'Azimuth',
+      distance: 'Distance',
+    },
   },
 
   settings: {

@@ -194,15 +194,17 @@ export function MapContextMenu(): ReactElement {
 
           dispatch(
             drawingLineAddPoint({
-              type: 'line',
-              color,
-              width,
+              lineProps: {
+                type: 'line',
+                color,
+                width,
+              },
               point: {
                 id: 0,
                 lat: contextMenu.lat,
                 lon: contextMenu.lon,
               },
-              id: linesLength,
+              indexOfLineToSelect: linesLength,
             }),
           );
 

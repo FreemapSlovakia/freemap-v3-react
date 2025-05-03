@@ -129,9 +129,7 @@ async function serveFromNetwork(event: FetchEvent) {
     }
 
     return response;
-  } catch (err) {
-    console.error(err);
-
+  } catch {
     const cache = await caches.open(FALLBACK_CACHE_NAME);
 
     const url = new URL(request.url);

@@ -624,6 +624,11 @@ const hu: Messages = {
       title: 'Drawing style settings',
       applyToAll: 'Save and apply to all',
     },
+    projection: {
+      projectPoint: 'Pont vetítése',
+      distance: 'Távolság',
+      azimuth: 'Azimut',
+    },
   },
 
   settings: {

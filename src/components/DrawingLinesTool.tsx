@@ -54,19 +54,27 @@ export function DrawingLinesTool(): null {
         id = (linePoints[pos - 1].id + linePoints[pos].id) / 2;
       }
 
-      const index =
+      const lineIndex =
         selection?.type === 'draw-line-poly' ? selection.id : undefined;
 
       dispatch(
-        drawingLineAddPoint({
-          index,
-          color,
-          width,
-          point: { lat: latlng.lat, lon: latlng.lng, id },
-          position: pos,
-          type: tool === 'draw-lines' ? 'line' : 'polygon',
-          id: index ?? linesLength,
-        }),
+        lineIndex === undefined
+          ? drawingLineAddPoint({
+              lineProps: {
+                type: tool === 'draw-lines' ? 'line' : 'polygon',
+                color,
+                width,
+              },
+              point: { lat: latlng.lat, lon: latlng.lng, id },
+              position: pos,
+              indexOfLineToSelect: linesLength,
+            })
+          : drawingLineAddPoint({
+              lineIndex,
+              point: { lat: latlng.lat, lon: latlng.lng, id },
+              position: pos,
+              indexOfLineToSelect: lineIndex,
+            }),
       );
 
       dispatch(drawingMeasure({}));

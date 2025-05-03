@@ -474,6 +474,11 @@ export type Messages = {
       title: string;
       applyToAll: string;
     };
+    projection: {
+      projectPoint: string;
+      distance: string;
+      azimuth: string;
+    };
   };
   settings: {
     map: {

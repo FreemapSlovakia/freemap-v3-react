@@ -1,11 +1,15 @@
-import { ReactElement } from 'react';
+import { destination } from '@turf/destination';
+import { ReactElement, useCallback, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
+import { TbAngle } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
+import { drawingPointAdd } from '../actions/drawingPointActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
 import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton.js';
+import { ProjectPointModal } from './ProjectPointModal.js';
 import { Selection } from './Selection.js';
 
 export default DrawingPointSelection;
@@ -21,35 +25,85 @@ export function DrawingPointSelection(): ReactElement | null {
       : undefined,
   );
 
-  return !point ? null : (
-    <Selection
-      icon={<FaMapMarkerAlt />}
-      title={m?.selections.drawPoints}
-      deletable
-    >
-      <Button
-        className="ms-1"
-        variant="secondary"
-        onClick={() => dispatch(setActiveModal('edit-label'))}
-      >
-        <FaTag />
-        <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
-      </Button>
+  const nextId = useAppSelector((state) => state.drawingPoints.points.length);
 
-      <OpenInExternalAppMenuButton
-        className="ms-1"
-        lat={point.lat}
-        lon={point.lon}
-        includePoint
-        pointTitle={point.label}
-        url={`/?point=${point.lat}/${point.lon}`}
+  const color = useAppSelector((state) => state.main.drawingColor);
+
+  const [projectPointDialogVisible, setProjectPointDialogVisible] =
+    useState(false);
+
+  const projectPoint = useCallback(
+    (distance: number, azimuth: number) => {
+      if (!point) {
+        return;
+      }
+
+      setProjectPointDialogVisible(false);
+
+      const p = destination([point.lon, point.lat], distance, azimuth, {
+        units: 'meters',
+      });
+
+      dispatch(
+        drawingPointAdd({
+          id: nextId,
+          lon: p.geometry.coordinates[0],
+          lat: p.geometry.coordinates[1],
+          color,
+        }),
+      );
+    },
+    [color, dispatch, nextId, point],
+  );
+
+  return !point ? null : (
+    <>
+      <ProjectPointModal
+        show={projectPointDialogVisible}
+        onClose={() => setProjectPointDialogVisible(false)}
+        onAdd={projectPoint}
+      />
+      <Selection
+        icon={<FaMapMarkerAlt />}
+        title={m?.selections.drawPoints}
+        deletable
       >
-        <FaExternalLinkAlt />
-        <span className="d-none d-sm-inline">
-          {' '}
-          {m?.gallery.viewer.openInNewWindow}
-        </span>
-      </OpenInExternalAppMenuButton>
-    </Selection>
+        <Button
+          className="ms-1"
+          variant="secondary"
+          onClick={() => dispatch(setActiveModal('edit-label'))}
+        >
+          <FaTag />
+          <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
+        </Button>
+
+        <Button
+          className="ms-1"
+          variant="secondary"
+          onClick={() => setProjectPointDialogVisible(true)}
+        >
+          <TbAngle />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.drawing.projection.projectPoint}
+          </span>
+        </Button>
+
+        <OpenInExternalAppMenuButton
+          className="ms-1"
+          lat={point.lat}
+          lon={point.lon}
+          includePoint
+          pointTitle={point.label}
+          url={`/?point=${point.lat}/${point.lon}`}
+        >
+          <FaExternalLinkAlt />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.gallery.viewer.openInNewWindow}
+          </span>
+        </OpenInExternalAppMenuButton>
+      </Selection>
+    </>
   );
 }

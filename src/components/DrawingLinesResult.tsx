@@ -35,7 +35,7 @@ export function DrawingLinesResult(): ReactElement {
   return (
     <>
       {lines.map((_, i) => (
-        <DrawingLineResult key={i} index={i} />
+        <DrawingLineResult key={i} lineIndex={i} />
       ))}
 
       <ElevationChartActivePoint />

@@ -202,7 +202,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(drawingLineAddPoint, (state, { payload }) => {
       state.selection = {
         type: 'draw-line-poly',
-        id: payload.id,
+        id: payload.indexOfLineToSelect,
       };
     })
     .addCase(drawingPointAdd, (state, { payload }) => {

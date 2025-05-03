@@ -17,15 +17,24 @@ export interface Line {
 
 export const drawingLineAdd = createAction<Line>('DRAWING_LINE_ADD');
 
-export const drawingLineAddPoint = createAction<{
-  type?: 'polygon' | 'line';
-  index?: number;
-  color?: string;
-  width?: number;
-  point: Point;
-  position?: number;
-  id: number;
-}>('DRAWING_LINE_ADD_POINT');
+export const drawingLineAddPoint = createAction<
+  {
+    point: Point;
+    position?: number;
+    indexOfLineToSelect: number;
+  } & (
+    | {
+        lineIndex: number;
+      }
+    | {
+        lineProps: {
+          type: 'polygon' | 'line';
+          color?: string;
+          width?: number;
+        };
+      }
+  )
+>('DRAWING_LINE_ADD_POINT');
 
 export const drawingLineChangeProperties = createAction<{
   index: number;
