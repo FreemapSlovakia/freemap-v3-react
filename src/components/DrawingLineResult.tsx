@@ -1,7 +1,24 @@
-import distance from '@turf/distance';
+import { bearing } from '@turf/bearing';
+import { distance } from '@turf/distance';
+import { bearingToAzimuth } from '@turf/helpers';
 import Color from 'color';
-import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
-import { Fragment, ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+  Direction,
+  divIcon,
+  DomEvent,
+  LeafletMouseEvent,
+  PointExpression,
+  Tooltip as TooltipType,
+} from 'leaflet';
+import {
+  Fragment,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Marker,
   Polygon,
@@ -177,6 +194,15 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     [language],
   );
 
+  const nf2 = useMemo(
+    () =>
+      Intl.NumberFormat(language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [language],
+  );
+
   function handleSelect() {
     dispatch(
       selectFeature({
@@ -216,25 +242,81 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   let x;
 
-  const futureLinePositions = (drawing || joinWith) &&
+  const futureLinePositions =
+    (drawing || joinWith) &&
     ps.length > 0 &&
     coords !== undefined &&
-    !window.preventMapClick && [
-      joinWith?.lineIndex === lineIndex
-        ? ((x = points.find((pt) => pt.id === joinWith.pointId)),
-          {
-            lat: x?.lat ?? -1,
-            lng: x?.lon ?? -1,
-          })
-        : {
-            lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
-            lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
-          },
-      { lat: coords.lat, lng: coords.lon },
-      ...(line.type === 'line' || ps.length < 3
-        ? []
-        : [{ lat: ps[0].lat, lng: ps[0].lon }]),
-    ];
+    !window.preventMapClick
+      ? [
+          joinWith?.lineIndex === lineIndex
+            ? ((x = points.find((pt) => pt.id === joinWith.pointId)),
+              {
+                lat: x?.lat ?? -1,
+                lng: x?.lon ?? -1,
+              })
+            : {
+                lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
+                lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
+              },
+          { lat: coords.lat, lng: coords.lon },
+          ...(line.type === 'line' || ps.length < 3
+            ? []
+            : [{ lat: ps[0].lat, lng: ps[0].lon }]),
+        ]
+      : undefined;
+
+  let measurementText: ReactNode = '';
+
+  let measurementTooltipDirection: Direction = 'auto';
+
+  let measurementTooltipOffset: PointExpression = [0, 0];
+
+  let measurementTooltipPosition: PointExpression = [0, 0];
+
+  if (line.type === 'line' && futureLinePositions?.length === 2) {
+    const a = [futureLinePositions[0].lng, futureLinePositions[0].lat];
+
+    const b = [futureLinePositions[1].lng, futureLinePositions[1].lat];
+
+    const azimuth = bearingToAzimuth(bearing(a, b));
+
+    measurementTooltipDirection =
+      azimuth < 70
+        ? 'left'
+        : azimuth < 90
+          ? 'bottom'
+          : azimuth < 125
+            ? 'top'
+            : azimuth < 170
+              ? 'left'
+              : azimuth < 240
+                ? 'right'
+                : azimuth < 270
+                  ? 'top'
+                  : azimuth < 290
+                    ? 'bottom'
+                    : 'right';
+
+    measurementTooltipOffset = (
+      {
+        left: [-10, 0],
+        right: [10, 0],
+        top: [0, -10],
+        bottom: [0, 10],
+      } satisfies Partial<Record<Direction, PointExpression>>
+    )[measurementTooltipDirection];
+
+    const dist = distance(a, b, { units: 'meters' });
+
+    measurementText = (
+      <span>
+        ↔ {nf.format(dist)} km
+        <br />∡ {nf2.format(azimuth)}°
+      </span>
+    );
+
+    measurementTooltipPosition = [(a[1] + b[1]) / 2, (a[0] + b[0]) / 2];
+  }
 
   return (
     <Fragment key={[line.type, line.width, lineIndex].join(',')}>
@@ -309,7 +391,18 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           dashArray="6,8"
           interactive={false}
           positions={futureLinePositions}
-        />
+        >
+          <Tooltip
+            key={measurementTooltipDirection}
+            permanent
+            className="compact"
+            direction={measurementTooltipDirection}
+            offset={measurementTooltipOffset}
+            position={measurementTooltipPosition}
+          >
+            {measurementText}
+          </Tooltip>
+        </Polyline>
       )}
 
       {(selected || selectedPointId !== undefined || joinWith !== undefined) &&
