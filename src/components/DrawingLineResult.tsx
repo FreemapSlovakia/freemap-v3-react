@@ -8,7 +8,6 @@ import {
   DomEvent,
   LeafletMouseEvent,
   PointExpression,
-  Tooltip as TooltipType,
 } from 'leaflet';
 import {
   Fragment,
@@ -16,7 +15,6 @@ import {
   ReactNode,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import {
