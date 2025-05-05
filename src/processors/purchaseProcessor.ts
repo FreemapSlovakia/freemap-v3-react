@@ -29,17 +29,20 @@ export const purchaseProcessor: Processor = {
       cancelActions: [],
     });
 
-    const token = assert<{ token: string }>(await res.json()).token;
+    const token = assert<{ token: string; expiration: number }>(
+      await res.json(),
+    );
 
     const w = window.open(
       (user.name === 'New Payment Test'
         ? 'https://dev.rovas.app/rewpro?paytype=project&recipient=35384'
         : process.env['PURCHASE_URL_PREFIX']) +
         '&token=' +
-        encodeURIComponent(token) +
+        encodeURIComponent(token.token) +
         '&callbackurl=' +
         encodeURIComponent(process.env['BASE_URL'] + '/purchaseCallback.html') +
-        '&timeout=3600',
+        '&expiration=' +
+        token.expiration,
       'rovas',
       `width=800,height=680,left=${window.screen.width / 2 - 800 / 2},top=${
         window.screen.height / 2 - 680 / 2
