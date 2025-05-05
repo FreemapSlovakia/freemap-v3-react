@@ -24,9 +24,6 @@ import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
 import { createReduxStore } from './store.js';
 import './styles/index.scss';
 
-// filter out old browsers
-[].flatMap(() => null);
-
 if (
   window.location.search === '?reset-local-storage' ||
   window.location.hash === '#reset-local-storage'

@@ -33,7 +33,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light">{renderPremiumInfo()}</Modal.Body>
+      <Modal.Body>{renderPremiumInfo()}</Modal.Body>
 
       <Modal.Footer>
         <Button

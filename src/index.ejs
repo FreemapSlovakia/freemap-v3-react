@@ -16,6 +16,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
     />
+    <meta name="color-scheme" content="light dark">
     <meta property="fb:pages" content="146029225443232" />
     <meta
       property="article:author"
@@ -300,18 +301,33 @@
         window.removeEventListener('error', validate_startup);
 
         validate_startup();
+
         delete validate_startup;
       });
 
-      console.log('Pre-entry.');
-    </script>
+      function applySystemTheme() {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    <% for (const js of htmlWebpackPlugin.files.js) { %>
-    <script src="<%= js %>"></script>
-    <% } %>
+        document.documentElement.setAttribute(
+          'data-bs-theme',
+          isDark ? 'dark' : 'light',
+        );
+      }
 
-    <script>
-      console.log('Post-entry.');
+      window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', applySystemTheme);
+
+      applySystemTheme();
+
+      // filter out old browsers
+      [].flatMap(() => null);
+
+      for (const js of <%=JSON.stringify(htmlWebpackPlugin.files.js)%>) {
+        const script = document.createElement('script');
+        script.src = js;
+        document.head.appendChild(script);
+      }
     </script>
   </body>
 </html>

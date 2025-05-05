@@ -150,7 +150,7 @@ export function MapsModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light">
+      <Modal.Body>
         <Card className="mb-2">
           <Card.Body>
             <Card.Title>
