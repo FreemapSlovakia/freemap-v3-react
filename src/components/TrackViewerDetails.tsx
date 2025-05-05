@@ -1,6 +1,7 @@
 import distance from '@turf/distance';
 import { Geometry } from 'geojson';
 import { ReactElement } from 'react';
+import { formatDistance } from '../distanceFormatter.js';
 import { smoothElevations } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
@@ -29,6 +30,8 @@ export function TrackViewerDetailsInt({
   const [startPoints, finishPoints] = useStartFinishPoints();
 
   const eleSmoothingFactor = 5;
+
+  const language = useAppSelector((state) => state.l10n.language);
 
   const oneDecimalDigitNumberFormat = useNumberFormat({
     minimumFractionDigits: 1,
@@ -83,15 +86,12 @@ export function TrackViewerDetailsInt({
   }
 
   if (finishPoints.length) {
-    const { lengthInKm } = finishPoints[0];
+    const { length } = finishPoints[0];
 
-    tableData.push([
-      'distance',
-      `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`,
-    ]);
+    tableData.push(['distance', formatDistance(length, language)]);
 
     if (duration) {
-      const avgSpeed = (lengthInKm / duration) * 3600;
+      const avgSpeed = (length / duration) * 3.6;
 
       tableData.push([
         'avgSpeed',

@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { RichMarker } from '../components/RichMarker.js';
+import { formatDistance } from '../distanceFormatter.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
@@ -19,10 +20,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
     maximumFractionDigits: 0,
   });
 
-  const nf1 = useNumberFormat({
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
+  const language = useAppSelector((state) => state.l10n.language);
 
   return (
     elevationChartActivePoint && (
@@ -42,7 +40,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
           permanent
         >
           <span>
-            → {nf1.format(elevationChartActivePoint.distance / 1000)} km
+            → {formatDistance(elevationChartActivePoint.distance, language)}
             {' ▴ '}
             {nf0.format(elevationChartActivePoint.ele)} {m?.general.masl}
             {typeof elevationChartActivePoint.climbUp === 'number' &&

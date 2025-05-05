@@ -184,7 +184,8 @@ const hu: Messages = {
       <>
         Távolság:{' '}
         <b>
-          {value} km{diff ? ` (+ ${diff} km)` : ''}
+          {value}
+          {diff ? ` (+ ${diff})` : ''}
         </b>
       </>
     ),
@@ -198,7 +199,7 @@ const hu: Messages = {
     ),
     summary: ({ distance, h, m }) => (
       <>
-        Távolság: <b>{distance} km</b> | Időtartam:{' '}
+        Távolság: <b>{distance}</b> | Időtartam:{' '}
         <b>
           {h} óra {m} perc
         </b>

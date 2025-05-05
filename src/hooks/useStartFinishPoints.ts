@@ -22,7 +22,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
 
     for (const feature of features) {
       if (feature.geometry.type === 'LineString') {
-        const lengthInKm = turfLength(feature);
+        const length = turfLength(feature, { units: 'meters' });
 
         const coords = feature.geometry.coordinates;
 
@@ -45,7 +45,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
         startPoints.push({
           lat: startLonlat[1],
           lon: startLonlat[0],
-          lengthInKm: 0,
+          length: 0,
           startTime,
         });
 
@@ -54,7 +54,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
         finishPoints.push({
           lat: finishLonLat[1],
           lon: finishLonLat[0],
-          lengthInKm,
+          length,
           finishTime,
         });
       }

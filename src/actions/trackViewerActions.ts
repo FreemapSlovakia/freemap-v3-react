@@ -7,7 +7,7 @@ export type ColorizingMode = 'elevation' | 'steepness';
 export interface TrackPoint extends LatLon {
   startTime?: Date;
   finishTime?: Date;
-  lengthInKm: number;
+  length: number;
 }
 
 export const trackViewerSetData = createAction<{

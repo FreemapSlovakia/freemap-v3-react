@@ -180,7 +180,8 @@ const en: Messages = {
       <>
         Distance:{' '}
         <b>
-          {value} km{diff ? ` (+ ${diff} km)` : ''}
+          {value}
+          {diff ? ` (+ ${diff})` : ''}
         </b>
       </>
     ),
@@ -194,7 +195,7 @@ const en: Messages = {
     ),
     summary: ({ distance, h, m }) => (
       <>
-        Distance: <b>{distance} km</b> | Duration:{' '}
+        Distance: <b>{distance}</b> | Duration:{' '}
         <b>
           {h} h {m} m
         </b>

@@ -188,7 +188,8 @@ const messages: Messages = {
       <>
         Vzdialenosť:{' '}
         <b>
-          {value} km{diff ? ` (+ ${diff} km)` : ''}
+          {value}
+          {diff ? ` (+ ${diff})` : ''}
         </b>
       </>
     ),
@@ -202,7 +203,7 @@ const messages: Messages = {
     ),
     summary: ({ distance, h, m }) => (
       <>
-        Vzdialenosť: <b>{distance} km</b> | Trvanie:{' '}
+        Vzdialenosť: <b>{distance}</b> | Trvanie:{' '}
         <b>
           {h} h {m} m
         </b>

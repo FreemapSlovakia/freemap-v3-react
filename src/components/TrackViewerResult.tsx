@@ -1,12 +1,10 @@
-// import turfLineSlice from '@turf/line-slice';
-// import turfLength from '@turf/length';
 import distance from '@turf/distance';
 import turfFlatten from '@turf/flatten';
 import { getCoords } from '@turf/invariant';
 import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { LatLngExpression, Point as LPoint } from 'leaflet';
-import { Fragment, ReactElement, useState } from 'react';
-import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
+import { Fragment, ReactElement } from 'react';
+import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { setTool } from '../actions/mainActions.js';
@@ -14,10 +12,10 @@ import { ElevationChartActivePoint } from '../components/ElevationChartActivePoi
 import { Hotline } from '../components/Hotline.js';
 import { RichMarker } from '../components/RichMarker.js';
 import { colors } from '../constants.js';
+import { formatDistance } from '../distanceFormatter.js';
 import { smoothElevations } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
-import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 
@@ -33,6 +31,8 @@ export function TrackViewerResult({
 }: {
   trackGeojson: FeatureCollection;
 }): ReactElement | null {
+  const language = useAppSelector((state) => state.l10n.language);
+
   const [startPoints, finishPoints] = useStartFinishPoints();
 
   const displayingElevationChart = useAppSelector(
@@ -44,12 +44,6 @@ export function TrackViewerResult({
   );
 
   const eleSmoothingFactor = 5;
-
-  const [infoLat] = useState<number>();
-
-  const [infoLon] = useState<number>();
-
-  const [infoDistanceKm] = useState<number>();
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
     turfFlatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
@@ -96,60 +90,6 @@ export function TrackViewerResult({
       });
     });
 
-  // TODO
-  // // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
-  // handleEachFeature = (feature, layer) => {
-  //   if (
-  //     feature.geometry.type === 'Point' &&
-  //     feature.properties &&
-  //     feature.properties.name
-  //   ) {
-  //     layer.bindTooltip(feature.properties.name, {
-  //       direction: 'right',
-  //       className: 'compact',
-  //     });
-  //   }
-
-  //   if (feature.geometry.type === 'LineString') {
-  //     layer.on('click', (e) => {
-  //       this.showInfoPoint(e, feature);
-  //     });
-
-  //     layer.on('mouseover', (e) => {
-  //       this.showInfoPoint(e, feature);
-  //     });
-
-  //     layer.on('mouseout', () => {
-  //       this.setState({
-  //         infoLat: undefined,
-  //         infoLon: undefined,
-  //         infoDistanceKm: undefined,
-  //       });
-  //     });
-  //   }
-  // };
-
-  // showInfoPoint = (e, feature) => {
-  //   const infoLat = e.latlng.lat;
-  //   const infoLon = e.latlng.lng;
-  //   const infoDistanceKm = this.computeInfoDistanceKm(
-  //     infoLat,
-  //     infoLon,
-  //     feature,
-  //   );
-  //   this.setState({ infoLat, infoLon, infoDistanceKm });
-  // };
-
-  // computeInfoDistanceKm = (
-  //   infoLat: number,
-  //   infoLon: number,
-  //   geojsonLineString,
-  // ) => {
-  //   const p1 = point(geojsonLineString.geometry.coordinates[0]);
-  //   const p2 = point([infoLon, infoLat]);
-  //   return turfLength(turfLineSlice(p1, p2, geojsonLineString));
-  // };
-
   const interactive = useAppSelector(selectingModeSelector);
 
   const dispatch = useDispatch();
@@ -163,18 +103,13 @@ export function TrackViewerResult({
     (JSON.stringify(trackGeojson) + displayingElevationChart).length
   }`; // otherwise GeoJSON will still display the first data
 
-  const xxx = getFeatures('LineString').map((feature) => ({
+  const features = getFeatures('LineString').map((feature) => ({
     name: feature.properties && feature.properties['name'],
     lineData: feature.geometry.coordinates.map(([lng, lat]) => ({
       lat,
       lng,
     })),
   }));
-
-  const oneDecimalDigitNumberFormat = useNumberFormat({
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
 
   const timeFormat = useDateTimeFormat({
     hour: 'numeric',
@@ -183,7 +118,7 @@ export function TrackViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
-      {xxx.map(({ lineData, name }, i) => (
+      {features.map(({ lineData, name }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
           weight={10}
@@ -226,7 +161,7 @@ export function TrackViewerResult({
           key={`poly-${interactive ? 'a' : 'b'}`}
           weight={6}
           interactive={interactive}
-          positions={xxx.map(({ lineData }) => lineData)}
+          positions={features.map(({ lineData }) => lineData)}
           color="#838"
           bubblingMouseEvents={false}
           eventHandlers={{
@@ -311,36 +246,11 @@ export function TrackViewerResult({
                   {p.finishTime ? ', ' : ''}
                 </>
               )}
-              {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km
+              {formatDistance(p.length, language)}
             </span>
           </Tooltip>
         </RichMarker>
       ))}
-
-      {infoLat && infoLon && infoDistanceKm && (
-        <RichMarker
-          key={`info-${interactive ? 'a' : 'b'}`}
-          faIcon={<FaInfo color="grey" />}
-          color="grey"
-          interactive={interactive}
-          position={{ lat: infoLat, lng: infoLon }}
-          eventHandlers={{
-            click: setThisTool,
-          }}
-        >
-          <Tooltip
-            className="compact"
-            offset={new LPoint(10, 10)}
-            direction="right"
-            permanent
-          >
-            <span>
-              {oneDecimalDigitNumberFormat.format(infoDistanceKm)}
-              {' km'}
-            </span>
-          </Tooltip>
-        </RichMarker>
-      )}
 
       <ElevationChartActivePoint />
     </Fragment>

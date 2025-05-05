@@ -44,6 +44,7 @@ import {
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { RichMarker } from '../components/RichMarker.js';
 import { colors } from '../constants.js';
+import { formatDistance } from '../distanceFormatter.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
@@ -164,20 +165,15 @@ export function RoutePlannerResult(): ReactElement {
       distanceDiff?: number,
       durationDiff?: number,
     ) => {
-      const nf = new Intl.NumberFormat(language, {
-        minimumFractionDigits: 1,
-        maximumFractionDigits: 1,
-      });
-
       return (
         <div>
           <div>
             {m?.routePlanner.distance({
-              value: nf.format(distanceSum / 1000),
+              value: formatDistance(distanceSum, language),
               diff:
                 distanceDiff === undefined
                   ? undefined
-                  : nf.format(distanceDiff / 1000),
+                  : formatDistance(distanceDiff, language),
             })}
           </div>
           {durationSum !== undefined && (

@@ -36,6 +36,7 @@ import { drawingMeasure } from '../actions/drawingPointActions.js';
 import { selectFeature } from '../actions/mainActions.js';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { colors } from '../constants.js';
+import { formatDistance } from '../distanceFormatter.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { isEventOnMap } from '../mapUtils.js';
@@ -62,34 +63,6 @@ const selectedCircularIcon = divIcon({
 type Props = {
   lineIndex: number;
 };
-
-function formatDistance(valueInMeters: number, locale: string): string {
-  const useKilometers = valueInMeters >= 1000;
-
-  const unit = useKilometers ? 'kilometer' : 'meter';
-
-  const value = useKilometers ? valueInMeters / 1000 : valueInMeters;
-
-  const fractionDigits =
-    value && value < 1
-      ? 4
-      : value < 10
-        ? 3
-        : value < 100
-          ? 2
-          : value < 1000
-            ? 1
-            : 0;
-
-  const formatter = new Intl.NumberFormat(locale, {
-    style: 'unit',
-    unit,
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  });
-
-  return formatter.format(value);
-}
 
 export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const dispatch = useDispatch();
@@ -277,7 +250,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         ]
       : undefined;
 
-  let measurementText: ReactNode = '';
+  let measurementText: ReactNode = null;
 
   let measurementTooltipDirection: Direction = 'auto';
 
@@ -336,18 +309,19 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       ] satisfies PtDist,
     );
 
-    measurementText = (
-      <span>
-        {points.length > 1 ? (
-          <>
-            ∑ {formatDistance(sumDist, language)}
-            <br />
-          </>
-        ) : null}
-        ↔ {formatDistance(dist, language)}
-        <br />∡ {azimuthNumberFormat.format(azimuth)}°
-      </span>
-    );
+    measurementText =
+      dist > 0 ? (
+        <span>
+          {points.length > 1 ? (
+            <>
+              ∑ {formatDistance(sumDist, language)}
+              <br />
+            </>
+          ) : null}
+          ↔ {formatDistance(dist, language)}
+          <br />∡ {azimuthNumberFormat.format(azimuth)}°
+        </span>
+      ) : null;
 
     measurementTooltipPosition = [(a[1] + b[1]) / 2, (a[0] + b[0]) / 2];
   }
@@ -426,15 +400,17 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           interactive={false}
           positions={futureLinePositions}
         >
-          <Tooltip
-            key={measurementTooltipDirection}
-            permanent
-            className="compact"
-            direction={measurementTooltipDirection}
-            position={measurementTooltipPosition}
-          >
-            {measurementText}
-          </Tooltip>
+          {measurementText && (
+            <Tooltip
+              key={measurementTooltipDirection}
+              permanent
+              className="compact"
+              direction={measurementTooltipDirection}
+              position={measurementTooltipPosition}
+            >
+              {measurementText}
+            </Tooltip>
+          )}
         </Polyline>
       )}
 
