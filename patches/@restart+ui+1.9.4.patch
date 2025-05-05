@@ -1,0 +1,13 @@
+diff --git a/node_modules/@restart/ui/esm/useClickOutside.js b/node_modules/@restart/ui/esm/useClickOutside.js
+index 7c8eeb3..63d1db2 100644
+--- a/node_modules/@restart/ui/esm/useClickOutside.js
++++ b/node_modules/@restart/ui/esm/useClickOutside.js
+@@ -66,7 +66,7 @@ function useClickOutside(ref, onClickOutside = noop, {
+     // For things rendered in an iframe, the event might originate on the parent window
+     // so we should fall back to that global event if the local one doesn't exist
+     // https://github.com/facebook/react/issues/20074
+-    let currentEvent = (_ownerWindow$event = ownerWindow.event) != null ? _ownerWindow$event : (_ownerWindow$parent = ownerWindow.parent) == null ? void 0 : _ownerWindow$parent.event;
++    let currentEvent = null; try { currentEvent = (_ownerWindow$event = ownerWindow.event) != null ? _ownerWindow$event : (_ownerWindow$parent = ownerWindow.parent) == null ? void 0 : _ownerWindow$parent.event; } catch {}
+     let removeInitialTriggerListener = null;
+     if (InitialTriggerEvents[clickTrigger]) {
+       removeInitialTriggerListener = listen(doc, InitialTriggerEvents[clickTrigger], handleInitialMouse, true);

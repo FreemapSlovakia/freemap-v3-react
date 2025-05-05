@@ -21,7 +21,8 @@
     "lint": "node node_modules/eslint/bin/eslint.js src",
     "lint:fix": "node node_modules/eslint/bin/eslint.js src --fix",
     "prepare": "ts-patch install",
-    "build": "tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts"
+    "build": "tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@bokuweb/zstd-wasm": "^0.0.27",
@@ -135,6 +136,7 @@
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
+    "patch-package": "^8.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "react-refresh": "^0.17.0",

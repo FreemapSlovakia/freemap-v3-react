@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
 
@@ -28,7 +28,11 @@ type Props = {
 export class ErrorCatcher extends Component<Props, State> {
   state: State = {};
 
-  componentDidCatch(error: Error): void {
+  componentDidCatch(error: Error, info: ErrorInfo): void {
+    console.error(info.digest);
+
+    console.error(info.componentStack);
+
     this.setState({ error });
   }
 
