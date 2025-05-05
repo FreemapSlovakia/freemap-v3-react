@@ -38,7 +38,8 @@ export const purchaseProcessor: Processor = {
         '&token=' +
         encodeURIComponent(token) +
         '&callbackurl=' +
-        encodeURIComponent(process.env['BASE_URL'] + '/purchaseCallback.html'),
+        encodeURIComponent(process.env['BASE_URL'] + '/purchaseCallback.html') +
+        '&timeout=3600',
       'rovas',
       `width=800,height=680,left=${window.screen.width / 2 - 800 / 2},top=${
         window.screen.height / 2 - 680 / 2
