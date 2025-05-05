@@ -15,7 +15,7 @@ function Error() {
     <div
       className="p-2"
       dangerouslySetInnerHTML={{
-        __html: m.errorCatcher.html(errorTicketId ?? '???'),
+        __html: m.errorCatcher.html(errorTicketId),
       }}
     />
   ) : null;

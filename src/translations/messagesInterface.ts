@@ -687,7 +687,7 @@ export type Messages = {
     fetchError: ({ err }: Err) => string;
   };
   errorCatcher: {
-    html: (ticketId: string) => string;
+    html: (ticketId?: string) => string;
   };
   osm: {
     fetchingError: ({ err }: Err) => string;
