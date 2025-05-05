@@ -5,6 +5,7 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import useLocalStorageState from 'use-local-storage-state';
 import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import { baseLayers, overlayLayers } from '../mapDefinitions.js';
 import { LatLon } from '../types/common.js';
@@ -27,7 +28,7 @@ export function ElevationInfo({
   tileMessage,
   maslMessage,
 }: ElevationInfoProps) {
-  const nf01 = new Intl.NumberFormat(lang, {
+  const nf01 = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 1,
   });

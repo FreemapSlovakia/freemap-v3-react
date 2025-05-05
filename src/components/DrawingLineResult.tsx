@@ -37,6 +37,7 @@ import { selectFeature } from '../actions/mainActions.js';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { colors } from '../constants.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { isEventOnMap } from '../mapUtils.js';
 import {
   drawingLinePolys,
@@ -62,14 +63,40 @@ type Props = {
   lineIndex: number;
 };
 
+function formatDistance(valueInMeters: number, locale: string): string {
+  const useKilometers = valueInMeters >= 1000;
+
+  const unit = useKilometers ? 'kilometer' : 'meter';
+
+  const value = useKilometers ? valueInMeters / 1000 : valueInMeters;
+
+  const fractionDigits =
+    value && value < 1
+      ? 4
+      : value < 10
+        ? 3
+        : value < 100
+          ? 2
+          : value < 1000
+            ? 1
+            : 0;
+
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'unit',
+    unit,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
+
+  return formatter.format(value);
+}
+
 export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const drawing = useAppSelector(drawingLinePolys);
 
   const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
-
-  const language = useAppSelector((state) => state.l10n.language);
 
   const selected = useAppSelector(
     (state) =>
@@ -181,25 +208,12 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   let prev: Point | null = null;
 
-  let dist = 0;
+  let sumDist = 0;
 
-  const nf = useMemo(
-    () =>
-      Intl.NumberFormat(language, {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3,
-      }),
-    [language],
-  );
-
-  const nf2 = useMemo(
-    () =>
-      Intl.NumberFormat(language, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-    [language],
-  );
+  const azimuthNumberFormat = useNumberFormat({
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   function handleSelect() {
     dispatch(
@@ -267,9 +281,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   let measurementTooltipDirection: Direction = 'auto';
 
-  let measurementTooltipOffset: PointExpression = [0, 0];
-
   let measurementTooltipPosition: PointExpression = [0, 0];
+
+  const language = useAppSelector((state) => state.l10n.language);
 
   if (line.type === 'line' && futureLinePositions?.length === 2) {
     const a = [futureLinePositions[0].lng, futureLinePositions[0].lat];
@@ -295,21 +309,43 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                     ? 'bottom'
                     : 'right';
 
-    measurementTooltipOffset = (
-      {
-        left: [-10, 0],
-        right: [10, 0],
-        top: [0, -10],
-        bottom: [0, 10],
-      } satisfies Partial<Record<Direction, PointExpression>>
-    )[measurementTooltipDirection];
-
     const dist = distance(a, b, { units: 'meters' });
+
+    type PtDist = [number, Point];
+
+    const rev = [...points].reverse();
+
+    const [sumDist] = rev.reduce(
+      ([dist, prevPoint], nextPoint) =>
+        [
+          dist +
+            distance(
+              [prevPoint.lon, prevPoint.lat],
+              [nextPoint.lon, nextPoint.lat],
+              { units: 'meters' },
+            ),
+          nextPoint,
+        ] satisfies PtDist,
+      [
+        0,
+        {
+          id: 0,
+          lat: futureLinePositions[1].lat,
+          lon: futureLinePositions[1].lng,
+        },
+      ] satisfies PtDist,
+    );
 
     measurementText = (
       <span>
-        ↔ {nf.format(dist)} km
-        <br />∡ {nf2.format(azimuth)}°
+        {points.length > 1 ? (
+          <>
+            ∑ {formatDistance(sumDist, language)}
+            <br />
+          </>
+        ) : null}
+        ↔ {formatDistance(dist, language)}
+        <br />∡ {azimuthNumberFormat.format(azimuth)}°
       </span>
     );
 
@@ -395,7 +431,6 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             permanent
             className="compact"
             direction={measurementTooltipDirection}
-            offset={measurementTooltipOffset}
             position={measurementTooltipPosition}
           >
             {measurementText}
@@ -405,14 +440,14 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
       {(selected || selectedPointId !== undefined || joinWith !== undefined) &&
         ps.map((p, i) => {
-          if (i % 2 === 0) {
-            if (prev) {
-              dist += distance([p.lon, p.lat], [prev.lon, prev.lat], {
-                units: 'kilometers',
-              });
-            }
+          let dist = 0;
 
-            prev = p;
+          if (prev && i % 2 === 0) {
+            dist = distance([p.lon, p.lat], [prev.lon, prev.lat], {
+              units: 'meters',
+            });
+
+            sumDist += dist;
           }
 
           if (
@@ -424,92 +459,123 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             return null;
           }
 
-          return i % 2 === 0 ? (
-            <Marker
-              key={p.id}
-              draggable
-              position={{ lat: p.lat, lng: p.lon }}
-              // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-              icon={
-                selectedPointId === p.id ? selectedCircularIcon : circularIcon
-              }
-              opacity={1}
-              eventHandlers={{
-                drag(e) {
-                  const coord = e.target.getLatLng();
+          const marker =
+            i % 2 === 0 ? (
+              <Marker
+                key={p.id}
+                draggable
+                position={{ lat: p.lat, lng: p.lon }}
+                // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+                icon={
+                  selectedPointId === p.id ? selectedCircularIcon : circularIcon
+                }
+                opacity={1}
+                eventHandlers={{
+                  drag(e) {
+                    const coord = e.target.getLatLng();
 
-                  dispatch(
-                    drawingLineUpdatePoint({
-                      index: lineIndex,
-                      point: { lat: coord.lat, lon: coord.lng, id: p.id },
-                    }),
-                  );
-
-                  dispatch(drawingMeasure({}));
-                },
-                click() {
-                  if (joinWith) {
                     dispatch(
-                      drawingLineJoinFinish({
-                        lineIndex,
-                        pointId: p.id,
-                        selection: {
-                          type: 'draw-line-poly',
-                          id:
-                            joinWith.lineIndex -
-                            (lineIndex > joinWith.lineIndex ? 0 : 1),
-                        },
+                      drawingLineUpdatePoint({
+                        index: lineIndex,
+                        point: { lat: coord.lat, lon: coord.lng, id: p.id },
                       }),
                     );
 
                     dispatch(drawingMeasure({}));
-                  } else {
-                    dispatch(
-                      selectFeature({
-                        type: 'line-point',
-                        lineIndex,
-                        pointId: p.id,
-                      }),
+                  },
+                  click() {
+                    if (joinWith) {
+                      dispatch(
+                        drawingLineJoinFinish({
+                          lineIndex,
+                          pointId: p.id,
+                          selection: {
+                            type: 'draw-line-poly',
+                            id:
+                              joinWith.lineIndex -
+                              (lineIndex > joinWith.lineIndex ? 0 : 1),
+                          },
+                        }),
+                      );
+
+                      dispatch(drawingMeasure({}));
+                    } else {
+                      dispatch(
+                        selectFeature({
+                          type: 'line-point',
+                          lineIndex,
+                          pointId: p.id,
+                        }),
+                      );
+                    }
+                  },
+                  dragstart: handleDragStart,
+                  dragend: handleDragEnd,
+                }}
+              >
+                {line.type === 'line' && !joinWith && (
+                  <Tooltip
+                    className="compact"
+                    offset={[-4, 0]}
+                    direction="right"
+                  >
+                    <span>
+                      {i < 3 ? null : (
+                        <>
+                          ∑ {formatDistance(sumDist, language)}
+                          <br />
+                        </>
+                      )}
+                      ↔ {formatDistance(dist, language)}
+                      {i < 2 ? null : (
+                        <>
+                          <br />∡{' '}
+                          {prev &&
+                            azimuthNumberFormat.format(
+                              bearingToAzimuth(
+                                bearing([prev.lon, prev.lat], [p.lon, p.lat]),
+                              ),
+                            )}
+                          °
+                        </>
+                      )}
+                    </span>
+                  </Tooltip>
+                )}
+              </Marker>
+            ) : (
+              <Marker
+                key={p.id}
+                draggable
+                position={{ lat: p.lat, lng: p.lon }}
+                icon={circularIcon}
+                opacity={0.33}
+                eventHandlers={{
+                  dragstart(e) {
+                    addPoint(
+                      e.target.getLatLng().lat,
+                      e.target.getLatLng().lng,
+                      i,
+                      p.id,
                     );
-                  }
-                },
-                dragstart: handleDragStart,
-                dragend: handleDragEnd,
-              }}
-            >
-              {line.type === 'line' && !joinWith && (
-                <Tooltip className="compact" offset={[-4, 0]} direction="right">
-                  <span>{nf.format(dist)} km</span>
-                </Tooltip>
-              )}
-            </Marker>
-          ) : (
-            <Marker
-              key={p.id}
-              draggable
-              position={{ lat: p.lat, lng: p.lon }}
-              icon={circularIcon}
-              opacity={0.33}
-              eventHandlers={{
-                dragstart(e) {
-                  addPoint(
-                    e.target.getLatLng().lat,
-                    e.target.getLatLng().lng,
-                    i,
-                    p.id,
-                  );
-                },
-                click(e) {
-                  addPoint(
-                    e.target.getLatLng().lat,
-                    e.target.getLatLng().lng,
-                    i,
-                    p.id,
-                  );
-                },
-              }}
-            />
-          );
+                  },
+                  click(e) {
+                    addPoint(
+                      e.target.getLatLng().lat,
+                      e.target.getLatLng().lng,
+                      i,
+                      p.id,
+                    );
+                  },
+                }}
+              />
+            );
+
+          if (i % 2 === 0) {
+            prev = p;
+          }
+
+          return marker;
         })}
 
       <ElevationChartActivePoint />
