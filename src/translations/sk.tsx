@@ -657,7 +657,7 @@ const messages: Messages = {
       applyToAll: 'Uložiť a aplikovať na všetko',
     },
     projection: {
-      projectPoint: 'Zameraj bod',
+      projectPoint: 'Zamerať bod',
       distance: 'Vzdialenosť',
       azimuth: 'Azimut',
     },
