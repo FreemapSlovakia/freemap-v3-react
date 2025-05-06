@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Alert } from 'react-bootstrap';
+import { Alert, AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
@@ -410,13 +410,13 @@ const messages: Messages = {
       ua: () => (
         <>
           🇺🇦 Stojíme za Ukrajinou.{' '}
-          <a
+          <AlertLink
             href="https://donio.cz/pomocukrajine"
             target="_blank"
             rel="noopener"
           >
             Pomozte Ukrajině ›
-          </a>{' '}
+          </AlertLink>{' '}
           🇺🇦
         </>
       ),

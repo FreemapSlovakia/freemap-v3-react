@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Alert } from 'react-bootstrap';
+import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
@@ -401,13 +401,13 @@ const en: Messages = {
       ua: () => (
         <>
           🇺🇦 We stand with Ukraine.{' '}
-          <a
+          <AlertLink
             href="https://bank.gov.ua/en/about/support-the-armed-forces"
             target="_blank"
             rel="noopener"
           >
             Donate to the Ukrainian Army ›
-          </a>{' '}
+          </AlertLink>{' '}
           🇺🇦
         </>
       ),
@@ -1367,9 +1367,9 @@ const en: Messages = {
     exported: ({ url }) => (
       <>
         Map export has finished.{' '}
-        <Alert.Link href={url} target="_blank">
+        <AlertLink href={url} target="_blank">
           Open.
-        </Alert.Link>
+        </AlertLink>
       </>
     ),
     area: 'Export area:',
@@ -1405,29 +1405,29 @@ const en: Messages = {
             <br />
             <em>
               map ©{' '}
-              <Alert.Link
+              <AlertLink
                 href="https://www.freemap.sk/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Freemap Slovakia
-              </Alert.Link>
+              </AlertLink>
               , data{' '}
-              <Alert.Link
+              <AlertLink
                 href="https://osm.org/copyright"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 © OpenStreetMap contributors
-              </Alert.Link>
+              </AlertLink>
               {', SRTM, '}
-              <Alert.Link
+              <AlertLink
                 href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 LLS: ÚGKK SR
-              </Alert.Link>
+              </AlertLink>
             </em>
           </li>
         </ul>{' '}

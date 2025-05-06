@@ -409,6 +409,7 @@ const messages: Messages = {
     ),
     infoBars: {
       dp: () => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const dispatch = useDispatch();
 
         return (
@@ -421,7 +422,7 @@ const messages: Messages = {
               Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
               potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
             </span>{' '}
-            <a
+            <AlertLink
               href="/#document=dvePercenta"
               onClick={(e) => {
                 e.preventDefault();
@@ -430,7 +431,7 @@ const messages: Messages = {
               }}
             >
               2% z dane
-            </a>
+            </AlertLink>
             .
           </>
         );

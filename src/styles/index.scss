@@ -32,11 +32,17 @@ body {
 .info-bar {
   @media screen {
     background-color: #ffa;
+    color: black;
     text-align: center;
 
     & > button {
       float: right;
       margin: 0 4px;
+    }
+
+    [data-bs-theme='dark'] & {
+      background-color: #653;
+      color: #ffa;
     }
   }
   @media print {
