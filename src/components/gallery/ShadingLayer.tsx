@@ -5,7 +5,6 @@ import {
   DoneCallback,
   GridLayerOptions,
   Map as LeafletMap,
-  LeafletMouseEvent,
   GridLayer as LGridLayer,
   Util,
 } from 'leaflet';
@@ -14,6 +13,20 @@ import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 type ShadingLayerOptions = GridLayerOptions & {
   url: string;
   zoomOffset?: number;
+};
+
+type Layer = {
+  method: number;
+  azimuth: number;
+  altitude: number;
+  contrast: number;
+  brightness: number;
+  weight: number;
+  color: [number, number, number, number];
+};
+
+type CanvasWithRender = HTMLCanvasElement & {
+  render: (layers: Layer[]) => void;
 };
 
 class LShadingLayer extends LGridLayer {
@@ -27,7 +40,7 @@ class LShadingLayer extends LGridLayer {
 
   private _workerPool: WorkerPool;
 
-  private _light: [number, number, number];
+  // private _light: [number, number, number];
 
   constructor(options: ShadingLayerOptions) {
     super(options);
@@ -38,7 +51,7 @@ class LShadingLayer extends LGridLayer {
       throw new Error('WebGPU not supported');
     }
 
-    this._light = [0, 0, 1];
+    // this._light = [0, 0, 1];
 
     this._workerPool = createWorkerPool(
       () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
@@ -106,6 +119,11 @@ class LShadingLayer extends LGridLayer {
             visibility: GPUShaderStage.FRAGMENT,
             buffer: { type: 'uniform' },
           },
+          {
+            binding: 3,
+            visibility: GPUShaderStage.FRAGMENT,
+            buffer: { type: 'uniform' },
+          },
         ],
       });
 
@@ -137,21 +155,21 @@ class LShadingLayer extends LGridLayer {
       return [device, pipeline, sampler];
     })();
 
-    this.handleMove = this.handleMove.bind(this);
+    // this.handleMove = this.handleMove.bind(this);
   }
 
-  handleMove(e: LeafletMouseEvent) {
-    const size = this._map.getSize();
+  // handleMove(e: LeafletMouseEvent) {
+  //   const size = this._map.getSize();
 
-    this.setLight([
-      2 * e.containerPoint.x - size.x,
-      2 * e.containerPoint.y - size.y,
-      size.x / 4,
-    ]);
-  }
+  //   this.setLight([
+  //     2 * e.containerPoint.x - size.x,
+  //     2 * e.containerPoint.y - size.y,
+  //     size.x / 4,
+  //   ]);
+  // }
 
   onAdd(map: LeafletMap): this {
-    map.on('mousemove', this.handleMove);
+    // map.on('mousemove', this.handleMove);
 
     return super.onAdd(map);
   }
@@ -159,7 +177,7 @@ class LShadingLayer extends LGridLayer {
   onRemove(map: LeafletMap): this {
     this._workerPool.destroy();
 
-    map.off('mousemove', this.handleMove);
+    // map.off('mousemove', this.handleMove);
 
     return super.onRemove(map);
   }
@@ -179,7 +197,7 @@ class LShadingLayer extends LGridLayer {
     context.configure({
       device,
       format: this.format,
-      alphaMode: 'opaque',
+      alphaMode: 'premultiplied',
     });
 
     const controller = new AbortController();
@@ -238,31 +256,59 @@ class LShadingLayer extends LGridLayer {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
+    const layersBuffer = device.createBuffer({
+      size: 8 /* MAX_LAYERS */ * 4 * 12,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+
     const bindGroup = device.createBindGroup({
       layout: pipeline.getBindGroupLayout(0),
       entries: [
         { binding: 0, resource: sampler },
         { binding: 1, resource: texture.createView() },
         { binding: 2, resource: { buffer: configBuffer } },
+        { binding: 3, resource: { buffer: layersBuffer } },
       ],
     });
 
-    (canvas as any).render = (light: [number, number, number]) => {
-      const configData = new ArrayBuffer(4 * 4);
+    (canvas as CanvasWithRender).render = (layers: Layer[]) => {
+      const configData = new ArrayBuffer(configBuffer.size);
 
       const configView = new DataView(configData);
 
-      let i = 0;
+      configView.setUint32(0, layers.length, true);
 
-      for (const v of light) {
-        configView.setFloat32(i * 4, v, true);
-
-        i++;
-      }
-
-      configView.setUint32(i * 4, z, true);
+      configView.setUint32(4, z, true);
 
       device.queue.writeBuffer(configBuffer, 0, configData);
+
+      const layersData = new ArrayBuffer(layersBuffer.size);
+
+      const layersView = new DataView(layersData);
+
+      let off = -4;
+
+      for (const layer of layers) {
+        layersView.setUint32((off += 4), layer.method, true);
+
+        layersView.setFloat32((off += 4), layer.azimuth, true);
+
+        layersView.setFloat32((off += 4), layer.altitude, true);
+
+        layersView.setFloat32((off += 4), layer.contrast, true);
+
+        layersView.setFloat32((off += 4), layer.brightness, true);
+
+        layersView.setFloat32((off += 4), layer.weight, true);
+
+        off += 8;
+
+        for (const band of layer.color) {
+          layersView.setFloat32((off += 4), band, true);
+        }
+      }
+
+      device.queue.writeBuffer(layersBuffer, 0, layersData);
 
       const encoder = device.createCommandEncoder();
 
@@ -272,7 +318,7 @@ class LShadingLayer extends LGridLayer {
             view: context.getCurrentTexture().createView(),
             loadOp: 'clear',
             storeOp: 'store',
-            clearValue: { r: 0, g: 0, b: 0, a: 1 },
+            clearValue: { r: 0, g: 0, b: 0, a: 0 },
           },
         ],
       });
@@ -315,8 +361,49 @@ class LShadingLayer extends LGridLayer {
 
     canvas.style.height = size.x + 'px';
 
+    canvas.style.background = 'white';
+
+    // igor,5060FF60,135+   igor,E0D000B0,315+   igor,00000080,135+   igor-slope,000000FF
+
     this.createTileAsync(coords, canvas).then(() => {
-      (canvas as any).render(this._light);
+      (canvas as CanvasWithRender).render([
+        {
+          method: 0,
+          altitude: 0,
+          azimuth: (135 / 180) * Math.PI,
+          brightness: 0,
+          contrast: 1,
+          color: [0.3137, 0.3765, 1.0, 0.3765],
+          weight: 1,
+        },
+        {
+          method: 0,
+          altitude: 0,
+          azimuth: (315 / 180) * Math.PI,
+          brightness: 0,
+          contrast: 1,
+          color: [0.8784, 0.8157, 0.0, 0.6902],
+          weight: 1,
+        },
+        {
+          method: 0,
+          altitude: 0,
+          azimuth: (135 / 180) * Math.PI,
+          brightness: 0,
+          contrast: 1,
+          color: [0.0, 0.0, 0.0, 0.5],
+          weight: 1,
+        },
+        {
+          method: 2,
+          altitude: 0,
+          azimuth: 0,
+          brightness: 0,
+          contrast: 1,
+          color: [0.0, 0.0, 0.0, 1.0],
+          weight: 1,
+        },
+      ]);
 
       done(undefined, canvas);
     }, done);
@@ -324,13 +411,13 @@ class LShadingLayer extends LGridLayer {
     return canvas;
   }
 
-  setLight(light: [number, number, number]) {
-    this._light = light;
+  // setLight(light: [number, number, number]) {
+  //   this._light = light;
 
-    for (const tile in this._tiles) {
-      (this._tiles[tile] as any).el.render?.(light);
-    }
-  }
+  //   for (const tile in this._tiles) {
+  //     (this._tiles[tile].el as CanvasWithRender).render(light);
+  //   }
+  // }
 }
 
 type Props = ShadingLayerOptions;

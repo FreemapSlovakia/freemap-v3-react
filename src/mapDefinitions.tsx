@@ -104,7 +104,7 @@ export const baseLayerLetters = [
   'VS',
   'VD',
   'VT',
-  'H',
+  // 'H',
 ] as const;
 
 export const overlayLetters = [
@@ -119,6 +119,7 @@ export const overlayLetters = [
   's3',
   's4',
   'w',
+  'h',
 ] as const;
 
 export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -420,25 +421,6 @@ export const baseLayers: BaseLayerDef[] = [
       },
     ],
   },
-  {
-    type: 'H',
-    url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
-    // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
-    icon: <GiHills />,
-    key: ['KeyN', false],
-    scaleWithDpi: true,
-    maxNativeZoom: 20,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
-      },
-    ],
-    experimental: true,
-    adminOnly: true,
-  },
 ];
 
 export const overlayLayers: OverlayLayerDef[] = [
@@ -523,5 +505,24 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+  },
+  {
+    type: 'h',
+    // url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
+    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
+    icon: <GiHills />,
+    key: ['KeyJ', true],
+    scaleWithDpi: true,
+    maxNativeZoom: 19,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: 'LLS DMR: ©\xa0ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    experimental: true,
+    adminOnly: false,
   },
 ];

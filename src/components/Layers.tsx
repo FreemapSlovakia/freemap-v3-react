@@ -94,7 +94,7 @@ export function Layers(): ReactElement | null {
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
-    if (type === 'H' && url) {
+    if (type === 'h' && url) {
       return (
         <AsyncComponent
           url={url}

@@ -15,31 +15,31 @@ self.onmessage = async (evt) => {
   try {
     await initPromise;
 
-    const pixelBlock = Lerc.decode(decompress(evt.data.payload).buffer);
+    // const pixelBlock = Lerc.decode(decompress(evt.data.payload).buffer);
 
-    const arrays: Float32Array[] = pixelBlock.pixels as Float32Array[];
+    // const arrays: Float32Array[] = pixelBlock.pixels as Float32Array[];
 
-    const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
+    // const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
 
-    const flat = new Float32Array(totalLength);
+    // const flat = new Float32Array(totalLength);
 
-    let offset = 0;
+    // let offset = 0;
 
-    for (const arr of arrays) {
-      flat.set(arr, offset);
+    // for (const arr of arrays) {
+    //   flat.set(arr, offset);
 
-      offset += arr.length;
-    }
+    //   offset += arr.length;
+    // }
 
-    const payload = flat;
+    // const payload = flat;
 
-    // const flat = decompress(evt.data.payload);
+    const flat = decompress(evt.data.payload);
 
-    // const payload = new Float32Array(
-    //   flat.buffer,
-    //   flat.byteOffset,
-    //   flat.byteLength / 4,
-    // );
+    const payload = new Float32Array(
+      flat.buffer,
+      flat.byteOffset,
+      flat.byteLength / 4,
+    );
 
     self.postMessage({ id, payload }, [payload.buffer]);
   } catch (err) {
