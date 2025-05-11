@@ -247,6 +247,7 @@ export const baseLayers: BaseLayerDef[] = [
     ],
     key: ['KeyZ', false],
     errorTileUrl: white1x1,
+    premiumFromZoom: 20,
   },
   {
     type: 'J',
