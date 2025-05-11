@@ -133,7 +133,11 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    const effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
+    let effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
+
+    if (effPremiumFromZoom && scaleWithDpi) {
+      effPremiumFromZoom--;
+    }
 
     return (
       !!url && (
