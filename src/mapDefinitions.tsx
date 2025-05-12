@@ -371,7 +371,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VO',
-    url: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    url: maptiler('openstreetmap'),
     key: ['KeyV', false],
     icon: <FaMap />,
     attribution: [
@@ -384,7 +384,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VS',
-    url: 'https://api.maptiler.com/maps/streets-v2/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    url: maptiler('streets-v2'),
     key: ['KeyR', false],
     icon: <FaMap />,
     attribution: [
@@ -397,7 +397,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VD',
-    url: 'https://api.maptiler.com/maps/dataviz-dark/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    url: maptiler('dataviz-dark'),
     key: ['KeyM', false],
     icon: <FaMap />,
     attribution: [
@@ -410,7 +410,7 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'VT',
-    url: 'https://api.maptiler.com/maps/outdoor-v2/style.json?key=hpnL3lUOTtPNnue7UkOt',
+    url: maptiler('outdoor-v2'),
     key: ['KeyU', false],
     icon: <FaMap />,
     attribution: [
@@ -526,3 +526,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     zIndex: 3,
   },
 ];
+
+function maptiler(style: string) {
+  return `https://api.maptiler.com/maps/${style}/style.json?key=KgKDGG75zYDIyCCTAG6L`;
+}
