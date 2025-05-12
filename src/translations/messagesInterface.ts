@@ -344,6 +344,7 @@ export type Messages = {
       takenAt: string;
       createdAt: string;
       season: string;
+      premium: string;
     };
     viewer: {
       title: string;
@@ -363,6 +364,8 @@ export type Messages = {
       captured: (takenAt: JSX.Element) => JSX.Element;
       deletePrompt: string;
       modify: string;
+      premiumOnly: string;
+      noComments: string;
     };
     editForm: {
       name: string;
@@ -383,6 +386,7 @@ export type Messages = {
       rules: string;
       success: string;
       showPreview: string;
+      premium: string;
     };
     locationPicking: {
       title: string;
@@ -406,6 +410,7 @@ export type Messages = {
       rating: string;
       noTags: string;
       pano: string;
+      premium: string;
     };
     noPicturesFound: string;
     linkToWww: string;

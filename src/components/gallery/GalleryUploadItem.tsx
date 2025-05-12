@@ -66,6 +66,7 @@ export function GalleryUploadItem({
       )}
       <fieldset disabled={disabled}>
         <GalleryEditForm
+          id={id}
           {...{ model, allTags, errors }}
           onPositionPick={disabled ? undefined : handlePositionPick}
           onModelChange={handleModelChange}

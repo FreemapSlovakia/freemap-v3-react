@@ -438,6 +438,7 @@ const en: Messages = {
       takenAt: 'taken date',
       createdAt: 'upload date',
       season: 'season',
+      premium: 'premium',
     },
     viewer: {
       title: 'Photo',
@@ -455,6 +456,9 @@ const en: Messages = {
       captured: (takenAt) => <>Captured on {takenAt}</>,
       deletePrompt: 'Delete this picture?',
       modify: 'Modify',
+      premiumOnly:
+        'This photo has been made available by its author only to users with full access.',
+      noComments: 'No comments',
     },
     editForm: {
       name: 'Name',
@@ -487,6 +491,7 @@ const en: Messages = {
       `,
       success: 'Pictures have been successfully uploaded.',
       showPreview: 'Show previews (uses more CPU load and memory)',
+      premium: 'Make available only to premium users',
     },
     locationPicking: {
       title: 'Select photo location',
@@ -512,6 +517,7 @@ const en: Messages = {
       rating: 'Rating',
       noTags: 'no tags',
       pano: 'Panorama',
+      premium: 'Premium',
     },
     noPicturesFound: 'There were no photos found on this place.',
     linkToWww: 'photo at www.freemap.sk',

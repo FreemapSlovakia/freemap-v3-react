@@ -10,9 +10,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Alert, Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import {
   FaExternalLinkAlt,
+  FaGem,
   FaPencilAlt,
   FaRegDotCircle,
   FaSave,
@@ -27,6 +28,7 @@ import {
   galleryDeletePicture,
   galleryEditPicture,
   galleryQuickAddTag,
+  galleryQuickChangePremium,
   galleryRequestImage,
   gallerySavePicture,
   gallerySetComment,
@@ -42,11 +44,13 @@ import {
   PictureModel,
 } from '../../components/gallery/GalleryEditForm.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
-import '../../styles/gallery.scss';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton.js';
 import { RecentTags } from './RecentTags.js';
+
+import '../../styles/gallery.scss';
 
 type Props = { show: boolean };
 
@@ -86,6 +90,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const imageElement = useRef<HTMLImageElement>(undefined);
 
   const fullscreenElement = useRef<HTMLDivElement | null>(null);
+
+  const becomePremium = useBecomePremium();
 
   if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
@@ -159,8 +165,14 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     myStars = undefined,
     lat,
     lon,
-    pano,
   } = image || {};
+
+  const premium = Boolean(image?.premium);
+
+  const disabledPremium =
+    premium && !user?.isPremium && user?.id !== image?.user.id;
+
+  const pano = Boolean(image?.pano);
 
   const p = activeImageId !== null && pano;
 
@@ -272,8 +284,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     minute: '2-digit',
   });
 
-  const getImageUrl = (id: number) =>
-    `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${Math.round(
+  const getImageUrl = (id: number) => {
+    const width = Math.round(
       window.devicePixelRatio *
         (isFullscreen
           ? window.innerWidth
@@ -282,7 +294,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             : window.matchMedia('(min-width: 992px)').matches
               ? 770
               : 470),
-    )}`;
+    );
+
+    return (
+      `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${width}` +
+      (user ? '&authToken=' + encodeURIComponent(user.authToken) : '')
+    );
+  };
 
   const handlePositionPick = useCallback(() => {
     dispatch(gallerySetItemForPositionPicking(-1));
@@ -291,6 +309,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const handleStarsChange = useCallback(
     (stars: number) => {
       dispatch(gallerySubmitStars(stars));
+    },
+    [dispatch],
+  );
+
+  const handlePremiumChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      dispatch(galleryQuickChangePremium(e.currentTarget.checked));
     },
     [dispatch],
   );
@@ -329,6 +354,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           )}
           {imageIds ? ` / ${imageIds.length} ` : ''}
           {title && `- ${title}`}
+          {premium && (
+            <>
+              {' '}
+              <FaGem className="text-warning" />
+            </>
+          )}
         </Modal.Title>
       </Modal.Header>
 
@@ -361,6 +392,19 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                           }
                     }
                   />
+                ) : disabledPremium ? (
+                  <Alert variant="warning" className="text-center mb-0">
+                    {m?.gallery.viewer.premiumOnly}
+
+                    {becomePremium && (
+                      <>
+                        <br />
+                        <Button onClick={becomePremium} className="mt-3">
+                          <FaGem /> {m?.premium.becomePremium}
+                        </Button>
+                      </>
+                    )}
+                  </Alert>
                 ) : (
                   <img
                     key={imgKey}
@@ -495,13 +539,18 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
                   <h5>{m?.gallery.viewer.comments}</h5>
 
-                  {comments &&
+                  {!comments ? null : comments.length ? (
                     comments.map((c) => (
                       <p key={c.id}>
                         {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
                         {c.comment}
                       </p>
-                    ))}
+                    ))
+                  ) : (
+                    <p>
+                      <i>{m?.gallery.viewer.noComments}</i>
+                    </p>
+                  )}
 
                   {user && (
                     <Form onSubmit={handleCommentFormSubmit}>
@@ -517,12 +566,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                               );
                             }}
                             maxLength={4096}
+                            disabled={disabledPremium}
                           />
 
                           <Button
                             variant="secondary"
                             type="submit"
-                            disabled={comment.length < 1}
+                            disabled={comment.length < 1 || disabledPremium}
                           >
                             {m?.gallery.viewer.addComment}
                           </Button>
@@ -537,13 +587,15 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                         {m?.gallery.viewer.yourRating}
                       </span>
 
-                      <Rating
-                        className="stars ms-1 flex-shrink-0"
-                        size={22}
-                        allowFraction={false}
-                        initialValue={myStars ?? 0}
-                        onClick={handleStarsChange}
-                      />
+                      {disabledPremium ? null : (
+                        <Rating
+                          className="stars ms-1 flex-shrink-0"
+                          size={22}
+                          allowFraction={false}
+                          initialValue={myStars ?? 0}
+                          onClick={handleStarsChange}
+                        />
+                      )}
 
                       {editModel === null && tags && canEdit && (
                         <RecentTags
@@ -551,6 +603,18 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                           onAdd={handleTagAdd}
                           prefix={<div>｜</div>}
                         />
+                      )}
+
+                      {editModel === null && canEdit && (
+                        <>
+                          ｜
+                          <Form.Check
+                            id="chk-fast-premium"
+                            label={m?.gallery.uploadModal.premium}
+                            checked={premium}
+                            onChange={handlePremiumChange}
+                          />
+                        </>
                       )}
                     </div>
                   )}

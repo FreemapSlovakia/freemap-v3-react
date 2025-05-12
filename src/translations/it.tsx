@@ -445,6 +445,7 @@ const messages: Messages = {
       takenAt: 'data scatto',
       createdAt: 'data di caricamento',
       season: 'stagione',
+      premium: 'premium', // TODO translate
     },
     viewer: {
       title: 'Foto',
@@ -462,6 +463,9 @@ const messages: Messages = {
       captured: (takenAt) => <>Captured on {takenAt}</>,
       deletePrompt: 'Eliminare questa foto?',
       modify: 'Modifica',
+      premiumOnly:
+        'This photo has been made available by its author only to users with full access.', // TODO translate
+      noComments: 'No comments', // TODO translate
     },
     editForm: {
       name: 'Nome',
@@ -494,6 +498,7 @@ const messages: Messages = {
       `,
       success: 'Le foto sono state caricate con successo.',
       showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
+      premium: 'Make available only to premium users', // TODO translate
     },
     locationPicking: {
       title: "Selezione l'ubicazione della foto",
@@ -522,6 +527,7 @@ const messages: Messages = {
       rating: 'Valutazione',
       noTags: 'no tag',
       pano: 'Panorama', // TODO translate
+      premium: 'Premium', // TODO translate
     },
     noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
     linkToWww: 'foto su www.freemap.sk',

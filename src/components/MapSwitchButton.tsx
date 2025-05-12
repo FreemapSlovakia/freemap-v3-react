@@ -63,7 +63,7 @@ export function MapSwitchButton(): ReactElement {
   const overlays = useAppSelector((state) => state.map.overlays);
 
   const pictureFilterIsActive = useAppSelector((state) =>
-    Object.values(state.gallery.filter).some((x) => x),
+    Object.values(state.gallery.filter).some((x) => x !== undefined),
   );
 
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);

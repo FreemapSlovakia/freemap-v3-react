@@ -88,6 +88,11 @@ export function GallerySubmenu(): JSX.Element {
         {m?.gallery.c.disable}
       </Dropdown.Item>
 
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-premium">
+        {colorizeBy === 'premium' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        {m?.gallery.c.premium}
+      </Dropdown.Item>
+
       <Dropdown.Item as="button" eventKey="photosColorizeBy-mine">
         {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.mine}

@@ -49,6 +49,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const [pano, setPano] = useState<boolean>();
 
+  const [premium, setPremium] = useState<boolean>();
+
   useEffect(() => {
     setTag(filter.tag === '' ? '⌘' : (filter.tag ?? ''));
 
@@ -89,6 +91,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     );
 
     setPano(filter.pano);
+
+    setPremium(filter.premium);
   }, [filter]);
 
   const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -148,6 +152,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     setPano((value) => (value ? false : value === false ? undefined : true));
   }, []);
 
+  const handlePremiumChange = useCallback(() => {
+    setPremium((value) => (value ? false : value === false ? undefined : true));
+  }, []);
+
   const handleFormSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -165,6 +173,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           ratingFrom: nn(ratingFrom ? parseFloat(ratingFrom) : undefined),
           ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
           pano,
+          premium,
         }),
       );
 
@@ -181,6 +190,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
       ratingFrom,
       ratingTo,
       pano,
+      premium,
     ],
   );
 
@@ -202,6 +212,8 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     setRatingTo('');
 
     setPano(undefined);
+
+    setPremium(undefined);
   };
 
   const close = useCallback(() => {
@@ -210,11 +222,21 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
   const [panoCheck, setPanoCheck] = useState<HTMLInputElement | null>(null);
 
+  const [premiumCheck, setPremiumCheck] = useState<HTMLInputElement | null>(
+    null,
+  );
+
   useEffect(() => {
     if (panoCheck) {
       panoCheck.indeterminate = pano === undefined;
     }
   }, [panoCheck, pano]);
+
+  useEffect(() => {
+    if (premiumCheck) {
+      premiumCheck.indeterminate = premium === undefined;
+    }
+  }, [premiumCheck, premium]);
 
   return (
     <Modal show={show} onHide={close}>
@@ -334,6 +356,15 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
               />
             </InputGroup>
           </Form.Group>
+
+          <Form.Check
+            className="mb-3"
+            id="filt-premiumOnly"
+            checked={!!premium}
+            onChange={handlePremiumChange}
+            label={m?.gallery.filterModal.premium}
+            ref={setPremiumCheck}
+          />
 
           <Form.Check
             className="mb-3"

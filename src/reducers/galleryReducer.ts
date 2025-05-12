@@ -28,6 +28,7 @@ import {
   gallerySetUsers,
   galleryShowOnTheMap,
   GalleryTag,
+  galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
   GalleryUser,
@@ -51,6 +52,7 @@ export interface GalleryState {
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
   showPreview: boolean;
+  premium: boolean;
   uploadingId: number | null;
   tags: GalleryTag[];
   users: GalleryUser[];
@@ -74,6 +76,7 @@ export const galleryInitialState: GalleryState = {
   pickingPositionForId: null,
   pickingPosition: null,
   showPreview: true,
+  premium: true,
 
   uploadingId: null,
 
@@ -172,6 +175,13 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       state.items = state.items.map((item) =>
         item.id === action.payload.id ? { ...item, ...action.payload } : item,
       );
+
+      if (state.items) {
+        const len = state.items.filter((item) => item.premium).length;
+
+        state.premium =
+          len === 0 ? false : len === state.items.length ? true : state.premium;
+      }
     })
     .addCase(gallerySetItemError, (state, action) => {
       const item = state.items.find((item) => item.id === action.payload.id);
@@ -280,6 +290,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             dirtyPosition: position
               ? latLonToString(position, state.language)
               : '',
+            premium: Boolean(state.image?.premium),
           };
     })
     .addCase(gallerySetEditModel, (state, action) => {
@@ -293,6 +304,13 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(galleryToggleShowPreview, (state) => {
       state.showPreview = !state.showPreview;
+    })
+    .addCase(galleryTogglePremium, (state) => {
+      state.premium = !state.premium;
+
+      for (const item of state.items) {
+        item.premium = state.premium;
+      }
     })
     .addCase(l10nSetLanguage, (state, action) => {
       state.language = action.payload;

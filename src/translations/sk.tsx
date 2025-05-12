@@ -478,6 +478,7 @@ const messages: Messages = {
       takenAt: 'dátumu odfotenia',
       createdAt: 'dátumu nahrania',
       season: 'ročného obdobia',
+      premium: 'prémiové',
     },
     viewer: {
       title: 'Fotografia',
@@ -495,6 +496,9 @@ const messages: Messages = {
       captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',
+      premiumOnly:
+        'Túto fotografiu sprístupnil jej autor len používateľom s plným prístupom.',
+      noComments: 'Bez komentára',
     },
     editForm: {
       name: 'Názov',
@@ -527,6 +531,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie boli úspešne nahrané.',
       showPreview: 'Zobraziť náhľady (náročnejšie na výkon a pamäť)',
+      premium: 'Sprístupniť len prémiovým používateľom',
     },
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
@@ -557,6 +562,7 @@ const messages: Messages = {
       rating: 'Hodnotenie',
       noTags: 'bez tagov',
       pano: 'Panoráma',
+      premium: 'Prémiové',
     },
     noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
     linkToWww: 'fotografia na www.freemap.sk',

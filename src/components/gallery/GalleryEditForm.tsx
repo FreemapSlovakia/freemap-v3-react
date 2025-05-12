@@ -21,9 +21,11 @@ export interface PictureModel {
   tags: string[];
   takenAt: string;
   dirtyPosition: string;
+  premium: boolean;
 }
 
 interface Props {
+  id?: number;
   model: PictureModel;
   allTags: GalleryTag[];
   errors: string[] | null | undefined;
@@ -32,6 +34,7 @@ interface Props {
 }
 
 export function GalleryEditForm({
+  id,
   model,
   allTags,
   errors,
@@ -71,6 +74,13 @@ export function GalleryEditForm({
   const handlePositionChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       changeModel('dirtyPosition', e.currentTarget.value || null);
+    },
+    [changeModel],
+  );
+
+  const handlePremiumChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      changeModel('premium', e.currentTarget.checked);
     },
     [changeModel],
   );
@@ -191,6 +201,15 @@ export function GalleryEditForm({
           onAdd={(tag) => handleTagAddition({ label: tag, value: tag })}
         />
       </Form.Group>
+
+      <Form.Check
+        id={'chk-premium-' + (id ?? 'x')}
+        className="mb-3"
+        type="checkbox"
+        onChange={handlePremiumChange}
+        checked={model.premium}
+        label={m?.gallery.uploadModal.premium}
+      />
     </div>
   );
 }

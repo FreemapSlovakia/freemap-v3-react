@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback, useEffect, useRef } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes, FaUpload } from 'react-icons/fa';
@@ -9,6 +9,7 @@ import {
   galleryMergeItem,
   galleryRemoveItem,
   gallerySetItemForPositionPicking,
+  galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
 } from '../../actions/galleryActions.js';
@@ -39,6 +40,8 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
   const showPreview = useAppSelector((state) => state.gallery.showPreview);
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const premium = useAppSelector((state) => state.gallery.premium);
 
   const handleItemMerge = useCallback(
     (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
@@ -113,6 +116,18 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
+  const premiumCheck = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!premiumCheck.current) {
+      return;
+    }
+
+    const len = items.filter((item) => item.premium).length;
+
+    premiumCheck.current.indeterminate = len > 0 && len !== items.length;
+  }, [premium, items]);
+
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
@@ -131,6 +146,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             tags,
             errors,
             dirtyPosition,
+            premium,
           }) => (
             <GalleryUploadItem
               key={id}
@@ -139,6 +155,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
               filename={file.name}
               url={url}
               model={{
+                premium,
                 dirtyPosition,
                 title,
                 description,
@@ -155,17 +172,25 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             />
           ),
         )}
+
         {!uploading && (
           <>
             <Form.Check
               id="chk-preview"
               type="checkbox"
-              onChange={() => {
-                dispatch(galleryToggleShowPreview());
-              }}
+              onChange={() => dispatch(galleryToggleShowPreview())}
               checked={showPreview}
               disabled={!!items.length}
               label={m?.gallery.uploadModal.showPreview}
+            />
+
+            <Form.Check
+              id="chk-premium"
+              type="checkbox"
+              onChange={() => dispatch(galleryTogglePremium())}
+              checked={premium}
+              label={m?.gallery.uploadModal.premium}
+              ref={premiumCheck}
             />
 
             <div

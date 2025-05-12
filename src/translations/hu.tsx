@@ -445,6 +445,7 @@ const hu: Messages = {
       takenAt: 'taken date', // TODO translate
       createdAt: 'upload date', // TODO translate
       season: 'season', // TODO translate
+      premium: 'premium', // TODO translate
     },
     viewer: {
       title: 'Fénykép',
@@ -462,6 +463,9 @@ const hu: Messages = {
       captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
       deletePrompt: 'Kép törlése?',
       modify: 'Módosítás',
+      premiumOnly:
+        'This photo has been made available by its author only to users with full access.', // TODO translate
+      noComments: 'No comments', // TODO translate
     },
     editForm: {
       name: 'Név',
@@ -495,6 +499,7 @@ const hu: Messages = {
       success: 'A képek sikeresen fel lettek töltve.',
       showPreview:
         'Előnézetek megjelenítése (több processzorteljesítményt és memóriát használ)',
+      premium: 'Make available only to premium users', // TODO translate
     },
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
@@ -525,6 +530,7 @@ const hu: Messages = {
       rating: 'Értékelés',
       noTags: 'nincs címke',
       pano: 'Panoráma', // TODO translate
+      premium: 'Premium', // TODO translate
     },
     noPicturesFound: 'There were no photos found on this place.', // TODO translate
     linkToWww: 'photo at www.freemap.sk', // TODO translate

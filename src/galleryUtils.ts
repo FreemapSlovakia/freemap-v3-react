@@ -11,6 +11,7 @@ export function createFilter({
   createdAtFrom,
   createdAtTo,
   pano,
+  premium,
 }: GalleryFilter): StringDates<GalleryFilter> {
   return {
     tag,
@@ -22,6 +23,7 @@ export function createFilter({
     createdAtFrom: createdAtFrom?.toISOString(),
     createdAtTo: plusDay(createdAtTo)?.toISOString(),
     pano,
+    premium,
   };
 }
 

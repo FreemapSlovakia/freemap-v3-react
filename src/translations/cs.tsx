@@ -447,6 +447,7 @@ const messages: Messages = {
       takenAt: 'data vyfocení',
       createdAt: 'data nahrání',
       season: 'ročního období',
+      premium: 'prémiové',
     },
     viewer: {
       title: 'Fotografie',
@@ -464,6 +465,9 @@ const messages: Messages = {
       captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
       deletePrompt: 'Smazat obrázek?',
       modify: 'Úprava',
+      premiumOnly:
+        'Tuto fotografii zpřístupnil její autor pouze uživatelům s plným přístupem.',
+      noComments: 'Bez komentáře',
     },
     editForm: {
       name: 'Název',
@@ -496,6 +500,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie byly úspěšně nahrány.',
       showPreview: 'Zobrazit náhledy (náročnější na výkon a paměť)',
+      premium: 'Zpřístupnit pouze prémiovým uživatelům',
     },
     locationPicking: {
       title: 'Zvolte pozici fotografie',
@@ -526,6 +531,7 @@ const messages: Messages = {
       rating: 'Hodnocení',
       noTags: 'bez tagů',
       pano: 'Panoráma',
+      premium: 'Prémiové',
     },
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
     linkToWww: 'fotografie na www.freemap.sk',

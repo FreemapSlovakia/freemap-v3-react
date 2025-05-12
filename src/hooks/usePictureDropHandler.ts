@@ -3,6 +3,7 @@ import pica from 'pica';
 import { useCallback } from 'react';
 import { GalleryItem } from '../actions/galleryActions.js';
 import { latLonToString } from '../geoutils.js';
+import { useAppSelector } from './reduxSelectHook.js';
 
 let nextId = 1;
 
@@ -59,6 +60,8 @@ export function usePictureDropHandler(
   onItemAdd: (item: GalleryItem) => void,
   onItemChange: (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => void,
 ): (files: File[]) => void {
+  const premium = useAppSelector((state) => state.gallery.premium);
+
   const processFile = useCallback(
     (file: File, cb: (err?: unknown) => void) => {
       const reader = new FileReader();
@@ -156,6 +159,7 @@ export function usePictureDropHandler(
           takenAt:
             (takenAtRaw && parseExifDateTime(takenAtRaw.description)) ?? null,
           tags: keywords,
+          premium,
           errors: [],
         });
 
@@ -176,7 +180,7 @@ export function usePictureDropHandler(
 
       reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
     },
-    [showPreview, language, onItemAdd, onItemChange],
+    [showPreview, language, onItemAdd, onItemChange, premium],
   );
 
   return useCallback(
