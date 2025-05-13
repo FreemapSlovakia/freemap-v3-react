@@ -13,7 +13,13 @@ export const galleryMakeAllPremiumOrFreeProcessor: Processor<
   async handle({ getState, action, dispatch }) {
     await new Promise((resolve) => window.setTimeout(resolve));
 
-    window.confirm(window.translations?.general.areYouSure ?? 'Are you sure?');
+    if (
+      !window.confirm(
+        window.translations?.general.areYouSure ?? 'Are you sure?',
+      )
+    ) {
+      return;
+    }
 
     await httpRequest({
       getState,
