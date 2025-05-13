@@ -146,9 +146,6 @@ importers:
       pica:
         specifier: ^9.0.1
         version: 9.0.1
-      popup-centered:
-        specifier: ^1.2.0
-        version: 1.2.0
       rbush:
         specifier: ^4.0.1
         version: 4.0.1
@@ -3908,9 +3905,6 @@ packages:
 
   point-in-polygon-hao@1.2.4:
     resolution: {integrity: sha512-x2pcvXeqhRHlNRdhLs/tgFapAbSSe86wa/eqmj1G6pWftbEs5aVRJhRGM6FYSUERKu0PjekJzMq0gsI2XyiclQ==}
-
-  popup-centered@1.2.0:
-    resolution: {integrity: sha512-VGqBZxPMwRvHKDuwlOsHPUo9J0+94JFjiCu390+nM7jVk0ymBmqeQJRPLh0q0yE8RMzvVOM8TmrMrsu0WcZPpg==}
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -9208,8 +9202,6 @@ snapshots:
   point-in-polygon-hao@1.2.4:
     dependencies:
       robust-predicates: 3.0.2
-
-  popup-centered@1.2.0: {}
 
   possible-typed-array-names@1.1.0: {}
 

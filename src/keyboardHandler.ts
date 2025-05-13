@@ -299,12 +299,6 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         case 'KeyM':
           return openInExternalApp({ where: 'mapy.cz' });
 
-        case 'KeyF':
-          return openInExternalApp({ where: 'facebook' });
-
-        case 'KeyT':
-          return openInExternalApp({ where: 'twitter' });
-
         case 'KeyH':
           return openInExternalApp({ where: 'hiking.sk' });
 

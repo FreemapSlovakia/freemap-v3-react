@@ -5,7 +5,6 @@ import {
   // FaFacebook,
   FaLink,
   FaShareAlt,
-  FaTwitter,
   FaWindowMaximize,
 } from 'react-icons/fa';
 import {
@@ -20,7 +19,6 @@ import {
   getOpenStreetCamUrl,
   getOsmUrl,
   getPeakfinderUrl,
-  getTwitterUrl,
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
@@ -97,32 +95,6 @@ export function OpenInExternalAppDropdownItems({
       )}
 
       {!url && ((hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
-
-      {/* <Dropdown.Item as="button" eventKey="open-facebook">
-        <FaFacebook /> Facebook
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>f</kbd>
-          </>
-        )}
-      </Dropdown.Item> */}
-
-      <Dropdown.Item
-        href={getTwitterUrl()}
-        target="_blank"
-        eventKey="open-twitter"
-      >
-        <FaTwitter /> Twitter
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>t</kbd>
-          </>
-        )}
-      </Dropdown.Item>
-
-      <Dropdown.Divider />
 
       <Dropdown.Item
         href={getOsmUrl(lat, lon, zoom, includePoint)}

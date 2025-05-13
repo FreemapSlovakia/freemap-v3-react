@@ -120,9 +120,3 @@ export function getOmaUrl(
 ): string {
   return `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`;
 }
-
-export function getTwitterUrl(): string {
-  return `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-    window.location.href,
-  )}`;
-}

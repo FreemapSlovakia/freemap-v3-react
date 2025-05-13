@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { FaFacebook, FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FaFacebook, FaGithub, FaYoutube } from 'react-icons/fa';
 import { useMessages } from '../../l10nInjector.js';
 
 type Props = {
@@ -21,16 +21,6 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         title={m?.mainMenu.facebook}
       >
         <FaFacebook />
-      </a>{' '}
-      <a
-        onClick={closeMenu}
-        href="https://twitter.com/FreemapSlovakia"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ color: '#0084b4' }}
-        title={m?.mainMenu.twitter}
-      >
-        <FaTwitter />
       </a>{' '}
       <a
         onClick={closeMenu}

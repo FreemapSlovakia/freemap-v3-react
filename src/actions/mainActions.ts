@@ -168,7 +168,6 @@ export const convertToDrawing = createAction<
 export type ExternalTargets =
   | 'copy'
   | 'f4map'
-  | 'facebook'
   | 'google'
   | 'hiking.sk'
   | 'image'
@@ -180,7 +179,6 @@ export type ExternalTargets =
   | 'osm.org'
   | 'osm.org/id'
   | 'peakfinder'
-  | 'twitter'
   | 'url'
   | 'waze'
   | 'window'
