@@ -64,19 +64,23 @@ export function GallerySubmenu(): JSX.Element {
       </Dropdown.Item>
 
       {sendGalleryEmails !== undefined && (
-        <Dropdown.Item as="button" eventKey="galEmails">
-          <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
-          {m?.settings.account.sendGalleryEmails}
-        </Dropdown.Item>
+        <>
+          <Dropdown.Item as="button" eventKey="galEmails">
+            <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
+            {m?.settings.account.sendGalleryEmails}
+          </Dropdown.Item>
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item as="button" eventKey="galAll-premium">
+            <FaGem /> {m?.gallery.allMyPhotos.premium}
+          </Dropdown.Item>
+
+          <Dropdown.Item as="button" eventKey="galAll-free">
+            <FaDove /> {m?.gallery.allMyPhotos.free}
+          </Dropdown.Item>
+        </>
       )}
-
-      <Dropdown.Item as="button" eventKey="galAll-premium">
-        <FaGem /> {m?.gallery.allMyPhotos.premium}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="galAll-free">
-        <FaDove /> {m?.gallery.allMyPhotos.free}
-      </Dropdown.Item>
 
       <Dropdown.Divider />
 
