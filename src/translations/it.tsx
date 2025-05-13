@@ -498,7 +498,7 @@ const messages: Messages = {
       `,
       success: 'Le foto sono state caricate con successo.',
       showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
-      premium: 'Make available only to premium users', // TODO translate
+      premium: 'Make available only to users with full access', // TODO translate
     },
     locationPicking: {
       title: "Selezione l'ubicazione della foto",
@@ -1544,6 +1544,10 @@ const messages: Messages = {
           <li>rimozione del banner pubblicitario</li>
           <li>
             accesso ai livelli mappa <FaGem /> premium
+          </li>
+          <li>
+            {/* TODO translate */}
+            access to <FaGem /> premium photos
           </li>
         </ul>
       </>

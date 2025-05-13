@@ -531,7 +531,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie boli úspešne nahrané.',
       showPreview: 'Zobraziť náhľady (náročnejšie na výkon a pamäť)',
-      premium: 'Sprístupniť len prémiovým používateľom',
+      premium: 'Sprístupniť len používateľom s plným prístupom',
     },
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
@@ -682,7 +682,7 @@ const messages: Messages = {
     account: {
       name: 'Meno',
       email: 'E-Mail',
-      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotke',
+      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotkám',
       delete: 'Zmazať účet',
       deleteWarning:
         'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
@@ -1583,6 +1583,9 @@ const messages: Messages = {
           <li>odstránenie reklamného baneru</li>
           <li>
             prístup k <FaGem /> prémiovým mapovým vrstvám
+          </li>
+          <li>
+            prístup k <FaGem /> prémiovým fotkám
           </li>
         </ul>
       </>

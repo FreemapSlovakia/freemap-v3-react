@@ -25,6 +25,7 @@ import { exportMapFeaturesProcessor } from './processors/exportMapFeaturesProces
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor.js';
 import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor.js';
+import { galleryMakeAllPremiumOrFreeProcessor } from './processors/galleryMakeAllPremiumOrFreeProcessor.js';
 import { galleryQuickAddTagProcessor } from './processors/galleryQuickAddTagProcessor.js';
 import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor.js';
 import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor.js';
@@ -145,6 +146,7 @@ export const processors = [
   galleryUploadModalProcessor,
   galleryQuickAddTagProcessor,
   galleryItemUploadProcessor,
+  galleryMakeAllPremiumOrFreeProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
   routePlannerSetFromCurrentPositionProcessor,

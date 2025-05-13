@@ -138,6 +138,8 @@
     <script src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js" crossorigin="anonymous"></script>
 
     <script>
+      console.log({sentry});
+
       Sentry.init({
         dsn: '<%= process.env["SENTRY_DSN"] %>',
         tracesSampleRate: 0.01,

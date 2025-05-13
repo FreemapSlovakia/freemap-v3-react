@@ -30,19 +30,12 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
   const [email, setEmail] = useState(user?.email ?? '');
 
-  const [sendGalleryEmails, setSendGalleryEmails] = useState(
-    user?.sendGalleryEmails ?? true,
-  );
-
   const becomePremium = useBecomePremium();
 
   const dispatch = useDispatch();
 
   const userMadeChanges =
-    user &&
-    (name !== (user.name ?? '') ||
-      email !== (user.email ?? '') ||
-      sendGalleryEmails !== user?.sendGalleryEmails);
+    user && (name !== user.name || email !== (user.email ?? ''));
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -82,7 +75,6 @@ export function AccountModal({ show }: Props): ReactElement | null {
               user: {
                 name: name.trim(),
                 email: email.trim() || null,
-                sendGalleryEmails,
               },
             }),
           );
@@ -132,17 +124,6 @@ export function AccountModal({ show }: Props): ReactElement | null {
               maxLength={255}
             />
           </Form.Group>
-
-          <Form.Check
-            className="mb-3"
-            id="chk-galEmails"
-            type="checkbox"
-            onChange={(e) => {
-              setSendGalleryEmails(e.currentTarget.checked);
-            }}
-            checked={sendGalleryEmails}
-            label={m?.settings.account.sendGalleryEmails}
-          />
 
           {user.authProviders.length < 4 && (
             <>

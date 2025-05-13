@@ -4,6 +4,7 @@ import { is } from 'typia';
 import {
   GalleryColorizeBy,
   GalleryListOrder,
+  galleryAllPremiumOrFree,
   galleryColorizeBy,
   galleryList,
 } from '../actions/galleryActions.js';
@@ -15,6 +16,7 @@ import {
   clearMapFeatures,
   documentShow,
   openInExternalApp,
+  saveSettings,
   setActiveModal,
   setTool,
 } from '../actions/mainActions.js';
@@ -67,6 +69,10 @@ export function useMenuHandler({
       setSubmenu(null);
     }
   }, [menuShown]);
+
+  const sendGalleryEmails = useAppSelector(
+    (state) => state.auth.user?.sendGalleryEmails,
+  );
 
   const extraHandler = useRef<(eventKey: string) => boolean>(undefined);
 
@@ -140,13 +146,37 @@ export function useMenuHandler({
               : [...overlays, 'I'],
           }),
         );
+      } else if (eventKey.startsWith('galAll-')) {
+        setShow(false);
+
+        dispatch(
+          galleryAllPremiumOrFree(eventKey.slice(7) as 'premium' | 'free'),
+        );
       } else if (eventKey === 'close' || eventKey === 'url') {
         setShow(false);
+      } else if (eventKey === 'galEmails') {
+        dispatch(
+          saveSettings({
+            user: {
+              sendGalleryEmails: !sendGalleryEmails,
+            },
+          }),
+        );
       } else if (extraHandler.current?.(eventKey)) {
         // nothing
       }
     },
-    [dispatch, lat, lon, mapType, pointDescription, pointTitle, zoom, overlays],
+    [
+      dispatch,
+      lat,
+      lon,
+      mapType,
+      pointDescription,
+      pointTitle,
+      zoom,
+      overlays,
+      sendGalleryEmails,
+    ],
   );
 
   const handleMenuToggle = useCallback((nextShow: boolean) => {

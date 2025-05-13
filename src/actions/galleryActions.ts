@@ -173,3 +173,7 @@ export const galleryQuickAddTag = createAction<string>('GALLERY_QUICK_ADD_TAG');
 export const galleryQuickChangePremium = createAction<boolean>(
   'GALLERY_QUICK_CHANGE_PREMIUM',
 );
+
+export const galleryAllPremiumOrFree = createAction<'premium' | 'free'>(
+  'GALLERY_ALL_PREMIUM_OR_FREE',
+);

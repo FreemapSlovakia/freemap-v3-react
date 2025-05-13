@@ -499,7 +499,7 @@ const hu: Messages = {
       success: 'A képek sikeresen fel lettek töltve.',
       showPreview:
         'Előnézetek megjelenítése (több processzorteljesítményt és memóriát használ)',
-      premium: 'Make available only to premium users', // TODO translate
+      premium: 'Make available only to users with full access', // TODO translate
     },
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
@@ -650,7 +650,7 @@ const hu: Messages = {
     account: {
       name: 'Név',
       email: 'E-mail',
-      sendGalleryEmails: 'Notify photo comments via email', // TODO translate
+      sendGalleryEmails: 'Notify photos comments via email', // TODO translate
       delete: 'Delete account', // TODO translate
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
@@ -1552,6 +1552,10 @@ const hu: Messages = {
           <li>reklámszalag eltávolítása</li>
           <li>
             hozzáférés a <FaGem /> prémium térképrétegekhez
+          </li>
+          <li>
+            {/* TODO translate */}
+            access to <FaGem /> premium photos
           </li>
         </ul>
       </>

@@ -101,9 +101,9 @@ type Settings = {
 export const saveSettings = createAction<{
   settings?: Settings;
   user?: {
-    name: string;
-    email: string | null;
-    sendGalleryEmails: boolean;
+    name?: string;
+    email?: string | null;
+    sendGalleryEmails?: boolean;
   };
 }>('SAVE_SETTINGS');
 

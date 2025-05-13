@@ -491,7 +491,7 @@ const en: Messages = {
       `,
       success: 'Pictures have been successfully uploaded.',
       showPreview: 'Show previews (uses more CPU load and memory)',
-      premium: 'Make available only to premium users',
+      premium: 'Make available only to users with full access',
     },
     locationPicking: {
       title: 'Select photo location',
@@ -635,7 +635,7 @@ const en: Messages = {
     account: {
       name: 'Name',
       email: 'Email',
-      sendGalleryEmails: 'Notify photo comments via email',
+      sendGalleryEmails: 'Notify photos comments via email',
       delete: 'Delete account',
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
@@ -1515,6 +1515,9 @@ const en: Messages = {
           <li>removed ad banner</li>
           <li>
             access to <FaGem /> premium map layers
+          </li>
+          <li>
+            access to <FaGem /> premium photos
           </li>
         </ul>
       </>
