@@ -532,9 +532,14 @@ const hu: Messages = {
       pano: 'Panoráma', // TODO translate
       premium: 'Premium', // TODO translate
     },
-    noPicturesFound: 'There were no photos found on this place.', // TODO translate
+    noPicturesFound: 'There were no photos found on this place.',
     linkToWww: 'photo at www.freemap.sk', // TODO translate
     linkToImage: 'photo image file', // TODO translate
+    // TODO translate
+    allMyPhotos: {
+      premium: 'Include all my photos in premium content',
+      free: 'Make all my photos accessible to everyone',
+    },
   },
 
   measurement: {

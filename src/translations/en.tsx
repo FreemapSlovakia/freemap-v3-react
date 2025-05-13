@@ -522,6 +522,10 @@ const en: Messages = {
     noPicturesFound: 'There were no photos found on this place.',
     linkToWww: 'photo at www.freemap.sk',
     linkToImage: 'photo image file',
+    allMyPhotos: {
+      premium: 'Include all my photos in premium content',
+      free: 'Make all my photos accessible to everyone',
+    },
   },
 
   measurement: {

@@ -415,6 +415,10 @@ export type Messages = {
     noPicturesFound: string;
     linkToWww: string;
     linkToImage: string;
+    allMyPhotos: {
+      premium: string;
+      free: string;
+    };
   };
   measurement: {
     distance: string;

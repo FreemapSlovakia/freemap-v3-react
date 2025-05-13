@@ -536,6 +536,10 @@ const messages: Messages = {
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
     linkToWww: 'fotografie na www.freemap.sk',
     linkToImage: 'soubor fotografie',
+    allMyPhotos: {
+      premium: 'Zařadit všechny mé fotky do prémiového obsahu',
+      free: 'Zpřístupnit všechny mé fotky každému',
+    },
   },
 
   measurement: {

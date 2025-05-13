@@ -71,11 +71,11 @@ export function GallerySubmenu(): JSX.Element {
       )}
 
       <Dropdown.Item as="button" eventKey="galAll-premium">
-        <FaGem /> Zaradiť všetky moje fotky do prémiového obsahu
+        <FaGem /> {m?.gallery.allMyPhotos.premium}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="galAll-free">
-        <FaDove /> Sprístupniť všetky moje fotky každému
+        <FaDove /> {m?.gallery.allMyPhotos.free}
       </Dropdown.Item>
 
       <Dropdown.Divider />
