@@ -711,6 +711,10 @@ function handleGallery(
 
   const qPano = typeof a !== 'string' ? undefined : a === 'true';
 
+  a = query['gallery-premium'];
+
+  const qPremium = typeof a !== 'string' ? undefined : a === 'true';
+
   if (
     qUserId ||
     qGalleryTag != null ||
@@ -720,7 +724,8 @@ function handleGallery(
     qTakenAtTo ||
     qCreatedAtFrom ||
     qCreatedAtTo ||
-    qPano !== undefined
+    qPano !== undefined ||
+    qPremium !== undefined
   ) {
     const { filter } = getState().gallery;
 
@@ -776,6 +781,10 @@ function handleGallery(
 
     if (qPano !== filter.pano) {
       newFilter.pano = qPano;
+    }
+
+    if (qPremium !== filter.premium) {
+      newFilter.premium = qPremium;
     }
 
     if (Object.keys(newFilter).length !== 0) {

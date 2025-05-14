@@ -447,6 +447,7 @@ const messages: Messages = {
       takenAt: 'data vyfocení',
       createdAt: 'data nahrání',
       season: 'ročního období',
+      premium: 'prémiové',
     },
     viewer: {
       title: 'Fotografie',
@@ -464,6 +465,9 @@ const messages: Messages = {
       captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
       deletePrompt: 'Smazat obrázek?',
       modify: 'Úprava',
+      premiumOnly:
+        'Tuto fotografii zpřístupnil její autor pouze uživatelům s plným přístupem.',
+      noComments: 'Bez komentáře',
     },
     editForm: {
       name: 'Název',
@@ -496,6 +500,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie byly úspěšně nahrány.',
       showPreview: 'Zobrazit náhledy (náročnější na výkon a paměť)',
+      premium: 'Zpřístupnit pouze uživatelům s plným přístupem',
     },
     locationPicking: {
       title: 'Zvolte pozici fotografie',
@@ -526,10 +531,15 @@ const messages: Messages = {
       rating: 'Hodnocení',
       noTags: 'bez tagů',
       pano: 'Panoráma',
+      premium: 'Prémiové',
     },
     noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
     linkToWww: 'fotografie na www.freemap.sk',
     linkToImage: 'soubor fotografie',
+    allMyPhotos: {
+      premium: 'Zařadit všechny mé fotky do prémiového obsahu',
+      free: 'Zpřístupnit všechny mé fotky každému',
+    },
   },
 
   measurement: {
@@ -645,7 +655,7 @@ const messages: Messages = {
     account: {
       name: 'Jméno',
       email: 'E-Mail',
-      sendGalleryEmails: 'Upozornit emailem na komentáře k fotce',
+      sendGalleryEmails: 'Upozornit emailem na komentáře k fotkám',
       delete: 'Smazat účet',
       deleteWarning:
         'Opravdu si přejete smazat svůj účet? Spolu s ním se odstraní všechny vaše fotografie, komentáře a hodnocení fotografií, vlastní mapy a sledovaná zařízení.',
@@ -1544,6 +1554,9 @@ const messages: Messages = {
           <li>odstranění reklamního baneru</li>
           <li>
             přístup k <FaGem /> prémiovým mapovým vrstvám
+          </li>
+          <li>
+            přístup k <FaGem /> prémiovým fotkám
           </li>
         </ul>
       </>

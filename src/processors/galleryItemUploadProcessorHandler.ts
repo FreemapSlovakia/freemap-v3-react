@@ -50,6 +50,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       position: parseCoordinates(item.dirtyPosition),
       takenAt: item.takenAt?.toISOString(),
       tags: item.tags,
+      premium: item.premium,
     }),
   );
 

@@ -438,6 +438,7 @@ const en: Messages = {
       takenAt: 'taken date',
       createdAt: 'upload date',
       season: 'season',
+      premium: 'premium',
     },
     viewer: {
       title: 'Photo',
@@ -455,6 +456,9 @@ const en: Messages = {
       captured: (takenAt) => <>Captured on {takenAt}</>,
       deletePrompt: 'Delete this picture?',
       modify: 'Modify',
+      premiumOnly:
+        'This photo has been made available by its author only to users with full access.',
+      noComments: 'No comments',
     },
     editForm: {
       name: 'Name',
@@ -487,6 +491,7 @@ const en: Messages = {
       `,
       success: 'Pictures have been successfully uploaded.',
       showPreview: 'Show previews (uses more CPU load and memory)',
+      premium: 'Make available only to users with full access',
     },
     locationPicking: {
       title: 'Select photo location',
@@ -512,10 +517,15 @@ const en: Messages = {
       rating: 'Rating',
       noTags: 'no tags',
       pano: 'Panorama',
+      premium: 'Premium',
     },
     noPicturesFound: 'There were no photos found on this place.',
     linkToWww: 'photo at www.freemap.sk',
     linkToImage: 'photo image file',
+    allMyPhotos: {
+      premium: 'Include all my photos in premium content',
+      free: 'Make all my photos accessible to everyone',
+    },
   },
 
   measurement: {
@@ -629,7 +639,7 @@ const en: Messages = {
     account: {
       name: 'Name',
       email: 'Email',
-      sendGalleryEmails: 'Notify photo comments via email',
+      sendGalleryEmails: 'Notify photos comments via email',
       delete: 'Delete account',
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
@@ -1509,6 +1519,9 @@ const en: Messages = {
           <li>removed ad banner</li>
           <li>
             access to <FaGem /> premium map layers
+          </li>
+          <li>
+            access to <FaGem /> premium photos
           </li>
         </ul>
       </>

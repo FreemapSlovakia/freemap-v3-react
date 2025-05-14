@@ -9,6 +9,7 @@ type Marble = LatLon & {
   createdAt: number;
   takenAt?: number | null;
   pano?: 1;
+  premium?: 1;
 };
 
 type Props = {
@@ -81,7 +82,9 @@ export function renderGalleryTile({
         ? sort(data, (a) => Number(a[colorizeBy]))
         : colorizeBy === 'mine'
           ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
-          : sort(data, () => 0);
+          : colorizeBy === 'premium'
+            ? sort(data, (a) => a.premium ?? 0)
+            : sort(data, () => 0);
 
   // remove "dense" pictures
   const marbles: Marble[] = items
@@ -140,6 +143,7 @@ export function renderGalleryTile({
     takenAt,
     userId,
     pano,
+    premium,
   } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
@@ -235,6 +239,11 @@ export function renderGalleryTile({
 
       case 'mine':
         ctx.fillStyle = userId === myUserId ? '#ff0' : '#fa4';
+
+        break;
+
+      case 'premium':
+        ctx.fillStyle = premium ? '#ff0' : '#fa4';
 
         break;
     }

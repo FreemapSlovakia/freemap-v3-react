@@ -286,6 +286,10 @@ export const urlProcessor: Processor = {
       historyParts.push(['gallery-pano', galleryFilter.pano]);
     }
 
+    if (galleryFilter.premium !== undefined) {
+      historyParts.push(['gallery-premium', galleryFilter.premium]);
+    }
+
     if (objects.active.length) {
       historyParts.push(['objects', objects.active.join(';')]);
     }

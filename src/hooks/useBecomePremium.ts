@@ -1,5 +1,6 @@
 import { MouseEvent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { galleryClear } from '../actions/galleryActions.js';
 import { removeAdsOnLogin, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from './reduxSelectHook.js';
 
@@ -13,6 +14,8 @@ export function useBecomePremium() {
       e?.preventDefault();
 
       e?.stopPropagation();
+
+      dispatch(galleryClear());
 
       if (isPremium == null) {
         dispatch(setActiveModal('login'));

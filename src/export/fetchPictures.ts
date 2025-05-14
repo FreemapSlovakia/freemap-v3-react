@@ -38,6 +38,7 @@ export async function fetchPictures(getState: () => RootState) {
           'rating',
           'tags',
           'user',
+          'premium',
         ],
       }),
     expectedStatus: 200,

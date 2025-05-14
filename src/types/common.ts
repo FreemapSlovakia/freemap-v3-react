@@ -46,7 +46,7 @@ declare global {
     fmHeadless?: {
       searchResultStyle?: PathOptions;
     };
-    Sentry: typeof Sentry;
+    Sentry?: typeof Sentry;
   }
 
   interface ServiceWorkerGlobalScope {

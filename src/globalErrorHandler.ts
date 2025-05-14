@@ -51,7 +51,7 @@ export function sendError(errDetails: ErrorDetails): void {
 
   console.error(errDetails);
 
-  const eventId = window.Sentry.captureException(errDetails.error);
+  const eventId = window.Sentry?.captureException(errDetails.error);
 
   window._paq.push(['trackEvent', 'Main', 'error', eventId]);
 

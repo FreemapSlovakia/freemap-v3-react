@@ -445,6 +445,7 @@ const hu: Messages = {
       takenAt: 'taken date', // TODO translate
       createdAt: 'upload date', // TODO translate
       season: 'season', // TODO translate
+      premium: 'premium', // TODO translate
     },
     viewer: {
       title: 'Fénykép',
@@ -462,6 +463,9 @@ const hu: Messages = {
       captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
       deletePrompt: 'Kép törlése?',
       modify: 'Módosítás',
+      premiumOnly:
+        'This photo has been made available by its author only to users with full access.', // TODO translate
+      noComments: 'No comments', // TODO translate
     },
     editForm: {
       name: 'Név',
@@ -495,6 +499,7 @@ const hu: Messages = {
       success: 'A képek sikeresen fel lettek töltve.',
       showPreview:
         'Előnézetek megjelenítése (több processzorteljesítményt és memóriát használ)',
+      premium: 'Make available only to users with full access', // TODO translate
     },
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
@@ -525,10 +530,16 @@ const hu: Messages = {
       rating: 'Értékelés',
       noTags: 'nincs címke',
       pano: 'Panoráma', // TODO translate
+      premium: 'Premium', // TODO translate
     },
-    noPicturesFound: 'There were no photos found on this place.', // TODO translate
+    noPicturesFound: 'There were no photos found on this place.',
     linkToWww: 'photo at www.freemap.sk', // TODO translate
     linkToImage: 'photo image file', // TODO translate
+    // TODO translate
+    allMyPhotos: {
+      premium: 'Include all my photos in premium content',
+      free: 'Make all my photos accessible to everyone',
+    },
   },
 
   measurement: {
@@ -644,7 +655,7 @@ const hu: Messages = {
     account: {
       name: 'Név',
       email: 'E-mail',
-      sendGalleryEmails: 'Notify photo comments via email', // TODO translate
+      sendGalleryEmails: 'Notify photos comments via email', // TODO translate
       delete: 'Delete account', // TODO translate
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
@@ -1546,6 +1557,10 @@ const hu: Messages = {
           <li>reklámszalag eltávolítása</li>
           <li>
             hozzáférés a <FaGem /> prémium térképrétegekhez
+          </li>
+          <li>
+            {/* TODO translate */}
+            access to <FaGem /> premium photos
           </li>
         </ul>
       </>

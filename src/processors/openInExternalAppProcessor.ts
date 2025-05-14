@@ -1,7 +1,6 @@
 import bbox from '@turf/bbox';
 import buffer from '@turf/buffer';
 import { point } from '@turf/helpers';
-import popupCentered from 'popup-centered';
 import { openInExternalApp } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { copyToClipboard } from '../clipboardUtils.js';
@@ -16,11 +15,9 @@ import {
   getOpenStreetCamUrl,
   getOsmUrl,
   getPeakfinderUrl,
-  getTwitterUrl,
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
-import { loadFb } from '../fbLoader.js';
 import { mapPromise } from '../leafletElementHolder.js';
 import { Processor } from '../middlewares/processorMiddleware.js';
 
@@ -52,22 +49,6 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
     switch (where) {
       case 'window':
         window.open(url);
-
-        break;
-
-      case 'facebook':
-        loadFb().then(() => {
-          FB.ui({
-            method: 'share',
-            hashtag: '#openstreetmap',
-            href: location.href,
-          });
-        });
-
-        break;
-
-      case 'twitter':
-        popupCentered.default(getTwitterUrl(), 'twitter', 575, 280);
 
         break;
 

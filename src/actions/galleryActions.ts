@@ -10,6 +10,7 @@ export interface GalleryItem {
   takenAt: Date | null;
   // position: LatLon | null;
   dirtyPosition: string | '';
+  premium: boolean;
   errors: string[];
   url?: string;
   file: File;
@@ -30,7 +31,8 @@ export type GalleryColorizeBy =
   | 'createdAt'
   | 'rating'
   | 'mine'
-  | 'season';
+  | 'season'
+  | 'premium';
 
 export interface GalleryTag {
   name: string;
@@ -62,6 +64,7 @@ export interface Picture extends LatLon {
   createdAt: Date;
   takenAt: Date | null;
   pano?: 1;
+  premium?: 1;
 }
 
 export interface GalleryFilter {
@@ -74,6 +77,7 @@ export interface GalleryFilter {
   ratingFrom?: number;
   ratingTo?: number;
   pano?: boolean;
+  premium?: boolean;
 }
 
 export const galleryAddTag = createAction<string>('GALLERY_ADD_TAG');
@@ -162,4 +166,14 @@ export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',
 );
 
+export const galleryTogglePremium = createAction('GALLERY_TOGGLE_PREMIUM');
+
 export const galleryQuickAddTag = createAction<string>('GALLERY_QUICK_ADD_TAG');
+
+export const galleryQuickChangePremium = createAction<boolean>(
+  'GALLERY_QUICK_CHANGE_PREMIUM',
+);
+
+export const galleryAllPremiumOrFree = createAction<'premium' | 'free'>(
+  'GALLERY_ALL_PREMIUM_OR_FREE',
+);

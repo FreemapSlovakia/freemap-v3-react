@@ -3,7 +3,11 @@ import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaCamera,
+  FaDove,
+  FaEnvelope,
+  FaEye,
   FaFilter,
+  FaGem,
   FaRegCheckCircle,
   FaRegCircle,
   FaUpload,
@@ -27,16 +31,21 @@ export function GallerySubmenu(): JSX.Element {
 
   const colorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
+  const sendGalleryEmails = useAppSelector(
+    (state) => state.auth.user?.sendGalleryEmails,
+  );
+
   return (
     <>
       <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
       <Dropdown.Item
-        href="#show=gallery-filter"
-        eventKey="modal-gallery-filter"
-        active={filterIsActive}
+        as="button"
+        eventKey="overlays-toggle-I"
+        active={overlays.includes('I')}
       >
-        <FaFilter /> {m?.gallery.filter} <kbd>p</kbd> <kbd>f</kbd>
+        <Checkbox value={overlays.includes('I')} /> <FaEye />{' '}
+        {m?.gallery.showLayer} <kbd>⇧f</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -47,13 +56,31 @@ export function GallerySubmenu(): JSX.Element {
       </Dropdown.Item>
 
       <Dropdown.Item
-        as="button"
-        eventKey="overlays-toggle-I"
-        active={overlays.includes('I')}
+        href="#show=gallery-filter"
+        eventKey="modal-gallery-filter"
+        active={filterIsActive}
       >
-        <Checkbox value={overlays.includes('I')} /> {m?.gallery.showLayer}{' '}
-        <kbd>⇧f</kbd>
+        <FaFilter /> {m?.gallery.filter} <kbd>p</kbd> <kbd>f</kbd>
       </Dropdown.Item>
+
+      {sendGalleryEmails !== undefined && (
+        <>
+          <Dropdown.Item as="button" eventKey="galEmails">
+            <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
+            {m?.settings.account.sendGalleryEmails}
+          </Dropdown.Item>
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item as="button" eventKey="galAll-premium">
+            <FaGem /> {m?.gallery.allMyPhotos.premium}
+          </Dropdown.Item>
+
+          <Dropdown.Item as="button" eventKey="galAll-free">
+            <FaDove /> {m?.gallery.allMyPhotos.free}
+          </Dropdown.Item>
+        </>
+      )}
 
       <Dropdown.Divider />
 
@@ -86,6 +113,11 @@ export function GallerySubmenu(): JSX.Element {
       <Dropdown.Item as="button" eventKey="photosColorizeBy-">
         {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
         {m?.gallery.c.disable}
+      </Dropdown.Item>
+
+      <Dropdown.Item as="button" eventKey="photosColorizeBy-premium">
+        {colorizeBy === 'premium' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+        {m?.gallery.c.premium}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="photosColorizeBy-mine">

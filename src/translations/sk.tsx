@@ -478,6 +478,7 @@ const messages: Messages = {
       takenAt: 'dátumu odfotenia',
       createdAt: 'dátumu nahrania',
       season: 'ročného obdobia',
+      premium: 'prémiové',
     },
     viewer: {
       title: 'Fotografia',
@@ -495,6 +496,9 @@ const messages: Messages = {
       captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',
+      premiumOnly:
+        'Túto fotografiu sprístupnil jej autor len používateľom s plným prístupom.',
+      noComments: 'Bez komentára',
     },
     editForm: {
       name: 'Názov',
@@ -527,6 +531,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie boli úspešne nahrané.',
       showPreview: 'Zobraziť náhľady (náročnejšie na výkon a pamäť)',
+      premium: 'Sprístupniť len používateľom s plným prístupom',
     },
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
@@ -557,10 +562,15 @@ const messages: Messages = {
       rating: 'Hodnotenie',
       noTags: 'bez tagov',
       pano: 'Panoráma',
+      premium: 'Prémiové',
     },
     noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
     linkToWww: 'fotografia na www.freemap.sk',
     linkToImage: 'súbor fotografie',
+    allMyPhotos: {
+      premium: 'Zaradiť všetky moje fotky do prémiového obsahu',
+      free: 'Sprístupniť všetky moje fotky každému',
+    },
   },
 
   measurement: {
@@ -676,7 +686,7 @@ const messages: Messages = {
     account: {
       name: 'Meno',
       email: 'E-Mail',
-      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotke',
+      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotkám',
       delete: 'Zmazať účet',
       deleteWarning:
         'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
@@ -1577,6 +1587,9 @@ const messages: Messages = {
           <li>odstránenie reklamného baneru</li>
           <li>
             prístup k <FaGem /> prémiovým mapovým vrstvám
+          </li>
+          <li>
+            prístup k <FaGem /> prémiovým fotkám
           </li>
         </ul>
       </>
