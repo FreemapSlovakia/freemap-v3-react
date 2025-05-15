@@ -559,6 +559,10 @@ export function Main(): ReactElement {
               {showAds && !askingCookieConsent && (
                 <AsyncComponent factory={adFactory} />
               )}
+
+              <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
+                <ShadingsControl />
+              </div>
             </div>
 
             {showElevationChart && (
@@ -749,8 +753,6 @@ export function Main(): ReactElement {
       />
 
       <GalleryModals />
-
-      <ShadingsControl />
     </>
   );
 }

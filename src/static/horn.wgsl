@@ -6,7 +6,8 @@ const PI = radians(180.0);
 
 const TAU = radians(360.0);
 
-const SCALE_CONST: f32 = 256.0 / 6378137.0 / TAU / cos(radians(49.0)) / 16.0;
+// zoom 0 tile - meter per pixel
+const METER_PER_PIXEL_Z0: f32 = (TAU * 6378137.0 * cos(radians(49.0))) / 256.0;
 
 struct ShadingLayer {
   method: u32,
@@ -73,9 +74,9 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
              + np + 2.0 * zp + pp;
 
 
-  let scale = SCALE_CONST * f32(1 << config.zoom);
+  let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << config.zoom) * 8;
 
-  var normal = normalize(vec3(-dzdx * scale, -dzdy * scale, 1.0));
+  var normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
 
   normal = select(normal, vec3(0.0, 0.0, 1.0), sign(normal.z) == 0.0);
 

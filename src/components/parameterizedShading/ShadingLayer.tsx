@@ -357,7 +357,7 @@ class LShadingLayer extends LGridLayer {
 
     canvas.style.height = size.x + 'px';
 
-    canvas.style.background = 'white';
+    canvas.style.background = 'black';
 
     // igor,5060FF60,135+   igor,E0D000B0,315+   igor,00000080,135+   igor-slope,000000FF
 
