@@ -30,7 +30,7 @@ export function Layers(): ReactElement | null {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const shadings = useAppSelector((state) => state.map.shadings);
+  const shading = useAppSelector((state) => state.map.shading);
 
   const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
@@ -99,6 +99,7 @@ export function Layers(): ReactElement | null {
     if (type === 'h' && url) {
       return (
         <AsyncComponent
+          key={type}
           url={url}
           factory={shadingLayerFactory}
           opacity={opacity}
@@ -114,7 +115,7 @@ export function Layers(): ReactElement | null {
                 : maxNativeZoom
           }
           zoomOffset={isHdpi ? 1 : 0}
-          shadings={shadings}
+          shading={shading}
         />
       );
     }

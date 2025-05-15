@@ -1,4 +1,4 @@
-export const SHADING_TYPES = [
+export const SHADING_COMPONENT_TYPES = [
   'hillshade-igor',
   'hillshade-classic',
   'slope-igor',
@@ -7,24 +7,22 @@ export const SHADING_TYPES = [
   // 'color-relief',
 ] as const;
 
-export type ShadingType = (typeof SHADING_TYPES)[number];
+export type Color = [number, number, number, number];
 
-export type Shading = {
+export type ShadingComponentType = (typeof SHADING_COMPONENT_TYPES)[number];
+
+export type ShadingComponent = {
   id: number;
-  type: ShadingType;
+  type: ShadingComponentType;
   elevation: number;
   azimuth: number;
-  color: [number, number, number, number];
+  color: Color;
   contrast: number;
   brightness: number;
   weight: number;
 };
 
-// export type SlopeShading = Shading & {
-//   type: `slope-${string}`;
-// };
-
-// export type HillshadeShading = Shading & {
-//   type: `hillshade-${string}`;
-//   azimuth: number;
-// };
+export type Shading = {
+  backgroundColor: Color;
+  components: ShadingComponent[];
+};

@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { Shading } from 'components/parameterizedShading/Shading.js';
 import { authSetUser } from '../actions/authActions.js';
 import { gallerySetFilter } from '../actions/galleryActions.js';
 import { applySettings, Selection } from '../actions/mainActions.js';
@@ -6,12 +7,11 @@ import {
   mapRefocus,
   mapSetCustomLayers,
   mapSetEsriAttribution,
-  mapSetShadings,
+  mapSetShading,
   MapStateBase,
   mapSuppressLegacyMapWarning,
 } from '../actions/mapActions.js';
 import { mapsLoaded } from '../actions/mapsActions.js';
-import { Shading } from '../components/parameterizedShading/Shading.js';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;
@@ -20,7 +20,7 @@ export interface MapState extends MapStateBase {
   legacyMapWarningSuppressions: string[];
   tempLegacyMapWarningSuppressions: string[];
   esriAttribution: string[];
-  shadings: Shading[];
+  shading: Shading;
 }
 
 export const mapInitialState: MapState = {
@@ -38,58 +38,61 @@ export const mapInitialState: MapState = {
   legacyMapWarningSuppressions: [],
   tempLegacyMapWarningSuppressions: [],
   esriAttribution: [],
-  shadings: [
-    {
-      id: 1,
-      type: 'hillshade-classic',
-      elevation: 0,
-      azimuth: (135 / 180) * Math.PI,
-      brightness: 0,
-      contrast: 1,
-      color: [0xff, 0xff, 0xff, 0xff],
-      weight: 1,
-    },
-    // {
-    //   id: 1,
-    //   type: 'hillshade-igor',
-    //   elevation: 0,
-    //   azimuth: (135 / 180) * Math.PI,
-    //   brightness: 0,
-    //   contrast: 1,
-    //   color: [0x50, 0x60, 0xff, 0x60],
-    //   weight: 1,
-    // },
-    // {
-    //   id: 2,
-    //   type: 'hillshade-igor',
-    //   elevation: 0,
-    //   azimuth: (315 / 180) * Math.PI,
-    //   brightness: 0,
-    //   contrast: 1,
-    //   color: [0xe0, 0xd0, 0x00, 0xb0],
-    //   weight: 1,
-    // },
-    // {
-    //   id: 3,
-    //   type: 'hillshade-igor',
-    //   elevation: 0,
-    //   azimuth: (135 / 180) * Math.PI,
-    //   brightness: 0,
-    //   contrast: 1,
-    //   color: [0x00, 0x00, 0x00, 0x80],
-    //   weight: 1,
-    // },
-    // {
-    //   id: 4,
-    //   type: 'slope-igor',
-    //   elevation: 0,
-    //   azimuth: 0,
-    //   brightness: 0,
-    //   contrast: 1,
-    //   color: [0x00, 0x00, 0x00, 0xff],
-    //   weight: 1,
-    // },
-  ],
+  shading: {
+    backgroundColor: [0x00, 0x00, 0x00, 0xff],
+    components: [
+      {
+        id: 1,
+        type: 'hillshade-classic',
+        elevation: 45 * (Math.PI / 180),
+        azimuth: 315 * (Math.PI / 180),
+        brightness: 0,
+        contrast: 1,
+        color: [0xff, 0xff, 0xff, 0xff],
+        weight: 1,
+      },
+      // {
+      //   id: 1,
+      //   type: 'hillshade-igor',
+      //   elevation: 0,
+      //   azimuth: (135 / 180) * Math.PI,
+      //   brightness: 0,
+      //   contrast: 1,
+      //   color: [0x50, 0x60, 0xff, 0x60],
+      //   weight: 1,
+      // },
+      // {
+      //   id: 2,
+      //   type: 'hillshade-igor',
+      //   elevation: 0,
+      //   azimuth: (315 / 180) * Math.PI,
+      //   brightness: 0,
+      //   contrast: 1,
+      //   color: [0xe0, 0xd0, 0x00, 0xb0],
+      //   weight: 1,
+      // },
+      // {
+      //   id: 3,
+      //   type: 'hillshade-igor',
+      //   elevation: 0,
+      //   azimuth: (135 / 180) * Math.PI,
+      //   brightness: 0,
+      //   contrast: 1,
+      //   color: [0x00, 0x00, 0x00, 0x80],
+      //   weight: 1,
+      // },
+      // {
+      //   id: 4,
+      //   type: 'slope-igor',
+      //   elevation: 0,
+      //   azimuth: 0,
+      //   brightness: 0,
+      //   contrast: 1,
+      //   color: [0x00, 0x00, 0x00, 0xff],
+      //   weight: 1,
+      // },
+    ],
+  },
 };
 
 export const mapReducer = createReducer(mapInitialState, (builder) =>
@@ -190,7 +193,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapSetEsriAttribution, (state, action) => {
       state.esriAttribution = action.payload;
     })
-    .addCase(mapSetShadings, (state, action) => {
-      state.shadings = action.payload;
+    .addCase(mapSetShading, (state, action) => {
+      state.shading = action.payload;
     }),
 );

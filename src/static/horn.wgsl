@@ -1,5 +1,3 @@
-const MAX_LAYERS: u32 = 8;
-
 const HALF_PI = radians(90.0);
 
 const PI = radians(180.0);
@@ -9,25 +7,30 @@ const TAU = radians(360.0);
 // zoom 0 tile - meter per pixel
 const METER_PER_PIXEL_Z0: f32 = (TAU * 6378137.0 * cos(radians(49.0))) / 256.0;
 
-struct ShadingLayer {
+const MAX_COMPONENTS: u32 = 8;
+
+struct Shading {
+  component_count: u32,
+  zoom: u32,
+  background_color: vec4<f32>,
+  components: array<ShadingComponent, MAX_COMPONENTS>,
+};
+
+struct ShadingComponent {
   method: u32,
   azimuth: f32,
   altitude: f32,
   contrast: f32,
   brightness: f32,
   weight: f32,
-  color: vec4<f32>, // RGBA
-};
-
-struct Config {
-  layer_count: u32,
-  zoom: u32
+  color: vec4<f32>,
 };
 
 @group(0) @binding(0) var samp: sampler;
+
 @group(0) @binding(1) var elev: texture_2d<f32>;
-@group(0) @binding(2) var<uniform> config: Config;
-@group(0) @binding(3) var<uniform> layers: array<ShadingLayer, MAX_LAYERS>;
+
+@group(0) @binding(2) var<uniform> shading: Shading;
 
 fn get_elev(coord: vec2<i32>) -> f32 {
   let texSize = vec2<f32>(textureDimensions(elev, 0));
@@ -74,7 +77,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
              + np + 2.0 * zp + pp;
 
 
-  let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << config.zoom) * 8;
+  let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8;
 
   var normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
 
@@ -84,14 +87,14 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
   var sum_alpha_weight = 0.0;
   var alpha_product = 1.0;
 
-  for (var i = 0u; i < MAX_LAYERS && i < config.layer_count; i = i + 1u) {
-    let layer = layers[i];
+  for (var i = 0u; i < MAX_COMPONENTS && i < shading.component_count; i = i + 1u) {
+    let component = shading.components[i];
 
     var intensity = 0.0;
 
-    if (layer.method == 0u) {
+    if (component.method == 0u) {
       // Igor
-      var aspect_diff = abs(normalize_angle(atan2(normal.y, normal.x)) - normalize_angle(layer.azimuth - HALF_PI));
+      var aspect_diff = abs(normalize_angle(atan2(normal.y, normal.x)) - normalize_angle(component.azimuth - HALF_PI));
 
       if (aspect_diff > PI) {
         aspect_diff = TAU - aspect_diff;
@@ -102,30 +105,30 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
       let slope_angle = acos(normal.z); // radians from vertical
 
       intensity = slope_angle / HALF_PI * 2.0 * aspect_strength;
-    } else if (layer.method == 1u) {
+    } else if (component.method == 1u) {
       // Oblique
-      let zenith = HALF_PI - layer.altitude;
+      let zenith = HALF_PI - component.altitude;
 
       let light = vec3(
-        sin(layer.azimuth) * sin(zenith),
-        -cos(layer.azimuth) * sin(zenith),
+        sin(component.azimuth) * sin(zenith),
+        -cos(component.azimuth) * sin(zenith),
         cos(zenith)
       );
 
       intensity = dot(normal, light);
-    } else if (layer.method == 2u) {
+    } else if (component.method == 2u) {
       intensity = acos(normal.z) / HALF_PI;
-    } else if (layer.method == 3u) {
-      let zenith = HALF_PI - layer.altitude;
+    } else if (component.method == 3u) {
+      let zenith = HALF_PI - component.altitude;
 
       intensity = cos(zenith) * normal.z + sin(zenith) * length(normal.xy);
     }
 
-    let modulated = layer.contrast * (intensity - 0.5) + 0.5 + layer.brightness;
-    let alpha = layer.color.a * modulated;
-    let weighted_alpha = alpha * layer.weight;
+    let modulated = component.contrast * (intensity - 0.5) + 0.5 + component.brightness;
+    let alpha = component.color.a * modulated;
+    let weighted_alpha = alpha * component.weight;
 
-    sum_rgb = sum_rgb + weighted_alpha * layer.color.rgb;
+    sum_rgb = sum_rgb + weighted_alpha * component.color.rgb;
     sum_alpha_weight = sum_alpha_weight + weighted_alpha;
     alpha_product = alpha_product * (1.0 - weighted_alpha);
   }
@@ -136,12 +139,12 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
   let rgb_p = clamp(rgb, vec3(0.0), vec3(1.0));
 
-  return vec4(rgb_p * alpha, alpha);
+  let fg = vec4(rgb_p * alpha, alpha);
 
-  // let shade = dot(
-  //   normal,
-  //   normalize(config.light)
-  // );
+  let bg = shading.background_color;
 
-  // return vec4<f32>(vec3(shade * 0.5 + 0.5), 1.0);
+  let out_rgb = fg.rgb * fg.a + bg.rgb * (1.0 - fg.a);
+  let out_a   = fg.a + bg.a * (1.0 - fg.a);
+
+  return vec4(out_rgb, out_a);
 }

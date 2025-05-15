@@ -68,7 +68,6 @@ import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapDetailsTool } from './MapDetailsTool.js';
 import { MapsMenu } from './MapsMenu.js';
-import { ShadingsControl } from './parameterizedShading/ShadingsControl.js';
 import { SelectionTool } from './SelectionTool.js';
 import { ToolMenu } from './ToolMenu.js';
 import { TrackingSelection } from './TrackingSelection.js';
@@ -102,6 +101,9 @@ const homeLocationPickingMenuFactory = () =>
   import('./HomeLocationPickingMenu.js');
 
 const adFactory = () => import('./Ad.js');
+
+const shadingControlFactory = () =>
+  import('./parameterizedShading/ShadingControl.js');
 
 const elevationChartFactory = () => import('./ElevationChart.js');
 
@@ -160,6 +162,10 @@ export function Main(): ReactElement {
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const mapType = useAppSelector((state) => state.map.mapType);
+
+  const hasParamShading = useAppSelector((state) =>
+    state.map.overlays.includes('h'),
+  );
 
   const showInteractiveLayer = useAppSelector(
     (state) => !state.map.overlays.includes('i'),
@@ -560,9 +566,11 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
-              <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
-                <ShadingsControl />
-              </div>
+              {hasParamShading && (
+                <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
+                  <AsyncComponent factory={shadingControlFactory} />
+                </div>
+              )}
             </div>
 
             {showElevationChart && (

@@ -9,16 +9,17 @@ import {
   Util,
 } from 'leaflet';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
-import { Shading, SHADING_TYPES } from './Shading.js';
+import { DataWriter } from './DataWriter.js';
+import { Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
 
 type ShadingLayerOptions = GridLayerOptions & {
   url: string;
   zoomOffset?: number;
-  shadings: Shading[];
+  shading: Shading;
 };
 
 type CanvasWithRender = HTMLCanvasElement & {
-  render: (shadings: Shading[]) => void;
+  render: (shading: Shading) => void;
 };
 
 class LShadingLayer extends LGridLayer {
@@ -32,7 +33,7 @@ class LShadingLayer extends LGridLayer {
 
   private _workerPool: WorkerPool;
 
-  private _shadings: Shading[];
+  private _shading: Shading;
 
   constructor(options: ShadingLayerOptions) {
     super(options);
@@ -43,7 +44,7 @@ class LShadingLayer extends LGridLayer {
       throw new Error('WebGPU not supported');
     }
 
-    this._shadings = options.shadings;
+    this._shading = options.shading;
 
     this._workerPool = createWorkerPool(
       () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
@@ -111,11 +112,6 @@ class LShadingLayer extends LGridLayer {
             visibility: GPUShaderStage.FRAGMENT,
             buffer: { type: 'uniform' },
           },
-          {
-            binding: 3,
-            visibility: GPUShaderStage.FRAGMENT,
-            buffer: { type: 'uniform' },
-          },
         ],
       });
 
@@ -146,30 +142,10 @@ class LShadingLayer extends LGridLayer {
 
       return [device, pipeline, sampler];
     })();
-
-    // this.handleMove = this.handleMove.bind(this);
-  }
-
-  // handleMove(e: LeafletMouseEvent) {
-  //   const size = this._map.getSize();
-
-  //   this.setLight([
-  //     2 * e.containerPoint.x - size.x,
-  //     2 * e.containerPoint.y - size.y,
-  //     size.x / 4,
-  //   ]);
-  // }
-
-  onAdd(map: LeafletMap): this {
-    // map.on('mousemove', this.handleMove);
-
-    return super.onAdd(map);
   }
 
   onRemove(map: LeafletMap): this {
     this._workerPool.destroy();
-
-    // map.off('mousemove', this.handleMove);
 
     return super.onRemove(map);
   }
@@ -196,17 +172,20 @@ class LShadingLayer extends LGridLayer {
 
     const { x, y } = coords;
 
-    const z = coords.z + (this._options.zoomOffset ?? 0);
+    const zoom = coords.z + (this._options.zoomOffset ?? 0);
 
-    const key = `${x}/${y}/${z}`;
+    const key = `${x}/${y}/${zoom}`;
 
     this._acm.set(key, controller);
 
     const { signal } = controller;
 
-    const res = await fetch(Util.template(this._options.url, { x, y, z }), {
-      signal,
-    });
+    const res = await fetch(
+      Util.template(this._options.url, { x, y, z: zoom }),
+      {
+        signal,
+      },
+    );
 
     this._acm.delete(key);
 
@@ -243,13 +222,8 @@ class LShadingLayer extends LGridLayer {
       { width: tileSize, height: tileSize },
     );
 
-    const configBuffer = device.createBuffer({
-      size: 4 * 4,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-
-    const shadingsBuffer = device.createBuffer({
-      size: 8 /* MAX_LAYERS */ * 4 * 12,
+    const shadingBuffer = device.createBuffer({
+      size: 8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * 12,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
@@ -258,53 +232,50 @@ class LShadingLayer extends LGridLayer {
       entries: [
         { binding: 0, resource: sampler },
         { binding: 1, resource: texture.createView() },
-        { binding: 2, resource: { buffer: configBuffer } },
-        { binding: 3, resource: { buffer: shadingsBuffer } },
+        { binding: 2, resource: { buffer: shadingBuffer } },
       ],
     });
 
-    (canvas as CanvasWithRender).render = (shadings: Shading[]) => {
-      const configData = new ArrayBuffer(configBuffer.size);
+    (canvas as CanvasWithRender).render = (shading: Shading) => {
+      const shadingData = new ArrayBuffer(shadingBuffer.size);
 
-      const configView = new DataView(configData);
+      const dw = new DataWriter(shadingData);
 
-      configView.setUint32(0, shadings.length, true);
+      dw.u32(shading.components.length);
 
-      configView.setUint32(4, z, true);
+      dw.u32(zoom);
 
-      device.queue.writeBuffer(configBuffer, 0, configData);
+      dw.f32(NaN);
 
-      const shadingsData = new ArrayBuffer(shadingsBuffer.size);
+      dw.f32(NaN);
 
-      const shadingsView = new DataView(shadingsData);
+      for (const c of shading.backgroundColor) {
+        dw.f32(c / 255);
+      }
 
-      let off = -4;
+      for (const component of shading.components) {
+        dw.u32(SHADING_COMPONENT_TYPES.indexOf(component.type));
 
-      for (const shading of shadings) {
-        shadingsView.setUint32(
-          (off += 4),
-          SHADING_TYPES.indexOf(shading.type),
-          true,
-        );
+        dw.f32(component.azimuth);
 
-        shadingsView.setFloat32((off += 4), shading.azimuth, true);
+        dw.f32(component.elevation);
 
-        shadingsView.setFloat32((off += 4), shading.elevation, true);
+        dw.f32(component.contrast);
 
-        shadingsView.setFloat32((off += 4), shading.contrast, true);
+        dw.f32(component.brightness);
 
-        shadingsView.setFloat32((off += 4), shading.brightness, true);
+        dw.f32(component.weight);
 
-        shadingsView.setFloat32((off += 4), shading.weight, true);
+        dw.f32(NaN);
 
-        off += 8;
+        dw.f32(NaN);
 
-        for (const band of shading.color) {
-          shadingsView.setFloat32((off += 4), band / 255, true);
+        for (const band of component.color) {
+          dw.f32(band / 255);
         }
       }
 
-      device.queue.writeBuffer(shadingsBuffer, 0, shadingsData);
+      device.queue.writeBuffer(shadingBuffer, 0, shadingData);
 
       const encoder = device.createCommandEncoder();
 
@@ -357,12 +328,8 @@ class LShadingLayer extends LGridLayer {
 
     canvas.style.height = size.x + 'px';
 
-    canvas.style.background = 'black';
-
-    // igor,5060FF60,135+   igor,E0D000B0,315+   igor,00000080,135+   igor-slope,000000FF
-
     this.createTileAsync(coords, canvas).then(() => {
-      (canvas as CanvasWithRender).render(this._shadings);
+      (canvas as CanvasWithRender).render(this._shading);
 
       done(undefined, canvas);
     }, done);
@@ -370,11 +337,11 @@ class LShadingLayer extends LGridLayer {
     return canvas;
   }
 
-  setShadings(shadings: Shading[]) {
-    this._shadings = shadings;
+  setShading(shading: Shading) {
+    this._shading = shading;
 
     for (const tile in this._tiles) {
-      (this._tiles[tile].el as CanvasWithRender).render?.(shadings);
+      (this._tiles[tile].el as CanvasWithRender).render?.(shading);
     }
   }
 }
@@ -389,11 +356,11 @@ export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
 
   (instance, props, prevProps) => {
     if (
-      (['shadings'] as const).some(
+      (['shading'] as const).some(
         (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
       )
     ) {
-      instance.setShadings(props.shadings);
+      instance.setShading(props.shading);
     }
   },
 );
