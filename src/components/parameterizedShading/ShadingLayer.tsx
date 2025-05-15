@@ -9,24 +9,16 @@ import {
   Util,
 } from 'leaflet';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
+import { Shading, SHADING_TYPES } from './Shading.js';
 
 type ShadingLayerOptions = GridLayerOptions & {
   url: string;
   zoomOffset?: number;
-};
-
-type Layer = {
-  method: number;
-  azimuth: number;
-  altitude: number;
-  contrast: number;
-  brightness: number;
-  weight: number;
-  color: [number, number, number, number];
+  shadings: Shading[];
 };
 
 type CanvasWithRender = HTMLCanvasElement & {
-  render: (layers: Layer[]) => void;
+  render: (shadings: Shading[]) => void;
 };
 
 class LShadingLayer extends LGridLayer {
@@ -40,7 +32,7 @@ class LShadingLayer extends LGridLayer {
 
   private _workerPool: WorkerPool;
 
-  // private _light: [number, number, number];
+  private _shadings: Shading[];
 
   constructor(options: ShadingLayerOptions) {
     super(options);
@@ -51,7 +43,7 @@ class LShadingLayer extends LGridLayer {
       throw new Error('WebGPU not supported');
     }
 
-    // this._light = [0, 0, 1];
+    this._shadings = options.shadings;
 
     this._workerPool = createWorkerPool(
       () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
@@ -256,7 +248,7 @@ class LShadingLayer extends LGridLayer {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
-    const layersBuffer = device.createBuffer({
+    const shadingsBuffer = device.createBuffer({
       size: 8 /* MAX_LAYERS */ * 4 * 12,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
@@ -267,48 +259,52 @@ class LShadingLayer extends LGridLayer {
         { binding: 0, resource: sampler },
         { binding: 1, resource: texture.createView() },
         { binding: 2, resource: { buffer: configBuffer } },
-        { binding: 3, resource: { buffer: layersBuffer } },
+        { binding: 3, resource: { buffer: shadingsBuffer } },
       ],
     });
 
-    (canvas as CanvasWithRender).render = (layers: Layer[]) => {
+    (canvas as CanvasWithRender).render = (shadings: Shading[]) => {
       const configData = new ArrayBuffer(configBuffer.size);
 
       const configView = new DataView(configData);
 
-      configView.setUint32(0, layers.length, true);
+      configView.setUint32(0, shadings.length, true);
 
       configView.setUint32(4, z, true);
 
       device.queue.writeBuffer(configBuffer, 0, configData);
 
-      const layersData = new ArrayBuffer(layersBuffer.size);
+      const shadingsData = new ArrayBuffer(shadingsBuffer.size);
 
-      const layersView = new DataView(layersData);
+      const shadingsView = new DataView(shadingsData);
 
       let off = -4;
 
-      for (const layer of layers) {
-        layersView.setUint32((off += 4), layer.method, true);
+      for (const shading of shadings) {
+        shadingsView.setUint32(
+          (off += 4),
+          SHADING_TYPES.indexOf(shading.type),
+          true,
+        );
 
-        layersView.setFloat32((off += 4), layer.azimuth, true);
+        shadingsView.setFloat32((off += 4), shading.azimuth, true);
 
-        layersView.setFloat32((off += 4), layer.altitude, true);
+        shadingsView.setFloat32((off += 4), shading.elevation, true);
 
-        layersView.setFloat32((off += 4), layer.contrast, true);
+        shadingsView.setFloat32((off += 4), shading.contrast, true);
 
-        layersView.setFloat32((off += 4), layer.brightness, true);
+        shadingsView.setFloat32((off += 4), shading.brightness, true);
 
-        layersView.setFloat32((off += 4), layer.weight, true);
+        shadingsView.setFloat32((off += 4), shading.weight, true);
 
         off += 8;
 
-        for (const band of layer.color) {
-          layersView.setFloat32((off += 4), band, true);
+        for (const band of shading.color) {
+          shadingsView.setFloat32((off += 4), band / 255, true);
         }
       }
 
-      device.queue.writeBuffer(layersBuffer, 0, layersData);
+      device.queue.writeBuffer(shadingsBuffer, 0, shadingsData);
 
       const encoder = device.createCommandEncoder();
 
@@ -366,44 +362,7 @@ class LShadingLayer extends LGridLayer {
     // igor,5060FF60,135+   igor,E0D000B0,315+   igor,00000080,135+   igor-slope,000000FF
 
     this.createTileAsync(coords, canvas).then(() => {
-      (canvas as CanvasWithRender).render([
-        {
-          method: 0,
-          altitude: 0,
-          azimuth: (135 / 180) * Math.PI,
-          brightness: 0,
-          contrast: 1,
-          color: [0.3137, 0.3765, 1.0, 0.3765],
-          weight: 1,
-        },
-        {
-          method: 0,
-          altitude: 0,
-          azimuth: (315 / 180) * Math.PI,
-          brightness: 0,
-          contrast: 1,
-          color: [0.8784, 0.8157, 0.0, 0.6902],
-          weight: 1,
-        },
-        {
-          method: 0,
-          altitude: 0,
-          azimuth: (135 / 180) * Math.PI,
-          brightness: 0,
-          contrast: 1,
-          color: [0.0, 0.0, 0.0, 0.5],
-          weight: 1,
-        },
-        {
-          method: 2,
-          altitude: 0,
-          azimuth: 0,
-          brightness: 0,
-          contrast: 1,
-          color: [0.0, 0.0, 0.0, 1.0],
-          weight: 1,
-        },
-      ]);
+      (canvas as CanvasWithRender).render(this._shadings);
 
       done(undefined, canvas);
     }, done);
@@ -411,13 +370,13 @@ class LShadingLayer extends LGridLayer {
     return canvas;
   }
 
-  // setLight(light: [number, number, number]) {
-  //   this._light = light;
+  setShadings(shadings: Shading[]) {
+    this._shadings = shadings;
 
-  //   for (const tile in this._tiles) {
-  //     (this._tiles[tile].el as CanvasWithRender).render(light);
-  //   }
-  // }
+    for (const tile in this._tiles) {
+      (this._tiles[tile].el as CanvasWithRender).render?.(shadings);
+    }
+  }
 }
 
 type Props = ShadingLayerOptions;
@@ -428,15 +387,15 @@ export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
     context,
   }),
 
-  // (instance, props, prevProps) => {
-  // if (
-  //   (['dirtySeq', 'filter', 'colorizeBy', 'myUserId'] as const).some(
-  //     (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
-  //   )
-  // ) {
-  //   instance.redraw();
-  // }
-  // },
+  (instance, props, prevProps) => {
+    if (
+      (['shadings'] as const).some(
+        (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
+      )
+    ) {
+      instance.setShadings(props.shadings);
+    }
+  },
 );
 
 export default ShadingLayer;

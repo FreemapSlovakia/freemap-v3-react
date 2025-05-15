@@ -1,24 +1,6 @@
-import { produce } from "immer";
-import { useCallback, useEffect, useRef, useState } from "react";
-
-export const SHADING_TYPES = [
-  "hillshade-igor",
-  "hillshade-classic",
-  "slope-igor",
-  "slope-classic",
-  "aspect",
-  "color-relief",
-] as const;
-
-export type ShadingType = (typeof SHADING_TYPES)[number];
-
-export type Shading = {
-  id: number;
-  azimuth: number;
-  elevation: number;
-  color: string;
-  type: ShadingType;
-};
+import { produce } from 'immer';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Shading } from './Shading.js';
 
 export type Props = {
   diameter?: number;
@@ -76,6 +58,7 @@ export function ShadingControl({
       if (!mouse) {
         return;
       }
+
       const x = mouse.x - dragging.dx;
 
       const y = mouse.y - dragging.dy;
@@ -97,10 +80,10 @@ export function ShadingControl({
 
             shading.azimuth = azimuth;
           }
-        })
+        }),
       );
     },
-    [radius, dragging, onChange, shadings]
+    [radius, dragging, onChange, shadings],
   );
 
   const handleMouseDown = useCallback(
@@ -109,7 +92,7 @@ export function ShadingControl({
         return undefined;
       }
 
-      const id = Number(e.target.dataset["sc_" + gid.current]);
+      const id = Number(e.target.dataset['sc_' + gid.current]);
 
       const mouse = getCoordinates(e);
 
@@ -123,23 +106,19 @@ export function ShadingControl({
         return;
       }
 
+      const ele = shading.type.endsWith('-classic')
+        ? Math.cos(shading.elevation)
+        : 1;
+
       setDragging({
         id: shading.id,
-        dx:
-          mouse.x -
-          radius *
-            Math.cos(shading.elevation) *
-            Math.sin(Math.PI - shading.azimuth),
-        dy:
-          mouse.y -
-          radius *
-            Math.cos(shading.elevation) *
-            Math.cos(Math.PI - shading.azimuth),
+        dx: mouse.x - radius * ele * Math.sin(Math.PI - shading.azimuth),
+        dy: mouse.y - radius * ele * Math.cos(Math.PI - shading.azimuth),
       });
 
       onSelect(shading.id);
     },
-    [shadings, radius, onSelect]
+    [shadings, radius, onSelect],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -149,16 +128,22 @@ export function ShadingControl({
   useEffect(() => {
     const body = document.body;
 
-    body.addEventListener("mousedown", handleMouseDown);
-    body.addEventListener("mouseup", handleMouseUp);
-    body.addEventListener("mousemove", handleMouseMove);
-    body.addEventListener("mouseleave", handleMouseUp);
+    body.addEventListener('mousedown', handleMouseDown);
+
+    body.addEventListener('mouseup', handleMouseUp);
+
+    body.addEventListener('mousemove', handleMouseMove);
+
+    body.addEventListener('mouseleave', handleMouseUp);
 
     return () => {
-      body.removeEventListener("mousedown", handleMouseDown);
-      body.removeEventListener("mouseup", handleMouseUp);
-      body.removeEventListener("mousemove", handleMouseMove);
-      body.removeEventListener("mouseleave", handleMouseUp);
+      body.removeEventListener('mousedown', handleMouseDown);
+
+      body.removeEventListener('mouseup', handleMouseUp);
+
+      body.removeEventListener('mousemove', handleMouseMove);
+
+      body.removeEventListener('mouseleave', handleMouseUp);
     };
   }, [handleMouseDown, handleMouseUp, handleMouseMove]);
 
@@ -168,47 +153,52 @@ export function ShadingControl({
     domPoint.current = element ? element.createSVGPoint() : null;
   }
 
-  const items = shadings.map((shading) => ({
-    ...shading,
-    cx:
-      radius *
-      Math.cos(shading.elevation) *
-      Math.sin(Math.PI - shading.azimuth),
-    cy:
-      radius *
-      Math.cos(shading.elevation) *
-      Math.cos(Math.PI - shading.azimuth),
-  }));
+  const items = shadings.map((shading) => {
+    const ele = shading.type.endsWith('-classic')
+      ? Math.cos(shading.elevation)
+      : 1;
+
+    return {
+      ...shading,
+      cx: radius * ele * Math.sin(Math.PI - shading.azimuth),
+      cy: radius * ele * Math.cos(Math.PI - shading.azimuth),
+    };
+  });
 
   return (
     <svg
       width={diameter + 16}
       height={diameter + 16}
-      viewBox={`${-diameter / 2 - 8} ${-diameter / 2 - 8} ${diameter + 16} ${
-        diameter + 16
-      }`}
+      viewBox={[
+        -diameter / 2 - 8,
+        -diameter / 2 - 8,
+        diameter + 16,
+        diameter + 16,
+      ].join(' ')}
       ref={setSvg}
     >
       <circle
         cx={0}
         cy={0}
         r={diameter / 2}
-        style={{ fill: "none", strokeWidth: "1px", stroke: "black" }}
+        style={{ fill: 'none', strokeWidth: '1px', stroke: 'black' }}
       />
 
-      {items.map((shading) => (
-        <line
-          key={shading.id}
-          x1={0}
-          y1={0}
-          x2={shading.cx}
-          y2={shading.cy}
-          stroke="silver"
-          strokeDasharray="4 2"
-        />
-      ))}
+      {items
+        .filter((shading) => shading.type.startsWith('hillshade-'))
+        .map((shading) => (
+          <line
+            key={shading.id}
+            x1={0}
+            y1={0}
+            x2={shading.cx}
+            y2={shading.cy}
+            stroke="silver"
+            strokeDasharray="4 2"
+          />
+        ))}
 
-      <circle cx={0} cy={0} r={3} style={{ fill: "silver" }} />
+      <circle cx={0} cy={0} r={3} style={{ fill: 'silver' }} />
 
       {items.map((shading) => (
         <circle
@@ -216,7 +206,7 @@ export function ShadingControl({
           cx={shading.cx}
           cy={shading.cy}
           r={6}
-          style={{ fill: shading.color, stroke: "silver" }}
+          style={{ fill: `rgba(${shading.color.join(',')})`, stroke: 'silver' }}
           {...{ [`data-sc_${gid.current}`]: shading.id }}
         />
       ))}
@@ -230,11 +220,11 @@ export function ShadingControl({
             cx={shading.cx}
             cy={shading.cy}
             style={{
-              fill: "none",
+              fill: 'none',
               strokeWidth: 1,
-              stroke: "blue",
-              strokeDasharray: "2 2",
-              pointerEvents: "none",
+              stroke: 'blue',
+              strokeDasharray: '2 2',
+              pointerEvents: 'none',
             }}
           />
         ))}

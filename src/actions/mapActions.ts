@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { Shading } from '../components/parameterizedShading/Shading.js';
 import {
   BaseLayerDef,
   BaseLayerLetters,
@@ -61,3 +62,5 @@ export const mapSetCustomLayers = createAction<CustomLayer[]>(
 export const mapSetEsriAttribution = createAction<string[]>(
   'MAP_SET_ESRI_ATTRIBUTION',
 );
+
+export const mapSetShadings = createAction<Shading[]>('MAP_SET_SHADINGS');

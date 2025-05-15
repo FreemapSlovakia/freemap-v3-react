@@ -524,7 +524,7 @@ export const overlayLayers: OverlayLayerDef[] = [
       },
     ],
     experimental: true,
-    adminOnly: false,
+    // adminOnly: false,
   },
 ];
 

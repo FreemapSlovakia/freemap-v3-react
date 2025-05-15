@@ -17,7 +17,7 @@ const galleryLayerFactory = () =>
   import('../components/gallery/GalleryLayer.js');
 
 const shadingLayerFactory = () =>
-  import('../components/gallery/ShadingLayer.js');
+  import('./parameterizedShading/ShadingLayer.js');
 
 const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 
@@ -29,6 +29,8 @@ export function Layers(): ReactElement | null {
   const mapType = useAppSelector((state) => state.map.mapType);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
+  const shadings = useAppSelector((state) => state.map.shadings);
 
   const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
@@ -112,6 +114,7 @@ export function Layers(): ReactElement | null {
                 : maxNativeZoom
           }
           zoomOffset={isHdpi ? 1 : 0}
+          shadings={shadings}
         />
       );
     }

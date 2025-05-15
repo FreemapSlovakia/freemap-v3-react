@@ -68,6 +68,7 @@ import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapDetailsTool } from './MapDetailsTool.js';
 import { MapsMenu } from './MapsMenu.js';
+import { ShadingsControl } from './parameterizedShading/ShadingsControl.js';
 import { SelectionTool } from './SelectionTool.js';
 import { ToolMenu } from './ToolMenu.js';
 import { TrackingSelection } from './TrackingSelection.js';
@@ -748,6 +749,8 @@ export function Main(): ReactElement {
       />
 
       <GalleryModals />
+
+      <ShadingsControl />
     </>
   );
 }
