@@ -1,7 +1,7 @@
-import along from '@turf/along';
-import distance from '@turf/distance';
+import { along } from '@turf/along';
+import { distance } from '@turf/distance';
 import { getCoord, getCoords } from '@turf/invariant';
-import length from '@turf/length';
+import { length } from '@turf/length';
 import {
   Feature,
   LineString,

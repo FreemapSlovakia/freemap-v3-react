@@ -22,7 +22,6 @@ import {
   setTool,
 } from './actions/mainActions.js';
 import { mapRefocus } from './actions/mapActions.js';
-import { history } from './historyHolder.js';
 import {
   BaseLayerLetters,
   baseLayers,

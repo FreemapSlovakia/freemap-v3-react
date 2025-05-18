@@ -1,4 +1,3 @@
-import FileSaver from 'file-saver';
 import { Dispatch } from 'redux';
 import { ExportTarget } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
@@ -221,13 +220,56 @@ export async function upload(
       break;
 
     case 'download':
-      FileSaver.saveAs(
-        data,
-        `freemap-export-${new Date().toISOString()}.${type}`,
-      );
+      try {
+        await saveFile(data, type);
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') {
+          return false;
+        }
+
+        throw e;
+      }
 
       break;
   }
 
   return true;
+}
+
+async function saveFile(blob: Blob, type: 'gpx' | 'geojson') {
+  const suggestedName = `freemap-export-${new Date().toISOString()}.${type}`;
+
+  if ('showSaveFilePicker' in window) {
+    const handle = await showSaveFilePicker({
+      suggestedName,
+      types: [
+        {
+          description: blob.type || 'File',
+          accept: {
+            [blob.type]: type === 'gpx' ? ['.gpx'] : ['.geojson', '.json'],
+          } as any,
+        },
+      ],
+    });
+
+    const writable = await handle.createWritable();
+
+    await writable.write(blob);
+
+    await writable.close();
+
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+
+  a.href = url;
+
+  a.download = suggestedName;
+
+  a.click();
+
+  URL.revokeObjectURL(url);
 }

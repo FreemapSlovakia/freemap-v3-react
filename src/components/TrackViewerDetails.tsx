@@ -1,4 +1,4 @@
-import distance from '@turf/distance';
+import { distance } from '@turf/distance';
 import { Geometry } from 'geojson';
 import { ReactElement } from 'react';
 import { formatDistance } from '../distanceFormatter.js';

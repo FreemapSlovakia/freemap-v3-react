@@ -1,6 +1,6 @@
-import turfFlatten from '@turf/flatten';
+import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
-import simplify from '@turf/simplify';
+import { simplify } from '@turf/simplify';
 import { drawingLineAdd, Point } from '../actions/drawingLineActions.js';
 import { drawingPointAdd } from '../actions/drawingPointActions.js';
 import { convertToDrawing, selectFeature } from '../actions/mainActions.js';

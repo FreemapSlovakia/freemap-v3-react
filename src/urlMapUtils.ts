@@ -1,4 +1,3 @@
-import { Location } from 'history';
 import { is } from 'typia';
 import { MapViewState } from './actions/mapActions.js';
 import {
@@ -11,12 +10,10 @@ import {
   getTrasformedParamsIfIsOldFreemapUrl,
 } from './oldFreemapUtils.js';
 
-export function getMapStateFromUrl(
-  location: Location,
-): Partial<MapViewState> & Pick<MapViewState, 'overlays'> {
+export function getMapStateFromUrl(): Partial<MapViewState> &
+  Pick<MapViewState, 'overlays'> {
   {
-    const transformedParams =
-      getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+    const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
 
     if (transformedParams) {
       return transformedParams;
@@ -24,7 +21,7 @@ export function getMapStateFromUrl(
   }
 
   {
-    const transformedParams = getTrasformedParamsIfIsOldFreemapUrl(location);
+    const transformedParams = getTrasformedParamsIfIsOldFreemapUrl();
 
     if (transformedParams) {
       return transformedParams;

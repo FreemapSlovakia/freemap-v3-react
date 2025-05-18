@@ -1,4 +1,3 @@
-import { Location } from 'history';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
 import {
@@ -57,7 +56,6 @@ import {
 } from './actions/trackViewerActions.js';
 import { tools } from './constants.js';
 import { DocumentKey } from './documents/index.js';
-import { history } from './historyHolder.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
@@ -86,12 +84,12 @@ function parseQuery(search: string) {
   return q;
 }
 
-export function handleLocationChange(store: MyStore, location: Location): void {
+export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.location.state as { sq: string }) ?? {
+  const { sq } = (history.state as { sq: string }) ?? {
     sq: undefined,
   };
 
@@ -372,7 +370,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
     dispatch(drawingLineSetLines(lines));
   }
 
-  const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+  const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
 
   if (transformed) {
     const { lat, lon } = transformed;
@@ -382,7 +380,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
     );
   }
 
-  const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
+  const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2();
 
   if (f2) {
     const { lat, lon, label } = f2;
@@ -475,10 +473,7 @@ export function handleLocationChange(store: MyStore, location: Location): void {
     }
   }
 
-  const diff = getMapStateDiffFromUrl(
-    getMapStateFromUrl(location),
-    getState().map,
-  );
+  const diff = getMapStateDiffFromUrl(getMapStateFromUrl(), getState().map);
 
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));

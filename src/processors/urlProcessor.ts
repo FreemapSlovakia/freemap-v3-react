@@ -5,7 +5,6 @@ import { ShowModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { basicModals } from '../constants.js';
 import { DocumentKey } from '../documents/index.js';
-import { history } from '../historyHolder.js';
 import { OverlayLetters } from '../mapDefinitions.js';
 import { Processor } from '../middlewares/processorMiddleware.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
@@ -369,22 +368,17 @@ export const urlProcessor: Processor = {
     const urlSearch = serializeQuery(queryParts);
 
     if (
-      (mapId && sq !== (history.location.state as { sq: string })?.sq) ||
+      (mapId && sq !== (history.state as { sq: string })?.sq) ||
       urlSearch !== window.location.hash.slice(1)
     ) {
       const isReplaceAction = isAnyOf(mapRefocus, drawingLineUpdatePoint);
 
       const method =
-        lastActionType && isReplaceAction(action) ? 'replace' : 'push';
+        lastActionType && isReplaceAction(action)
+          ? 'replaceState'
+          : 'pushState';
 
-      history[method](
-        {
-          pathname: '/',
-          // search: urlSearch,
-          hash: urlSearch,
-        },
-        { sq },
-      );
+      history[method]({ sq }, '', '/' + (urlSearch ? '#' + urlSearch : ''));
 
       if (window.fmEmbedded) {
         window.parent.postMessage(

@@ -1,4 +1,4 @@
-import distance from '@turf/distance';
+import { distance } from '@turf/distance';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';

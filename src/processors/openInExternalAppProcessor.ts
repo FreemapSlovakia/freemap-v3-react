@@ -1,5 +1,5 @@
-import bbox from '@turf/bbox';
-import buffer from '@turf/buffer';
+import { bbox } from '@turf/bbox';
+import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
 import { openInExternalApp } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';

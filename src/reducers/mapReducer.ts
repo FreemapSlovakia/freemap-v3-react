@@ -1,5 +1,4 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { Shading } from 'components/parameterizedShading/Shading.js';
 import { authSetUser } from '../actions/authActions.js';
 import { gallerySetFilter } from '../actions/galleryActions.js';
 import { applySettings, Selection } from '../actions/mainActions.js';
@@ -12,6 +11,7 @@ import {
   mapSuppressLegacyMapWarning,
 } from '../actions/mapActions.js';
 import { mapsLoaded } from '../actions/mapsActions.js';
+import { Shading } from '../components/parameterizedShading/Shading.js';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;

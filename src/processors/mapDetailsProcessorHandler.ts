@@ -1,4 +1,4 @@
-import distance from '@turf/distance';
+import { distance } from '@turf/distance';
 import { assert } from 'typia';
 import {
   clearMapFeatures,

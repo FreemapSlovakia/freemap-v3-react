@@ -26,7 +26,8 @@
       "facebook-pixel",
       "google.picker",
       "google.accounts",
-      "@webgpu/types"
+      "@webgpu/types",
+      "@types/wicg-file-system-access"
     ]
   },
   "include": ["src", "typings"]

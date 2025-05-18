@@ -15,31 +15,45 @@ self.onmessage = async (evt) => {
   try {
     await initPromise;
 
-    // const pixelBlock = Lerc.decode(decompress(evt.data.payload).buffer);
+    const pixelBlock = Lerc.decode(decompress(evt.data.payload).buffer);
 
-    // const arrays: Float32Array[] = pixelBlock.pixels as Float32Array[];
+    if (pixelBlock.mask) {
+      let off = 0;
 
-    // const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
+      for (const chunk of pixelBlock.pixels) {
+        for (let i = 0; i < chunk.length; i++) {
+          if (pixelBlock.mask[off + i] === 0) {
+            chunk[i] = NaN;
+          }
+        }
 
-    // const flat = new Float32Array(totalLength);
+        off += chunk.length;
+      }
+    }
 
-    // let offset = 0;
+    const arrays: Float32Array[] = pixelBlock.pixels as Float32Array[];
 
-    // for (const arr of arrays) {
-    //   flat.set(arr, offset);
+    const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
 
-    //   offset += arr.length;
-    // }
+    const flat = new Float32Array(totalLength);
 
-    // const payload = flat;
+    let offset = 0;
 
-    const flat = decompress(evt.data.payload);
+    for (const arr of arrays) {
+      flat.set(arr, offset);
 
-    const payload = new Float32Array(
-      flat.buffer,
-      flat.byteOffset,
-      flat.byteLength / 4,
-    );
+      offset += arr.length;
+    }
+
+    const payload = flat;
+
+    // const flat = decompress(evt.data.payload);
+
+    // const payload = new Float32Array(
+    //   flat.buffer,
+    //   flat.byteOffset,
+    //   flat.byteLength / 4,
+    // );
 
     self.postMessage({ id, payload }, [payload.buffer]);
   } catch (err) {

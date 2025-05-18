@@ -1,5 +1,5 @@
 import { lineString } from '@turf/helpers';
-import length from '@turf/length';
+import { length } from '@turf/length';
 import { authWithGarmin } from '../actions/authActions.js';
 import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';

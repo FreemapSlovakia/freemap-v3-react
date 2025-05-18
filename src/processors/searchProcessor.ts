@@ -1,5 +1,5 @@
 import { tileToGeoJSON } from '@mapbox/tilebelt';
-import bboxPolygon from '@turf/bbox-polygon';
+import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
 import { BBox, Geometry } from 'geojson';
 import { CRS, Point } from 'leaflet';

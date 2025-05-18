@@ -1,5 +1,5 @@
-import distance from '@turf/distance';
-import turfFlatten from '@turf/flatten';
+import { distance } from '@turf/distance';
+import { flatten } from '@turf/flatten';
 import { getCoords } from '@turf/invariant';
 import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { LatLngExpression, Point as LPoint } from 'leaflet';
@@ -46,7 +46,7 @@ export function TrackViewerResult({
   const eleSmoothingFactor = 5;
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
-    turfFlatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
+    flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
   const getColorLineDataForElevation = () =>
     getFeatures('LineString').map((feature) => {

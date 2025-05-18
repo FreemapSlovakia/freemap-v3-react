@@ -1,4 +1,3 @@
-import 'fullscreen-api-polyfill';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -17,7 +16,6 @@ import { MessagesProvider } from './components/TranslationProvider.js';
 import './fbLoader.js';
 import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler.js';
 import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
-import { history } from './historyHolder.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { handleLocationChange } from './locationChangeHandler.js';
 import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
@@ -60,13 +58,11 @@ store.dispatch(
 
 store.dispatch(authInit({}));
 
-const { location } = history;
-
-history.listen((update) => {
-  handleLocationChange(store, update.location);
+window.addEventListener('popstate', () => {
+  handleLocationChange(store);
 });
 
-handleLocationChange(store, location);
+handleLocationChange(store);
 
 attachOsmLoginMessageHandler(store);
 

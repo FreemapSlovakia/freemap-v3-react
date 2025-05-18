@@ -1,6 +1,6 @@
-import along from '@turf/along';
+import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
-import length from '@turf/length';
+import { length } from '@turf/length';
 import { Feature, Point } from 'geojson';
 import {
   divIcon,

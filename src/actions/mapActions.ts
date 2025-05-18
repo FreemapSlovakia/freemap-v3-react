@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { Shading } from 'components/parameterizedShading/Shading.js';
+import { Shading } from '../components/parameterizedShading/Shading.js';
 import {
   BaseLayerDef,
   BaseLayerLetters,

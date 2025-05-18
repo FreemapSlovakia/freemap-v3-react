@@ -1,5 +1,5 @@
 import area from '@turf/area';
-import bboxPolygon from '@turf/bbox-polygon';
+import { bboxPolygon } from '@turf/bbox-polygon';
 import { CRS, Point } from 'leaflet';
 import RBush, { BBox } from 'rbush';
 import { assert } from 'typia';

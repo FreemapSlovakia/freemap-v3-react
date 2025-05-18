@@ -509,8 +509,8 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   {
     type: 'h',
-    url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
-    // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
+    // url: 'https://fm3.freemap.sk/dem/tiles/{z}/{x}/{y}',
+    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <GiHills />,
     key: ['KeyJ', true],
     scaleWithDpi: true,
@@ -524,6 +524,7 @@ export const overlayLayers: OverlayLayerDef[] = [
       },
     ],
     experimental: true,
+    adminOnly: true,
     zIndex: 2,
   },
 ];

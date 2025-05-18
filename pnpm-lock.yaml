@@ -53,9 +53,6 @@ importers:
       '@turf/boolean-contains':
         specifier: ^7.2.0
         version: 7.2.0
-      '@turf/boolean-within':
-        specifier: ^7.2.0
-        version: 7.2.0
       '@turf/buffer':
         specifier: ^7.2.0
         version: 7.2.0
@@ -80,12 +77,6 @@ importers:
       '@turf/length':
         specifier: ^7.2.0
         version: 7.2.0
-      '@turf/line-offset':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/line-slice':
-        specifier: ^7.2.0
-        version: 7.2.0
       '@turf/simplify':
         specifier: ^7.2.0
         version: 7.2.0
@@ -101,21 +92,9 @@ importers:
       color:
         specifier: ^5.0.0
         version: 5.0.0
-      eventemitter3:
-        specifier: ^5.0.1
-        version: 5.0.1
       exifreader:
         specifier: ^4.30.1
         version: 4.30.1
-      file-saver:
-        specifier: ^2.0.5
-        version: 2.0.5
-      fullscreen-api-polyfill:
-        specifier: ^1.1.2
-        version: 1.1.2
-      history:
-        specifier: ^5.3.0
-        version: 5.3.0
       htm:
         specifier: ^3.1.1
         version: 3.1.1
@@ -170,9 +149,6 @@ importers:
       react-leaflet:
         specifier: ^5.0.0
         version: 5.0.0(leaflet@1.9.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      react-overlays:
-        specifier: ^5.2.1
-        version: 5.2.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-redux:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@19.1.3)(react@19.1.0)(redux@5.0.1)
@@ -288,6 +264,9 @@ importers:
       '@types/webpack-env':
         specifier: ^1.18.8
         version: 1.18.8
+      '@types/wicg-file-system-access':
+        specifier: ^2023.10.6
+        version: 2023.10.6
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.32.0
         version: 8.32.0(@typescript-eslint/parser@8.32.0(eslint@9.26.0)(typescript@5.8.3))(eslint@9.26.0)(typescript@5.8.3)
@@ -372,9 +351,6 @@ importers:
       typescript-eslint:
         specifier: ^8.32.0
         version: 8.32.0(eslint@9.26.0)(typescript@5.8.3)
-      util:
-        specifier: ^0.12.5
-        version: 0.12.5
       utility-types:
         specifier: ^3.11.0
         version: 3.11.0
@@ -1492,9 +1468,6 @@ packages:
   '@turf/boolean-point-on-line@7.2.0':
     resolution: {integrity: sha512-H/bXX8+2VYeSyH8JWrOsu8OGmeA9KVZfM7M6U5/fSqGsRHXo9MyYJ94k39A9kcKSwI0aWiMXVD2UFmiWy8423Q==}
 
-  '@turf/boolean-within@7.2.0':
-    resolution: {integrity: sha512-zB3AiF59zQZ27Dp1iyhp9mVAKOFHat8RDH45TZhLY8EaqdEPdmLGvwMFCKfLryQcUDQvmzP8xWbtUR82QM5C4g==}
-
   '@turf/buffer@7.2.0':
     resolution: {integrity: sha512-QH1FTr5Mk4z1kpQNztMD8XBOZfpOXPOtlsxaSAj2kDIf5+LquA6HtJjZrjUngnGtzG5+XwcfyRL4ImvLnFjm5Q==}
 
@@ -1528,17 +1501,8 @@ packages:
   '@turf/length@7.2.0':
     resolution: {integrity: sha512-LBmYN+iCgVtWNLsckVnpQIJENqIIPO63mogazMp23lrDGfWXu07zZQ9ZinJVO5xYurXNhc/QI2xxoqt2Xw90Ig==}
 
-  '@turf/line-offset@7.2.0':
-    resolution: {integrity: sha512-1+OkYueDCbnEWzbfBh3taVr+3SyM2bal5jfnSEuDiLA6jnlScgr8tn3INo+zwrUkPFZPPAejL1swVyO5TjUahw==}
-
-  '@turf/line-slice@7.2.0':
-    resolution: {integrity: sha512-bHotzZIaU1GPV3RMwttYpDrmcvb3X2i1g/WUttPZWtKrEo2VVAkoYdeZ2aFwtogERYS4quFdJ/TDzAtquBC8WQ==}
-
   '@turf/meta@7.2.0':
     resolution: {integrity: sha512-igzTdHsQc8TV1RhPuOLVo74Px/hyPrVgVOTgjWQZzt3J9BVseCdpfY/0cJBdlSRI4S/yTmmHl7gAqjhpYH5Yaw==}
-
-  '@turf/nearest-point-on-line@7.2.0':
-    resolution: {integrity: sha512-UOhAeoDPVewBQV+PWg1YTMQcYpJsIqfW5+EuZ5vJl60XwUa0+kqB/eVfSLNXmHENjKKIlEt9Oy9HIDF4VeWmXA==}
 
   '@turf/projection@7.2.0':
     resolution: {integrity: sha512-/qke5vJScv8Mu7a+fU3RSChBRijE6EVuFHU3RYihMuYm04Vw8dBMIs0enEpoq0ke/IjSbleIrGQNZIMRX9EwZQ==}
@@ -1774,6 +1738,9 @@ packages:
 
   '@types/webpack@4.41.40':
     resolution: {integrity: sha512-u6kMFSBM9HcoTpUXnL6mt2HSzftqb3JgYV6oxIgL2dl6sX6aCa5k6SOkzv5DuZjBTPUE/dJltKtwwuqrkZHpfw==}
+
+  '@types/wicg-file-system-access@2023.10.6':
+    resolution: {integrity: sha512-YO/183gNRzZFSdKu+ikkD7ambAj4PhgjFAF2A/Mw/7wroSF6ne8r804RkpZzqrJ/F6DO2/IYlQF/ULOZ/bhKyA==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -2919,9 +2886,6 @@ packages:
   eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
 
-  eventemitter3@5.0.1:
-    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
-
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
@@ -3001,9 +2965,6 @@ packages:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
 
-  file-saver@2.0.5:
-    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
-
   file-selector@2.1.2:
     resolution: {integrity: sha512-QgXo+mXTe8ljeqUFaX3QVHc5osSItJ/Km+xpocx0aSqWGMSCf6qYs/VnzZgS864Pjn5iceMRFigeAV7AfTlaig==}
     engines: {node: '>= 12'}
@@ -3081,9 +3042,6 @@ packages:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
-
-  fullscreen-api-polyfill@1.1.2:
-    resolution: {integrity: sha512-ptL3SiayeEwLAXBPrryfFtSNNpE5gIxJIHH7FgSE8vF5dYzeTZlypdt5TFpz8XEt8ETnHpMP/ZTLQd4eQISZqw==}
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
@@ -3208,9 +3166,6 @@ packages:
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
-
-  history@5.3.0:
-    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
 
   hpack.js@2.1.6:
     resolution: {integrity: sha512-zJxVehUdMGIKsRaNt7apO2Gqp0BdqW5yaiGHXXmbpvxgBYVZnAql+BJb4RO5ad2MgpbZKn5G6nMnegrH1FcNYQ==}
@@ -3368,10 +3323,6 @@ packages:
   ipaddr.js@2.2.0:
     resolution: {integrity: sha512-Ag3wB2o37wslZS19hZqorUnrnzSkpOVy+IiiDEiTqNubEYpYuHWIf6K4psgN2ZWKExS4xhVCrRVfb/wfW8fWJA==}
     engines: {node: '>= 10'}
-
-  is-arguments@1.2.0:
-    resolution: {integrity: sha512-7bVbi0huj/wrIAOzb8U1aszg9kdi3KN/CyU19CTI7tAoZYEZoL9yCDXpbXN+uPsuWnP02cyug1gleqq+TU+YCA==}
-    engines: {node: '>= 0.4'}
 
   is-array-buffer@3.0.5:
     resolution: {integrity: sha512-DDfANUiiG2wC1qawP66qlTugJeL5HyzMpfr8lLK+jMQirGzNod0B12cFB/9q838Ru27sBwfw78/rdoU7RERz6A==}
@@ -4405,12 +4356,6 @@ packages:
   react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
 
-  react-overlays@5.2.1:
-    resolution: {integrity: sha512-GLLSOLWr21CqtJn8geSwQfoJufdt3mfdsnIiQswouuQ2MMPns+ihZklxvsTDKD3cR2tF8ELbi5xUsvqVhR6WvA==}
-    peerDependencies:
-      react: '>=16.3.0'
-      react-dom: '>=16.3.0'
-
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
     peerDependencies:
@@ -5128,9 +5073,6 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
-
-  util@0.12.5:
-    resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
 
   utila@0.4.0:
     resolution: {integrity: sha512-Z0DbgELS9/L/75wZbro8xAnT50pBVFQZ+hUEueGDU5FN51YSCYM+jdxsfCiHjwNP/4LCDD0i/graKpeBnOXKRA==}
@@ -6574,16 +6516,6 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
-  '@turf/boolean-within@7.2.0':
-    dependencies:
-      '@turf/bbox': 7.2.0
-      '@turf/boolean-point-in-polygon': 7.2.0
-      '@turf/boolean-point-on-line': 7.2.0
-      '@turf/helpers': 7.2.0
-      '@turf/invariant': 7.2.0
-      '@types/geojson': 7946.0.16
-      tslib: 2.8.1
-
   '@turf/buffer@7.2.0':
     dependencies:
       '@turf/bbox': 7.2.0
@@ -6659,33 +6591,10 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
-  '@turf/line-offset@7.2.0':
-    dependencies:
-      '@turf/helpers': 7.2.0
-      '@turf/invariant': 7.2.0
-      '@turf/meta': 7.2.0
-      '@types/geojson': 7946.0.16
-
-  '@turf/line-slice@7.2.0':
-    dependencies:
-      '@turf/helpers': 7.2.0
-      '@turf/invariant': 7.2.0
-      '@turf/nearest-point-on-line': 7.2.0
-      '@types/geojson': 7946.0.16
-
   '@turf/meta@7.2.0':
     dependencies:
       '@turf/helpers': 7.2.0
       '@types/geojson': 7946.0.16
-
-  '@turf/nearest-point-on-line@7.2.0':
-    dependencies:
-      '@turf/distance': 7.2.0
-      '@turf/helpers': 7.2.0
-      '@turf/invariant': 7.2.0
-      '@turf/meta': 7.2.0
-      '@types/geojson': 7946.0.16
-      tslib: 2.8.1
 
   '@turf/projection@7.2.0':
     dependencies:
@@ -6968,6 +6877,8 @@ snapshots:
       '@types/webpack-sources': 3.2.3
       anymatch: 3.1.3
       source-map: 0.6.1
+
+  '@types/wicg-file-system-access@2023.10.6': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -8359,8 +8270,6 @@ snapshots:
 
   eventemitter3@4.0.7: {}
 
-  eventemitter3@5.0.1: {}
-
   events@3.3.0: {}
 
   eventsource-parser@3.0.1: {}
@@ -8491,8 +8400,6 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
-  file-saver@2.0.5: {}
-
   file-selector@2.1.2:
     dependencies:
       tslib: 2.8.1
@@ -8574,8 +8481,6 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
-
-  fullscreen-api-polyfill@1.1.2: {}
 
   function-bind@1.1.2: {}
 
@@ -8697,10 +8602,6 @@ snapshots:
       function-bind: 1.1.2
 
   he@1.2.0: {}
-
-  history@5.3.0:
-    dependencies:
-      '@babel/runtime': 7.27.1
 
   hpack.js@2.1.6:
     dependencies:
@@ -8879,11 +8780,6 @@ snapshots:
   ipaddr.js@1.9.1: {}
 
   ipaddr.js@2.2.0: {}
-
-  is-arguments@1.2.0:
-    dependencies:
-      call-bound: 1.0.4
-      has-tostringtag: 1.0.2
 
   is-array-buffer@3.0.5:
     dependencies:
@@ -9893,19 +9789,6 @@ snapshots:
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-overlays@5.2.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
-    dependencies:
-      '@babel/runtime': 7.27.1
-      '@popperjs/core': 2.11.8
-      '@restart/hooks': 0.4.16(react@19.1.0)
-      '@types/warning': 3.0.3
-      dom-helpers: 5.2.1
-      prop-types: 15.8.1
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
-      uncontrollable: 7.2.1(react@19.1.0)
-      warning: 4.0.3
-
   react-redux@9.2.0(@types/react@19.1.3)(react@19.1.0)(redux@5.0.1):
     dependencies:
       '@types/use-sync-external-store': 0.0.6
@@ -10710,14 +10593,6 @@ snapshots:
       react: 19.1.0
 
   util-deprecate@1.0.2: {}
-
-  util@0.12.5:
-    dependencies:
-      inherits: 2.0.4
-      is-arguments: 1.2.0
-      is-generator-function: 1.1.0
-      is-typed-array: 1.1.15
-      which-typed-array: 1.1.19
 
   utila@0.4.0: {}
 

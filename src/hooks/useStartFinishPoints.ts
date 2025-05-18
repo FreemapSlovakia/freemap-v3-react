@@ -1,4 +1,4 @@
-import turfLength from '@turf/length';
+import { length as turfLength } from '@turf/length';
 import { useMemo } from 'react';
 import { assert } from 'typia';
 import { TrackPoint } from '../actions/trackViewerActions.js';

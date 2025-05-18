@@ -1,4 +1,4 @@
-import center from '@turf/center';
+import { center } from '@turf/center';
 import {
   ChangeEvent,
   forwardRef,

@@ -1,5 +1,5 @@
-import booleanContains from '@turf/boolean-contains';
-import { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
+import { booleanContains } from '@turf/boolean-contains';
+import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common.js';
 
