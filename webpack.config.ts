@@ -54,9 +54,6 @@ const config: Configuration = {
     extensionAlias: {
       '.js': ['.js', '.ts', '.tsx'],
     },
-    alias: {
-      pica: 'pica/dist/pica.js',
-    },
     fallback: {
       url: false,
       fs: false,

@@ -64,7 +64,6 @@
     "maplibre-gl": "^5.5.0",
     "marked": "^15.0.11",
     "pannellum": "^2.5.6",
-    "pica": "^9.0.1",
     "rbush": "^4.0.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",

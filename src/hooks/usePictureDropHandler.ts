@@ -1,8 +1,8 @@
 import ExifReader, { Tags } from 'exifreader';
-import pica from 'pica';
 import { useCallback } from 'react';
 import { GalleryItem } from '../actions/galleryActions.js';
 import { latLonToString } from '../geoutils.js';
+import { resize } from '../pica-gpu/resize.js';
 import { useAppSelector } from './reduxSelectHook.js';
 
 let nextId = 1;
@@ -28,27 +28,31 @@ function loadPreview(
 
     const ratio = 618 / img.naturalWidth;
 
-    const width = img.naturalWidth * ratio;
+    const width = img.naturalWidth * ratio * devicePixelRatio;
 
-    const height = img.naturalHeight * ratio;
+    const height = img.naturalHeight * ratio * devicePixelRatio;
 
     canvas.width = width;
 
     canvas.height = height;
 
-    pica()
-      .resize(img, canvas)
-      .then(() => {
-        // TODO play with toBlob (not supported in safari)
-        // canvas2.toBlob((blob) => {
-        //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
-        //   cb();
-        // });
-        cb(undefined, canvas.toDataURL());
-      })
-      .catch((err: unknown) => {
-        cb(err);
+    try {
+      resize(img, canvas, {
+        targetWidth: width,
+        targetHeight: height,
+        filter: 'mks2013',
       });
+    } catch (err) {
+      cb(err);
+    }
+
+    // TODO play with toBlob (not supported in safari)
+    // canvas2.toBlob((blob) => {
+    //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
+    //   cb();
+    // });
+
+    cb(undefined, canvas.toDataURL());
   };
 
   img.src = url;
