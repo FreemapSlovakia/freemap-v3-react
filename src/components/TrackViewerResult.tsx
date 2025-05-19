@@ -2,14 +2,14 @@ import { distance } from '@turf/distance';
 import { flatten } from '@turf/flatten';
 import { getCoords } from '@turf/invariant';
 import { Feature, FeatureCollection, LineString, Point } from 'geojson';
-import { LatLngExpression, Point as LPoint } from 'leaflet';
+import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
+import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { setTool } from '../actions/mainActions.js';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
-import { Hotline } from '../components/Hotline.js';
 import { RichMarker } from '../components/RichMarker.js';
 import { colors } from '../constants.js';
 import { formatDistance } from '../distanceFormatter.js';
@@ -58,10 +58,10 @@ export function TrackViewerResult({
 
       const minEle = Math.min(...eles);
 
-      return smoothed.map((coord): LatLngExpression => {
+      return smoothed.map((coord) => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
 
-        return [coord[1], coord[0], color || 0];
+        return { lat: coord[1], lon: coord[0], color };
       });
     });
 
@@ -71,7 +71,7 @@ export function TrackViewerResult({
 
       let prevCoord = smoothed[0];
 
-      return smoothed.map((coord): LatLngExpression => {
+      return smoothed.map((coord) => {
         const [lon, lat, ele] = coord;
 
         const d = distance([lon, lat], prevCoord, { units: 'meters' });
@@ -86,7 +86,7 @@ export function TrackViewerResult({
 
         const color = angle / 0.5 + 0.5;
 
-        return [lat, lon, color || 0];
+        return { lat, lon, color };
       });
     });
 
@@ -145,14 +145,26 @@ export function TrackViewerResult({
         ).map((positions, i) => (
           <Hotline
             key={`${colorizeTrackBy}-${i}`}
-            positions={positions}
-            palette={
-              colorizeTrackBy === 'elevation'
-                ? { 0.0: 'black', 0.5: '#838', 1.0: 'white' }
-                : { 0.0: 'green', 0.5: 'white', 1.0: 'red' }
-            }
-            weight={6}
-            outlineWidth={0}
+            data={positions}
+            getVal={(p) => p.point.color}
+            getLat={(p) => p.point.lat}
+            getLng={(p) => p.point.lon}
+            options={{
+              weight: 6,
+              outlineWidth: 0,
+              palette:
+                colorizeTrackBy === 'elevation'
+                  ? [
+                      { r: 0, g: 0, b: 0, t: 0.0 },
+                      { r: 128, g: 128, b: 128, t: 0.5 },
+                      { r: 255, g: 255, b: 255, t: 1.0 },
+                    ]
+                  : [
+                      { r: 0, g: 255, b: 0, t: 0.0 },
+                      { r: 255, g: 255, b: 255, t: 0.5 },
+                      { r: 255, g: 0, b: 0, t: 1.0 },
+                    ],
+            }}
           />
         ))}
 
