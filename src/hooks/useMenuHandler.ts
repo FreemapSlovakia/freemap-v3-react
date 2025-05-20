@@ -51,6 +51,28 @@ export function useMenuHandler({
   const stack = useRef<Submenu[]>([]);
 
   useEffect(() => {
+    function handle(e: KeyboardEvent) {
+      if (e.code === 'Escape') {
+        setSubmenu((submenu) => {
+          if (!submenu) {
+            setShow(false);
+          }
+
+          return null;
+        });
+
+        e.preventDefault();
+      }
+    }
+
+    window.addEventListener('keydown', handle);
+
+    return () => {
+      window.removeEventListener('keydown', handle);
+    };
+  }, []);
+
+  useEffect(() => {
     if (submenu) {
       if (stack.current.at(-1) !== submenu) {
         stack.current.push(submenu);
