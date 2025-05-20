@@ -64,19 +64,19 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
     let elev = get_elev(px);
 
-    if true {
-        return interpolate_color(
-            array<f32, NUM_STOPS>(0, 300, 600, 900, 1200, 3000),
-            array<vec4<f32>, NUM_STOPS>(
-                vec4(0, 0, 1, 1),
-                vec4(0, 1, 0, 1),
-                vec4(1, 0, 0, 1),
-                vec4(1, 1, 0, 1),
-                vec4(1, 0, 1, 1),
-                vec4(1, 1, 1, 1)
-            ), elev
-        );
-    }
+    // if true {
+    //     return interpolate_color(
+    //         array<f32, NUM_STOPS>(0, 300, 600, 900, 1200, 3000),
+    //         array<vec4<f32>, NUM_STOPS>(
+    //             vec4(0, 0, 1, 1),
+    //             vec4(0, 1, 0, 1),
+    //             vec4(1, 0, 0, 1),
+    //             vec4(1, 1, 0, 1),
+    //             vec4(1, 0, 1, 1),
+    //             vec4(1, 1, 1, 1)
+    //         ), elev
+    //     );
+    // }
 
     let nn = get_elev(px + vec2(-1, -1));
     let nz = get_elev(px + vec2(-1, 0));
