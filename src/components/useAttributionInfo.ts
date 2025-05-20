@@ -11,8 +11,8 @@ type EsriWorldImageryAttribution = {
   contributors: {
     attribution: string;
     coverageAreas: {
-      zoomMax: number;
-      zoomMin: number;
+      zoomMax?: number;
+      zoomMin?: number;
       score: number;
       bbox: BBox;
     }[];
@@ -106,8 +106,8 @@ export function useAttributionInfo() {
     const a = esriAttributions.contributors.filter((c) =>
       c.coverageAreas.some(
         (ca) =>
-          ca.zoomMin <= zoom &&
-          ca.zoomMax >= zoom &&
+          (ca.zoomMin === undefined || ca.zoomMin <= zoom) &&
+          (ca.zoomMax === undefined || ca.zoomMax >= zoom) &&
           isIntersecting(ca.bbox, bounds),
       ),
     );
