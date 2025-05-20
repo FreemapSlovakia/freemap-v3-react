@@ -1,0 +1,216 @@
+.react-tags {
+  & {
+    position: relative;
+    padding: 0.25rem 0 0 0.25rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background: var(--bs-modal-bg);
+    /* shared font styles */
+    font-size: 1rem;
+    line-height: 1.2;
+    /* clicking anywhere will focus the input */
+    cursor: text;
+    transition:
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
+  }
+
+  &.is-active {
+    outline: 0;
+    border-color: rgb(134, 182.5, 254);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  &.is-disabled {
+    opacity: 0.75;
+    [data-bs-theme='light'] & {
+      background-color: #eaeef2;
+    }
+    /* Prevent any clicking on the component */
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  &.is-invalid {
+    border-color: #fd5956;
+    box-shadow: 0 0 0 2px rgba(253, 86, 83, 0.25);
+  }
+
+  &__label {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  &__list {
+    /* Do not use display: contents, it's too buggy */
+    display: inline;
+    padding: 0;
+
+    &-item {
+      display: inline;
+      list-style: none;
+    }
+  }
+
+  &__tag {
+    margin: 0 0.25rem 0.25rem 0;
+    padding: 0.375rem 0.5rem;
+    border: 0;
+    border-radius: 3px;
+    color: #ffffff;
+    background-color: var(--bs-primary);
+    /* match the font styles */
+    font-size: inherit;
+    line-height: inherit;
+    transition:
+      color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
+
+    &:hover {
+      color: #ffffff;
+      background-color: rgb(11.05, 93.5, 215.05);
+    }
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 0.65rem;
+      height: 0.65rem;
+      clip-path: polygon(
+        10% 0,
+        0 10%,
+        40% 50%,
+        0 90%,
+        10% 100%,
+        50% 60%,
+        90% 100%,
+        100% 90%,
+        60% 50%,
+        100% 10%,
+        90% 0,
+        50% 40%
+      );
+      margin-left: 0.5rem;
+      font-size: 0.875rem;
+      background-color: var(--bs-secondary-color);
+    }
+
+    &:hover::after {
+      background-color: #ffffff;
+    }
+  }
+
+  &__combobox {
+    display: inline-block;
+    /* match tag layout */
+    padding: 0.375rem 0.25rem;
+    margin-bottom: 0.25rem;
+    /* prevents autoresize overflowing the container */
+    max-width: 100%;
+
+    &-input {
+      /* prevent autoresize overflowing the container */
+      max-width: 100%;
+      /* remove styles and layout from this element */
+      margin: 0;
+      padding: 0;
+      border: 0;
+      outline: none;
+      background: none;
+      /* match the font styles */
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    &-input::placeholder {
+      color: var(--bs-secondary-color);
+      opacity: 1;
+    }
+  }
+
+  &__listbox {
+    position: absolute;
+    z-index: 1;
+    top: calc(100% + 5px);
+    /* Negate the border width on the container */
+    left: -2px;
+    right: -2px;
+    max-height: 12.5rem;
+    overflow-y: auto;
+    background: var(--bs-modal-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    /* box-shadow:
+      rgba(0, 0, 0, 0.1) 0 10px 15px -4px,
+      rgba(0, 0, 0, 0.05) 0 4px 6px -2px; */
+
+    &-option {
+      padding: 0.375rem 0.5rem;
+
+      &:hover {
+        cursor: pointer;
+        color: #ffffff;
+        background: #0d6efd;
+      }
+
+      &:not([aria-disabled='true']).is-active {
+        background: rgb(11.05, 93.5, 215.05);
+        color: #ffffff;
+      }
+
+      &[aria-disabled='true'] {
+        color: #7c7d86;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      &[aria-selected='true']::after {
+        content: '✓';
+        margin-left: 0.5rem;
+      }
+
+      &[aria-selected='true']:not(.is-active)::after {
+        color: var(--bs-secondary-color);
+      }
+
+      &-highlight {
+        background-color: var(--bs-highlight-bg);
+        color: var(--bs-highlight-color);
+      }
+    }
+  }
+}
+
+.tag-group {
+  & {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    padding: 8px;
+    gap: 8px;
+    background-color: #00000003;
+    margin: 0.25rem 0.5rem 0.5rem 0.25rem;
+    justify-content: flex-start;
+    border: 1px solid #e2e2e2;
+    align-items: flex-start;
+    border-radius: 4px;
+  }
+
+  & ul {
+    margin: 0;
+  }
+
+  & > p {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5rem;
+    color: #00000080;
+  }
+}

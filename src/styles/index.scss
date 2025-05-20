@@ -380,7 +380,8 @@ button#freemap-logo {
 
   &:hover,
   &-dropping {
-    background-color: #d9edf7;
+    background-color: var(--bs-highlight-bg);
+    color: var(--bs-highlight-color);
   }
 }
 
