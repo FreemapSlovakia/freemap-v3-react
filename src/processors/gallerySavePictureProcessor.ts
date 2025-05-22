@@ -6,7 +6,7 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { parseCoordinates } from '../coordinatesParser.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,

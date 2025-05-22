@@ -6,9 +6,9 @@ import { mapRefocus } from '../actions/mapActions.js';
 import { basicModals } from '../constants.js';
 import { DocumentKey } from '../documents/index.js';
 import { OverlayLetters } from '../mapDefinitions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 let lastActionType: string | undefined;
 

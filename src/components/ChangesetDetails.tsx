@@ -1,4 +1,4 @@
-import { CSSProperties, ReactElement } from 'react';
+import type { CSSProperties, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   Changeset,

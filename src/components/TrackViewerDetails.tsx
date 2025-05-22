@@ -1,6 +1,6 @@
 import { distance } from '@turf/distance';
 import { Geometry } from 'geojson';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { formatDistance } from '../distanceFormatter.js';
 import { smoothElevations } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';

@@ -4,7 +4,7 @@ import { authWithGarmin } from '../actions/authActions.js';
 import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { HttpError, httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { getExportables } from './garminExport.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({

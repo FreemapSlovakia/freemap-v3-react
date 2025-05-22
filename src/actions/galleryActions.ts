@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
-import { PictureModel } from '../components/gallery/GalleryEditForm.js';
-import { LatLon, User } from '../types/common.js';
+import type { PictureModel } from '../components/gallery/GalleryEditForm.js';
+import type { User } from '../types/auth.js';
+import type { LatLon } from '../types/common.js';
 
 export interface GalleryItem {
   id: number;

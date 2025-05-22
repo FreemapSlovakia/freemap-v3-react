@@ -8,7 +8,7 @@ import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import { baseLayers, overlayLayers } from '../mapDefinitions.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;

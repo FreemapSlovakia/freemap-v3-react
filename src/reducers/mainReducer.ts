@@ -46,7 +46,7 @@ import {
   Tool,
 } from '../actions/mainActions.js';
 import { DocumentKey } from '../documents/index.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 interface Location extends LatLon {
   accuracy: number;

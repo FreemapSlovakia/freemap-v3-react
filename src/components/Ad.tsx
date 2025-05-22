@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import fallback from '../images/rovas_reklama.svg';

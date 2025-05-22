@@ -16,7 +16,7 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
 import { baseLayers } from '../mapDefinitions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,

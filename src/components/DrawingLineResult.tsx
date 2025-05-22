@@ -44,7 +44,7 @@ import {
   drawingLinePolys,
   selectingModeSelector,
 } from '../selectors/mainSelectors.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],

@@ -5,7 +5,7 @@ import {
 } from '../actions/l10nActions.js';
 import { httpRequest } from '../httpRequest.js';
 import { getEffectiveChosenLanguage } from '../langUtils.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const l10nSetLanguageProcessor: Processor = {
   actionCreator: [l10nSetChosenLanguage, authSetUser],

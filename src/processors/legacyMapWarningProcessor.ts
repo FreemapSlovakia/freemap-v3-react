@@ -8,7 +8,7 @@ import {
   toastsAdd,
   toastsRemove,
 } from '../actions/toastsActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const legacyMapWarningProcessor: Processor = {
   stateChangePredicate: (state) => state.map.mapType,

@@ -3,7 +3,7 @@ import { Tool } from '../actions/mainActions.js';
 import { PickMode } from '../actions/routePlannerActions.js';
 import marker from '../images/cursors/marker.svg';
 import pencil from '../images/cursors/pencil.svg';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 import { Track } from '../types/trackingTypes.js';
 
 export const toolSelector = (state: RootState): Tool | null => state.main.tool;

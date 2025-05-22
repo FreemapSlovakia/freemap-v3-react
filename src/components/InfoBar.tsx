@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { hideInfoBar } from '../actions/mainActions.js';

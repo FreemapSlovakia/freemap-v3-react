@@ -6,7 +6,7 @@ import {
   wikiSetPreview,
 } from '../actions/wikiActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 
 interface WikiResponse1 {

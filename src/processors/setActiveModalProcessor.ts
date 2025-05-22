@@ -1,6 +1,6 @@
 import { setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
   actionCreator: setActiveModal,

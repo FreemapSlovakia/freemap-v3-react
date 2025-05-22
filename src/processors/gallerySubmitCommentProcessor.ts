@@ -3,7 +3,7 @@ import {
   gallerySubmitComment,
 } from '../actions/galleryActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,

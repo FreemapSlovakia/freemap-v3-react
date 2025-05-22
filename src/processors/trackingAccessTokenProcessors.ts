@@ -2,9 +2,9 @@ import { assert } from 'typia';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { trackingActions } from '../actions/trackingActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { StringDates } from '../types/common.js';
-import { AccessToken } from '../types/trackingTypes.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { StringDates } from '../types/common.js';
+import type { AccessToken } from '../types/trackingTypes.js';
 
 export const saveAccessTokenProcessor: Processor<
   typeof trackingActions.saveAccessToken

@@ -7,7 +7,7 @@ import { deleteFeature, selectFeature } from '../actions/mainActions.js';
 import { routePlannerDelete } from '../actions/routePlannerActions.js';
 import { trackingActions } from '../actions/trackingActions.js';
 import { trackViewerDelete } from '../actions/trackViewerActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const deleteProcessor: Processor = {
   actionCreator: deleteFeature,

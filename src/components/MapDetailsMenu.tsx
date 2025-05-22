@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { DeleteButton } from './DeleteButton.js';
 import { ToolMenu } from './ToolMenu.js';

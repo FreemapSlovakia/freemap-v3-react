@@ -1,13 +1,13 @@
 import { featureCollection, lineString, point } from '@turf/helpers';
-import { Feature, LineString, Point, Polygon } from 'geojson';
+import type { Feature, LineString, Point, Polygon } from 'geojson';
 import { assert } from 'typia';
 import { clearMapFeatures } from '../actions/mainActions.js';
 import { osmLoadRelation } from '../actions/osmActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
 import { mergeLines } from '../geoutils.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { OsmNode, OsmRelation, OsmResult, OsmWay } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { OsmNode, OsmRelation, OsmResult, OsmWay } from '../types/osm.js';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,

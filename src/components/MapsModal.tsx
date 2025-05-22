@@ -1,4 +1,10 @@
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Form } from 'react-bootstrap';
 import { setActiveModal } from '../actions/mainActions.js';
 import {

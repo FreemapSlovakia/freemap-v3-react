@@ -1,15 +1,15 @@
 import { assert } from 'typia';
 import { authLogout, authSetUser } from '../actions/authActions.js';
-import { Line, Point } from '../actions/drawingLineActions.js';
+import type { Line, Point } from '../actions/drawingLineActions.js';
 import {
-  MapData,
-  MapMeta,
+  type MapData,
+  type MapMeta,
   mapsLoad,
   mapsLoaded,
 } from '../actions/mapsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { StringDates } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { StringDates } from '../types/common.js';
 
 interface CompatLine {
   type: 'polygon' | 'line' | 'area' | 'distance';

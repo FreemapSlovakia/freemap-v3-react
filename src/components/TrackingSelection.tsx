@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { FaBullseye } from 'react-icons/fa';
 import { useMessages } from '../l10nInjector.js';
 import { Selection } from './Selection.js';

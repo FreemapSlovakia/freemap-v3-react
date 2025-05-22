@@ -8,7 +8,7 @@ import { WikiPoint, wikiSetPoints } from '../actions/wikiActions.js';
 import { cancelRegister } from '../cancelRegister.js';
 import { httpRequest } from '../httpRequest.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 
 interface WikiResponse {

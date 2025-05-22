@@ -3,7 +3,7 @@ import {
   trackViewerSetData,
 } from '../actions/trackViewerActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const trackViewerGpxLoadProcessor: Processor = {
   actionCreator: trackViewerGpxLoad,

@@ -15,7 +15,7 @@ import {
 } from '../actions/routePlannerActions.js';
 import { ToastAction, toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';

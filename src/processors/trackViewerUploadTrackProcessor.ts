@@ -6,8 +6,8 @@ import {
   trackViewerUploadTrack,
 } from '../actions/trackViewerActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { RootState } from '../store.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { RootState } from '../store.js';
 
 export async function handleTrackUpload({
   dispatch,

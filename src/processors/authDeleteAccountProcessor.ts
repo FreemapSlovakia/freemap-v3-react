@@ -2,7 +2,7 @@ import { authDeleteAccount, authLogout } from '../actions/authActions.js';
 import { gallerySetLayerDirty } from '../actions/galleryActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const authDeleteAccountProcessor: Processor<typeof authDeleteAccount> = {
   actionCreator: authDeleteAccount,

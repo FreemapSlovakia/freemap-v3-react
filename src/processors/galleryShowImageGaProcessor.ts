@@ -1,5 +1,5 @@
 import { gallerySetImage } from '../actions/galleryActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryShowImageGaProcessor: Processor = {
   actionCreator: gallerySetImage,

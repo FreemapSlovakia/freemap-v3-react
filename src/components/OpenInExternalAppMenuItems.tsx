@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaClipboard,
@@ -23,7 +23,7 @@ import {
   getZbgisUrl,
 } from '../externalUrlUtils.js';
 import { useMessages } from '../l10nInjector.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 interface Props extends LatLon {
   lat: number;

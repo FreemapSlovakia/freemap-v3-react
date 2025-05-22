@@ -1,5 +1,5 @@
 import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
+import { type ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../../actions/galleryActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';

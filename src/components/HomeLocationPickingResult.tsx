@@ -1,5 +1,5 @@
 import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FaHome } from 'react-icons/fa';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';

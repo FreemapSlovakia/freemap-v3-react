@@ -4,7 +4,7 @@ import {
   CancelItem,
   cancelRegister,
 } from './cancelRegister.js';
-import { RootState } from './store.js';
+import type { RootState } from './store.js';
 
 export class HttpError extends Error {
   status: number;

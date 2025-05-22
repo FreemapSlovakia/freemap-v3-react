@@ -1,5 +1,11 @@
 import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,

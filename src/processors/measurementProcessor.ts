@@ -11,10 +11,10 @@ import {
 } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+import type { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { LatLon } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { LatLon } from '../types/common.js';
 
 const cancelType = [
   clearMapFeatures.type,

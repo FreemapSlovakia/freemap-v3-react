@@ -1,5 +1,5 @@
 import { authWithFacebook } from '../actions/authActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const authWithFacebookProcessor: Processor<typeof authWithFacebook> = {
   actionCreator: authWithFacebook,

@@ -5,8 +5,8 @@ import { osmLoadWay } from '../actions/osmActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
 import { positionsEqual, shouldBeArea } from '../geoutils.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { OsmResult } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { OsmResult } from '../types/osm.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,

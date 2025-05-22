@@ -1,5 +1,5 @@
 import { Point } from 'leaflet';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { RichMarker } from '../components/RichMarker.js';

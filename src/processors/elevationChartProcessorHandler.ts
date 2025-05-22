@@ -18,13 +18,13 @@ import {
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
 } from '../actions/elevationChartActions.js';
-import { RootAction } from '../actions/index.js';
+import type { RootAction } from '../actions/index.js';
 import { clearMapFeatures, selectFeature } from '../actions/mainActions.js';
 import { containsElevations } from '../geoutils.js';
 import { httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
-import { ElevationProfilePoint } from '../reducers/elevationChartReducer.js';
-import { RootState } from '../store.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ElevationProfilePoint } from '../reducers/elevationChartReducer.js';
+import type { RootState } from '../store.js';
 
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch,

@@ -1,5 +1,5 @@
 import { divIcon } from 'leaflet';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Circle, Marker } from 'react-leaflet';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 

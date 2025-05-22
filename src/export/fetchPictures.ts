@@ -2,7 +2,7 @@ import { assert } from 'typia';
 import { createFilter } from '../galleryUtils.js';
 import { httpRequest } from '../httpRequest.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 
 export type Picture = {

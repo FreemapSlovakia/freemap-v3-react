@@ -8,8 +8,8 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { OverpassResult } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { OverpassResult } from '../types/overpass.js';
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;

@@ -1,5 +1,5 @@
 import { Icon } from 'leaflet';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { createRoot } from 'react-dom/client';
 import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';

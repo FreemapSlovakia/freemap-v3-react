@@ -1,5 +1,5 @@
-import { Modifier, Obj } from '@popperjs/core';
-import { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
+import type { Modifier, Obj } from '@popperjs/core';
+import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 
 const positionFixerModifier: Modifier<'positionFixer', Obj> = {
   name: 'positionFixer',

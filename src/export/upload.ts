@@ -3,7 +3,7 @@ import { ExportTarget } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { loadGapi, startGoogleAuth } from '../gapiLoader.js';
 import { httpRequest } from '../httpRequest.js';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 import { hasProperty } from '../typeUtils.js';
 
 export const licenseNotice =

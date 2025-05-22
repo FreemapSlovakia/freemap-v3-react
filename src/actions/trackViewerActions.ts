@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { FeatureCollection } from 'geojson';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 export type ColorizingMode = 'elevation' | 'steepness';
 

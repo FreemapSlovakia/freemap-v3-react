@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { basicModals, tools } from '../constants.js';
 import { DocumentKey } from '../documents/index.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 import { CustomLayer, LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];

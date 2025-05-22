@@ -1,6 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 
 export const statePersistingMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>

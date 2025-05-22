@@ -1,6 +1,6 @@
 import { authWithGarmin2 } from '../actions/authActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
 
 const handle: ProcessorHandler<typeof authWithGarmin2> = async ({

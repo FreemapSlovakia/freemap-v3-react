@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,

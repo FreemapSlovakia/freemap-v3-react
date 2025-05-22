@@ -1,8 +1,11 @@
-import { LeafletMouseEvent } from 'leaflet';
+import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { Point, drawingLineAddPoint } from '../actions/drawingLineActions.js';
+import {
+  type Point,
+  drawingLineAddPoint,
+} from '../actions/drawingLineActions.js';
 import { drawingMeasure } from '../actions/drawingPointActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { isEventOnMap } from '../mapUtils.js';

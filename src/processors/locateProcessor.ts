@@ -3,7 +3,7 @@ import { setLocation, toggleLocate } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 let watch: number | undefined;
 

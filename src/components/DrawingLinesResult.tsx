@@ -1,5 +1,5 @@
 import Color from 'color';
-import { ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { colors } from '../constants.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';

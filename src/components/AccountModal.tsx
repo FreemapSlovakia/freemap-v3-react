@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import {
   FaCheck,

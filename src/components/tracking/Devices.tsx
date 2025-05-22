@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

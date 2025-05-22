@@ -22,7 +22,7 @@ import { useMessages } from '../l10nInjector.js';
 import { getOsmMapping, resolveGenericName } from '../osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { Node, OsmMapping } from '../osm/types.js';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 import { removeAccents } from '../stringUtils.js';
 import { HideArrow } from './SearchMenu.js';
 import { ToolMenu } from './ToolMenu.js';

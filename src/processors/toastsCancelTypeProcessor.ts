@@ -1,5 +1,5 @@
 import { toastsRemove } from '../actions/toastsActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const toastsCancelTypeProcessor: Processor = {
   handle: async ({ dispatch, getState, action }) => {

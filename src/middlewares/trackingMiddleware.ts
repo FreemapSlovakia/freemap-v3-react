@@ -3,7 +3,7 @@ import { is } from 'typia';
 import { rpcCall, rpcResponse } from '../actions/rpcActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { wsClose, wsOpen } from '../actions/websocketActions.js';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 import { TrackedDevice } from '../types/trackingTypes.js';
 
 export function createTrackingMiddleware(): Middleware<

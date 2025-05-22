@@ -7,11 +7,14 @@ import {
   setTool,
 } from '../actions/mainActions.js';
 import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
-import { SearchResult, searchSetResults } from '../actions/searchActions.js';
+import {
+  type SearchResult,
+  searchSetResults,
+} from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
-import { OverpassElement } from '../types/common.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { OverpassElement } from '../types/overpass.js';
 
 const cancelType = [
   clearMapFeatures.type,

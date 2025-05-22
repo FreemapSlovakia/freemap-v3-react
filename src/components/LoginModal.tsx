@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import { type ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { RootAction } from '../actions/index.js';
+import type { RootAction } from '../actions/index.js';
 import {
   ToastAction,
   toastsRemove,

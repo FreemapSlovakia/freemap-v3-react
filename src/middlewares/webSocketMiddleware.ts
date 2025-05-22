@@ -7,7 +7,7 @@ import {
   wsSend,
   wsStateChanged,
 } from '../actions/websocketActions.js';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 
 export function createWebsocketMiddleware(): Middleware<{}, RootState> {
   let ws: WebSocket | null = null;

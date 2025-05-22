@@ -6,7 +6,7 @@ import {
 } from '../actions/galleryActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],

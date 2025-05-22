@@ -14,9 +14,9 @@ import {
 import { parseCoordinates } from '../coordinatesParser.js';
 import { httpRequest } from '../httpRequest.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 interface NominatimResult {
   osm_id?: number;

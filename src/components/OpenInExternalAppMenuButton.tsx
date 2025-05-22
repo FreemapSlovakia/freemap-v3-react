@@ -5,7 +5,7 @@ import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';
 import { useMessages } from '../l10nInjector.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
 
 interface Props extends LatLon {

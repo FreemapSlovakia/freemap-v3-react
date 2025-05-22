@@ -7,7 +7,7 @@ import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerToggleElevationChart,
 } from '../actions/routePlannerActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const routePlannerToggleElevationChartProcessor: Processor<
   | typeof routePlannerToggleElevationChart

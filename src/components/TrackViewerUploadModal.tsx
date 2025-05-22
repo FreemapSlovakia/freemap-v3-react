@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';

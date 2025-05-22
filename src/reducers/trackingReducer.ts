@@ -5,8 +5,8 @@ import { mapsLoaded } from '../actions/mapsActions.js';
 import { rpcEvent, rpcResponse } from '../actions/rpcActions.js';
 import { trackingActions } from '../actions/trackingActions.js';
 import { wsStateChanged } from '../actions/websocketActions.js';
-import { StringDates } from '../types/common.js';
-import {
+import type { StringDates } from '../types/common.js';
+import type {
   AccessToken,
   Device,
   Track,

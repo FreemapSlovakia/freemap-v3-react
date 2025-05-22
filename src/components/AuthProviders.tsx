@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaFacebook, FaGoogle } from 'react-icons/fa';
 import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
@@ -12,7 +12,7 @@ import {
 } from '../actions/authActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
-import { AuthProvider } from '../types/common.js';
+import type { AuthProvider } from '../types/auth.js';
 
 type Props = { mode: 'login' | 'connect' | 'disconnect' };
 

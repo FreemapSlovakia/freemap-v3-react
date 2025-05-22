@@ -40,7 +40,7 @@ import {
   TransportType,
   transportTypeDefs,
 } from '../transportTypeDefs.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 export interface RoutePlannerCleanResultState {
   alternatives: Alternative[];

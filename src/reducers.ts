@@ -1,10 +1,10 @@
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
-import { GalleryColorizeBy } from './actions/galleryActions.js';
+import type { GalleryColorizeBy } from './actions/galleryActions.js';
 import {
   authInitialState,
   authReducer,
-  AuthState,
+  type AuthState,
 } from './reducers/authReducer.js';
 import { changesetReducer } from './reducers/changesetsReducer.js';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer.js';
@@ -17,29 +17,29 @@ import {
 import {
   l10nInitialState,
   l10nReducer,
-  L10nState,
+  type L10nState,
 } from './reducers/l10nReducer.js';
 import {
   mainInitialState,
   mainReducer,
-  MainState,
+  type MainState,
 } from './reducers/mainReducer.js';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer.js';
 import {
   mapInitialState,
   mapReducer,
-  MapState,
+  type MapState,
 } from './reducers/mapReducer.js';
 import { mapsReducer } from './reducers/mapsReducer.js';
 import {
   objectInitialState,
   objectsReducer,
-  ObjectsState,
+  type ObjectsState,
 } from './reducers/objectsReducer.js';
 import {
   routePlannerInitialState,
   routePlannerReducer,
-  RoutePlannerState,
+  type RoutePlannerState,
 } from './reducers/routePlannerReducer.js';
 import { searchReducer } from './reducers/searchReducer.js';
 import { toastsReducer } from './reducers/toastsReducer.js';
@@ -47,11 +47,11 @@ import { trackingReducer } from './reducers/trackingReducer.js';
 import {
   trackViewerInitialState,
   trackViewerReducer,
-  TrackViewerState,
+  type TrackViewerState,
 } from './reducers/trackViewerReducer.js';
 import { websocketReducer } from './reducers/websocketReducer.js';
 import { wikiReducer } from './reducers/wikiReducer.js';
-import { RootState } from './store.js';
+import type { RootState } from './store.js';
 import { transportTypeDefs } from './transportTypeDefs.js';
 
 export const reducers = {

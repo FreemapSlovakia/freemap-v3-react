@@ -1,7 +1,7 @@
 import { authWithGoogle } from '../actions/authActions.js';
 import { startGoogleAuth } from '../gapiLoader.js';
 import { httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { hasProperty } from '../typeUtils.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
 

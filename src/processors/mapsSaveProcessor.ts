@@ -1,16 +1,16 @@
 import { assert } from 'typia';
 import {
-  MapData,
-  MapMeta,
+  type MapData,
+  type MapMeta,
   mapsLoadList,
   mapsSave,
   mapsSetMeta,
 } from '../actions/mapsActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { RootState } from '../store.js';
-import { StringDates } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { RootState } from '../store.js';
+import type { StringDates } from '../types/common.js';
 import { handleTrackUpload } from './trackViewerUploadTrackProcessor.js';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {

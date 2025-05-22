@@ -2,7 +2,7 @@ import { assert } from 'typia';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { trackingActions } from '../actions/trackingActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { Device } from '../types/trackingTypes.js';
 
 export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =

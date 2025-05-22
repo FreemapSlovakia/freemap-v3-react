@@ -4,8 +4,8 @@ import {
   routePlannerSetStart,
 } from '../actions/routePlannerActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { LatLon } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { LatLon } from '../types/common.js';
 
 export const routePlannerRefocusMapProcessor: Processor<
   typeof routePlannerSetStart | typeof routePlannerSetFinish

@@ -2,7 +2,7 @@ import { Fragment, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { documentShow } from '../actions/mainActions.js';
-import { DocumentKey } from '../documents/index.js';
+import type { DocumentKey } from '../documents/index.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
 import {

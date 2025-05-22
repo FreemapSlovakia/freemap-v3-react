@@ -8,7 +8,7 @@ import { setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { parseCoordinates } from '../coordinatesParser.js';
 import { httpRequest } from '../httpRequest.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   const { items, uploadingId } = getState().gallery;

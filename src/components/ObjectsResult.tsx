@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFeature } from '../actions/mainActions.js';
@@ -17,7 +17,7 @@ import {
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { OsmMapping } from '../osm/types.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
-import { RootState } from '../store.js';
+import type { RootState } from '../store.js';
 import { RichMarker } from './RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {

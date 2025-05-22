@@ -4,7 +4,7 @@ import {
   authSetPremium,
   authSetUser,
 } from '../actions/authActions.js';
-import { User } from '../types/common.js';
+import type { User } from '../types/auth.js';
 
 export interface AuthState {
   validated: boolean;

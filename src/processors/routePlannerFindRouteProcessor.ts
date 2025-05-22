@@ -13,7 +13,7 @@ import {
   routePlannerSetWeighting,
   routePlannerSwapEnds,
 } from '../actions/routePlannerActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const updateRouteTypes = [
   routePlannerSetStart,

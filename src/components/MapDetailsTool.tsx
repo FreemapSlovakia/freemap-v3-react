@@ -1,10 +1,10 @@
 import { LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
 import { isEventOnMap } from '../mapUtils.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 export function MapDetailsTool(): ReactElement | null {
   const dispatch = useDispatch();

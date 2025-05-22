@@ -19,7 +19,7 @@ import {
   getZbgisUrl,
 } from '../externalUrlUtils.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   actionCreator: openInExternalApp,

@@ -1,4 +1,4 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
 

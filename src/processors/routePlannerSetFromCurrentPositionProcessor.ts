@@ -4,7 +4,7 @@ import {
   routePlannerSetStart,
 } from '../actions/routePlannerActions.js';
 import { getCurrentPosition } from '../geoutils.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const routePlannerSetFromCurrentPositionProcessor: Processor<
   typeof routePlannerSetFromCurrentPosition

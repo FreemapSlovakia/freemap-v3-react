@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import missingTile from '../images/missing-tile-256x256.png';

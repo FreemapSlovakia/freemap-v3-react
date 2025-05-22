@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { FaFacebook, FaGithub, FaYoutube } from 'react-icons/fa';
 import { useMessages } from '../../l10nInjector.js';
 

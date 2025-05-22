@@ -4,7 +4,7 @@ import {
   elevationChartSetTrackGeojson,
 } from '../actions/elevationChartActions.js';
 import { trackViewerToggleElevationChart } from '../actions/trackViewerActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,

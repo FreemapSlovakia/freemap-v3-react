@@ -42,7 +42,7 @@ import { PictureModel } from '../components/gallery/GalleryEditForm.js';
 import { parseCoordinates } from '../coordinatesParser.js';
 import { toDatetimeLocal } from '../dateUtils.js';
 import { latLonToString } from '../geoutils.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 export interface GalleryState {
   imageIds: number[] | null;

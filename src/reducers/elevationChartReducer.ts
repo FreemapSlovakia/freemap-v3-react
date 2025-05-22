@@ -12,7 +12,7 @@ import {
 } from '../actions/elevationChartActions.js';
 import { selectFeature, setTool } from '../actions/mainActions.js';
 import { routePlannerSetResult } from '../actions/routePlannerActions.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 
 export interface ElevationProfilePoint extends LatLon {
   climbUp?: number;

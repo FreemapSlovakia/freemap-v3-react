@@ -1,6 +1,6 @@
 import { enableUpdatingUrl } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 let prevMapType: string | undefined;
 

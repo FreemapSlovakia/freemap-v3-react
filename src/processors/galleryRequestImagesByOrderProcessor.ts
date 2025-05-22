@@ -6,7 +6,7 @@ import {
 } from '../actions/galleryActions.js';
 import { createFilter } from '../galleryUtils.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 
 export const galleryRequestImagesByOrderProcessor: Processor<

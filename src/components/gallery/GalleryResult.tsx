@@ -1,5 +1,5 @@
 import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../../actions/galleryActions.js';

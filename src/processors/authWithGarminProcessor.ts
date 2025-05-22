@@ -1,5 +1,5 @@
 import { authWithGarmin } from '../actions/authActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const authWithGarminProcessor: Processor<typeof authWithGarmin> = {
   actionCreator: authWithGarmin,

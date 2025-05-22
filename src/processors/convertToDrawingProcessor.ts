@@ -8,7 +8,7 @@ import { routePlannerDelete } from '../actions/routePlannerActions.js';
 import { searchClear } from '../actions/searchActions.js';
 import { trackViewerDelete } from '../actions/trackViewerActions.js';
 import { mergeLines } from '../geoutils.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,

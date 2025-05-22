@@ -1,6 +1,6 @@
 import { destination } from '@turf/destination';
 import { lineString } from '@turf/helpers';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaChartArea,

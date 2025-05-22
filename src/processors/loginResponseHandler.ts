@@ -3,8 +3,8 @@ import { assert } from 'typia';
 import { authSetUser } from '../actions/authActions.js';
 import { removeAds, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { RootState } from '../store.js';
-import { LoginResponse } from '../types/common.js';
+import type { RootState } from '../store.js';
+import type { LoginResponse } from '../types/auth.js';
 
 export async function handleLoginResponse(
   res: Response,

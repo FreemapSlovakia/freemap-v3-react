@@ -1,5 +1,5 @@
 import { exportMapFeatures } from '../actions/mainActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,

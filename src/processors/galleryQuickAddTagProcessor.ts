@@ -6,7 +6,7 @@ import {
 } from '../actions/galleryActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryQuickAddTagProcessor: Processor<
   typeof galleryQuickAddTag | typeof galleryQuickChangePremium

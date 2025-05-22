@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

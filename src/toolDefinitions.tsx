@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import {
   FaDrawPolygon,
   FaInfo,
@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { Tool } from './actions/mainActions.js';
-import { Messages } from './translations/messagesInterface.js';
+import type { Messages } from './translations/messagesInterface.js';
 
 export interface ToolDefinition {
   tool: Tool;

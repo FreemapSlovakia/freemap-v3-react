@@ -12,7 +12,7 @@ import { mapRefocus } from '../actions/mapActions.js';
 import { toastsAdd, toastsRemove } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 
 export const changesetsTrackProcessor: Processor = {

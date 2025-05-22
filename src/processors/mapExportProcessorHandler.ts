@@ -6,7 +6,7 @@ import { toastsAdd } from '../actions/toastsActions.js';
 import { colors } from '../constants.js';
 import { httpRequest } from '../httpRequest.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 

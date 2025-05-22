@@ -1,6 +1,6 @@
 import Color from 'color';
 import { DragEndEvent, LeafletEvent } from 'leaflet';
-import { ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';

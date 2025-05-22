@@ -3,7 +3,7 @@ import { authInit } from '../actions/authActions.js';
 import { removeAds } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 type CallbackData = {
   freemap: {

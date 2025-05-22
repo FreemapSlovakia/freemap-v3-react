@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import type { Dispatch } from 'redux';
 import { assert, is } from 'typia';
 import {
   ChangesetParams,
@@ -18,7 +18,7 @@ import {
   galleryRequestImage,
   gallerySetFilter,
 } from './actions/galleryActions.js';
-import { RootAction } from './actions/index.js';
+import type { RootAction } from './actions/index.js';
 import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
   documentShow,
@@ -30,7 +30,7 @@ import {
   Tool,
 } from './actions/mainActions.js';
 import {
-  CustomLayer,
+  type CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
 } from './actions/mapActions.js';
@@ -49,21 +49,21 @@ import {
 import { searchSetQuery } from './actions/searchActions.js';
 import { trackingActions } from './actions/trackingActions.js';
 import {
-  ColorizingMode,
+  type ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
 } from './actions/trackViewerActions.js';
 import { tools } from './constants.js';
-import { DocumentKey } from './documents/index.js';
+import type { DocumentKey } from './documents/index.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from './oldFreemapUtils.js';
-import { MyStore, RootState } from './store.js';
-import { TransportType } from './transportTypeDefs.js';
-import { LatLon } from './types/common.js';
-import { TrackedDevice } from './types/trackingTypes.js';
+import type { MyStore, RootState } from './store.js';
+import type { TransportType } from './transportTypeDefs.js';
+import type { LatLon } from './types/common.js';
+import type { TrackedDevice } from './types/trackingTypes.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {

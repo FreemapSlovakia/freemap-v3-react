@@ -7,7 +7,7 @@ import {
 } from '@turf/helpers';
 import { FeatureCollection } from 'geojson';
 import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
 import { TrackingState } from '../reducers/trackingReducer.js';
 import { fetchPictures, Picture } from './fetchPictures.js';

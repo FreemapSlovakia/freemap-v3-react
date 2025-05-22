@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode, useCallback } from 'react';
+import { type ReactElement, ReactNode, useCallback } from 'react';
 import { Alert, Button, ButtonToolbar } from 'react-bootstrap';
-import { RootAction } from '../actions/index.js';
+import type { RootAction } from '../actions/index.js';
 import { ResolvedToast } from '../actions/toastsActions.js';
 import '../styles/toasts.scss';
 

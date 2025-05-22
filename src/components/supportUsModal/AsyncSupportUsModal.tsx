@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { ShowProps } from '../../hooks/useShow.js';
 import { AsyncModal } from '../AsyncModal.js';
 

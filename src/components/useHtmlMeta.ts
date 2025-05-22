@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { Modal } from '../actions/mainActions.js';
+import type { Modal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { getMessageByKey, useMessages } from '../l10nInjector.js';
-import { MessagePaths } from '../types/common.js';
+import type { MessagePaths } from '../types/common.js';
 
 // TODO Partiel because of missing documents (formerly tips)
 const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {

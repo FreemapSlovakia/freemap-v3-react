@@ -1,6 +1,6 @@
 import { selectFeature } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { trackingTrackSelector } from '../selectors/mainSelectors.js';
 
 export const trackingFollowProcessor: Processor = {

@@ -1,5 +1,5 @@
 import { toastsRestartTimeout } from '../actions/toastsActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 import { setupTimeout, timeoutMap } from '../processors/toasts.js';
 
 export const toastsRestartTimeoutProcessor: Processor<

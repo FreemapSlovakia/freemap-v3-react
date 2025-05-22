@@ -1,7 +1,7 @@
 import { Feature, FeatureCollection } from 'geojson';
 import { exportMapFeatures, setActiveModal } from '../actions/mainActions.js';
 import { colors } from '../constants.js';
-import { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { DrawingLinesState } from '../reducers/drawingLinesReducer.js';
 import { DrawingPointsState } from '../reducers/drawingPointsReducer.js';
 import { ObjectsState } from '../reducers/objectsReducer.js';
@@ -9,7 +9,7 @@ import { RoutePlannerState } from '../reducers/routePlannerReducer.js';
 import { TrackingState } from '../reducers/trackingReducer.js';
 import { TrackViewerState } from '../reducers/trackViewerReducer.js';
 import { escapeHtml } from '../stringUtils.js';
-import { LatLon } from '../types/common.js';
+import type { LatLon } from '../types/common.js';
 import { fetchPictures, Picture } from './fetchPictures.js';
 import {
   addAttribute,

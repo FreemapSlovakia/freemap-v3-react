@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Card, Dropdown } from 'react-bootstrap';
 import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

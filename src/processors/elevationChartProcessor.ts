@@ -1,5 +1,5 @@
 import { elevationChartSetTrackGeojson } from '../actions/elevationChartActions.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const elevationChartProcessor: Processor<
   typeof elevationChartSetTrackGeojson

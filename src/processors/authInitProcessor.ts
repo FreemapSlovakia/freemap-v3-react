@@ -3,8 +3,8 @@ import { assert } from 'typia';
 import { authInit, authSetUser } from '../actions/authActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { User } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { User } from '../types/auth.js';
 
 function track(id: number | undefined) {
   window._paq.push(
