@@ -123,15 +123,18 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
-if ('serviceWorker' in window.navigator) {
-  window.navigator.serviceWorker.register('/sw.js').catch((e) => {
+window.navigator.serviceWorker?.register('/sw.js').catch((e) => {
+  console.warn('Error registering service worker:', e);
+});
+
+// share target SW
+window.navigator.serviceWorker
+  ?.register('/upload-sw.js', { scope: '/upload' })
+  .catch((e) => {
     console.warn('Error registering service worker:', e);
   });
-}
 
-window.addEventListener('message', (e: MessageEvent) => {
-  const { data } = e;
-
+window.addEventListener('message', ({ data }: MessageEvent) => {
   if (data && typeof data === 'object' && typeof data.freemap === 'object') {
     if (data.freemap.action === 'setEmbedFeatures') {
       store.dispatch(setEmbedFeatures(data.freemap.payload));

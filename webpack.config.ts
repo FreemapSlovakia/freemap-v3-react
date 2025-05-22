@@ -42,10 +42,17 @@ const htmlPluginProps = {
 const config: Configuration = {
   mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
-  entry: './index.tsx',
+  entry: {
+    main: './index.tsx',
+    'upload-sw': './sw/upload-sw.ts',
+  },
   output: {
     clean: true,
-    filename: '[name].[chunkhash].js',
+    filename: (pathData) => {
+      return pathData.chunk?.name === 'upload-sw'
+        ? '[name].js'
+        : '[name].[chunkhash].js';
+    },
     chunkFilename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist'),
   },

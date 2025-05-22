@@ -28,28 +28,6 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     (async () => {
-      const url = new URL(event.request.url);
-
-      // share target
-      if (
-        event.request.method === 'POST' &&
-        url.origin === location.origin &&
-        url.pathname === '/'
-      ) {
-        const data = await event.request.formData();
-
-        const client = await self.clients.get(
-          event.resultingClientId || event.clientId,
-        );
-
-        client?.postMessage({
-          freemap: { action: 'shareFile', payload: data.getAll('file') },
-        });
-
-        // return Response.error();
-        return Response.redirect('/');
-      }
-
       const cacheMode = (await get('cacheMode')) as undefined | CacheMode;
 
       if (!cacheMode || cacheMode === 'networkOnly') {
