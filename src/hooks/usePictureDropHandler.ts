@@ -2,61 +2,10 @@ import ExifReader, { Tags } from 'exifreader';
 import { useCallback } from 'react';
 import { GalleryItem } from '../actions/galleryActions.js';
 import { latLonToString } from '../geoutils.js';
-import { resize } from '../pica-gpu/resize.js';
+import { loadPreview } from '../imagePreview.js';
 import { useAppSelector } from './reduxSelectHook.js';
 
 let nextId = 1;
-
-function loadPreview(
-  file: File,
-  cb: (err?: unknown, dataUrl?: string) => void,
-) {
-  const img = new Image();
-
-  const url = URL.createObjectURL(file);
-
-  img.onerror = () => {
-    URL.revokeObjectURL(url);
-
-    cb(new Error());
-  };
-
-  img.onload = () => {
-    URL.revokeObjectURL(url);
-
-    const canvas = document.createElement('canvas');
-
-    const ratio = 618 / img.naturalWidth;
-
-    const width = img.naturalWidth * ratio * devicePixelRatio;
-
-    const height = img.naturalHeight * ratio * devicePixelRatio;
-
-    canvas.width = width;
-
-    canvas.height = height;
-
-    try {
-      resize(img, canvas, {
-        targetWidth: width,
-        targetHeight: height,
-        filter: 'mks2013',
-      });
-    } catch (err) {
-      cb(err);
-    }
-
-    // TODO play with toBlob (not supported in safari)
-    // canvas2.toBlob((blob) => {
-    //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
-    //   cb();
-    // });
-
-    cb(undefined, canvas.toDataURL());
-  };
-
-  img.src = url;
-}
 
 export function usePictureDropHandler(
   showPreview: boolean,
@@ -168,11 +117,12 @@ export function usePictureDropHandler(
         });
 
         if (showPreview) {
-          loadPreview(file, (err, url) => {
+          // TODO adjust 618 by display width
+          loadPreview(file, 618, (err, key) => {
             if (err) {
               cb(err);
             } else {
-              onItemChange({ id, url });
+              onItemChange({ id, previewKey: key });
 
               cb();
             }

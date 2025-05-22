@@ -13,7 +13,7 @@ export interface GalleryItem {
   dirtyPosition: string | '';
   premium: boolean;
   errors: string[];
-  url?: string;
+  previewKey?: {};
   file: File;
 }
 

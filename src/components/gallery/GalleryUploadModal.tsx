@@ -139,7 +139,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
           ({
             id,
             file,
-            url,
+            previewKey,
             title,
             description,
             takenAt,
@@ -153,7 +153,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
               id={id}
               m={m}
               filename={file.name}
-              url={url}
+              previewKey={previewKey}
               model={{
                 premium,
                 dirtyPosition,

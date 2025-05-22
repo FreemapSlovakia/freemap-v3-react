@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useCallback } from 'react';
+import { Fragment, ReactElement, useCallback, useEffect, useRef } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { GalleryTag } from '../../actions/galleryActions.js';
@@ -6,13 +6,14 @@ import {
   GalleryEditForm,
   PictureModel,
 } from '../../components/gallery/GalleryEditForm.js';
+import { getPreview } from '../../imagePreview.js';
 import spinnerbar from '../../images/spinnerbar.gif';
 import { Messages } from '../../translations/messagesInterface.js';
 
 interface Props {
   id: number;
   filename: string;
-  url?: string;
+  previewKey?: {};
   model: PictureModel;
   allTags: GalleryTag[];
   errors: string[] | null | undefined;
@@ -27,7 +28,7 @@ interface Props {
 export function GalleryUploadItem({
   id,
   filename,
-  url,
+  previewKey,
   disabled,
   model,
   allTags,
@@ -53,14 +54,28 @@ export function GalleryUploadItem({
     [id, onModelChange],
   );
 
+  const canvasContainer = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canvas = previewKey && getPreview(previewKey);
+
+    if (canvas) {
+      canvas.className = 'gallery-image gallery-image-upload';
+
+      canvasContainer.current?.appendChild(canvas);
+    }
+  }, [previewKey]);
+
   return (
     <Fragment key={id}>
-      {showPreview ? (
+      {showPreview && !previewKey ? (
         <img
           className="gallery-image gallery-image-upload"
-          src={url || spinnerbar}
+          src={spinnerbar}
           alt={filename}
         />
+      ) : showPreview && previewKey ? (
+        <div ref={canvasContainer} />
       ) : (
         <h4>{filename}</h4>
       )}
