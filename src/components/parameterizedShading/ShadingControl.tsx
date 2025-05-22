@@ -78,11 +78,10 @@ export function ShadingControl() {
                       id,
                       azimuth: 0,
                       elevation: Math.PI / 2,
-                      color: [128, 128, 128, 255],
+                      colors: [[NaN, [128, 128, 128, 255]]],
                       type: type as ShadingComponentType,
                       brightness: 0,
                       contrast: 1,
-                      weight: 1,
                     });
                   }),
                 ),
@@ -218,7 +217,8 @@ export function ShadingControl() {
           className="mt-3"
           showTriangle={false}
           color={(() => {
-            const color = selectedComponent?.color ?? shading.backgroundColor;
+            const color =
+              selectedComponent?.colors[0][1] ?? shading.backgroundColor;
 
             return rgbaToHexa({
               r: color[0],
@@ -246,7 +246,7 @@ export function ShadingControl() {
                     );
 
                     if (component) {
-                      component.color = colorArr;
+                      component.colors = [[NaN, colorArr]];
                     }
                   }
                 }),

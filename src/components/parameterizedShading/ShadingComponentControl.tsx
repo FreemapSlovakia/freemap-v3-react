@@ -206,7 +206,10 @@ export function ShadingComponentControl({
           cx={shading.cx}
           cy={shading.cy}
           r={6}
-          style={{ fill: `rgba(${shading.color.join(',')})`, stroke: 'silver' }}
+          style={{
+            fill: `rgba(${shading.colors[0][1].join(',')})`,
+            stroke: 'silver',
+          }}
           {...{ [`data-sc_${gid.current}`]: shading.id }}
         />
       ))}

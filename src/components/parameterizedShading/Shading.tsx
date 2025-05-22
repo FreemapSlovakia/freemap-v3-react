@@ -3,9 +3,11 @@ export const SHADING_COMPONENT_TYPES = [
   'hillshade-classic',
   'slope-igor',
   'slope-classic',
-  // 'aspect',
-  // 'color-relief',
+  'color-relief',
+  'aspect',
 ] as const;
+
+export type ColorStop = [ratio: number, color: Color];
 
 export type Color = [number, number, number, number];
 
@@ -16,10 +18,9 @@ export type ShadingComponent = {
   type: ShadingComponentType;
   elevation: number;
   azimuth: number;
-  color: Color;
   contrast: number;
   brightness: number;
-  weight: number;
+  colors: ColorStop[];
 };
 
 export type Shading = {

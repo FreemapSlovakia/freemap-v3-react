@@ -31,7 +31,15 @@ export class DataWriter {
     this.offset += 4;
   }
 
-  pad(n: number) {
+  pad8(n: number) {
     this.offset += n;
+  }
+
+  pad16(n: number) {
+    this.offset += n * 2;
+  }
+
+  pad32(n: number) {
+    this.offset += n * 4;
   }
 }

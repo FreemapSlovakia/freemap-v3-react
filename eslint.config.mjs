@@ -2,9 +2,9 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 // Import the necessary plugins and parser
+import eslintPluginPrettier from 'eslint-plugin-prettier';
 import eslintPluginReact from 'eslint-plugin-react';
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
-import eslintPluginPrettier from 'eslint-plugin-prettier';
 
 const cfg = tseslint.config(
   {
@@ -55,11 +55,11 @@ const cfg = tseslint.config(
       'object-shorthand': [1, 'always'],
       'padding-line-between-statements': [
         1,
-        {
-          blankLine: 'always',
-          next: '*',
-          prev: '*',
-        },
+        // {
+        //   blankLine: 'always',
+        //   next: '*',
+        //   prev: '*',
+        // },
         {
           blankLine: 'any',
           next: '*',

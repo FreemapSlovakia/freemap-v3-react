@@ -77,7 +77,7 @@ class LShadingLayer extends LGridLayer {
 
       const device = await adapter.requestDevice();
 
-      const shaderCode = await (await fetch('/horn.wgsl')).text();
+      const shaderCode = await (await fetch('/shading.wgsl')).text();
 
       const shaderModule = device.createShaderModule({ code: shaderCode });
 
@@ -223,7 +223,8 @@ class LShadingLayer extends LGridLayer {
     );
 
     const shadingBuffer = device.createBuffer({
-      size: 8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * 12,
+      size:
+        8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * (8 + 16 /* colors len */ * 8 * 8),
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
@@ -242,12 +243,8 @@ class LShadingLayer extends LGridLayer {
       const dw = new DataWriter(shadingData);
 
       dw.u32(shading.components.length);
-
       dw.u32(zoom);
-
-      dw.f32(NaN);
-
-      dw.f32(NaN);
+      dw.pad32(2);
 
       for (const c of shading.backgroundColor) {
         dw.f32(c / 255);
@@ -255,24 +252,23 @@ class LShadingLayer extends LGridLayer {
 
       for (const component of shading.components) {
         dw.u32(SHADING_COMPONENT_TYPES.indexOf(component.type));
-
         dw.f32(component.azimuth);
-
         dw.f32(component.elevation);
-
         dw.f32(component.contrast);
-
         dw.f32(component.brightness);
+        dw.u32(component.colors.length);
+        dw.pad32(2);
 
-        dw.f32(component.weight);
+        for (const colorStop of component.colors) {
+          dw.u32(colorStop[0]);
+          dw.pad32(3);
 
-        dw.f32(NaN);
-
-        dw.f32(NaN);
-
-        for (const band of component.color) {
-          dw.f32(band / 255);
+          for (const band of colorStop[1]) {
+            dw.f32(band / 255);
+          }
         }
+
+        dw.pad32(8 * (16 - component.colors.length));
       }
 
       device.queue.writeBuffer(shadingBuffer, 0, shadingData);
@@ -291,11 +287,8 @@ class LShadingLayer extends LGridLayer {
       });
 
       pass.setPipeline(pipeline);
-
       pass.setBindGroup(0, bindGroup);
-
       pass.draw(6, 1, 0, 0);
-
       pass.end();
 
       device.queue.submit([encoder.finish()]);

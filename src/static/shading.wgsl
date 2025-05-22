@@ -7,14 +7,22 @@ const TAU = radians(360.0);
 // zoom 0 tile - meter per pixel
 const METER_PER_PIXEL_Z0: f32 = (TAU * 6378137.0 * cos(radians(49.0))) / 256.0;
 
-const MAX_COMPONENTS: u32 = 8;
+const NUM_STOPS = 6u;
 
 struct Shading {
     component_count: u32,
     zoom: u32,
+    _pad: vec2<f32>,
     background_color: vec4<f32>,
-    components: array<ShadingComponent, MAX_COMPONENTS>,
+    components: array<ShadingComponent, 8>,
 };
+
+struct ColorStop {
+    ratio: f32,
+    _pad1: f32,
+    _pad2: vec2<f32>,
+    color: vec4<f32>,
+}
 
 struct ShadingComponent {
     method: u32,
@@ -22,8 +30,9 @@ struct ShadingComponent {
     altitude: f32,
     contrast: f32,
     brightness: f32,
-    weight: f32,
-    color: vec4<f32>,
+    color_count: u32,
+    _pad: vec2<f32>,
+    colors: array<ColorStop, 16>
 };
 
 @group(0) @binding(0) var samp: sampler;
@@ -56,13 +65,32 @@ fn normalize_angle(angle: f32) -> f32 {
     return select(ang, TAU + ang, ang < 0.0);
 }
 
-const NUM_STOPS = 6u;
+fn get_normal(pos: vec2<i32>) -> vec3<f32> {
+    let nn = get_elev(pos + vec2(-1, -1));
+    let nz = get_elev(pos + vec2(-1, 0));
+    let np = get_elev(pos + vec2(-1, 1));
+    let zn = get_elev(pos + vec2(0, -1));
+    let zp = get_elev(pos + vec2(0, 1));
+    let pn = get_elev(pos + vec2(1, -1));
+    let pz = get_elev(pos + vec2(1, 0));
+    let pp = get_elev(pos + vec2(1, 1));
+
+    let dzdx = -nn + pn - 2.0 * nz + 2.0 * pz - np + pp;
+
+    let dzdy = -nn - 2.0 * zn - pn + np + 2.0 * zp + pp;
+
+    let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8;
+
+    let normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
+
+    return select(normal, vec3(0.0, 0.0, 1.0), sign(normal.z) == 0.0);
+}
 
 @fragment
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
-    let px = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
+    let pos2 = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
 
-    let elev = get_elev(px);
+    let elev = get_elev(pos2);
 
     // if true {
     //     return interpolate_color(
@@ -78,34 +106,22 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     //     );
     // }
 
-    let nn = get_elev(px + vec2(-1, -1));
-    let nz = get_elev(px + vec2(-1, 0));
-    let np = get_elev(px + vec2(-1, 1));
-    let zn = get_elev(px + vec2(0, -1));
-    let zp = get_elev(px + vec2(0, 1));
-    let pn = get_elev(px + vec2(1, -1));
-    let pz = get_elev(px + vec2(1, 0));
-    let pp = get_elev(px + vec2(1, 1));
-
-    let dzdx = -nn + pn - 2.0 * nz + 2.0 * pz - np + pp;
-
-    let dzdy = -nn - 2.0 * zn - pn + np + 2.0 * zp + pp;
-
-
-    let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8;
-
-    var normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
-
-    normal = select(normal, vec3(0.0, 0.0, 1.0), sign(normal.z) == 0.0);
-
     var sum_rgb = vec3<f32>(0.0);
-    var sum_alpha_weight = 0.0;
+    var sum_alpha = 0.0;
     var alpha_product = 1.0;
 
-    for (var i = 0u; i < MAX_COMPONENTS && i < shading.component_count; i = i + 1u) {
+    var normal = vec3<f32>(0.0);
+
+    for (var i = 0u; i < shading.component_count; i = i + 1u) {
         let component = shading.components[i];
 
         var intensity = 0.0;
+
+        if component.method < 4u && all(normal == vec3<f32>(0.0)) {
+            normal = get_normal(pos2);
+        }
+
+        let color = component.colors[0].color;
 
         if component.method == 0u {
             // Igor
@@ -137,18 +153,28 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             let zenith = HALF_PI - component.altitude;
 
             intensity = cos(zenith) * normal.z + sin(zenith) * length(normal.xy);
+        } else if component.method == 4u {
+            intensity = 1.0;
+
+            // TODO
+        } else if component.method == 5u {
+            intensity = 1.0;
+
+            // TODO
         }
 
         let modulated = component.contrast * (intensity - 0.5) + 0.5 + component.brightness;
-        let alpha = component.color.a * modulated;
-        let weighted_alpha = alpha * component.weight;
 
-        sum_rgb = sum_rgb + weighted_alpha * component.color.rgb;
-        sum_alpha_weight = sum_alpha_weight + weighted_alpha;
-        alpha_product = alpha_product * (1.0 - weighted_alpha);
+        let alpha = color.a * modulated;
+
+        sum_rgb = sum_rgb + alpha * color.rgb;
+
+        sum_alpha = sum_alpha + alpha;
+
+        alpha_product = alpha_product * (1.0 - alpha);
     }
 
-    let rgb = select(sum_rgb / sum_alpha_weight, vec3(0.0), sum_alpha_weight == 0.0);
+    let rgb = select(sum_rgb / sum_alpha, vec3(0.0), sum_alpha == 0.0);
 
     let alpha = 1.0 - clamp(alpha_product, 0.0, 1.0);
 
@@ -159,6 +185,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     let bg = shading.background_color;
 
     let out_rgb = fg.rgb * fg.a + bg.rgb * (1.0 - fg.a);
+
     let out_a = fg.a + bg.a * (1.0 - fg.a);
 
     return vec4(out_rgb, out_a);
