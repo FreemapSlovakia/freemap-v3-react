@@ -106,3 +106,7 @@ legend {
     border-bottom-right-radius: 5px;
   }
 }
+
+.dropdown-item {
+  white-space: normal; // to see all menu text on narrow mobile screens
+}
