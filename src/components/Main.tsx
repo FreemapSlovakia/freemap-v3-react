@@ -103,7 +103,7 @@ const homeLocationPickingMenuFactory = () =>
 const adFactory = () => import('./Ad.js');
 
 const shadingControlFactory = () =>
-  import('./parameterizedShading/ShadingControl.js');
+  import('./parametericShading/ShadingControl.js');
 
 const elevationChartFactory = () => import('./ElevationChart.js');
 

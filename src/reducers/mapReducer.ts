@@ -11,7 +11,7 @@ import {
   mapSuppressLegacyMapWarning,
 } from '../actions/mapActions.js';
 import { mapsLoaded } from '../actions/mapsActions.js';
-import { Shading } from '../components/parameterizedShading/Shading.js';
+import { Shading } from '../components/parametericShading/Shading.js';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;

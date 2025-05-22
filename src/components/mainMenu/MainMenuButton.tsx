@@ -13,7 +13,12 @@ import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMenuHandler } from '../../hooks/useMenuHandler.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import { useMessages } from '../../l10nInjector.js';
-import { CacheMode } from '../../types/common.js';
+import {
+  applyCacheMode,
+  applyCachingActive,
+  clearCache,
+  type CacheMode,
+} from '../../offline.js';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
 import { DrawingSubmenu } from './DrawingSubmenu.js';
 import { GallerySubmenu } from './GallerySubmenu.js';
@@ -58,29 +63,17 @@ export function MainMenuButton(): ReactElement {
       if (eventKey.startsWith('cacheMode-')) {
         const cacheMode = eventKey.slice(10) as CacheMode;
 
-        window.navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({
-            type: 'setCacheMode',
-            payload: cacheMode,
-          });
-        });
+        applyCacheMode(cacheMode);
 
         setCacheMode(cacheMode);
       } else if (eventKey === 'caching-active-toggle') {
-        window.navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({
-            type: 'setCachingActive',
-            payload: !cachingActive,
-          });
-
+        applyCachingActive(!cachingActive).then(() => {
           setCacheExists(true); // TODO use events from sw
         });
 
         setCachingActive((a) => !a);
       } else if (eventKey === 'cache-clear') {
-        window.navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({ type: 'clearCache' });
-
+        clearCache().then(() => {
           setCacheExists(false); // TODO use events from sw
         });
       } else {

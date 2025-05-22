@@ -1,8 +1,8 @@
 import type * as Sentry from '@sentry/browser';
-import { PathOptions } from 'leaflet';
-import { Action } from 'redux';
-import { CustomLayer, LayerSettings } from '../actions/mapActions.js';
-import { Messages } from '../translations/messagesInterface.js';
+import type { PathOptions } from 'leaflet';
+import type { Action } from 'redux';
+import type { CustomLayer, LayerSettings } from '../actions/mapActions.js';
+import type { Messages } from '../translations/messagesInterface.js';
 
 export interface LatLon {
   lat: number;
@@ -86,51 +86,6 @@ export type StringDates<T> = {
           : StringDates<T[K]>;
 };
 
-interface OsmElement {
-  id: number;
-  tags?: Record<string, string>;
-}
-
-export interface OsmNode extends OsmElement, LatLon {
-  type: 'node';
-}
-
-export interface OsmWay extends OsmElement {
-  type: 'way';
-  nodes: number[];
-}
-
-export interface OsmRelation extends OsmElement {
-  type: 'relation';
-  members: { type: 'node' | 'way' | 'relation'; ref: number; role?: string }[];
-}
-
-export interface OsmResult {
-  elements: (OsmNode | OsmWay | OsmRelation)[];
-}
-
-interface OverpassElementBase {
-  id: number;
-  tags?: Record<string, string>; // probably bug in overpass, but it returned node without tags
-}
-
-interface OverpassNodeElement extends OverpassElementBase, LatLon {
-  type: 'node';
-}
-
-interface OverpassWayOrRelationElement extends OverpassElementBase {
-  type: 'way' | 'relation';
-  center: LatLon;
-}
-
-export type OverpassElement =
-  | OverpassNodeElement
-  | OverpassWayOrRelationElement;
-
-export interface OverpassResult {
-  elements: OverpassElement[];
-}
-
 // see https://stackoverflow.com/questions/58434389/typescript-deep-keyof-of-a-nested-object/58436959#58436959
 
 type Prev = [
@@ -176,17 +131,3 @@ export type MessagePaths = Leaves<Messages>;
 export interface OffscreenCanvas extends EventTarget {
   getContext: (contextId: '2d') => CanvasRenderingContext2D;
 }
-
-export type CacheMode =
-  | 'networkOnly'
-  | 'networkFirst'
-  | 'cacheFirst'
-  | 'cacheOnly';
-
-export type SwCacheAction =
-  | {
-      type: 'setCacheMode';
-      payload: CacheMode;
-    }
-  | { type: 'clearCache' }
-  | { type: 'setCachingActive'; payload: boolean };

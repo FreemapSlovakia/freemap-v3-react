@@ -18,6 +18,7 @@ import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler.js'
 import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { handleLocationChange } from './locationChangeHandler.js';
+import { prepareOffline } from './offline.js';
 import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
 import { createReduxStore } from './store.js';
 import './styles/index.scss';
@@ -123,11 +124,14 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
-if ('serviceWorker' in window.navigator) {
-  window.navigator.serviceWorker.register('/sw.js').catch((e) => {
+prepareOffline();
+
+// share target SW
+window.navigator.serviceWorker
+  ?.register('/upload-sw.js', { scope: '/upload' })
+  .catch((e) => {
     console.warn('Error registering service worker:', e);
   });
-}
 
 window.addEventListener('message', (e: MessageEvent) => {
   const { data } = e;

@@ -1,9 +1,9 @@
+import { CacheMode } from 'offline.js';
 import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaEraser } from 'react-icons/fa';
 import { useMessages } from '../../l10nInjector.js';
-import { CacheMode } from '../../types/common.js';
 import { Checkbox } from '../Checkbox.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 

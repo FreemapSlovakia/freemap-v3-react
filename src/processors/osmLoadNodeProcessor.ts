@@ -4,8 +4,8 @@ import { clearMapFeatures } from '../actions/mainActions.js';
 import { osmLoadNode } from '../actions/osmActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { Processor } from '../middlewares/processorMiddleware.js';
-import { OsmNode, OsmResult } from '../types/common.js';
+import type { Processor } from '../middlewares/processorMiddleware.js';
+import type { OsmNode, OsmResult } from '../types/osm.js';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,

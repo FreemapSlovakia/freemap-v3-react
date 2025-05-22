@@ -17,7 +17,7 @@ const galleryLayerFactory = () =>
   import('../components/gallery/GalleryLayer.js');
 
 const shadingLayerFactory = () =>
-  import('./parameterizedShading/ShadingLayer.js');
+  import('./parametericShading/ShadingLayer.js');
 
 const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 

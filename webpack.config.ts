@@ -9,7 +9,7 @@ import process from 'process';
 import type SassLoader from 'sass-loader';
 import type { Configuration } from 'webpack';
 import webpack from 'webpack';
-import { InjectManifest } from 'workbox-webpack-plugin';
+import { WebpackAssetsManifest } from 'webpack-assets-manifest';
 // import ESLintPlugin from 'eslint-webpack-plugin';
 
 import csMessages from './src/translations/cs-shared.js';
@@ -161,9 +161,10 @@ const config: Configuration = {
       new ReactRefreshWebpackPlugin({
         overlay: false,
       }),
-    new InjectManifest({
-      swSrc: './sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 100000000,
+    new WebpackAssetsManifest({
+      output: 'precache-manifest.json',
+      publicPath: true,
+      writeToDisk: true,
     }),
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
