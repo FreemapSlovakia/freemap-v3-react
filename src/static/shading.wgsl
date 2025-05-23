@@ -83,7 +83,7 @@ fn get_normal(pos: vec2<i32>) -> vec3<f32> {
 
     let normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
 
-    return select(normal, vec3(0.0, 0.0, 1.0), sign(normal.z) == 0.0);
+    return select(normal, vec3(0.0, 0.0, 0.0), sign(normal.z) == 0.0);
 }
 
 @fragment
@@ -91,6 +91,10 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     let pos2 = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
 
     let elev = get_elev(pos2); // TODO make lazy-memo
+
+    if sign(elev) == 0.0 {
+        return vec4(0.0, 0.0, 0.0, 0.0);
+    }
 
     var sum_rgb = vec3<f32>(0.0);
     var sum_alpha = 0.0;
@@ -105,6 +109,10 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
         if component.method != 4u && all(normal == vec3<f32>(0.0)) {
             normal = get_normal(pos2);
+
+            if all(normal == vec3(0.0, 0.0, 0.0)) {
+                return vec4(0.0, 0.0, 0.0, 0.0);
+            }
         }
 
         var color: vec4<f32>;
