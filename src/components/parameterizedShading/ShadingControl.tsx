@@ -15,6 +15,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { mapSetShading } from '../../actions/mapActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import {
   ColorStop,
   SHADING_COMPONENT_TYPES,
@@ -38,299 +39,303 @@ export function ShadingControl() {
 
   const [activeStopIndex, setActiveStopIndex] = useState<number>();
 
+  const sc = useScrollClasses('vertical');
+
   return (
-    <Card
-      body
-      style={{ width: 'fit-content', pointerEvents: 'auto' }}
-      className="m-2"
-    >
-      <Form>
-        <ShadingComponentControl
-          components={shading.components}
-          onChange={(components) =>
-            dispatch(mapSetShading({ ...shading, components }))
-          }
-          selectedId={id}
-          onSelect={setId}
-        />
+    <Card body className="fm-shading-control mt-2 ms-2">
+      <div className="fm-menu-scroller" ref={sc}>
+        <div />
 
-        <ButtonToolbar className="mt-3">
-          <DropdownButton
-            id="add-shading-button"
-            title="Add"
-            variant="success"
-            onSelect={(type0) => {
-              const id = Math.random();
-
-              const type = type0 as ShadingComponentType;
-
-              dispatch(
-                mapSetShading(
-                  produce(shading, (draft) => {
-                    draft.components.push({
-                      id,
-                      azimuth: 0,
-                      elevation: Math.PI / 2,
-                      colorStops:
-                        type === 'color-relief' || type === 'aspect'
-                          ? [
-                              { value: 0 / 6, color: [255, 0, 0, 1] },
-                              { value: 1 / 6, color: [255, 255, 0, 1] },
-                              { value: 2 / 6, color: [0, 255, 0, 1] },
-                              { value: 3 / 6, color: [0, 255, 255, 1] },
-                              { value: 4 / 6, color: [0, 0, 255, 1] },
-                              { value: 5 / 6, color: [255, 0, 255, 1] },
-                              { value: 6 / 6, color: [255, 0, 0, 1] },
-                            ]
-                          : [{ value: 0, color: [128, 128, 128, 1] }],
-                      type,
-                      brightness: 0,
-                      contrast: 1,
-                    });
-                  }),
-                ),
-              );
-
-              setId(id);
-            }}
-          >
-            {SHADING_COMPONENT_TYPES.map((st) => (
-              <DropdownItem key={st} eventKey={st}>
-                {st}
-              </DropdownItem>
-            ))}
-          </DropdownButton>
-
-          <Button
-            className="ms-1"
-            type="button"
-            disabled={id === undefined}
-            variant="danger"
-            onClick={() => {
-              dispatch(
-                mapSetShading(
-                  produce(shading, (draft) => {
-                    draft.components = draft.components.filter(
-                      (component) => component.id !== id,
-                    );
-                  }),
-                ),
-              );
-
-              setId(undefined);
-            }}
-          >
-            Remove
-          </Button>
-
-          <ToggleButton
-            id="bg-toggle"
-            type="checkbox"
-            value="1"
-            checked={id === undefined}
-            className="ms-1"
-            onClick={() => {
-              setId(undefined);
-            }}
-            variant="outline-secondary"
-          >
-            Bg Color
-          </ToggleButton>
-        </ButtonToolbar>
-
-        {selectedComponent && (
-          <>
-            <Form.Group className="mt-3">
-              <Form.Label>Type</Form.Label>
-
-              <Form.Select
-                value={selectedComponent.type}
-                onChange={(e) => {
-                  const type = e.currentTarget.value as ShadingComponentType;
-
-                  dispatch(
-                    mapSetShading(
-                      produce(shading, (draft) => {
-                        draft.components.find(
-                          (component) => component.id === selectedComponent.id,
-                        )!.type = type;
-                      }),
-                    ),
-                  );
-                }}
-              >
-                {SHADING_COMPONENT_TYPES.map((st) => (
-                  <option key={st} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-
-            {selectedComponent.type.startsWith('hillshade-') && (
-              <Form.Group className="mt-3">
-                <Form.Label>Azimuth</Form.Label>
-
-                <Form.Control
-                  type="number"
-                  min={0}
-                  max={360}
-                  step={5}
-                  value={((selectedComponent.azimuth / Math.PI) * 180).toFixed(
-                    2,
-                  )}
-                  onChange={(e) => {
-                    const azimuth =
-                      (Number(e.currentTarget.value) / 180) * Math.PI;
-
-                    dispatch(
-                      mapSetShading(
-                        produce(shading, (draft) => {
-                          draft.components.find(
-                            (component) =>
-                              component.id === selectedComponent.id,
-                          )!.azimuth = azimuth;
-                        }),
-                      ),
-                    );
-                  }}
-                />
-              </Form.Group>
-            )}
-
-            {selectedComponent.type.endsWith('-classic') && (
-              <Form.Group className="mt-3">
-                <Form.Label>Elevation</Form.Label>
-
-                <Form.Control
-                  type="number"
-                  min={0}
-                  max={90}
-                  value={(
-                    (selectedComponent.elevation / Math.PI) *
-                    180
-                  ).toFixed(2)}
-                  onChange={(e) => {
-                    const elevation =
-                      (Number(e.currentTarget.value) / 180) * Math.PI;
-
-                    dispatch(
-                      mapSetShading(
-                        produce(shading, (draft) => {
-                          draft.components.find(
-                            (component) =>
-                              component.id === selectedComponent.id,
-                          )!.elevation = elevation;
-                        }),
-                      ),
-                    );
-                  }}
-                />
-              </Form.Group>
-            )}
-          </>
-        )}
-
-        <ColorPicker
-          className="mt-3"
-          height={100}
-          width={240}
-          hideGradientAngle
-          hideGradientType
-          hideColorTypeBtns
-          hideInputs
-          hideInputType
-          value={(() => {
-            let v: string;
-
-            if (!selectedComponent) {
-              v = Color.rgb(shading.backgroundColor).string();
-            } else if (
-              selectedComponent.type === 'aspect' ||
-              selectedComponent.type === 'color-relief'
-            ) {
-              v =
-                'linear-gradient(90deg, ' +
-                selectedComponent.colorStops
-                  .map(
-                    (colorStop, i) =>
-                      (activeStopIndex === i ? 'RGBA' : 'rgba') +
-                      `(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
-                  )
-                  .join(', ') +
-                ')';
-            } else {
-              const color =
-                selectedComponent?.colorStops[0].color ??
-                shading.backgroundColor;
-
-              v = Color.rgb(color).string();
+        <Form className="p-2">
+          <ShadingComponentControl
+            components={shading.components}
+            onChange={(components) =>
+              dispatch(mapSetShading({ ...shading, components }))
             }
+            selectedId={id}
+            onSelect={setId}
+          />
 
-            console.log('SET', v === color.toLowerCase() ? color : v);
+          <ButtonToolbar className="mt-3">
+            <DropdownButton
+              id="add-shading-button"
+              title="Add"
+              variant="success"
+              onSelect={(type0) => {
+                const id = Math.random();
 
-            return v === color.toLowerCase() ? color : v;
-          })()}
-          onChange={(color) => {
-            setColor(color);
+                const type = type0 as ShadingComponentType;
 
-            console.log('GET', color);
+                dispatch(
+                  mapSetShading(
+                    produce(shading, (draft) => {
+                      draft.components.push({
+                        id,
+                        azimuth: 0,
+                        elevation: Math.PI / 2,
+                        colorStops:
+                          type === 'color-relief' || type === 'aspect'
+                            ? [
+                                { value: 0 / 6, color: [255, 0, 0, 1] },
+                                { value: 1 / 6, color: [255, 255, 0, 1] },
+                                { value: 2 / 6, color: [0, 255, 0, 1] },
+                                { value: 3 / 6, color: [0, 255, 255, 1] },
+                                { value: 4 / 6, color: [0, 0, 255, 1] },
+                                { value: 5 / 6, color: [255, 0, 255, 1] },
+                                { value: 6 / 6, color: [255, 0, 0, 1] },
+                              ]
+                            : [{ value: 0, color: [128, 128, 128, 1] }],
+                        type,
+                        brightness: 0,
+                        contrast: 1,
+                      });
+                    }),
+                  ),
+                );
 
-            let colorStops: ColorStop[];
+                setId(id);
+              }}
+            >
+              {SHADING_COMPONENT_TYPES.map((st) => (
+                <DropdownItem key={st} eventKey={st}>
+                  {st}
+                </DropdownItem>
+              ))}
+            </DropdownButton>
 
-            let activeIndex: number | undefined;
+            <Button
+              className="ms-1"
+              type="button"
+              disabled={id === undefined}
+              variant="danger"
+              onClick={() => {
+                dispatch(
+                  mapSetShading(
+                    produce(shading, (draft) => {
+                      draft.components = draft.components.filter(
+                        (component) => component.id !== id,
+                      );
+                    }),
+                  ),
+                );
 
-            if (color.startsWith('linear-gradient(')) {
-              colorStops = [
-                ...color.matchAll(/(r)gba?\(([^)]+)\) (\d+%)/gi),
-              ].map(([, r, rgba, stop], i) => {
-                if (r === 'R') {
-                  activeIndex = i;
-                }
+                setId(undefined);
+              }}
+            >
+              Remove
+            </Button>
 
-                const color = rgba.split(',').map(Number) as ColorType;
+            <ToggleButton
+              id="bg-toggle"
+              type="checkbox"
+              value="1"
+              checked={id === undefined}
+              className="ms-1"
+              onClick={() => {
+                setId(undefined);
+              }}
+              variant="outline-secondary"
+            >
+              Bg Color
+            </ToggleButton>
+          </ButtonToolbar>
 
-                if (color.length < 4) {
-                  color.push(1);
-                }
+          {selectedComponent && (
+            <>
+              <Form.Group className="mt-3">
+                <Form.Label>Type</Form.Label>
 
-                return {
-                  value: parseFloat(stop) / 100,
-                  color,
-                };
-              });
+                <Form.Select
+                  value={selectedComponent.type}
+                  onChange={(e) => {
+                    const type = e.currentTarget.value as ShadingComponentType;
 
-              setActiveStopIndex(activeIndex);
-            } else {
-              const c = Color(color).rgb().array() as ColorType;
+                    dispatch(
+                      mapSetShading(
+                        produce(shading, (draft) => {
+                          draft.components.find(
+                            (component) =>
+                              component.id === selectedComponent.id,
+                          )!.type = type;
+                        }),
+                      ),
+                    );
+                  }}
+                >
+                  {SHADING_COMPONENT_TYPES.map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
 
-              if (c.length < 4) {
-                c.push(1);
+              {selectedComponent.type.startsWith('hillshade-') && (
+                <Form.Group className="mt-3">
+                  <Form.Label>Azimuth</Form.Label>
+
+                  <Form.Control
+                    type="number"
+                    min={0}
+                    max={360}
+                    step={5}
+                    value={(
+                      (selectedComponent.azimuth / Math.PI) *
+                      180
+                    ).toFixed(2)}
+                    onChange={(e) => {
+                      const azimuth =
+                        (Number(e.currentTarget.value) / 180) * Math.PI;
+
+                      dispatch(
+                        mapSetShading(
+                          produce(shading, (draft) => {
+                            draft.components.find(
+                              (component) =>
+                                component.id === selectedComponent.id,
+                            )!.azimuth = azimuth;
+                          }),
+                        ),
+                      );
+                    }}
+                  />
+                </Form.Group>
+              )}
+
+              {selectedComponent.type.endsWith('-classic') && (
+                <Form.Group className="mt-3">
+                  <Form.Label>Elevation</Form.Label>
+
+                  <Form.Control
+                    type="number"
+                    min={0}
+                    max={90}
+                    value={(
+                      (selectedComponent.elevation / Math.PI) *
+                      180
+                    ).toFixed(2)}
+                    onChange={(e) => {
+                      const elevation =
+                        (Number(e.currentTarget.value) / 180) * Math.PI;
+
+                      dispatch(
+                        mapSetShading(
+                          produce(shading, (draft) => {
+                            draft.components.find(
+                              (component) =>
+                                component.id === selectedComponent.id,
+                            )!.elevation = elevation;
+                          }),
+                        ),
+                      );
+                    }}
+                  />
+                </Form.Group>
+              )}
+            </>
+          )}
+
+          <ColorPicker
+            className="mt-3"
+            height={100}
+            width={230}
+            hideGradientAngle
+            hideGradientType
+            hideColorTypeBtns
+            hideInputs
+            hideInputType
+            value={(() => {
+              let v: string;
+
+              if (!selectedComponent) {
+                v = Color.rgb(shading.backgroundColor).string();
+              } else if (
+                selectedComponent.type === 'aspect' ||
+                selectedComponent.type === 'color-relief'
+              ) {
+                v =
+                  'linear-gradient(90deg, ' +
+                  selectedComponent.colorStops
+                    .map(
+                      (colorStop, i) =>
+                        (activeStopIndex === i ? 'RGBA' : 'rgba') +
+                        `(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
+                    )
+                    .join(', ') +
+                  ')';
+              } else {
+                const color =
+                  selectedComponent?.colorStops[0].color ??
+                  shading.backgroundColor;
+
+                v = Color.rgb(color).string();
               }
 
-              colorStops = [{ value: 0, color: c }];
-            }
+              console.log('SET', v === color.toLowerCase() ? color : v);
 
-            dispatch(
-              mapSetShading(
-                produce(shading, (draft) => {
-                  if (id === undefined) {
-                    draft.backgroundColor = colorStops[0].color;
-                  } else {
-                    const component = draft.components.find(
-                      (component) => component.id === id,
-                    );
+              return v === color.toLowerCase() ? color : v;
+            })()}
+            onChange={(color) => {
+              setColor(color);
 
-                    if (component) {
-                      component.colorStops = colorStops;
-                    }
+              console.log('GET', color);
+
+              let colorStops: ColorStop[];
+
+              let activeIndex: number | undefined;
+
+              if (color.startsWith('linear-gradient(')) {
+                colorStops = [
+                  ...color.matchAll(/(r)gba?\(([^)]+)\) (\d+%)/gi),
+                ].map(([, r, rgba, stop], i) => {
+                  if (r === 'R') {
+                    activeIndex = i;
                   }
-                }),
-              ),
-            );
-          }}
-        />
-      </Form>
+
+                  const color = rgba.split(',').map(Number) as ColorType;
+
+                  if (color.length < 4) {
+                    color.push(1);
+                  }
+
+                  return {
+                    value: parseFloat(stop) / 100,
+                    color,
+                  };
+                });
+
+                setActiveStopIndex(activeIndex);
+              } else {
+                const c = Color(color).rgb().array() as ColorType;
+
+                if (c.length < 4) {
+                  c.push(1);
+                }
+
+                colorStops = [{ value: 0, color: c }];
+              }
+
+              dispatch(
+                mapSetShading(
+                  produce(shading, (draft) => {
+                    if (id === undefined) {
+                      draft.backgroundColor = colorStops[0].color;
+                    } else {
+                      const component = draft.components.find(
+                        (component) => component.id === id,
+                      );
+
+                      if (component) {
+                        component.colorStops = colorStops;
+                      }
+                    }
+                  }),
+                ),
+              );
+            }}
+          />
+        </Form>
+      </div>
     </Card>
   );
 }

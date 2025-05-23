@@ -395,3 +395,22 @@ button#freemap-logo {
 .fm-fs-content {
   field-sizing: content;
 }
+
+.fm-shading-control {
+  width: fit-content;
+
+  .fm-menu-scroller {
+    max-height: calc(100vh - 116px);
+  }
+
+  .fm-menu-scroller::before,
+  .fm-menu-scroller > div:first-child::before {
+    margin-top: 0;
+  }
+  .card-body {
+    pointer-events: auto;
+    margin: 0;
+    padding: 0;
+    transform: translate(0, 0);
+  }
+}
