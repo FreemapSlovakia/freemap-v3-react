@@ -36,6 +36,8 @@ export function ShadingControl() {
 
   const [color, setColor] = useState('');
 
+  const [activeStopIndex, setActiveStopIndex] = useState<number>();
+
   return (
     <Card
       body
@@ -251,8 +253,9 @@ export function ShadingControl() {
                 'linear-gradient(90deg, ' +
                 selectedComponent.colorStops
                   .map(
-                    (colorStop) =>
-                      `rgba(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
+                    (colorStop, i) =>
+                      (activeStopIndex === i ? 'RGBA' : 'rgba') +
+                      `(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
                   )
                   .join(', ') +
                 ')';
@@ -275,21 +278,29 @@ export function ShadingControl() {
 
             let colorStops: ColorStop[];
 
+            let activeIndex: number | undefined;
+
             if (color.startsWith('linear-gradient(')) {
-              colorStops = [...color.matchAll(/rgba?\(([^)]+)\) (\d+%)/gi)].map(
-                ([, rgba, stop]) => {
-                  const color = rgba.split(',').map(Number) as ColorType;
+              colorStops = [
+                ...color.matchAll(/(r)gba?\(([^)]+)\) (\d+%)/gi),
+              ].map(([, r, rgba, stop], i) => {
+                if (r === 'R') {
+                  activeIndex = i;
+                }
 
-                  if (color.length < 4) {
-                    color.push(1);
-                  }
+                const color = rgba.split(',').map(Number) as ColorType;
 
-                  return {
-                    value: parseFloat(stop) / 100,
-                    color,
-                  };
-                },
-              );
+                if (color.length < 4) {
+                  color.push(1);
+                }
+
+                return {
+                  value: parseFloat(stop) / 100,
+                  color,
+                };
+              });
+
+              setActiveStopIndex(activeIndex);
             } else {
               const c = Color(color).rgb().array() as ColorType;
 
