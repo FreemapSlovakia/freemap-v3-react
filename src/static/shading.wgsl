@@ -217,4 +217,7 @@ fn interpolate_color(stops: array<ColorStop, NUM_STOPS>, count: u32, t: f32) -> 
             return stops[i].color;
         }
     }
+
+    // unreachable fallback to satisfy validator
+    return vec4<f32>(0.0, 0.0, 0.0, 0.0);
 }
