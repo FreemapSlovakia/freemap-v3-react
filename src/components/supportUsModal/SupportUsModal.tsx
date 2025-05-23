@@ -1,5 +1,5 @@
 import { type ReactElement, useCallback } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../../actions/mainActions.js';
@@ -42,17 +42,46 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
         <hr />
 
+        {becomePremium && (
+          <Alert variant="warning">
+            <span dangerouslySetInnerHTML={{ __html: lm?.alert.line1 ?? '' }} />
+            <Button onClick={becomePremium} className="my-3 mx-auto d-block">
+              <FaGem /> {m?.premium.becomePremium}
+            </Button>
+            {lm?.alert.line2}
+          </Alert>
+        )}
+
         <div className="d-flex flex-wrap justify-content-between">
           <div>
             <p>
               <b>{lm?.account}</b>
               <br /> VÚB 2746389453/0200
             </p>
+
             <p>
               <b>IBAN</b>
               <br />
               SK33 0200 0000 0027 4638 9453
             </p>
+
+            <Form
+              action="https://www.paypal.com/cgi-bin/webscr"
+              method="post"
+              target="_blank"
+            >
+              <input name="cmd" value="_s-xclick" type="hidden" />
+
+              <input
+                name="hosted_button_id"
+                value="DB6Y3ZAB2XCPN"
+                type="hidden"
+              />
+
+              <Button type="submit">
+                <FaPaypal /> {lm?.paypal}
+              </Button>
+            </Form>
           </div>
 
           <img
@@ -88,7 +117,8 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
         <p>{lm?.thanks}</p>
 
-        <p className="text-end">
+        <div className="text-end">
+          {lm?.team}{' '}
           <a
             href="#show=about"
             onClick={(e) => {
@@ -99,7 +129,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
           >
             OZ Freemap Slovakia
           </a>
-        </p>
+        </div>
       </Modal.Body>
 
       <Modal.Footer>
@@ -108,20 +138,6 @@ export function SupportUsModal({ show }: Props): ReactElement {
             <FaGem /> {m?.premium.becomePremium}
           </Button>
         )}
-
-        <Form
-          action="https://www.paypal.com/cgi-bin/webscr"
-          method="post"
-          target="_blank"
-        >
-          <input name="cmd" value="_s-xclick" type="hidden" />
-
-          <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
-
-          <Button type="submit">
-            <FaPaypal /> {lm?.paypal}
-          </Button>
-        </Form>
 
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
