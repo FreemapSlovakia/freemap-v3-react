@@ -133,12 +133,6 @@ export function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        {becomePremium && (
-          <Button onClick={becomePremium}>
-            <FaGem /> {m?.premium.becomePremium}
-          </Button>
-        )}
-
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
