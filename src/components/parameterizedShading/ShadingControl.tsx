@@ -1,4 +1,6 @@
-import { Chrome, rgbaToHexa } from '@uiw/react-color';
+import ColorPicker from 'react-best-gradient-color-picker';
+// import { Chrome, rgbaToHexa } from '@uiw/react-color';
+import Color from 'color';
 import { produce } from 'immer';
 import { useState } from 'react';
 import {
@@ -14,8 +16,9 @@ import { useDispatch } from 'react-redux';
 import { mapSetShading } from '../../actions/mapActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import {
-  Color,
+  ColorStop,
   SHADING_COMPONENT_TYPES,
+  type Color as ColorType,
   type ShadingComponentType,
 } from './Shading.js';
 import { ShadingComponentControl } from './ShadingComponentControl.js';
@@ -30,6 +33,8 @@ export function ShadingControl() {
   );
 
   const dispatch = useDispatch();
+
+  const [color, setColor] = useState('');
 
   return (
     <Card
@@ -47,29 +52,15 @@ export function ShadingControl() {
           onSelect={setId}
         />
 
-        <ToggleButton
-          id="bg-toggle"
-          type="checkbox"
-          value="1"
-          checked={id === undefined}
-          className="ms-1 mt-1 d-block"
-          onClick={() => {
-            setId(undefined);
-          }}
-          variant="outline-secondary"
-        >
-          Set Background Color
-        </ToggleButton>
-
-        <hr />
-
         <ButtonToolbar className="mt-3">
           <DropdownButton
             id="add-shading-button"
             title="Add"
             variant="success"
-            onSelect={(type) => {
+            onSelect={(type0) => {
               const id = Math.random();
+
+              const type = type0 as ShadingComponentType;
 
               dispatch(
                 mapSetShading(
@@ -78,8 +69,19 @@ export function ShadingControl() {
                       id,
                       azimuth: 0,
                       elevation: Math.PI / 2,
-                      colors: [[NaN, [128, 128, 128, 255]]],
-                      type: type as ShadingComponentType,
+                      colorStops:
+                        type === 'color-relief' || type === 'aspect'
+                          ? [
+                              { value: 0 / 6, color: [255, 0, 0, 1] },
+                              { value: 1 / 6, color: [255, 255, 0, 1] },
+                              { value: 2 / 6, color: [0, 255, 0, 1] },
+                              { value: 3 / 6, color: [0, 255, 255, 1] },
+                              { value: 4 / 6, color: [0, 0, 255, 1] },
+                              { value: 5 / 6, color: [255, 0, 255, 1] },
+                              { value: 6 / 6, color: [255, 0, 0, 1] },
+                            ]
+                          : [{ value: 0, color: [128, 128, 128, 1] }],
+                      type,
                       brightness: 0,
                       contrast: 1,
                     });
@@ -118,6 +120,20 @@ export function ShadingControl() {
           >
             Remove
           </Button>
+
+          <ToggleButton
+            id="bg-toggle"
+            type="checkbox"
+            value="1"
+            checked={id === undefined}
+            className="ms-1"
+            onClick={() => {
+              setId(undefined);
+            }}
+            variant="outline-secondary"
+          >
+            Bg Color
+          </ToggleButton>
         </ButtonToolbar>
 
         {selectedComponent && (
@@ -213,47 +229,96 @@ export function ShadingControl() {
           </>
         )}
 
-        <Chrome
-          className="mt-3"
-          showTriangle={false}
-          color={(() => {
-            const color =
-              selectedComponent?.colors[0][1] ?? shading.backgroundColor;
+        {selectedComponent && (
+          <ColorPicker
+            className="mt-3"
+            height={100}
+            width={240}
+            hideGradientAngle
+            hideGradientType
+            hideColorTypeBtns
+            hideInputs
+            hideInputType
+            value={(() => {
+              let v: string;
 
-            return rgbaToHexa({
-              r: color[0],
-              g: color[1],
-              b: color[2],
-              a: color[3] / 255,
-            });
-          })()}
-          onChange={(color) => {
-            dispatch(
-              mapSetShading(
-                produce(shading, (draft) => {
-                  const colorArr = [
-                    color.rgba.r,
-                    color.rgba.g,
-                    color.rgba.b,
-                    color.rgba.a * 255,
-                  ] as Color;
+              if (
+                selectedComponent.type === 'aspect' ||
+                selectedComponent.type === 'color-relief'
+              ) {
+                v =
+                  'linear-gradient(90deg, ' +
+                  selectedComponent.colorStops
+                    .map(
+                      (colorStop) =>
+                        `rgba(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
+                    )
+                    .join(', ') +
+                  ')';
+              } else {
+                const color =
+                  selectedComponent?.colorStops[0].color ??
+                  shading.backgroundColor;
 
-                  if (id === undefined) {
-                    draft.backgroundColor = colorArr;
-                  } else {
-                    const component = draft.components.find(
-                      (component) => component.id === id,
-                    );
+                v = Color.rgb(color).string();
+              }
 
-                    if (component) {
-                      component.colors = [[NaN, colorArr]];
-                    }
+              console.log('SET', v === color.toLowerCase() ? color : v);
+
+              return v === color.toLowerCase() ? color : v;
+            })()}
+            onChange={(color) => {
+              setColor(color);
+
+              console.log('GET', color);
+
+              let colorStops: ColorStop[];
+
+              if (color.startsWith('linear-gradient(')) {
+                colorStops = [
+                  ...color.matchAll(/rgba?\(([^)]+)\) (\d+%)/gi),
+                ].map(([, rgba, stop]) => {
+                  const color = rgba.split(',').map(Number) as ColorType;
+
+                  if (color.length < 4) {
+                    color.push(1);
                   }
-                }),
-              ),
-            );
-          }}
-        />
+
+                  return {
+                    value: parseFloat(stop) / 100,
+                    color,
+                  };
+                });
+              } else {
+                const c = Color(color).rgb().array() as ColorType;
+
+                if (c.length < 4) {
+                  c.push(1);
+                }
+
+                colorStops = [{ value: 0, color: c }];
+              }
+
+              dispatch(
+                mapSetShading(
+                  produce(shading, (draft) => {
+                    if (id === undefined) {
+                      draft.backgroundColor = colorStops[0].color;
+                    } else {
+                      const component = draft.components.find(
+                        (component) => component.id === id,
+                      );
+
+                      if (component) {
+                        component.colorStops = colorStops;
+                      }
+                    }
+                  }),
+                ),
+              );
+            }}
+          />
+        )}
       </Form>
     </Card>
   );

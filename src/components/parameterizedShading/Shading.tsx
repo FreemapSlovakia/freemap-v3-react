@@ -7,7 +7,7 @@ export const SHADING_COMPONENT_TYPES = [
   'aspect',
 ] as const;
 
-export type ColorStop = [value: number, color: Color];
+export type ColorStop = { value: number; color: Color };
 
 export type Color = [number, number, number, number];
 
@@ -20,7 +20,7 @@ export type ShadingComponent = {
   azimuth: number;
   contrast: number;
   brightness: number;
-  colors: ColorStop[];
+  colorStops: ColorStop[];
 };
 
 export type Shading = {

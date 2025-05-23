@@ -10,7 +10,7 @@ import {
 } from 'leaflet';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 import { DataWriter } from './DataWriter.js';
-import { Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
+import { Color, Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
 
 type ShadingLayerOptions = GridLayerOptions & {
   url: string;
@@ -242,13 +242,18 @@ class LShadingLayer extends LGridLayer {
 
       const dw = new DataWriter(shadingData);
 
+      function writeColor(color: Color) {
+        dw.f32(color[0] / 255);
+        dw.f32(color[1] / 255);
+        dw.f32(color[2] / 255);
+        dw.f32(color[3]);
+      }
+
       dw.u32(shading.components.length);
       dw.u32(zoom);
       dw.pad32(2);
 
-      for (const band of shading.backgroundColor) {
-        dw.f32(band / 255);
-      }
+      writeColor(shading.backgroundColor);
 
       for (const component of shading.components) {
         dw.u32(SHADING_COMPONENT_TYPES.indexOf(component.type));
@@ -256,19 +261,24 @@ class LShadingLayer extends LGridLayer {
         dw.f32(component.elevation);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
-        dw.u32(component.colors.length);
+        dw.u32(component.colorStops.length);
         dw.pad32(2);
 
-        for (const colorStop of component.colors) {
-          dw.f32(colorStop[0]);
+        const range =
+          component.type === 'aspect'
+            ? 2 * Math.PI
+            : component.type === 'color-relief'
+              ? 2660
+              : 0;
+
+        for (const colorStop of component.colorStops) {
+          dw.f32(colorStop.value * range);
           dw.pad32(3);
 
-          for (const band of colorStop[1]) {
-            dw.f32(band / 255);
-          }
+          writeColor(colorStop.color);
         }
 
-        dw.pad32(8 * (16 - component.colors.length));
+        dw.pad32(8 * (16 - component.colorStops.length));
       }
 
       device.queue.writeBuffer(shadingBuffer, 0, shadingData);

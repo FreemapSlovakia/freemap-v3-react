@@ -192,28 +192,29 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 }
 
 fn interpolate_color(stops: array<ColorStop, NUM_STOPS>, count: u32, t: f32) -> vec4<f32> {
-    if count < 1 || stops[0].value > t {
+    if count == 0 {
         return vec4<f32>(0.0, 0.0, 0.0, 0.0);
+    }
+
+    if count == 1 || t < stops[0].value {
+        return stops[0].color;
     }
 
     var i = 0u;
 
     loop {
-        if t < stops[i + 1].value {
-            break;
-        }
+        let s1 = stops[i + 1];
 
-        if i >= count - 2 {
-            return vec4<f32>(0.0, 0.0, 0.0, 0.0);
+        if t < s1.value {
+            let s0 = stops[i];
+
+            return mix(s0.color, s1.color, (t - s0.value) / (s1.value - s0.value));
         }
 
         i = i + 1;
+
+        if i == count - 1 {
+            return stops[i].color;
+        }
     }
-
-    let s0 = stops[i];
-    let s1 = stops[i + 1];
-
-    let local_t = clamp((t - s0.value) / (s1.value - s0.value), 0.0, 1.0);
-
-    return mix(s0.color, s1.color, local_t);
 }

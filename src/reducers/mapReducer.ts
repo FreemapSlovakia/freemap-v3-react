@@ -39,7 +39,7 @@ export const mapInitialState: MapState = {
   tempLegacyMapWarningSuppressions: [],
   esriAttribution: [],
   shading: {
-    backgroundColor: [0x00, 0x00, 0x00, 0xff],
+    backgroundColor: [0x00, 0x00, 0x00, 1],
     components: [
       {
         id: 1,
@@ -48,7 +48,7 @@ export const mapInitialState: MapState = {
         azimuth: 315 * (Math.PI / 180),
         brightness: 0,
         contrast: 1,
-        colors: [[NaN, [0xff, 0xff, 0xff, 0xff]]],
+        colorStops: [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
       },
       // {
       //   id: 1,
