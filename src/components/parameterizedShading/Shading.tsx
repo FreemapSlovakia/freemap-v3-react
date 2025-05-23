@@ -7,7 +7,7 @@ export const SHADING_COMPONENT_TYPES = [
   'aspect',
 ] as const;
 
-export type ColorStop = [ratio: number, color: Color];
+export type ColorStop = [value: number, color: Color];
 
 export type Color = [number, number, number, number];
 

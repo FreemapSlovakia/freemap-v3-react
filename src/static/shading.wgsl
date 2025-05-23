@@ -7,7 +7,7 @@ const TAU = radians(360.0);
 // zoom 0 tile - meter per pixel
 const METER_PER_PIXEL_Z0: f32 = (TAU * 6378137.0 * cos(radians(49.0))) / 256.0;
 
-const NUM_STOPS = 6u;
+const NUM_STOPS = 16u;
 
 struct Shading {
     component_count: u32,
@@ -18,7 +18,7 @@ struct Shading {
 };
 
 struct ColorStop {
-    ratio: f32,
+    value: f32,
     _pad1: f32,
     _pad2: vec2<f32>,
     color: vec4<f32>,
@@ -32,7 +32,7 @@ struct ShadingComponent {
     brightness: f32,
     color_count: u32,
     _pad: vec2<f32>,
-    colors: array<ColorStop, 16>
+    colors: array<ColorStop, NUM_STOPS>
 };
 
 @group(0) @binding(0) var samp: sampler;
@@ -90,21 +90,7 @@ fn get_normal(pos: vec2<i32>) -> vec3<f32> {
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     let pos2 = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
 
-    let elev = get_elev(pos2);
-
-    // if true {
-    //     return interpolate_color(
-    //         array<f32, NUM_STOPS>(0, 300, 600, 900, 1200, 3000),
-    //         array<vec4<f32>, NUM_STOPS>(
-    //             vec4(0, 0, 1, 1),
-    //             vec4(0, 1, 0, 1),
-    //             vec4(1, 0, 0, 1),
-    //             vec4(1, 1, 0, 1),
-    //             vec4(1, 0, 1, 1),
-    //             vec4(1, 1, 1, 1)
-    //         ), elev
-    //     );
-    // }
+    let elev = get_elev(pos2); // TODO make lazy-memo
 
     var sum_rgb = vec3<f32>(0.0);
     var sum_alpha = 0.0;
@@ -117,11 +103,11 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
         var intensity = 0.0;
 
-        if component.method < 4u && all(normal == vec3<f32>(0.0)) {
+        if component.method != 4u && all(normal == vec3<f32>(0.0)) {
             normal = get_normal(pos2);
         }
 
-        let color = component.colors[0].color;
+        var color: vec4<f32>;
 
         if component.method == 0u {
             // Igor
@@ -136,6 +122,8 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             let slope_angle = acos(normal.z); // radians from vertical
 
             intensity = slope_angle / HALF_PI * 2.0 * aspect_strength;
+
+            color = component.colors[0].color;
         } else if component.method == 1u {
             // Oblique
             let zenith = HALF_PI - component.altitude;
@@ -147,20 +135,32 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             );
 
             intensity = dot(normal, light);
+
+            color = component.colors[0].color;
         } else if component.method == 2u {
             intensity = acos(normal.z) / HALF_PI;
+
+            color = component.colors[0].color;
         } else if component.method == 3u {
             let zenith = HALF_PI - component.altitude;
 
             intensity = cos(zenith) * normal.z + sin(zenith) * length(normal.xy);
+
+            color = component.colors[0].color;
         } else if component.method == 4u {
+            // Relief
             intensity = 1.0;
 
-            // TODO
+            color = interpolate_color(component.colors, component.color_count, elev);
         } else if component.method == 5u {
+            // Aspect
             intensity = 1.0;
 
-            // TODO
+            let angle = atan2(normal.x, -normal.y); // TODO maybe lazy-memo; but multiple such layers are barely possible
+
+            let angle_0_2pi = select(angle, angle + TAU, angle < 0.0);
+
+            color = interpolate_color(component.colors, component.color_count, angle_0_2pi);
         }
 
         let modulated = component.contrast * (intensity - 0.5) + 0.5 + component.brightness;
@@ -191,21 +191,29 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     return vec4(out_rgb, out_a);
 }
 
-fn interpolate_color(stops: array<f32, NUM_STOPS>, colors: array<vec4<f32>, NUM_STOPS>, t: f32) -> vec4<f32> {
-    var i: u32 = 0u;
-
-    loop {
-        if i >= NUM_STOPS - 1u || t < stops[i + 1u] {
-            break;
-        }
-        i = i + 1u;
+fn interpolate_color(stops: array<ColorStop, NUM_STOPS>, count: u32, t: f32) -> vec4<f32> {
+    if count < 1 || stops[0].value > t {
+        return vec4<f32>(0.0, 0.0, 0.0, 0.0);
     }
 
-    let t0 = stops[i];
-    let t1 = stops[i + 1u];
-    let c0 = colors[i];
-    let c1 = colors[i + 1u];
-    let local_t = clamp((t - t0) / (t1 - t0), 0.0, 1.0);
+    var i = 0u;
 
-    return mix(c0, c1, local_t);
+    loop {
+        if t < stops[i + 1].value {
+            break;
+        }
+
+        if i >= count - 2 {
+            return vec4<f32>(0.0, 0.0, 0.0, 0.0);
+        }
+
+        i = i + 1;
+    }
+
+    let s0 = stops[i];
+    let s1 = stops[i + 1];
+
+    let local_t = clamp((t - s0.value) / (s1.value - s0.value), 0.0, 1.0);
+
+    return mix(s0.color, s1.color, local_t);
 }
