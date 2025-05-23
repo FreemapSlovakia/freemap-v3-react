@@ -229,55 +229,55 @@ export function ShadingControl() {
           </>
         )}
 
-        {selectedComponent && (
-          <ColorPicker
-            className="mt-3"
-            height={100}
-            width={240}
-            hideGradientAngle
-            hideGradientType
-            hideColorTypeBtns
-            hideInputs
-            hideInputType
-            value={(() => {
-              let v: string;
+        <ColorPicker
+          className="mt-3"
+          height={100}
+          width={240}
+          hideGradientAngle
+          hideGradientType
+          hideColorTypeBtns
+          hideInputs
+          hideInputType
+          value={(() => {
+            let v: string;
 
-              if (
-                selectedComponent.type === 'aspect' ||
-                selectedComponent.type === 'color-relief'
-              ) {
-                v =
-                  'linear-gradient(90deg, ' +
-                  selectedComponent.colorStops
-                    .map(
-                      (colorStop) =>
-                        `rgba(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
-                    )
-                    .join(', ') +
-                  ')';
-              } else {
-                const color =
-                  selectedComponent?.colorStops[0].color ??
-                  shading.backgroundColor;
+            if (!selectedComponent) {
+              v = Color.rgb(shading.backgroundColor).string();
+            } else if (
+              selectedComponent.type === 'aspect' ||
+              selectedComponent.type === 'color-relief'
+            ) {
+              v =
+                'linear-gradient(90deg, ' +
+                selectedComponent.colorStops
+                  .map(
+                    (colorStop) =>
+                      `rgba(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
+                  )
+                  .join(', ') +
+                ')';
+            } else {
+              const color =
+                selectedComponent?.colorStops[0].color ??
+                shading.backgroundColor;
 
-                v = Color.rgb(color).string();
-              }
+              v = Color.rgb(color).string();
+            }
 
-              console.log('SET', v === color.toLowerCase() ? color : v);
+            console.log('SET', v === color.toLowerCase() ? color : v);
 
-              return v === color.toLowerCase() ? color : v;
-            })()}
-            onChange={(color) => {
-              setColor(color);
+            return v === color.toLowerCase() ? color : v;
+          })()}
+          onChange={(color) => {
+            setColor(color);
 
-              console.log('GET', color);
+            console.log('GET', color);
 
-              let colorStops: ColorStop[];
+            let colorStops: ColorStop[];
 
-              if (color.startsWith('linear-gradient(')) {
-                colorStops = [
-                  ...color.matchAll(/rgba?\(([^)]+)\) (\d+%)/gi),
-                ].map(([, rgba, stop]) => {
+            if (color.startsWith('linear-gradient(')) {
+              colorStops = [...color.matchAll(/rgba?\(([^)]+)\) (\d+%)/gi)].map(
+                ([, rgba, stop]) => {
                   const color = rgba.split(',').map(Number) as ColorType;
 
                   if (color.length < 4) {
@@ -288,37 +288,37 @@ export function ShadingControl() {
                     value: parseFloat(stop) / 100,
                     color,
                   };
-                });
-              } else {
-                const c = Color(color).rgb().array() as ColorType;
+                },
+              );
+            } else {
+              const c = Color(color).rgb().array() as ColorType;
 
-                if (c.length < 4) {
-                  c.push(1);
-                }
-
-                colorStops = [{ value: 0, color: c }];
+              if (c.length < 4) {
+                c.push(1);
               }
 
-              dispatch(
-                mapSetShading(
-                  produce(shading, (draft) => {
-                    if (id === undefined) {
-                      draft.backgroundColor = colorStops[0].color;
-                    } else {
-                      const component = draft.components.find(
-                        (component) => component.id === id,
-                      );
+              colorStops = [{ value: 0, color: c }];
+            }
 
-                      if (component) {
-                        component.colorStops = colorStops;
-                      }
+            dispatch(
+              mapSetShading(
+                produce(shading, (draft) => {
+                  if (id === undefined) {
+                    draft.backgroundColor = colorStops[0].color;
+                  } else {
+                    const component = draft.components.find(
+                      (component) => component.id === id,
+                    );
+
+                    if (component) {
+                      component.colorStops = colorStops;
                     }
-                  }),
-                ),
-              );
-            }}
-          />
-        )}
+                  }
+                }),
+              ),
+            );
+          }}
+        />
       </Form>
     </Card>
   );
