@@ -16,6 +16,8 @@ type ShadingLayerOptions = GridLayerOptions & {
   url: string;
   zoomOffset?: number;
   shading: Shading;
+  premiumFromZoom: number | undefined;
+  premiumOnlyText: string | undefined;
 };
 
 type CanvasWithRender = HTMLCanvasElement & {
@@ -25,15 +27,15 @@ type CanvasWithRender = HTMLCanvasElement & {
 class LShadingLayer extends LGridLayer {
   private _options: ShadingLayerOptions;
 
-  private _acm = new Map<string, AbortController>();
+  private acm = new Map<string, AbortController>();
 
-  private _gpuPromise: Promise<[GPUDevice, GPURenderPipeline, GPUSampler]>;
+  private gpuPromise: Promise<[GPUDevice, GPURenderPipeline, GPUSampler]>;
 
-  private format: GPUTextureFormat;
+  private textureFormat: GPUTextureFormat;
 
-  private _workerPool: WorkerPool;
+  private workerPool: WorkerPool;
 
-  private _shading: Shading;
+  private shading: Shading;
 
   constructor(options: ShadingLayerOptions) {
     super(options);
@@ -44,29 +46,29 @@ class LShadingLayer extends LGridLayer {
       throw new Error('WebGPU not supported');
     }
 
-    this._shading = options.shading;
+    this.shading = options.shading;
 
-    this._workerPool = createWorkerPool(
+    this.workerPool = createWorkerPool(
       () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
     );
 
-    const format = navigator.gpu.getPreferredCanvasFormat();
+    const textureFormat = navigator.gpu.getPreferredCanvasFormat();
 
-    this.format = format;
+    this.textureFormat = textureFormat;
 
     this.on('tileunload', ({ coords }: { coords: Coords }) => {
       const key = `${coords.x}/${coords.y}/${coords.z}`;
 
-      const ac = this._acm.get(key);
+      const ac = this.acm.get(key);
 
       if (ac) {
         ac.abort();
 
-        this._acm.delete(key);
+        this.acm.delete(key);
       }
     });
 
-    this._gpuPromise = (async () => {
+    this.gpuPromise = (async () => {
       const initPromise = init();
 
       const adapter = await navigator.gpu.requestAdapter();
@@ -128,7 +130,7 @@ class LShadingLayer extends LGridLayer {
         fragment: {
           module: shaderModule,
           entryPoint: 'fs_main',
-          targets: [{ format }],
+          targets: [{ format: textureFormat }],
         },
         primitive: { topology: 'triangle-list' },
       });
@@ -145,7 +147,7 @@ class LShadingLayer extends LGridLayer {
   }
 
   onRemove(map: LeafletMap): this {
-    this._workerPool.destroy();
+    this.workerPool.destroy();
 
     return super.onRemove(map);
   }
@@ -154,7 +156,7 @@ class LShadingLayer extends LGridLayer {
     coords: Coords,
     canvas: HTMLCanvasElement,
   ): Promise<void> {
-    const [device, pipeline, sampler] = await this._gpuPromise;
+    const [device, pipeline, sampler] = await this.gpuPromise;
 
     const context = canvas.getContext('webgpu');
 
@@ -164,7 +166,7 @@ class LShadingLayer extends LGridLayer {
 
     context.configure({
       device,
-      format: this.format,
+      format: this.textureFormat,
       alphaMode: 'premultiplied',
     });
 
@@ -176,7 +178,7 @@ class LShadingLayer extends LGridLayer {
 
     const key = `${x}/${y}/${zoom}`;
 
-    this._acm.set(key, controller);
+    this.acm.set(key, controller);
 
     const { signal } = controller;
 
@@ -187,7 +189,7 @@ class LShadingLayer extends LGridLayer {
       },
     );
 
-    this._acm.delete(key);
+    this.acm.delete(key);
 
     if (res.status !== 200) {
       throw new Error('unexpected status ' + res.status);
@@ -195,7 +197,7 @@ class LShadingLayer extends LGridLayer {
 
     const compressed = new Uint8Array(await res.arrayBuffer());
 
-    const f32data = await this._workerPool.addJob<Float32Array>(() => [
+    const f32data = await this.workerPool.addJob<Float32Array>(() => [
       compressed,
       [compressed.buffer],
     ]);
@@ -319,6 +321,24 @@ class LShadingLayer extends LGridLayer {
   }
 
   createTile(coords: Coords, done: DoneCallback) {
+    const isOnPremiumZoom =
+      this._options.premiumFromZoom !== undefined &&
+      coords.z >= this._options.premiumFromZoom;
+
+    if (isOnPremiumZoom && (coords.x + coords.y * 2) % 4) {
+      const div = document.createElement('div');
+
+      div.className = 'fm-nonpremium-tile';
+
+      if (this._options.premiumOnlyText) {
+        div.innerHTML = '<div>' + this._options.premiumOnlyText + '</div>';
+      }
+
+      setTimeout(() => done(undefined, div));
+
+      return div;
+    }
+
     const size = this.getTileSize();
 
     const canvas = document.createElement('canvas');
@@ -332,7 +352,7 @@ class LShadingLayer extends LGridLayer {
     canvas.style.height = size.x + 'px';
 
     this.createTileAsync(coords, canvas).then(() => {
-      (canvas as CanvasWithRender).render(this._shading);
+      (canvas as CanvasWithRender).render(this.shading);
 
       done(undefined, canvas);
     }, done);
@@ -341,7 +361,7 @@ class LShadingLayer extends LGridLayer {
   }
 
   setShading(shading: Shading) {
-    this._shading = shading;
+    this.shading = shading;
 
     for (const tile in this._tiles) {
       (this._tiles[tile].el as CanvasWithRender).render?.(shading);

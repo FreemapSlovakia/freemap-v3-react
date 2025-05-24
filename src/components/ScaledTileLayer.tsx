@@ -10,10 +10,10 @@ type Props = TileLayerProps & {
 };
 
 class LScaledTileLayer extends TileLayer {
-  extraScales;
-  cors;
-  premiumFromZoom;
-  premiumOnlyText;
+  private extraScales;
+  private cors;
+  private premiumFromZoom;
+  private premiumOnlyText;
 
   constructor(
     urlTemplate: string,
@@ -35,10 +35,10 @@ class LScaledTileLayer extends TileLayer {
   }
 
   createTile(coords: Coords, done: DoneCallback) {
-    const onPremiumZoom =
+    const isOnPremiumZoom =
       this.premiumFromZoom !== undefined && coords.z >= this.premiumFromZoom;
 
-    if (onPremiumZoom && (coords.x + coords.y * 2) % 4) {
+    if (isOnPremiumZoom && (coords.x + coords.y * 2) % 4) {
       const div = document.createElement('div');
 
       div.className = 'fm-nonpremium-tile';
@@ -54,7 +54,7 @@ class LScaledTileLayer extends TileLayer {
 
     const img = super.createTile(coords, done) as HTMLImageElement;
 
-    img.classList.toggle('fm-demo-tile', onPremiumZoom);
+    img.classList.toggle('fm-demo-tile', isOnPremiumZoom);
 
     if (this.cors) {
       img.crossOrigin = 'anonymous';

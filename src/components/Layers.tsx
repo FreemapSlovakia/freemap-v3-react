@@ -96,10 +96,24 @@ export function Layers(): ReactElement | null {
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
+    let effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
+
+    if (effPremiumFromZoom && scaleWithDpi) {
+      effPremiumFromZoom--;
+    }
+
     if (type === 'h' && url) {
       return (
         <AsyncComponent
-          key={type}
+          key={
+            type +
+            '-' +
+            opacity +
+            '-' +
+            (effPremiumFromZoom ?? 99) +
+            '-' +
+            (effPremiumFromZoom ? m?.premium.premiumOnly : '')
+          }
           url={url}
           factory={shadingLayerFactory}
           opacity={opacity}
@@ -116,6 +130,8 @@ export function Layers(): ReactElement | null {
           }
           zoomOffset={isHdpi ? 1 : 0}
           shading={shading}
+          premiumFromZoom={effPremiumFromZoom}
+          premiumOnlyText={m?.premium.premiumOnly}
         />
       );
     }
@@ -135,12 +151,6 @@ export function Layers(): ReactElement | null {
           language={language}
         />
       );
-    }
-
-    let effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
-
-    if (effPremiumFromZoom && scaleWithDpi) {
-      effPremiumFromZoom--;
     }
 
     return (
