@@ -94,21 +94,21 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
         <hr />
 
-        {(language === 'sk' || language === 'cs') && (
+        {language === 'sk' && (
           <>
             <p>
               Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
               <a
-                href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia"
+                href="https://www.freemap.sk/#document=dvePercenta"
                 onClick={(e) => {
                   e.preventDefault();
-
                   dispatch(documentShow('dvePercenta'));
                 }}
               >
                 2% z dane
               </a>
-              .
+              . Násladne vás, podľa výpisu z daňového úradu, odmeníme predĺžením
+              plného prístupu o jeden rok.
             </p>
 
             <hr />
@@ -123,7 +123,6 @@ export function SupportUsModal({ show }: Props): ReactElement {
             href="#show=about"
             onClick={(e) => {
               e.preventDefault();
-
               navigate('show=about');
             }}
           >
