@@ -334,54 +334,6 @@ class LShadingLayer extends LGridLayer {
     this.createTileAsync(coords, canvas).then(() => {
       (canvas as CanvasWithRender).render(this._shading);
 
-      // const SIX = Math.PI / 3;
-      // (canvas as CanvasWithRender).render({
-      //   backgroundColor: [0, 0, 0, 1],
-      //   components: [
-      //     {
-      //       id: 1,
-      //       type: 'aspect',
-      //       contrast: 1,
-      //       brightness: 0,
-      //       azimuth: NaN,
-      //       elevation: NaN,
-      //       colors: [
-      //         [0, [255, 0, 0, 255]],
-      //         [SIX, [255, 255, 0, 255]],
-      //         [SIX * 2, [0, 255, 0, 255]],
-      //         [SIX * 3, [0, 255, 255, 255]],
-      //         [SIX * 4, [0, 0, 255, 255]],
-      //         [SIX * 5, [255, 0, 255, 255]],
-      //         [SIX * 6, [255, 0, 0, 255]],
-      //       ],
-      //     },
-      //   ],
-      // });
-
-      // const SIX = 300;
-      // (canvas as CanvasWithRender).render({
-      //   backgroundColor: [0, 0, 0, 1],
-      //   components: [
-      //     {
-      //       id: 1,
-      //       type: 'color-relief',
-      //       contrast: 1,
-      //       brightness: 0,
-      //       azimuth: NaN,
-      //       elevation: NaN,
-      //       colors: [
-      //         [0, [255, 0, 0, 255]],
-      //         [300, [255, 255, 0, 255]],
-      //         [300 * 2, [0, 255, 0, 255]],
-      //         [300 * 3, [0, 255, 255, 255]],
-      //         [300 * 4, [0, 0, 255, 255]],
-      //         [300 * 5, [255, 0, 255, 255]],
-      //         [300 * 6, [255, 0, 0, 255]],
-      //       ],
-      //     },
-      //   ],
-      // });
-
       done(undefined, canvas);
     }, done);
 
