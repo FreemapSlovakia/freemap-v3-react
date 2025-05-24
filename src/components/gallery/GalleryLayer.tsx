@@ -125,7 +125,7 @@ class LGalleryLayer extends LGridLayer {
 
       this._acm.set(key, controller);
 
-      let response: Response;
+      let response;
 
       try {
         response = await fetch(

@@ -182,14 +182,21 @@ class LShadingLayer extends LGridLayer {
 
     const { signal } = controller;
 
-    const res = await fetch(
-      Util.template(this._options.url, { x, y, z: zoom }),
-      {
-        signal,
-      },
-    );
+    let res;
 
-    this.acm.delete(key);
+    try {
+      res = await fetch(Util.template(this._options.url, { x, y, z: zoom }), {
+        signal,
+      });
+    } catch (err) {
+      if (String(err).includes('abort')) {
+        return;
+      }
+
+      throw err;
+    } finally {
+      this.acm.delete(key);
+    }
 
     if (res.status !== 200) {
       throw new Error('unexpected status ' + res.status);
@@ -307,17 +314,6 @@ class LShadingLayer extends LGridLayer {
 
       // await device.queue.onSubmittedWorkDone();
     };
-
-    // })
-    // .catch((err) => {
-    //   if (!String(err).includes('abort')) {
-    //     console.error(err);
-    //   }
-
-    //   done(err);
-
-    //   this._acm.delete(key);
-    // });
   }
 
   createTile(coords: Coords, done: DoneCallback) {
