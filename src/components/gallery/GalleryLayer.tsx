@@ -138,7 +138,7 @@ class LGalleryLayer extends LGridLayer {
           },
         );
       } catch (err) {
-        if (String(err).includes('abort')) {
+        if (signal.aborted) {
           return;
         }
 

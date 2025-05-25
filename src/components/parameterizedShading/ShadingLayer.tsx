@@ -26,6 +26,8 @@ type CanvasWithRender = HTMLCanvasElement & {
   render: (shading: Shading) => void;
 };
 
+class TileNotFoundError extends Error {}
+
 class GpuError extends Error {
   private _kind: keyof Messages['gpu'];
   private _detail: string | undefined;
@@ -242,13 +244,17 @@ class LShadingLayer extends LGridLayer {
         signal,
       });
     } catch (err) {
-      if (String(err).includes('abort')) {
+      if (signal.aborted) {
         return;
       }
 
       throw err;
     } finally {
       this.acm.delete(key);
+    }
+
+    if (res.status === 404) {
+      throw new TileNotFoundError();
     }
 
     if (res.status !== 200) {
@@ -413,7 +419,9 @@ class LShadingLayer extends LGridLayer {
         done(undefined, canvas);
       },
       (err) => {
-        this.showError(err);
+        if (!(err instanceof TileNotFoundError)) {
+          this.showError(err);
+        }
 
         done(err);
       },
