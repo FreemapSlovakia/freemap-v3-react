@@ -10,7 +10,6 @@ import {
   DropdownButton,
   DropdownItem,
   Form,
-  ToggleButton,
 } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { mapSetShading } from '../../actions/mapActions.js';
@@ -22,7 +21,10 @@ import {
   type Color as ColorType,
   type ShadingComponentType,
 } from './Shading.js';
-import { ShadingComponentControl } from './ShadingComponentControl.js';
+import {
+  MANAGEABLE_TYPES,
+  ShadingComponentControl,
+} from './ShadingComponentControl.js';
 
 export function ShadingControl() {
   const shading = useAppSelector((state) => state.map.shading);
@@ -47,16 +49,7 @@ export function ShadingControl() {
         <div />
 
         <Form className="p-2">
-          <ShadingComponentControl
-            components={shading.components}
-            onChange={(components) =>
-              dispatch(mapSetShading({ ...shading, components }))
-            }
-            selectedId={id}
-            onSelect={setId}
-          />
-
-          <ButtonToolbar className="mt-3">
+          <ButtonToolbar>
             <DropdownButton
               id="add-shading-button"
               title="Add"
@@ -124,25 +117,43 @@ export function ShadingControl() {
             >
               Remove
             </Button>
-
-            <ToggleButton
-              id="bg-toggle"
-              type="checkbox"
-              value="1"
-              checked={id === undefined}
-              className="ms-1"
-              onClick={() => {
-                setId(undefined);
-              }}
-              variant="outline-secondary"
-            >
-              Bg Color
-            </ToggleButton>
           </ButtonToolbar>
+
+          <Form.Select
+            className="my-2"
+            value={selectedComponent?.id ?? -1}
+            onChange={(e) =>
+              setId(
+                e.currentTarget.value
+                  ? Number(e.currentTarget.value)
+                  : undefined,
+              )
+            }
+          >
+            <option value="">Background</option>
+            {shading.components.map((component) => (
+              <option key={component.id} value={component.id}>
+                {component.type}
+              </option>
+            ))}
+          </Form.Select>
+
+          {shading.components.some(
+            (shading) => MANAGEABLE_TYPES[shading.type],
+          ) && (
+            <ShadingComponentControl
+              components={shading.components}
+              onChange={(components) =>
+                dispatch(mapSetShading({ ...shading, components }))
+              }
+              selectedId={id}
+              onSelect={setId}
+            />
+          )}
 
           {selectedComponent && (
             <>
-              <Form.Group className="mt-3">
+              {/* changing type disabled <Form.Group className="mt-3">
                 <Form.Label>Type</Form.Label>
 
                 <Form.Select
@@ -168,7 +179,7 @@ export function ShadingControl() {
                     </option>
                   ))}
                 </Form.Select>
-              </Form.Group>
+              </Form.Group> */}
 
               {selectedComponent.type.startsWith('hillshade-') && (
                 <Form.Group className="mt-3">
@@ -271,14 +282,10 @@ export function ShadingControl() {
                 v = Color.rgb(color).string();
               }
 
-              console.log('SET', v === color.toLowerCase() ? color : v);
-
               return v === color.toLowerCase() ? color : v;
             })()}
             onChange={(color) => {
               setColor(color);
-
-              console.log('GET', color);
 
               let colorStops: ColorStop[];
 

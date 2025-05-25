@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ShadingComponent } from './Shading.js';
+import { ShadingComponent, ShadingComponentType } from './Shading.js';
 
 export type Props = {
   diameter?: number;
@@ -8,6 +8,12 @@ export type Props = {
   onChange: (components: ShadingComponent[]) => void;
   selectedId?: number;
   onSelect: (id: number) => void;
+};
+
+export const MANAGEABLE_TYPES: Partial<Record<ShadingComponentType, true>> = {
+  'slope-classic': true,
+  'hillshade-classic': true,
+  'hillshade-igor': true,
 };
 
 export function ShadingComponentControl({
@@ -67,7 +73,7 @@ export function ShadingComponentControl({
 
       const azimuth = Math.PI - Math.atan2(x, y);
 
-      const elevation = Math.acos(Math.min(1, hypot / radius));
+      const elevation = Math.min(1, hypot / radius) * (Math.PI / 2);
 
       const dragged = dragging;
 
@@ -92,6 +98,8 @@ export function ShadingComponentControl({
         return undefined;
       }
 
+      e.preventDefault();
+
       const id = Number(e.target.dataset['sc_' + gid.current]);
 
       const mouse = getCoordinates(e);
@@ -107,7 +115,7 @@ export function ShadingComponentControl({
       }
 
       const ele = shading.type.endsWith('-classic')
-        ? Math.cos(shading.elevation)
+        ? shading.elevation / (Math.PI / 2)
         : 1;
 
       setDragging({
@@ -155,7 +163,7 @@ export function ShadingComponentControl({
 
   const items = shadings.map((shading) => {
     const ele = shading.type.endsWith('-classic')
-      ? Math.cos(shading.elevation)
+      ? shading.elevation / (Math.PI / 2)
       : 1;
 
     return {
@@ -200,26 +208,29 @@ export function ShadingComponentControl({
 
       <circle cx={0} cy={0} r={3} style={{ fill: 'silver' }} />
 
-      {items.map((shading) => (
-        <circle
-          key={shading.id}
-          cx={shading.cx}
-          cy={shading.cy}
-          r={6}
-          style={{
-            fill: `rgba(${shading.colorStops[0].color.join(',')})`,
-            stroke: 'silver',
-          }}
-          {...{ [`data-sc_${gid.current}`]: shading.id }}
-        />
-      ))}
+      {items
+        .filter((shading) => MANAGEABLE_TYPES[shading.type])
+        .map((shading) => (
+          <circle
+            key={shading.id}
+            cx={shading.cx}
+            cy={shading.cy}
+            r={7}
+            style={{
+              fill: `rgba(${shading.colorStops[0].color.join(',')})`,
+              stroke: 'silver',
+            }}
+            {...{ [`data-sc_${gid.current}`]: shading.id }}
+          />
+        ))}
 
       {items
+        .filter((shading) => MANAGEABLE_TYPES[shading.type])
         .filter((shading) => selectedId === shading.id)
         .map((shading) => (
           <circle
             key={shading.id}
-            r={7}
+            r={8}
             cx={shading.cx}
             cy={shading.cy}
             style={{
