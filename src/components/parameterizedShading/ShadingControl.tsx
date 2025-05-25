@@ -48,7 +48,7 @@ export function ShadingControl() {
       <div className="fm-menu-scroller" ref={sc}>
         <div />
 
-        <Form className="p-2">
+        <Form className="p-2" onSubmit={(e) => e.preventDefault()}>
           <ButtonToolbar>
             <DropdownButton
               id="add-shading-button"
