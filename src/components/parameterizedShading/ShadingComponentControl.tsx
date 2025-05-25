@@ -73,7 +73,7 @@ export function ShadingComponentControl({
 
       const azimuth = Math.PI - Math.atan2(x, y);
 
-      const elevation = Math.min(1, hypot / radius) * (Math.PI / 2);
+      const elevation = (1 - Math.min(1, hypot / radius)) * (Math.PI / 2);
 
       const dragged = dragging;
 
@@ -115,7 +115,7 @@ export function ShadingComponentControl({
       }
 
       const ele = shading.type.endsWith('-classic')
-        ? shading.elevation / (Math.PI / 2)
+        ? 1 - shading.elevation / (Math.PI / 2)
         : 1;
 
       setDragging({
@@ -163,7 +163,7 @@ export function ShadingComponentControl({
 
   const items = shadings.map((shading) => {
     const ele = shading.type.endsWith('-classic')
-      ? shading.elevation / (Math.PI / 2)
+      ? 1 - shading.elevation / (Math.PI / 2)
       : 1;
 
     return {
