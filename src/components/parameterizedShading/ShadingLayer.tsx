@@ -8,6 +8,7 @@ import {
   GridLayer as LGridLayer,
   Util,
 } from 'leaflet';
+import { Messages } from 'translations/messagesInterface.js';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 import { DataWriter } from './DataWriter.js';
 import { Color, Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
@@ -18,35 +19,73 @@ type ShadingLayerOptions = GridLayerOptions & {
   shading: Shading;
   premiumFromZoom: number | undefined;
   premiumOnlyText: string | undefined;
+  gpuMessages?: Messages['gpu'];
 };
 
 type CanvasWithRender = HTMLCanvasElement & {
   render: (shading: Shading) => void;
 };
 
+class GpuError extends Error {
+  private _kind: keyof Messages['gpu'];
+  private _detail: string | undefined;
+
+  constructor(kind: keyof Messages['gpu'], error?: unknown) {
+    super(
+      'GPU Error: ' +
+        kind +
+        (error instanceof Error
+          ? ': ' + error.message
+          : error
+            ? ': ' + String(error)
+            : ''),
+    );
+
+    this._kind = kind;
+
+    if (error) {
+      this._detail = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  get kind() {
+    return this._kind;
+  }
+
+  get detail() {
+    return this._detail;
+  }
+}
+
 class LShadingLayer extends LGridLayer {
   private _options: ShadingLayerOptions;
 
   private acm = new Map<string, AbortController>();
 
-  private gpuPromise: Promise<[GPUDevice, GPURenderPipeline, GPUSampler]>;
+  private gpuPromise:
+    | Promise<[GPUDevice, GPURenderPipeline, GPUSampler]>
+    | undefined;
 
-  private textureFormat: GPUTextureFormat;
+  private textureFormat: GPUTextureFormat | undefined;
 
-  private workerPool: WorkerPool;
+  private workerPool: WorkerPool | undefined;
 
   private shading: Shading;
+
+  private errorDiv: HTMLDivElement | undefined;
 
   constructor(options: ShadingLayerOptions) {
     super(options);
 
     this._options = options;
 
-    if (!navigator.gpu) {
-      throw new Error('WebGPU not supported');
-    }
-
     this.shading = options.shading;
+
+    if (!navigator.gpu) {
+      this.showError(new GpuError('notSupported'));
+
+      return;
+    }
 
     this.workerPool = createWorkerPool(
       () => new Worker(new URL('./shadingLayerWorker', import.meta.url)),
@@ -71,13 +110,23 @@ class LShadingLayer extends LGridLayer {
     this.gpuPromise = (async () => {
       const initPromise = init();
 
-      const adapter = await navigator.gpu.requestAdapter();
+      let adapter;
+
+      try {
+        adapter = await navigator.gpu.requestAdapter();
+      } catch (err) {
+        throw new GpuError('errorRequestingDevice', err);
+      }
 
       if (!adapter) {
-        throw new Error('No GPU adapter found');
+        throw new GpuError('noAdapter');
       }
 
       const device = await adapter.requestDevice();
+
+      device.lost.then((e) => {
+        this.showError(new GpuError('lost', e.message));
+      });
 
       const shaderCode = await (await fetch('/shading.wgsl')).text();
 
@@ -147,7 +196,11 @@ class LShadingLayer extends LGridLayer {
   }
 
   onRemove(map: LeafletMap): this {
-    this.workerPool.destroy();
+    this.workerPool?.destroy();
+
+    if (this.errorDiv) {
+      this._map.getContainer().removeChild(this.errorDiv);
+    }
 
     return super.onRemove(map);
   }
@@ -156,17 +209,17 @@ class LShadingLayer extends LGridLayer {
     coords: Coords,
     canvas: HTMLCanvasElement,
   ): Promise<void> {
-    const [device, pipeline, sampler] = await this.gpuPromise;
+    const [device, pipeline, sampler] = await this.gpuPromise!;
 
     const context = canvas.getContext('webgpu');
 
     if (!context) {
-      throw new Error('error getting context');
+      throw new Error('Error getting WebGPU context');
     }
 
     context.configure({
       device,
-      format: this.textureFormat,
+      format: this.textureFormat!,
       alphaMode: 'premultiplied',
     });
 
@@ -204,7 +257,7 @@ class LShadingLayer extends LGridLayer {
 
     const compressed = new Uint8Array(await res.arrayBuffer());
 
-    const f32data = await this.workerPool.addJob<Float32Array>(() => [
+    const f32data = await this.workerPool!.addJob<Float32Array>(() => [
       compressed,
       [compressed.buffer],
     ]);
@@ -317,6 +370,12 @@ class LShadingLayer extends LGridLayer {
   }
 
   createTile(coords: Coords, done: DoneCallback) {
+    if (this.errorDiv) {
+      done(new Error('already errored'));
+
+      return document.createElement('div');
+    }
+
     const isOnPremiumZoom =
       this._options.premiumFromZoom !== undefined &&
       coords.z >= this._options.premiumFromZoom;
@@ -347,11 +406,18 @@ class LShadingLayer extends LGridLayer {
 
     canvas.style.height = size.x + 'px';
 
-    this.createTileAsync(coords, canvas).then(() => {
-      (canvas as CanvasWithRender).render(this.shading);
+    this.createTileAsync(coords, canvas).then(
+      () => {
+        (canvas as CanvasWithRender).render(this.shading);
 
-      done(undefined, canvas);
-    }, done);
+        done(undefined, canvas);
+      },
+      (err) => {
+        this.showError(err);
+
+        done(err);
+      },
+    );
 
     return canvas;
   }
@@ -361,6 +427,38 @@ class LShadingLayer extends LGridLayer {
 
     for (const tile in this._tiles) {
       (this._tiles[tile].el as CanvasWithRender).render?.(shading);
+    }
+  }
+
+  private showError(err: unknown) {
+    if (this.errorDiv) {
+      return;
+    }
+
+    this.workerPool?.destroy();
+
+    this.errorDiv = document.createElement('div');
+
+    this.errorDiv.classList.add('fm-shading-layer-error');
+
+    const errorTextDiv = document.createElement('div');
+
+    const message =
+      err instanceof GpuError
+        ? (this._options.gpuMessages?.[err.kind] ?? '…') + (err.detail ?? '')
+        : err instanceof Error
+          ? err.message
+          : String(err);
+
+    errorTextDiv.innerHTML = `<p><span class="sad">:(</span></p><p>${message}</p>`;
+
+    this.errorDiv.appendChild(errorTextDiv);
+
+    this._map.getContainer()?.appendChild(this.errorDiv);
+
+    // to hide non-premium tiles
+    for (const tile of Object.values(this._tiles)) {
+      tile.el.style.display = 'none';
     }
   }
 }
@@ -374,12 +472,20 @@ export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
   }),
 
   (instance, props, prevProps) => {
-    if (
-      (['shading'] as const).some(
-        (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
-      )
-    ) {
+    if (JSON.stringify(props.shading) !== JSON.stringify(prevProps.shading)) {
       instance.setShading(props.shading);
+    } else if (
+      (
+        [
+          'url',
+          'zoomOffset',
+          'premiumFromZoom',
+          'premiumOnlyText',
+          'gpuMessages',
+        ] as const
+      ).some((p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]))
+    ) {
+      instance.redraw();
     }
   },
 );

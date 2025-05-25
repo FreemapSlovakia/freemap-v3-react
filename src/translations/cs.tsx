@@ -1673,6 +1673,13 @@ const messages: Messages = {
     510: 'Nerozšířeno',
     511: 'Vyžadována síťová autentizace',
   },
+  gpu: {
+    lost: 'Zařízení GPU bylo ztraceno: ',
+    noAdapter: 'V tomto prohlížeči není dostupný WebGPU adaptér.',
+    notSupported: 'WebGPU není v tomto prohlížeči podporováno.',
+    errorRequestingDevice: 'Nepodařilo se vytvořit GPU zařízení: ',
+    other: 'Chyba při vykreslování: ',
+  },
 };
 
 function numberize(n: number, words: [string, string, string]) {

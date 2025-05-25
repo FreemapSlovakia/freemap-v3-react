@@ -130,8 +130,18 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   },
 
   (instance, props, prevProps) => {
-    if (props.url !== prevProps.url) {
-      instance.setUrl(props.url);
+    if (
+      (
+        [
+          'url',
+          'extraScales',
+          'cors',
+          'premiumFromZoom',
+          'premiumOnlyText',
+        ] as const
+      ).some((p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]))
+    ) {
+      instance.redraw();
     }
   },
 );

@@ -132,6 +132,7 @@ export function Layers(): ReactElement | null {
           shading={shading}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
+          gpuMessages={m?.gpu}
         />
       );
     }

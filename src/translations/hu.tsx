@@ -1677,6 +1677,13 @@ const hu: Messages = {
     510: 'Nem bővített',
     511: 'Hálózati hitelesítés szükséges',
   },
+  gpu: {
+    lost: 'A GPU eszköz elveszett: ',
+    noAdapter: 'A WebGPU adapter nem érhető el ebben a böngészőben.',
+    notSupported: 'A WebGPU nem támogatott ebben a böngészőben.',
+    errorRequestingDevice: 'Nem sikerült létrehozni a GPU eszközt: ',
+    other: 'Hiba a megjelenítés során: ',
+  },
 };
 
 function numberize(n: number, words: [string, string]) {

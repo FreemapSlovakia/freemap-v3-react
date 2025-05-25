@@ -1639,6 +1639,13 @@ const en: Messages = {
     510: 'Not Extended',
     511: 'Network Authentication Required',
   },
+  gpu: {
+    lost: 'The GPU device was lost: ',
+    noAdapter: 'WebGPU adapter is not available in this browser.',
+    notSupported: 'WebGPU is not supported in this browser.',
+    errorRequestingDevice: 'Failed to create GPU device: ',
+    other: 'Error rendering: ',
+  },
 };
 
 function numberize(n: number, words: [string, string]) {

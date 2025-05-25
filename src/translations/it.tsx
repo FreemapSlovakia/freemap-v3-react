@@ -1670,6 +1670,13 @@ const messages: Messages = {
     510: 'Non esteso',
     511: 'Autenticazione di rete necessaria',
   },
+  gpu: {
+    lost: 'Il dispositivo GPU è andato perso: ',
+    noAdapter: "L'adattatore WebGPU non è disponibile in questo browser.",
+    notSupported: 'WebGPU non è supportato in questo browser.',
+    errorRequestingDevice: 'Impossibile creare il dispositivo GPU: ',
+    other: 'Errore durante il rendering: ',
+  },
 };
 
 function numberize(n: number, words: [string, string]) {

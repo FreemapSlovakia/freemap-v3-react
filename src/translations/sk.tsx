@@ -1712,6 +1712,13 @@ const messages: Messages = {
     510: 'Nerozšírené',
     511: 'Vyžaduje sa sieťové overenie',
   },
+  gpu: {
+    lost: 'GPU zariadenie bolo stratené: ',
+    noAdapter: 'V tomto prehliadači nie je dostupný WebGPU adaptér.',
+    notSupported: 'WebGPU nie je v tomto prehliadači podporovaný.',
+    errorRequestingDevice: 'Nepodarilo sa vytvoriť GPU zariadenie: ',
+    other: 'Chyba pri vykresľovaní: ',
+  },
 };
 
 function numberize(n: number, words: [string, string, string]) {

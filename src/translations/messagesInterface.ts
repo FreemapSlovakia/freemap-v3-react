@@ -862,6 +862,13 @@ export type Messages = {
     cacheOnly: string;
   };
   errorStatus: Record<number, string>;
+  gpu: {
+    notSupported: string;
+    noAdapter: string;
+    lost: string;
+    errorRequestingDevice: string;
+    other: string;
+  };
 };
 
 export function addError(
