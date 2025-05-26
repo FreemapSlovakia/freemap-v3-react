@@ -1,4 +1,3 @@
-import { init } from '@bokuweb/zstd-wasm';
 import { createTileLayerComponent } from '@react-leaflet/core';
 import {
   Coords,
@@ -64,9 +63,9 @@ class LShadingLayer extends LGridLayer {
 
   private acm = new Map<string, AbortController>();
 
-  private gpuPromise:
-    | Promise<[GPUDevice, GPURenderPipeline, GPUSampler]>
-    | undefined;
+  private gpuPromise: Promise<
+    readonly [GPUDevice, GPURenderPipeline, GPUSampler]
+  >;
 
   private textureFormat: GPUTextureFormat | undefined;
 
@@ -84,7 +83,7 @@ class LShadingLayer extends LGridLayer {
     this.shading = options.shading;
 
     if (!navigator.gpu) {
-      this.showError(new GpuError('notSupported'));
+      this.gpuPromise = Promise.reject(new GpuError('notSupported'));
 
       return;
     }
@@ -109,7 +108,7 @@ class LShadingLayer extends LGridLayer {
       }
     });
 
-    this.gpuPromise = (async () => {
+    const init = async () => {
       const initPromise = init();
 
       let adapter;
@@ -193,8 +192,10 @@ class LShadingLayer extends LGridLayer {
 
       await initPromise;
 
-      return [device, pipeline, sampler];
-    })();
+      return [device, pipeline, sampler] as const;
+    };
+
+    this.gpuPromise = init();
   }
 
   onRemove(map: LeafletMap): this {
@@ -211,7 +212,7 @@ class LShadingLayer extends LGridLayer {
     coords: Coords,
     canvas: HTMLCanvasElement,
   ): Promise<void> {
-    const [device, pipeline, sampler] = await this.gpuPromise!;
+    const [device, pipeline, sampler] = await this.gpuPromise;
 
     const context = canvas.getContext('webgpu');
 
@@ -443,6 +444,8 @@ class LShadingLayer extends LGridLayer {
       return;
     }
 
+    console.error((err as unknown as Error).stack);
+
     this.workerPool?.destroy();
 
     this.errorDiv = document.createElement('div');
@@ -462,7 +465,7 @@ class LShadingLayer extends LGridLayer {
 
     this.errorDiv.appendChild(errorTextDiv);
 
-    this._map.getContainer()?.appendChild(this.errorDiv);
+    this._map.getContainer().appendChild(this.errorDiv);
 
     // to hide non-premium tiles
     for (const tile of Object.values(this._tiles)) {
