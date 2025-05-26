@@ -149,17 +149,16 @@ export interface LayerDef {
   cors?: boolean;
   premiumFromZoom?: number;
   experimental?: boolean;
+  key?: readonly [code: string, shift: boolean];
 }
 
 export interface BaseLayerDef extends LayerDef {
   type: BaseLayerLetters;
-  key?: [code: string, shift: boolean];
 }
 
 export interface OverlayLayerDef extends LayerDef {
   zIndex?: number;
   type: OverlayLetters;
-  key?: [code: string, shift: boolean];
 }
 
 function legacyFreemap(
@@ -453,6 +452,26 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [],
   },
   {
+    type: 'h',
+    // url: 'https://parametric-shading.tiles.freemap.sk/{z}/{x}/{y}',
+    url: 'https://www.freemap.sk/tiles/parametric-shading/{z}/{x}/{y}',
+    icon: <GiHills />,
+    key: ['KeyJ', true],
+    scaleWithDpi: true,
+    maxNativeZoom: 19,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: 'LLS DMR: ©\xa0ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
+    experimental: true,
+    premiumFromZoom: 13,
+    zIndex: 2,
+  },
+  {
     type: 'l',
     icon: <FaTractor />,
     url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
@@ -506,26 +525,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
-  },
-  {
-    type: 'h',
-    // url: 'https://parametric-shading.tiles.freemap.sk/{z}/{x}/{y}',
-    url: 'https://www.freemap.sk/tiles/parametric-shading/{z}/{x}/{y}',
-    icon: <GiHills />,
-    key: ['KeyJ', true],
-    scaleWithDpi: true,
-    maxNativeZoom: 19,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
-      },
-    ],
-    experimental: true,
-    premiumFromZoom: 13,
-    zIndex: 2,
   },
 ];
 

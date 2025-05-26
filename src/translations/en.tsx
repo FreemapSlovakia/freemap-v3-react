@@ -1149,7 +1149,7 @@ const en: Messages = {
       VS: 'Streets Vector',
       VD: 'Dataviz Vector',
       VT: 'Outdoor Vector',
-      h: 'Parametric shading (SK) ⚠',
+      h: 'Parametric shading (SK)',
     },
     customBase: 'Custom map',
     customOverlay: 'Custom map overlay',

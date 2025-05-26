@@ -36,6 +36,7 @@ import {
   baseLayers,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
+  LayerDef,
   NoncustomLayerLetters,
   overlayLayers,
   OverlayLetters,
@@ -188,6 +189,7 @@ export function MapSwitchButton(): ReactElement {
         icon: <MdDashboardCustomize />,
         key: ['Digit' + cl.type.slice(1), false] as const,
         premiumFromZoom: undefined,
+        experimental: undefined,
       })),
   ];
 
@@ -201,12 +203,108 @@ export function MapSwitchButton(): ReactElement {
         icon: <MdDashboardCustomize />,
         key: ['Digit' + cl.type.slice(1), true] as const,
         premiumFromZoom: undefined,
+        experimental: undefined,
       })),
   ];
 
   const handleToggle = useCallback((nextShow: boolean) => {
     setShow(nextShow);
   }, []);
+
+  function commonBadges({
+    icon,
+    experimental,
+    premiumFromZoom,
+    scaleWithDpi,
+  }: Pick<
+    LayerDef,
+    'icon' | 'experimental' | 'premiumFromZoom' | 'scaleWithDpi'
+  >) {
+    return (
+      <>
+        {icon}
+
+        {experimental && (
+          <FaExclamationTriangle
+            data-interactive="1"
+            title={m?.general.experimentalFunction}
+            className="text-warning ms-1"
+          />
+        )}
+
+        {!isPremium &&
+        premiumFromZoom !== undefined &&
+        zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
+          <FaGem
+            className="ms-1 text-warning"
+            title={isPremium ? undefined : m?.premium.premiumOnly}
+            onClick={isPremium ? undefined : becomePremium}
+          />
+        ) : null}
+      </>
+    );
+  }
+
+  function menuItemCommons(
+    {
+      key,
+      icon,
+      premiumFromZoom,
+      scaleWithDpi,
+      minZoom,
+      experimental,
+    }: Pick<
+      LayerDef,
+      | 'icon'
+      | 'key'
+      | 'premiumFromZoom'
+      | 'scaleWithDpi'
+      | 'minZoom'
+      | 'experimental'
+    >,
+    name = '…',
+  ) {
+    return (
+      <>
+        <span className="px-2">{icon}</span>
+
+        <span
+          style={{
+            textDecoration:
+              minZoom !== undefined && zoom < minZoom ? 'line-through' : 'none',
+          }}
+        >
+          {name}
+        </span>
+
+        {getKbdShortcut(key)}
+
+        {experimental && (
+          <FaExclamationTriangle
+            data-interactive="1"
+            title={m?.general.experimentalFunction}
+            className="text-warning ms-1"
+          />
+        )}
+
+        {premiumFromZoom !== undefined &&
+        zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
+          <FaGem
+            className={'ms-1 ' + (isPremium ? 'text-success' : 'text-warning')}
+            title={isPremium ? undefined : m?.premium.premiumOnly}
+            onClickCapture={isPremium ? undefined : becomePremium}
+          />
+        ) : null}
+
+        {minZoom !== undefined && zoom < minZoom && (
+          <FaExclamationTriangle
+            title={m?.mapLayers.minZoomWarning(minZoom)}
+            className="text-warning ms-1"
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <>
@@ -220,7 +318,7 @@ export function MapSwitchButton(): ReactElement {
                 defaultToolbarLayerLetters.includes(type)) ||
               mapType === type,
           )
-          .map(({ type, icon, premiumFromZoom, scaleWithDpi }) => (
+          .map(({ type, ...rest }) => (
             <Button
               variant="secondary"
               title={
@@ -233,17 +331,7 @@ export function MapSwitchButton(): ReactElement {
               active={mapType === type}
               onClick={handleBaseClick}
             >
-              {icon}
-
-              {!isPremium &&
-              premiumFromZoom !== undefined &&
-              zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
-                <FaGem
-                  className="ms-1 text-warning"
-                  title={isPremium ? undefined : m?.premium.premiumOnly}
-                  onClick={isPremium ? undefined : becomePremium}
-                />
-              ) : null}
+              {commonBadges(rest)}
             </Button>
           ))}
 
@@ -256,7 +344,7 @@ export function MapSwitchButton(): ReactElement {
                 defaultToolbarLayerLetters.includes(l.type)) ||
               overlays.includes(l.type),
           )
-          .map(({ type, icon, premiumFromZoom, scaleWithDpi }) => (
+          .map(({ type, ...rest }) => (
             <Button
               variant="secondary"
               title={
@@ -269,17 +357,7 @@ export function MapSwitchButton(): ReactElement {
               active={overlays.includes(type as OverlayLetters)}
               onClick={handleOverlayClick}
             >
-              {icon}
-
-              {!isPremium &&
-              premiumFromZoom !== undefined &&
-              zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
-                <FaGem
-                  className="ms-1 text-warning"
-                  title={isPremium ? undefined : m?.premium.premiumOnly}
-                  onClick={isPremium ? undefined : becomePremium}
-                />
-              ) : null}
+              {commonBadges(rest)}
 
               {pictureFilterIsActive && type === 'I' && (
                 <FaFilter
@@ -341,74 +419,35 @@ export function MapSwitchButton(): ReactElement {
                       (layersSettings[l.type]?.showInMenu ??
                         defaultMenuLayerLetters.includes(l.type)),
                   )
-                  .map(
-                    ({
-                      type,
-                      icon,
-                      minZoom,
-                      key,
-                      premiumFromZoom,
-                      scaleWithDpi,
-                    }) => (
-                      <Dropdown.Item
-                        href={`?layers=${type}`}
-                        key={type}
-                        eventKey={'b' + type}
-                        active={mapType === type}
-                        style={{
-                          opacity:
-                            show === 'all' ||
-                            (layersSettings[type]?.showInMenu ??
-                              defaultMenuLayerLetters.includes(type))
-                              ? 1
-                              : 0.5,
-                        }}
-                      >
-                        {mapType === type ? (
-                          <FaRegCheckCircle />
-                        ) : (
-                          <FaRegCircle />
-                        )}{' '}
-                        {icon}{' '}
-                        <span
-                          style={{
-                            textDecoration:
-                              minZoom !== undefined && zoom < minZoom
-                                ? 'line-through'
-                                : 'none',
-                          }}
-                        >
-                          {type.startsWith('.')
-                            ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                            : m?.mapLayers.letters[
-                                type as NoncustomLayerLetters
-                              ]}
-                        </span>
-                        {getKbdShortcut(key)}
-                        {premiumFromZoom !== undefined &&
-                        zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
-                          <FaGem
-                            className={
-                              'ms-1 ' +
-                              (isPremium ? 'text-success' : 'text-warning')
-                            }
-                            title={
-                              isPremium ? undefined : m?.premium.premiumOnly
-                            }
-                            onClickCapture={
-                              isPremium ? undefined : becomePremium
-                            }
-                          />
-                        ) : null}
-                        {minZoom !== undefined && zoom < minZoom && (
-                          <FaExclamationTriangle
-                            title={m?.mapLayers.minZoomWarning(minZoom)}
-                            className="text-warning ms-1"
-                          />
-                        )}
-                      </Dropdown.Item>
-                    ),
-                  )
+                  .map(({ type, ...rest }) => (
+                    <Dropdown.Item
+                      href={`?layers=${type}`}
+                      key={type}
+                      eventKey={'b' + type}
+                      active={mapType === type}
+                      style={{
+                        opacity:
+                          show === 'all' ||
+                          (layersSettings[type]?.showInMenu ??
+                            defaultMenuLayerLetters.includes(type))
+                            ? 1
+                            : 0.5,
+                      }}
+                    >
+                      {mapType === type ? (
+                        <FaRegCheckCircle />
+                      ) : (
+                        <FaRegCircle />
+                      )}
+
+                      {menuItemCommons(
+                        rest,
+                        type.startsWith('.')
+                          ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                          : m?.mapLayers.letters[type as NoncustomLayerLetters],
+                      )}
+                    </Dropdown.Item>
+                  ))
               }
 
               <Dropdown.Divider />
@@ -422,83 +461,46 @@ export function MapSwitchButton(): ReactElement {
                     (layersSettings[l.type]?.showInMenu ??
                       defaultMenuLayerLetters.includes(l.type)),
                 )
-                .map(
-                  ({
-                    type,
-                    icon,
-                    minZoom,
-                    key,
-                    premiumFromZoom,
-                    scaleWithDpi,
-                  }) => {
-                    const active =
-                      (type === 'i') !==
-                      overlays.includes(type as OverlayLetters);
+                .map(({ type, ...rest }) => {
+                  const active =
+                    (type === 'i') !==
+                    overlays.includes(type as OverlayLetters);
 
-                    return (
-                      <Dropdown.Item
-                        key={type}
-                        as="button"
-                        eventKey={'o' + type}
-                        active={active}
-                        style={{
-                          opacity:
-                            type === 'i' ||
-                            show === 'all' ||
-                            (layersSettings[type]?.showInMenu ??
-                              defaultMenuLayerLetters.includes(type))
-                              ? 1
-                              : 0.5,
-                        }}
-                      >
-                        <Checkbox value={active} /> {icon}{' '}
-                        <span
-                          style={{
-                            textDecoration:
-                              minZoom !== undefined && zoom < minZoom
-                                ? 'line-through'
-                                : 'none',
-                          }}
-                        >
-                          {type.startsWith(':')
-                            ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                            : m?.mapLayers.letters[
-                                type as NoncustomLayerLetters
-                              ]}
-                        </span>
-                        {getKbdShortcut(key)}
-                        {premiumFromZoom !== undefined &&
-                        zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
-                          <FaGem
-                            className={
-                              'ms-1 ' +
-                              (isPremium ? 'text-success' : 'text-warning')
-                            }
-                            title={
-                              isPremium ? undefined : m?.premium.premiumOnly
-                            }
-                            onClickCapture={
-                              isPremium ? undefined : becomePremium
-                            }
-                          />
-                        ) : null}
-                        {minZoom !== undefined && zoom < minZoom && (
-                          <FaExclamationTriangle
-                            title={m?.mapLayers.minZoomWarning(minZoom)}
-                            className="text-warning ms-1"
-                          />
-                        )}
-                        {type === 'I' && pictureFilterIsActive && (
-                          <FaFilter
-                            data-filter="1"
-                            title={m?.mapLayers.photoFilterWarning}
-                            className="text-warning ms-1"
-                          />
-                        )}
-                      </Dropdown.Item>
-                    );
-                  },
-                )}
+                  return (
+                    <Dropdown.Item
+                      key={type}
+                      as="button"
+                      eventKey={'o' + type}
+                      active={active}
+                      style={{
+                        opacity:
+                          type === 'i' ||
+                          show === 'all' ||
+                          (layersSettings[type]?.showInMenu ??
+                            defaultMenuLayerLetters.includes(type))
+                            ? 1
+                            : 0.5,
+                      }}
+                    >
+                      <Checkbox value={active} />
+
+                      {menuItemCommons(
+                        rest,
+                        type.startsWith(':')
+                          ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                          : m?.mapLayers.letters[type as NoncustomLayerLetters],
+                      )}
+
+                      {type === 'I' && pictureFilterIsActive && (
+                        <FaFilter
+                          data-filter="1"
+                          title={m?.mapLayers.photoFilterWarning}
+                          className="text-warning ms-1"
+                        />
+                      )}
+                    </Dropdown.Item>
+                  );
+                })}
 
               {show !== 'all' && (
                 <>
