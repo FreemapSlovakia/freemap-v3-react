@@ -5,6 +5,7 @@ import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
+import { Emoji } from '../components/Emoji.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
@@ -409,15 +410,16 @@ const messages: Messages = {
     infoBars: {
       ua: () => (
         <>
-          🇺🇦 Stojíme za Ukrajinou.{' '}
+          <Emoji>🇺🇦</Emoji>&ensp;Stojíme za Ukrajinou.{' '}
           <AlertLink
             href="https://donio.cz/pomocukrajine"
             target="_blank"
             rel="noopener"
           >
             Pomozte Ukrajině ›
-          </AlertLink>{' '}
-          🇺🇦
+          </AlertLink>
+          &ensp;
+          <Emoji>🇺🇦</Emoji>
         </>
       ),
     },

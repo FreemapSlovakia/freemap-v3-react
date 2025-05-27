@@ -7,6 +7,7 @@ import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
+import { Emoji } from '../components/Emoji.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
@@ -439,7 +440,7 @@ const messages: Messages = {
       ua: () => {
         return (
           <>
-            {'🇺🇦 '}
+            <Emoji>🇺🇦</Emoji>&ensp;
             <a
               href="https://donio.sk/spolocne-pre-ukrajinu"
               target="_blank"
@@ -447,7 +448,8 @@ const messages: Messages = {
             >
               Spoločne pre Ukrajinu ›
             </a>
-            {' 🇺🇦'}
+            &ensp;
+            <Emoji>🇺🇦</Emoji>
           </>
         );
       },

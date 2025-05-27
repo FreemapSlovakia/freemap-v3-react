@@ -3,6 +3,7 @@ import { Dropdown } from 'react-bootstrap';
 import { FaLanguage } from 'react-icons/fa';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
+import { Emoji } from '../Emoji.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function LanguageSubmenu(): JSX.Element {
@@ -30,7 +31,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-en"
         active={chosenLanguage === 'en'}
       >
-        🇬🇧 English
+        <Emoji>🇬🇧</Emoji>&ensp;English
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -38,7 +39,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-sk"
         active={chosenLanguage === 'sk'}
       >
-        🇸🇰 Slovensky
+        <Emoji>🇸🇰</Emoji>&ensp;Slovensky
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -46,7 +47,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-cs"
         active={chosenLanguage === 'cs'}
       >
-        🇨🇿 Česky
+        <Emoji>🇨🇿</Emoji>&ensp;Česky
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -54,7 +55,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-hu"
         active={chosenLanguage === 'hu'}
       >
-        🇭🇺 Magyar
+        <Emoji>🇭🇺</Emoji>&ensp;Magyar
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -62,7 +63,7 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-it"
         active={chosenLanguage === 'it'}
       >
-        🇮🇹 Italiano
+        <Emoji>🇮🇹</Emoji>&ensp;Italiano
       </Dropdown.Item>
     </>
   );

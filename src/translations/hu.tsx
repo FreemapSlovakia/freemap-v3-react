@@ -5,6 +5,7 @@ import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
+import { Emoji } from '../components/Emoji.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
@@ -407,15 +408,16 @@ const hu: Messages = {
     infoBars: {
       ua: () => (
         <>
-          🇺🇦 Ukrajnával állunk.{' '}
+          <Emoji>🇺🇦</Emoji>&ensp;Ukrajnával állunk.{' '}
           <AlertLink
             href="https://bank.gov.ua/en/about/support-the-armed-forces"
             target="_blank"
             rel="noopener"
           >
             Adományozás az ukrán hadseregnek ›
-          </AlertLink>{' '}
-          🇺🇦
+          </AlertLink>
+          &ensp;
+          <Emoji>🇺🇦</Emoji>
         </>
       ),
     },
