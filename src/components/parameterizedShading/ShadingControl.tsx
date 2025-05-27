@@ -91,6 +91,7 @@ export function ShadingControl() {
         <div />
 
         <Form
+          noValidate
           className="p-2"
           onSubmit={(e) => e.preventDefault()}
           style={{ width: '250px' }}
@@ -110,8 +111,8 @@ export function ShadingControl() {
                     produce(shading, (draft) => {
                       draft.components.push({
                         id,
-                        azimuth: 0,
-                        elevation: Math.PI / 2,
+                        elevation: 45 * (Math.PI / 180),
+                        azimuth: 315 * (Math.PI / 180),
                         colorStops:
                           type === 'color-relief' || type === 'aspect'
                             ? [
@@ -123,7 +124,7 @@ export function ShadingControl() {
                                 { value: 5 / 6, color: [255, 0, 255, 1] },
                                 { value: 6 / 6, color: [255, 0, 0, 1] },
                               ]
-                            : [{ value: 0, color: [128, 128, 128, 1] }],
+                            : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
                         type,
                         brightness: 0,
                         contrast: 1,
@@ -186,11 +187,11 @@ export function ShadingControl() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {component.type}
+                {component.type.replace(/hillshade/, 'hs')}
                 {component.type.startsWith('hillshade-') &&
-                  ' ○ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
+                  ' ◯ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
                 {component.type.endsWith('-classic') &&
-                  ' ↑ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
+                  ' ↥ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
               </ListGroup.Item>
             ))}
           </ListGroup>
@@ -249,7 +250,6 @@ export function ShadingControl() {
                     min={0}
                     max={360}
                     step={5}
-                    formNoValidate
                     value={(
                       (selectedComponent.azimuth / Math.PI) *
                       180
@@ -281,7 +281,6 @@ export function ShadingControl() {
                     type="number"
                     min={0}
                     max={90}
-                    formNoValidate
                     value={(
                       (selectedComponent.elevation / Math.PI) *
                       180

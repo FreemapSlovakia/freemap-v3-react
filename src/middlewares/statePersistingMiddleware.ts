@@ -57,6 +57,7 @@ function persistSelectedState(state: RootState) {
         overlays: state.map.overlays,
         customLayers: state.map.customLayers,
         legacyMapWarningSuppressions: state.map.legacyMapWarningSuppressions,
+        shading: state.map.shading,
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,

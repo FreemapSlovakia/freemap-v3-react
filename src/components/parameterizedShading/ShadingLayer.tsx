@@ -245,12 +245,13 @@ class LShadingLayer extends LGridLayer {
       res = await fetch(Util.template(this._options.url, { x, y, z: zoom }), {
         signal,
       });
-    } catch (err) {
+    } catch {
       if (signal.aborted) {
         return;
       }
 
-      throw err;
+      throw new TileNotFoundError();
+      // throw err;
     } finally {
       this.acm.delete(key);
     }

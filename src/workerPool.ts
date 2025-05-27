@@ -49,8 +49,6 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
   >();
 
   function createWorker() {
-    console.log('CREATE');
-
     const w = workerFactory();
 
     w.onmessage = (evt) => {

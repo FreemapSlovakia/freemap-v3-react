@@ -1,3 +1,4 @@
+import Color from 'color';
 import type { Dispatch } from 'redux';
 import { assert, is } from 'typia';
 import {
@@ -33,6 +34,7 @@ import {
   type CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
+  mapSetShading,
 } from './actions/mapActions.js';
 import { mapsLoad } from './actions/mapsActions.js';
 import { objectsSetFilter } from './actions/objectsActions.js';
@@ -54,6 +56,13 @@ import {
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
 } from './actions/trackViewerActions.js';
+import {
+  type ColorStop,
+  type Color as ColorType,
+  type ShadingComponentType,
+  serializeShading,
+  ShadingComponent,
+} from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import type { DocumentKey } from './documents/index.js';
 import {
@@ -477,6 +486,106 @@ export function handleLocationChange(store: MyStore): void {
 
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));
+  }
+
+  const { shading } = query;
+
+  if (
+    shading &&
+    !Array.isArray(shading) &&
+    getState().map.overlays.includes('h') &&
+    shading !== serializeShading(getState().map.shading)
+  ) {
+    function toColor(color = '00000000') {
+      const bands = Color('#' + color).array();
+
+      if (bands.length === 3) {
+        bands.push(1);
+      }
+
+      return bands as ColorType;
+    }
+
+    const [bg, ...comps] = shading.split('!');
+
+    const components: ShadingComponent[] = comps
+      .map((component) => {
+        const [type, ...params] = component.split('_');
+
+        let azimuth = 0;
+        let elevation = 0;
+
+        switch (type) {
+          case 'hillshade-classic':
+            azimuth = Number(params.shift()) * (Math.PI / 180);
+            elevation = Number(params.shift()) * (Math.PI / 180);
+
+            break;
+          case 'hillshade-igor':
+            azimuth = Number(params.shift()) * (Math.PI / 180);
+            break;
+          case 'slope-classic':
+            elevation = Number(params.shift()) * (Math.PI / 180);
+            break;
+          case 'slope-igor':
+            break;
+          case 'aspect':
+          case 'color-relief':
+            break;
+          default:
+            return undefined;
+        }
+
+        let colorStops: ColorStop[];
+
+        console.log(type, [...params]);
+
+        switch (type) {
+          case 'hillshade-classic':
+          case 'hillshade-igor':
+          case 'slope-classic':
+          case 'slope-igor':
+            colorStops = [
+              {
+                value: 0,
+                color: toColor(params.shift()),
+              },
+            ];
+
+            break;
+          case 'aspect':
+          case 'color-relief':
+            colorStops = [];
+
+            for (let i = 0; i < params.length; i += 2) {
+              colorStops.push({
+                value: Number(params[i]) / 100,
+                color: toColor(params[i + 1]),
+              });
+            }
+            break;
+          default:
+            return undefined;
+        }
+
+        return {
+          id: Math.random(),
+          type: type as ShadingComponentType,
+          azimuth,
+          elevation,
+          brightness: 0,
+          contrast: 1,
+          colorStops,
+        } satisfies ShadingComponent;
+      })
+      .filter((a): a is ShadingComponent => Boolean(a));
+
+    dispatch(
+      mapSetShading({
+        backgroundColor: toColor(bg),
+        components,
+      }),
+    );
   }
 
   const activeModal = getState().main.activeModal;

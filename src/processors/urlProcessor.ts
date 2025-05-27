@@ -3,6 +3,7 @@ import { is } from 'typia';
 import { drawingLineUpdatePoint } from '../actions/drawingLineActions.js';
 import { ShowModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
+import { serializeShading } from '../components/parameterizedShading/Shading.js';
 import { basicModals } from '../constants.js';
 import { DocumentKey } from '../documents/index.js';
 import { OverlayLetters } from '../mapDefinitions.js';
@@ -53,6 +54,7 @@ export const urlProcessor: Processor = {
       map.mapType,
       map.overlays,
       map.customLayers,
+      map.shading,
       routePlanner,
       routePlanner.finish,
       routePlanner.midpoints,
@@ -91,6 +93,10 @@ export const urlProcessor: Processor = {
         `${map.mapType}${map.overlays.filter((l) => l !== 'i').join('')}`,
       ],
     ];
+
+    if (map.overlays.includes('h')) {
+      queryParts.push(['shading', serializeShading(map.shading)]);
+    }
 
     if (main.tool) {
       queryParts.push(['tool', main.tool]);
