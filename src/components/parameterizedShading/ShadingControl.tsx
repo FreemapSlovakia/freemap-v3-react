@@ -10,6 +10,7 @@ import {
   DropdownButton,
   DropdownItem,
   Form,
+  ListGroup,
 } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { mapSetShading } from '../../actions/mapActions.js';
@@ -89,7 +90,11 @@ export function ShadingControl() {
       <div className="fm-menu-scroller" ref={setCard}>
         <div />
 
-        <Form className="p-2" onSubmit={(e) => e.preventDefault()}>
+        <Form
+          className="p-2"
+          onSubmit={(e) => e.preventDefault()}
+          style={{ width: '250px' }}
+        >
           <ButtonToolbar>
             <DropdownButton
               id="add-shading-button"
@@ -160,24 +165,37 @@ export function ShadingControl() {
             </Button>
           </ButtonToolbar>
 
-          <Form.Select
+          <ListGroup
             className="my-2"
-            value={selectedComponent?.id ?? -1}
-            onChange={(e) =>
-              setId(
-                e.currentTarget.value
-                  ? Number(e.currentTarget.value)
-                  : undefined,
-              )
-            }
+            activeKey={selectedComponent?.id ?? ''}
+            onSelect={(e) => setId(e ? Number(e) : undefined)}
           >
-            <option value="">Background</option>
+            <ListGroup.Item action eventKey="">
+              Background
+            </ListGroup.Item>
+
             {shading.components.map((component) => (
-              <option key={component.id} value={component.id}>
+              <ListGroup.Item
+                action
+                key={component.id}
+                eventKey={component.id}
+                style={{
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {component.type}
-              </option>
+                {component.type.startsWith('hillshade-') &&
+                  ' ○ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
+                {component.type.endsWith('-classic') &&
+                  ' ↑ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
+              </ListGroup.Item>
             ))}
-          </Form.Select>
+          </ListGroup>
+
+          <hr />
 
           {shading.components.some(
             (shading) => MANAGEABLE_TYPES[shading.type],
@@ -231,10 +249,11 @@ export function ShadingControl() {
                     min={0}
                     max={360}
                     step={5}
+                    formNoValidate
                     value={(
                       (selectedComponent.azimuth / Math.PI) *
                       180
-                    ).toFixed(2)}
+                    ).toFixed(1)}
                     onChange={(e) => {
                       const azimuth =
                         (Number(e.currentTarget.value) / 180) * Math.PI;
@@ -262,10 +281,11 @@ export function ShadingControl() {
                     type="number"
                     min={0}
                     max={90}
+                    formNoValidate
                     value={(
                       (selectedComponent.elevation / Math.PI) *
                       180
-                    ).toFixed(2)}
+                    ).toFixed(1)}
                     onChange={(e) => {
                       const elevation =
                         (Number(e.currentTarget.value) / 180) * Math.PI;
@@ -289,8 +309,8 @@ export function ShadingControl() {
 
           <ColorPicker
             className="mt-3"
-            height={100}
-            width={230}
+            height={120}
+            width={236}
             hideGradientAngle
             hideGradientType
             hideColorTypeBtns
