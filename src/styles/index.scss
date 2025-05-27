@@ -399,10 +399,6 @@ button#freemap-logo {
 .fm-shading-control {
   width: fit-content;
 
-  .fm-menu-scroller {
-    max-height: calc(100vh - 116px);
-  }
-
   .fm-menu-scroller::before,
   .fm-menu-scroller > div:first-child::before {
     margin-top: 0;

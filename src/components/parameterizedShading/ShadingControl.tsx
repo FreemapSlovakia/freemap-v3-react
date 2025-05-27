@@ -2,7 +2,7 @@ import ColorPicker from 'react-best-gradient-color-picker';
 // import { Chrome, rgbaToHexa } from '@uiw/react-color';
 import Color from 'color';
 import { produce } from 'immer';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   ButtonToolbar,
@@ -43,9 +43,50 @@ export function ShadingControl() {
 
   const sc = useScrollClasses('vertical');
 
+  const [card, setCard] = useState<HTMLDivElement | null>(null);
+
+  const rf = useCallback(() => {
+    if (!card) {
+      return;
+    }
+
+    const { top } = card.getBoundingClientRect();
+
+    window.requestAnimationFrame(() => {
+      card.style.maxHeight =
+        Math.max(window.innerHeight - top - 57, 100) + 'px';
+    });
+  }, [card]);
+
+  useEffect(() => {
+    window.addEventListener('resize', rf);
+
+    return () => {
+      window.removeEventListener('resize', rf);
+    };
+  }, [rf]);
+
+  useEffect(() => {
+    sc(card);
+
+    if (!card) {
+      return;
+    }
+
+    const ro = new ResizeObserver(() => {
+      rf();
+    });
+
+    ro.observe(card);
+
+    return () => {
+      ro.disconnect();
+    };
+  }, [card, sc, rf]);
+
   return (
     <Card body className="fm-shading-control mt-2 ms-2">
-      <div className="fm-menu-scroller" ref={sc}>
+      <div className="fm-menu-scroller" ref={setCard}>
         <div />
 
         <Form className="p-2" onSubmit={(e) => e.preventDefault()}>
