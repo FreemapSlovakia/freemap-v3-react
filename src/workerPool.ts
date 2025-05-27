@@ -8,6 +8,10 @@ export type WorkerPool = {
 export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
   const workerPool: Worker[] = [];
 
+  let workerCount = 0;
+
+  const maxWorkers = Math.min(16, window.navigator.hardwareConcurrency);
+
   let id = 0;
 
   function runNextJob() {
@@ -20,9 +24,9 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
         job.started = true;
 
         job.run(w);
-      } else if (
-        workerPool.length < Math.min(window.navigator.hardwareConcurrency, 8)
-      ) {
+      } else if (workerCount < maxWorkers) {
+        workerCount++;
+
         const w = createWorker();
 
         workerPool.push(w);
@@ -45,6 +49,8 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
   >();
 
   function createWorker() {
+    console.log('CREATE');
+
     const w = workerFactory();
 
     w.onmessage = (evt) => {
