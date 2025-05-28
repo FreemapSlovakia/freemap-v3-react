@@ -7,7 +7,6 @@ import {
   FaCamera,
   FaChevronRight,
   FaCode,
-  FaCog,
   FaDownload,
   FaEraser,
   FaExternalLinkAlt,
@@ -19,6 +18,7 @@ import {
   FaPrint,
   FaRegMap,
   FaSignInAlt,
+  FaUser,
 } from 'react-icons/fa';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
@@ -48,7 +48,7 @@ export function MainMenu(): ReactElement {
 
       {user ? (
         <Dropdown.Item eventKey="modal-account" href="#show=account">
-          <FaCog /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
+          <FaUser /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
         </Dropdown.Item>
       ) : (
         <Dropdown.Item eventKey="modal-login">

@@ -104,6 +104,7 @@ const messages: Messages = {
     areYouSure: 'Jste si jisti?',
     export: 'Exportovat',
     success: 'Hotovo!',
+    expiration: 'Expirace',
   },
 
   selections: {
@@ -661,6 +662,8 @@ const messages: Messages = {
       delete: 'Smazat účet',
       deleteWarning:
         'Opravdu si přejete smazat svůj účet? Spolu s ním se odstraní všechny vaše fotografie, komentáře a hodnocení fotografií, vlastní mapy a sledovaná zařízení.',
+      personalInfo: 'Osobní údaje',
+      authProviders: 'Poskytovatelé přihlášení',
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',

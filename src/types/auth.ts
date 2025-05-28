@@ -3,6 +3,12 @@ import type { CustomLayer, LayerSettings } from '../actions/mapActions.js';
 
 export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
+export interface Purchase {
+  createdAt: Date;
+  article: string;
+  expireAt: Date;
+}
+
 export interface User {
   name: string;
   email: string | null;

@@ -99,6 +99,7 @@ const en: Messages = {
     areYouSure: 'Are you sure?',
     export: 'Export',
     success: 'Success!',
+    expiration: 'Expiration',
   },
 
   selections: {
@@ -644,6 +645,8 @@ const en: Messages = {
       delete: 'Delete account',
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
+      personalInfo: 'Personal information',
+      authProviders: 'Login providers',
     },
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',

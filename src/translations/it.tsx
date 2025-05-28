@@ -104,6 +104,7 @@ const messages: Messages = {
     areYouSure: 'Are you sure?', // TODO translate
     export: 'Esporta',
     success: 'Success!', // TODO translate
+    expiration: 'Scadenza',
   },
 
   selections: {
@@ -663,6 +664,8 @@ const messages: Messages = {
       delete: 'Delete account', // TODO translate
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
+      personalInfo: 'Dati personali',
+      authProviders: 'Provider di accesso',
     },
     general: {
       tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
