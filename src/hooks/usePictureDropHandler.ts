@@ -36,6 +36,8 @@ export function usePictureDropHandler(
           tags = {} as Tags;
         }
 
+        console.log(tags);
+
         const keywords: string[] = [];
 
         // try {
@@ -66,6 +68,8 @@ export function usePictureDropHandler(
           tags.GPSLatitude as WeirdGpsCoordinate,
         );
 
+        console.log(rawLat, latRef);
+
         const NS: Record<string, number> = { S: -1, N: 1 };
 
         const lat =
@@ -77,7 +81,7 @@ export function usePictureDropHandler(
                   .value[0] ||
                 '',
             ).toUpperCase()
-          ] || Number.NaN);
+          ] ?? 1);
 
         const [rawLon, lonRef] = adaptGpsCoordinate(
           tags.GPSLongitude as WeirdGpsCoordinate,
@@ -94,7 +98,7 @@ export function usePictureDropHandler(
                   .value[0] ||
                 '',
             ).toUpperCase()
-          ] || Number.NaN);
+          ] ?? 1);
 
         onItemAdd({
           id,
