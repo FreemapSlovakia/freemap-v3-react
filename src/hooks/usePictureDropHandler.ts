@@ -68,8 +68,6 @@ export function usePictureDropHandler(
           tags.GPSLatitude as WeirdGpsCoordinate,
         );
 
-        console.log(rawLat, latRef);
-
         const NS: Record<string, number> = { S: -1, N: 1 };
 
         const lat =
