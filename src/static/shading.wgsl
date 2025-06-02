@@ -192,7 +192,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
     let bg = shading.background_color;
 
-    let out_rgb = fg.rgb * fg.a + bg.rgb * (1.0 - fg.a);
+    let out_rgb = fg.rgb * fg.a + bg.rgb * bg.a * (1.0 - fg.a);
 
     let out_a = fg.a + bg.a * (1.0 - fg.a);
 
