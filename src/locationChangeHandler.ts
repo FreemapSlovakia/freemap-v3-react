@@ -559,7 +559,7 @@ export function handleLocationChange(store: MyStore): void {
 
             for (let i = 0; i < params.length; i += 2) {
               colorStops.push({
-                value: Number(params[i]) / 100,
+                value: Number(params[i]),
                 color: toColor(params[i + 1]),
               });
             }

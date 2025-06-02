@@ -53,7 +53,7 @@ export function serializeShading(shading: Shading) {
       case 'aspect':
       case 'color-relief':
         for (const cs of component.colorStops) {
-          sub.push((cs.value * 100).toFixed(1));
+          sub.push(cs.value.toFixed(1));
           sub.push(Color(cs.color).hexa().slice(1));
         }
         break;

@@ -330,7 +330,7 @@ export function ShadingControl() {
                     .map(
                       (colorStop, i) =>
                         (activeStopIndex === i ? 'RGBA' : 'rgba') +
-                        `(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
+                        `(${colorStop.color.join(',')}) ${(100 * colorStop.value) / (selectedComponent.type === 'aspect' ? 2 * Math.PI : 2660)}%`,
                     )
                     .join(', ') +
                   ')';
@@ -366,7 +366,11 @@ export function ShadingControl() {
                   }
 
                   return {
-                    value: parseFloat(stop) / 100,
+                    value:
+                      (parseFloat(stop) / 100) *
+                      (selectedComponent!.type === 'aspect'
+                        ? 2 * Math.PI
+                        : 2660),
                     color,
                   };
                 });
