@@ -10,16 +10,20 @@ import {
 import {
   Accordion,
   Button,
+  ButtonGroup,
+  Col,
+  Container,
   Dropdown,
   DropdownButton,
   Form,
   Modal,
+  Row,
+  Stack,
 } from 'react-bootstrap';
 import {
   FaCheck,
   FaCog,
   FaEllipsisH,
-  FaFlask,
   FaRegListAlt,
   FaTimes,
 } from 'react-icons/fa';
@@ -384,7 +388,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
               </Accordion.Header>
 
               <Accordion.Body>
-                <Form.Group className="mb-3">
+                {/* <Form.Group className="mb-3">
                   <Form.Label>
                     {m?.settings.customLayersDef}{' '}
                     <FaFlask
@@ -402,7 +406,68 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     onFocus={handleCustomLayersDefFocus}
                     placeholder={customLayersHelp}
                   />
-                </Form.Group>
+                </Form.Group> */}
+                <Container fluid className="p-0">
+                  <Row className="mb-3">
+                    <Col>Base</Col>
+                    <ButtonGroup as={Col}>
+                      {Array(10)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Button key={i}>{i}</Button>
+                        ))}
+                    </ButtonGroup>
+                  </Row>
+                  <Row>
+                    <Col>Overlay</Col>
+                    <ButtonGroup as={Col}>
+                      {Array(10)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Button key={i}>{i}</Button>
+                        ))}
+                    </ButtonGroup>
+                  </Row>
+                </Container>
+
+                <hr />
+
+                <Stack gap={3}>
+                  <Form.Group>
+                    <Form.Label>Template</Form.Label>
+                    <Form.Control type="text" />
+                  </Form.Group>
+                  <Stack direction="horizontal" gap={2}>
+                    <Form.Group>
+                      <Form.Label>Min Zoom</Form.Label>
+                      <Form.Control type="number" min={0} />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Max Zoom</Form.Label>
+                      <Form.Control type="number" min={0} />
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="horizontal" gap={2}>
+                    <Form.Group className="w-50">
+                      <Form.Label>Max Native Zoom</Form.Label>
+                      <Form.Control type="number" min={0} />
+                    </Form.Group>
+                    <Form.Group className="w-50">
+                      <Form.Label>&nbsp;</Form.Label>
+                      <Form.Check id="chk-scale-dpi" label="Scale with DPI" />
+                    </Form.Group>
+                  </Stack>
+                  <Stack direction="horizontal" gap={2}>
+                    <Form.Group>
+                      <Form.Label>Z-Index</Form.Label>
+                      <Form.Control type="number" min={0} />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Extra scales</Form.Label>
+                      <Form.Control type="text" />
+                    </Form.Group>
+                  </Stack>
+                </Stack>
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
