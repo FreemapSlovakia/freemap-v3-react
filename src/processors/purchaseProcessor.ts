@@ -29,27 +29,19 @@ export const purchaseProcessor: Processor = {
       cancelActions: [],
     });
 
-    const token = assert<{ token: string; expiration: number }>(
-      await res.json(),
-    );
+    const { paymentUrl } = assert<{ paymentUrl: string }>(await res.json());
 
-    const w = window.open(
-      (user.name === 'New Payment Test'
-        ? 'https://dev.rovas.app/rewpro?paytype=project&recipient=35384'
-        : process.env['PURCHASE_URL_PREFIX']) +
-        '&token=' +
-        encodeURIComponent(token.token) +
-        '&callbackurl=' +
-        encodeURIComponent(process.env['BASE_URL'] + '/purchaseCallback.html') +
-        '&expiration=' +
-        token.expiration,
+    const left = window.screen.width / 2 - 800 / 2;
+
+    const top = window.screen.height / 2 - 680 / 2;
+
+    const windowProxy = window.open(
+      paymentUrl,
       'rovas',
-      `width=800,height=680,left=${window.screen.width / 2 - 800 / 2},top=${
-        window.screen.height / 2 - 680 / 2
-      }`,
+      `width=800,height=680,left=${left},top=${top}`,
     );
 
-    if (!w) {
+    if (!windowProxy) {
       dispatch(
         toastsAdd({
           id: 'enablePopup',
@@ -77,12 +69,12 @@ export const purchaseProcessor: Processor = {
 
           resolve(true);
 
-          w.close();
+          windowProxy.close();
         }
       };
 
       const timer = window.setInterval(() => {
-        if (w.closed) {
+        if (windowProxy.closed) {
           window.clearInterval(timer);
 
           window.removeEventListener('message', msgListener);
