@@ -439,7 +439,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [
       {
         type: 'photos',
-        name: 'CC BY-SA',
+        name: 'CC BY-SA 4.0',
       },
     ],
   },
