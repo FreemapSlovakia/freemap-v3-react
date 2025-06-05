@@ -406,13 +406,22 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     )}
                   </Alert>
                 ) : (
-                  <img
-                    key={imgKey}
-                    ref={setImageElement}
-                    className={`gallery-image ${loading ? 'loading' : ''}`}
-                    src={getImageUrl(activeImageId)}
-                    alt={title ?? undefined}
-                  />
+                  <div className="gallery-image-container">
+                    <img
+                      key={imgKey}
+                      ref={setImageElement}
+                      className={`gallery-image ${loading ? 'loading' : ''}`}
+                      src={getImageUrl(activeImageId)}
+                      alt={title ?? undefined}
+                    />
+                    <a
+                      href="https://creativecommons.org/licenses/by-sa/4.0/"
+                      target="cc-by-sa"
+                      rel="noreferrer"
+                    >
+                      CC BY-SA 4.0
+                    </a>
+                  </div>
                 )}
 
                 {nextImageId != null && !loading && (
