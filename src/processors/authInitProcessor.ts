@@ -44,12 +44,32 @@ export const authInitProcessor: Processor<typeof authInit> = {
 
         const ok = res.status === 200;
 
-        dispatch(authSetUser(ok ? assert<User>(await res.json()) : null));
+        let user: User | null;
+
+        if (ok) {
+          const json = await res.json();
+
+          const rawUser = assert<
+            Omit<User, 'premiumExpiration'> & { premiumExpiration: string }
+          >(json);
+
+          user = {
+            ...rawUser,
+            premiumExpiration:
+              rawUser.premiumExpiration === null
+                ? null
+                : new Date(rawUser.premiumExpiration),
+          };
+        } else {
+          user = null;
+        }
+
+        dispatch(authSetUser(user));
 
         if (
           ok &&
           action.payload.becamePremium &&
-          getState().auth.user?.isPremium // TODO else show error
+          getState().auth.user?.premiumExpiration // TODO else show error
         ) {
           dispatch(
             toastsAdd({
@@ -66,7 +86,9 @@ export const authInitProcessor: Processor<typeof authInit> = {
 
         const cm = await get('cacheMode');
 
-        if (!cm || cm === 'networkOnly') {
+        console.log('DDDDDDDDDDDDDDd', cm);
+
+        if (!cm || cm === 'networkOnly' || cm === 'networkFirst') {
           throw err;
         }
 

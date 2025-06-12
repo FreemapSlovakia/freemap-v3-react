@@ -188,7 +188,7 @@ export function Main(): ReactElement {
       !process.env['PREVENT_ADS'] &&
       !window.isRobot &&
       !window.fmEmbedded &&
-      !state.auth.user?.isPremium,
+      !state.auth.user?.premiumExpiration,
   );
 
   const showElevationChart = useAppSelector(
