@@ -47,11 +47,9 @@ export const authInitProcessor: Processor<typeof authInit> = {
         let user: User | null;
 
         if (ok) {
-          const json = await res.json();
-
           const rawUser = assert<
             Omit<User, 'premiumExpiration'> & { premiumExpiration: string }
-          >(json);
+          >(await res.json());
 
           user = {
             ...rawUser,
