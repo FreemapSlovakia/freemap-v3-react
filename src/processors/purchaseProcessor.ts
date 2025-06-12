@@ -27,6 +27,9 @@ export const purchaseProcessor: Processor = {
       method: 'POST',
       expectedStatus: 200,
       cancelActions: [],
+      data: {
+        type: 'premium',
+      },
     });
 
     const { paymentUrl } = assert<{ paymentUrl: string }>(await res.json());

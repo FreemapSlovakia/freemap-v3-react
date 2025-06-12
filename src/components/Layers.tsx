@@ -96,7 +96,9 @@ export function Layers(): ReactElement | null {
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
-    let effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
+    let effPremiumFromZoom = user?.premiumExpiration
+      ? undefined
+      : premiumFromZoom;
 
     if (effPremiumFromZoom && scaleWithDpi) {
       effPremiumFromZoom--;

@@ -24,7 +24,7 @@ export async function handleLoginResponse(
 
   dispatch(authSetUser(user));
 
-  if (!user.isPremium && getState().main.removeAdsOnLogin) {
+  if (!user.premiumExpiration && getState().main.removeAdsOnLogin) {
     dispatch(removeAds());
   }
 

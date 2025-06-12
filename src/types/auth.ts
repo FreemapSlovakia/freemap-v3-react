@@ -18,7 +18,7 @@ export interface User {
   lat?: number | null;
   lon?: number | null;
   language?: string | null;
-  isPremium: boolean;
+  premiumExpiration: Date | null;
   authProviders: AuthProvider[];
 }
 

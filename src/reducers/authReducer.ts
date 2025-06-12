@@ -1,9 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  authLogout,
-  authSetPremium,
-  authSetUser,
-} from '../actions/authActions.js';
+import { authLogout, authSetUser } from '../actions/authActions.js';
 import type { User } from '../types/auth.js';
 
 export interface AuthState {
@@ -27,15 +23,10 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         id: action.payload.id,
         authToken: action.payload.authToken,
         isAdmin: action.payload.isAdmin,
-        isPremium: action.payload.isPremium,
+        premiumExpiration: action.payload.premiumExpiration,
         authProviders: action.payload.authProviders,
       },
       validated: true,
     }))
-    .addCase(authSetPremium, (state) => {
-      if (state.user) {
-        state.user.isPremium = true;
-      }
-    })
     .addCase(authLogout, () => authInitialState),
 );

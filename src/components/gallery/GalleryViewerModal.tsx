@@ -170,7 +170,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const premium = Boolean(image?.premium);
 
   const disabledPremium =
-    premium && !user?.isPremium && user?.id !== image?.user.id;
+    premium && !user?.premiumExpiration && user?.id !== image?.user.id;
 
   const pano = Boolean(image?.pano);
 

@@ -69,7 +69,9 @@ export function MapSwitchButton(): ReactElement {
 
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
-  const isPremium = useAppSelector((state) => !!state.auth.user?.isPremium);
+  const isPremium = useAppSelector(
+    (state) => !!state.auth.user?.premiumExpiration,
+  );
 
   const becomePremium = useBecomePremium();
 

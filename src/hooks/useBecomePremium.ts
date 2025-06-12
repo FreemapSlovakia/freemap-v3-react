@@ -7,7 +7,9 @@ import { useAppSelector } from './reduxSelectHook.js';
 export function useBecomePremium() {
   const dispatch = useDispatch();
 
-  const isPremium = useAppSelector((state) => state.auth.user?.isPremium);
+  const isPremium = useAppSelector(
+    (state) => !!state.auth.user?.premiumExpiration,
+  );
 
   const becomePremium = useCallback(
     (e?: MouseEvent) => {
