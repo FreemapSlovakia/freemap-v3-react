@@ -84,8 +84,6 @@ export const authInitProcessor: Processor<typeof authInit> = {
 
         const cm = await get('cacheMode');
 
-        console.log('DDDDDDDDDDDDDDd', cm);
-
         if (!cm || cm === 'networkOnly' || cm === 'networkFirst') {
           throw err;
         }
