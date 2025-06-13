@@ -6,7 +6,7 @@ import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const galleryFetchUsersProcessor: Processor = {
   actionCreator: setActiveModal,
-  errorKey: 'gallery.tagsFetchingError',
+  // TODO errorKey: 'gallery.tagsFetchingError',
   async handle({ getState, dispatch, action }) {
     if (setActiveModal.match(action) && action.payload !== 'gallery-filter') {
       return;

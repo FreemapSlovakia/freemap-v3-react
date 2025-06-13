@@ -101,6 +101,7 @@ const hu: Messages = {
     areYouSure: 'Are you sure?', // TODO translate
     export: 'Exportálás',
     success: 'Success!', // TODO translate
+    expiration: 'Lejárat',
   },
 
   selections: {
@@ -492,7 +493,7 @@ const hu: Messages = {
           <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>
           <li>Kérjük, csak a saját fényképeit töltse fel.</li>
           <li>Azok a feliratok vagy megjegyzések, amelyek nem kapcsolódnak közvetlenül a feltöltött fotók tartalmához, vagy ellentmondanak a civilizált együttélés általánosan elfogadott elveinek, eltávolításra kerülnek. A szabály megsértőit figyelmeztetjük, ismételt megsértése esetén az alkalmazásban lévő fiókjukat törölhetjük.</li>
-          <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC-BY-SA 4.0 licenc alapján terjesszék.</li>
+          <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC BY-SA 4.0 licenc alapján terjesszék.</li>
           <li>Az üzemeltető (Freemap.sk) minden kötelezettséget elhárít, és nem vállal felelősséget a fénykép galériában történő közzétételéből eredő közvetlen vagy közvetett károkért. A fényképért teljes mértékben az azt a kiszolgálóra feltöltő személy felel.</li>
           <li>Az üzemeltető fenntartja a jogot, hogy a fénykép leírását, nevét, pozíciójáőt és címkéit szerkesszt, illetve hogy a fényképet törölje, ha annak tartalma nem megfelelő (megszegi ezeket a szabályokat).</li>
           <li>Az üzemeltető fenntartja a jogot, hogy törölje azt a fiókot, amelynek felhasználója nem megfelelő tartalom közzétételével ismételten megsérti a galéria szabályzatát.</li>
@@ -657,29 +658,32 @@ const hu: Messages = {
     account: {
       name: 'Név',
       email: 'E-mail',
-      sendGalleryEmails: 'Notify photos comments via email', // TODO translate
-      delete: 'Delete account', // TODO translate
+      sendGalleryEmails: 'Értesítés fotómegjegyzésekről e-mailben',
+      delete: 'Fiók törlése',
       deleteWarning:
-        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
+        'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
+      personalInfo: 'Személyes adatok',
+      authProviders: 'Bejelentkezési szolgáltatók',
     },
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
     },
     layer: 'Térkép',
-    overlayOpacity: 'Opacity', // TODO translate
-    showInMenu: 'Show in menu', // TODO translate
-    showInToolbar: 'Show in toolbar', // TODO translate
+    overlayOpacity: 'Átlátszóság',
+    showInMenu: 'Megjelenítés a menüben',
+    showInToolbar: 'Megjelenítés az eszköztáron',
     saveSuccess: 'A beállítások el lettek mentve.',
     savingError: ({ err }) =>
       addError(hu, 'Hiba történt a beállítások mentésénél', err),
-    customLayersDef: 'Custom map layers definition', // TODO translate
-    customLayersDefError: 'Invalid definition of custom map layers.', // TODO translate
+    customLayersDef: 'Egyéni térképrétegek meghatározása',
+    customLayersDefError: 'Érvénytelen egyéni térképréteg-meghatározás.',
   },
 
   changesets: {
     allAuthors: 'Minden szerző',
     tooBig:
-      'Changesets request may return too many items. Please try zoom in, choose fewer days or enter the specific author.', // TODO translate
+      'A változáskérések túl sok elemet adhatnak vissza. Kérlek, nagyíts rá, válassz kevesebb napot, vagy adj meg egy konkrét szerzőt.',
+
     olderThan: ({ days }) => `${days} nap`,
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
@@ -1191,8 +1195,6 @@ const hu: Messages = {
         <MaptilerAttribution
           tilesFrom="Vector tiles from"
           hostedBy="hosted by"
-          see="See"
-          _3Dterrain="3D terrain"
         />
       ),
     },

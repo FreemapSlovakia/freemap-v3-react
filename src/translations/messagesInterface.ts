@@ -67,6 +67,7 @@ export type Messages = {
     areYouSure: string;
     export: string;
     success: string;
+    expiration: string;
   };
   selections: {
     objects: string;
@@ -504,6 +505,8 @@ export type Messages = {
       sendGalleryEmails: string;
       delete: string;
       deleteWarning: string;
+      personalInfo: string;
+      authProviders: string;
     };
     general: {
       tips: string;
@@ -712,10 +715,10 @@ export type Messages = {
     };
     accessToken: {
       token: string;
-      timeFrom: string;
-      timeTo: string;
+      timeFrom: string; // TODO move to general
+      timeTo: string; // TODO move to general
       listingLabel: string;
-      note: string;
+      note: string; // TODO move to general
       delete: string;
     };
     accessTokens: {

@@ -1,15 +1,22 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { authLogout, authSetUser } from '../actions/authActions.js';
-import type { User } from '../types/auth.js';
+import {
+  authFetchPurchases,
+  authLogout,
+  authSetPurchases,
+  authSetUser,
+} from '../actions/authActions.js';
+import type { Purchase, User } from '../types/auth.js';
 
 export interface AuthState {
   validated: boolean;
   user: User | null;
+  purchases: Purchase[] | null;
 }
 
 export const authInitialState: AuthState = {
   validated: false,
   user: null,
+  purchases: null,
 };
 
 export const authReducer = createReducer(authInitialState, (builder) =>
@@ -26,7 +33,14 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         premiumExpiration: action.payload.premiumExpiration,
         authProviders: action.payload.authProviders,
       },
+      purchases: null,
       validated: true,
     }))
-    .addCase(authLogout, () => authInitialState),
+    .addCase(authLogout, () => authInitialState)
+    .addCase(authFetchPurchases, (state) => {
+      state.purchases = null;
+    })
+    .addCase(authSetPurchases, (state, action) => {
+      state.purchases = action.payload;
+    }),
 );

@@ -22,6 +22,7 @@ import { deleteProcessor } from './processors/deleteProcessor.js';
 import { elevationChartProcessor } from './processors/elevationChartProcessor.js';
 import { errorProcessor } from './processors/errorProcessor.js';
 import { exportMapFeaturesProcessor } from './processors/exportMapFeaturesProcessor.js';
+import { fetchPurchasesProcessor } from './processors/fetchPurchasesProcessor.js';
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor.js';
 import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor.js';
@@ -172,6 +173,7 @@ export const processors = [
   authWithOsm2Processor,
   authWithGarminProcessor,
   authWithGarmin2Processor,
+  fetchPurchasesProcessor,
   purchaseProcessor,
   urlProcessor,
 ];

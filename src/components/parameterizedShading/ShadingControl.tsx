@@ -7,8 +7,8 @@ import {
   Button,
   ButtonToolbar,
   Card,
+  Dropdown,
   DropdownButton,
-  DropdownItem,
   Form,
   ListGroup,
 } from 'react-bootstrap';
@@ -19,6 +19,7 @@ import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import {
   ColorStop,
   SHADING_COMPONENT_TYPES,
+  ShadingComponent,
   type Color as ColorType,
   type ShadingComponentType,
 } from './Shading.js';
@@ -104,31 +105,64 @@ export function ShadingControl() {
               onSelect={(type0) => {
                 const id = Math.random();
 
-                const type = type0 as ShadingComponentType;
+                let shadingComponent: ShadingComponent;
+
+                if (type0 === 'contour') {
+                  const eleWidth = window.prompt(
+                    'Enter elevation[,width[,opacity]] (eg: "430.5,1,50")',
+                  );
+
+                  if (!eleWidth) {
+                    return;
+                  }
+
+                  const parts = eleWidth.split(',').map((v) => Number(v));
+
+                  const ele = parts[0];
+                  const hwidth = parts[1] / 2 || 1;
+                  const opacity = parts[2] / 100 || 1;
+
+                  shadingComponent = {
+                    id,
+                    type: 'color-relief',
+                    elevation: NaN,
+                    azimuth: NaN,
+                    colorStops: [
+                      { value: ele - hwidth, color: [0, 0, 0, 0] },
+                      { value: ele - hwidth, color: [0, 0, 0, opacity] },
+                      { value: ele + hwidth, color: [0, 0, 0, opacity] },
+                      { value: ele + hwidth, color: [0, 0, 0, 0] },
+                    ],
+                    brightness: 0,
+                    contrast: 1,
+                  };
+                } else {
+                  shadingComponent = {
+                    id,
+                    type: type0 as ShadingComponentType,
+                    elevation: 45 * (Math.PI / 180),
+                    azimuth: 315 * (Math.PI / 180),
+                    colorStops:
+                      type0 === 'color-relief' || type0 === 'aspect'
+                        ? [
+                            { value: 0 / 6, color: [255, 0, 0, 1] },
+                            { value: 1 / 6, color: [255, 255, 0, 1] },
+                            { value: 2 / 6, color: [0, 255, 0, 1] },
+                            { value: 3 / 6, color: [0, 255, 255, 1] },
+                            { value: 4 / 6, color: [0, 0, 255, 1] },
+                            { value: 5 / 6, color: [255, 0, 255, 1] },
+                            { value: 6 / 6, color: [255, 0, 0, 1] },
+                          ]
+                        : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
+                    brightness: 0,
+                    contrast: 1,
+                  };
+                }
 
                 dispatch(
                   mapSetShading(
                     produce(shading, (draft) => {
-                      draft.components.push({
-                        id,
-                        elevation: 45 * (Math.PI / 180),
-                        azimuth: 315 * (Math.PI / 180),
-                        colorStops:
-                          type === 'color-relief' || type === 'aspect'
-                            ? [
-                                { value: 0 / 6, color: [255, 0, 0, 1] },
-                                { value: 1 / 6, color: [255, 255, 0, 1] },
-                                { value: 2 / 6, color: [0, 255, 0, 1] },
-                                { value: 3 / 6, color: [0, 255, 255, 1] },
-                                { value: 4 / 6, color: [0, 0, 255, 1] },
-                                { value: 5 / 6, color: [255, 0, 255, 1] },
-                                { value: 6 / 6, color: [255, 0, 0, 1] },
-                              ]
-                            : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
-                        type,
-                        brightness: 0,
-                        contrast: 1,
-                      });
+                      draft.components.push(shadingComponent);
                     }),
                   ),
                 );
@@ -137,10 +171,13 @@ export function ShadingControl() {
               }}
             >
               {SHADING_COMPONENT_TYPES.map((st) => (
-                <DropdownItem key={st} eventKey={st}>
+                <Dropdown.Item key={st} eventKey={st}>
                   {st}
-                </DropdownItem>
+                </Dropdown.Item>
               ))}
+
+              <Dropdown.Divider />
+              <Dropdown.Item eventKey="contour">contour</Dropdown.Item>
             </DropdownButton>
 
             <Button
@@ -330,7 +367,7 @@ export function ShadingControl() {
                     .map(
                       (colorStop, i) =>
                         (activeStopIndex === i ? 'RGBA' : 'rgba') +
-                        `(${colorStop.color.join(',')}) ${(colorStop.value * 100).toFixed()}%`,
+                        `(${colorStop.color.join(',')}) ${(100 * colorStop.value) / (selectedComponent.type === 'aspect' ? 2 * Math.PI : 2660)}%`,
                     )
                     .join(', ') +
                   ')';
@@ -366,7 +403,11 @@ export function ShadingControl() {
                   }
 
                   return {
-                    value: parseFloat(stop) / 100,
+                    value:
+                      (parseFloat(stop) / 100) *
+                      (selectedComponent!.type === 'aspect'
+                        ? 2 * Math.PI
+                        : 2660),
                     color,
                   };
                 });

@@ -106,6 +106,7 @@ const messages: Messages = {
     areYouSure: 'Ste si istí?',
     export: 'Exportovať',
     success: 'Hotovo!',
+    expiration: 'Exspirácia',
   },
 
   selections: {
@@ -525,7 +526,7 @@ const messages: Messages = {
           <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania odstránené.</li>
           <li>Nahrávajte len vlastné fotografie, alebo fotografie, pre ktoré máte udelený súhlas na zdieľanie.</li>
           <li>Popisky, alebo komentáre, ktoré sa priamo netýkajú obsahu načítaných fotografií, alebo odporujú všeobecne prijímaným zásadám civilizovaného spolužitia, budú odstránené. Porušovatelia tohoto pravidla budú varovaní a pri opakovanom porušovaní môže byť ich účet v aplikácii zrušený.</li>
-          <li>Nahraté fotografie sú ďalej šírené pod licenciou CC-BY-SA 4.0.</li>
+          <li>Nahraté fotografie sú ďalej šírené pod licenciou CC BY-SA 4.0.</li>
           <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
           <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu odstrániť, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
@@ -692,6 +693,8 @@ const messages: Messages = {
       delete: 'Zmazať účet',
       deleteWarning:
         'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
+      personalInfo: 'Osobné údaje',
+      authProviders: 'Poskytovatelia prihlásenia',
     },
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',
@@ -1227,8 +1230,6 @@ const messages: Messages = {
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
           hostedBy="hostované na"
-          see="Pozri"
-          _3Dterrain="3D terén"
         />
       ),
     },

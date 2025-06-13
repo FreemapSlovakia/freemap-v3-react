@@ -99,6 +99,7 @@ const en: Messages = {
     areYouSure: 'Are you sure?',
     export: 'Export',
     success: 'Success!',
+    expiration: 'Expiration',
   },
 
   selections: {
@@ -484,7 +485,7 @@ const en: Messages = {
           <li>Upload only photos of landscapes or documentation pictures. Portraits and macro photos are undesirable and will be deleted without warning.</li>
           <li>Please upload only your own photos.</li>
           <li>Captions or comments that do not directly relate to the content of the uploaded photos, or contradict generally accepted principles of civilized coexistence will be removed. Violators of this rule will be warned, and in case of repeated violations, their account in the application may be canceled.</li>
-          <li>By uploading the photos, you agree they will be distributed under the terms of CC-BY-SA 4.0 license.</li>
+          <li>By uploading the photos, you agree they will be distributed under the terms of CC BY-SA 4.0 license.</li>
           <li>The operator (Freemap.sk) hereby disclaims all liability and is not liable for direct or indirect damages resulting from publication of a photo in the gallery. The person who has uploaded the picture on the server is fully responsible for the photo.</li>
           <li>The operator reserves the right to edit the description, name, position and tags of photo, or to delete the photo if the content is inappropriate (violate these rules).</li>
           <li>The operator reserves the right to delete the account in case that the user repeatedly violates the gallery policy by publishing inappropriate content.</li>
@@ -644,6 +645,8 @@ const en: Messages = {
       delete: 'Delete account',
       deleteWarning:
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
+      personalInfo: 'Personal information',
+      authProviders: 'Login providers',
     },
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
@@ -1168,8 +1171,6 @@ const en: Messages = {
         <MaptilerAttribution
           tilesFrom="Vector tiles from"
           hostedBy="hosted by"
-          see="See"
-          _3Dterrain="3D terrain"
         />
       ),
     },

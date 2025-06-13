@@ -104,6 +104,7 @@ const messages: Messages = {
     areYouSure: 'Jste si jisti?',
     export: 'Exportovat',
     success: 'Hotovo!',
+    expiration: 'Expirace',
   },
 
   selections: {
@@ -494,7 +495,7 @@ const messages: Messages = {
           <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>
           <li>Nahrávejte pouze vlastní fotografie nebo fotografie, pro které máte udělen souhlas ke sdílení.</li>
           <li>Popisky nebo komentáře, které se přímo netýkají obsahu načtených fotografií nebo odporují obecně přijímaným zásadám civilizovaného soužití, budou odstraněny. Porušovatelé tohoto pravidla budou varováni a při opakovaném porušování může být jejich účet v aplikaci zrušen.</li>
-          <li>Fotografie jsou dále šířeny pod licencí CC-BY-SA 4.0.</li>
+          <li>Fotografie jsou dále šířeny pod licencí CC BY-SA 4.0.</li>
           <li>Provozovatel Freemap.sk se tímto zbavuje jakékoli odpovědnosti a neodpovídá za přímé ani nepřímé škody vzniklé zveřejněním fotografie v galerii. Za fotografii nese plnou odpovědnost osoba, která fotografii na server uložila.</li>
           <li>Provozovatel si vyhrazuje právo upravit popis, název, pozici a tagy fotografie nebo fotografii vymazat, pokud je její obsah nevhodný (porušuje tato pravidla).</li>
           <li>Provozovatel si vyhrazuje právo zrušit účet v případě, že uživatel opakovaně porušuje pravidla galerie zveřejňováním nevhodného obsahu.</li>
@@ -661,6 +662,8 @@ const messages: Messages = {
       delete: 'Smazat účet',
       deleteWarning:
         'Opravdu si přejete smazat svůj účet? Spolu s ním se odstraní všechny vaše fotografie, komentáře a hodnocení fotografií, vlastní mapy a sledovaná zařízení.',
+      personalInfo: 'Osobní údaje',
+      authProviders: 'Poskytovatelé přihlášení',
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
@@ -1195,8 +1198,6 @@ const messages: Messages = {
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
           hostedBy="hostované na"
-          see="Viz"
-          _3Dterrain="3D terén"
         />
       ),
     },

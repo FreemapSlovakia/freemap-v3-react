@@ -335,15 +335,8 @@ class LShadingLayer extends LGridLayer {
         dw.u32(component.colorStops.length);
         dw.pad32(2);
 
-        const range =
-          component.type === 'aspect'
-            ? 2 * Math.PI
-            : component.type === 'color-relief'
-              ? 2660
-              : 0;
-
         for (const colorStop of component.colorStops) {
-          dw.f32(colorStop.value * range);
+          dw.f32(colorStop.value);
           dw.pad32(3);
 
           writeColor(colorStop.color);
