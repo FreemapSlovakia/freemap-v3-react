@@ -113,6 +113,8 @@ const trackingModalFactory = () => import('./tracking/TrackingModal.js');
 
 const accountModalFactory = () => import('./AccountModal.js');
 
+const downloadMapModalFactory = () => import('./DownloadMapModal.js');
+
 const mapSettingsModalFactory = () => import('./MapSettingsModal.js');
 
 const embedMapModalFactory = () => import('./EmbedMapModal.js');
@@ -685,6 +687,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal === 'account'}
         factory={accountModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'download-map'}
+        factory={downloadMapModalFactory}
       />
 
       <AsyncModal

@@ -119,6 +119,10 @@ export function MapSwitchButton(): ReactElement {
         setShow(false);
 
         dispatch(setActiveModal('mapSettings'));
+      } else if (selection === 'downloadMap') {
+        setShow(false);
+
+        dispatch(setActiveModal('download-map'));
       } else if (selection.startsWith('b')) {
         const base = selection.slice(1);
 
