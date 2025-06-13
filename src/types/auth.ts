@@ -9,22 +9,23 @@ export interface Purchase {
 }
 
 export interface User {
-  name: string;
-  email: string | null;
-  sendGalleryEmails: boolean;
-  id: number;
+  authProviders: AuthProvider[];
   authToken: string;
+  credits: number;
+  email: string | null;
+  id: number;
   isAdmin: boolean;
+  language?: string | null;
+  lat?: number | null;
+  lon?: number | null;
+  name: string;
+  premiumExpiration: Date | null;
+  sendGalleryEmails: boolean;
   settings?: {
     layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
     customLayers?: CustomLayer[];
   };
-  lat?: number | null;
-  lon?: number | null;
-  language?: string | null;
-  premiumExpiration: Date | null;
-  authProviders: AuthProvider[];
 }
 
 export type LoginResponse = {

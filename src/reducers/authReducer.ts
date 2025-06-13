@@ -32,6 +32,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         isAdmin: action.payload.isAdmin,
         premiumExpiration: action.payload.premiumExpiration,
         authProviders: action.payload.authProviders,
+        credits: action.payload.credits,
       },
       purchases: null,
       validated: true,

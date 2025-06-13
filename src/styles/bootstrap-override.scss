@@ -110,3 +110,8 @@ legend {
 .dropdown-item {
   white-space: normal; // to see all menu text on narrow mobile screens
 }
+
+// this can be enabled directly in bootstrap but i dunno how
+.m-n2 {
+  margin: -0.5rem !important;
+}

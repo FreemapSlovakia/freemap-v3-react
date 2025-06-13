@@ -5,12 +5,17 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Accordion, Button, Form, Modal, Table } from 'react-bootstrap';
+import { Accordion, Alert, Button, Form, Modal, Table } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaCheck,
+  FaCoins,
   FaEraser,
+  FaExclamation,
+  FaExclamationTriangle,
   FaGem,
+  FaSadTear,
+  FaShoppingBasket,
   FaSignOutAlt,
   FaTimes,
   FaUser,
@@ -122,43 +127,82 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body className="bg-light">
-          <Accordion defaultActiveKey="personal">
-            {!becomePremium && (
-              <Accordion.Item eventKey="paylents">
-                <Accordion.Header>
-                  <span>
-                    <FaGem /> {m?.premium.youArePremium}
-                  </span>
-                </Accordion.Header>
-                <Accordion.Body>
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th>{m?.general.createdAt /* TODO better name */}</th>
-                        <th>
-                          {m?.tracking.accessToken.note /* TODO rename */}
-                        </th>
-                      </tr>
-                    </thead>
+          <Accordion>
+            <Accordion.Item eventKey="payments">
+              <Accordion.Header>
+                <span>
+                  <FaShoppingBasket /> Purchases{/* t */}
+                </span>
+              </Accordion.Header>
 
-                    <tbody>
-                      {!purchases ? (
-                        <tr key="loading">
-                          <td colSpan={2}>{m?.general.loading}</td>
+              <Accordion.Body>
+                {becomePremium ? (
+                  <Alert
+                    variant="warning"
+                    className="d-flex justify-content-between"
+                  >
+                    <span>
+                      <FaExclamationTriangle /> You are not premium yet.
+                      {/* t */}
+                    </span>
+
+                    <Button onClick={becomePremium} className="m-n2">
+                      <FaGem /> {m?.premium.becomePremium}
+                    </Button>
+                  </Alert>
+                ) : (
+                  <Alert variant="success">
+                    <FaGem /> {m?.premium.youArePremium}
+                  </Alert>
+                )}
+
+                <Alert
+                  variant="info"
+                  className="d-flex justify-content-between"
+                >
+                  <span>
+                    <FaCoins /> Credits:{/* t */}{' '}
+                    <b>{user.credits.toFixed(2)}</b>
+                  </span>
+
+                  <Button className="m-n2">
+                    <FaCoins /> Buy credits{/* t */}
+                  </Button>
+                </Alert>
+
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>{m?.general.createdAt /* TODO better name */}</th>
+                      <th>{m?.tracking.accessToken.note /* TODO rename */}</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {!purchases ? (
+                      <tr key="loading">
+                        <td colSpan={2} className="text-center">
+                          {m?.general.loading}
+                        </td>
+                      </tr>
+                    ) : purchases.length === 0 ? (
+                      <tr key="loading">
+                        <td colSpan={2} className="text-center">
+                          No purchases{/* t */}
+                        </td>
+                      </tr>
+                    ) : (
+                      [...purchases].sort().map((purchase, i) => (
+                        <tr key={i}>
+                          <td>{dateFormat.format(purchase.createdAt)}</td>
+                          <td>{JSON.stringify(purchase.item)}</td>
                         </tr>
-                      ) : (
-                        [...purchases].sort().map((purchase, i) => (
-                          <tr key={i}>
-                            <td>{dateFormat.format(purchase.createdAt)}</td>
-                            <td>{JSON.stringify(purchase.item)}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </Table>
-                </Accordion.Body>
-              </Accordion.Item>
-            )}
+                      ))
+                    )}
+                  </tbody>
+                </Table>
+              </Accordion.Body>
+            </Accordion.Item>
 
             <Accordion.Item eventKey="personal">
               <Accordion.Header>
@@ -166,6 +210,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   <FaAddressCard /> {m?.settings.account.personalInfo}
                 </span>
               </Accordion.Header>
+
               <Accordion.Body>
                 <Form.Group className="mb-3">
                   <Form.Label>{m?.settings.account.name}</Form.Label>
@@ -210,18 +255,17 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   <FaUserCircle /> {m?.settings.account.authProviders}
                 </span>
               </Accordion.Header>
+
               <Accordion.Body>
                 {user.authProviders.length < 4 && (
                   <>
-                    <hr />
-
                     <p>{m?.auth.connect.label}</p>
 
                     <AuthProviders mode="connect" />
+
+                    <hr />
                   </>
                 )}
-
-                <hr />
 
                 <p>{m?.auth.disconnect.label}</p>
 
