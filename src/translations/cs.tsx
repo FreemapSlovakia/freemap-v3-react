@@ -1201,6 +1201,7 @@ const messages: Messages = {
         />
       ),
     },
+    downloadMap: 'Stáhnout mapu',
   },
 
   elevationChart: {

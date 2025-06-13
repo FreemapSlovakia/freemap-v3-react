@@ -1174,6 +1174,7 @@ const en: Messages = {
         />
       ),
     },
+    downloadMap: 'Download map',
   },
 
   elevationChart: {

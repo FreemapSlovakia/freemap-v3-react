@@ -46,9 +46,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
   const purchases = useMemo(
     () =>
       [...(purchasesUnsorted ?? [])].sort(
-        (a, b) =>
-          b.expireAt.getTime() - a.expireAt.getTime() ||
-          b.createdAt.getTime() - a.createdAt.getTime(),
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
       ),
     [purchasesUnsorted],
   );
@@ -133,35 +131,31 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   </span>
                 </Accordion.Header>
                 <Accordion.Body>
-                  {!purchases ? (
-                    '…'
-                  ) : (
-                    <Table>
-                      <thead>
-                        <tr>
-                          <th>{m?.general.createdAt}</th>
-                          <th>{m?.general.expiration}</th>
-                          <th>{m?.tracking.accessToken.note}</th>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>{m?.general.createdAt /* TODO better name */}</th>
+                        <th>
+                          {m?.tracking.accessToken.note /* TODO rename */}
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {!purchases ? (
+                        <tr key="loading">
+                          <td colSpan={2}>{m?.general.loading}</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {[...purchases].sort().map((purchase, i) => (
-                          <tr
-                            key={i}
-                            className={
-                              purchase.expireAt.getTime() > Date.now()
-                                ? 'table-success'
-                                : 'table-danger'
-                            }
-                          >
+                      ) : (
+                        [...purchases].sort().map((purchase, i) => (
+                          <tr key={i}>
                             <td>{dateFormat.format(purchase.createdAt)}</td>
-                            <td>{dateFormat.format(purchase.expireAt)}</td>
-                            <td>{purchase.article}</td>
+                            <td>{JSON.stringify(purchase.item)}</td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  )}
+                        ))
+                      )}
+                    </tbody>
+                  </Table>
                 </Accordion.Body>
               </Accordion.Item>
             )}

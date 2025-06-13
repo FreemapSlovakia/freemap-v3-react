@@ -1198,6 +1198,7 @@ const messages: Messages = {
         />
       ),
     },
+    downloadMap: 'Scarica mappa',
   },
 
   elevationChart: {

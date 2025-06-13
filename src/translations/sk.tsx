@@ -1233,6 +1233,7 @@ const messages: Messages = {
         />
       ),
     },
+    downloadMap: 'Stiahnúť mapu',
   },
 
   elevationChart: {

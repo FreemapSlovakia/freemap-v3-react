@@ -1198,6 +1198,7 @@ const hu: Messages = {
         />
       ),
     },
+    downloadMap: 'Térkép letöltése',
   },
 
   elevationChart: {

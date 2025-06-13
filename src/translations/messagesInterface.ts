@@ -692,6 +692,7 @@ export type Messages = {
       photos: string;
     };
     attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
+    downloadMap: string;
   };
   elevationChart: {
     distance: string;

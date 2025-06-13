@@ -5,8 +5,7 @@ export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
 export interface Purchase {
   createdAt: Date;
-  article: string;
-  expireAt: Date;
+  item: { type: 'premium' } | { type: 'credits'; amount: number };
 }
 
 export interface User {

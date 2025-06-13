@@ -8,6 +8,7 @@ import {
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import {
   FaCog,
+  FaDownload,
   FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
@@ -406,6 +407,14 @@ export function MapSwitchButton(): ReactElement {
                 eventKey="mapSettings"
               >
                 <FaCog /> {m?.mapLayers.settings}
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                key="downloadMap"
+                as="button"
+                eventKey="downloadMap"
+              >
+                <FaDownload /> {m?.mapLayers.downloadMap}
               </Dropdown.Item>
 
               <Dropdown.Divider />
