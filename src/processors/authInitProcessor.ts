@@ -5,6 +5,7 @@ import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { User } from '../types/auth.js';
+import { StringDates } from '../types/common.js';
 
 function track(id: number | undefined) {
   window._paq.push(
@@ -47,9 +48,7 @@ export const authInitProcessor: Processor<typeof authInit> = {
         let user: User | null;
 
         if (ok) {
-          const rawUser = assert<
-            Omit<User, 'premiumExpiration'> & { premiumExpiration: string }
-          >(await res.json());
+          const rawUser = assert<StringDates<User>>(await res.json());
 
           user = {
             ...rawUser,
