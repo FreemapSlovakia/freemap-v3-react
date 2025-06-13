@@ -45,7 +45,12 @@ function persistSelectedState(state: RootState) {
         milestones: state.routePlanner.milestones,
       },
       auth: {
-        user: state.auth.user,
+        user: state.auth.user && {
+          ...state.auth.user,
+          premiumExpiration: state.auth.user.premiumExpiration
+            ? state.auth.user.premiumExpiration.toISOString()
+            : null,
+        },
       },
       map: {
         layersSettings: state.map.layersSettings,
