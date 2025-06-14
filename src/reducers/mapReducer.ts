@@ -181,6 +181,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         mapType: map?.mapType ?? state.mapType,
         overlays: map?.overlays ?? state.overlays,
         customLayers: map?.customLayers ?? state.customLayers,
+        shading: map?.shading ?? state.shading,
       }),
     )
     .addCase(mapSetCustomLayers, (state, action) => {

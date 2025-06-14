@@ -102,6 +102,8 @@ export const mapsLoadProcessor: Processor = {
         delete mapData.map.mapType;
 
         delete mapData.map.overlays;
+
+        delete mapData.map.shading;
       }
     }
 
