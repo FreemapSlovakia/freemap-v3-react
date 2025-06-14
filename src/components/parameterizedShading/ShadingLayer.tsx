@@ -332,8 +332,9 @@ class LShadingLayer extends LGridLayer {
         dw.f32(component.elevation);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
+        dw.f32(component.exaggeration);
         dw.u32(component.colorStops.length);
-        dw.pad32(2);
+        dw.pad32(1);
 
         for (const colorStop of component.colorStops) {
           dw.f32(colorStop.value);

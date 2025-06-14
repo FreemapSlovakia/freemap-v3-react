@@ -49,6 +49,7 @@ export const mapInitialState: MapState = {
         brightness: 0,
         contrast: 1,
         colorStops: [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
+        exaggeration: 1,
       },
       // {
       //   id: 1,

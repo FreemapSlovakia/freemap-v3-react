@@ -30,8 +30,9 @@ struct ShadingComponent {
     altitude: f32,
     contrast: f32,
     brightness: f32,
+    exaggeration: f32,
     color_count: u32,
-    _pad: vec2<f32>,
+    _pad: f32,
     colors: array<ColorStop, NUM_STOPS>
 };
 
@@ -65,7 +66,7 @@ fn normalize_angle(angle: f32) -> f32 {
     return select(ang, TAU + ang, ang < 0.0);
 }
 
-fn get_normal(pos: vec2<i32>) -> vec3<f32> {
+fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
     let nn = get_elev(pos + vec2(-1, -1));
     let nz = get_elev(pos + vec2(-1, 0));
     let np = get_elev(pos + vec2(-1, 1));
@@ -79,7 +80,7 @@ fn get_normal(pos: vec2<i32>) -> vec3<f32> {
 
     let dzdy = -nn - 2.0 * zn - pn + np + 2.0 * zp + pp;
 
-    let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8;
+    let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8 / exaggeration;
 
     let normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
 
@@ -108,7 +109,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
         var intensity = 0.0;
 
         if component.method != 4u && all(normal == vec3<f32>(0.0)) {
-            normal = get_normal(pos2);
+            normal = get_normal(pos2, component.exaggeration);
 
             if all(normal == vec3(0.0, 0.0, 0.0)) {
                 return vec4(0.0, 0.0, 0.0, 0.0);
@@ -188,7 +189,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
     let rgb_p = clamp(rgb, vec3(0.0), vec3(1.0));
 
-    let fg = vec4(rgb_p, alpha);
+    let fg = vec4(rgb_p * alpha, alpha);
 
     let bg = shading.background_color;
 
