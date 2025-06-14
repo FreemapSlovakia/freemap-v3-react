@@ -183,21 +183,21 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
         alpha_product = alpha_product * (1.0 - alpha);
     }
 
-    let rgb = select(sum_rgb / sum_alpha, vec3(0.0), sum_alpha == 0.0);
-
-    let alpha = 1.0 - clamp(alpha_product, 0.0, 1.0);
-
-    let rgb_p = clamp(rgb, vec3(0.0), vec3(1.0));
-
-    let fg = vec4(rgb_p * alpha, alpha);
+    let fg = vec4(
+        select(
+            clamp(sum_rgb / sum_alpha, vec3(0.0), vec3(1.0)),
+            vec3(0.0),
+            sum_alpha == 0.0
+        ),
+        1.0 - clamp(alpha_product, 0.0, 1.0)
+    );
 
     let bg = shading.background_color;
 
-    let out_rgb = fg.rgb * fg.a + bg.rgb * bg.a * (1.0 - fg.a);
-
-    let out_a = fg.a + bg.a * (1.0 - fg.a);
-
-    return vec4(out_rgb, out_a);
+    return vec4(
+        fg.rgb * fg.a + bg.rgb * bg.a * (1.0 - fg.a),
+        fg.a + bg.a * (1.0 - fg.a)
+    );
 }
 
 fn interpolate_color(stops: array<ColorStop, NUM_STOPS>, count: u32, t: f32) -> vec4<f32> {
