@@ -12,6 +12,7 @@ import { Messages } from 'translations/messagesInterface.js';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 import { DataWriter } from './DataWriter.js';
 import { Color, Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
+import shadingWgslResource from './shading.wgsl';
 
 type ShadingLayerOptions = GridLayerOptions & {
   url: string;
@@ -130,7 +131,7 @@ class LShadingLayer extends LGridLayer {
         this.showError(new GpuError('lost', e.message));
       });
 
-      const shaderCode = await (await fetch('/shading.wgsl')).text();
+      const shaderCode = await (await fetch(shadingWgslResource)).text();
 
       const shaderModule = device.createShaderModule({ code: shaderCode });
 
@@ -332,8 +333,9 @@ class LShadingLayer extends LGridLayer {
         dw.f32(component.elevation);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
+        dw.f32(component.exaggeration);
         dw.u32(component.colorStops.length);
-        dw.pad32(2);
+        dw.pad32(1);
 
         for (const colorStop of component.colorStops) {
           dw.f32(colorStop.value);

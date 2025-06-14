@@ -154,11 +154,7 @@ const config: Configuration = {
         type: 'javascript/auto',
       },
       {
-        test: /zstd\.wasm/,
-        type: 'asset/resource',
-      },
-      {
-        test: /lerc-wasm\.wasm/,
+        test: /\.(wasm|wgsl)$/,
         type: 'asset/resource',
       },
     ],

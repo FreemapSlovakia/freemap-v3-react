@@ -514,20 +514,24 @@ export function handleLocationChange(store: MyStore): void {
 
         let azimuth = 0;
         let elevation = 0;
+        let exaggeration = 1;
 
         switch (type) {
           case 'hillshade-classic':
             azimuth = Number(params.shift()) * (Math.PI / 180);
             elevation = Number(params.shift()) * (Math.PI / 180);
-
+            exaggeration = Number(params.shift());
             break;
           case 'hillshade-igor':
             azimuth = Number(params.shift()) * (Math.PI / 180);
+            exaggeration = Number(params.shift());
             break;
           case 'slope-classic':
             elevation = Number(params.shift()) * (Math.PI / 180);
+            exaggeration = Number(params.shift());
             break;
           case 'slope-igor':
+            exaggeration = Number(params.shift());
             break;
           case 'aspect':
           case 'color-relief':
@@ -575,6 +579,7 @@ export function handleLocationChange(store: MyStore): void {
           elevation,
           brightness: 0,
           contrast: 1,
+          exaggeration,
           colorStops,
         } satisfies ShadingComponent;
       })
