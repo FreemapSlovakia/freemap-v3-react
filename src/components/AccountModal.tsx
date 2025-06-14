@@ -9,7 +9,6 @@ import { Accordion, Alert, Button, Form, Modal, Table } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaCheck,
-  FaCoins,
   FaEraser,
   FaExclamationTriangle,
   FaGem,
@@ -32,6 +31,7 @@ import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import { AuthProviders } from './AuthProviders.js';
+import { CreditsAlert } from './CreditsAlert.js';
 
 type Props = { show: boolean };
 
@@ -164,19 +164,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   </Alert>
                 )}
 
-                <Alert
-                  variant="info"
-                  className="d-flex justify-content-between"
-                >
-                  <span>
-                    <FaCoins /> Credits:{/* t */}{' '}
-                    <b>{user.credits.toFixed(2)}</b>
-                  </span>
-
-                  <Button className="m-n2 ms-2">
-                    <FaCoins /> Buy credits{/* t */}
-                  </Button>
-                </Alert>
+                <CreditsAlert />
 
                 <Table>
                   <thead>

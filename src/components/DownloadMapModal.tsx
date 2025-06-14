@@ -4,6 +4,7 @@ import { FaDownload, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useMessages } from '../l10nInjector.js';
+import { CreditsAlert } from './CreditsAlert.js';
 
 type Props = { show: boolean };
 
@@ -26,7 +27,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>TODO</Modal.Body>
+      <Modal.Body>
+        <CreditsAlert />
+      </Modal.Body>
 
       <Modal.Footer>
         <Button variant="dark" onClick={close}>

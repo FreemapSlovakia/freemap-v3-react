@@ -73,7 +73,6 @@ export const authInitProcessor: Processor<typeof authInit> = {
             toastsAdd({
               style: 'success',
               messageKey: 'premium.success',
-              timeout: 5000,
             }),
           );
         }
