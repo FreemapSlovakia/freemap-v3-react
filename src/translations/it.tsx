@@ -1594,7 +1594,11 @@ const messages: Messages = {
     continue: 'Continua',
     success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
     becomePremium: 'Accesso completo',
-    youArePremium: 'Hai accesso a tutte le funzionalità',
+    youArePremium: (date) => (
+      <>
+        Hai accesso a tutte le funzionalità <b>{date}</b>
+      </>
+    ), // TODO fix translation
     premiumOnly: 'Disponibile solo con accesso completo.', // TODO google translated
   },
 

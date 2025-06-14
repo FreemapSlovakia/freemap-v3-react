@@ -140,17 +140,27 @@ export function AccountModal({ show }: Props): ReactElement | null {
                     className="d-flex justify-content-between"
                   >
                     <span>
-                      <FaExclamationTriangle /> You are not premium yet.
-                      {/* t */}
+                      <FaExclamationTriangle />{' '}
+                      {user.premiumExpiration ? (
+                        <>
+                          Your premium access expired at{' '}
+                          <b>{dateFormat.format(user.premiumExpiration!)}</b>
+                        </>
+                      ) : (
+                        <>You are not premium yet.{/* t */}</>
+                      )}
                     </span>
 
-                    <Button onClick={becomePremium} className="m-n2">
+                    <Button onClick={becomePremium} className="m-n2 ms-2">
                       <FaGem /> {m?.premium.becomePremium}
                     </Button>
                   </Alert>
                 ) : (
                   <Alert variant="success">
-                    <FaGem /> {m?.premium.youArePremium}
+                    <FaGem />{' '}
+                    {m?.premium.youArePremium(
+                      dateFormat.format(user.premiumExpiration!),
+                    )}
                   </Alert>
                 )}
 
@@ -163,7 +173,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                     <b>{user.credits.toFixed(2)}</b>
                   </span>
 
-                  <Button className="m-n2">
+                  <Button className="m-n2 ms-2">
                     <FaCoins /> Buy credits{/* t */}
                   </Button>
                 </Alert>
@@ -171,8 +181,8 @@ export function AccountModal({ show }: Props): ReactElement | null {
                 <Table>
                   <thead>
                     <tr>
-                      <th>{m?.general.createdAt /* TODO better name */}</th>
-                      <th>{m?.tracking.accessToken.note /* TODO rename */}</th>
+                      <th>Date{/* t */}</th>
+                      <th>Item{/* t */}</th>
                     </tr>
                   </thead>
 

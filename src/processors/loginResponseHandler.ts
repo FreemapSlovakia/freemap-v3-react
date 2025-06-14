@@ -3,6 +3,7 @@ import { assert } from 'typia';
 import { authSetUser } from '../actions/authActions.js';
 import { removeAds, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
+import { isPremium } from '../premium.js';
 import type { RootState } from '../store.js';
 import type { LoginResponse } from '../types/auth.js';
 import { StringDates } from '../types/common.js';
@@ -12,9 +13,11 @@ export async function handleLoginResponse(
   getState: () => RootState,
   dispatch: Dispatch,
 ) {
-  const { user, connect, clientData } = assert<StringDates<LoginResponse>>(
-    await res.json(),
-  );
+  const {
+    user: rawUser,
+    connect,
+    clientData,
+  } = assert<StringDates<LoginResponse>>(await res.json());
 
   dispatch(
     toastsAdd({
@@ -25,16 +28,16 @@ export async function handleLoginResponse(
     }),
   );
 
-  dispatch(
-    authSetUser({
-      ...user,
-      premiumExpiration: user.premiumExpiration
-        ? new Date(user.premiumExpiration)
-        : null,
-    }),
-  );
+  const user = {
+    ...rawUser,
+    premiumExpiration: rawUser.premiumExpiration
+      ? new Date(rawUser.premiumExpiration)
+      : null,
+  };
 
-  if (!user.premiumExpiration && getState().main.removeAdsOnLogin) {
+  dispatch(authSetUser(user));
+
+  if (!isPremium(user) && getState().main.removeAdsOnLogin) {
     dispatch(removeAds());
   }
 

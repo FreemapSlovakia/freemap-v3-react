@@ -42,6 +42,7 @@ import {
   overlayLayers,
   OverlayLetters,
 } from '../mapDefinitions.js';
+import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
@@ -70,9 +71,7 @@ export function MapSwitchButton(): ReactElement {
 
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
-  const isPremium = useAppSelector(
-    (state) => !!state.auth.user?.premiumExpiration,
-  );
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const becomePremium = useBecomePremium();
 
@@ -239,13 +238,13 @@ export function MapSwitchButton(): ReactElement {
           />
         )}
 
-        {!isPremium &&
+        {!premium &&
         premiumFromZoom !== undefined &&
         zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
           <FaGem
             className="ms-1 text-warning"
-            title={isPremium ? undefined : m?.premium.premiumOnly}
-            onClick={isPremium ? undefined : becomePremium}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClick={premium ? undefined : becomePremium}
           />
         ) : null}
       </>
@@ -297,9 +296,9 @@ export function MapSwitchButton(): ReactElement {
         {premiumFromZoom !== undefined &&
         zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
           <FaGem
-            className={'ms-1 ' + (isPremium ? 'text-success' : 'text-warning')}
-            title={isPremium ? undefined : m?.premium.premiumOnly}
-            onClickCapture={isPremium ? undefined : becomePremium}
+            className={'ms-1 ' + (premium ? 'text-success' : 'text-warning')}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClickCapture={premium ? undefined : becomePremium}
           />
         ) : null}
 

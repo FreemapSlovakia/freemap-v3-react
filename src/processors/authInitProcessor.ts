@@ -4,6 +4,7 @@ import { authInit, authSetUser } from '../actions/authActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
+import { isPremium } from '../premium.js';
 import type { User } from '../types/auth.js';
 import { StringDates } from '../types/common.js';
 
@@ -66,7 +67,7 @@ export const authInitProcessor: Processor<typeof authInit> = {
         if (
           ok &&
           action.payload.becamePremium &&
-          getState().auth.user?.premiumExpiration // TODO else show error
+          isPremium(getState().auth.user) // TODO else show error
         ) {
           dispatch(
             toastsAdd({

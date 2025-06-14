@@ -852,7 +852,7 @@ export type Messages = {
     continue: string;
     success: string;
     becomePremium: string;
-    youArePremium: string;
+    youArePremium: (date: string) => JSX.Element;
     premiumOnly: string;
   };
   offline: {

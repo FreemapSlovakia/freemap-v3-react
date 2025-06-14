@@ -2,14 +2,13 @@ import { MouseEvent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { galleryClear } from '../actions/galleryActions.js';
 import { removeAdsOnLogin, setActiveModal } from '../actions/mainActions.js';
+import { isPremium } from '../premium.js';
 import { useAppSelector } from './reduxSelectHook.js';
 
 export function useBecomePremium() {
   const dispatch = useDispatch();
 
-  const isPremium = useAppSelector(
-    (state) => !!state.auth.user?.premiumExpiration,
-  );
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const becomePremium = useCallback(
     (e?: MouseEvent) => {
@@ -19,7 +18,7 @@ export function useBecomePremium() {
 
       dispatch(galleryClear());
 
-      if (isPremium == null) {
+      if (premium == null) {
         dispatch(setActiveModal('login'));
 
         dispatch(removeAdsOnLogin());
@@ -27,8 +26,8 @@ export function useBecomePremium() {
         dispatch(setActiveModal('remove-ads'));
       }
     },
-    [dispatch, isPremium],
+    [dispatch, premium],
   );
 
-  return isPremium ? undefined : becomePremium;
+  return premium ? undefined : becomePremium;
 }

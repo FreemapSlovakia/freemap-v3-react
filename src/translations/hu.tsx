@@ -1603,7 +1603,12 @@ const hu: Messages = {
     continue: 'Folytatás',
     success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
     becomePremium: 'Teljes hozzáférés',
-    youArePremium: 'Ön hozzáfér minden funkcióhoz',
+    // TODO fix translation
+    youArePremium: (date) => (
+      <>
+        Ön hozzáfér minden funkcióhoz <b>{date}</b>.
+      </>
+    ),
     premiumOnly: 'Csak teljes hozzáféréssel érhető el.', // TODO google translated
   },
 

@@ -47,6 +47,7 @@ import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isPremium } from '../../premium.js';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton.js';
 import { RecentTags } from './RecentTags.js';
 
@@ -170,7 +171,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const premium = Boolean(image?.premium);
 
   const disabledPremium =
-    premium && !user?.premiumExpiration && user?.id !== image?.user.id;
+    premium && !isPremium(user) && user?.id !== image?.user.id;
 
   const pano = Boolean(image?.pano);
 

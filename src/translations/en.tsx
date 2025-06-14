@@ -1562,7 +1562,11 @@ const en: Messages = {
     continue: 'Continue',
     success: 'Congratulations, you have now acces to all features!',
     becomePremium: 'Get full access',
-    youArePremium: 'You have access to all features',
+    youArePremium: (date) => (
+      <>
+        You have access to all features until <b>{date}</b>
+      </>
+    ),
     premiumOnly: 'Only available with full access.',
   },
 

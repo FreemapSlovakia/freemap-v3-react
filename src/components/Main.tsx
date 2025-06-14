@@ -52,6 +52,7 @@ import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
 import { useMessages } from '../l10nInjector.js';
 import { setMapLeafletElement } from '../leafletElementHolder.js';
+import { isPremium } from '../premium.js';
 import {
   drawingLinePolys,
   selectingModeSelector,
@@ -190,7 +191,7 @@ export function Main(): ReactElement {
       !process.env['PREVENT_ADS'] &&
       !window.isRobot &&
       !window.fmEmbedded &&
-      !state.auth.user?.premiumExpiration,
+      !isPremium(state.auth.user),
   );
 
   const showElevationChart = useAppSelector(

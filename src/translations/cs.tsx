@@ -1597,7 +1597,11 @@ const messages: Messages = {
     continue: 'Pokračovat',
     success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
     becomePremium: 'Získat plný přístup',
-    youArePremium: 'Máte přístup ke všem funkcím',
+    youArePremium: (date) => (
+      <>
+        Máte přístup ke všem funkcím do <b>{date}</b>.
+      </>
+    ),
     premiumOnly: 'Dostupné pouze s plným přístupem.',
   },
 
