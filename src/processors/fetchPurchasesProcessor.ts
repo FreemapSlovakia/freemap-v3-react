@@ -20,9 +20,8 @@ export const fetchPurchasesProcessor: Processor = {
 
     dispatch(
       authSetPurchases(
-        data.map(({ expireAt, createdAt, ...rest }) => ({
+        data.map(({ createdAt, ...rest }) => ({
           ...rest,
-          expireAt: new Date(expireAt),
           createdAt: new Date(createdAt),
         })),
       ),
