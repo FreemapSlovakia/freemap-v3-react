@@ -439,8 +439,6 @@ class LShadingLayer extends LGridLayer {
       return;
     }
 
-    console.error((err as unknown as Error).stack);
-
     this.workerPool?.destroy();
 
     this.errorDiv = document.createElement('div');
