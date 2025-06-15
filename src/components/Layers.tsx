@@ -163,7 +163,7 @@ export function Layers(): ReactElement | null {
           cors={layerDef.cors ?? true}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
-          className={`fm-${layerDef.layer}-layer`}
+          className={`fm-${'layer' in layerDef ? layerDef.layer : layerDef.type.startsWith('.') ? 'base' : 'overlay'}-layer`}
         />
       );
     }

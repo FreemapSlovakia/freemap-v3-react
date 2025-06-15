@@ -216,7 +216,6 @@ export type IsIntegratedBaseLayerDef = {
 
 export type IsCustomBaseLayerDef = {
   type: CustomBaseLayerLetters;
-  layer: 'base';
 };
 
 export type IsIntegratedOverlayLayerDef = {
@@ -226,7 +225,6 @@ export type IsIntegratedOverlayLayerDef = {
 
 export type IsCustomOverlayLayerDef = {
   type: CustomOverlayLayerLetters;
-  layer: 'overlay';
 };
 
 export type IsAllTechnologiesLayerDef =
