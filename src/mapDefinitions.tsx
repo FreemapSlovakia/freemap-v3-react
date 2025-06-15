@@ -454,7 +454,8 @@ export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'h',
     // url: 'https://parametric-shading.tiles.freemap.sk/{z}/{x}/{y}',
-    url: 'https://www.freemap.sk/tiles/parametric-shading/{z}/{x}/{y}',
+    // url: 'https://www.freemap.sk/tiles/parametric-shading/{z}/{x}/{y}',
+    url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <GiHills />,
     key: ['KeyJ', true],
     scaleWithDpi: true,
