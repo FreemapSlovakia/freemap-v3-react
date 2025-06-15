@@ -166,8 +166,9 @@ export function Main(): ReactElement {
 
   const mapType = useAppSelector((state) => state.map.mapType);
 
-  const hasParamShading = useAppSelector((state) =>
-    state.map.overlays.includes('h'),
+  const hasParamShading = useAppSelector(
+    (state) =>
+      state.map.overlays.includes('h') || state.map.overlays.includes('z'),
   );
 
   const showInteractiveLayer = useAppSelector(

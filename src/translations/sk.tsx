@@ -1213,6 +1213,7 @@ const messages: Messages = {
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
       h: 'Parametrické tieňovanie (SK)',
+      z: 'Parametrické tieňovanie (CZ)',
     },
     customBase: 'Vlastná mapa',
     customOverlay: 'Vlastné prekrytie mapy',

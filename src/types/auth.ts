@@ -1,5 +1,6 @@
 import type { Action } from 'redux';
-import type { CustomLayer, LayerSettings } from '../actions/mapActions.js';
+import type { LayerSettings } from '../actions/mapActions.js';
+import { CustomLayerDef } from '../mapDefinitions.js';
 
 export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
@@ -24,7 +25,7 @@ export interface User {
   settings?: {
     layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
-    customLayers?: CustomLayer[];
+    customLayers?: CustomLayerDef[];
   };
 }
 

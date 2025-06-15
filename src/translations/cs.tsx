@@ -1180,7 +1180,8 @@ const messages: Messages = {
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
-      h: ' Parametrické stínování (SK)', // TODO translate
+      h: ' Parametrické stínování (SK)',
+      z: ' Parametrické stínování (CZ)',
     },
     customBase: 'Vlastní mapa',
     customOverlay: 'Vlastní překrytí mapy',

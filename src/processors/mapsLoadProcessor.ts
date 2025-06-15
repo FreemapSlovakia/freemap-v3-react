@@ -67,7 +67,7 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
-    // backward compat.
+    // backward compatibility
     try {
       const { routePlanner } = data.data;
 

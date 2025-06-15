@@ -211,6 +211,12 @@ export function ShadingControl() {
             onSelect={(e) => setId(e ? Number(e) : undefined)}
           >
             <ListGroup.Item action eventKey="">
+              <span
+                className="fm-shading-color"
+                style={{
+                  backgroundColor: Color(shading.backgroundColor).hex(),
+                }}
+              />{' '}
               Background
             </ListGroup.Item>
 
@@ -226,6 +232,16 @@ export function ShadingControl() {
                   whiteSpace: 'nowrap',
                 }}
               >
+                {/^hillshade-|^slope-/.test(component.type) && (
+                  <span
+                    className=" fm-shading-color"
+                    style={{
+                      backgroundColor: Color(
+                        component.colorStops[0].color,
+                      ).hex(),
+                    }}
+                  />
+                )}{' '}
                 {component.type.replace(/hillshade/, 'hs')}
                 {component.type.startsWith('hillshade-') &&
                   ' ◯ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}

@@ -1154,6 +1154,7 @@ const en: Messages = {
       VD: 'Dataviz Vector',
       VT: 'Outdoor Vector',
       h: 'Parametric shading (SK)',
+      z: 'Parametric shading (CZ)',
     },
     customBase: 'Custom map',
     customOverlay: 'Custom map overlay',

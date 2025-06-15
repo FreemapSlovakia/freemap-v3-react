@@ -1,10 +1,8 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Shading } from '../components/parameterizedShading/Shading.js';
 import {
-  BaseLayerDef,
   BaseLayerLetters,
-  LayerDef,
-  OverlayLayerDef,
+  CustomLayerDef,
   OverlayLetters,
 } from '../mapDefinitions.js';
 
@@ -22,29 +20,10 @@ export type LayerSettings = {
   showInToolbar?: boolean;
 };
 
-type CustomLayerBase = Pick<
-  LayerDef,
-  | 'url'
-  | 'minZoom'
-  | 'maxNativeZoom'
-  | 'subdomains'
-  | 'tms'
-  | 'extraScales'
-  | 'scaleWithDpi'
-  | 'cors'
->;
-
-export type CustomBaseLayer = CustomLayerBase & Pick<BaseLayerDef, 'type'>;
-
-export type CustomOverlayLayer = CustomLayerBase &
-  Pick<OverlayLayerDef, 'type' | 'zIndex'>;
-
-export type CustomLayer = CustomBaseLayer | CustomOverlayLayer;
-
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   overlayPaneOpacity: number;
-  customLayers: (CustomBaseLayer | CustomOverlayLayer)[]; // URL is mandatory here
+  customLayers: CustomLayerDef[];
 }
 
 export const mapRefocus = createAction<
@@ -55,7 +34,7 @@ export const mapSuppressLegacyMapWarning = createAction<{ forever: boolean }>(
   'MAP_SUPPRESS_LEGACY_MAP_WARING',
 );
 
-export const mapSetCustomLayers = createAction<CustomLayer[]>(
+export const mapSetCustomLayers = createAction<CustomLayerDef[]>(
   'MAP_SET_CUSTOM_LAYERS',
 );
 
