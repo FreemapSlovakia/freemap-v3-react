@@ -243,7 +243,13 @@ class LShadingLayer extends LGridLayer {
     let res;
 
     try {
-      res = await fetch(Util.template(this._options.url, { x, y, z: zoom }), {
+      const url = Util.template(this._options.url, { x, y, z: zoom });
+
+      // console.log('CCCCCCCCC', url);
+
+      canvas.dataset['url'] = url;
+
+      res = await fetch(url, {
         signal,
       });
     } catch {
@@ -264,6 +270,8 @@ class LShadingLayer extends LGridLayer {
     if (res.status !== 200) {
       throw new Error('unexpected status ' + res.status);
     }
+
+    canvas.style.display = '';
 
     const compressed = new Uint8Array(await res.arrayBuffer());
 
@@ -401,6 +409,8 @@ class LShadingLayer extends LGridLayer {
     const size = this.getTileSize();
 
     const canvas = document.createElement('canvas');
+
+    canvas.style.display = 'none';
 
     canvas.width = size.x * (1 << (this._options.zoomOffset ?? 0));
 

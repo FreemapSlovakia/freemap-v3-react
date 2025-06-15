@@ -4,7 +4,7 @@ import { Changeset } from '../actions/changesetsActions.js';
 import { RoutingMode, Weighting } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { HttpError } from '../httpRequest.js';
-import { AttributionDef, NoncustomLayerLetters } from '../mapDefinitions.js';
+import { AttributionDef, IntegratedLayerLetters } from '../mapDefinitions.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
@@ -683,7 +683,7 @@ export type Messages = {
     photoFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
-    letters: Record<NoncustomLayerLetters, string>;
+    letters: Record<IntegratedLayerLetters, string>;
     customBase: string;
     customOverlay: string;
     type: {

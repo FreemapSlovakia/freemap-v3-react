@@ -1,8 +1,9 @@
 import { createAction } from '@reduxjs/toolkit';
 import { basicModals, tools } from '../constants.js';
 import { DocumentKey } from '../documents/index.js';
+import { CustomLayerDef } from '../mapDefinitions.js';
 import type { LatLon } from '../types/common.js';
-import { CustomLayer, LayerSettings } from './mapActions.js';
+import { LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];
 
@@ -93,7 +94,7 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
-  customLayers?: CustomLayer[];
+  customLayers?: CustomLayerDef[];
   drawingColor?: string;
   drawingWidth?: number;
 };

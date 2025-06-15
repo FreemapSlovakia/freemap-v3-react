@@ -94,7 +94,7 @@ export const urlProcessor: Processor = {
       ],
     ];
 
-    if (map.overlays.includes('h')) {
+    if (map.overlays.includes('h') || map.overlays.includes('z')) {
       queryParts.push(['shading', serializeShading(map.shading)]);
     }
 

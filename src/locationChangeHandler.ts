@@ -31,7 +31,6 @@ import {
   Tool,
 } from './actions/mainActions.js';
 import {
-  type CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
   mapSetShading,
@@ -65,6 +64,7 @@ import {
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import type { DocumentKey } from './documents/index.js';
+import type { CustomLayerDef } from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
@@ -464,7 +464,7 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const newCls = assert<CustomLayer[]>(JSON.parse(customLayers)).filter(
+      const newCls = assert<CustomLayerDef[]>(JSON.parse(customLayers)).filter(
         (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
       );
 
@@ -493,7 +493,8 @@ export function handleLocationChange(store: MyStore): void {
   if (
     shading &&
     !Array.isArray(shading) &&
-    getState().map.overlays.includes('h') &&
+    (getState().map.overlays.includes('h') ||
+      getState().map.overlays.includes('z')) &&
     shading !== serializeShading(getState().map.shading)
   ) {
     function toColor(color = '00000000') {
