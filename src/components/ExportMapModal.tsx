@@ -11,6 +11,7 @@ import {
 import {
   FaDownload,
   FaDrawPolygon,
+  FaEye,
   FaFlask,
   FaPrint,
   FaRegQuestionCircle,
@@ -34,7 +35,9 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
-  const [area, setArea] = useState<'visible' | 'selected'>('visible');
+  const [area, setArea] = useState<'visible' | 'selected'>(
+    canExportByPolygon ? 'selected' : 'visible',
+  );
 
   const [scale, setScale] = useState(100);
 
@@ -182,7 +185,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             active={area === 'visible'}
             onClick={() => setArea('visible')}
           >
-            {m?.mapExport.areas.visible}
+            <FaEye /> {m?.mapExport.areas.visible}
           </Button>
 
           <Button
@@ -191,7 +194,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
           >
-            {m?.mapExport.areas.pinned} <FaDrawPolygon />
+            <FaDrawPolygon /> {m?.mapExport.areas.pinned}
           </Button>
         </ButtonGroup>
 

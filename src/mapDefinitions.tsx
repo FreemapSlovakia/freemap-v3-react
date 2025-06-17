@@ -201,7 +201,6 @@ export type IsTileLayerDef = HasUrl &
   HasMaxNativeZoom &
   HasZIndex &
   HasScaleWithDpi & {
-    technology: 'tile';
     subdomains?: string | string[];
     tms?: boolean;
     extraScales?: number[];
@@ -228,36 +227,37 @@ export type IsCustomOverlayLayerDef = {
 };
 
 export type IsAllTechnologiesLayerDef =
-  | IsTileLayerDef
+  | (IsTileLayerDef & {
+      creditsPerTile?: number;
+      technology: 'tile';
+    })
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
   | IsWikipediaLayerDef;
 
-export type CustomBaseLayerDef = Omit<IsTileLayerDef, 'technology'> &
+export type CustomBaseLayerDef = IsTileLayerDef &
   IsCustomBaseLayerDef &
   IsCommonLayerDef;
 
-export type CustomOverlayLayerDef = Omit<IsTileLayerDef, 'technology'> &
+export type CustomOverlayLayerDef = IsTileLayerDef &
   IsCustomOverlayLayerDef &
   IsCommonLayerDef;
 
 export type CustomLayerDef = CustomBaseLayerDef | CustomOverlayLayerDef;
 
-export type IntegratedBaseLayerDef = IsAllTechnologiesLayerDef &
-  IsCommonLayerDef &
-  IsIntegratedLayerDef &
-  IsIntegratedBaseLayerDef;
+export type IntegratedBaseLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedBaseLayerDef;
 
-export type IntegratedOverlayLayerDef = IsAllTechnologiesLayerDef &
-  IsCommonLayerDef &
-  IsIntegratedLayerDef &
-  IsIntegratedOverlayLayerDef;
+export type IntegratedOverlayLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedOverlayLayerDef;
 
-export type IntegratedLayerDef =
-  | IntegratedBaseLayerDef
-  | IntegratedOverlayLayerDef;
+export type IntegratedLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = IntegratedBaseLayerDef<T> | IntegratedOverlayLayerDef<T>;
 
 export type BaseLayerDef = IntegratedBaseLayerDef | CustomBaseLayerDef;
 
@@ -279,6 +279,7 @@ function legacyFreemap(
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['Key' + type, false],
+    creditsPerTile: 1,
   };
 }
 
@@ -303,6 +304,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 19,
     key: ['KeyX', false],
     premiumFromZoom: 19,
+    creditsPerTile: 5,
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
@@ -362,6 +364,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyZ', false],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
+    creditsPerTile: 1,
   },
   {
     layer: 'base',
@@ -381,6 +384,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     ],
     key: ['KeyZ', true],
     errorTileUrl: white1x1,
+    creditsPerTile: 1,
   },
   {
     layer: 'base',
@@ -438,6 +442,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
+    creditsPerTile: 1,
   },
   {
     layer: 'base',
@@ -458,6 +463,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
+    creditsPerTile: 1,
   },
   {
     layer: 'base',
@@ -477,6 +483,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+    creditsPerTile: 1,
   },
   {
     layer: 'base',
@@ -496,6 +503,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+    creditsPerTile: 1,
   },
   {
     layer: 'base',
@@ -650,6 +658,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
+    creditsPerTile: 1,
   },
   ...(
     [
@@ -688,6 +697,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+    creditsPerTile: 1,
   },
   {
     layer: 'overlay',
@@ -699,6 +709,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+    creditsPerTile: 1,
   },
 ];
 
