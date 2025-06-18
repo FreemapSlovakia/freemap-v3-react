@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
 import { authSetUser } from '../actions/authActions.js';
-import { removeAds, setActiveModal } from '../actions/mainActions.js';
+import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { isPremium } from '../premium.js';
 import type { RootState } from '../store.js';
@@ -37,8 +37,10 @@ export async function handleLoginResponse(
 
   dispatch(authSetUser(user));
 
-  if (!isPremium(user) && getState().main.removeAdsOnLogin) {
-    dispatch(removeAds());
+  const { purchaseOnLogin } = getState().main;
+
+  if (!isPremium(user) && purchaseOnLogin) {
+    dispatch(purchase(purchaseOnLogin));
   }
 
   if (clientData?.successAction) {

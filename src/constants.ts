@@ -6,6 +6,7 @@ export const colors = {
 export const basicModals = [
   'about',
   'account',
+  'buy-credits',
   'download-map',
   'drawing-properties',
   'embed',

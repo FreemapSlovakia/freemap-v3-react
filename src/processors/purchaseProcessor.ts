@@ -1,6 +1,6 @@
 import { assert, is } from 'typia';
 import { authInit } from '../actions/authActions.js';
-import { removeAds } from '../actions/mainActions.js';
+import { purchase } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -12,9 +12,9 @@ type CallbackData = {
   };
 };
 
-export const purchaseProcessor: Processor = {
-  actionCreator: removeAds,
-  async handle({ getState, dispatch }) {
+export const purchaseProcessor: Processor<typeof purchase> = {
+  actionCreator: purchase,
+  async handle({ getState, dispatch, action }) {
     const { user } = getState().auth;
 
     if (!user) {
@@ -27,9 +27,7 @@ export const purchaseProcessor: Processor = {
       method: 'POST',
       expectedStatus: 200,
       cancelActions: [],
-      data: {
-        type: 'premium',
-      },
+      data: action.payload,
     });
 
     const { paymentUrl } = assert<{ paymentUrl: string }>(await res.json());
@@ -94,7 +92,32 @@ export const purchaseProcessor: Processor = {
         return;
       }
 
-      dispatch(authInit({ becamePremium: true }));
+      // refresh user data
+      dispatch(authInit());
+
+      switch (purchase.type) {
+        case 'premium':
+          dispatch(
+            toastsAdd({
+              style: 'success',
+              messageKey: 'premium.success',
+            }),
+          );
+
+          break;
+        case 'credits':
+          dispatch(
+            toastsAdd({
+              style: 'success',
+              messageKey: 'credits.success',
+              messageParams: {
+                amount: action.payload.amount,
+              },
+            }),
+          );
+
+          break;
+      }
     } catch (err) {
       console.error(err);
 

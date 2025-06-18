@@ -4,10 +4,14 @@ import { CustomLayerDef } from '../mapDefinitions.js';
 
 export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
-export interface Purchase {
+export type Purchase =
+  | { type: 'premium' }
+  | { type: 'credits'; amount: number };
+
+export type PurchaseRecord = {
   createdAt: Date;
-  item: { type: 'premium' } | { type: 'credits'; amount: number };
-}
+  item: Purchase;
+};
 
 export interface User {
   authProviders: AuthProvider[];

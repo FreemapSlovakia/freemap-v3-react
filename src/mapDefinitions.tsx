@@ -228,7 +228,7 @@ export type IsCustomOverlayLayerDef = {
 
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
-      creditsPerTile?: number;
+      creditsPerMTile?: number;
       technology: 'tile';
     })
   | IsMapLibreLayerDef
@@ -279,7 +279,7 @@ function legacyFreemap(
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['Key' + type, false],
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   };
 }
 
@@ -304,7 +304,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 19,
     key: ['KeyX', false],
     premiumFromZoom: 19,
-    creditsPerTile: 5,
+    creditsPerMTile: 5000,
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
@@ -364,7 +364,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyZ', false],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -384,7 +384,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     ],
     key: ['KeyZ', true],
     errorTileUrl: white1x1,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -442,7 +442,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -463,7 +463,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -483,7 +483,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -503,7 +503,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -658,7 +658,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   ...(
     [
@@ -697,7 +697,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'overlay',
@@ -709,7 +709,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
-    creditsPerTile: 1,
+    creditsPerMTile: 1000,
   },
 ];
 

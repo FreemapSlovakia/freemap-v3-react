@@ -2,12 +2,12 @@ import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaGem, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { removeAds, setActiveModal } from '../actions/mainActions.js';
+import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { useMessages } from '../l10nInjector.js';
 
 type Props = { show: boolean };
 
-export function RemoveAdsModal({ show }: Props): ReactElement {
+export function PremiumActivationModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
@@ -15,15 +15,6 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
   function close() {
     dispatch(setActiveModal(null));
   }
-
-  const renderPremiumInfo = () => {
-    return (
-      <>
-        {m?.premium.commonHeader}
-        {m?.premium.commonFooter}
-      </>
-    );
-  };
 
   return (
     <Modal show={show} onHide={close}>
@@ -33,7 +24,10 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>{renderPremiumInfo()}</Modal.Body>
+      <Modal.Body>
+        {m?.premium.commonHeader}
+        {m?.premium.commonFooter}
+      </Modal.Body>
 
       <Modal.Footer>
         <Button
@@ -41,7 +35,7 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
           onClick={() => {
             dispatch(setActiveModal(null));
 
-            dispatch(removeAds());
+            dispatch(purchase({ type: 'premium' }));
           }}
         >
           <FaGem /> {m?.premium.continue}
@@ -55,4 +49,4 @@ export function RemoveAdsModal({ show }: Props): ReactElement {
   );
 }
 
-export default RemoveAdsModal;
+export default PremiumActivationModal;

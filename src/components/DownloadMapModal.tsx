@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMap } from '../hooks/useMap.js';
+import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import {
   baseLayers,
@@ -24,7 +25,7 @@ import {
   IsTileLayerDef,
   overlayLayers,
 } from '../mapDefinitions.js';
-import { CreditsAlert } from './CreditsAlert.js';
+import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
 
@@ -69,10 +70,10 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           def,
         ): def is IntegratedLayerDef<
           IsTileLayerDef & {
-            creditsPerTile: number;
+            creditsPerMTile: number;
             technology: 'tile';
           }
-        > => def.technology === 'tile' && def.creditsPerTile !== undefined,
+        > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
       ),
     [],
   );
@@ -149,6 +150,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     maxZoom,
   ]);
 
+  const cnf = useNumberFormat({
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
   return (
     <Modal show={show} onHide={close}>
       <form onSubmit={handleSubmit}>
@@ -159,6 +165,67 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body>
+          <div>
+            <p>
+              <strong>Where you can use downloaded MBTiles maps:</strong>
+            </p>
+            <ul>
+              <li>
+                <strong>Desktop:</strong>{' '}
+                <a href="https://qgis.org/" target="_blank">
+                  QGIS
+                </a>{' '}
+                (Windows/macOS/Linux),{' '}
+                <a href="https://www.maptiler.com/desktop/" target="_blank">
+                  MapTiler Desktop
+                </a>
+              </li>
+
+              <li>
+                <strong>Android:</strong>{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=menion.android.locus"
+                  target="_blank"
+                >
+                  Locus Map
+                </a>
+                ,{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=menion.android.locus.pro"
+                  target="_blank"
+                >
+                  OruxMaps
+                </a>
+                ,{' '}
+                <a href="https://www.locusmap.app/" target="_blank">
+                  Guru Maps
+                </a>
+              </li>
+
+              <li>
+                <strong>iOS:</strong>{' '}
+                <a
+                  href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
+                  target="_blank"
+                >
+                  Guru Maps
+                </a>
+                ,{' '}
+                <a
+                  href="https://apps.apple.com/app/map-plus/id123456789"
+                  target="_blank"
+                >
+                  Map Plus
+                </a>
+              </li>
+
+              <li>
+                <strong>Web:</strong> Leaflet, MapLibre GL JS or OpenLayers (via
+                a tile server such as TileServer GL)
+              </li>
+            </ul>
+          </div>
+
           <CreditsAlert />
 
           <Form.Group>
@@ -252,14 +319,21 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           {tileCount !== undefined && mapDef && (
             <>
-              <span>Tiles: {tileCount}</span>
-              <span>Credist: {tileCount * mapDef.creditsPerTile}</span>
+              <div>Tiles: {cnf.format(tileCount)}</div>
+
+              <div>
+                Price:{' '}
+                {cnf.format(
+                  Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000),
+                )}{' '}
+                credits
+              </div>
             </>
           )}
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="dark" onClick={close} type="submit">
+          <Button variant="primary" onClick={close} type="submit">
             <FaDownload /> Download
           </Button>
 

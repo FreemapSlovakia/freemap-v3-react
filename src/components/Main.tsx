@@ -128,6 +128,8 @@ const documentModalFactory = () => import('./DocumentModal.js');
 
 const aboutModalFactory = () => import('./AboutModal.js');
 
+const buyCreditModalFactory = () => import('./BuyCreditsModal.js');
+
 const supportUsModalFactory = () =>
   import('./supportUsModal/SupportUsModal.js');
 
@@ -145,7 +147,7 @@ const loginModalFactory = () => import('./LoginModal.js');
 
 const mapsModalFactory = () => import('./MapsModal.js');
 
-const removeAdsModalFactory = () => import('./RemoveAdsModal.js');
+const removeAdsModalFactory = () => import('./PremiumActivationModal.js');
 
 const galleryFilterModalFactory = () =>
   import('./gallery/GalleryFilterModal.js');
@@ -722,6 +724,11 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal show={activeModal === 'about'} factory={aboutModalFactory} />
+
+      <AsyncModal
+        show={activeModal === 'buy-credits'}
+        factory={buyCreditModalFactory}
+      />
 
       <AsyncModal
         show={activeModal === 'supportUs'}

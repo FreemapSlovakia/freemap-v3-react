@@ -31,7 +31,7 @@ import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import { AuthProviders } from './AuthProviders.js';
-import { CreditsAlert } from './CreditsAlert.js';
+import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
 

@@ -56,7 +56,7 @@ store.dispatch(
   }),
 );
 
-store.dispatch(authInit({}));
+store.dispatch(authInit());
 
 window.addEventListener('popstate', () => {
   handleLocationChange(store);

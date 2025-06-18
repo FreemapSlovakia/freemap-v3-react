@@ -5,12 +5,12 @@ import {
   authSetPurchases,
   authSetUser,
 } from '../actions/authActions.js';
-import type { Purchase, User } from '../types/auth.js';
+import type { PurchaseRecord, User } from '../types/auth.js';
 
 export interface AuthState {
   validated: boolean;
   user: User | null;
-  purchases: Purchase[] | null;
+  purchases: PurchaseRecord[] | null;
 }
 
 export const authInitialState: AuthState = {

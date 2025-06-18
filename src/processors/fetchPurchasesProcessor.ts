@@ -1,4 +1,4 @@
-import { Purchase } from 'types/auth.js';
+import { PurchaseRecord } from 'types/auth.js';
 import { StringDates } from 'types/common.js';
 import { assert } from 'typia';
 import { authSetPurchases } from '../actions/authActions.js';
@@ -16,7 +16,7 @@ export const fetchPurchasesProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const data = assert<StringDates<Purchase[]>>(await res.json());
+    const data = assert<StringDates<PurchaseRecord[]>>(await res.json());
 
     dispatch(
       authSetPurchases(

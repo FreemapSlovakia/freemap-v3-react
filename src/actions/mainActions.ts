@@ -4,6 +4,7 @@ import { DocumentKey } from '../documents/index.js';
 import { CustomLayerDef } from '../mapDefinitions.js';
 import type { LatLon } from '../types/common.js';
 import { LayerSettings } from './mapActions.js';
+import { Purchase } from 'types/auth.js';
 
 export type Tool = (typeof tools)[number];
 
@@ -118,9 +119,9 @@ export const setErrorTicketId = createAction<string | undefined>(
 
 export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
 
-export const removeAdsOnLogin = createAction('REMOVE_ADS_ON_LOGIN');
+export const purchaseOnLogin = createAction<Purchase>('PURCHASE_ON_LOGIN');
 
-export const removeAds = createAction('REMOVE_ADS');
+export const purchase = createAction<Purchase>('PURCHASE');
 
 export const deleteFeature = createAction('DELETE_FEATURE');
 
