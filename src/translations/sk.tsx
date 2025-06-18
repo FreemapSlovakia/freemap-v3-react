@@ -1213,6 +1213,7 @@ const messages: Messages = {
       '5': 'Tieňovanie terénu (SK)',
       '6': 'Tieňovanie povrchu (SK)',
       '7': 'Detailné tieňovanie povrchu (SK)',
+      '8': 'Detailné tieňovanie povrchu (CZ)',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',

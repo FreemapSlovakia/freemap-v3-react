@@ -1154,6 +1154,7 @@ const en: Messages = {
       '5': 'Terrain shading (SK)',
       '6': 'Surface shading (SK)',
       '7': 'Detailed surface shading (SK)',
+      '8': 'Detailed surface hillshading (CZ)',
       VO: 'OpenStreetMap Vector',
       VS: 'Streets Vector',
       VD: 'Dataviz Vector',

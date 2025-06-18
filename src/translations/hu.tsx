@@ -1177,6 +1177,7 @@ const hu: Messages = {
       '5': 'Terrain hillshading (SK)', // TODO translate
       '6': 'Surface hillshading (SK)', // TODO translate
       '7': 'Detailed surface hillshading (SK)', // TODO translate
+      '8': 'Detailed surface hillshading (CZ)', // TODO translate
       VO: 'OpenStreetMap Vector', // TODO translate
       VS: 'Streets Vector', // TODO translate
       VD: 'Dataviz Vector', // TODO translate
