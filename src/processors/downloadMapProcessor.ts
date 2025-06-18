@@ -1,6 +1,6 @@
-import { toastsAdd } from 'actions/toastsActions.js';
-import { httpRequest } from 'httpRequest.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const downloadMapProcessor: Processor<typeof downloadMap> = {

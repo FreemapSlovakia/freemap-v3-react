@@ -1,4 +1,4 @@
-import { pointToTile, tileToBBOX, tileToGeoJSON } from '@mapbox/tilebelt';
+import { pointToTile, tileToGeoJSON } from '@mapbox/tilebelt';
 import bbox from '@turf/bbox';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { booleanIntersects } from '@turf/boolean-intersects';
@@ -78,6 +78,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       ),
     [],
   );
+
+  console.log(JSON.stringify(mapDefs, null, 2));
 
   const [type, setType] = useState(
     mapDefs.find((mapDef) => mapDef.type === mapType)?.type ?? 'X',

@@ -147,7 +147,8 @@ const loginModalFactory = () => import('./LoginModal.js');
 
 const mapsModalFactory = () => import('./MapsModal.js');
 
-const removeAdsModalFactory = () => import('./PremiumActivationModal.js');
+const premiumActivationModalFactory = () =>
+  import('./PremiumActivationModal.js');
 
 const galleryFilterModalFactory = () =>
   import('./gallery/GalleryFilterModal.js');
@@ -763,7 +764,7 @@ export function Main(): ReactElement {
 
       <AsyncModal
         show={activeModal === 'remove-ads'}
-        factory={removeAdsModalFactory}
+        factory={premiumActivationModalFactory}
       />
 
       <AsyncModal
