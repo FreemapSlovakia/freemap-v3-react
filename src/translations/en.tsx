@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('en', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('en', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0a.s.l.';
 
 const getErrorMarkup = (ticketId?: string) => `
@@ -1569,6 +1574,14 @@ const en: Messages = {
       </>
     ),
     premiumOnly: 'Only available with full access.',
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>Your credit has been increased by {nf00.format(amount)}.</>
+      ),
+    },
   },
 
   offline: {

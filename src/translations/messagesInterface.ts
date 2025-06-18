@@ -855,6 +855,11 @@ export type Messages = {
     youArePremium: (date: string) => JSX.Element;
     premiumOnly: string;
   };
+  credits: {
+    purchase: {
+      success: ({ amount }: { amount: number }) => JSX.Element;
+    };
+  };
   offline: {
     offlineMode: string;
     cachingActive: string;

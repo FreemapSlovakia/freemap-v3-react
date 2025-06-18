@@ -1,6 +1,6 @@
 import { assert, is } from 'typia';
 import { authInit } from '../actions/authActions.js';
-import { purchase } from '../actions/mainActions.js';
+import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -95,6 +95,8 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       // refresh user data
       dispatch(authInit());
 
+      const purchase = action.payload;
+
       switch (purchase.type) {
         case 'premium':
           dispatch(
@@ -109,12 +111,14 @@ export const purchaseProcessor: Processor<typeof purchase> = {
           dispatch(
             toastsAdd({
               style: 'success',
-              messageKey: 'credits.success',
+              messageKey: 'credits.purchase.success',
               messageParams: {
-                amount: action.payload.amount,
+                amount: purchase.amount,
               },
             }),
           );
+
+          dispatch(setActiveModal(null));
 
           break;
       }

@@ -1,10 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import { basicModals, tools } from '../constants.js';
-import { DocumentKey } from '../documents/index.js';
-import { CustomLayerDef } from '../mapDefinitions.js';
+import type { DocumentKey } from '../documents/index.js';
+import type { CustomLayerDef } from '../mapDefinitions.js';
+import type { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
-import { LayerSettings } from './mapActions.js';
-import { Purchase } from 'types/auth.js';
+import type { LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];
 
@@ -208,3 +209,13 @@ export const hideInfoBar = createAction<{
   key: string;
   ts: number;
 }>('HIDE_INFO_BAR');
+
+export const downloadMap = createAction<{
+  name: string;
+  email: string;
+  type: string;
+  maxZoom: number;
+  minZoom: number;
+  scale: number;
+  boundary: Feature<Polygon | MultiPolygon>;
+}>('DOWNLOAD_MAP');

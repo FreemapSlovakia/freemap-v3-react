@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('cs', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('cs', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0n.\xa0m.';
 
 const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
@@ -1604,6 +1609,14 @@ const messages: Messages = {
       </>
     ),
     premiumOnly: 'Dostupné pouze s plným přístupem.',
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>Váš kredit byl navýšen o {nf00.format(amount)}.</>
+      ),
+    },
   },
 
   offline: {

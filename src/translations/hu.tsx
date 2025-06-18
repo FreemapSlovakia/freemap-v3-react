@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('hu', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('hu', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
 const getErrorMarkup = (ticketId?: string) => `
@@ -1611,6 +1616,14 @@ const hu: Messages = {
       </>
     ),
     premiumOnly: 'Csak teljes hozzáféréssel érhető el.', // TODO google translated
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
+      ),
+    },
   },
 
   offline: {

@@ -1,8 +1,9 @@
-import { pointToTile, tileToBBOX } from '@mapbox/tilebelt';
+import { pointToTile, tileToBBOX, tileToGeoJSON } from '@mapbox/tilebelt';
 import bbox from '@turf/bbox';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { booleanIntersects } from '@turf/boolean-intersects';
 import { polygon } from '@turf/helpers';
+import { BBox } from 'geojson';
 import {
   FormEvent,
   ReactElement,
@@ -14,7 +15,7 @@ import {
 import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../actions/mainActions.js';
+import { downloadMap, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMap } from '../hooks/useMap.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
@@ -40,13 +41,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-  }
+  const user = useAppSelector((state) => state.auth.user);
+
+  const mapType = useAppSelector((state) => state.map.mapType);
 
   const [name, setName] = useState('');
 
-  const [type, setType] = useState('X');
+  const [email, setEmail] = useState(user?.email ?? '');
 
   const [minZoom, setMinZoom] = useState('0');
 
@@ -78,6 +79,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     [],
   );
 
+  const [type, setType] = useState(
+    mapDefs.find((mapDef) => mapDef.type === mapType)?.type ?? 'X',
+  );
+
+  const [scale, setScale] = useState('1');
+
   const mapDef = useMemo(
     () => mapDefs.find((def) => def.type === type),
     [type, mapDefs],
@@ -89,6 +96,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     }
 
     setMinZoom(String(mapDef.minZoom ?? 0));
+
     setMaxZoom(String(mapDef.maxNativeZoom));
   }, [mapDef]);
 
@@ -98,24 +106,24 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const tileCount = useMemo(() => {
     if (selectedLine?.type === 'polygon' && area === 'selected') {
-      const poly = polygon([selectedLine.points.map((pt) => [pt.lon, pt.lat])]);
+      const poly = polygon([
+        [
+          ...selectedLine.points.map((pt) => [pt.lon, pt.lat]),
+          [selectedLine.points[0].lon, selectedLine.points[0].lat],
+        ],
+      ]);
 
-      const bounds = bbox(poly);
+      const bboxExtent = bbox(poly);
 
       let count = 0;
 
-      for (let zoom = Number(minZoom); zoom <= Number(maxZoom); zoom++) {
-        const from = pointToTile(bounds[0], bounds[1], zoom);
+      for (let z = Number(minZoom); z <= Number(maxZoom); z++) {
+        const minTile = pointToTile(bboxExtent[0], bboxExtent[3], z);
+        const maxTile = pointToTile(bboxExtent[2], bboxExtent[1], z);
 
-        const to = pointToTile(bounds[2], bounds[3], zoom);
-
-        for (let x = from[0]; x <= to[0]; x++) {
-          for (let y = from[1]; y <= to[1]; y++) {
-            const tileBbox = tileToBBOX([x, y, zoom]);
-
-            const tilePoly = bboxPolygon(tileBbox);
-
-            if (booleanIntersects(poly, tilePoly)) {
+        for (let x = minTile[0]; x <= maxTile[0]; x++) {
+          for (let y = minTile[1]; y <= maxTile[1]; y++) {
+            if (booleanIntersects(poly, tileToGeoJSON([x, y, z]))) {
               count++;
             }
           }
@@ -154,6 +162,45 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      dispatch(
+        downloadMap({
+          email,
+          name,
+          type,
+          maxZoom: Number(maxZoom),
+          minZoom: Number(minZoom),
+          scale: Number(scale),
+          boundary:
+            selectedLine?.type === 'polygon' && area === 'selected'
+              ? polygon([
+                  [
+                    ...selectedLine.points.map((pt) => [pt.lon, pt.lat]),
+                    [selectedLine.points[0].lon, selectedLine.points[0].lat],
+                  ],
+                ])
+              : bboxPolygon(boundingBox!.split(',').map(Number) as BBox),
+        }),
+      );
+    },
+    [
+      area,
+      boundingBox,
+      dispatch,
+      email,
+      maxZoom,
+      minZoom,
+      name,
+      scale,
+      selectedLine?.points,
+      selectedLine?.type,
+      type,
+    ],
+  );
 
   return (
     <Modal show={show} onHide={close}>
@@ -228,6 +275,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           <CreditsAlert />
 
+          <hr />
+
           <Form.Group>
             <Form.Label>Download</Form.Label>
 
@@ -249,16 +298,16 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 <FaDrawPolygon /> Area covered by selected polygon
               </Button>
             </ButtonGroup>
+          </Form.Group>
 
-            <Form.Group controlId="name" className="mb-3">
-              <Form.Label>Name</Form.Label>
+          <Form.Group controlId="name" className="mb-3">
+            <Form.Label>Name</Form.Label>
 
-              <Form.Control
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.currentTarget.value)}
-              />
-            </Form.Group>
+            <Form.Control
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.currentTarget.value)}
+            />
           </Form.Group>
 
           <Form.Group controlId="type">
@@ -267,7 +316,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Select
               className="mb-3"
               value={type}
-              onChange={(e) => setType(e.currentTarget.value)}
+              onChange={(e) => setType(e.currentTarget.value as 'X')}
             >
               {mapDefs.map((layer) => (
                 <option value={layer.type}>
@@ -307,7 +356,10 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Group controlId="scale" className="mb-3">
               <Form.Label>Scale</Form.Label>
 
-              <Form.Select>
+              <Form.Select
+                value={scale}
+                onChange={(e) => setScale(e.currentTarget.value)}
+              >
                 <option value="1">1</option>
 
                 {mapDef.extraScales.map((scale) => (
@@ -317,23 +369,42 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             </Form.Group>
           )}
 
-          {tileCount !== undefined && mapDef && (
-            <>
-              <div>Tiles: {cnf.format(tileCount)}</div>
+          <hr />
 
-              <div>
-                Price:{' '}
+          <Form.Group controlId="email" className="mb-3">
+            <Form.Label>Your email address</Form.Label>
+
+            <Form.Control
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+            />
+
+            <Form.Text className="text-muted">
+              We will use your email to send you the download link.
+            </Form.Text>
+          </Form.Group>
+
+          {tileCount !== undefined && mapDef && (
+            <div className="mb-3">
+              Tiles: <b>{cnf.format(tileCount)}</b> ｜ Total price:{' '}
+              <b>
                 {cnf.format(
                   Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000),
-                )}{' '}
-                credits
-              </div>
-            </>
+                )}
+              </b>{' '}
+              credits
+            </div>
           )}
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" onClick={close} type="submit">
+          <Button
+            variant="primary"
+            onClick={close}
+            type="submit"
+            disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+          >
             <FaDownload /> Download
           </Button>
 
