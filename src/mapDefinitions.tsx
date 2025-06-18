@@ -100,6 +100,7 @@ export const baseLayerLetters = [
   '5',
   '6',
   '7',
+  '8',
   'VO',
   'VS',
   'VD',
@@ -429,6 +430,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
@@ -448,6 +450,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 20,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
@@ -461,6 +464,27 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
   },
   {
     layer: 'base',
+    type: '8',
+    technology: 'tile',
+    url: 'https://cz-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minZoom: 0,
+    maxNativeZoom: 18,
+    icon: <GiHills />,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: '©\xa0ČÚZK',
+        url: 'https://geoportal.cuzk.cz/',
+      },
+    ],
+    key: ['KeyL', false],
+    errorTileUrl: white1x1,
+    scaleWithDpi: true,
+    premiumFromZoom: 16,
+  },
+  {
+    layer: 'base',
     type: '5',
     technology: 'tile',
     url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
@@ -468,6 +492,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
@@ -487,6 +512,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'DMP 1.0: ©\xa0ÚGKK SR',
