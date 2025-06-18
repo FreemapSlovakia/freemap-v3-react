@@ -79,7 +79,20 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     [],
   );
 
-  console.log(JSON.stringify(mapDefs, null, 2));
+  // for server
+  console.log(
+    JSON.stringify(
+      mapDefs.map((mapDef) => ({
+        type: mapDef.type,
+        url: mapDef.url,
+        extraScales: mapDef.extraScales,
+        minZoom: mapDef.minZoom,
+        maxNativeZoom: mapDef.maxNativeZoom,
+        creditsPerMTile: mapDef.creditsPerMTile,
+        attributuion: 'TODO',
+      })),
+    ),
+  );
 
   const [type, setType] = useState(
     mapDefs.find((mapDef) => mapDef.type === mapType)?.type ?? 'X',
@@ -321,7 +334,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               onChange={(e) => setType(e.currentTarget.value as 'X')}
             >
               {mapDefs.map((layer) => (
-                <option value={layer.type}>
+                <option key={layer.type} value={layer.type}>
                   {m?.mapLayers.letters[layer.type]}
                 </option>
               ))}
@@ -365,7 +378,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 <option value="1">1</option>
 
                 {mapDef.extraScales.map((scale) => (
-                  <option value={scale}>{scale}</option>
+                  <option key={scale} value={scale}>
+                    {scale}
+                  </option>
                 ))}
               </Form.Select>
             </Form.Group>
