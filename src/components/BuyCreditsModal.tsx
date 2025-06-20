@@ -14,7 +14,7 @@ export default CurrentDrawingPropertiesModal;
 export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const [credits, setCredits] = useState('100');
+  const [credits, setCredits] = useState('500');
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -32,6 +32,8 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+  const invalidCredits = !/^[1-9]\d*$/.test(credits) || Number(credits) < 500;
 
   return (
     <Modal show={show} onHide={close}>
@@ -52,8 +54,9 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
               <Form.Control
                 type="number"
                 value={credits}
-                min={1}
-                step={1}
+                min={500}
+                step={10}
+                isInvalid={invalidCredits}
                 onChange={(e) => setCredits(e.currentTarget.value)}
               />
 
@@ -65,7 +68,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={!/^[1-9]\d*$/.test(credits)}>
+          <Button type="submit" disabled={invalidCredits}>
             <FaCheck /> Buy
           </Button>
 
