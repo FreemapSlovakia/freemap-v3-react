@@ -65,6 +65,8 @@ const NLC_ATTR: AttributionDef = {
   url: 'http://www.nlcsk.org/',
 };
 
+const LLS_URL = 'https://www.geoportal.sk/sk/udaje/lls-dmr/';
+
 export const defaultMenuLayerLetters = [
   'T',
   'C',
@@ -438,7 +440,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyD', true],
@@ -459,7 +461,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyH', false],
@@ -502,7 +504,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyD', false],
@@ -523,7 +525,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'DMP 1.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyF', false],
@@ -643,7 +645,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     experimental: true,
@@ -664,7 +666,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     experimental: true,

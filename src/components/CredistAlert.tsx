@@ -31,7 +31,7 @@ export function CreditsAlert({ buy, price }: Props): ReactElement | null {
           className="m-n2 ms-2"
           onClick={() => dispatch(setActiveModal('buy-credits'))}
         >
-          <FaCoins /> Buy credit{/* t */}
+          <FaCoins /> Buy credits{/* t */}
         </Button>
       )}
     </Alert>

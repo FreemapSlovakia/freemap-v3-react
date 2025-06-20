@@ -48,6 +48,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const [name, setName] = useState('');
 
+  const [nameChanged, setNameChanged] = useState(false);
+
   const [email, setEmail] = useState(user?.email ?? '');
 
   const [minZoom, setMinZoom] = useState('0');
@@ -67,33 +69,48 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const mapDefs = useMemo(
     () =>
-      [...baseLayers, ...overlayLayers].filter(
-        (
-          def,
-        ): def is IntegratedLayerDef<
-          IsTileLayerDef & {
-            creditsPerMTile: number;
-            technology: 'tile';
-          }
-        > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
+      [baseLayers, overlayLayers].flatMap((layers) =>
+        layers
+          .filter(
+            (
+              def,
+            ): def is IntegratedLayerDef<
+              IsTileLayerDef & {
+                creditsPerMTile: number;
+                technology: 'tile';
+              }
+            > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
+          )
+          .map((layer) => ({
+            ...layer,
+            overlay: layers === overlayLayers,
+            url: layer.url.startsWith('//') ? 'http:' + layer.url : layer.url,
+          })),
       ),
     [],
   );
 
-  // for server
-  console.log(
-    JSON.stringify(
-      mapDefs.map((mapDef) => ({
-        type: mapDef.type,
-        url: mapDef.url,
-        extraScales: mapDef.extraScales,
-        minZoom: mapDef.minZoom,
-        maxNativeZoom: mapDef.maxNativeZoom,
-        creditsPerMTile: mapDef.creditsPerMTile,
-        attributuion: 'TODO',
-      })),
-    ),
-  );
+  // for server: src/downloadableMaps.ts
+  // console.log(
+  //   JSON.stringify(
+  //     mapDefs.map((mapDef) => ({
+  //       type: mapDef.type,
+  //       url: mapDef.url,
+  //       extraScales: mapDef.extraScales,
+  //       minZoom: mapDef.minZoom,
+  //       maxNativeZoom: mapDef.maxNativeZoom,
+  //       creditsPerMTile: mapDef.creditsPerMTile,
+  //       attribution: mapDef.attribution
+  //         .map(
+  //           (a) =>
+  //             a.type +
+  //             ': ' +
+  //             (a.nameKey ? (m?.mapLayers.attr[a.nameKey] ?? '') : a.name),
+  //         )
+  //         .join(', '),
+  //     })),
+  //   ),
+  // );
 
   const [type, setType] = useState(
     mapDefs.find((mapDef) => mapDef.type === mapType)?.type ?? 'X',
@@ -230,6 +247,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  useEffect(() => {
+    setName((name) =>
+      name && nameChanged ? name : (m?.mapLayers.letters[type] ?? ''),
+    );
+  }, [m, type, nameChanged]);
+
   return (
     <Modal show={show} onHide={close}>
       <form onSubmit={handleSubmit}>
@@ -305,6 +328,22 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           <hr />
 
+          <Form.Group controlId="type">
+            <Form.Label>Map</Form.Label>
+
+            <Form.Select
+              className="mb-3"
+              value={type}
+              onChange={(e) => setType(e.currentTarget.value as 'X')}
+            >
+              {mapDefs.map((layer) => (
+                <option key={layer.type} value={layer.type}>
+                  {m?.mapLayers.letters[layer.type]}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
           <Form.Group>
             <Form.Label>Download</Form.Label>
 
@@ -334,24 +373,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Control
               type="text"
               value={name}
-              onChange={(e) => setName(e.currentTarget.value)}
+              onChange={(e) => {
+                setNameChanged(true);
+                setName(e.currentTarget.value);
+              }}
             />
-          </Form.Group>
-
-          <Form.Group controlId="type">
-            <Form.Label>Map</Form.Label>
-
-            <Form.Select
-              className="mb-3"
-              value={type}
-              onChange={(e) => setType(e.currentTarget.value as 'X')}
-            >
-              {mapDefs.map((layer) => (
-                <option key={layer.type} value={layer.type}>
-                  {m?.mapLayers.letters[layer.type]}
-                </option>
-              ))}
-            </Form.Select>
           </Form.Group>
 
           {mapDef && (
@@ -399,8 +425,6 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             </Form.Group>
           )}
 
-          <hr />
-
           <Form.Group controlId="email" className="mb-3">
             <Form.Label>
               Your email address <sup>*</sup>
@@ -418,16 +442,22 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               We will use your email to send you the download link.
             </Form.Text>
           </Form.Group>
-
-          {tileCount !== undefined && mapDef && (
-            <div className="mb-3">
-              Tiles: <b>{cnf.format(tileCount)}</b> ｜ Total price:{' '}
-              <b>{cnf.format(price)}</b> credits
-            </div>
-          )}
         </Modal.Body>
 
-        <Modal.Footer>
+        <Modal.Footer className="flex-wrap">
+          {tileCount !== undefined && mapDef && (
+            <div className="w-100 text-end">
+              Tiles: <b>{cnf.format(tileCount)}</b> ｜{' '}
+              <span
+                className={
+                  price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
+                }
+              >
+                Total price: <b>{cnf.format(price)}</b> credits
+              </span>
+            </div>
+          )}
+
           <Button
             variant="primary"
             onClick={close}
