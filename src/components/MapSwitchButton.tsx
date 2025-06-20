@@ -12,6 +12,7 @@ import {
   FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
+  FaFlask,
   FaGem,
   FaRegCheckCircle,
   FaRegCircle,
@@ -412,7 +413,12 @@ export function MapSwitchButton(): ReactElement {
                 as="button"
                 eventKey="downloadMap"
               >
-                <FaDownload /> {m?.mapLayers.downloadMap}
+                <FaDownload />{' '}
+                <FaFlask
+                  title={m?.general.experimentalFunction}
+                  className="text-warning"
+                />{' '}
+                {m?.mapLayers.downloadMap}
               </Dropdown.Item>
 
               <Dropdown.Divider />

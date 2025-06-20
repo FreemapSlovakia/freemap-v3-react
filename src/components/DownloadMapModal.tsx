@@ -13,7 +13,13 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
+import {
+  FaDownload,
+  FaDrawPolygon,
+  FaEye,
+  FaFlask,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
@@ -258,7 +264,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDownload /> Download map{/* t */}
+            <FaDownload />{' '}
+            <FaFlask
+              title={m?.general.experimentalFunction}
+              className="text-warning"
+            />{' '}
+            Download map{/* t */}
           </Modal.Title>
         </Modal.Header>
 
