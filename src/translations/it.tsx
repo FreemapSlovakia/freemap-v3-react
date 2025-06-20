@@ -1596,7 +1596,9 @@ const messages: Messages = {
         </a>
         , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato
         verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>,
-        che potrai usare per rimuovere gli annunci da www.freemap.sk.
+        che puoi utilizzare per ottenere l'accesso completo a www.freemap.sk o
+        acquistare crediti, che potrai usare per rimuovere gli annunci da
+        www.freemap.sk.
       </p>
     ),
     continue: 'Continua',

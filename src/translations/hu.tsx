@@ -1603,8 +1603,8 @@ const hu: Messages = {
         </a>
         engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
         jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
-        kapsz, amit felhasználhatsz a hirdetések eltávolítására a www.freemap.sk
-        oldalon.
+        kapsz, amelyet felhasználhatsz teljes hozzáférés megszerzéséhez a
+        www.freemap.sk oldalon, vagy krediteket is vásárolhatsz.
       </p>
     ),
     continue: 'Folytatás',

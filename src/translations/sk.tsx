@@ -1637,7 +1637,7 @@ const messages: Messages = {
         </a>
         , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
         získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
-        odstránenie reklám na www.freemap.sk.
+        získanie plného prístupu na www.freemap.sk alebo nákup kreditov.
       </p>
     ),
     continue: 'Pokračovať',

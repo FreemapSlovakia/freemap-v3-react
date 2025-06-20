@@ -1562,8 +1562,8 @@ const en: Messages = {
           Rovas Connector plugin
         </a>
         , which can create reports for you. After a report is verified by two
-        users, you will receive community currency <i>Chron</i>, which you can
-        use to remove ads from www.freemap.sk.
+        users, you will receive the community currency <i>Chron</i>, which you
+        can use to obtain full access to www.freemap.sk or purchase credits.
       </p>
     ),
     continue: 'Continue',

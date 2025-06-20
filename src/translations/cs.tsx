@@ -1597,8 +1597,8 @@ const messages: Messages = {
           doplněk Rovas Connector
         </a>
         , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli získáte
-        odměnu v komunitní měně <i>chron</i> a tu můžete použít k odstranění
-        reklam na www.freemap.sk.
+        odměnu v komunitní měně <i>chron</i>, kterou můžete použít k získání
+        plného přístupu na www.freemap.sk nebo k nákupu kreditů.
       </p>
     ),
     continue: 'Pokračovat',
