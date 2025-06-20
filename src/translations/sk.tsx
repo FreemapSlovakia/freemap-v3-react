@@ -108,7 +108,7 @@ const messages: Messages = {
     ),
     unauthenticatedError:
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
-    areYouSure: 'Ste si istí?',
+    areYouSure: 'Ste si istý/á?',
     export: 'Exportovať',
     success: 'Hotovo!',
     expiration: 'Exspirácia',
