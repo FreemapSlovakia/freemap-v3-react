@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('cs', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('cs', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0n.\xa0m.';
 
 const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
@@ -1203,6 +1208,7 @@ const messages: Messages = {
         />
       ),
     },
+    downloadMap: 'Stáhnout mapu',
   },
 
   elevationChart: {
@@ -1552,7 +1558,7 @@ const messages: Messages = {
           <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
         <p className="mb-1">
-          Za <b>5 hodin</b> vaší dobrovolnické* práce nebo <b>5 €</b> získáte na
+          Za <b>8 hodin</b> vaší dobrovolnické* práce nebo <b>8 €</b> získáte na
           rok:
         </p>
         <ul>
@@ -1591,15 +1597,27 @@ const messages: Messages = {
           doplněk Rovas Connector
         </a>
         , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli získáte
-        odměnu v komunitní měně <i>chron</i> a tu můžete použít k odstranění
-        reklam na www.freemap.sk.
+        odměnu v komunitní měně <i>chron</i>, kterou můžete použít k získání
+        plného přístupu na www.freemap.sk nebo k nákupu kreditů.
       </p>
     ),
     continue: 'Pokračovat',
     success: 'Gratulujeme, získali jste přístup ke všem funkcím!',
     becomePremium: 'Získat plný přístup',
-    youArePremium: 'Máte přístup ke všem funkcím',
+    youArePremium: (date) => (
+      <>
+        Máte přístup ke všem funkcím do <b>{date}</b>.
+      </>
+    ),
     premiumOnly: 'Dostupné pouze s plným přístupem.',
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>Váš kredit byl navýšen o {nf00.format(amount)}.</>
+      ),
+    },
   },
 
   offline: {

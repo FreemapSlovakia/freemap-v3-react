@@ -56,6 +56,9 @@ importers:
       '@turf/boolean-contains':
         specifier: ^7.2.0
         version: 7.2.0
+      '@turf/boolean-intersects':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@turf/buffer':
         specifier: ^7.2.0
         version: 7.2.0
@@ -214,8 +217,8 @@ importers:
         specifier: ^7946.0.16
         version: 7946.0.16
       '@types/google.accounts':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.17
+        version: 0.0.17
       '@types/google.picker':
         specifier: ^0.0.50
         version: 0.0.50
@@ -225,9 +228,6 @@ importers:
       '@types/mapbox__geojson-area':
         specifier: ^0.2.6
         version: 0.2.6
-      '@types/mapbox__tilebelt':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/rbush':
         specifier: ^4.0.0
         version: 4.0.0
@@ -1447,6 +1447,12 @@ packages:
   '@turf/boolean-contains@7.2.0':
     resolution: {integrity: sha512-dgRQm4uVO5XuLee4PLVH7CFQZKdefUBMIXTPITm2oRIDmPLJKHDOFKQTNkGJ73mDKKBR2lmt6eVH3br6OYrEYg==}
 
+  '@turf/boolean-disjoint@7.2.0':
+    resolution: {integrity: sha512-xdz+pYKkLMuqkNeJ6EF/3OdAiJdiHhcHCV0ykX33NIuALKIEpKik0+NdxxNsZsivOW6keKwr61SI+gcVtHYcnQ==}
+
+  '@turf/boolean-intersects@7.2.0':
+    resolution: {integrity: sha512-GLRyLQgK3F14drkK5Qi9Mv7Z9VT1bgQUd9a3DB3DACTZWDSwfh8YZUFn/HBwRkK8dDdgNEXaavggQHcPi1k9ow==}
+
   '@turf/boolean-point-in-polygon@7.2.0':
     resolution: {integrity: sha512-lvEOjxeXIp+wPXgl9kJA97dqzMfNexjqHou+XHVcfxQgolctoJiRYmcVCWGpiZ9CBf/CJha1KmD1qQoRIsjLaA==}
 
@@ -1486,8 +1492,14 @@ packages:
   '@turf/length@7.2.0':
     resolution: {integrity: sha512-LBmYN+iCgVtWNLsckVnpQIJENqIIPO63mogazMp23lrDGfWXu07zZQ9ZinJVO5xYurXNhc/QI2xxoqt2Xw90Ig==}
 
+  '@turf/line-intersect@7.2.0':
+    resolution: {integrity: sha512-GhCJVEkc8EmggNi85EuVLoXF5T5jNVxmhIetwppiVyJzMrwkYAkZSYB3IBFYGUUB9qiNFnTwungVSsBV/S8ZiA==}
+
   '@turf/meta@7.2.0':
     resolution: {integrity: sha512-igzTdHsQc8TV1RhPuOLVo74Px/hyPrVgVOTgjWQZzt3J9BVseCdpfY/0cJBdlSRI4S/yTmmHl7gAqjhpYH5Yaw==}
+
+  '@turf/polygon-to-line@7.2.0':
+    resolution: {integrity: sha512-9jeTN3LiJ933I5sd4K0kwkcivOYXXm1emk0dHorwXeSFSHF+nlYesEW3Hd889wb9lZd7/SVLMUeX/h39mX+vCA==}
 
   '@turf/projection@7.2.0':
     resolution: {integrity: sha512-/qke5vJScv8Mu7a+fU3RSChBRijE6EVuFHU3RYihMuYm04Vw8dBMIs0enEpoq0ke/IjSbleIrGQNZIMRX9EwZQ==}
@@ -1567,8 +1579,8 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
-  '@types/google.accounts@0.0.16':
-    resolution: {integrity: sha512-llwLXm6qVFMrY31VNyGe87pyRU36J5/Z+NF1+hMraPjxYPdjjw953JozeG+/+tbjzlFkmd/gIzXAK7hyJ8ukqA==}
+  '@types/google.accounts@0.0.17':
+    resolution: {integrity: sha512-ZDOmep4Zslca9pFJ7oXgg/DdirGU+tPuWlXRGfIFNqMtBvkEgzktY292O3V03Ul6AA7ye4CDVZlMnd9m1FeIeg==}
 
   '@types/google.picker@0.0.50':
     resolution: {integrity: sha512-0gY/HaMFjzmX5yYm+wZLEIZIn6x6hrn9Cn2ERp4E6T7v5X4s5nqcjfr62KRILEy+YEaj5isxSbfTYcEe1fX5hQ==}
@@ -1602,9 +1614,6 @@ packages:
 
   '@types/mapbox__point-geometry@0.1.4':
     resolution: {integrity: sha512-mUWlSxAmYLfwnRBmgYV86tgYmMIICX4kza8YnE/eIlywGe2XoOxlpVnXWwir92xRLjwyarqwpu2EJKD2pk0IUA==}
-
-  '@types/mapbox__tilebelt@1.0.4':
-    resolution: {integrity: sha512-0bFeefnaxWLeQOf+7srPLYqOGu5LqMq+KaZp3r/y8mxhIBHbOD8GcEf8EDxxgLTlo6LBZV/9obQf7nCTL0o4Ew==}
 
   '@types/mapbox__vector-tile@1.3.4':
     resolution: {integrity: sha512-bpd8dRn9pr6xKvuEBQup8pwQfD4VUyqO/2deGjfpe6AwC8YRlyEipvefyRJUSiCJTZuCb8Pl1ciVV5ekqJ96Bg==}
@@ -4599,6 +4608,9 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
+  sweepline-intersections@1.5.0:
+    resolution: {integrity: sha512-AoVmx72QHpKtItPu72TzFL+kcYjd67BPLDoR0LarIk+xyaRg+pDTMFXndIEvZf9xEKnJv6JdhgRMnocoG0D3AQ==}
+
   synckit@0.11.8:
     resolution: {integrity: sha512-+XZ+r1XGIJGeQk3VvXhT6xx/VpbHsRzsTkGgF6E5RX9TTXD0118l87puaEBZ566FhqblC6U0d4XnubznJDm30A==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -4657,6 +4669,9 @@ packages:
   tinyglobby@0.2.14:
     resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
     engines: {node: '>=12.0.0'}
+
+  tinyqueue@2.0.3:
+    resolution: {integrity: sha512-ppJZNDuKGgxzkHihX8v9v9G5f+18gzaTfrukGrq6ueg0lmH4nqVnA2IPG0AEH3jKEk2GRJCUhDoqpoiw3PHLBA==}
 
   tinyqueue@3.0.0:
     resolution: {integrity: sha512-gRa9gwYU3ECmQYv3lslts5hxuIa90veaEcxDYuu3QGOIAEM2mOZkVHp48ANJuu1CURtRdHKUBY5Lm1tHV+sD4g==}
@@ -6231,6 +6246,24 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
+  '@turf/boolean-disjoint@7.2.0':
+    dependencies:
+      '@turf/boolean-point-in-polygon': 7.2.0
+      '@turf/helpers': 7.2.0
+      '@turf/line-intersect': 7.2.0
+      '@turf/meta': 7.2.0
+      '@turf/polygon-to-line': 7.2.0
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/boolean-intersects@7.2.0':
+    dependencies:
+      '@turf/boolean-disjoint': 7.2.0
+      '@turf/helpers': 7.2.0
+      '@turf/meta': 7.2.0
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
   '@turf/boolean-point-in-polygon@7.2.0':
     dependencies:
       '@turf/helpers': 7.2.0
@@ -6321,10 +6354,24 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
+  '@turf/line-intersect@7.2.0':
+    dependencies:
+      '@turf/helpers': 7.2.0
+      '@types/geojson': 7946.0.16
+      sweepline-intersections: 1.5.0
+      tslib: 2.8.1
+
   '@turf/meta@7.2.0':
     dependencies:
       '@turf/helpers': 7.2.0
       '@types/geojson': 7946.0.16
+
+  '@turf/polygon-to-line@7.2.0':
+    dependencies:
+      '@turf/helpers': 7.2.0
+      '@turf/invariant': 7.2.0
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
 
   '@turf/projection@7.2.0':
     dependencies:
@@ -6436,7 +6483,7 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
-  '@types/google.accounts@0.0.16': {}
+  '@types/google.accounts@0.0.17': {}
 
   '@types/google.picker@0.0.50': {}
 
@@ -6469,10 +6516,6 @@ snapshots:
       '@types/geojson': 7946.0.16
 
   '@types/mapbox__point-geometry@0.1.4': {}
-
-  '@types/mapbox__tilebelt@1.0.4':
-    dependencies:
-      '@types/geojson': 7946.0.16
 
   '@types/mapbox__vector-tile@1.3.4':
     dependencies:
@@ -9760,6 +9803,10 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
 
+  sweepline-intersections@1.5.0:
+    dependencies:
+      tinyqueue: 2.0.3
+
   synckit@0.11.8:
     dependencies:
       '@pkgr/core': 0.2.4
@@ -9809,6 +9856,8 @@ snapshots:
     dependencies:
       fdir: 6.4.5(picomatch@4.0.2)
       picomatch: 4.0.2
+
+  tinyqueue@2.0.3: {}
 
   tinyqueue@3.0.0: {}
 

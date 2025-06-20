@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('en', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('en', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0a.s.l.';
 
 const getErrorMarkup = (ticketId?: string) => `
@@ -1176,6 +1181,7 @@ const en: Messages = {
         />
       ),
     },
+    downloadMap: 'Download map',
   },
 
   elevationChart: {
@@ -1516,7 +1522,7 @@ const en: Messages = {
           <strong>Support the volunteers who create this map!</strong>
         </p>
         <p className="mb-1">
-          For <b>5 hours</b> of your volunteer* work or <b>5 €</b> you will have
+          For <b>8 hours</b> of your volunteer* work or <b>8 €</b> you will have
           a year of access with:
         </p>
         <ul>
@@ -1556,15 +1562,27 @@ const en: Messages = {
           Rovas Connector plugin
         </a>
         , which can create reports for you. After a report is verified by two
-        users, you will receive community currency <i>Chron</i>, which you can
-        use to remove ads from www.freemap.sk.
+        users, you will receive the community currency <i>Chron</i>, which you
+        can use to obtain full access to www.freemap.sk or purchase credits.
       </p>
     ),
     continue: 'Continue',
     success: 'Congratulations, you have now acces to all features!',
     becomePremium: 'Get full access',
-    youArePremium: 'You have access to all features',
+    youArePremium: (date) => (
+      <>
+        You have access to all features until <b>{date}</b>
+      </>
+    ),
     premiumOnly: 'Only available with full access.',
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>Your credit has been increased by {nf00.format(amount)}.</>
+      ),
+    },
   },
 
   offline: {

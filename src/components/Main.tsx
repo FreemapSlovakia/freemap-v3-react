@@ -52,6 +52,7 @@ import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
 import { useMessages } from '../l10nInjector.js';
 import { setMapLeafletElement } from '../leafletElementHolder.js';
+import { isPremium } from '../premium.js';
 import {
   drawingLinePolys,
   selectingModeSelector,
@@ -113,6 +114,8 @@ const trackingModalFactory = () => import('./tracking/TrackingModal.js');
 
 const accountModalFactory = () => import('./AccountModal.js');
 
+const downloadMapModalFactory = () => import('./DownloadMapModal.js');
+
 const mapSettingsModalFactory = () => import('./MapSettingsModal.js');
 
 const embedMapModalFactory = () => import('./EmbedMapModal.js');
@@ -124,6 +127,8 @@ const exportMapModalFactory = () => import('./ExportMapModal.js');
 const documentModalFactory = () => import('./DocumentModal.js');
 
 const aboutModalFactory = () => import('./AboutModal.js');
+
+const buyCreditModalFactory = () => import('./BuyCreditsModal.js');
 
 const supportUsModalFactory = () =>
   import('./supportUsModal/SupportUsModal.js');
@@ -142,7 +147,8 @@ const loginModalFactory = () => import('./LoginModal.js');
 
 const mapsModalFactory = () => import('./MapsModal.js');
 
-const removeAdsModalFactory = () => import('./RemoveAdsModal.js');
+const premiumActivationModalFactory = () =>
+  import('./PremiumActivationModal.js');
 
 const galleryFilterModalFactory = () =>
   import('./gallery/GalleryFilterModal.js');
@@ -189,7 +195,7 @@ export function Main(): ReactElement {
       !process.env['PREVENT_ADS'] &&
       !window.isRobot &&
       !window.fmEmbedded &&
-      !state.auth.user?.isPremium,
+      !isPremium(state.auth.user),
   );
 
   const showElevationChart = useAppSelector(
@@ -689,6 +695,11 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
+        show={activeModal === 'download-map'}
+        factory={downloadMapModalFactory}
+      />
+
+      <AsyncModal
         show={activeModal === 'mapSettings'}
         factory={mapSettingsModalFactory}
       />
@@ -714,6 +725,11 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal show={activeModal === 'about'} factory={aboutModalFactory} />
+
+      <AsyncModal
+        show={activeModal === 'buy-credits'}
+        factory={buyCreditModalFactory}
+      />
 
       <AsyncModal
         show={activeModal === 'supportUs'}
@@ -748,7 +764,7 @@ export function Main(): ReactElement {
 
       <AsyncModal
         show={activeModal === 'remove-ads'}
-        factory={removeAdsModalFactory}
+        factory={premiumActivationModalFactory}
       />
 
       <AsyncModal

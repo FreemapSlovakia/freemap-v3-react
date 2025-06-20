@@ -4,29 +4,33 @@ import { CustomLayerDef } from '../mapDefinitions.js';
 
 export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
-export interface Purchase {
+export type Purchase =
+  | { type: 'premium' }
+  | { type: 'credits'; amount: number };
+
+export type PurchaseRecord = {
   createdAt: Date;
-  article: string;
-  expireAt: Date;
-}
+  item: Purchase;
+};
 
 export interface User {
-  name: string;
-  email: string | null;
-  sendGalleryEmails: boolean;
-  id: number;
+  authProviders: AuthProvider[];
   authToken: string;
+  credits: number;
+  email: string | null;
+  id: number;
   isAdmin: boolean;
+  language?: string | null;
+  lat?: number | null;
+  lon?: number | null;
+  name: string;
+  premiumExpiration: Date | null;
+  sendGalleryEmails: boolean;
   settings?: {
     layersSettings?: Record<string, LayerSettings>;
     overlayPaneOpacity?: number;
     customLayers?: CustomLayerDef[];
   };
-  lat?: number | null;
-  lon?: number | null;
-  language?: string | null;
-  isPremium: boolean;
-  authProviders: AuthProvider[];
 }
 
 export type LoginResponse = {

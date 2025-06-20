@@ -22,10 +22,10 @@ export function LoginModal({ show }: Props): ReactElement {
     (state) => state.main.cookieConsentResult,
   );
 
-  const removeAds = useAppSelector((state) => state.main.removeAdsOnLogin);
+  const purchaseOnLogin = useAppSelector((state) => state.main.purchaseOnLogin);
 
   const renderPremiumInfo = () =>
-    removeAds ? (
+    purchaseOnLogin ? (
       <Alert variant="primary">
         {m?.premium.commonHeader}
         {m?.premium.stepsForAnonymous}

@@ -22,6 +22,11 @@ const nf33 = new Intl.NumberFormat('sk', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('sk', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0n.\xa0m.';
 
 const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
@@ -1235,6 +1240,7 @@ const messages: Messages = {
         />
       ),
     },
+    downloadMap: 'Stiahnúť mapu',
   },
 
   elevationChart: {
@@ -1585,7 +1591,7 @@ const messages: Messages = {
           <strong>Podporte dobrovoľníkov vytvárajúcich túto mapu!</strong>
         </p>
         <p className="mb-1">
-          Za <b>5 hodín</b> vašej dobrovoľníckej práce* alebo <b>5 €</b> získate
+          Za <b>8 hodín</b> vašej dobrovoľníckej práce* alebo <b>8 €</b> získate
           na rok:
         </p>
         <ul>
@@ -1631,14 +1637,26 @@ const messages: Messages = {
         </a>
         , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
         získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
-        odstránenie reklám na www.freemap.sk.
+        získanie plného prístupu na www.freemap.sk alebo nákup kreditov.
       </p>
     ),
     continue: 'Pokračovať',
     success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
     becomePremium: 'Získať plný prístup',
-    youArePremium: 'Máte prístup k všetkým funkciám',
+    youArePremium: (date) => (
+      <>
+        Máte prístup k všetkým funkciám do <b>{date}</b>.
+      </>
+    ),
     premiumOnly: 'Dostupné len s plným prístupom.',
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>Váš kredit bol navýšený o {nf00.format(amount)}.</>
+      ),
+    },
   },
 
   offline: {

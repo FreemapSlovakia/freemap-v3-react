@@ -5,12 +5,14 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Accordion, Button, Form, Modal, Table } from 'react-bootstrap';
+import { Accordion, Alert, Button, Form, Modal, Table } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaCheck,
   FaEraser,
+  FaExclamationTriangle,
   FaGem,
+  FaShoppingBasket,
   FaSignOutAlt,
   FaTimes,
   FaUser,
@@ -20,6 +22,7 @@ import { useDispatch } from 'react-redux';
 import {
   authDeleteAccount,
   authFetchPurchases,
+  authInit,
   authStartLogout,
 } from '../actions/authActions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
@@ -29,6 +32,7 @@ import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import { AuthProviders } from './AuthProviders.js';
+import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
 
@@ -41,14 +45,16 @@ export function AccountModal({ show }: Props): ReactElement | null {
     dispatch(authFetchPurchases());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(authInit());
+  }, [dispatch]);
+
   const purchasesUnsorted = useAppSelector((state) => state.auth.purchases);
 
   const purchases = useMemo(
     () =>
       [...(purchasesUnsorted ?? [])].sort(
-        (a, b) =>
-          b.expireAt.getTime() - a.expireAt.getTime() ||
-          b.createdAt.getTime() - a.createdAt.getTime(),
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
       ),
     [purchasesUnsorted],
   );
@@ -124,47 +130,80 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body className="bg-light">
-          <Accordion defaultActiveKey="personal">
-            {!becomePremium && (
-              <Accordion.Item eventKey="paylents">
-                <Accordion.Header>
-                  <span>
-                    <FaGem /> {m?.premium.youArePremium}
-                  </span>
-                </Accordion.Header>
-                <Accordion.Body>
-                  {!purchases ? (
-                    '…'
-                  ) : (
-                    <Table>
-                      <thead>
-                        <tr>
-                          <th>{m?.general.createdAt}</th>
-                          <th>{m?.general.expiration}</th>
-                          <th>{m?.tracking.accessToken.note}</th>
+          <Accordion>
+            <Accordion.Item eventKey="payments">
+              <Accordion.Header>
+                <span>
+                  <FaShoppingBasket /> Purchases{/* t */}
+                </span>
+              </Accordion.Header>
+
+              <Accordion.Body>
+                {becomePremium ? (
+                  <Alert
+                    variant="warning"
+                    className="d-flex justify-content-between"
+                  >
+                    <span>
+                      <FaExclamationTriangle />{' '}
+                      {user.premiumExpiration ? (
+                        <>
+                          Your premium access expired at{' '}
+                          <b>{dateFormat.format(user.premiumExpiration!)}</b>
+                        </>
+                      ) : (
+                        <>You are not premium yet.{/* t */}</>
+                      )}
+                    </span>
+
+                    <Button onClick={becomePremium} className="m-n2 ms-2">
+                      <FaGem /> {m?.premium.becomePremium}
+                    </Button>
+                  </Alert>
+                ) : (
+                  <Alert variant="success">
+                    <FaGem />{' '}
+                    {m?.premium.youArePremium(
+                      dateFormat.format(user.premiumExpiration!),
+                    )}
+                  </Alert>
+                )}
+
+                <CreditsAlert />
+
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Date{/* t */}</th>
+                      <th>Item{/* t */}</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {!purchases ? (
+                      <tr key="loading">
+                        <td colSpan={2} className="text-center">
+                          {m?.general.loading}
+                        </td>
+                      </tr>
+                    ) : purchases.length === 0 ? (
+                      <tr key="loading">
+                        <td colSpan={2} className="text-center">
+                          No purchases{/* t */}
+                        </td>
+                      </tr>
+                    ) : (
+                      [...purchases].sort().map((purchase, i) => (
+                        <tr key={i}>
+                          <td>{dateFormat.format(purchase.createdAt)}</td>
+                          <td>{JSON.stringify(purchase.item)}</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {[...purchases].sort().map((purchase, i) => (
-                          <tr
-                            key={i}
-                            className={
-                              purchase.expireAt.getTime() > Date.now()
-                                ? 'table-success'
-                                : 'table-danger'
-                            }
-                          >
-                            <td>{dateFormat.format(purchase.createdAt)}</td>
-                            <td>{dateFormat.format(purchase.expireAt)}</td>
-                            <td>{purchase.article}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  )}
-                </Accordion.Body>
-              </Accordion.Item>
-            )}
+                      ))
+                    )}
+                  </tbody>
+                </Table>
+              </Accordion.Body>
+            </Accordion.Item>
 
             <Accordion.Item eventKey="personal">
               <Accordion.Header>
@@ -172,6 +211,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   <FaAddressCard /> {m?.settings.account.personalInfo}
                 </span>
               </Accordion.Header>
+
               <Accordion.Body>
                 <Form.Group className="mb-3">
                   <Form.Label>{m?.settings.account.name}</Form.Label>
@@ -216,18 +256,17 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   <FaUserCircle /> {m?.settings.account.authProviders}
                 </span>
               </Accordion.Header>
+
               <Accordion.Body>
                 {user.authProviders.length < 4 && (
                   <>
-                    <hr />
-
                     <p>{m?.auth.connect.label}</p>
 
                     <AuthProviders mode="connect" />
+
+                    <hr />
                   </>
                 )}
-
-                <hr />
 
                 <p>{m?.auth.disconnect.label}</p>
 

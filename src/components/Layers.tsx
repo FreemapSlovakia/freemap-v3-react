@@ -10,6 +10,7 @@ import {
   LayerDef,
   overlayLayers,
 } from '../mapDefinitions.js';
+import { isPremium } from '../premium.js';
 import { AsyncComponent } from './AsyncComponent.js';
 
 const galleryLayerFactory = () =>
@@ -71,7 +72,7 @@ export function Layers(): ReactElement | null {
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
     let effPremiumFromZoom =
-      !('premiumFromZoom' in layerDef) || user?.isPremium
+      !('premiumFromZoom' in layerDef) || isPremium(user)
         ? undefined
         : layerDef.premiumFromZoom;
 

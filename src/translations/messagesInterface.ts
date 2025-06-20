@@ -692,6 +692,7 @@ export type Messages = {
       photos: string;
     };
     attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
+    downloadMap: string;
   };
   elevationChart: {
     distance: string;
@@ -851,8 +852,13 @@ export type Messages = {
     continue: string;
     success: string;
     becomePremium: string;
-    youArePremium: string;
+    youArePremium: (date: string) => JSX.Element;
     premiumOnly: string;
+  };
+  credits: {
+    purchase: {
+      success: ({ amount }: { amount: number }) => JSX.Element;
+    };
   };
   offline: {
     offlineMode: string;

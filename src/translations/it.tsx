@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('it', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('it', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0a.s.l.';
 
 const getErrorMarkup = (ticketId?: string) => `
@@ -1201,6 +1206,7 @@ const messages: Messages = {
         />
       ),
     },
+    downloadMap: 'Scarica mappa',
   },
 
   elevationChart: {
@@ -1548,7 +1554,7 @@ const messages: Messages = {
           <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
+          Con <b>8 ore</b> di lavoro volontario oppure <b>8 €</b> otterrai un
           anno di accesso con:
         </p>
         <ul>
@@ -1590,14 +1596,28 @@ const messages: Messages = {
         </a>
         , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato
         verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>,
-        che potrai usare per rimuovere gli annunci da www.freemap.sk.
+        che puoi utilizzare per ottenere l'accesso completo a www.freemap.sk o
+        acquistare crediti, che potrai usare per rimuovere gli annunci da
+        www.freemap.sk.
       </p>
     ),
     continue: 'Continua',
     success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
     becomePremium: 'Accesso completo',
-    youArePremium: 'Hai accesso a tutte le funzionalità',
+    youArePremium: (date) => (
+      <>
+        Hai accesso a tutte le funzionalità <b>{date}</b>
+      </>
+    ), // TODO fix translation
     premiumOnly: 'Disponibile solo con accesso completo.', // TODO google translated
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>Il tuo credito è stato aumentato di {nf00.format(amount)}.</>
+      ),
+    },
   },
 
   offline: {

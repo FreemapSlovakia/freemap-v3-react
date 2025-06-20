@@ -20,6 +20,11 @@ const nf33 = new Intl.NumberFormat('hu', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('hu', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
 const getErrorMarkup = (ticketId?: string) => `
@@ -1200,6 +1205,7 @@ const hu: Messages = {
         />
       ),
     },
+    downloadMap: 'Térkép letöltése',
   },
 
   elevationChart: {
@@ -1556,7 +1562,7 @@ const hu: Messages = {
           </strong>
         </p>
         <p className="mb-1">
-          <b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap egy
+          <b>8 óra</b> önkéntes munkáért* vagy <b>8 €</b> összegért kap egy
           évre:
         </p>
         <ul>
@@ -1597,15 +1603,28 @@ const hu: Messages = {
         </a>
         engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
         jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
-        kapsz, amit felhasználhatsz a hirdetések eltávolítására a www.freemap.sk
-        oldalon.
+        kapsz, amelyet felhasználhatsz teljes hozzáférés megszerzéséhez a
+        www.freemap.sk oldalon, vagy krediteket is vásárolhatsz.
       </p>
     ),
     continue: 'Folytatás',
     success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
     becomePremium: 'Teljes hozzáférés',
-    youArePremium: 'Ön hozzáfér minden funkcióhoz',
+    // TODO fix translation
+    youArePremium: (date) => (
+      <>
+        Ön hozzáfér minden funkcióhoz <b>{date}</b>.
+      </>
+    ),
     premiumOnly: 'Csak teljes hozzáféréssel érhető el.', // TODO google translated
+  },
+
+  credits: {
+    purchase: {
+      success: ({ amount }) => (
+        <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
+      ),
+    },
   },
 
   offline: {

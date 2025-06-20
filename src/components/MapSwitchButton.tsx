@@ -8,9 +8,11 @@ import {
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import {
   FaCog,
+  FaDownload,
   FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
+  FaFlask,
   FaGem,
   FaRegCheckCircle,
   FaRegCircle,
@@ -35,12 +37,13 @@ import {
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
   HasScaleWithDpi,
+  IntegratedLayerLetters,
   IsCommonLayerDef,
   IsIntegratedLayerDef,
-  IntegratedLayerLetters,
   overlayLayers,
   OverlayLetters,
 } from '../mapDefinitions.js';
+import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
@@ -69,7 +72,7 @@ export function MapSwitchButton(): ReactElement {
 
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
-  const isPremium = useAppSelector((state) => !!state.auth.user?.isPremium);
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const becomePremium = useBecomePremium();
 
@@ -116,6 +119,10 @@ export function MapSwitchButton(): ReactElement {
         setShow(false);
 
         dispatch(setActiveModal('mapSettings'));
+      } else if (selection === 'downloadMap') {
+        setShow(false);
+
+        dispatch(setActiveModal('download-map'));
       } else if (selection.startsWith('b')) {
         const base = selection.slice(1);
 
@@ -230,13 +237,13 @@ export function MapSwitchButton(): ReactElement {
           />
         )}
 
-        {!isPremium &&
+        {!premium &&
         premiumFromZoom !== undefined &&
         zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
           <FaGem
             className="ms-1 text-warning"
-            title={isPremium ? undefined : m?.premium.premiumOnly}
-            onClick={isPremium ? undefined : becomePremium}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClick={premium ? undefined : becomePremium}
           />
         ) : null}
       </>
@@ -285,9 +292,9 @@ export function MapSwitchButton(): ReactElement {
         {premiumFromZoom !== undefined &&
         zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
           <FaGem
-            className={'ms-1 ' + (isPremium ? 'text-success' : 'text-warning')}
-            title={isPremium ? undefined : m?.premium.premiumOnly}
-            onClickCapture={isPremium ? undefined : becomePremium}
+            className={'ms-1 ' + (premium ? 'text-success' : 'text-warning')}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClickCapture={premium ? undefined : becomePremium}
           />
         ) : null}
 
@@ -399,6 +406,19 @@ export function MapSwitchButton(): ReactElement {
                 eventKey="mapSettings"
               >
                 <FaCog /> {m?.mapLayers.settings}
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                key="downloadMap"
+                as="button"
+                eventKey="downloadMap"
+              >
+                <FaDownload />{' '}
+                <FaFlask
+                  title={m?.general.experimentalFunction}
+                  className="text-warning"
+                />{' '}
+                {m?.mapLayers.downloadMap}
               </Dropdown.Item>
 
               <Dropdown.Divider />

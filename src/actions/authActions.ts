@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { Action } from 'redux';
-import type { AuthProvider, Purchase, User } from '../types/auth.js';
+import type { AuthProvider, PurchaseRecord, User } from '../types/auth.js';
 
 export const authWithOsm = createAction<{
   connect: boolean;
@@ -41,14 +41,12 @@ export const authStartLogout = createAction('AUTH_START_LOGOUT');
 
 export const authSetUser = createAction<User | null>('AUTH_SET_USER');
 
-export const authInit = createAction<{ becamePremium?: boolean }>('AUTH_INIT');
-
-export const authSetPremium = createAction('AUTH_SET_PREMIUM');
+export const authInit = createAction('AUTH_INIT');
 
 export const authDeleteAccount = createAction('AUTH_DELETE_ACCOUNT');
 
 export const authFetchPurchases = createAction('AUTH_FETCH_PURCHASES');
 
-export const authSetPurchases = createAction<Purchase[] | null>(
+export const authSetPurchases = createAction<PurchaseRecord[] | null>(
   'AUTH_SET_PURCHASES',
 );

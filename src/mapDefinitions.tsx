@@ -65,6 +65,8 @@ const NLC_ATTR: AttributionDef = {
   url: 'http://www.nlcsk.org/',
 };
 
+const LLS_URL = 'https://www.geoportal.sk/sk/udaje/lls-dmr/';
+
 export const defaultMenuLayerLetters = [
   'T',
   'C',
@@ -202,7 +204,6 @@ export type IsTileLayerDef = HasUrl &
   HasMaxNativeZoom &
   HasZIndex &
   HasScaleWithDpi & {
-    technology: 'tile';
     subdomains?: string | string[];
     tms?: boolean;
     extraScales?: number[];
@@ -229,36 +230,37 @@ export type IsCustomOverlayLayerDef = {
 };
 
 export type IsAllTechnologiesLayerDef =
-  | IsTileLayerDef
+  | (IsTileLayerDef & {
+      creditsPerMTile?: number;
+      technology: 'tile';
+    })
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
   | IsWikipediaLayerDef;
 
-export type CustomBaseLayerDef = Omit<IsTileLayerDef, 'technology'> &
+export type CustomBaseLayerDef = IsTileLayerDef &
   IsCustomBaseLayerDef &
   IsCommonLayerDef;
 
-export type CustomOverlayLayerDef = Omit<IsTileLayerDef, 'technology'> &
+export type CustomOverlayLayerDef = IsTileLayerDef &
   IsCustomOverlayLayerDef &
   IsCommonLayerDef;
 
 export type CustomLayerDef = CustomBaseLayerDef | CustomOverlayLayerDef;
 
-export type IntegratedBaseLayerDef = IsAllTechnologiesLayerDef &
-  IsCommonLayerDef &
-  IsIntegratedLayerDef &
-  IsIntegratedBaseLayerDef;
+export type IntegratedBaseLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedBaseLayerDef;
 
-export type IntegratedOverlayLayerDef = IsAllTechnologiesLayerDef &
-  IsCommonLayerDef &
-  IsIntegratedLayerDef &
-  IsIntegratedOverlayLayerDef;
+export type IntegratedOverlayLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedOverlayLayerDef;
 
-export type IntegratedLayerDef =
-  | IntegratedBaseLayerDef
-  | IntegratedOverlayLayerDef;
+export type IntegratedLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = IntegratedBaseLayerDef<T> | IntegratedOverlayLayerDef<T>;
 
 export type BaseLayerDef = IntegratedBaseLayerDef | CustomBaseLayerDef;
 
@@ -280,6 +282,7 @@ function legacyFreemap(
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['Key' + type, false],
+    creditsPerMTile: 1000,
   };
 }
 
@@ -304,6 +307,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     maxNativeZoom: 19,
     key: ['KeyX', false],
     premiumFromZoom: 19,
+    creditsPerMTile: 5000,
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
@@ -363,6 +367,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyZ', false],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -382,6 +387,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     ],
     key: ['KeyZ', true],
     errorTileUrl: white1x1,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -434,12 +440,13 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -454,13 +461,14 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyH', false],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -496,12 +504,13 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -516,12 +525,13 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       {
         type: 'data',
         name: 'DMP 1.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'base',
@@ -635,7 +645,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     experimental: true,
@@ -656,7 +666,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     experimental: true,
@@ -676,6 +686,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
+    creditsPerMTile: 1000,
   },
   ...(
     [
@@ -714,6 +725,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+    creditsPerMTile: 1000,
   },
   {
     layer: 'overlay',
@@ -725,6 +737,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+    creditsPerMTile: 1000,
   },
 ];
 
