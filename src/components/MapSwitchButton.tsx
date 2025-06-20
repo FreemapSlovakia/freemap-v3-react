@@ -37,9 +37,9 @@ import {
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
   HasScaleWithDpi,
+  IntegratedLayerLetters,
   IsCommonLayerDef,
   IsIntegratedLayerDef,
-  IntegratedLayerLetters,
   overlayLayers,
   OverlayLetters,
 } from '../mapDefinitions.js';
