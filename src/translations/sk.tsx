@@ -1591,7 +1591,7 @@ const messages: Messages = {
           <strong>Podporte dobrovoľníkov vytvárajúcich túto mapu!</strong>
         </p>
         <p className="mb-1">
-          Za <b>5 hodín</b> vašej dobrovoľníckej práce* alebo <b>8 €</b> získate
+          Za <b>8 hodín</b> vašej dobrovoľníckej práce* alebo <b>8 €</b> získate
           na rok:
         </p>
         <ul>

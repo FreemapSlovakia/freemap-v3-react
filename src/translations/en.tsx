@@ -1522,7 +1522,7 @@ const en: Messages = {
           <strong>Support the volunteers who create this map!</strong>
         </p>
         <p className="mb-1">
-          For <b>5 hours</b> of your volunteer* work or <b>8 €</b> you will have
+          For <b>8 hours</b> of your volunteer* work or <b>8 €</b> you will have
           a year of access with:
         </p>
         <ul>
