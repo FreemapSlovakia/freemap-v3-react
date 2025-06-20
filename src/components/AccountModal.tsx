@@ -22,6 +22,7 @@ import { useDispatch } from 'react-redux';
 import {
   authDeleteAccount,
   authFetchPurchases,
+  authInit,
   authStartLogout,
 } from '../actions/authActions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
@@ -42,6 +43,10 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
   useEffect(() => {
     dispatch(authFetchPurchases());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(authInit());
   }, [dispatch]);
 
   const purchasesUnsorted = useAppSelector((state) => state.auth.purchases);

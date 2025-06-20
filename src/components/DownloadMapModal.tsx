@@ -15,6 +15,7 @@ import {
 import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMap } from '../hooks/useMap.js';
@@ -217,6 +218,18 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     ],
   );
 
+  // refresh user (credits)
+  useEffect(() => {
+    dispatch(authInit());
+  }, [dispatch]);
+
+  const price =
+    mapDef && tileCount
+      ? Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000)
+      : Infinity;
+
+  const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   return (
     <Modal show={show} onHide={close}>
       <form onSubmit={handleSubmit}>
@@ -288,7 +301,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             </ul>
           </div>
 
-          <CreditsAlert />
+          <CreditsAlert price={price} />
 
           <hr />
 
@@ -389,11 +402,15 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <hr />
 
           <Form.Group controlId="email" className="mb-3">
-            <Form.Label>Your email address</Form.Label>
+            <Form.Label>
+              Your email address <sup>*</sup>
+            </Form.Label>
 
             <Form.Control
               type="email"
               value={email}
+              required
+              isInvalid={invalidEmail}
               onChange={(e) => setEmail(e.currentTarget.value)}
             />
 
@@ -405,12 +422,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           {tileCount !== undefined && mapDef && (
             <div className="mb-3">
               Tiles: <b>{cnf.format(tileCount)}</b> ｜ Total price:{' '}
-              <b>
-                {cnf.format(
-                  Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000),
-                )}
-              </b>{' '}
-              credits
+              <b>{cnf.format(price)}</b> credits
             </div>
           )}
         </Modal.Body>
@@ -420,7 +432,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             variant="primary"
             onClick={close}
             type="submit"
-            disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+            disabled={invalidEmail || price >= Math.floor(user?.credits ?? 0)}
           >
             <FaDownload /> Download
           </Button>

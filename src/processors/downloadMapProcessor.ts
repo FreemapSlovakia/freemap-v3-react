@@ -18,7 +18,8 @@ export const downloadMapProcessor: Processor<typeof downloadMap> = {
 
     dispatch(
       toastsAdd({
-        messageKey: 'general.success', // TODO add specific message key for success
+        message:
+          'The map is being downloaded. You will be notified by email when it is ready for download.',
       }),
     );
   },
