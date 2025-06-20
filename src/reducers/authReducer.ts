@@ -34,7 +34,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         authProviders: action.payload.authProviders,
         credits: action.payload.credits,
       },
-      purchases: null,
+      purchases: action.payload ? state.purchases : null,
       validated: true,
     }))
     .addCase(authLogout, () => authInitialState)

@@ -19,6 +19,7 @@ import {
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import type { Purchase } from 'types/auth.js';
 import {
   authDeleteAccount,
   authFetchPurchases,
@@ -107,6 +108,17 @@ export function AccountModal({ show }: Props): ReactElement | null {
     minute: '2-digit',
   });
 
+  function itemToString(item: Purchase): string {
+    switch (item.type) {
+      case 'premium':
+        return 'Premium'; // TODO translate
+      case 'credits':
+        return `Credits (${item.amount})`; // TODO translate
+      default:
+        return 'Unknown';
+    }
+  }
+
   return !user ? null : (
     <Modal show={show} onHide={close}>
       <Form
@@ -187,7 +199,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                         </td>
                       </tr>
                     ) : purchases.length === 0 ? (
-                      <tr key="loading">
+                      <tr key="empty">
                         <td colSpan={2} className="text-center">
                           No purchases{/* t */}
                         </td>
@@ -196,7 +208,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                       [...purchases].sort().map((purchase, i) => (
                         <tr key={i}>
                           <td>{dateFormat.format(purchase.createdAt)}</td>
-                          <td>{JSON.stringify(purchase.item)}</td>
+                          <td>{itemToString(purchase.item)}</td>
                         </tr>
                       ))
                     )}
