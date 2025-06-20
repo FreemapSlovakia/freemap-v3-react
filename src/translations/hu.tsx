@@ -1562,7 +1562,7 @@ const hu: Messages = {
           </strong>
         </p>
         <p className="mb-1">
-          <b>5 óra</b> önkéntes munkáért* vagy <b>5 €</b> összegért kap egy
+          <b>5 óra</b> önkéntes munkáért* vagy <b>8 €</b> összegért kap egy
           évre:
         </p>
         <ul>

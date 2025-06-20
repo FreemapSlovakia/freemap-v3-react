@@ -1554,7 +1554,7 @@ const messages: Messages = {
           <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
+          Con <b>5 ore</b> di lavoro volontario oppure <b>8 €</b> otterrai un
           anno di accesso con:
         </p>
         <ul>
