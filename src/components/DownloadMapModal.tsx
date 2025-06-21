@@ -310,8 +310,18 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                   OruxMaps
                 </a>
                 ,{' '}
-                <a href="https://www.locusmap.app/" target="_blank">
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.bodunov.galileo"
+                  target="_blank"
+                >
                   Guru Maps
+                </a>
+                ,{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=net.osmand"
+                  target="_blank"
+                >
+                  OsmAnd
                 </a>
               </li>
 
@@ -329,6 +339,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                   target="_blank"
                 >
                   Map Plus
+                </a>
+                ,{' '}
+                <a
+                  href="https://apps.apple.com/us/app/osmand-maps-travel-navigate/id934850257"
+                  target="_blank"
+                >
+                  OsmAnd
                 </a>
               </li>
 
@@ -404,7 +421,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               onChange={(e) => setFormat(e.currentTarget.value)}
             >
               <option value="mbtiles">MBTiles</option>
-              <option value="sqlitedb">SQLiteDB</option>
+              <option value="sqlitedb">SQLiteDB (OsmAnd)</option>
             </Form.Select>
           </Form.Group>
 
