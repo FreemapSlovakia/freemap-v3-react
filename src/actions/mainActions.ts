@@ -213,7 +213,8 @@ export const hideInfoBar = createAction<{
 export const downloadMap = createAction<{
   name: string;
   email: string;
-  type: string;
+  map: string;
+  format: string;
   maxZoom: number;
   minZoom: number;
   scale: number;

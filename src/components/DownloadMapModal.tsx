@@ -50,7 +50,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const user = useAppSelector((state) => state.auth.user);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
+  const activeMapType = useAppSelector((state) => state.map.mapType);
 
   const [name, setName] = useState('');
 
@@ -118,15 +118,17 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   //   ),
   // );
 
-  const [type, setType] = useState(
-    mapDefs.find((mapDef) => mapDef.type === mapType)?.type ?? 'X',
+  const [mapType, setMapType] = useState(
+    mapDefs.find((mapDef) => mapDef.type === activeMapType)?.type ?? 'X',
   );
+
+  const [format, setFormat] = useState('mbtiles');
 
   const [scale, setScale] = useState('1');
 
   const mapDef = useMemo(
-    () => mapDefs.find((def) => def.type === type),
-    [type, mapDefs],
+    () => mapDefs.find((def) => def.type === mapType),
+    [mapType, mapDefs],
   );
 
   useEffect(() => {
@@ -210,7 +212,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         downloadMap({
           email,
           name,
-          type,
+          map: mapType,
+          format,
           maxZoom: Number(maxZoom),
           minZoom: Number(minZoom),
           scale: Number(scale),
@@ -227,17 +230,18 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       );
     },
     [
-      area,
-      boundingBox,
       dispatch,
       email,
+      name,
+      mapType,
+      format,
       maxZoom,
       minZoom,
-      name,
       scale,
-      selectedLine?.points,
       selectedLine?.type,
-      type,
+      selectedLine?.points,
+      area,
+      boundingBox,
     ],
   );
 
@@ -255,9 +259,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   useEffect(() => {
     setName((name) =>
-      name && nameChanged ? name : (m?.mapLayers.letters[type] ?? ''),
+      name && nameChanged ? name : (m?.mapLayers.letters[mapType] ?? ''),
     );
-  }, [m, type, nameChanged]);
+  }, [m, mapType, nameChanged]);
 
   return (
     <Modal show={show} onHide={close}>
@@ -339,13 +343,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           <hr />
 
-          <Form.Group controlId="type">
+          <Form.Group controlId="mapType">
             <Form.Label>Map</Form.Label>
 
             <Form.Select
               className="mb-3"
-              value={type}
-              onChange={(e) => setType(e.currentTarget.value as 'X')}
+              value={mapType}
+              onChange={(e) => setMapType(e.currentTarget.value as 'X')}
             >
               {mapDefs.map((layer) => (
                 <option key={layer.type} value={layer.type}>
@@ -389,6 +393,19 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 setName(e.currentTarget.value);
               }}
             />
+          </Form.Group>
+
+          <Form.Group controlId="format">
+            <Form.Label>Format</Form.Label>
+
+            <Form.Select
+              className="mb-3"
+              value={format}
+              onChange={(e) => setFormat(e.currentTarget.value)}
+            >
+              <option value="mbtiles">MBTiles</option>
+              <option value="sqlitedb">SQLiteDB</option>
+            </Form.Select>
           </Form.Group>
 
           {mapDef && (
