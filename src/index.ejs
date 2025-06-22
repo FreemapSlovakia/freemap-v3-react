@@ -152,6 +152,9 @@
       _paq.push(['setCustomUrl', '/']);
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['enableLinkTracking']);
+      if (fmEmbedded) {
+        _paq.push(['setCustomVariable', 1, 'isEmbedded', 'true', 'visit']);     
+      }
       (function() {
         var u="//matomo.freemap.sk/";
         _paq.push(['setTrackerUrl', u+'matomo.php']);
