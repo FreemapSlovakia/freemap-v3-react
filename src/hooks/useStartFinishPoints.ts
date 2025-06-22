@@ -39,7 +39,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
         if (times) {
           startTime = new Date(times[0]);
 
-          finishTime = new Date(times[times.length - 1]);
+          finishTime = new Date(times.at(-1)!);
         }
 
         startPoints.push({
@@ -49,7 +49,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
           startTime,
         });
 
-        const finishLonLat = coords[coords.length - 1];
+        const finishLonLat = coords.at(-1)!;
 
         finishPoints.push({
           lat: finishLonLat[1],

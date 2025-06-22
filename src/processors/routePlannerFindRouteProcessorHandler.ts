@@ -458,12 +458,12 @@ export default handle;
 //     const nextStep = routeSteps[i + 1];
 //
 //     const prevStepLastPoint = prevStep
-//       ? coord(prevStep)[coord(prevStep).length - 1]
+//       ? coord(prevStep).at(-1)!
 //       : null;
 //
 //     const firstPoint = coord(step)[0];
 //
-//     const lastShapePoint = coord(step)[coord(step).length - 1];
+//     const lastShapePoint = coord(step).at(-1)!;
 //
 //     const nextStepFirstPoint = nextStep?.geometry.coordinates[0] ?? null;
 //

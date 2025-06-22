@@ -115,9 +115,7 @@ export function TrackingResult(): ReactElement {
         }
 
         const lastPoint =
-          track.trackPoints.length > 0
-            ? track.trackPoints[track.trackPoints.length - 1]
-            : null;
+          track.trackPoints.length > 0 ? track.trackPoints.at(-1)! : null;
 
         return (
           <Fragment key={`trk-${track.token}`}>
@@ -162,7 +160,7 @@ export function TrackingResult(): ReactElement {
 
             {(showPoints || track.trackPoints.length === 0
               ? track.trackPoints
-              : [track.trackPoints[track.trackPoints.length - 1]]
+              : [track.trackPoints.at(-1)!]
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
@@ -170,9 +168,7 @@ export function TrackingResult(): ReactElement {
                     interactive ? 'a' : 'b'
                   }`}
                   interactive={interactive}
-                  position={toLatLon(
-                    track.trackPoints[track.trackPoints.length - 1],
-                  )}
+                  position={toLatLon(track.trackPoints.at(-1)!)}
                   color={color}
                   eventHandlers={{
                     click: handleClick,

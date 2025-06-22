@@ -63,7 +63,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
 
   const end =
     selection.pointId === line.points[0].id ||
-    selection.pointId === line.points[line.points.length - 1].id;
+    selection.pointId === line.points.at(-1)?.id;
 
   return (
     <Selection

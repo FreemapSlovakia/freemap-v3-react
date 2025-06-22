@@ -194,7 +194,7 @@ export function handleLocationChange(store: MyStore): void {
         .slice(1, latLons.length - 1)
         .filter((x): x is LatLon => !!x);
 
-      const nextFinish = latLons[latLons.length - 1];
+      const nextFinish = latLons.at(-1)!;
 
       if (
         query['transport'] !== transportType ||

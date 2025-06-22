@@ -219,9 +219,7 @@ export const routePlannerReducer = createReducer(
           ? {
               // only possible in (round)trip mode
               ...state,
-              finish: state.midpoints.length
-                ? state.midpoints[state.midpoints.length - 1]
-                : null,
+              finish: state.midpoints.at(-1) ?? null,
               midpoints: state.midpoints.length
                 ? state.midpoints.slice(0, state.midpoints.length - 1)
                 : [],

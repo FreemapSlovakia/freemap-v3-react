@@ -148,8 +148,12 @@ export function latLonToString(
   )}, ${formatGpsCoord(latLon.lon, 'WE', style, language)}`;
 }
 
-export function positionsEqual(pt1: Position, pt2: Position): boolean {
-  return pt1[0] === pt2[0] && pt1[1] === pt2[1];
+export function positionsEqual(pt1?: Position, pt2?: Position): boolean {
+  if (!pt1 || !pt2) {
+    throw new Error();
+  }
+
+  return pt1[0] === pt2?.[0] && pt1[1] === pt2[1];
 }
 
 export function mergeLines<T extends Geometry>(
@@ -186,12 +190,7 @@ export function mergeLines<T extends Geometry>(
           continue restart;
         }
 
-        if (
-          positionsEqual(
-            g1.coordinates[0],
-            g2.coordinates[g2.coordinates.length - 1],
-          )
-        ) {
+        if (positionsEqual(g1.coordinates[0], g2.coordinates.at(-1))) {
           g1.coordinates.splice(0, 1, ...g2.coordinates);
 
           features.splice(j, 1);
@@ -202,12 +201,7 @@ export function mergeLines<T extends Geometry>(
           continue restart;
         }
 
-        if (
-          positionsEqual(
-            g1.coordinates[g1.coordinates.length - 1],
-            g2.coordinates[0],
-          )
-        ) {
+        if (positionsEqual(g1.coordinates.at(-1), g2.coordinates[0])) {
           g1.coordinates.push(...g2.coordinates.slice(1));
 
           features.splice(j, 1);
@@ -218,12 +212,7 @@ export function mergeLines<T extends Geometry>(
           continue restart;
         }
 
-        if (
-          positionsEqual(
-            g1.coordinates[g1.coordinates.length - 1],
-            g2.coordinates[g2.coordinates.length - 1],
-          )
-        ) {
+        if (positionsEqual(g1.coordinates.at(-1), g2.coordinates.at(-1))) {
           g1.coordinates.push(...g2.coordinates.reverse().slice(1));
 
           features.splice(j, 1);
@@ -244,7 +233,7 @@ export function mergeLines<T extends Geometry>(
 
     if (
       g.type === 'LineString' &&
-      positionsEqual(g.coordinates[0], g.coordinates[g.coordinates.length - 1])
+      positionsEqual(g.coordinates[0], g.coordinates.at(-1))
     ) {
       Object.assign(g, { type: 'Polygon', coordinates: [g.coordinates] });
     }

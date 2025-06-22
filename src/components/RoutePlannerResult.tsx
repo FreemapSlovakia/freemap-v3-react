@@ -635,9 +635,7 @@ export function RoutePlannerResult(): ReactElement {
           interactive={interactive1}
           faIcon={mode === 'roundtrip' ? undefined : <FaStop color="#d9534f" />}
           label={
-            mode === 'roundtrip'
-              ? waypoints[waypoints.length - 1]?.waypoint_index
-              : undefined
+            mode === 'roundtrip' ? waypoints.at(-1)?.waypoint_index : undefined
           }
           color={mode === 'roundtrip' ? undefined : '#d9534f'}
           zIndexOffset={10}
@@ -936,8 +934,7 @@ function addMissingSegments(alt: Alternative) {
 
     const firstShapePoint = slice.geometry.coordinates[0];
 
-    const lastShapePoint =
-      slice.geometry.coordinates[slice.geometry.coordinates.length - 1];
+    const lastShapePoint = slice.geometry.coordinates.at(-1)!;
 
     const nextSliceFirstShapePoint = nextSlice
       ? nextSlice.geometry.coordinates[0]
