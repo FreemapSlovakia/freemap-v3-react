@@ -5,7 +5,7 @@ import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { isPremium } from '../premium.js';
 import type { RootState } from '../store.js';
-import type { LoginResponse } from '../types/auth.js';
+import type { LoginResponse, User, UserSettings } from '../types/auth.js';
 import { StringDates } from '../types/common.js';
 
 export async function handleLoginResponse(
@@ -17,7 +17,11 @@ export async function handleLoginResponse(
     user: rawUser,
     connect,
     clientData,
-  } = assert<StringDates<LoginResponse>>(await res.json());
+  } = assert<
+    Omit<LoginResponse, 'user'> & {
+      user: StringDates<Omit<User, 'settings'>> & { settings?: unknown };
+    }
+  >(await res.json());
 
   dispatch(
     toastsAdd({
@@ -35,7 +39,17 @@ export async function handleLoginResponse(
       : null,
   };
 
-  dispatch(authSetUser(user));
+  let settings: UserSettings | undefined;
+
+  try {
+    settings = assert<UserSettings>(user.settings);
+  } catch (e) {
+    console.error('Invalid user settings:', e);
+
+    settings = undefined;
+  }
+
+  dispatch(authSetUser({ ...user, settings }));
 
   const { purchaseOnLogin } = getState().main;
 

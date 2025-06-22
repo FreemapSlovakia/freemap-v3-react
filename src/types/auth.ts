@@ -13,6 +13,12 @@ export type PurchaseRecord = {
   item: Purchase;
 };
 
+export interface UserSettings {
+  layersSettings?: Record<string, LayerSettings>;
+  overlayPaneOpacity?: number;
+  customLayers?: CustomLayerDef[];
+}
+
 export interface User {
   authProviders: AuthProvider[];
   authToken: string;
@@ -26,11 +32,7 @@ export interface User {
   name: string;
   premiumExpiration: Date | null;
   sendGalleryEmails: boolean;
-  settings?: {
-    layersSettings?: Record<string, LayerSettings>;
-    overlayPaneOpacity?: number;
-    customLayers?: CustomLayerDef[];
-  };
+  settings?: UserSettings;
 }
 
 export type LoginResponse = {
