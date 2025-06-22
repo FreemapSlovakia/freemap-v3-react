@@ -5,7 +5,7 @@
     "downlevelIteration": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "lib": ["ES2020", "dom", "dom.iterable", "WebWorker"],
+    "lib": ["ES2022", "dom", "dom.iterable", "WebWorker"],
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "noPropertyAccessFromIndexSignature": true,
