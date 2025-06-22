@@ -153,7 +153,7 @@ export type HasUrl = {
 };
 
 export type HasMaxNativeZoom = {
-  maxNativeZoom: number;
+  maxNativeZoom?: number;
 };
 
 type HasZIndex = {
