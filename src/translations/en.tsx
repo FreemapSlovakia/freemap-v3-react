@@ -498,7 +498,7 @@ const en: Messages = {
       `,
       success: 'Pictures have been successfully uploaded.',
       showPreview: 'Show previews (uses more CPU load and memory)',
-      premium: 'Make available only to users with full access',
+      premium: 'Make available only to users with premium access',
     },
     locationPicking: {
       title: 'Select photo location',

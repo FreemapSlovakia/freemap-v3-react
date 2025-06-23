@@ -506,7 +506,7 @@ const messages: Messages = {
       `,
       success: 'Le foto sono state caricate con successo.',
       showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
-      premium: 'Make available only to users with full access', // TODO translate
+      premium: 'Disponibile solo per gli utenti con accesso completo',
     },
     locationPicking: {
       title: "Selezione l'ubicazione della foto",

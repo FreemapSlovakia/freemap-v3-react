@@ -508,7 +508,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie byly úspěšně nahrány.',
       showPreview: 'Zobrazit náhledy (náročnější na výkon a paměť)',
-      premium: 'Zpřístupnit pouze uživatelům s plným přístupem',
+      premium: 'Zpřístupnit pouze uživatelům s prémiovým přístupem',
     },
     locationPicking: {
       title: 'Zvolte pozici fotografie',

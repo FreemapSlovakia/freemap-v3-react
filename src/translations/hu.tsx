@@ -507,7 +507,8 @@ const hu: Messages = {
       success: 'A képek sikeresen fel lettek töltve.',
       showPreview:
         'Előnézetek megjelenítése (több processzorteljesítményt és memóriát használ)',
-      premium: 'Make available only to users with full access', // TODO translate
+      premium:
+        'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
     },
     locationPicking: {
       title: 'Fénykép helyének kijelölése',

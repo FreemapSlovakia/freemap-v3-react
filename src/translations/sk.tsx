@@ -539,7 +539,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie boli úspešne nahrané.',
       showPreview: 'Zobraziť náhľady (náročnejšie na výkon a pamäť)',
-      premium: 'Sprístupniť len používateľom s plným prístupom',
+      premium: 'Sprístupniť len používateľom s prémiovým prístupom',
     },
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
