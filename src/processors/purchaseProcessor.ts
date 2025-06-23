@@ -1,6 +1,10 @@
 import { assert, is } from 'typia';
 import { authInit } from '../actions/authActions.js';
-import { purchase, setActiveModal } from '../actions/mainActions.js';
+import {
+  purchase,
+  purchaseOnLogin,
+  setActiveModal,
+} from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -18,6 +22,10 @@ export const purchaseProcessor: Processor<typeof purchase> = {
     const { user } = getState().auth;
 
     if (!user) {
+      dispatch(purchaseOnLogin(action.payload));
+
+      dispatch(setActiveModal('login'));
+
       return;
     }
 

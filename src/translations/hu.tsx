@@ -1627,6 +1627,7 @@ const hu: Messages = {
       </>
     ),
     premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
+    alreadyPremium: 'Már prémium hozzáféréssel rendelkezel.',
   },
 
   credits: {

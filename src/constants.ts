@@ -18,7 +18,7 @@ export const basicModals = [
   'login',
   'map-settings',
   'maps',
-  'remove-ads',
+  'premium',
   'support-us',
   'tracking-my',
   'tracking-watched',

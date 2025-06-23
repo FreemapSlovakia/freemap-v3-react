@@ -1620,6 +1620,7 @@ const messages: Messages = {
       </>
     ),
     premiumOnly: 'Disponibile solo con accesso premium.',
+    alreadyPremium: 'Hai già accesso premium.',
   },
 
   credits: {

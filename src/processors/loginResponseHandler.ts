@@ -53,8 +53,19 @@ export async function handleLoginResponse(
 
   const { purchaseOnLogin } = getState().main;
 
-  if (!isPremium(user) && purchaseOnLogin) {
-    dispatch(purchase(purchaseOnLogin));
+  if (purchaseOnLogin) {
+    if (isPremium(user) && purchaseOnLogin.type === 'premium') {
+      dispatch(
+        toastsAdd({
+          id: 'premiumAlready',
+          messageKey: 'premium.alreadyPremium',
+          style: 'info',
+          timeout: 5000,
+        }),
+      );
+    } else {
+      dispatch(purchase(purchaseOnLogin));
+    }
   }
 
   if (clientData?.successAction) {

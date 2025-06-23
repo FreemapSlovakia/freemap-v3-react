@@ -863,6 +863,7 @@ export type Messages = {
     becomePremium: string;
     youArePremium: (date: string) => JSX.Element;
     premiumOnly: string;
+    alreadyPremium: string;
   };
   credits: {
     buyCredits: string;

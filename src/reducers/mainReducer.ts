@@ -29,7 +29,7 @@ import {
   enableUpdatingUrl,
   hideInfoBar,
   Modal,
-  purchaseOnLogin as purchaseOnLogin,
+  purchaseOnLogin,
   saveHomeLocation,
   selectFeature,
   Selection,

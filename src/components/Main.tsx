@@ -763,7 +763,7 @@ export function Main(): ReactElement {
       <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
 
       <AsyncModal
-        show={activeModal === 'remove-ads'}
+        show={activeModal === 'premium'}
         factory={premiumActivationModalFactory}
       />
 

@@ -25,7 +25,7 @@ export function LoginModal({ show }: Props): ReactElement {
   const purchaseOnLogin = useAppSelector((state) => state.main.purchaseOnLogin);
 
   const renderPremiumInfo = () =>
-    purchaseOnLogin ? (
+    purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
         {m?.premium.commonHeader}
         {m?.premium.stepsForAnonymous}

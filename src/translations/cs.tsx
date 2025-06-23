@@ -1619,6 +1619,7 @@ const messages: Messages = {
       </>
     ),
     premiumOnly: 'Dostupné pouze s prémiovým přístupem.',
+    alreadyPremium: 'Máte již prémiový přístup.',
   },
 
   credits: {

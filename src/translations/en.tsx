@@ -1585,6 +1585,7 @@ const en: Messages = {
       </>
     ),
     premiumOnly: 'Only available with premium access.',
+    alreadyPremium: 'You already have premium access.',
   },
 
   credits: {

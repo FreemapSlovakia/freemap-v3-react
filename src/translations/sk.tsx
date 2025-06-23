@@ -1659,6 +1659,7 @@ const messages: Messages = {
       </>
     ),
     premiumOnly: 'Dostupné len s prémiovým prístupom.',
+    alreadyPremium: 'Už máte prémiový prístup.',
   },
 
   credits: {

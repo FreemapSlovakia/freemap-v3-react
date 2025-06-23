@@ -607,6 +607,8 @@ export function handleLocationChange(store: MyStore): void {
     show = 'support-us';
   } else if (show === 'mapSettings') {
     show = 'map-settings';
+  } else if (show === 'remove-ads') {
+    show = 'premium';
   }
 
   if (is<ShowModal>(show)) {
