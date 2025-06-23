@@ -199,7 +199,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                     ) : purchases.length === 0 ? (
                       <tr key="empty">
                         <td colSpan={2} className="text-center">
-                          <th>{m?.purchases.noPurchases}</th>
+                          {m?.purchases.noPurchases}
                         </td>
                       </tr>
                     ) : (
