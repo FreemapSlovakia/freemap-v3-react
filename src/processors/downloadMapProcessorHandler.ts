@@ -8,6 +8,18 @@ const handle: ProcessorHandler<typeof downloadMap> = async ({
   getState,
   action,
 }) => {
+  const sp = new URLSearchParams();
+  sp.append('map', action.payload.map);
+  sp.append('format', action.payload.format);
+  sp.append('scale', String(action.payload.scale ?? 1));
+
+  window._paq.push([
+    'trackEvent',
+    'DownloadMap',
+    'downloadMapStart',
+    JSON.stringify(sp.toString()),
+  ]);
+
   await httpRequest({
     getState,
     method: 'POST',
