@@ -505,7 +505,7 @@ const messages: Messages = {
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',
       premiumOnly:
-        'Túto fotografiu sprístupnil jej autor len používateľom s plným prístupom.',
+        'Túto fotografiu sprístupnil jej autor len používateľom s prémiovým prístupom.',
       noComments: 'Bez komentára',
     },
     editForm: {
@@ -680,6 +680,17 @@ const messages: Messages = {
       distance: 'Vzdialenosť',
       azimuth: 'Azimut',
     },
+  },
+
+  purchases: {
+    purchases: 'Nákupy',
+    premiumExpired: (at) => <>Váš prémiový prístup vypršal {at}</>,
+    date: 'Dátum',
+    item: 'Položka',
+    notPremiumYet: 'Ešte nemáte prémiový prístup.',
+    noPurchases: 'Žiadne nákupy',
+    premium: 'Prémium',
+    credits: (amount) => <>Kredity ({amount})</>,
   },
 
   settings: {
@@ -1240,7 +1251,6 @@ const messages: Messages = {
         />
       ),
     },
-    downloadMap: 'Stiahnúť mapu',
   },
 
   elevationChart: {
@@ -1584,7 +1594,7 @@ const messages: Messages = {
   },
 
   premium: {
-    title: 'Získať plný prístup',
+    title: 'Získať prémiový prístup',
     commonHeader: (
       <>
         <p>
@@ -1637,25 +1647,32 @@ const messages: Messages = {
         </a>
         , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
         získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
-        získanie plného prístupu na www.freemap.sk alebo nákup kreditov.
+        získanie prémiového prístupu na www.freemap.sk alebo nákup kreditov.
       </p>
     ),
     continue: 'Pokračovať',
-    success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
-    becomePremium: 'Získať plný prístup',
+    success: 'Gratulujeme, získali ste prémiový prístup!',
+    becomePremium: 'Získať prémiový prístup',
     youArePremium: (date) => (
       <>
-        Máte prístup k všetkým funkciám do <b>{date}</b>.
+        Máte prémiový prístup do <b>{date}</b>.
       </>
     ),
-    premiumOnly: 'Dostupné len s plným prístupom.',
+    premiumOnly: 'Dostupné len s prémiovým prístupom.',
   },
 
   credits: {
+    buyCredits: 'Kúpiť kredity',
+    amount: 'Kredity',
+    credits: 'kreditov',
+    buy: 'Kúpiť',
     purchase: {
       success: ({ amount }) => (
         <>Váš kredit bol navýšený o {nf00.format(amount)}.</>
       ),
+    },
+    youHaveCredits(amount) {
+      return <>Máte {amount} kreditov.</>;
     },
   },
 
@@ -1741,6 +1758,26 @@ const messages: Messages = {
     notSupported: 'WebGPU nie je v tomto prehliadači podporovaný.',
     errorRequestingDevice: 'Nepodarilo sa vytvoriť GPU zariadenie: ',
     other: 'Chyba pri vykresľovaní: ',
+  },
+  downloadMap: {
+    downloadMap: 'Stiahnuť mapu',
+    format: 'Formát',
+    map: 'Mapa',
+    downloadArea: 'Stiahnuť',
+    area: {
+      visible: 'Viditeľnú oblasť',
+      byPolygon: 'Oblasť pokrytú označeným polygónom',
+    },
+    name: 'Názov',
+    zoomRange: 'Rozsah priblíženia',
+    scale: 'Mierka',
+    email: 'Vaša e-mailová adresa',
+    emailInfo: 'Váš e-mail použijeme na zaslanie odkazu na stiahnutie.',
+    download: 'Stiahnuť',
+    success:
+      'Mapa sa pripravuje. Po dokončení vám bude emailom doručený odkaz na jej stiahnutie.',
+    summaryTiles: 'Dlaždíc',
+    summaryPrice: (amount) => <>Celková cena: {amount} kreditov</>,
   },
 };
 

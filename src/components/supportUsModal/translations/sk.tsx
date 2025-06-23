@@ -8,9 +8,10 @@ const sk: SupportUsMessages = {
   thanks: 'Za každý príspevok vám budeme veľmi vďační.',
   registration: 'Registrované na MV/VVS/1-900/90-34343 dňa 2. 10. 2009',
   alert: {
-    line1: '<b>Pozor!</b> Pre získanie plného prístupu použite toto tlačítko:',
+    line1:
+      '<b>Pozor!</b> Pre získanie prémiového prístupu použite toto tlačítko:',
     line2:
-      'Platba na bankový účet alebo cez PayPal slúži na poďakovanie za základné služby, bez získania plného prístupu.',
+      'Platba na bankový účet alebo cez PayPal slúži na poďakovanie za základné služby, bez získania prémiového prístupu.',
   },
   team: 'Tím',
 };

@@ -8,11 +8,9 @@ import {
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import {
   FaCog,
-  FaDownload,
   FaEllipsisV,
   FaExclamationTriangle,
   FaFilter,
-  FaFlask,
   FaGem,
   FaRegCheckCircle,
   FaRegCircle,
@@ -118,11 +116,7 @@ export function MapSwitchButton(): ReactElement {
       } else if (selection === 'mapSettings') {
         setShow(false);
 
-        dispatch(setActiveModal('mapSettings'));
-      } else if (selection === 'downloadMap') {
-        setShow(false);
-
-        dispatch(setActiveModal('download-map'));
+        dispatch(setActiveModal('map-settings'));
       } else if (selection.startsWith('b')) {
         const base = selection.slice(1);
 
@@ -406,19 +400,6 @@ export function MapSwitchButton(): ReactElement {
                 eventKey="mapSettings"
               >
                 <FaCog /> {m?.mapLayers.settings}
-              </Dropdown.Item>
-
-              <Dropdown.Item
-                key="downloadMap"
-                as="button"
-                eventKey="downloadMap"
-              >
-                <FaDownload />{' '}
-                <FaFlask
-                  title={m?.general.experimentalFunction}
-                  className="text-warning"
-                />{' '}
-                {m?.mapLayers.downloadMap}
               </Dropdown.Item>
 
               <Dropdown.Divider />

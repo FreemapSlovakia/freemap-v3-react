@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { useMessages } from '../l10nInjector.js';
 
 type Props = { buy?: boolean; price?: number };
 
@@ -15,14 +16,17 @@ export function CreditsAlert({ buy, price }: Props): ReactElement | null {
 
   const nf = useNumberFormat();
 
+  const m = useMessages();
+
   return !user ? null : (
     <Alert
       variant={price !== undefined && price > user.credits ? 'danger' : 'info'}
       className="d-flex justify-content-between"
     >
       <span>
-        <FaCoins /> You have {/* t */}{' '}
-        <b>{nf.format(Math.floor(user.credits))}</b> credits.
+        {m?.credits.youHaveCredits(
+          <b>{nf.format(Math.floor(user.credits))}</b>,
+        )}
       </span>
 
       {buy !== false && (
@@ -31,7 +35,7 @@ export function CreditsAlert({ buy, price }: Props): ReactElement | null {
           className="m-n2 ms-2"
           onClick={() => dispatch(setActiveModal('buy-credits'))}
         >
-          <FaCoins /> Buy credits{/* t */}
+          <FaCoins /> {m?.credits.buyCredits}
         </Button>
       )}
     </Alert>

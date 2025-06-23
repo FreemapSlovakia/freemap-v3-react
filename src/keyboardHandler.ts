@@ -350,6 +350,9 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
         case 'KeyD':
           return setActiveModal('drawing-properties');
+
+        case 'KeyM':
+          return setActiveModal('download-map');
       }
 
       return undefined;

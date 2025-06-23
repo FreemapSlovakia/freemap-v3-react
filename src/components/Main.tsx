@@ -700,7 +700,7 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'mapSettings'}
+        show={activeModal === 'map-settings'}
         factory={mapSettingsModalFactory}
       />
 
@@ -732,7 +732,7 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'supportUs'}
+        show={activeModal === 'support-us'}
         factory={supportUsModalFactory}
       />
 

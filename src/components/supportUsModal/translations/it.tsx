@@ -9,9 +9,9 @@ const it: SupportUsMessages = {
   registration: 'Registrato nel MV/VVS/1-900/90-34343 il 2 Ottobre 2009',
   alert: {
     line1:
-      '<b>Attenzione!</b> Usa questo pulsante per ottenere l’accesso completo:',
+      '<b>Attenzione!</b> Usa questo pulsante per ottenere l’accesso premium:',
     line2:
-      'Il pagamento tramite bonifico bancario o PayPal è un ringraziamento per i servizi di base, senza ottenere l’accesso completo.',
+      'Il pagamento tramite bonifico bancario o PayPal è un ringraziamento per i servizi di base, senza ottenere l’accesso premium.',
   },
   team: 'Squadra',
 };

@@ -273,7 +273,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               title={m?.general.experimentalFunction}
               className="text-warning"
             />{' '}
-            Download map{/* t */}
+            {m?.downloadMap.downloadMap}
           </Modal.Title>
         </Modal.Header>
 
@@ -351,7 +351,21 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
               <li>
                 <strong>Web:</strong> Leaflet, MapLibre GL JS or OpenLayers (via
-                a tile server such as TileServer GL)
+                a tile server such as{' '}
+                <a
+                  href="https://github.com/consbio/mbtileserver"
+                  target="_blank"
+                >
+                  mbtileserver
+                </a>{' '}
+                or{' '}
+                <a
+                  href="https://github.com/maptiler/tileserver-gl"
+                  target="_blank"
+                >
+                  TileServer GL
+                </a>
+                )
               </li>
             </ul>
           </div>
@@ -361,7 +375,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <hr />
 
           <Form.Group controlId="mapType">
-            <Form.Label>Map</Form.Label>
+            <Form.Label>{m?.downloadMap.map}</Form.Label>
 
             <Form.Select
               className="mb-3"
@@ -377,7 +391,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           </Form.Group>
 
           <Form.Group>
-            <Form.Label>Download</Form.Label>
+            <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
             <ButtonGroup className="d-block mb-3">
               <Button
@@ -385,7 +399,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 active={area === 'visible'}
                 onClick={() => setArea('visible')}
               >
-                <FaEye /> Visible area
+                <FaEye /> {m?.downloadMap.area.visible}
               </Button>
 
               <Button
@@ -394,13 +408,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 onClick={() => setArea('selected')}
                 disabled={selectedLine?.type !== 'polygon'}
               >
-                <FaDrawPolygon /> Area covered by selected polygon
+                <FaDrawPolygon /> {m?.downloadMap.area.byPolygon}
               </Button>
             </ButtonGroup>
           </Form.Group>
 
           <Form.Group controlId="name" className="mb-3">
-            <Form.Label>Name</Form.Label>
+            <Form.Label>{m?.downloadMap.name}</Form.Label>
 
             <Form.Control
               type="text"
@@ -412,22 +426,33 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             />
           </Form.Group>
 
-          <Form.Group controlId="format">
-            <Form.Label>Format</Form.Label>
+          <Form.Group controlId="format" className="mb-3">
+            <Form.Label>{m?.downloadMap.format}</Form.Label>
 
-            <Form.Select
-              className="mb-3"
-              value={format}
-              onChange={(e) => setFormat(e.currentTarget.value)}
-            >
-              <option value="mbtiles">MBTiles</option>
-              <option value="sqlitedb">SQLiteDB (OsmAnd)</option>
-            </Form.Select>
+            <ButtonGroup className="d-block">
+              <Button
+                variant="secondary"
+                active={format === 'mbtiles'}
+                onClick={() => setFormat('mbtiles')}
+                title="Locus Map, Guru Maps, OruxMaps"
+              >
+                MBTiles
+              </Button>
+
+              <Button
+                variant="secondary"
+                active={format === 'sqlitedb'}
+                onClick={() => setFormat('sqlitedb')}
+                title="OSMAnd, Locus Map"
+              >
+                SQLiteDB
+              </Button>
+            </ButtonGroup>
           </Form.Group>
 
           {mapDef && (
             <Form.Group controlId="zoomRange" className="mb-3">
-              <Form.Label>Zoom range</Form.Label>
+              <Form.Label>{m?.downloadMap.zoomRange}</Form.Label>
 
               <InputGroup>
                 <Form.Control
@@ -453,7 +478,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           {mapDef?.extraScales && (
             <Form.Group controlId="scale" className="mb-3">
-              <Form.Label>Scale</Form.Label>
+              <Form.Label>{m?.downloadMap.scale}</Form.Label>
 
               <Form.Select
                 value={scale}
@@ -472,7 +497,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           <Form.Group controlId="email" className="mb-3">
             <Form.Label>
-              Your email address <sup>*</sup>
+              {m?.downloadMap.email} <sup>*</sup>
             </Form.Label>
 
             <Form.Control
@@ -484,7 +509,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             />
 
             <Form.Text className="text-muted">
-              We will use your email to send you the download link.
+              {m?.downloadMap.emailInfo}
             </Form.Text>
           </Form.Group>
         </Modal.Body>
@@ -492,13 +517,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         <Modal.Footer className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
-              Tiles: <b>{cnf.format(tileCount)}</b> ｜{' '}
+              {m?.downloadMap.summaryTiles}: <b>{cnf.format(tileCount)}</b> ｜{' '}
               <span
                 className={
                   price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
                 }
               >
-                Total price: <b>{cnf.format(price)}</b> credits
+                {m?.downloadMap.summaryPrice(<b>{cnf.format(price)}</b>)}
               </span>
             </div>
           )}
@@ -509,7 +534,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             type="submit"
             disabled={invalidEmail || price >= Math.floor(user?.credits ?? 0)}
           >
-            <FaDownload /> Download
+            <FaDownload /> {m?.downloadMap.download} <kbd>Enter</kbd>
           </Button>
 
           <Button variant="dark" onClick={close} type="button">

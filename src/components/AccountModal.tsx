@@ -1,4 +1,5 @@
 import {
+  JSX,
   type ReactElement,
   useCallback,
   useEffect,
@@ -108,12 +109,12 @@ export function AccountModal({ show }: Props): ReactElement | null {
     minute: '2-digit',
   });
 
-  function itemToString(item: Purchase): string {
+  function itemToString(item: Purchase): undefined | string | JSX.Element {
     switch (item.type) {
       case 'premium':
-        return 'Premium'; // TODO translate
+        return m?.purchases.premium;
       case 'credits':
-        return `Credits (${item.amount})`; // TODO translate
+        return m?.purchases.credits(item.amount);
       default:
         return 'Unknown';
     }
@@ -146,7 +147,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
             <Accordion.Item eventKey="payments">
               <Accordion.Header>
                 <span>
-                  <FaShoppingBasket /> Purchases{/* t */}
+                  <FaShoppingBasket /> {m?.purchases.purchases}
                 </span>
               </Accordion.Header>
 
@@ -158,14 +159,11 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   >
                     <span>
                       <FaExclamationTriangle />{' '}
-                      {user.premiumExpiration ? (
-                        <>
-                          Your premium access expired at{' '}
-                          <b>{dateFormat.format(user.premiumExpiration!)}</b>
-                        </>
-                      ) : (
-                        <>You are not premium yet.{/* t */}</>
-                      )}
+                      {user.premiumExpiration
+                        ? m?.purchases.premiumExpired(
+                            <b>{dateFormat.format(user.premiumExpiration!)}</b>,
+                          )
+                        : m?.purchases.notPremiumYet}
                     </span>
 
                     <Button onClick={becomePremium} className="m-n2 ms-2">
@@ -186,8 +184,8 @@ export function AccountModal({ show }: Props): ReactElement | null {
                 <Table>
                   <thead>
                     <tr>
-                      <th>Date{/* t */}</th>
-                      <th>Item{/* t */}</th>
+                      <th>{m?.purchases.date}</th>
+                      <th>{m?.purchases.item}</th>
                     </tr>
                   </thead>
 
@@ -201,7 +199,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                     ) : purchases.length === 0 ? (
                       <tr key="empty">
                         <td colSpan={2} className="text-center">
-                          No purchases{/* t */}
+                          <th>{m?.purchases.noPurchases}</th>
                         </td>
                       </tr>
                     ) : (

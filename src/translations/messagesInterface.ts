@@ -490,6 +490,16 @@ export type Messages = {
       azimuth: string;
     };
   };
+  purchases: {
+    purchases: string;
+    premiumExpired: (at: ReactNode) => JSX.Element;
+    date: string;
+    item: string;
+    notPremiumYet: string;
+    noPurchases: string;
+    premium: string;
+    credits: (amount: ReactNode) => JSX.Element;
+  };
   settings: {
     map: {
       overlayPaneOpacity: string;
@@ -692,7 +702,6 @@ export type Messages = {
       photos: string;
     };
     attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
-    downloadMap: string;
   };
   elevationChart: {
     distance: string;
@@ -856,9 +865,14 @@ export type Messages = {
     premiumOnly: string;
   };
   credits: {
+    buyCredits: string;
+    amount: string;
+    credits: string;
+    buy: string;
     purchase: {
       success: ({ amount }: { amount: number }) => JSX.Element;
     };
+    youHaveCredits: (amount: ReactNode) => JSX.Element;
   };
   offline: {
     offlineMode: string;
@@ -877,6 +891,22 @@ export type Messages = {
     lost: string;
     errorRequestingDevice: string;
     other: string;
+  };
+  downloadMap: {
+    downloadMap: string;
+    format: string;
+    map: string;
+    downloadArea: string;
+    area: { visible: string; byPolygon: string };
+    name: string;
+    zoomRange: string;
+    scale: string;
+    email: string;
+    emailInfo: string;
+    download: string;
+    success: string;
+    summaryTiles: string;
+    summaryPrice: (amount: ReactNode) => JSX.Element;
   };
 };
 

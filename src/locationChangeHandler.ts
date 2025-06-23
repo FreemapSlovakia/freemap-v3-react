@@ -603,6 +603,10 @@ export function handleLocationChange(store: MyStore): void {
     show = 'export-map-features';
   } else if (show === 'export-pdf') {
     show = 'export-map';
+  } else if (show === 'sypportUs') {
+    show = 'support-us';
+  } else if (show === 'mapSettings') {
+    show = 'map-settings';
   }
 
   if (is<ShowModal>(show)) {

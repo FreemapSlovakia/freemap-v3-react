@@ -40,7 +40,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCoins /> Buy credits
+            <FaCoins /> {m?.credits.buyCredits}
           </Modal.Title>
         </Modal.Header>
 
@@ -48,7 +48,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
           <CreditsAlert buy={false} />
 
           <Form.Group>
-            <Form.Label>Credits</Form.Label>
+            <Form.Label>{m?.credits.amount}</Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -61,7 +61,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
               />
 
               <InputGroup.Text>
-                credits = {nf.format(Number(credits) / 100)} €
+                {m?.credits.credits} = {nf.format(Number(credits) / 100)} €
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
@@ -69,7 +69,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
         <Modal.Footer>
           <Button type="submit" disabled={invalidCredits}>
-            <FaCheck /> Buy
+            <FaCheck /> {m?.credits.buy}
           </Button>
 
           <Button variant="dark" type="button" onClick={close}>

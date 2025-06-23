@@ -472,8 +472,8 @@ const messages: Messages = {
       deletePrompt: 'Eliminare questa foto?',
       modify: 'Modifica',
       premiumOnly:
-        'This photo has been made available by its author only to users with full access.', // TODO translate
-      noComments: 'No comments', // TODO translate
+        'Questa foto è stata resa disponibile dal suo autore solo agli utenti con accesso premium.',
+      noComments: 'Nessun commento',
     },
     editForm: {
       name: 'Nome',
@@ -640,17 +640,28 @@ const messages: Messages = {
     split: 'Separa',
     stopDrawing: 'Ferma il disegno',
     selectPointToJoin: 'Seleziona un punto per unire le linee',
-    // TODO translate
     defProps: {
-      menuItem: 'Style settings',
-      title: 'Drawing style settings',
-      applyToAll: 'Save and apply to all',
+      menuItem: 'Impostazioni stile',
+      title: 'Impostazioni dello stile di disegno',
+      applyToAll: 'Salva e applica a tutti',
     },
+
     projection: {
       projectPoint: 'Proietta punto',
       distance: 'Distanza',
       azimuth: 'Azimut',
     },
+  },
+
+  purchases: {
+    purchases: 'Acquisti',
+    premiumExpired: (at) => <>Il tuo accesso premium è scaduto il {at}</>,
+    date: 'Data',
+    item: 'Elemento',
+    notPremiumYet: 'Non hai ancora un accesso premium.',
+    noPurchases: 'Nessun acquisto',
+    premium: 'Premium',
+    credits: (amount) => <>Crediti ({amount})</>,
   },
 
   settings: {
@@ -1206,7 +1217,6 @@ const messages: Messages = {
         />
       ),
     },
-    downloadMap: 'Scarica mappa',
   },
 
   elevationChart: {
@@ -1547,7 +1557,7 @@ const messages: Messages = {
   },
 
   premium: {
-    title: 'Accesso completo',
+    title: 'Ottieni accesso premium',
     commonHeader: (
       <>
         <p>
@@ -1596,27 +1606,34 @@ const messages: Messages = {
         </a>
         , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato
         verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>,
-        che puoi utilizzare per ottenere l'accesso completo a www.freemap.sk o
+        che puoi utilizzare per ottenere l'accesso premium a www.freemap.sk o
         acquistare crediti, che potrai usare per rimuovere gli annunci da
         www.freemap.sk.
       </p>
     ),
     continue: 'Continua',
-    success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
-    becomePremium: 'Accesso completo',
+    success: 'Congratulazioni, hai ottenuto l’accesso premium!',
+    becomePremium: 'Ottieni accesso premium',
     youArePremium: (date) => (
       <>
-        Hai accesso a tutte le funzionalità <b>{date}</b>
+        Hai accesso premium fino al <b>{date}</b>.
       </>
-    ), // TODO fix translation
-    premiumOnly: 'Disponibile solo con accesso completo.', // TODO google translated
+    ),
+    premiumOnly: 'Disponibile solo con accesso premium.',
   },
 
   credits: {
+    buyCredits: 'Acquista crediti',
+    amount: 'Crediti',
+    credits: 'crediti',
+    buy: 'Acquista',
     purchase: {
       success: ({ amount }) => (
         <>Il tuo credito è stato aumentato di {nf00.format(amount)}.</>
       ),
+    },
+    youHaveCredits(amount) {
+      return <>Hai {amount} crediti.</>;
     },
   },
 
@@ -1702,6 +1719,27 @@ const messages: Messages = {
     notSupported: 'WebGPU non è supportato in questo browser.',
     errorRequestingDevice: 'Impossibile creare il dispositivo GPU: ',
     other: 'Errore durante il rendering: ',
+  },
+  downloadMap: {
+    downloadMap: 'Scarica mappa',
+    format: 'Formato',
+    map: 'Mappa',
+    downloadArea: 'Scarica',
+    area: {
+      visible: 'Area visibile',
+      byPolygon: 'Area coperta dal poligono selezionato',
+    },
+    name: 'Nome',
+    zoomRange: 'Intervallo di zoom',
+    scale: 'Scala',
+    email: 'Il tuo indirizzo email',
+    emailInfo:
+      'Utilizzeremo la tua email per inviarti il link per il download.',
+    download: 'Scarica',
+    success:
+      'La mappa è in preparazione. Al termine, riceverai via email un link per scaricarla.',
+    summaryTiles: 'Riquadri',
+    summaryPrice: (amount) => <>Prezzo totale: {amount} crediti</>,
   },
 };
 

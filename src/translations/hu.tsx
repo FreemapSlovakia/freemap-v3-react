@@ -472,8 +472,8 @@ const hu: Messages = {
       deletePrompt: 'Kép törlése?',
       modify: 'Módosítás',
       premiumOnly:
-        'This photo has been made available by its author only to users with full access.', // TODO translate
-      noComments: 'No comments', // TODO translate
+        'Ezt a fényképet a szerzője csak prémium hozzáféréssel rendelkező felhasználók számára tette elérhetővé.',
+      noComments: 'Nincs hozzászólás',
     },
     editForm: {
       name: 'Név',
@@ -624,31 +624,42 @@ const hu: Messages = {
   },
 
   drawing: {
-    modify: 'Properties', // TODO translate
+    modify: 'Tulajdonságok',
     edit: {
-      title: 'Properties', // TODO translate
-      color: 'Color', // TODO translate
+      title: 'Tulajdonságok',
+      color: 'Szín',
       label: 'Felirat:',
-      width: 'Szélesség', // TODO
-      hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
-      type: 'Geometry type', // TODO translate
+      width: 'Szélesség',
+      hint: 'A felirat eltávolításához hagyja üresen ezt a mezőt.',
+      type: 'Geometria típusa',
     },
-    continue: 'Continue', // TODO translate
-    join: 'Join', // TODO translate
-    split: 'Split', // TODO translate
-    stopDrawing: 'Stop drawing', // TODO translate
-    selectPointToJoin: 'Select point to join lines', // TODO translate
-    // TODO translate
+    continue: 'Folytatás',
+    join: 'Összekapcsolás',
+    split: 'Felosztás',
+    stopDrawing: 'Rajzolás befejezése',
+    selectPointToJoin: 'Válasszon pontot a vonalak összekapcsolásához',
     defProps: {
-      menuItem: 'Style settings',
-      title: 'Drawing style settings',
-      applyToAll: 'Save and apply to all',
+      menuItem: 'Stílusbeállítások',
+      title: 'Rajzolási stílus beállításai',
+      applyToAll: 'Mentés és alkalmazás mindegyikre',
     },
+
     projection: {
       projectPoint: 'Pont vetítése',
       distance: 'Távolság',
       azimuth: 'Azimut',
     },
+  },
+
+  purchases: {
+    purchases: 'Vásárlások',
+    premiumExpired: (at) => <>A prémium hozzáférésed lejárt ekkor: {at}</>,
+    date: 'Dátum',
+    item: 'Tétel',
+    notPremiumYet: 'Még nincs prémium hozzáférésed.',
+    noPurchases: 'Nincsenek vásárlások',
+    premium: 'Prémium',
+    credits: (amount) => <>Kreditek ({amount})</>,
   },
 
   settings: {
@@ -1205,7 +1216,6 @@ const hu: Messages = {
         />
       ),
     },
-    downloadMap: 'Térkép letöltése',
   },
 
   elevationChart: {
@@ -1553,7 +1563,7 @@ const hu: Messages = {
   },
 
   premium: {
-    title: 'Teljes hozzáférés',
+    title: 'Prémium hozzáférés megszerzése',
     commonHeader: (
       <>
         <p>
@@ -1603,27 +1613,33 @@ const hu: Messages = {
         </a>
         engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
         jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
-        kapsz, amelyet felhasználhatsz teljes hozzáférés megszerzéséhez a
+        kapsz, amelyet felhasználhatsz prémium hozzáférés megszerzéséhez a
         www.freemap.sk oldalon, vagy krediteket is vásárolhatsz.
       </p>
     ),
     continue: 'Folytatás',
-    success: 'Gratulálunk, most már hozzáférsz minden funkcióhoz!',
-    becomePremium: 'Teljes hozzáférés',
-    // TODO fix translation
+    success: 'Gratulálunk, megszerezted a prémium hozzáférést!',
+    becomePremium: 'Prémium hozzáférés megszerzése',
     youArePremium: (date) => (
       <>
-        Ön hozzáfér minden funkcióhoz <b>{date}</b>.
+        Prémium hozzáférésed érvényes eddig: <b>{date}</b>.
       </>
     ),
-    premiumOnly: 'Csak teljes hozzáféréssel érhető el.', // TODO google translated
+    premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
   },
 
   credits: {
+    buyCredits: 'Kreditek vásárlása',
+    amount: 'Kreditek',
+    credits: 'kredit',
+    buy: 'Vásárlás',
     purchase: {
       success: ({ amount }) => (
         <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
       ),
+    },
+    youHaveCredits(amount) {
+      return <>Önnek {amount} kreditje van.</>;
     },
   },
 
@@ -1708,6 +1724,27 @@ const hu: Messages = {
     notSupported: 'A WebGPU nem támogatott ebben a böngészőben.',
     errorRequestingDevice: 'Nem sikerült létrehozni a GPU eszközt: ',
     other: 'Hiba a megjelenítés során: ',
+  },
+  downloadMap: {
+    downloadMap: 'Térkép letöltése',
+    format: 'Formátum',
+    map: 'Térkép',
+    downloadArea: 'Letöltés',
+    area: {
+      visible: 'Látható terület',
+      byPolygon: 'A kijelölt sokszöggel lefedett terület',
+    },
+    name: 'Név',
+    zoomRange: 'Nagyítási tartomány',
+    scale: 'Lépték',
+    email: 'E-mail címed',
+    emailInfo:
+      'Az e-mail címedet a letöltési hivatkozás elküldésére használjuk.',
+    download: 'Letöltés',
+    success:
+      'A térkép előkészítése folyamatban van. A letöltési hivatkozást e-mailben kapja meg, miután elkészült.',
+    summaryTiles: 'Csempe',
+    summaryPrice: (amount) => <>Teljes ár: {amount} kredit</>,
   },
 };
 

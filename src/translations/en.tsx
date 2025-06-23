@@ -464,7 +464,7 @@ const en: Messages = {
       deletePrompt: 'Delete this picture?',
       modify: 'Modify',
       premiumOnly:
-        'This photo has been made available by its author only to users with full access.',
+        'This photo has been made available by its author only to users with premium access.',
       noComments: 'No comments',
     },
     editForm: {
@@ -632,6 +632,17 @@ const en: Messages = {
       azimuth: 'Azimuth',
       distance: 'Distance',
     },
+  },
+
+  purchases: {
+    purchases: 'Purchases',
+    premiumExpired: (at) => <>Your premium access expired at {at}</>,
+    date: 'Date',
+    item: 'Item',
+    notPremiumYet: 'You are not premium yet.',
+    noPurchases: 'No purchases',
+    premium: 'Premium',
+    credits: (amount) => <>Credits (${amount})</>,
   },
 
   settings: {
@@ -1181,7 +1192,6 @@ const en: Messages = {
         />
       ),
     },
-    downloadMap: 'Download map',
   },
 
   elevationChart: {
@@ -1515,7 +1525,7 @@ const en: Messages = {
   },
 
   premium: {
-    title: 'Get full access',
+    title: 'Get premium access',
     commonHeader: (
       <>
         <p>
@@ -1563,25 +1573,32 @@ const en: Messages = {
         </a>
         , which can create reports for you. After a report is verified by two
         users, you will receive the community currency <i>Chron</i>, which you
-        can use to obtain full access to www.freemap.sk or purchase credits.
+        can use to obtain premium access to www.freemap.sk or purchase credits.
       </p>
     ),
     continue: 'Continue',
-    success: 'Congratulations, you have now acces to all features!',
-    becomePremium: 'Get full access',
+    success: 'Congratulations, you have gained premium access!',
+    becomePremium: 'Get premium access',
     youArePremium: (date) => (
       <>
-        You have access to all features until <b>{date}</b>
+        You have premium access until <b>{date}</b>.
       </>
     ),
-    premiumOnly: 'Only available with full access.',
+    premiumOnly: 'Only available with premium access.',
   },
 
   credits: {
+    buyCredits: 'Buy credits',
+    amount: 'Credits',
+    credits: 'credits',
+    buy: 'Buy',
     purchase: {
       success: ({ amount }) => (
         <>Your credit has been increased by {nf00.format(amount)}.</>
       ),
+    },
+    youHaveCredits(amount) {
+      return <>You have {amount} credits.</>;
     },
   },
 
@@ -1667,6 +1684,26 @@ const en: Messages = {
     notSupported: 'WebGPU is not supported in this browser.',
     errorRequestingDevice: 'Failed to create GPU device: ',
     other: 'Error rendering: ',
+  },
+  downloadMap: {
+    downloadMap: 'Download map',
+    format: 'Format',
+    map: 'Map',
+    downloadArea: 'Download',
+    area: {
+      visible: 'Visible area',
+      byPolygon: 'Area covered by selected polygon',
+    },
+    name: 'Name',
+    zoomRange: 'Zoom range',
+    scale: 'Scale',
+    email: 'Your email address',
+    emailInfo: 'We will use your email to send you the download link.',
+    download: 'Download',
+    success:
+      'The map is being prepared. Once ready, a download link will be sent to your email.',
+    summaryTiles: 'Tiles',
+    summaryPrice: (amount) => <>Total price: {amount} credits</>,
   },
 };
 
