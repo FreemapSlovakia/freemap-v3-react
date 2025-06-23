@@ -21,6 +21,13 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
+    window._paq.push([
+      'trackEvent',
+      'Purchase',
+      'purchaseStart',
+      JSON.stringify(action.payload),
+    ]);
+
     const res = await httpRequest({
       getState,
       url: '/auth/purchaseToken',
@@ -91,6 +98,13 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       if (!(await callbackResultPromise)) {
         return;
       }
+
+      window._paq.push([
+        'trackEvent',
+        'Purchase',
+        'purchaseSuccess',
+        JSON.stringify(action.payload),
+      ]);
 
       // refresh user data
       dispatch(authInit());
