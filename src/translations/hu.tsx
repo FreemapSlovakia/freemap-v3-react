@@ -427,6 +427,12 @@ const hu: Messages = {
         </>
       ),
     },
+    ad: (email) => (
+      <>
+        Szeretnéd, ha itt lenne a saját hirdetésed? Ne habozz kapcsolatba lépni
+        velünk a következő címen: {email}.
+      </>
+    ),
   },
 
   gallery: {

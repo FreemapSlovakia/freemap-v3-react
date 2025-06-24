@@ -419,6 +419,12 @@ const en: Messages = {
         </>
       ),
     },
+    ad: (email) => (
+      <>
+        Interested in placing your own ad here? Don’t hesitate to contact us at{' '}
+        {email}.
+      </>
+    ),
   },
 
   gallery: {

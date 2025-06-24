@@ -429,6 +429,12 @@ const messages: Messages = {
         </>
       ),
     },
+    ad: (email) => (
+      <>
+        Máte zájem o vlastní reklamu na tomto místě? Neváhejte nás kontaktovat
+        na {email}.
+      </>
+    ),
   },
 
   gallery: {

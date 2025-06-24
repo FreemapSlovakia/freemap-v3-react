@@ -460,6 +460,12 @@ const messages: Messages = {
         );
       },
     },
+    ad: (email) => (
+      <>
+        Máš záujem o vlastnú reklamu na tomto mieste? Neváhaj nás kontaktovť na{' '}
+        {email}.
+      </>
+    ),
   },
 
   gallery: {

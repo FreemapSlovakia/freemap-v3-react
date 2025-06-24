@@ -427,6 +427,12 @@ const messages: Messages = {
         </>
       ),
     },
+    ad: (email) => (
+      <>
+        Vuoi pubblicare il tuo annuncio qui? Non esitare a contattarci a {email}
+        .
+      </>
+    ),
   },
 
   gallery: {

@@ -320,6 +320,7 @@ export type Messages = {
     copyright: string;
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
+    ad: (email: ReactNode) => JSX.Element;
   };
   gallery: {
     recentTags: string;

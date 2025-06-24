@@ -129,10 +129,6 @@ button#freemap-logo {
   }
 }
 
-.fm-bg {
-  background-color: rgba(255, 255, 255, 0.8);
-}
-
 .fm-toolbar {
   @media screen {
     min-height: 3rem;
@@ -421,4 +417,9 @@ button#freemap-logo {
   height: 1em;
   vertical-align: middle;
   border: 1px solid black;
+}
+
+.fm-rklm {
+  max-width: 380px;
+  background-color: rgba(255, 255, 255, 0.8);
 }
