@@ -97,7 +97,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     midpoints,
     transportType,
     mode,
-    weighting,
     roundtripParams,
     isochroneParams,
   } = getState().routePlanner;
@@ -143,15 +142,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     if (ttDef.api === 'gh' && mode === 'isochrone') {
       const response = await httpRequest({
         getState,
-        // url: 'https://local.gruveo.com/gh/isochrone',
         url:
-          'https://graphhopper.freemap.sk/isochrone?' +
+          process.env['GRAPHHOPPER_URL'] +
+          '/isochrone?' +
           objectToURLSearchParams({
-            profile:
-              ttDef.vehicle +
-              (weighting === 'shortest' || weighting === 'fastest'
-                ? '_' + weighting
-                : ''),
+            profile: ttDef.profile,
             buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
             time_limit: isochroneParams.timeLimit,
             distance_limit: isochroneParams.distanceLimit || -1,
@@ -175,11 +170,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       const response = await httpRequest({
         getState,
         method: 'POST',
-        // url: 'https://local.gruveo.com/gh/route',
-        url: 'https://graphhopper.freemap.sk/route',
+        url: process.env['GRAPHHOPPER_URL'] + '/route',
         data: {
-          // avoid: 'toll', // wut? doesn't work
-          // snap_preventions: ['trunk', 'motorway'], // without effect
+          snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
 
           // elevation: true, // if to return also elevations
 
@@ -193,27 +186,25 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,
 
-          'ch.disable': weighting !== 'fastest' || mode === 'roundtrip',
+          'ch.disable': mode === 'roundtrip',
 
           'alternative_route.max_paths': 2, // default is 2
           // 'alternative_route.max_weight_factor': 1.4,
           // 'alternative_route.max_paths': 0.6,
 
           instructions: true,
-          details:
-            ttDef.vehicle === 'bike2' ||
-            ttDef.vehicle === 'mtb' ||
-            ttDef.vehicle === 'racingbike'
-              ? ['get_off_bike']
-              : undefined,
+          // details:
+          //   ttDef.profile === 'bike' ||
+          //   ttDef.profile === 'mtb' ||
+          //   ttDef.profile === 'racingbike'
+          //     ? ['get_off_bike']
+          //     : undefined,
 
           // profile: ttDef.profile,
           // profile: 'wheelchair',
 
-          weighting, // fastest|short_fastest|shortest|curvature
-
           // turn_costs: true,
-          vehicle: ttDef.vehicle,
+          profile: ttDef.profile,
 
           // optimize: String(mode === 'trip'), // not included in (free) directions API
           points_encoded: false,

@@ -10,7 +10,6 @@ import {
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
-  routePlannerSetWeighting,
   routePlannerSwapEnds,
 } from '../actions/routePlannerActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -25,7 +24,6 @@ export const updateRouteTypes = [
   routePlannerSetTransportType,
   routePlannerSetMode,
   routePlannerSetParams,
-  routePlannerSetWeighting,
   routePlannerSetRoundtripParams,
   routePlannerSetIsochroneParams,
   mapsLoaded,

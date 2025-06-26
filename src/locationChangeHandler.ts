@@ -43,10 +43,7 @@ import {
   osmLoadRelation,
   osmLoadWay,
 } from './actions/osmActions.js';
-import {
-  routePlannerSetParams,
-  Weighting,
-} from './actions/routePlannerActions.js';
+import { routePlannerSetParams } from './actions/routePlannerActions.js';
 import { searchSetQuery } from './actions/searchActions.js';
 import { trackingActions } from './actions/trackingActions.js';
 import {
@@ -179,7 +176,6 @@ export function handleLocationChange(store: MyStore): void {
         transportType,
         mode,
         milestones,
-        weighting,
         roundtripParams,
         isochroneParams,
       } = getState().routePlanner;
@@ -206,8 +202,6 @@ export function handleLocationChange(store: MyStore): void {
             serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
-        (weighting === 'fastest' ? undefined : weighting) !==
-          query['route-weighting'] ||
         milestones !== reqMilestones ||
         String(roundtripParams.seed) !== (query['trip-seed'] ?? '0') ||
         String(roundtripParams.distance) !==
@@ -218,8 +212,6 @@ export function handleLocationChange(store: MyStore): void {
         String(isochroneParams.timeLimit) !== (query['iso-time-limit'] ?? '600')
       ) {
         const routeMode = query['route-mode'];
-
-        const weighting = query['route-weighting'];
 
         dispatch(
           routePlannerSetParams({
@@ -233,7 +225,6 @@ export function handleLocationChange(store: MyStore): void {
               routeMode === 'isochrone'
                 ? routeMode
                 : 'route',
-            weighting: is<Weighting>(weighting) ? weighting : undefined,
             milestones: reqMilestones,
             roundtripParams: {
               seed: Number(query['trip-seed']) || 0,

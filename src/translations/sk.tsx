@@ -162,14 +162,15 @@ const messages: Messages = {
     },
     transportType: {
       car: 'Auto',
+      car4wd: 'Auto 4x4',
       // 'car-toll': 'Auto, vrátane spoplatnených ciest',
       // 'car-free': 'Auto, mimo spoplatnených ciest',
       // bikesharing: 'Bike sharing',
       // imhd: 'MHD v Bratislave',
       bike: 'Bicykel',
-      bicycle_touring: 'Cykloturistika',
-      'foot-stroller': 'S kočíkom / vozíčkom',
-      nordic: 'Bežky',
+      // bicycle_touring: 'Cykloturistika',
+      // 'foot-stroller': 'S kočíkom / vozíčkom',
+      // nordic: 'Bežky',
       // ski: 'Zjazdové lyžovanie',
       foot: 'Pešo',
       hiking: 'Turistika',
@@ -185,11 +186,11 @@ const messages: Messages = {
       'routndtrip-gh': 'Výlet',
       isochrone: 'Izochróny',
     },
-    weighting: {
-      fastest: 'Najrýchlejšia',
-      short_fastest: 'Rýchla, krátka',
-      shortest: 'Najkratšia',
-    },
+    // weighting: {
+    //   fastest: 'Najrýchlejšia',
+    //   short_fastest: 'Rýchla, krátka',
+    //   shortest: 'Najkratšia',
+    // },
     alternative: 'Alternatíva',
     distance: ({ value, diff }) => (
       <>

@@ -179,29 +179,21 @@ const config: Configuration = {
       BASE_URL:
         {
           www: 'https://www.freemap.sk',
-          next: 'https://next.freemap.sk',
         }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:9000',
       API_URL:
         {
           www: 'https://backend.freemap.sk',
-          next: 'https://backend.freemap.sk',
         }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:3000',
-      MATOMO_SITE_ID:
-        { www: '1', next: null }[process.env['DEPLOYMENT']!] ?? null,
+      MATOMO_SITE_ID: { www: '1' }[process.env['DEPLOYMENT']!] ?? null,
       SENTRY_DSN:
         {
           www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2',
         }[process.env['DEPLOYMENT']!] ?? null,
-      FB_APP_ID:
-        { www: '681854635902254', next: '681854635902254' }[
-          process.env['DEPLOYMENT']!
-        ] ?? null,
-      PURCHASE_URL_PREFIX:
+      FB_APP_ID: { www: '681854635902254' }[process.env['DEPLOYMENT']!] ?? null,
+      GRAPHHOPPER_URL:
         {
-          www: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
-          next: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
-        }[process.env['DEPLOYMENT']!] ||
-        'https://dev.rovas.app/rewpro?paytype=project&recipient=35384',
+          www: 'https://graphhopper.freemap.sk',
+        }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', //'http://localhost:8989',
     }),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
     new HtmlWebpackPlugin({

@@ -60,7 +60,6 @@ export const urlProcessor: Processor = {
       routePlanner.midpoints,
       routePlanner.milestones,
       routePlanner.mode,
-      routePlanner.weighting,
       routePlanner.start,
       routePlanner.transportType,
       routePlanner.roundtripParams,
@@ -140,10 +139,6 @@ export const urlProcessor: Processor = {
 
       if (routePlanner.mode !== 'route') {
         historyParts.push(['route-mode', routePlanner.mode]);
-      }
-
-      if (routePlanner.weighting !== 'fastest') {
-        historyParts.push(['route-weighting', routePlanner.weighting]);
       }
 
       if (routePlanner.milestones) {

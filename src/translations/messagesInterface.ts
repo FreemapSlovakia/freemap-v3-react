@@ -1,7 +1,7 @@
 import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
-import { RoutingMode, Weighting } from '../actions/routePlannerActions.js';
+import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { HttpError } from '../httpRequest.js';
 import { AttributionDef, IntegratedLayerLetters } from '../mapDefinitions.js';
@@ -116,7 +116,6 @@ export type Messages = {
     transportType: Record<TransportTypeMsgKey, string>;
     development: string;
     mode: Record<RoutingMode | 'routndtrip-gh', string>;
-    weighting: Record<Weighting, string>;
     alternative: string;
     distance: ({
       value,

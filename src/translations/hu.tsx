@@ -137,15 +137,14 @@ const hu: Messages = {
   },
 
   routePlanner: {
-    // TODO translate
     ghParams: {
-      tripParameters: 'Trip parameters',
-      seed: 'Random seed',
-      distance: 'Approximate distance',
-      isochroneParameters: 'Isochrone parameters',
-      buckets: 'Buckets',
-      timeLimit: 'Time limit',
-      distanceLimit: 'Distance limit',
+      tripParameters: 'Út paraméterei',
+      seed: 'Véletlenszám mag',
+      distance: 'Közelítő távolság',
+      isochroneParameters: 'Izokron paraméterek',
+      buckets: 'Vödrök',
+      timeLimit: 'Időkorlát',
+      distanceLimit: 'Távolságkorlát',
     },
     milestones: 'Távolságszelvények',
     start: 'Kiindulás',
@@ -158,19 +157,20 @@ const hu: Messages = {
     },
     transportType: {
       car: 'Gépkocsi',
+      car4wd: 'Gépkocsi 4x4',
       // 'car-free': 'Gépkocsi (útdíj nélkül)',
       // bikesharing: 'Kerékpármegosztás',
       // imhd: 'Tömegközlekedés (Pozsony)',
-      bike: 'Bicycle', // TODO translate
-      bicycle_touring: 'Kerékpártúrázás',
-      'foot-stroller': 'Babakocsi / kerekesszék',
-      nordic: 'Sífutás',
+      bike: 'Kerékpár',
+      // bicycle_touring: 'Kerékpártúrázás',
+      // 'foot-stroller': 'Babakocsi / kerekesszék',
+      // nordic: 'Sífutás',
       // ski: 'Alpesi sí',
       foot: 'Gyaloglás',
-      hiking: 'Turisztika', // TODO translate
-      mtb: 'Mountain bike', // TODO translate
-      racingbike: 'Racing bike', // TODO translate
-      motorcycle: 'Motorcycle', // TODO translate
+      hiking: 'Túrázás',
+      mtb: 'Hegyikerékpár',
+      racingbike: 'Versenykerékpár',
+      motorcycle: 'Motorkerékpár',
     },
     development: 'fejlesztés alatt',
     mode: {
@@ -181,11 +181,11 @@ const hu: Messages = {
       isochrone: 'Isochrones', // TODO translate
     },
     // TODO translate
-    weighting: {
-      fastest: 'Fastest',
-      short_fastest: 'Fast, short',
-      shortest: 'Shortest',
-    },
+    // weighting: {
+    //   fastest: 'Fastest',
+    //   short_fastest: 'Fast, short',
+    //   shortest: 'Shortest',
+    // },
     alternative: 'Alternatíva',
     distance: ({ value, diff }) => (
       <>
