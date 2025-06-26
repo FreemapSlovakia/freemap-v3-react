@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useAd } from '../hooks/useAd.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
@@ -7,6 +7,12 @@ import rovasAd from '../images/rovas_reklama.svg';
 import { useMessages } from '../l10nInjector.js';
 
 export default Ad;
+
+const ads = {
+  tShirt: 4, // freemap t-shirt
+  rovas: 1, // rovas
+  self: 8, // self promo
+};
 
 export function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
@@ -35,13 +41,7 @@ export function Ad(): ReactElement | null {
     return () => window.clearInterval(i);
   }, []);
 
-  const ads = useRef({
-    tShirt: 4,
-    rovas: 1,
-    self: 8,
-  });
-
-  const ad = useAd(ads.current);
+  const ad = useAd(ads);
 
   return (
     <div
