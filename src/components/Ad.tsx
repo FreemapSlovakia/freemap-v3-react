@@ -1,6 +1,9 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { useAd } from '../hooks/useAd.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
+import tShirt from '../images/fm-t-shirt.jpg';
+import rovasAd from '../images/rovas_reklama.svg';
 import { useMessages } from '../l10nInjector.js';
 
 export default Ad;
@@ -32,6 +35,14 @@ export function Ad(): ReactElement | null {
     return () => window.clearInterval(i);
   }, []);
 
+  const ads = useRef({
+    tShirt: 4,
+    rovas: 1,
+    self: 8,
+  });
+
+  const ad = useAd(ads.current);
+
   return (
     <div
       className={`mt-2 mx-2 d-flex flex-column ${
@@ -39,11 +50,24 @@ export function Ad(): ReactElement | null {
       }`}
     >
       <div className="border rounded-top rounded-start fm-rklm p-1">
-        <div className="border px-3 py-2 rounded bg-body text-body">
-          {m?.main.ad(
-            <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>,
-          )}
-        </div>
+        {ad === 'self' ? (
+          <div
+            className="border px-3 py-2 rounded bg-body text-body"
+            style={{ maxWidth: '420px' }}
+          >
+            {m?.main.ad(
+              <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>,
+            )}
+          </div>
+        ) : ad === 'rovas' ? (
+          <img className="border rounded" src={rovasAd} />
+        ) : ad === 'tShirt' ? (
+          <img
+            className="border rounded w-100"
+            src={tShirt}
+            style={{ maxWidth: '360px' }}
+          />
+        ) : null}
       </div>
 
       <div className="align-self-end d-flex">
