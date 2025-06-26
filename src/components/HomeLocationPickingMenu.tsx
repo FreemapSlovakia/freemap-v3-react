@@ -22,7 +22,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
 
   return (
     <div>
-      <Card className="fm-toolbar mx-2 mt-2">
+      <Card className="fm-toolbar mt-2">
         <div className="m-1">Zvoľte domovskú pozíciu</div>
 
         <Button

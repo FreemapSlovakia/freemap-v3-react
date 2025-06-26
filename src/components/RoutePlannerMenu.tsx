@@ -475,7 +475,7 @@ export function RoutePlannerMenu(): ReactElement {
               {['car', 'car-toll', 'bikesharing'].includes(
                 activeTransportType,
               ) && <FaMoneyBill />}
-              <span className="d-none d-md-inline">
+              <span className="d-none d-lg-inline">
                 {' '}
                 {m?.routePlanner.transportType[activeTTDef.msgKey].replace(
                   /\s*,.*/,
@@ -759,7 +759,9 @@ export function RoutePlannerMenu(): ReactElement {
         </Dropdown>
       )}
 
-      {(routeFound || isochronesFound || canDelete) && <DeleteButton />}
+      {(routeFound || isochronesFound || canDelete) && (
+        <DeleteButton textClassName="d-none d-lg-inline" />
+      )}
     </ToolMenu>
   );
 }

@@ -39,7 +39,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
     joining /* TODO show joining toolbar */
   ) {
     return (
-      <Card className="fm-toolbar mx-2 mt-2">
+      <Card className="fm-toolbar mt-2">
         <span className="me-2">{m?.drawing.selectPointToJoin}</span>
 
         <Button

@@ -45,9 +45,7 @@ export function Ad(): ReactElement | null {
 
   return (
     <div
-      className={`mt-2 mx-2 d-flex flex-column ${
-        closed ? 'invisible' : 'visible'
-      }`}
+      className={`mt-2 d-flex flex-column ${closed ? 'invisible' : 'visible'}`}
     >
       <div className="border rounded-top rounded-start fm-rklm p-1">
         {ad === 'self' ? (

@@ -466,7 +466,7 @@ export function Main(): ReactElement {
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
-                <Card className="fm-toolbar mx-2 mt-2">
+                <Card className="fm-toolbar mt-2">
                   <Button
                     id="freemap-logo"
                     className={progress ? 'in-progress' : 'idle'}
