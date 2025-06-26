@@ -60,13 +60,21 @@ export function Ad(): ReactElement | null {
             )}
           </div>
         ) : ad === 'rovas' ? (
-          <img className="border rounded" src={rovasAd} />
+          <a href="https://rovas.app" target="_blank" rel="noreferrer">
+            <img className="border rounded" src={rovasAd} />
+          </a>
         ) : ad === 'tShirt' ? (
-          <img
-            className="border rounded w-100"
-            src={tShirt}
-            style={{ maxWidth: '360px' }}
-          />
+          <a
+            href="https://nabezky.sk/freemap_t-shirt"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              className="border rounded w-100"
+              src={tShirt}
+              style={{ maxWidth: '360px' }}
+            />
+          </a>
         ) : null}
       </div>
 
