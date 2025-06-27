@@ -197,6 +197,7 @@ export function GalleryEditForm({
           onChange={handleAzimuthChange}
           min={0}
           max={360}
+          step="any"
         />
       </Form.Group>
 
