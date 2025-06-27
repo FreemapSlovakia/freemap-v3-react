@@ -157,15 +157,16 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const {
     title = '...',
-    description = undefined,
-    createdAt = undefined,
-    takenAt = undefined,
-    tags = undefined,
-    comments = undefined,
-    rating = undefined,
-    myStars = undefined,
+    description,
+    createdAt,
+    takenAt,
+    tags,
+    comments,
+    rating,
+    myStars,
     lat,
     lon,
+    azimuth,
   } = image || {};
 
   const premium = Boolean(image?.premium);
@@ -499,6 +500,29 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   {m?.gallery.viewer.captured(
                     <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
                   )}
+                </>
+              )}
+
+              {azimuth != null && (
+                <>
+                  {' ｜ '}
+                  <svg viewBox="-10 -10 20 20" width="1.2em" height="1.2em">
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="9"
+                      fill="none"
+                      stroke="currentColor"
+                    />
+
+                    <path
+                      transform={`rotate(${azimuth - 90 - 45})`}
+                      d="M 0 0 L 9 0 A 9 9 0 0 1 0 9 Z"
+                      fill="#aaf"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                    />
+                  </svg>
                 </>
               )}
 

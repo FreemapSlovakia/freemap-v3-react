@@ -524,6 +524,7 @@ const messages: Messages = {
         time: 'Čas fotenia',
       },
       location: 'Pozícia',
+      azimuth: 'Azimut',
       tags: 'Tagy',
       setLocation: 'Nastaviť pozíciu',
     },

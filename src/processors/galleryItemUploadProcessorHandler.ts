@@ -48,6 +48,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       title: item.title,
       description: item.description,
       position: parseCoordinates(item.dirtyPosition),
+      azimuth: item.azimuth,
       takenAt: item.takenAt?.toISOString(),
       tags: item.tags,
       premium: item.premium,

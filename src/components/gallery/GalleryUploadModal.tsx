@@ -52,9 +52,12 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const handleModelChange = useCallback(
     (id: number, model: PictureModel) => {
+      const azimuth = parseFloat(model.azimuth);
+
       handleItemMerge({
         id,
         ...model,
+        azimuth: Number.isNaN(azimuth) ? null : azimuth,
         takenAt: model.takenAt ? new Date(model.takenAt) : null,
       });
     },
@@ -146,6 +149,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             tags,
             errors,
             dirtyPosition,
+            azimuth,
             premium,
           }) => (
             <GalleryUploadItem
@@ -157,6 +161,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
               model={{
                 premium,
                 dirtyPosition,
+                azimuth: typeof azimuth === 'number' ? String(azimuth) : '',
                 title,
                 description,
                 takenAt: takenAt ? toDatetimeLocal(takenAt) : '',

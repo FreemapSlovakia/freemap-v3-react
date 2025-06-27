@@ -64,6 +64,25 @@ export function usePictureDropHandler(
 
         const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
 
+        const rawAzimuth = tags.GPSImgDirection?.value;
+        let azimuth: number | null = null;
+
+        if (typeof rawAzimuth === 'number') {
+          azimuth = rawAzimuth;
+        } else if (
+          Array.isArray(rawAzimuth) &&
+          rawAzimuth.length === 2 &&
+          typeof rawAzimuth[0] === 'number' &&
+          typeof rawAzimuth[1] === 'number'
+        ) {
+          azimuth = rawAzimuth[0] / rawAzimuth[1];
+        } else if (typeof rawAzimuth === 'string') {
+          azimuth = parseFloat(rawAzimuth);
+        }
+
+        if (isNaN(azimuth ?? NaN)) {
+          azimuth = null;
+        }
         const [rawLat, latRef] = adaptGpsCoordinate(
           tags.GPSLatitude as WeirdGpsCoordinate,
         );
@@ -105,6 +124,7 @@ export function usePictureDropHandler(
             Number.isNaN(lat) || Number.isNaN(lon)
               ? ''
               : latLonToString({ lat, lon }, language),
+          azimuth,
           title: (
             tags['title']?.description ||
             tags['DocumentName']?.description ||

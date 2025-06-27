@@ -21,6 +21,7 @@ export interface PictureModel {
   tags: string[];
   takenAt: string;
   dirtyPosition: string;
+  azimuth: string;
   premium: boolean;
 }
 
@@ -60,6 +61,13 @@ export function GalleryEditForm({
   const handleDescriptionChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       changeModel('description', e.currentTarget.value || null);
+    },
+    [changeModel],
+  );
+
+  const handleAzimuthChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      changeModel('azimuth', e.currentTarget.value || null);
     },
     [changeModel],
   );
@@ -179,6 +187,17 @@ export function GalleryEditForm({
             <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
           </Button>
         </InputGroup>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Control
+          placeholder={m?.gallery.editForm.azimuth}
+          type="number"
+          value={model.azimuth}
+          onChange={handleAzimuthChange}
+          min={0}
+          max={360}
+        />
       </Form.Group>
 
       <Form.Group className="mb-3" key={key}>

@@ -493,6 +493,7 @@ const messages: Messages = {
         time: 'Čas focení',
       },
       location: 'Pozice',
+      azimuth: 'Azimut',
       tags: 'Tagy',
       setLocation: 'Nastavit pozici',
     },

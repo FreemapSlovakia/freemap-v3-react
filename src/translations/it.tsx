@@ -491,6 +491,7 @@ const messages: Messages = {
         time: 'Orario scatto',
       },
       location: 'Luogo',
+      azimuth: 'Azimut',
       tags: 'Tag',
       setLocation: 'Imposta il luogo',
     },

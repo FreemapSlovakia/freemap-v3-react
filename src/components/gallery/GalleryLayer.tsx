@@ -97,6 +97,10 @@ class LGalleryLayer extends LGridLayer {
       fields: 'pano',
     });
 
+    if (coords.z >= 14) {
+      sp.append('fields', 'azimuth');
+    }
+
     if (this._options) {
       for (const [k, v] of Object.entries(createFilter(this._options.filter))) {
         if (v != null) {

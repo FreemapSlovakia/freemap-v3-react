@@ -10,6 +10,7 @@ type Marble = LatLon & {
   takenAt?: number | null;
   pano?: 1;
   premium?: 1;
+  azimuth?: number;
 };
 
 type Props = {
@@ -114,11 +115,23 @@ export function renderGalleryTile({
     }))
     .reverse();
 
-  for (const { lat, lon, pano } of marbles) {
+  for (const { lat, lon, pano, azimuth } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
+
+    if (azimuth !== undefined) {
+      const az = azimuth * (Math.PI / 180) - (3 * Math.PI) / 4;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 13.5 * zk * Math.cos(az), y + 13.5 * zk * Math.sin(az));
+      ctx.arc(x, y, 13.5 * zk, az, az + Math.PI / 2);
+      ctx.closePath();
+      ctx.fillStyle = '#0000ff20';
+      ctx.fill();
+    }
 
     ctx.beginPath();
 

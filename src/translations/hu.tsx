@@ -490,6 +490,7 @@ const hu: Messages = {
         time: 'Felvétel időpontja',
       },
       location: 'Hely',
+      azimuth: 'Azimut',
       tags: 'Címkék',
       setLocation: 'Hely megadása',
     },

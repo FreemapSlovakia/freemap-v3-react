@@ -483,6 +483,7 @@ const en: Messages = {
         time: 'Capture time',
       },
       location: 'Location',
+      azimuth: 'Azimuth',
       tags: 'Tags',
       setLocation: 'Set the location',
     },

@@ -9,7 +9,7 @@ export interface GalleryItem {
   description: string;
   tags: string[];
   takenAt: Date | null;
-  // position: LatLon | null;
+  azimuth: number | null;
   dirtyPosition: string | '';
   premium: boolean;
   errors: string[];
@@ -66,6 +66,7 @@ export interface Picture extends LatLon {
   takenAt: Date | null;
   pano?: 1;
   premium?: 1;
+  azimuth?: number | null;
 }
 
 export interface GalleryFilter {

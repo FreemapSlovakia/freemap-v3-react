@@ -371,6 +371,7 @@ export type Messages = {
     editForm: {
       name: string;
       description: string;
+      azimuth: string;
       takenAt: {
         datetime: string;
         date: string;

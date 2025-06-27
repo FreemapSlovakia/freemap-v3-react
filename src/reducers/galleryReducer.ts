@@ -290,6 +290,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             dirtyPosition: position
               ? latLonToString(position, state.language)
               : '',
+            azimuth:
+              typeof state.image?.azimuth === 'number'
+                ? String(state.image.azimuth)
+                : '',
             premium: Boolean(state.image?.premium),
           };
     })
