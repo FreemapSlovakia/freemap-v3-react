@@ -66,8 +66,6 @@ export function renderGalleryTile({
 
   ctx.strokeStyle = '#000';
 
-  ctx.fillStyle = '#ff0';
-
   ctx.lineWidth = zk; // zoom > 9 ? 1.5 : 1;
 
   const k = 2 ** zoom;
@@ -143,6 +141,8 @@ export function renderGalleryTile({
 
     ctx.stroke();
   }
+
+  ctx.fillStyle = '#ff0';
 
   ctx.lineWidth = 0.25 * zk; // zoom > 9 ? 1.5 : 1;
 
