@@ -186,14 +186,7 @@ export function renderGalleryTile({
 
       case 'takenAt':
         ctx.fillStyle = takenAt
-          ? color
-              .hsl(
-                60,
-                100,
-                // 100 - ((now - takenAt) * 10) ** 0.2,
-                100 - ((now - takenAt) * 100) ** 0.185,
-              )
-              .hex()
+          ? color.hsl(60, 100, 100 - ((now - takenAt) * 100) ** 0.185).hex()
           : '#a22';
 
         break;
@@ -208,18 +201,20 @@ export function renderGalleryTile({
 
           const hs = 366 / 4;
 
-          const winter = [70, -5, -52];
+          type Color = [number, number, number];
 
-          const spring = [70, -62, 42];
+          const winter: Color = [70, -5, -52];
 
-          const summer = [90, -4, 74];
+          const spring: Color = [70, -62, 42];
 
-          const fall = [70, 48, 43];
+          const summer: Color = [90, -4, 74];
+
+          const fall: Color = [70, 48, 43];
 
           // 2847600
           const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
 
-          const fill = (from: number[], to: number[], n: number) => {
+          const fill = (from: Color, to: Color, n: number) => {
             ctx.fillStyle = color
               .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
               .hex();
