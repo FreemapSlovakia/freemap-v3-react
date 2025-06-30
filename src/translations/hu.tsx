@@ -436,6 +436,7 @@ const hu: Messages = {
   },
 
   gallery: {
+    legend: 'Jelmagyarázat',
     recentTags: 'Recent tags to assign:', // TODO translate
     filter: 'Szűrő',
     showPhotosFrom: 'Fényképek megtekintése',

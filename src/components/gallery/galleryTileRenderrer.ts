@@ -191,6 +191,13 @@ export function renderGalleryTile({
 
         break;
 
+      case 'createdAt':
+        ctx.fillStyle = color
+          .hsl(60, 100, 100 - ((now - createdAt) * 100) ** 0.185)
+          .hex();
+
+        break;
+
       case 'season':
         {
           if (!takenAt) {
@@ -230,18 +237,6 @@ export function renderGalleryTile({
             fill(fall, winter, (x - 3 * hs) / hs);
           }
         }
-
-        break;
-
-      case 'createdAt':
-        ctx.fillStyle = color
-          .hsl(
-            60,
-            100,
-            // 100 - ((now - createdAt) * 10) ** 0.2,
-            100 - ((now - createdAt) * 100) ** 0.185,
-          )
-          .hex();
 
         break;
 

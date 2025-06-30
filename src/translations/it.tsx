@@ -437,6 +437,7 @@ const messages: Messages = {
   },
 
   gallery: {
+    legend: 'Legenda',
     recentTags: 'Recent tags to assign:', // TODO translate
     filter: 'Filtro',
     showPhotosFrom: 'Vedi le foto',
