@@ -49,6 +49,7 @@ import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
 import { isPremium } from '../../premium.js';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton.js';
+import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 
 import '../../styles/gallery.scss';
@@ -506,23 +507,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               {azimuth != null && (
                 <>
                   {' ｜ '}
-                  <svg viewBox="-10 -10 20 20" width="1.2em" height="1.2em">
-                    <circle
-                      cx="0"
-                      cy="0"
-                      r="9"
-                      fill="none"
-                      stroke="currentColor"
-                    />
-
-                    <path
-                      transform={`rotate(${azimuth - 90 - 45})`}
-                      d="M 0 0 L 9 0 A 9 9 0 0 1 0 9 Z"
-                      fill="#aaf"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                    />
-                  </svg>
+                  <Azimuth value={azimuth} size={18} />
                 </>
               )}
 

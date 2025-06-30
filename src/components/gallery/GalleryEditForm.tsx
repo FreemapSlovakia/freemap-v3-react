@@ -13,6 +13,7 @@ import { galleryAddTag, GalleryTag } from '../../actions/galleryActions.js';
 import { getMessageByKey, useMessages } from '../../l10nInjector.js';
 import '../../styles/react-tags.scss';
 import { DateTime } from '../DateTime.js';
+import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 
 export interface PictureModel {
@@ -126,6 +127,11 @@ export function GalleryEditForm({
     setKey(1);
   }, []);
 
+  const handleAzimuthChange2 = useCallback(
+    (a: number) => changeModel('azimuth', a.toFixed(1)),
+    [changeModel],
+  );
+
   return (
     <div>
       {errors?.map((error) => (
@@ -189,7 +195,7 @@ export function GalleryEditForm({
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-3 d-flex align-items-center">
         <Form.Control
           placeholder={m?.gallery.editForm.azimuth}
           type="number"
@@ -198,6 +204,13 @@ export function GalleryEditForm({
           min={0}
           max={360}
           step="any"
+        />
+
+        <Azimuth
+          className="ms-2"
+          value={model.azimuth ? parseFloat(model.azimuth) : null}
+          size={34}
+          onChange={handleAzimuthChange2}
         />
       </Form.Group>
 
