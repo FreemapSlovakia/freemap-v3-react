@@ -7,19 +7,21 @@ export function PictureLegend() {
 
   const m = useMessages();
 
+  const byDate = colorizeBy === 'takenAt' || colorizeBy === 'createdAt';
+
   const background =
     colorizeBy === 'rating'
       ? 'linear-gradient(to right in hsl, hsl(60 100% 1%), hsl(60 100% 99%))'
-      : colorizeBy === 'takenAt' || colorizeBy === 'createdAt'
+      : byDate
         ? 'linear-gradient(to right in hsl, hsl(60 100% 99%), hsl(60 100% 1%))'
         : colorizeBy === 'season'
           ? `linear-gradient(
               to right in lab,
-              lab(70 -5 -52) 0%,      /* winter */
-              lab(70 -62 42) 25%,     /* spring */
-              lab(90 -4 74) 50%,      /* summer */
-              lab(70 48 43) 75%,      /* fall */
-              lab(70 -5 -52) 100%     /* wrap back to winter */
+              lab(70 -5 -52) 0%,  /* winter */
+              lab(70 -62 42) 25%, /* spring */
+              lab(90 -4 74) 50%,  /* summer */
+              lab(70 48 43) 75%,  /* fall */
+              lab(70 -5 -52) 100% /* wrap back to winter */
             )`
           : undefined;
 
@@ -27,38 +29,32 @@ export function PictureLegend() {
     return null;
   }
 
-  console.log({ background });
-
   return (
-    <div>
-      <Card className="fm-toolbar mt-2">
+    <div className="w-100" style={{ maxWidth: '400px' }}>
+      <Card className="fm-toolbar mt-2 d-flex">
         <div>{m?.gallery.legend}</div>
+
         <div
+          className="mx-2"
           style={{
+            flexGrow: '1',
             position: 'relative',
-            width: '300px',
             height: '34px',
           }}
         >
           <div
-            className="px-1"
             style={{
               position: 'absolute',
               inset: 0,
               background,
-              margin: '0 7px',
               border: '1px solid #ccc',
             }}
           />
 
           <div
-            className="px-1"
             style={{
               position: 'absolute',
               inset: 0,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
               textShadow: `
                 -1px -1px 0 white,
                 0px -1px 0 white,
@@ -73,28 +69,60 @@ export function PictureLegend() {
           >
             {colorizeBy === 'rating' ? (
               <>
-                {' '}
-                <div>1</div>
-                <div>2</div>
-                <div>3</div>
-                <div>4</div>
-                <div>5</div>
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        position: 'absolute',
+                        left: `calc(${(i * 100) / 4}% - 20px)`,
+                        top: '16%',
+                        width: '40px',
+                        textWrap: 'nowrap',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {i + 1}
+                    </div>
+                  ))}
+              </>
+            ) : byDate ? (
+              <>
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40].map((i, j) => (
+                  <div
+                    key={i}
+                    style={{
+                      transform: 'rotate(90deg)',
+                      fontSize: '0.75em',
+                      position: 'absolute',
+                      left: `calc(${(0.333 * i * 100) / (1 + 0.333 * i)}% - 4px)`,
+                      top: j % 2 ? '3px' : '13px',
+                    }}
+                  >
+                    {-i}
+                  </div>
+                ))}
               </>
             ) : colorizeBy === 'season' ? (
               <>
-                <div>1</div>
-                <div>2</div>
-                <div>3</div>
-                <div>4</div>
-                <div>5</div>
-                <div>6</div>
-                <div>7</div>
-                <div>8</div>
-                <div>9</div>
-                <div>10</div>
-                <div>11</div>
-                <div>12</div>
-                <div>1</div>
+                {Array(13)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        position: 'absolute',
+                        left: `calc(${(i * 100) / 12}% - 20px)`,
+                        top: '16%',
+                        width: '40px',
+                        textWrap: 'nowrap',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {(i % 12) + 1}
+                    </div>
+                  ))}
               </>
             ) : null}
           </div>

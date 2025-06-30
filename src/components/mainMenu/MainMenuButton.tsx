@@ -16,6 +16,7 @@ import { useMessages } from '../../l10nInjector.js';
 import { CacheMode } from '../../types/common.js';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
 import { DrawingSubmenu } from './DrawingSubmenu.js';
+import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
 import { GallerySubmenu } from './GallerySubmenu.js';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
@@ -24,7 +25,6 @@ import { OfflineSubmenu } from './OfflineSubmenu.js';
 import { SocialButtons } from './SocialButtons.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
-import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
 
 export function MainMenuButton(): ReactElement {
   const mapType = useAppSelector((state) => state.map.mapType);

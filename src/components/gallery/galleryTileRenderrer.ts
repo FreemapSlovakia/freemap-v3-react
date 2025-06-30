@@ -184,19 +184,25 @@ export function renderGalleryTile({
 
         break;
 
-      case 'takenAt':
-        ctx.fillStyle = takenAt
-          ? color.hsl(60, 100, 100 - ((now - takenAt) * 100) ** 0.185).hex()
+      case 'createdAt':
+      case 'takenAt': {
+        const v = colorizeBy === 'createdAt' ? createdAt : takenAt;
+
+        ctx.fillStyle = v
+          ? color
+              .hsl(
+                60,
+                100,
+                (() => {
+                  const y = (now - v) / 60 / 60 / 24 / 365;
+                  return 100 - (0.333 * y * 100) / (1 + 0.333 * y);
+                })(),
+              )
+              .hex()
           : '#a22';
 
         break;
-
-      case 'createdAt':
-        ctx.fillStyle = color
-          .hsl(60, 100, 100 - ((now - createdAt) * 100) ** 0.185)
-          .hex();
-
-        break;
+      }
 
       case 'season':
         {
