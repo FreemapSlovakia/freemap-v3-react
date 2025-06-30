@@ -24,6 +24,7 @@ import { OfflineSubmenu } from './OfflineSubmenu.js';
 import { SocialButtons } from './SocialButtons.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
+import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
 
 export function MainMenuButton(): ReactElement {
   const mapType = useAppSelector((state) => state.map.mapType);
@@ -151,6 +152,8 @@ export function MainMenuButton(): ReactElement {
             <LanguageSubmenu />
           ) : submenu === 'photos' ? (
             <GallerySubmenu />
+          ) : submenu === 'galleryColorizeBy' ? (
+            <GalleryColorizeBySubmenu />
           ) : submenu === 'tracking' ? (
             <TrackingSubmenu />
           ) : submenu === 'drawing' ? (

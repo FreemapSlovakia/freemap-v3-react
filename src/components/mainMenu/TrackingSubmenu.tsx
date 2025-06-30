@@ -46,7 +46,6 @@ export function TrackingSubmenu(): ReactElement {
 
       <Dropdown.Item
         as="button"
-        active={trackingDisplay === 'true,false'}
         onSelect={() => {
           dispatch(trackingActions.setShowPoints(true));
 
@@ -63,7 +62,6 @@ export function TrackingSubmenu(): ReactElement {
 
       <Dropdown.Item
         as="button"
-        active={trackingDisplay === 'false,true'}
         onSelect={() => {
           dispatch(trackingActions.setShowPoints(false));
 
@@ -80,7 +78,6 @@ export function TrackingSubmenu(): ReactElement {
 
       <Dropdown.Item
         as="button"
-        active={trackingDisplay === 'true,true'}
         onSelect={() => {
           dispatch(trackingActions.setShowPoints(true));
 
