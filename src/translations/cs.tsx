@@ -439,6 +439,7 @@ const messages: Messages = {
   },
 
   gallery: {
+    legend: 'Legenda',
     recentTags: 'Nedávné tagy pro přiřazení:',
     filter: 'Filtr',
     showPhotosFrom: 'Prohlížet fotky',

@@ -6,4 +6,5 @@ export type Submenu =
   | 'tracking'
   | 'drawing'
   | 'offline'
+  | 'galleryColorizeBy'
   | null;

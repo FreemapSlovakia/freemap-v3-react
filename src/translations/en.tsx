@@ -429,6 +429,7 @@ const en: Messages = {
   },
 
   gallery: {
+    legend: 'Legend',
     recentTags: 'Recent tags to assign:',
     filter: 'Filter',
     showPhotosFrom: 'View photos',

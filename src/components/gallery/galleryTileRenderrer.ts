@@ -184,19 +184,25 @@ export function renderGalleryTile({
 
         break;
 
-      case 'takenAt':
-        ctx.fillStyle = takenAt
+      case 'createdAt':
+      case 'takenAt': {
+        const v = colorizeBy === 'createdAt' ? createdAt : takenAt;
+
+        ctx.fillStyle = v
           ? color
               .hsl(
                 60,
                 100,
-                // 100 - ((now - takenAt) * 10) ** 0.2,
-                100 - ((now - takenAt) * 100) ** 0.185,
+                (() => {
+                  const y = (now - v) / 60 / 60 / 24 / 365;
+                  return 100 - (0.333 * y * 100) / (1 + 0.333 * y);
+                })(),
               )
               .hex()
           : '#a22';
 
         break;
+      }
 
       case 'season':
         {
@@ -208,18 +214,20 @@ export function renderGalleryTile({
 
           const hs = 366 / 4;
 
-          const winter = [70, -5, -52];
+          type Color = [number, number, number];
 
-          const spring = [70, -62, 42];
+          const winter: Color = [70, -5, -52];
 
-          const summer = [90, -4, 74];
+          const spring: Color = [70, -62, 42];
 
-          const fall = [70, 48, 43];
+          const summer: Color = [90, -4, 74];
+
+          const fall: Color = [70, 48, 43];
 
           // 2847600
           const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
 
-          const fill = (from: number[], to: number[], n: number) => {
+          const fill = (from: Color, to: Color, n: number) => {
             ctx.fillStyle = color
               .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
               .hex();
@@ -235,18 +243,6 @@ export function renderGalleryTile({
             fill(fall, winter, (x - 3 * hs) / hs);
           }
         }
-
-        break;
-
-      case 'createdAt':
-        ctx.fillStyle = color
-          .hsl(
-            60,
-            100,
-            // 100 - ((now - createdAt) * 10) ** 0.2,
-            100 - ((now - createdAt) * 100) ** 0.185,
-          )
-          .hex();
 
         break;
 

@@ -3,13 +3,12 @@ import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaCamera,
+  FaChevronRight,
   FaDove,
   FaEnvelope,
   FaEye,
   FaFilter,
   FaGem,
-  FaRegCheckCircle,
-  FaRegCircle,
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
@@ -29,8 +28,6 @@ export function GallerySubmenu(): JSX.Element {
 
   const overlays = useAppSelector((state) => state.map.overlays);
 
-  const colorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
-
   const sendGalleryEmails = useAppSelector(
     (state) => state.auth.user?.sendGalleryEmails,
   );
@@ -39,11 +36,7 @@ export function GallerySubmenu(): JSX.Element {
     <>
       <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
-      <Dropdown.Item
-        as="button"
-        eventKey="overlays-toggle-I"
-        active={overlays.includes('I')}
-      >
+      <Dropdown.Item as="button" eventKey="overlays-toggle-I">
         <Checkbox value={overlays.includes('I')} /> <FaEye />{' '}
         {m?.gallery.showLayer} <kbd>⇧f</kbd>
       </Dropdown.Item>
@@ -53,6 +46,10 @@ export function GallerySubmenu(): JSX.Element {
         eventKey="modal-gallery-upload"
       >
         <FaUpload /> {m?.gallery.upload} <kbd>p</kbd> <kbd>u</kbd>
+      </Dropdown.Item>
+
+      <Dropdown.Item eventKey="submenu-galleryColorizeBy">
+        <IoIosColorPalette /> {m?.gallery.colorizeBy} <FaChevronRight />
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -102,52 +99,6 @@ export function GallerySubmenu(): JSX.Element {
 
       <Dropdown.Item as="button" eventKey="photosBy--lastCommentedAt">
         {m?.gallery.f.lastComment}
-      </Dropdown.Item>
-
-      <Dropdown.Divider />
-
-      <Dropdown.Header>
-        <IoIosColorPalette /> {m?.gallery.colorizeBy}
-      </Dropdown.Header>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-">
-        {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.disable}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-premium">
-        {colorizeBy === 'premium' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.premium}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-mine">
-        {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.mine}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-userId">
-        {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.author}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-rating">
-        {colorizeBy === 'rating' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.rating}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-takenAt">
-        {colorizeBy === 'takenAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.takenAt}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-createdAt">
-        {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.createdAt}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="photosColorizeBy-season">
-        {colorizeBy === 'season' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.season}
       </Dropdown.Item>
     </>
   );

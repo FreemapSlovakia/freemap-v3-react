@@ -322,6 +322,7 @@ export type Messages = {
     ad: (email: ReactNode) => JSX.Element;
   };
   gallery: {
+    legend: string;
     recentTags: string;
     filter: string;
     showPhotosFrom: string;

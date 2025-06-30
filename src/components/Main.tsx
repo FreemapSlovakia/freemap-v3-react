@@ -63,6 +63,7 @@ import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
 import { DrawingPointsTool } from './DrawingPointsTool.js';
 import { GalleryModals } from './gallery/GalleryModals.js';
+import { PictureLegend } from './gallery/PictureLegend.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
 import { MainMenuButton } from './mainMenu/MainMenuButton.js';
@@ -568,6 +569,8 @@ export function Main(): ReactElement {
               {selectingHomeLocation !== false && (
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
+
+              <PictureLegend />
 
               {showAds && !askingCookieConsent && (
                 <AsyncComponent factory={adFactory} />
