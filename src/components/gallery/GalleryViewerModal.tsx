@@ -616,7 +616,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
 
                   {user && (
-                    <div className="d-flex f-gap-1 align-items-center mb-3">
+                    <div className="d-flex flex-wrap f-gap-1 align-items-center mb-3">
                       <span className="flex-shrink-0">
                         {m?.gallery.viewer.yourRating}
                       </span>
