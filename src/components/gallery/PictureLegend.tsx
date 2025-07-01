@@ -43,28 +43,20 @@ export function PictureLegend() {
           }}
         >
           <div
+            className="border rounded position-absolute"
             style={{
-              position: 'absolute',
               inset: 0,
               background,
-              border: '1px solid #ccc',
             }}
           />
 
           <div
+            className="text-body position-absolute"
             style={{
-              position: 'absolute',
               inset: 0,
-              textShadow: `
-                -1px -1px 0 white,
-                0px -1px 0 white,
-                1px -1px 0 white,
-                -1px  0px 0 white,
-                0px  0px 0 white,
-                1px  0px 0 white,
-                -1px  1px 0 white,
-                0px  1px 0 white,
-                1px  1px 0 white`,
+              paintOrder: 'stroke',
+              WebkitTextStrokeWidth: '2px',
+              WebkitTextStrokeColor: 'var(--bs-body-bg)',
             }}
           >
             {colorizeBy === 'rating' ? (
