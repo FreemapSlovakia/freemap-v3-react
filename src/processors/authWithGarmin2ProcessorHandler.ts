@@ -18,7 +18,6 @@ const handle: ProcessorHandler<typeof authWithGarmin2> = async ({
       token,
       verifier,
       language: getState().l10n.chosenLanguage,
-      // homeLocation: getState().main.homeLocation,
     },
     expectedStatus: 200,
   });

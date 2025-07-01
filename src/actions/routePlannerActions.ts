@@ -28,10 +28,6 @@ export type ManeuerModifier =
 
 export interface RouteStepExtra {
   type: 'foot' | 'bicycle';
-  // |'bus'
-  // |'tram'
-  // |'trolleybus'
-  // |'foot'
   destination: string;
   departure?: number;
   duration?: number;
@@ -42,13 +38,10 @@ export interface Leg {
   steps: Step[];
   distance: number;
   duration: number;
-  // weight: number;
-  // summary: string;
 }
 
 export interface Step {
   maneuver: {
-    // location: [number, number];
     type:
       | 'turn'
       | 'new name'
@@ -82,9 +75,6 @@ export interface Alternative {
   legs: Leg[];
   distance: number;
   duration: number;
-  // geometry: any;
-  // weight: number;
-  // weight_name: string;
 }
 
 export interface Waypoint {

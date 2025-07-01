@@ -50,7 +50,6 @@ import {
   routePlannerSetStart,
   routePlannerSetTransportType,
   routePlannerSwapEnds,
-  //  ,
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
   RoutingMode,
@@ -572,13 +571,7 @@ export function RoutePlannerMenu(): ReactElement {
             dispatch(routePlannerSetMode(mode as RoutingMode));
           }}
         >
-          <Dropdown.Toggle
-            id="mode"
-            variant="secondary"
-            // disabled={
-            //   transportType === 'imhd' || transportType === 'bikesharing'
-            // }
-          >
+          <Dropdown.Toggle id="mode" variant="secondary">
             {m?.routePlanner.mode[activeMode] ?? '…'}
           </Dropdown.Toggle>
 

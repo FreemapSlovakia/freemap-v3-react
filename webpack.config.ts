@@ -166,7 +166,7 @@ const config: Configuration = {
       }),
     new InjectManifest({
       swSrc: './sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 100000000,
+      maximumFileSizeToCacheInBytes: 100_000_000,
     }),
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
@@ -280,12 +280,6 @@ const config: Configuration = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-    // TODO
-    // prod &&
-    //   new ESLintPlugin({
-    //     extensions: ['js', 'jsx', 'ts', 'tsx'],
-    //     threads: 4,
-    //   }),
   ].filter(Boolean),
 };
 

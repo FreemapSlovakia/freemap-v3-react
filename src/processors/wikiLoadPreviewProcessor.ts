@@ -110,12 +110,5 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
     };
 
     dispatch(wikiSetPreview(preview));
-
-    // dispatch(
-    //   wikiSetPreview({
-    //     title: data.parse.title,
-    //     extract: data.parse.text['*'],
-    //   }),
-    // );
   },
 };

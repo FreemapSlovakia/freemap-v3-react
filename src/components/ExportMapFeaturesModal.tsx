@@ -112,10 +112,6 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       exportables.push('gpx');
     }
 
-    // if (state.changesets.changesets.length) {
-    //   exportables.push('changesets');
-    // }
-
     return '|' + exportables.map((e) => e + '|').join('');
   });
 

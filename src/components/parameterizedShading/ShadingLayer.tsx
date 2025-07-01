@@ -245,8 +245,6 @@ class LShadingLayer extends LGridLayer {
     try {
       const url = Util.template(this._options.url, { x, y, z: zoom });
 
-      // console.log('CCCCCCCCC', url);
-
       canvas.dataset['url'] = url;
 
       res = await fetch(url, {

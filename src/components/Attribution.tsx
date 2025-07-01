@@ -71,16 +71,6 @@ export function Attribution({ unknown }: Props): ReactElement {
           {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
         </li>
       ))}
-      {/* {imhd && (
-        <li>
-          {'; '}
-          {m?.routePlanner.imhdAttribution}
-          {' ©\xa0'}
-          <a href="https://imhd.sk" target="_blank" rel="noopener noreferrer">
-            imhd.sk
-          </a>
-        </li>
-      )} */}
     </ul>
   );
 }

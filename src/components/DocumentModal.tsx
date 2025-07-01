@@ -65,13 +65,6 @@ export function DocumentModal({ show }: Props): ReactElement | null {
         a.onclick = (e) => {
           const { href } = a;
 
-          // if (
-          //   !href.startsWith(process.env['BASE_URL'] ?? '~') &&
-          //   href.match(/^\w+:/)
-          // ) {
-          //   return;
-          // }
-
           e.preventDefault();
 
           const i = href.lastIndexOf('#');

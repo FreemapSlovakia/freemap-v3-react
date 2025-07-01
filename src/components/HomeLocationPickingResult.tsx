@@ -28,16 +28,10 @@ export function HomeLocationPickingResult(): ReactElement | null {
 
   return !selectingHomeLocation ? null : (
     <RichMarker
-      // eventHandlers={{
-      //   dragstart: onSelects[i],
-      //   dragend: handleDragEnd,
-      //   drag: handleDrag,
-      // }}
       position={{
         lat: selectingHomeLocation.lat,
         lng: selectingHomeLocation.lon,
       }}
-      // draggable={!window.fmEmbedded && activeIndex === i}
       interactive={false}
       faIcon={<FaHome />}
     />

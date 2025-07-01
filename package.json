@@ -86,6 +86,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.27.7",
+    "@babel/parser": "^7.27.7",
     "@babel/preset-env": "^7.27.2",
     "@eslint/js": "^9.30.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
@@ -131,6 +132,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "react-refresh": "^0.17.0",
+    "recast": "^0.23.11",
     "sass": "^1.89.2",
     "sass-loader": "^16.0.5",
     "source-map-loader": "^5.0.0",

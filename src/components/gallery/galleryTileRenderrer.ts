@@ -226,8 +226,8 @@ export function renderGalleryTile({
 
           const fall: Color = [70, 48, 43];
 
-          // 2847600
-          const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
+          // 2_847_600
+          const x = ((takenAt - 1_206_000) % 31_557_600) / 60 / 60 / 24;
 
           const fill = (from: Color, to: Color, n: number) => {
             ctx.fillStyle = color

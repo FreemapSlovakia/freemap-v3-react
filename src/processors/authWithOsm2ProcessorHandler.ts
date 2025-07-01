@@ -18,7 +18,6 @@ const handle: ProcessorHandler<typeof authWithOsm2> = async ({
       code,
       language: getState().l10n.chosenLanguage,
       connect,
-      // homeLocation: getState().main.homeLocation,
     },
     expectedStatus: 200,
   });

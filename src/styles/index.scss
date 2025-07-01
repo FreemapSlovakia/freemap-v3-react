@@ -141,7 +141,6 @@ button#freemap-logo {
     }
 
     display: inline-flex;
-    // flex-wrap: wrap;
     flex-direction: row;
     vertical-align: top;
     align-items: center;
@@ -324,14 +323,12 @@ button#freemap-logo {
 
 .fm-menu-scroller::before,
 .fm-menu-scroller > div:first-child::before {
-  // margin-left: -0.75rem;
   margin-top: -0.5rem;
 }
 
 .dropdown-long::before,
 .dropdown-long > div:first-child::before {
   margin-top: -0.5rem;
-  // margin-bottom: -0.5rem;
 }
 
 .scroll-left::before,
