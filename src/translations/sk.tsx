@@ -1,8 +1,6 @@
 import { Fragment } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { documentShow } from '../actions/mainActions.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
@@ -416,34 +414,34 @@ const messages: Messages = {
       />
     ),
     infoBars: {
-      dp: () => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const dispatch = useDispatch();
+      // dp: () => {
+      //   // eslint-disable-next-line react-hooks/rules-of-hooks
+      //   const dispatch = useDispatch();
 
-        return (
-          <>
-            <span className="d-sm-none">Podporte nás prosím</span>
-            <span className="d-none d-sm-inline d-xl-none">
-              Podporte prosím prevádzku služieb Freemap.sk vašimi
-            </span>
-            <span className="d-none d-xl-inline">
-              Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
-              potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
-            </span>{' '}
-            <AlertLink
-              href="/#document=dvePercenta"
-              onClick={(e) => {
-                e.preventDefault();
+      //   return (
+      //     <>
+      //       <span className="d-sm-none">Podporte nás prosím</span>
+      //       <span className="d-none d-sm-inline d-xl-none">
+      //         Podporte prosím prevádzku služieb Freemap.sk vašimi
+      //       </span>
+      //       <span className="d-none d-xl-inline">
+      //         Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
+      //         potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
+      //       </span>{' '}
+      //       <AlertLink
+      //         href="/#document=dvePercenta"
+      //         onClick={(e) => {
+      //           e.preventDefault();
 
-                dispatch(documentShow('dvePercenta'));
-              }}
-            >
-              2% z dane
-            </AlertLink>
-            .
-          </>
-        );
-      },
+      //           dispatch(documentShow('dvePercenta'));
+      //         }}
+      //       >
+      //         2% z dane
+      //       </AlertLink>
+      //       .
+      //     </>
+      //   );
+      // },
       ua: () => {
         return (
           <>
