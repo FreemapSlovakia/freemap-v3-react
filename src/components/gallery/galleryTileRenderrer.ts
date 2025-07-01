@@ -18,6 +18,7 @@ type Props = {
   zoom: number;
   dpr: number;
   colorizeBy: GalleryColorizeBy | null;
+  showDirection: boolean;
   data: Marble[];
   myUserId: number | null;
   size: { x: number; y: number };
@@ -48,6 +49,7 @@ export function renderGalleryTile({
   zoom,
   dpr,
   colorizeBy,
+  showDirection,
   data,
   myUserId,
   size,
@@ -119,7 +121,7 @@ export function renderGalleryTile({
 
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
-    if (azimuth !== undefined) {
+    if (showDirection && azimuth !== undefined) {
       const az = azimuth * (Math.PI / 180) - (3 * Math.PI) / 4;
 
       ctx.beginPath();

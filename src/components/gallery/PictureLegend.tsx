@@ -3,7 +3,9 @@ import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
 
 export function PictureLegend() {
-  const colorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
+  const colorizeBy = useAppSelector(
+    (state) => state.map.overlays.includes('I') && state.gallery.colorizeBy,
+  );
 
   const m = useMessages();
 

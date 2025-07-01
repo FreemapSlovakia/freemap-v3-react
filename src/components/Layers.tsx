@@ -36,6 +36,10 @@ export function Layers(): ReactElement | null {
 
   const galleryColorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
+  const galleryShowDirection = useAppSelector(
+    (state) => state.gallery.showDirection,
+  );
+
   const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);
 
   const user = useAppSelector((state) => state.auth.user);
@@ -53,16 +57,15 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={galleryLayerFactory}
-          key={`I-${galleryDirtySeq}-${opacity}-${user?.id}-${JSON.stringify({
-            galleryFilter,
-            galleryColorizeBy,
-          })}`}
+          key={`I-${opacity}`}
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
           opacity={opacity}
           zIndex={layerDef.zIndex ?? 1}
           myUserId={user?.id}
           authToken={user?.authToken}
+          showDirection={galleryShowDirection}
+          dirtySeq={galleryDirtySeq}
         />
       );
     }

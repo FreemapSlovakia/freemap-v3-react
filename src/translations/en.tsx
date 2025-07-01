@@ -445,6 +445,7 @@ const en: Messages = {
       lastComment: 'from last comment',
     },
     colorizeBy: 'Colorize by',
+    showDirection: 'Show shooting direction',
     c: {
       disable: "don't colorize",
       mine: 'differ mine',

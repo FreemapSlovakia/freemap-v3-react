@@ -9,6 +9,7 @@ import {
   FaEye,
   FaFilter,
   FaGem,
+  FaLocationArrow,
   FaUpload,
 } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
@@ -28,6 +29,8 @@ export function GallerySubmenu(): JSX.Element {
 
   const overlays = useAppSelector((state) => state.map.overlays);
 
+  const showDirection = useAppSelector((state) => state.gallery.showDirection);
+
   const sendGalleryEmails = useAppSelector(
     (state) => state.auth.user?.sendGalleryEmails,
   );
@@ -42,6 +45,14 @@ export function GallerySubmenu(): JSX.Element {
       </Dropdown.Item>
 
       <Dropdown.Item
+        href="#show=gallery-filter"
+        eventKey="modal-gallery-filter"
+        active={filterIsActive}
+      >
+        <FaFilter /> {m?.gallery.filter} <kbd>p</kbd> <kbd>f</kbd>
+      </Dropdown.Item>
+
+      <Dropdown.Item
         href="#show=gallery-upload"
         eventKey="modal-gallery-upload"
       >
@@ -52,12 +63,9 @@ export function GallerySubmenu(): JSX.Element {
         <IoIosColorPalette /> {m?.gallery.colorizeBy} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item
-        href="#show=gallery-filter"
-        eventKey="modal-gallery-filter"
-        active={filterIsActive}
-      >
-        <FaFilter /> {m?.gallery.filter} <kbd>p</kbd> <kbd>f</kbd>
+      <Dropdown.Item as="button" eventKey="galDirection">
+        <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
+        {m?.gallery.showDirection}
       </Dropdown.Item>
 
       {sendGalleryEmails !== undefined && (

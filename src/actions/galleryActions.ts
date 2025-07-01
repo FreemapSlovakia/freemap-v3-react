@@ -179,3 +179,7 @@ export const galleryQuickChangePremium = createAction<boolean>(
 export const galleryAllPremiumOrFree = createAction<'premium' | 'free'>(
   'GALLERY_ALL_PREMIUM_OR_FREE',
 );
+
+export const galleryToggleDirection = createAction<boolean | undefined>(
+  'GALLERY_TOGGLE_DIRECTION',
+);

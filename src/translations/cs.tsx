@@ -455,6 +455,7 @@ const messages: Messages = {
       lastComment: 'od posledního komentáře',
     },
     colorizeBy: 'Vybarvit podle',
+    showDirection: 'Ukaž směr focení',
     c: {
       disable: 'nevybarvit',
       mine: 'odlišit moje',

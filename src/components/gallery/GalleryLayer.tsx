@@ -1,14 +1,14 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
 import {
-  Coords,
-  DoneCallback,
-  GridLayerOptions,
-  Map as LeafletMap,
+  type Coords,
+  type DoneCallback,
+  type GridLayerOptions,
+  type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
 import {
-  GalleryColorizeBy,
-  GalleryFilter,
+  type GalleryColorizeBy,
+  type GalleryFilter,
 } from '../../actions/galleryActions.js';
 import { createFilter } from '../../galleryUtils.js';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
@@ -19,10 +19,11 @@ type GalleryLayerOptions = GridLayerOptions & {
   colorizeBy: GalleryColorizeBy | null;
   myUserId?: number;
   authToken?: string;
+  showDirection: boolean;
 };
 
 class LGalleryLayer extends LGridLayer {
-  private _options?: GalleryLayerOptions;
+  public _options?: GalleryLayerOptions;
 
   private _acm = new Map<string, AbortController>();
 
@@ -88,6 +89,8 @@ class LGalleryLayer extends LGridLayer {
     tile.height = size.y * dpr;
 
     const colorizeBy = this._options?.colorizeBy ?? null;
+
+    const showDirection = this._options?.showDirection ?? true;
 
     const myUserId = this._options?.myUserId ?? null;
 
@@ -162,6 +165,7 @@ class LGalleryLayer extends LGridLayer {
         dpr,
         zoom: coords.z,
         colorizeBy,
+        showDirection,
         pointA,
         pointB,
         myUserId,
@@ -213,10 +217,18 @@ export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
 
   (instance, props, prevProps) => {
     if (
-      (['dirtySeq', 'filter', 'colorizeBy', 'myUserId'] as const).some(
-        (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),
-      )
+      (
+        [
+          'dirtySeq',
+          'filter',
+          'colorizeBy',
+          'myUserId',
+          'showDirection',
+        ] satisfies (keyof Props)[]
+      ).some((p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]))
     ) {
+      instance._options = Object.assign({}, instance._options, props);
+
       instance.redraw();
     }
   },

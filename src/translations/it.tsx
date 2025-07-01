@@ -453,6 +453,7 @@ const messages: Messages = {
       lastComment: "dall'ultimo commento",
     },
     colorizeBy: 'Colora in base',
+    showDirection: 'Mostra la direzione dello scatto',
     c: {
       disable: 'non colorare',
       mine: 'diversi dai miei',

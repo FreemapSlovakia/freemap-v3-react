@@ -338,6 +338,7 @@ export type Messages = {
       lastComment: string;
     };
     colorizeBy: string;
+    showDirection: string;
     c: {
       disable: string;
       mine: string;

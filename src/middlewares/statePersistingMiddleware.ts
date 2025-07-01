@@ -66,6 +66,7 @@ function persistSelectedState(state: RootState) {
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,
+        showDirection: state.gallery.showDirection,
         recentTags: state.gallery.recentTags,
       },
     } as Partial<RootState>),

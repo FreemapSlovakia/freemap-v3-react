@@ -452,6 +452,7 @@ const hu: Messages = {
       lastComment: 'from last comment',
     },
     colorizeBy: 'Colorize by', // TODO translate
+    showDirection: 'Mutasd a fényképezés irányát',
     c: {
       disable: "don't colorize", // TODO translate
       mine: 'differ mine', // TODO translate

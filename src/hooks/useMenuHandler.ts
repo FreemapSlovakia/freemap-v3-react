@@ -7,6 +7,7 @@ import {
   galleryAllPremiumOrFree,
   galleryColorizeBy,
   galleryList,
+  galleryToggleDirection,
 } from '../actions/galleryActions.js';
 import { l10nSetChosenLanguage } from '../actions/l10nActions.js';
 import {
@@ -184,6 +185,8 @@ export function useMenuHandler({
             },
           }),
         );
+      } else if (eventKey === 'galDirection') {
+        dispatch(galleryToggleDirection());
       } else if (extraHandler.current?.(eventKey)) {
         // nothing
       }
