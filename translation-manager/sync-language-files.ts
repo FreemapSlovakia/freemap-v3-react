@@ -18,14 +18,11 @@ import {
   type Node,
   type ObjectExpression,
 } from '@babel/types';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { parse, print, types } from 'recast';
 
-// const prefix = '../src/translations/';
-// const ext = 'tsx';
-
-const prefix = '../src/osm/osmTagToNameMapping-';
-const ext = 'ts';
+type OtherLocales = [lang: string, Record<string, ObjectProperty>];
 
 const parser = {
   parse(source: string) {
@@ -37,17 +34,18 @@ const parser = {
   },
 };
 
-function parseFile(lang: string) {
-  const parsed: Node = parse(readFileSync(`${prefix}${lang}.${ext}`, 'utf-8'), {
-    parser,
-  });
+process(
+  resolve(import.meta.dirname, '../src/osm/osmTagToNameMapping-{LANG}.ts'),
+);
 
-  if (!isFile(parsed)) {
-    throw new Error('expected File');
-  }
+process(resolve(import.meta.dirname, '../src/translations/{LANG}.tsx'));
 
-  return parsed;
-}
+process(
+  resolve(
+    import.meta.dirname,
+    '../src/components/supportUsModal/translations/{LANG}.tsx',
+  ),
+);
 
 function findRoot(file: File) {
   const { program } = file;
@@ -121,7 +119,7 @@ function findRoot(file: File) {
         ? typeParameters?.params[0].typeName.name
         : typeName.name;
 
-    if (tn !== 'Messages' && tn !== 'OsmTagToNameMapping') {
+    if (!tn.endsWith('Messages') && tn !== 'OsmTagToNameMapping') {
       continue;
     }
 
@@ -161,45 +159,13 @@ function buildTranslationMap(
   return out;
 }
 
-const enFile = parseFile('en');
-
-const enRoot = findRoot(enFile);
-
-if (!enRoot) {
-  throw new Error('root not found for en');
-}
-
-const langs = ['cs', 'hu', 'it', 'sk', 'de'];
-
-const roots = langs.map((lang) => {
-  const file = parseFile(`${lang}.template`);
-
-  const root = findRoot(file);
-
-  if (!root) {
-    throw new Error('root not found for ' + lang);
-  }
-
-  return [lang, file, root] as const;
-});
-
-const otherLocalesMaps = roots.map(
-  ([lang, , root]) => [lang, buildTranslationMap(root)] as const,
-);
-
-for (const [lang, file, root] of roots) {
-  mergeIntoLocale(enRoot, root);
-
-  writeFileSync(
-    `${prefix}${lang}.${ext}`,
-    print(file, { quote: 'single', trailingComma: true }).code,
-  );
-}
-
-function collectTranslations(key: string): string[] {
+function collectTranslations(
+  key: string,
+  otherLocales: OtherLocales[],
+): string[] {
   const results: string[] = [];
 
-  for (const [lang, map] of otherLocalesMaps) {
+  for (const [lang, map] of otherLocales) {
     const prop = map[key];
 
     if (!prop) {
@@ -221,6 +187,7 @@ function collectTranslations(key: string): string[] {
 function mergeIntoLocale(
   base: ObjectExpression,
   target: ObjectExpression,
+  otherLocales: OtherLocales[],
   propPath: string[] = [],
 ) {
   const targetKeys = new Set(
@@ -265,7 +232,10 @@ function mergeIntoLocale(
         isObjectExpression(prop.value) &&
         isObjectExpression(targetProp.value)
       ) {
-        mergeIntoLocale(prop.value, targetProp.value, [...propPath, keyName]);
+        mergeIntoLocale(prop.value, targetProp.value, otherLocales, [
+          ...propPath,
+          keyName,
+        ]);
       }
 
       continue;
@@ -281,6 +251,7 @@ function mergeIntoLocale(
       visitNode(path) {
         const translations = collectTranslations(
           [...propPath, keyName].join('.'),
+          otherLocales,
         );
 
         const commentLines = [
@@ -301,5 +272,56 @@ function mergeIntoLocale(
     });
 
     target.properties.push(clonedProp);
+  }
+}
+
+function parseFile(lang: string, template: string) {
+  const parsed: Node = parse(
+    readFileSync(template.replace('{LANG}', lang), 'utf-8'),
+    { parser },
+  );
+
+  if (!isFile(parsed)) {
+    throw new Error('expected File');
+  }
+
+  return parsed;
+}
+
+function process(template: string) {
+  const enFile = parseFile('en', template);
+
+  const enRoot = findRoot(enFile);
+
+  if (!enRoot) {
+    throw new Error('root not found for en');
+  }
+
+  const langs = ['cs', 'hu', 'it', 'sk', 'de'];
+
+  const roots = langs.map((lang) => {
+    const file = parseFile(lang + '.template', template);
+
+    const root = findRoot(file);
+
+    if (!root) {
+      throw new Error('root not found for ' + lang);
+    }
+
+    return [lang, file, root] as const;
+  });
+
+  const otherLocales: OtherLocales[] = roots.map(
+    ([lang, , root]) => [lang, buildTranslationMap(root)] as const,
+  );
+
+  for (const [lang, file, root] of roots) {
+    mergeIntoLocale(enRoot, root, otherLocales);
+
+    writeFileSync(
+      template.replace('{LANG}', lang),
+
+      print(file, { quote: 'single', trailingComma: true }).code,
+    );
   }
 }
