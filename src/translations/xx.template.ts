@@ -11,6 +11,7 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { DeepPartialWithRequiredObjects } from 'deepPartial.js';
 import shared from './de-shared.js';
 import { DeepPartial, Messages, addError } from './messagesInterface.js';
 
@@ -44,7 +45,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 
 const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 
-const messages: DeepPartial<Messages> = {
+const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {},
   selections: {},
   tools: {},
@@ -53,6 +54,7 @@ const messages: DeepPartial<Messages> = {
     point: {},
     transportType: {},
     mode: {},
+    noHomeAlert: {},
   },
   mainMenu: {},
   main: {
@@ -133,17 +135,22 @@ const messages: DeepPartial<Messages> = {
   },
   mapExport: {
     areas: {},
+    layers: {},
   },
   maps: {},
   mapCtxMenu: {},
   legend: {},
   contacts: {},
   premium: {},
-  credits: {},
+  credits: {
+    purchase: {},
+  },
   offline: {},
   errorStatus: {},
   gpu: {},
-  downloadMap: {},
+  downloadMap: {
+    area: {},
+  },
 };
 
 export default messages;

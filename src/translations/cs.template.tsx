@@ -11,6 +11,7 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './cs-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 
@@ -45,7 +46,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 
 const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
 
-const messages: Messages = {
+const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
     iso: 'cs_CZ',
     elevationProfile: 'Výškový profil',

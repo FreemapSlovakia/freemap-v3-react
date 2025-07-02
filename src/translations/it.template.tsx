@@ -11,6 +11,11 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import {
+  DeepPartial,
+  DeepPartialKeepFunctionsAndStrings,
+  DeepPartialWithRequiredObjects,
+} from '../deepPartial.js';
 import shared from './it-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 
@@ -43,7 +48,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
-const messages: Messages = {
+const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',

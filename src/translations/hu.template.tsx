@@ -11,6 +11,7 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './hu-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 
@@ -43,7 +44,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
-const messages: Messages = {
+const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',

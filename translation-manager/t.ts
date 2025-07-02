@@ -53,7 +53,8 @@ function findRoot(file: File) {
       statement.specifiers = statement.specifiers.filter(
         (s) =>
           !isImportSpecifier(s) ||
-          (isIdentifier(s.imported) && s.imported.name !== 'DeepPartial'),
+          (isIdentifier(s.imported) &&
+            s.imported.name !== 'DeepPartialWithRequiredObjects'),
       );
 
       // Remove the entire import if empty
@@ -91,25 +92,31 @@ function findRoot(file: File) {
 
     const { typeName, typeParameters } = typeReference;
 
-    if (
-      (typeName.name === 'Messages' ||
-        (typeName.name === 'DeepPartial' &&
-          typeParameters?.params.length === 1 &&
-          isTSTypeReference(typeParameters?.params[0]) &&
-          isIdentifier(typeParameters?.params[0].typeName) &&
-          typeParameters?.params[0].typeName.name === 'Messages')) &&
-      isObjectExpression(declaration.init)
-    ) {
-      typeAnnotation.typeAnnotation = {
-        type: 'TSTypeReference',
-        typeName: {
-          type: 'Identifier',
-          name: 'Messages',
-        },
-      };
-
-      return declaration.init;
+    if (!isObjectExpression(declaration.init)) {
+      continue;
     }
+
+    const tn =
+      typeName.name === 'DeepPartialWithRequiredObjects' &&
+      typeParameters?.params.length === 1 &&
+      isTSTypeReference(typeParameters?.params[0]) &&
+      isIdentifier(typeParameters?.params[0].typeName)
+        ? typeParameters?.params[0].typeName.name
+        : typeName.name;
+
+    if (tn !== 'Messages' && tn !== 'OsmTagToNameMapping') {
+      continue;
+    }
+
+    typeAnnotation.typeAnnotation = {
+      type: 'TSTypeReference',
+      typeName: {
+        type: 'Identifier',
+        name: tn,
+      },
+    };
+
+    return declaration.init;
   }
 }
 
