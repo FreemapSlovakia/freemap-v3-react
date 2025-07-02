@@ -17,11 +17,12 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "start": "NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
+    "start": "npm run sync-language-files && NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
     "lint": "node node_modules/eslint/bin/eslint.js src",
     "lint:fix": "node node_modules/eslint/bin/eslint.js src --fix",
     "prepare": "ts-patch install",
-    "build": "tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts",
+    "build": "npm run sync-language-files && tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts",
+    "sync-language-files": "tsc -p translation-manager/tsconfig.json && node --enable-source-maps translation-manager/sync-language-files.js",
     "postinstall": "patch-package"
   },
   "dependencies": {
