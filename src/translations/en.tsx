@@ -601,7 +601,7 @@ const messages: Messages = {
     googleMaps: 'Google Maps',
     hiking_sk: 'Hiking.sk',
     zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.cz',
+    mapy_cz: 'Mapy.com',
     josm: 'Edit in JOSM',
     id: 'Edit in iD',
     window: 'New window',
@@ -1178,9 +1178,7 @@ const messages: Messages = {
         <>Your credit has been increased by {nf00.format(amount)}.</>
       ),
     },
-    youHaveCredits(amount) {
-      return <>You have {amount} credits.</>;
-    },
+    youHaveCredits: (amount) => <>You have {amount} credits.</>,
   },
 
   offline: {

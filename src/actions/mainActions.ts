@@ -176,7 +176,7 @@ export type ExternalTargets =
   | 'image'
   | 'josm'
   | 'mapillary'
-  | 'mapy.cz'
+  | 'mapy.com'
   | 'oma.sk'
   | 'openstreetcam'
   | 'osm.org'

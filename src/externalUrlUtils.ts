@@ -63,7 +63,7 @@ export function getMapyCzUrl(
   zoom: number,
   includePoint?: boolean,
 ): string {
-  return `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
+  return `https://mapy.com/zakladni?x=${lon}&y=${lat}&z=${
     zoom > 19 ? 19 : zoom
   }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`;
 }

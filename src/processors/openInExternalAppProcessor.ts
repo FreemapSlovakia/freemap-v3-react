@@ -173,7 +173,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
         break;
 
-      case 'mapy.cz':
+      case 'mapy.com':
         window.open(getMapyCzUrl(lat, lon, zoom, includePoint));
 
         break;

@@ -145,7 +145,7 @@ if (!enRoot) {
   throw new Error('root not found for en');
 }
 
-const langs = ['cs', 'hu', 'it', 'sk'];
+const langs = ['cs', 'hu', 'it', 'sk', 'de'];
 
 const roots = langs.map((lang) => {
   const file = parseFile(`${lang}.template`);

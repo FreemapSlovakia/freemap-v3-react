@@ -57,8 +57,8 @@ async function gen() {
           (tracking), export do GPX a GeoJSON, tlač máp, exportovanie mapy do
           PDF. Vloženie mapy do vlastnej stránky. Alternatíva k mapám ako
           ${' '}<a href="https://mapy.dennikn.sk">hiking.sk</a>,${' '}<a
-            href="https://mapy.cz"
-            >mapy.cz</a
+            href="https://mapy.com"
+            >mapy.com</a
           >${' '}alebo${' '}<a href="https://maps.google.com">maps.google.com</a
           >.
 

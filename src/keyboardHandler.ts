@@ -287,7 +287,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return openInExternalApp({ where: 'osm.org/id' });
 
         case 'KeyM':
-          return openInExternalApp({ where: 'mapy.cz' });
+          return openInExternalApp({ where: 'mapy.com' });
 
         case 'KeyH':
           return openInExternalApp({ where: 'hiking.sk' });

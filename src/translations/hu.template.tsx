@@ -678,7 +678,7 @@ const messages: Messages = {
     googleMaps: 'Google térkép',
     hiking_sk: 'hiking.sk',
     zbgis: 'ZBGIS',
-    mapy_cz: 'mapy.cz',
+    mapy_cz: 'mapy.com',
     josm: 'Szerkesztés JOSM-mal',
     id: 'Szerkesztés iD-vel',
     window: 'Új ablakban',
@@ -1303,9 +1303,7 @@ const messages: Messages = {
         <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
       ),
     },
-    youHaveCredits(amount) {
-      return <>Önnek {amount} kreditje van.</>;
-    },
+    youHaveCredits: (amount) => <>Önnek {amount} kreditje van.</>,
   },
 
   offline: {

@@ -13,6 +13,7 @@ import { InjectManifest } from 'workbox-webpack-plugin';
 // import ESLintPlugin from 'eslint-webpack-plugin';
 
 import csMessages from './src/translations/cs-shared.js';
+import deMessages from './src/translations/de-shared.js';
 import enMessages from './src/translations/en-shared.js';
 import huMessages from './src/translations/hu-shared.js';
 import itMessages from './src/translations/it-shared.js';
@@ -258,6 +259,21 @@ const config: Configuration = {
         nojsMessage:
           "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
         loadingMessage: 'Caricamento…',
+      },
+    }),
+    new HtmlWebpackPlugin({
+      ...htmlPluginProps,
+      filename: 'index-de.html',
+      templateParameters: {
+        lang: 'de',
+        title: deMessages.title,
+        description: deMessages.description,
+        errorHtml:
+          '<h1>Fehler beim Starten der Anwendung</h1>' +
+          '<p>Bitte stellen Sie sicher, dass Sie eine aktuelle Version eines modernen Browsers verwenden (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+        nojsMessage:
+          'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
+        loadingMessage: 'Lade…',
       },
     }),
     new CopyWebpackPlugin({

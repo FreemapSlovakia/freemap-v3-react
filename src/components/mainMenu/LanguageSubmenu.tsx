@@ -28,14 +28,6 @@ export function LanguageSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
-        eventKey="lang-en"
-        active={chosenLanguage === 'en'}
-      >
-        <Emoji>🇬🇧</Emoji>&ensp;English
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        as="button"
         eventKey="lang-sk"
         active={chosenLanguage === 'sk'}
       >
@@ -56,6 +48,22 @@ export function LanguageSubmenu(): JSX.Element {
         active={chosenLanguage === 'hu'}
       >
         <Emoji>🇭🇺</Emoji>&ensp;Magyar
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        eventKey="lang-en"
+        active={chosenLanguage === 'en'}
+      >
+        <Emoji>🇬🇧</Emoji>&ensp;English
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
+        eventKey="lang-de"
+        active={chosenLanguage === 'de'}
+      >
+        <Emoji>🇩🇪</Emoji>&ensp;Deutsch
       </Dropdown.Item>
 
       <Dropdown.Item
