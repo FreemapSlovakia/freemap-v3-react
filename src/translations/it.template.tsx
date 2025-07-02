@@ -5,7 +5,6 @@ import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { Emoji } from '../components/Emoji.js';
-import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
@@ -27,7 +26,7 @@ const nf00 = new Intl.NumberFormat('it', {
 const masl = 'm\xa0a.s.l.';
 
 const getErrorMarkup = (ticketId?: string) => `
-<h1>Application error!</h1>
+<h1>Errore dell’applicazione!</h1>
 <p>
   ${
     ticketId

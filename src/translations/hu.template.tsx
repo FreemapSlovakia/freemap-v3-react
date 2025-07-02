@@ -36,7 +36,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
-const hu: DeepPartial<Messages> = {
+const messages: DeepPartial<Messages> = {
   general: {
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
@@ -60,7 +60,7 @@ const hu: DeepPartial<Messages> = {
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => addError(hu, 'Alkalmazáshiba', err),
+    processorError: ({ err }) => addError(messages, 'Alkalmazáshiba', err),
     seconds: 'másodperc',
     minutes: 'perc',
     meters: 'méter',
@@ -73,9 +73,9 @@ const hu: DeepPartial<Messages> = {
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',
     copyPageUrl: 'Oldal URL-jének másolása',
-    savingError: ({ err }) => addError(hu, 'Mentési hiba', err),
-    loadError: ({ err }) => addError(hu, 'Betöltési hiba', err),
-    deleteError: ({ err }) => addError(hu, 'Törlési hiba', err),
+    savingError: ({ err }) => addError(messages, 'Mentési hiba', err),
+    loadError: ({ err }) => addError(messages, 'Betöltési hiba', err),
+    deleteError: ({ err }) => addError(messages, 'Törlési hiba', err),
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
@@ -180,7 +180,7 @@ const hu: DeepPartial<Messages> = {
     routeNotFound:
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
     fetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt az útvonaltervezésnél', err),
+      addError(messages, 'Hiba történt az útvonaltervezésnél', err),
   },
 
   mainMenu: {
@@ -322,19 +322,19 @@ const hu: DeepPartial<Messages> = {
       title: 'Fénykép helyének kijelölése',
     },
     deletingError: ({ err }) =>
-      addError(hu, 'Hiba történt a fénykép törlésénél', err),
+      addError(messages, 'Hiba történt a fénykép törlésénél', err),
     tagsFetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt a címkék beolvasásánál', err),
+      addError(messages, 'Hiba történt a címkék beolvasásánál', err),
     pictureFetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt a fénykép beolvasásánál', err),
+      addError(messages, 'Hiba történt a fénykép beolvasásánál', err),
     picturesFetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt a fényképek beolvasásánál', err),
+      addError(messages, 'Hiba történt a fényképek beolvasásánál', err),
     savingError: ({ err }) =>
-      addError(hu, 'Hiba történt a fénykép mentésénél', err),
+      addError(messages, 'Hiba történt a fénykép mentésénél', err),
     commentAddingError: ({ err }) =>
-      addError(hu, 'Hiba történt a hozzászólás hozzáadásánál', err),
+      addError(messages, 'Hiba történt a hozzászólás hozzáadásánál', err),
     ratingError: ({ err }) =>
-      addError(hu, 'Hiba történt a fénykép értékelésénél', err),
+      addError(messages, 'Hiba történt a fénykép értékelésénél', err),
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
@@ -355,7 +355,7 @@ const hu: DeepPartial<Messages> = {
     elevation: 'Magasság',
     area: 'Terület',
     elevationFetchError: ({ err }) =>
-      addError(hu, 'Hiba történt a pont magasságának beolvasásakor', err),
+      addError(messages, 'Hiba történt a pont magasságának beolvasásakor', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -414,9 +414,13 @@ const hu: DeepPartial<Messages> = {
     shareToast:
       'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',
     fetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt a nyomvonal adatainak beolvasásakor', err),
+      addError(
+        messages,
+        'Hiba történt a nyomvonal adatainak beolvasásakor',
+        err,
+      ),
     savingError: ({ err }) =>
-      addError(hu, 'Hiba történt a nyomvonal mentésekor', err),
+      addError(messages, 'Hiba történt a nyomvonal mentésekor', err),
     loadingError: 'Hiba történt a fájl betöltésekor.',
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
@@ -491,7 +495,7 @@ const hu: DeepPartial<Messages> = {
     showInToolbar: 'Megjelenítés az eszköztáron',
     saveSuccess: 'A beállítások el lettek mentve.',
     savingError: ({ err }) =>
-      addError(hu, 'Hiba történt a beállítások mentésénél', err),
+      addError(messages, 'Hiba történt a beállítások mentésénél', err),
     customLayersDef: 'Egyéni térképrétegek meghatározása',
     customLayersDefError: 'Érvénytelen egyéni térképréteg-meghatározás.',
   },
@@ -505,7 +509,11 @@ const hu: DeepPartial<Messages> = {
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
     fetchError: ({ err }) =>
-      addError(hu, 'Hiba történt a módosításkészletek beolvasásánál', err),
+      addError(
+        messages,
+        'Hiba történt a módosításkészletek beolvasásánál',
+        err,
+      ),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Szerző:',
@@ -523,7 +531,7 @@ const hu: DeepPartial<Messages> = {
   mapDetails: {
     notFound: 'Itt nem találtunk semmit.',
     fetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt a részletek lekérésekor', err),
+      addError(messages, 'Hiba történt a részletek lekérésekor', err),
   },
 
   objects: {
@@ -534,7 +542,11 @@ const hu: DeepPartial<Messages> = {
       zoom: 'Nagyítás',
     },
     fetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt az objektumok (POI-k) beolvasásánál', err),
+      addError(
+        messages,
+        'Hiba történt az objektumok (POI-k) beolvasásánál',
+        err,
+      ),
     icon: {
       pin: 'Tű',
       ring: 'Gyűrű',
@@ -563,7 +575,7 @@ const hu: DeepPartial<Messages> = {
     prompt: 'Adja meg a helyet',
     routeFrom: 'Útvonal innen',
     routeTo: 'Útvonal ide',
-    fetchingError: ({ err }) => addError(hu, 'Keresési hiba', err),
+    fetchingError: ({ err }) => addError(messages, 'Keresési hiba', err),
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
   },
@@ -586,7 +598,7 @@ const hu: DeepPartial<Messages> = {
 
   exportMapFeatures: {
     download: 'Letöltés',
-    exportError: ({ err }) => addError(hu, 'Hiba a exportálásakor', err),
+    exportError: ({ err }) => addError(messages, 'Hiba a exportálásakor', err),
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'megállásokkal',
@@ -639,14 +651,15 @@ const hu: DeepPartial<Messages> = {
       with: 'Válasszon bejelentkezési szolgáltatót',
       success: 'Sikeresen bejelentkezett.',
       logInError: ({ err }) =>
-        addError(hu, 'Hiba történt a bejelentkezésnél', err),
+        addError(messages, 'Hiba történt a bejelentkezésnél', err),
       logInError2: 'Hiba történt a bejelentkezésnél.',
       verifyError: ({ err }) =>
-        addError(hu, 'Hiba történt a hitelesítés ellenőrzésénél', err),
+        addError(messages, 'Hiba történt a hitelesítés ellenőrzésénél', err),
     },
     logOut: {
       success: 'Sikeresen kijelentkezett.',
-      error: ({ err }) => addError(hu, 'Hiba történt a kijelentkezésnél', err),
+      error: ({ err }) =>
+        addError(messages, 'Hiba történt a kijelentkezésnél', err),
     },
   },
 
@@ -694,7 +707,11 @@ const hu: DeepPartial<Messages> = {
     distance: 'Távolság [km]',
     ele: `Magasság [${masl}]`,
     fetchError: ({ err }) =>
-      addError(hu, 'Hiba történt a magasságiprofil-adatok lekérésénél', err),
+      addError(
+        messages,
+        'Hiba történt a magasságiprofil-adatok lekérésénél',
+        err,
+      ),
   },
 
   errorCatcher: {
@@ -712,7 +729,7 @@ const hu: DeepPartial<Messages> = {
 
   osm: {
     fetchingError: ({ err }) =>
-      addError(hu, 'Hiba történt az OSM-adatok lekérésénél', err),
+      addError(messages, 'Hiba történt az OSM-adatok lekérésénél', err),
   },
 
   tracking: {
@@ -889,7 +906,7 @@ const hu: DeepPartial<Messages> = {
   },
   mapExport: {
     exportError: ({ err }) =>
-      addError(hu, 'Hiba történt a térkép exportálásakor', err),
+      addError(messages, 'Hiba történt a térkép exportálásakor', err),
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
     exported: ({ url }) => (
       <>
@@ -968,17 +985,17 @@ const hu: DeepPartial<Messages> = {
     delete: 'Törlés',
     deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`,
     fetchError: ({ err }) =>
-      addError(hu, 'Hiba történt a térkép betöltéskor', err),
+      addError(messages, 'Hiba történt a térkép betöltéskor', err),
     fetchListError: ({ err }) =>
-      addError(hu, 'Hiba történt a térképek betöltéskor', err),
+      addError(messages, 'Hiba történt a térképek betöltéskor', err),
     deleteError: ({ err }) =>
-      addError(hu, 'Hiba történt a térkép törlésekor', err),
+      addError(messages, 'Hiba történt a térkép törlésekor', err),
     renameError: ({ err }) =>
-      addError(hu, 'Hiba történt a térkép átnevezésekor', err),
+      addError(messages, 'Hiba történt a térkép átnevezésekor', err),
     createError: ({ err }) =>
-      addError(hu, 'Hiba történt a térkép mentésekor', err),
+      addError(messages, 'Hiba történt a térkép mentésekor', err),
     saveError: ({ err }) =>
-      addError(hu, 'Hiba történt a térkép mentésekor', err),
+      addError(messages, 'Hiba történt a térkép mentésekor', err),
   },
 
   mapCtxMenu: {},
@@ -1190,4 +1207,4 @@ const hu: DeepPartial<Messages> = {
   },
 };
 
-export default hu;
+export default messages;

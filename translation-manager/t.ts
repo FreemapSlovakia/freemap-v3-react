@@ -113,7 +113,92 @@ function findRoot(file: File) {
   }
 }
 
-function mergeIntoLocale(base: ObjectExpression, target: ObjectExpression) {
+function buildTranslationMap(
+  root: ObjectExpression,
+  prefix: string[] = [],
+  out: Record<string, ObjectProperty> = {},
+): Record<string, ObjectProperty> {
+  for (const prop of root.properties) {
+    if (
+      isObjectProperty(prop) &&
+      (isIdentifier(prop.key) || isStringLiteral(prop.key))
+    ) {
+      const key = isIdentifier(prop.key) ? prop.key.name : prop.key.value;
+      const path = [...prefix, key];
+
+      if (isObjectExpression(prop.value)) {
+        buildTranslationMap(prop.value, path, out);
+      } else {
+        out[path.join('.')] = prop;
+      }
+    }
+  }
+
+  return out;
+}
+
+const enFile = parseFile('en');
+
+const enRoot = findRoot(enFile);
+
+if (!enRoot) {
+  throw new Error('root not found for en');
+}
+
+const langs = ['cs', 'hu', 'it', 'sk'];
+
+const roots = langs.map((lang) => {
+  const file = parseFile(`${lang}.template`);
+
+  const root = findRoot(file);
+
+  if (!root) {
+    throw new Error('root not found for ' + lang);
+  }
+
+  return [lang, file, root] as const;
+});
+
+const otherLocalesMaps = roots.map(
+  ([lang, , root]) => [lang, buildTranslationMap(root)] as const,
+);
+
+for (const [lang, file, root] of roots) {
+  mergeIntoLocale(enRoot, root);
+
+  writeFileSync(
+    `../src/translations/${lang}.tsx`,
+    print(file, { quote: 'single', trailingComma: true }).code,
+  );
+}
+
+function collectTranslations(key: string): string[] {
+  const results: string[] = [];
+
+  for (const [lang, map] of otherLocalesMaps) {
+    const prop = map[key];
+
+    if (!prop) {
+      continue;
+    }
+
+    const rawCode = print(prop).code;
+
+    if (/TODO translate/.test(rawCode)) {
+      continue;
+    }
+
+    results.push(`${lang}: ${print(prop.value).code}`);
+  }
+
+  return results;
+}
+
+function mergeIntoLocale(
+  base: ObjectExpression,
+  target: ObjectExpression,
+  propPath: string[] = [],
+) {
   const targetKeys = new Set(
     target.properties
       .filter((p) => isObjectProperty(p))
@@ -127,15 +212,22 @@ function mergeIntoLocale(base: ObjectExpression, target: ObjectExpression) {
   );
 
   for (const prop of base.properties) {
-    if (!isObjectProperty(prop)) continue;
+    if (!isObjectProperty(prop)) {
+      continue;
+    }
 
-    const keyName = isIdentifier(prop.key)
-      ? prop.key.name
-      : isStringLiteral(prop.key)
-        ? prop.key.value
-        : null;
+    let keyName;
 
-    if (!keyName || targetKeys.has(keyName)) {
+    if (isIdentifier(prop.key)) {
+      keyName = prop.key.name;
+    } else if (isStringLiteral(prop.key)) {
+      keyName = prop.key.value;
+    } else {
+      // Skip computed or unsupported keys
+      continue;
+    }
+
+    if (targetKeys.has(keyName)) {
       // key exists, recurse if both are objects
       const targetProp = target.properties.find(
         (p) =>
@@ -149,7 +241,7 @@ function mergeIntoLocale(base: ObjectExpression, target: ObjectExpression) {
         isObjectExpression(prop.value) &&
         isObjectExpression(targetProp.value)
       ) {
-        mergeIntoLocale(prop.value, targetProp.value);
+        mergeIntoLocale(prop.value, targetProp.value, [...propPath, keyName]);
       }
 
       continue;
@@ -163,18 +255,20 @@ function mergeIntoLocale(base: ObjectExpression, target: ObjectExpression) {
 
     types.visit(clonedProp, {
       visitNode(path) {
-        const enValueCode = print(prop.value).code;
+        const translations = collectTranslations(
+          [...propPath, keyName].join('.'),
+        );
 
         const commentLines = [
-          ' TODO translate from English:',
-          ...enValueCode.split('\n').map((line) => ` ${line}`),
+          ' TODO translate; non-english translations:',
+          ...translations,
         ];
 
         path.node.comments ??= [];
 
         path.node.comments.push({
           type: 'CommentBlock',
-          value: commentLines.join('\n *') + '\n ',
+          value: commentLines.join('\n').replace(/\n/g, '\n * ') + '\n ',
           leading: true,
         });
 
@@ -185,22 +279,3 @@ function mergeIntoLocale(base: ObjectExpression, target: ObjectExpression) {
     target.properties.push(clonedProp);
   }
 }
-
-const enFile = parseFile('en');
-
-const huFile = parseFile('hu.template');
-
-const enRoot = findRoot(enFile);
-
-const huRoot = findRoot(huFile);
-
-if (!enRoot || !huRoot) {
-  throw new Error('root not found');
-}
-
-mergeIntoLocale(enRoot, huRoot);
-
-writeFileSync(
-  `../src/translations/hu.tsx`,
-  print(huFile, { quote: 'single' }).code,
-);

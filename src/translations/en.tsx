@@ -43,7 +43,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Hiking, Bicycle, Ski, Riding';
 
-const en: Messages = {
+const messages: Messages = {
   general: {
     iso: 'en_US',
     elevationProfile: 'Elevation profile',
@@ -66,7 +66,7 @@ const en: Messages = {
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: ({ err }) => addError(en, 'Application error', err),
+    processorError: ({ err }) => addError(messages, 'Application error', err),
     seconds: 'seconds',
     minutes: 'minutes',
     meters: 'meters',
@@ -80,10 +80,10 @@ const en: Messages = {
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',
     copyPageUrl: 'Copy page URL',
-    savingError: ({ err }) => addError(en, 'Save error', err),
-    loadError: ({ err }) => addError(en, 'Loading error', err),
-    deleteError: ({ err }) => addError(en, 'Deleting error', err),
-    operationError: ({ err }) => addError(en, 'Operation error', err),
+    savingError: ({ err }) => addError(messages, 'Save error', err),
+    loadError: ({ err }) => addError(messages, 'Loading error', err),
+    deleteError: ({ err }) => addError(messages, 'Deleting error', err),
+    operationError: ({ err }) => addError(messages, 'Operation error', err),
     deleted: 'Deleted.',
     saved: 'Saved.',
     visual: 'Display',
@@ -204,7 +204,8 @@ const en: Messages = {
     gpsError: 'Error getting your current location.',
     routeNotFound:
       'No route found. Try to change parameters or move the route points.',
-    fetchingError: ({ err }) => addError(en, 'Error finding the route', err),
+    fetchingError: ({ err }) =>
+      addError(messages, 'Error finding the route', err),
   },
 
   mainMenu: {
@@ -362,15 +363,17 @@ const en: Messages = {
     locationPicking: {
       title: 'Select photo location',
     },
-    deletingError: ({ err }) => addError(en, 'Error deleting photo', err),
-    tagsFetchingError: ({ err }) => addError(en, 'Error fetching tags', err),
+    deletingError: ({ err }) => addError(messages, 'Error deleting photo', err),
+    tagsFetchingError: ({ err }) =>
+      addError(messages, 'Error fetching tags', err),
     pictureFetchingError: ({ err }) =>
-      addError(en, 'Error fetching photo', err),
+      addError(messages, 'Error fetching photo', err),
     picturesFetchingError: ({ err }) =>
-      addError(en, 'Error fetching photos', err),
-    savingError: ({ err }) => addError(en, 'Error saving photo', err),
-    commentAddingError: ({ err }) => addError(en, 'Error adding comment', err),
-    ratingError: ({ err }) => addError(en, 'Error rating photo', err),
+      addError(messages, 'Error fetching photos', err),
+    savingError: ({ err }) => addError(messages, 'Error saving photo', err),
+    commentAddingError: ({ err }) =>
+      addError(messages, 'Error adding comment', err),
+    ratingError: ({ err }) => addError(messages, 'Error rating photo', err),
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
     invalidTakenAt: 'Invalid capture date and time.',
@@ -399,7 +402,7 @@ const en: Messages = {
     elevation: 'Point',
     area: 'Polygon',
     elevationFetchError: ({ err }) =>
-      addError(en, 'Error fetching point elevation', err),
+      addError(messages, 'Error fetching point elevation', err),
     elevationInfo: (params) => (
       <ElevationInfo
         {...params}
@@ -457,8 +460,9 @@ const en: Messages = {
     },
     shareToast:
       'The track has been saved to the server and can be shared by copying page URL.',
-    fetchingError: ({ err }) => addError(en, 'Error fetching track data', err),
-    savingError: ({ err }) => addError(en, 'Error saving the track', err),
+    fetchingError: ({ err }) =>
+      addError(messages, 'Error fetching track data', err),
+    savingError: ({ err }) => addError(messages, 'Error saving the track', err),
     loadingError: 'Error loading file.',
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
@@ -531,7 +535,7 @@ const en: Messages = {
     showInMenu: 'Show in menu',
     showInToolbar: 'Show in toolbar',
     saveSuccess: 'Settings have been saved.',
-    savingError: ({ err }) => addError(en, 'Error saving settings', err),
+    savingError: ({ err }) => addError(messages, 'Error saving settings', err),
     customLayersDef: 'Custom map layers definition',
     customLayersDefError: 'Invalid definition of custom map layers.',
   },
@@ -543,7 +547,8 @@ const en: Messages = {
     olderThan: ({ days }) => `${days} days`,
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
-    fetchError: ({ err }) => addError(en, 'Error fetching changesets', err),
+    fetchError: ({ err }) =>
+      addError(messages, 'Error fetching changesets', err),
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Author:',
@@ -560,7 +565,8 @@ const en: Messages = {
 
   mapDetails: {
     notFound: 'Nothing found here.',
-    fetchingError: ({ err }) => addError(en, 'Error fetching details', err),
+    fetchingError: ({ err }) =>
+      addError(messages, 'Error fetching details', err),
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -580,7 +586,7 @@ const en: Messages = {
     },
     tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,
     fetchingError: ({ err }) =>
-      addError(en, 'Error fetching objects (POIs)', err),
+      addError(messages, 'Error fetching objects (POIs)', err),
     icon: {
       pin: 'Pin',
       ring: 'Ring',
@@ -609,7 +615,7 @@ const en: Messages = {
     prompt: 'Enter the place',
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
-    fetchingError: ({ err }) => addError(en, 'Searching error', err),
+    fetchingError: ({ err }) => addError(messages, 'Searching error', err),
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
   },
@@ -634,7 +640,7 @@ const en: Messages = {
     download: 'Download',
     format: 'Format',
     target: 'Target',
-    exportError: ({ err }) => addError(en, 'Error exporting', err),
+    exportError: ({ err }) => addError(messages, 'Error exporting', err),
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'include stops',
@@ -692,14 +698,14 @@ const en: Messages = {
     logIn: {
       with: 'Choose a login provider',
       success: 'You have been successfully logged in.',
-      logInError: ({ err }) => addError(en, 'Error logging in', err),
+      logInError: ({ err }) => addError(messages, 'Error logging in', err),
       logInError2: 'Error logging in.',
       verifyError: ({ err }) =>
-        addError(en, 'Error verifying authentication', err),
+        addError(messages, 'Error verifying authentication', err),
     },
     logOut: {
       success: 'You have been successfully logged out.',
-      error: ({ err }) => addError(en, 'Error logging out', err),
+      error: ({ err }) => addError(messages, 'Error logging out', err),
     },
   },
 
@@ -771,7 +777,7 @@ const en: Messages = {
     distance: 'Distance [km]',
     ele: `Elevation [${masl}]`,
     fetchError: ({ err }) =>
-      addError(en, 'Error fetching elevation profile data', err),
+      addError(messages, 'Error fetching elevation profile data', err),
   },
 
   errorCatcher: {
@@ -788,7 +794,8 @@ const en: Messages = {
   },
 
   osm: {
-    fetchingError: ({ err }) => addError(en, 'Error fetching OSM data', err),
+    fetchingError: ({ err }) =>
+      addError(messages, 'Error fetching OSM data', err),
   },
 
   tracking: {
@@ -965,7 +972,7 @@ const en: Messages = {
   mapExport: {
     advancedSettings: 'Advanced options',
     styles: 'Interactive layer styles',
-    exportError: ({ err }) => addError(en, 'Error exporting map', err),
+    exportError: ({ err }) => addError(messages, 'Error exporting map', err),
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
       <>
@@ -1046,12 +1053,12 @@ const en: Messages = {
     delete: 'Delete',
     disconnect: 'Disconnect',
     deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
-    fetchError: ({ err }) => addError(en, 'Error loading map', err),
-    fetchListError: ({ err }) => addError(en, 'Error loading maps', err),
-    deleteError: ({ err }) => addError(en, 'Error deleting map', err),
-    renameError: ({ err }) => addError(en, 'Error renaming map', err),
-    createError: ({ err }) => addError(en, 'Error saving map', err),
-    saveError: ({ err }) => addError(en, 'Error saving map', err),
+    fetchError: ({ err }) => addError(messages, 'Error loading map', err),
+    fetchListError: ({ err }) => addError(messages, 'Error loading maps', err),
+    deleteError: ({ err }) => addError(messages, 'Error deleting map', err),
+    renameError: ({ err }) => addError(messages, 'Error renaming map', err),
+    createError: ({ err }) => addError(messages, 'Error saving map', err),
+    saveError: ({ err }) => addError(messages, 'Error saving map', err),
     loadToEmpty: 'Load to empty map',
     loadInclMapAndPosition:
       'Load including saved background map and its position',
@@ -1281,4 +1288,4 @@ const en: Messages = {
   },
 };
 
-export default en;
+export default messages;
