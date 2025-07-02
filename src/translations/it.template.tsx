@@ -12,7 +12,7 @@ import {
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './it-shared.js';
-import { Messages, addError } from './messagesInterface.js';
+import { DeepPartial, Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 3,
@@ -43,7 +43,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
-const messages: Messages = {
+const messages: DeepPartial<Messages> = {
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -104,10 +104,7 @@ const messages: Messages = {
     attribution: () => (
       <Attribution unknown="Licenza della mappa non specificata." />
     ),
-    unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
-    areYouSure: 'Are you sure?', // TODO translate
     export: 'Esporta',
-    success: 'Success!', // TODO translate
     expiration: 'Scadenza',
   },
 
@@ -219,7 +216,7 @@ const messages: Messages = {
     logOut: 'Esci',
     logIn: 'Accedi',
     account: 'Account',
-    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa', // TODO google translatted
+    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa',
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
@@ -287,7 +284,6 @@ const messages: Messages = {
 
   gallery: {
     legend: 'Legenda',
-    recentTags: 'Recent tags to assign:', // TODO translate
     filter: 'Filtro',
     showPhotosFrom: 'Vedi le foto',
     showLayer: 'Mostra il livello',
@@ -311,7 +307,6 @@ const messages: Messages = {
       takenAt: 'data scatto',
       createdAt: 'data di caricamento',
       season: 'stagione',
-      premium: 'premium', // TODO translate
     },
     viewer: {
       title: 'Foto',
@@ -393,17 +388,11 @@ const messages: Messages = {
       author: 'Autore',
       rating: 'Valutazione',
       noTags: 'no tag',
-      pano: 'Panorama', // TODO translate
-      premium: 'Premium', // TODO translate
     },
     noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
     linkToWww: 'foto su www.freemap.sk',
     linkToImage: 'file immagine',
-    // TODO translate
-    allMyPhotos: {
-      premium: 'Include all my photos in premium content',
-      free: 'Make all my photos accessible to everyone',
-    },
+    allMyPhotos: {},
   },
 
   measurement: {
@@ -492,7 +481,6 @@ const messages: Messages = {
       label: 'Etichetta:',
       width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
-      type: 'Geometry type', // TODO translate
     },
     continue: 'Continua',
     join: 'Unisci',
@@ -536,9 +524,6 @@ const messages: Messages = {
       name: 'Nome',
       email: 'Email',
       sendGalleryEmails: 'Notifica i commenti alle foto via email',
-      delete: 'Delete account', // TODO translate
-      deleteWarning:
-        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
       personalInfo: 'Dati personali',
       authProviders: 'Provider di accesso',
     },
@@ -581,9 +566,9 @@ const messages: Messages = {
   },
 
   mapDetails: {
-    notFound: 'Niente trovato qui.', // TODO google translated
+    notFound: 'Niente trovato qui.',
     fetchingError: ({ err }) =>
-      addError(messages, 'Errore durante il recupero dei dettagli', err), // TODO google translated
+      addError(messages, 'Errore durante il recupero dei dettagli', err),
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -656,7 +641,6 @@ const messages: Messages = {
   exportMapFeatures: {
     download: 'Download',
     format: 'Formato',
-    target: 'Target', // TODO translate
     exportError: ({ err }) => addError(messages, 'Error exporting:', err),
     what: {
       plannedRoute: 'trova percorso',
@@ -668,7 +652,6 @@ const messages: Messages = {
       drawingPoints: 'disegno - punti',
       tracking: 'tracciamento in tempo reale',
       gpx: 'traccia GPX',
-      search: 'highlighted map feature', // TODO translate
     },
     disabledAlert:
       'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
@@ -705,7 +688,7 @@ const messages: Messages = {
       garmin: 'Garmin',
     },
     logIn: {
-      with: 'Scegli un provider di accesso', // TODO google-translated
+      with: 'Scegli un provider di accesso',
       success: 'Accesso eseguito correttamente.',
       logInError: ({ err }) => addError(messages, 'Error logging in:', err),
       logInError2: 'Error logging in.',
@@ -716,14 +699,8 @@ const messages: Messages = {
       success: 'Disconnessione avvenuta correttamente.',
       error: ({ err }) => addError(messages, 'Error logging out:', err),
     },
-    connect: {
-      label: 'Connect', // TODO translate
-      success: 'Connected', // TODO translate
-    },
-    disconnect: {
-      label: 'Disconnect', // TODO translate
-      success: 'Disconnected', // TODO translate
-    },
+    connect: {},
+    disconnect: {},
   },
 
   mapLayers: {
@@ -757,18 +734,6 @@ const messages: Messages = {
       s3: 'Strava (sport acquatici)',
       s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
-      '4': 'Light terrain hillshading (SK)', // TODO translate
-      '5': 'Terrain hillshading (SK)', // TODO translate
-      '6': 'Surface hillshading (SK)', // TODO translate
-      '7': 'Detailed surface hillshading (SK)', // TODO translate
-      '8': 'Detailed surface hillshading (CZ)', // TODO translate
-
-      VO: 'OpenStreetMap Vector', // TODO translate
-      VS: 'Streets Vector', // TODO translate
-      VD: 'Dataviz Vector', // TODO translate
-      VT: 'Outdoor Vector', // TODO translate
-      h: 'Parametric shading (SK)', // TODO translate
-      z: 'Parametric shading (CZ)', // TODO translate
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',
@@ -779,16 +744,7 @@ const messages: Messages = {
     },
     attr: {
       freemap: '©\xa0Freemap Slovakia',
-      osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'DTM providers…', // TODO translate
-      maptiler: (
-        // TODO translate
-        <MaptilerAttribution
-          tilesFrom="Vector tiles from"
-          hostedBy="hosted by"
-        />
-      ),
     },
   },
 
@@ -812,10 +768,7 @@ const messages: Messages = {
     `,
   },
 
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error fetching OSM data:', err),
-  },
+  osm: {},
 
   tracking: {
     trackedDevices: {
@@ -1066,7 +1019,7 @@ const messages: Messages = {
 
   maps: {
     legacyMapWarning:
-      'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?', // TODO by google translate
+      'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?',
     noMapFound: 'Nessuna mappa trovata',
     save: 'Salva',
     delete: 'Elimina',
@@ -1146,8 +1099,7 @@ const messages: Messages = {
             accesso ai livelli mappa <FaGem /> premium
           </li>
           <li>
-            {/* TODO translate */}
-            access to <FaGem /> premium photos
+            accesso alle foto <FaGem /> premium
           </li>
         </ul>
       </>

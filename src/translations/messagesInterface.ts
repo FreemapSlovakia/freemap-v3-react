@@ -786,10 +786,12 @@ export type Messages = {
 };
 
 export function addError(
-  messages: Messages,
+  dpMessages: DeepPartial<Messages>,
   message: string,
   err: unknown,
 ): string {
+  const messages = dpMessages as Messages; // our message compiler will make it non-partial
+
   return (
     message +
     ': ' +
@@ -805,3 +807,13 @@ export function addError(
           : err.message)
   );
 }
+
+export type DeepPartial<K> = {
+  [attr in keyof K]?: K[attr] extends Record<string, unknown>
+    ? DeepPartial<K[attr]>
+    : K[attr] extends Record<string, unknown> | null
+      ? DeepPartial<K[attr]> | null
+      : K[attr] extends Record<string, unknown> | null | undefined
+        ? DeepPartial<K[attr]> | null | undefined
+        : K[attr];
+};
