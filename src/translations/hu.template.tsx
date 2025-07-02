@@ -1,11 +1,18 @@
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
+import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { Emoji } from '../components/Emoji.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
+import {
+  ObjectDetailBasicProps,
+  ObjectDetails,
+} from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './hu-shared.js';
-import { DeepPartial, Messages, addError } from './messagesInterface.js';
+import { Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 3,
@@ -36,7 +43,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
-const messages: DeepPartial<Messages> = {
+const messages: Messages = {
   general: {
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
@@ -56,8 +63,10 @@ const messages: DeepPartial<Messages> = {
     loading: 'Töltés…',
     ok: 'OK',
     preventShowingAgain: 'Következő alkalommal ne jelenjék meg',
+
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
+
     back: 'Vissza',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
     processorError: ({ err }) => addError(messages, 'Alkalmazáshiba', err),
@@ -69,8 +78,10 @@ const messages: DeepPartial<Messages> = {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
+
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
+
     copyUrl: 'URL másolása',
     copyPageUrl: 'Oldal URL-jének másolása',
     savingError: ({ err }) => addError(messages, 'Mentési hiba', err),
@@ -79,10 +90,44 @@ const messages: DeepPartial<Messages> = {
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
+
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
+
     export: 'Exportálás',
     expiration: 'Lejárat',
+    modifiedAt: 'Módosítva',
+
+    operationError: ({ err }) => addError(messages, 'Műveleti hiba', err),
+
+    copyOk: 'Vágólapra másolva.',
+
+    noCookies: 'Ez a funkció a sütik elfogadását igényli.',
+
+    name: 'Név',
+
+    load: 'Betöltés',
+
+    unnamed: 'Névtelen',
+
+    componentLoadingError:
+      'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
+
+    offline: 'Nincs internetkapcsolatod.',
+
+    connectionError: 'Hiba a szerverhez való csatlakozáskor.',
+
+    experimentalFunction: 'Kísérleti funkció',
+
+    attribution: () => (
+      <Attribution unknown="A térkép licence nincs megadva." />
+    ),
+
+    unauthenticatedError: 'A funkció használatához előbb jelentkezz be.',
+
+    areYouSure: 'Biztos vagy benne?',
+
+    success: 'Kész!',
   },
 
   selections: {
@@ -91,6 +136,10 @@ const messages: DeepPartial<Messages> = {
     drawLines: 'Vonal',
     drawPolygons: 'Sokszög',
     tracking: 'Követés',
+
+    linePoint: 'Vonal pontja',
+
+    polygonPoint: 'Poligon pontja',
   },
 
   tools: {
@@ -144,6 +193,8 @@ const messages: DeepPartial<Messages> = {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',
       roundtrip: 'Legrövidebb úton (körutazás)',
+      'routndtrip-gh': 'Körút',
+      isochrone: 'Izokron',
     },
     alternative: 'Alternatíva',
     distance: ({ value, diff }) => (
@@ -202,6 +253,8 @@ const messages: DeepPartial<Messages> = {
     automaticLanguage: 'Automatikus',
     mapExport: 'Térkép exportálása',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
+    title: 'Főmenü',
+    osmWiki: 'OpenStreetMap dokumentáció',
   },
 
   main: {
@@ -214,13 +267,16 @@ const messages: DeepPartial<Messages> = {
     locationError: 'Nem sikerült megtalálni a helyzetét.',
     zoomIn: 'Nagyítás',
     zoomOut: 'Kicsinyítés',
+
     devInfo: () => (
       <div>
         Ez a Freemap Slovakia tesztverziója. A felhasználói verziót itt találja:{' '}
         <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
+
     copyright: 'Szerzői jog',
+
     infoBars: {
       ua: () => (
         <>
@@ -237,11 +293,19 @@ const messages: DeepPartial<Messages> = {
         </>
       ),
     },
+
     ad: (email) => (
       <>
         Szeretnéd, ha itt lenne a saját hirdetésed? Ne habozz kapcsolatba lépni
         velünk a következő címen: {email}.
       </>
+    ),
+    cookieConsent: () => (
+      <CookieConsent
+        prompt="Egyes funkciók sütiket igényelhetnek. Elfogadod:"
+        local="Helyi beállítások és közösségi hálós bejelentkezés sütijei"
+        analytics="Analitikus sütik"
+      />
     ),
   },
 
@@ -251,6 +315,7 @@ const messages: DeepPartial<Messages> = {
     showPhotosFrom: 'Fényképek megtekintése',
     showLayer: 'Réteg megjelenítése',
     upload: 'Feltöltés',
+
     f: {
       firstUploaded: 'az először feltöltöttől',
       lastUploaded: 'a legutóbb feltöltöttől',
@@ -260,8 +325,20 @@ const messages: DeepPartial<Messages> = {
       mostRated: 'a legjobbra értékelttől',
       lastComment: 'from last comment',
     },
+
     showDirection: 'Mutasd a fényképezés irányát',
-    c: {},
+
+    c: {
+      disable: 'ne színezd',
+      mine: 'különítsd el a sajátjaimat',
+      author: 'szerző',
+      rating: 'értékelés',
+      takenAt: 'készítés dátuma',
+      createdAt: 'feltöltés dátuma',
+      season: 'évszak',
+      premium: 'prémium',
+    },
+
     viewer: {
       title: 'Fénykép',
       comments: 'Hozzászólások',
@@ -282,6 +359,7 @@ const messages: DeepPartial<Messages> = {
         'Ezt a fényképet a szerzője csak prémium hozzáféréssel rendelkező felhasználók számára tette elérhetővé.',
       noComments: 'Nincs hozzászólás',
     },
+
     editForm: {
       name: 'Név',
       description: 'Leírás',
@@ -295,6 +373,7 @@ const messages: DeepPartial<Messages> = {
       tags: 'Címkék',
       setLocation: 'Hely megadása',
     },
+
     uploadModal: {
       title: 'Fényképek feltöltése',
       uploading: (n) => `Feltöltés folyamatban (${n})`,
@@ -318,26 +397,36 @@ const messages: DeepPartial<Messages> = {
       premium:
         'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
     },
+
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
     },
+
     deletingError: ({ err }) =>
       addError(messages, 'Hiba történt a fénykép törlésénél', err),
+
     tagsFetchingError: ({ err }) =>
       addError(messages, 'Hiba történt a címkék beolvasásánál', err),
+
     pictureFetchingError: ({ err }) =>
       addError(messages, 'Hiba történt a fénykép beolvasásánál', err),
+
     picturesFetchingError: ({ err }) =>
       addError(messages, 'Hiba történt a fényképek beolvasásánál', err),
+
     savingError: ({ err }) =>
       addError(messages, 'Hiba történt a fénykép mentésénél', err),
+
     commentAddingError: ({ err }) =>
       addError(messages, 'Hiba történt a hozzászólás hozzáadásánál', err),
+
     ratingError: ({ err }) =>
       addError(messages, 'Hiba történt a fénykép értékelésénél', err),
+
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
+
     filterModal: {
       title: 'Fényképek szűrése',
       tag: 'Címke',
@@ -346,8 +435,20 @@ const messages: DeepPartial<Messages> = {
       author: 'Szerző',
       rating: 'Értékelés',
       noTags: 'nincs címke',
+      pano: 'Panoráma',
+      premium: 'Prémium',
     },
-    allMyPhotos: {},
+
+    allMyPhotos: {
+      premium: 'Minden fotóm felvétele a prémium tartalomba',
+      free: 'Minden fotóm elérhetővé tétele mindenki számára',
+    },
+
+    recentTags: 'Legutóbbi címkék hozzárendeléshez:',
+    colorizeBy: 'Színezés ez alapján',
+    noPicturesFound: 'Ezen a helyen nem találhatók fotók.',
+    linkToWww: 'fotó a www.freemap.sk oldalon',
+    linkToImage: 'fotófájl',
   },
 
   measurement: {
@@ -530,28 +631,44 @@ const messages: DeepPartial<Messages> = {
 
   mapDetails: {
     notFound: 'Itt nem találtunk semmit.',
+
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt a részletek lekérésekor', err),
+
+    detail: (props: ObjectDetailBasicProps) => (
+      <ObjectDetails
+        {...props}
+        openText="Megnyitás az OpenStreetMap.org oldalon"
+        historyText="előzmények"
+        editInJosmText="Szerkesztés JOSM-ben"
+      />
+    ),
   },
 
   objects: {
     type: 'Típus',
+
     lowZoomAlert: {
       message: ({ minZoom }) =>
         `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,
       zoom: 'Nagyítás',
     },
+
     fetchingError: ({ err }) =>
       addError(
         messages,
         'Hiba történt az objektumok (POI-k) beolvasásánál',
         err,
       ),
+
     icon: {
       pin: 'Tű',
       ring: 'Gyűrű',
       square: 'Négyzet',
     },
+
+    tooManyPoints: ({ limit }) =>
+      `Az eredmény ${limit} objektumra lett korlátozva.`,
   },
 
   external: {
@@ -599,6 +716,7 @@ const messages: DeepPartial<Messages> = {
   exportMapFeatures: {
     download: 'Letöltés',
     exportError: ({ err }) => addError(messages, 'Hiba a exportálásakor', err),
+
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'megállásokkal',
@@ -611,12 +729,16 @@ const messages: DeepPartial<Messages> = {
       gpx: 'GPX-nyomvonal',
       search: 'kiemelt térképelem',
     },
+
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
+
     licenseAlert:
       'Különféle licencek vonatkozhatnak - például az OpenStreetMap. Kérjük, adja hozzá a hiányzó forrásokat az exportált fájl megosztásakor.',
+
     exportedToDropbox: 'Fájl elmentve a Dropboxba.',
     exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
+
     garmin: {
       courseName: 'Tanfolyam neve',
       description: 'Leírás',
@@ -636,6 +758,8 @@ const messages: DeepPartial<Messages> = {
       authPrompt:
         'Még nem vagy bejelentkezve a Garminonba. Szeretnél ez alkalommal bejelentkezni?',
     },
+    format: 'Formátum',
+    target: 'Cél',
   },
 
   auth: {
@@ -645,8 +769,14 @@ const messages: DeepPartial<Messages> = {
       osm: 'OpenStreetMap',
       garmin: 'Garmin',
     },
-    connect: {},
-    disconnect: {},
+    connect: {
+      label: 'Csatlakozás',
+      success: 'Csatlakoztatva',
+    },
+    disconnect: {
+      label: 'Kapcsolat bontása',
+      success: 'Lecsatlakoztatva',
+    },
     logIn: {
       with: 'Válasszon bejelentkezési szolgáltatót',
       success: 'Sikeresen bejelentkezett.',
@@ -667,6 +797,7 @@ const messages: DeepPartial<Messages> = {
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
+
     letters: {
       A: 'Autó (elavult)',
       T: 'Túrázás (elavult)',
@@ -690,17 +821,45 @@ const messages: DeepPartial<Messages> = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
+      '4': 'Világos domborzatárnyékolás (SK)',
+      '5': 'Domborzatárnyékolás (SK)',
+      '6': 'Felszínárnyékolás (SK)',
+      '7': 'Részletes felszínárnyékolás (SK)',
+      '8': 'Részletes felszínárnyékolás (CZ)',
+
+      VO: 'OpenStreetMap vektoros',
+      VS: 'Utcák vektoros',
+      VD: 'Dataviz vektoros',
+      VT: 'Outdoor vektoros',
+
+      h: 'Paraméteres árnyékolás (SK)',
+      z: 'Paraméteres árnyékolás (CZ)',
     },
+
     type: {
       map: 'térkép',
       data: 'adatok',
       photos: 'képek',
     },
+
     attr: {
       freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
       srtm: '©\xa0SRTM',
+      outdoorShadingAttribution: 'DMR szolgáltatók…',
+      maptiler: (
+        <MaptilerAttribution
+          tilesFrom="Vektorcsempék innen:"
+          hostedBy="hosztolva:"
+        />
+      ),
     },
+    showAll: 'Összes térkép megjelenítése',
+    settings: 'Térkép beállítások',
+    switch: 'Térképek',
+    interactiveLayerWarning: 'Az interaktív réteg rejtve van',
+    customBase: 'Egyéni térkép',
+    customOverlay: 'Egyéni térképátfedés',
   },
 
   elevationChart: {
@@ -737,16 +896,21 @@ const messages: DeepPartial<Messages> = {
       button: 'Figyelt',
       modalTitle: 'Figyelt eszközök',
       desc: 'Figyelt eszközök kezelése ismerősei pozíciójának megismeréséhez.',
+
       modifyTitle: (name) => (
         <>
           Figyelt eszköz módosításaí <i>{name}</i>
         </>
       ),
+
       createTitle: (name) => (
         <>
           <i>{name}</i> készülék figyelése
         </>
       ),
+
+      storageWarning:
+        'Figyelem, az eszközök listája csak az oldal URL-jében jelenik meg. Ha el szeretnéd menteni, használd a „Saját térképek” funkciót.',
     },
     accessToken: {
       token: 'Figyelőkód',
@@ -754,6 +918,7 @@ const messages: DeepPartial<Messages> = {
       timeTo: 'Eddig',
       listingLabel: 'Felsorolási felirat',
       note: 'Megjegyzés',
+      delete: 'Törlöd a hozzáférési tokent?',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
@@ -907,7 +1072,9 @@ const messages: DeepPartial<Messages> = {
   mapExport: {
     exportError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép exportálásakor', err),
+
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
+
     exported: ({ url }) => (
       <>
         A térkép exportálása befelyeződött.{' '}
@@ -916,13 +1083,17 @@ const messages: DeepPartial<Messages> = {
         </AlertLink>
       </>
     ),
+
     area: 'Exportálandó terület:',
+
     areas: {
       visible: 'A térkép látható területe',
       pinned: 'A kijelölt sokszöget (rajzot) tartalmazó terület',
     },
+
     format: 'Formátum:',
     layersTitle: 'Választható rétegek:',
+
     layers: {
       contours: 'Szintvonalak',
       shading: 'Domborzatárnyékolás',
@@ -934,7 +1105,9 @@ const messages: DeepPartial<Messages> = {
       plannedRoute: 'Tervezett útvonal',
       track: 'GPX-nyomvonal',
     },
+
     mapScale: 'Térkép felbontása:',
+
     alert: () => (
       <>
         Megjegyzések:
@@ -977,6 +1150,8 @@ const messages: DeepPartial<Messages> = {
         </ul>{' '}
       </>
     ),
+    advancedSettings: 'Speciális beállítások',
+    styles: 'Interaktív réteg stílusai',
   },
 
   maps: {
@@ -984,21 +1159,52 @@ const messages: DeepPartial<Messages> = {
     save: 'Mentés',
     delete: 'Törlés',
     deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`,
+
     fetchError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép betöltéskor', err),
+
     fetchListError: ({ err }) =>
       addError(messages, 'Hiba történt a térképek betöltéskor', err),
+
     deleteError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép törlésekor', err),
+
     renameError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép átnevezésekor', err),
+
     createError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép mentésekor', err),
+
     saveError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép mentésekor', err),
+
+    legacyMapWarning:
+      'A megjelenített térkép elavult. Átváltasz a modern outdoor térképre?',
+    disconnect: 'Leválasztás',
+    loadToEmpty: 'Betöltés üres térképre',
+    loadInclMapAndPosition:
+      'Betöltés a mentett alaptérképpel és annak pozíciójával együtt',
+    savedMaps: 'Mentett térképek',
+    newMap: 'Új térkép',
+    SomeMap: ({ name }) => (
+      <>
+        Térkép <i>{name}</i>
+      </>
+    ),
+    writers: 'Szerkesztők',
+    conflictError: 'A térképet időközben módosították.',
   },
 
-  mapCtxMenu: {},
+  mapCtxMenu: {
+    centerMap: 'Térkép középre helyezése ide',
+    measurePosition: 'Koordináták és magasság lekérdezése',
+    addPoint: 'Pont hozzáadása ide',
+    startLine: 'Vonal vagy mérés indítása innen',
+    queryFeatures: 'Részletek lekérdezése a közelben',
+    startRoute: 'Útvonal tervezése innen',
+    finishRoute: 'Útvonal tervezése idáig',
+    showPhotos: 'Közeli fotók megjelenítése',
+  },
 
   legend: {
     body: (

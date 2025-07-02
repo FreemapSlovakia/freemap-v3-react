@@ -5,13 +5,14 @@ import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { Emoji } from '../components/Emoji.js';
+import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './it-shared.js';
-import { DeepPartial, Messages, addError } from './messagesInterface.js';
+import { Messages, addError } from './messagesInterface.js';
 
 const nf33 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 3,
@@ -42,7 +43,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
-const messages: DeepPartial<Messages> = {
+const messages: Messages = {
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -65,8 +66,10 @@ const messages: DeepPartial<Messages> = {
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
     back: 'Indietro',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+
     processorError: ({ err }) =>
       addError(messages, "Errore dell'applicazione:", err),
+
     seconds: 'secondi',
     minutes: 'minuti',
     meters: 'metri',
@@ -76,14 +79,18 @@ const messages: DeepPartial<Messages> = {
     add: 'Aggiungi nuovo',
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
+
     simplifyPrompt:
       'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
+
     copyUrl: 'Copia URL',
     copyPageUrl: 'Copia URL della pagina',
     savingError: ({ err }) => addError(messages, "Salva l'errore:", err),
     loadError: ({ err }) => addError(messages, "Caricamento dell'errore:", err),
+
     deleteError: ({ err }) =>
       addError(messages, "Eliminazione dell'errore:", err),
+
     operationError: ({ err }) =>
       addError(messages, "Errore dell'operazione:", err),
     deleted: 'Eliminato.',
@@ -105,6 +112,9 @@ const messages: DeepPartial<Messages> = {
     ),
     export: 'Esporta',
     expiration: 'Scadenza',
+    unauthenticatedError: 'Accedi per utilizzare questa funzione.',
+    areYouSure: 'Sei sicuro/a?',
+    success: 'Fatto!',
   },
 
   selections: {
@@ -287,6 +297,7 @@ const messages: DeepPartial<Messages> = {
     showPhotosFrom: 'Vedi le foto',
     showLayer: 'Mostra il livello',
     upload: 'Carica',
+
     f: {
       firstUploaded: 'dai primi caricati',
       lastUploaded: 'dagli ultimi caricati',
@@ -296,8 +307,10 @@ const messages: DeepPartial<Messages> = {
       mostRated: 'dai più valutati',
       lastComment: "dall'ultimo commento",
     },
+
     colorizeBy: 'Colora in base',
     showDirection: 'Mostra la direzione dello scatto',
+
     c: {
       disable: 'non colorare',
       mine: 'diversi dai miei',
@@ -306,7 +319,9 @@ const messages: DeepPartial<Messages> = {
       takenAt: 'data scatto',
       createdAt: 'data di caricamento',
       season: 'stagione',
+      premium: 'premium',
     },
+
     viewer: {
       title: 'Foto',
       comments: 'Commenti',
@@ -327,6 +342,7 @@ const messages: DeepPartial<Messages> = {
         'Questa foto è stata resa disponibile dal suo autore solo agli utenti con accesso premium.',
       noComments: 'Nessun commento',
     },
+
     editForm: {
       name: 'Nome',
       description: 'Descrizione',
@@ -340,6 +356,7 @@ const messages: DeepPartial<Messages> = {
       tags: 'Tag',
       setLocation: 'Imposta il luogo',
     },
+
     uploadModal: {
       title: 'Carica foto',
       uploading: (n) => `Uploading (${n})`,
@@ -361,24 +378,33 @@ const messages: DeepPartial<Messages> = {
       showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
       premium: 'Disponibile solo per gli utenti con accesso completo',
     },
+
     locationPicking: {
       title: "Selezione l'ubicazione della foto",
     },
+
     deletingError: ({ err }) =>
       addError(messages, 'Error deleting photo:', err),
+
     tagsFetchingError: ({ err }) =>
       addError(messages, 'Error fetching tags:', err),
+
     pictureFetchingError: ({ err }) =>
       addError(messages, 'Error fetching photo:', err),
+
     picturesFetchingError: ({ err }) =>
       addError(messages, 'Error fetching photos:', err),
+
     savingError: ({ err }) => addError(messages, 'Error saving photo:', err),
+
     commentAddingError: ({ err }) =>
       addError(messages, 'Error adding comment:', err),
+
     ratingError: ({ err }) => addError(messages, 'Error rating photo:', err),
     missingPositionError: 'Luogo mancante.',
     invalidPositionError: 'Formato coordinate di posizione non valide.',
     invalidTakenAt: 'Data e orario di scatto non valide.',
+
     filterModal: {
       title: 'Filtro foto',
       tag: 'Tag',
@@ -387,11 +413,20 @@ const messages: DeepPartial<Messages> = {
       author: 'Autore',
       rating: 'Valutazione',
       noTags: 'no tag',
+      pano: 'Panorama',
+      premium: 'Premium',
     },
+
     noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
     linkToWww: 'foto su www.freemap.sk',
     linkToImage: 'file immagine',
-    allMyPhotos: {},
+
+    allMyPhotos: {
+      premium: 'Includi tutte le mie foto nei contenuti premium',
+      free: 'Rendi tutte le mie foto accessibili a tutti',
+    },
+
+    recentTags: 'Tag recenti da assegnare:',
   },
 
   measurement: {
@@ -480,6 +515,7 @@ const messages: DeepPartial<Messages> = {
       label: 'Etichetta:',
       width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
+      type: 'Tipo di geometria',
     },
     continue: 'Continua',
     join: 'Unisci',
@@ -525,6 +561,9 @@ const messages: DeepPartial<Messages> = {
       sendGalleryEmails: 'Notifica i commenti alle foto via email',
       personalInfo: 'Dati personali',
       authProviders: 'Provider di accesso',
+      delete: 'Elimina account',
+      deleteWarning:
+        'Sei sicuro di voler eliminare il tuo account? Verranno rimossi tutte le tue foto, i commenti e le valutazioni delle foto, le tue mappe e i dispositivi monitorati.',
     },
     general: {
       tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
@@ -641,6 +680,7 @@ const messages: DeepPartial<Messages> = {
     download: 'Download',
     format: 'Formato',
     exportError: ({ err }) => addError(messages, 'Error exporting:', err),
+
     what: {
       plannedRoute: 'trova percorso',
       plannedRouteWithStops: 'incluse fermate',
@@ -651,13 +691,18 @@ const messages: DeepPartial<Messages> = {
       drawingPoints: 'disegno - punti',
       tracking: 'tracciamento in tempo reale',
       gpx: 'traccia GPX',
+      search: 'elemento della mappa evidenziato',
     },
+
     disabledAlert:
       'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
+
     licenseAlert:
       'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
+
     exportedToDropbox: 'Il file è stato salvato su Dropbox.',
     exportedToGdrive: 'Il file è stato salvato su Google Drive.',
+
     garmin: {
       courseName: 'Nome del corso',
       description: 'Descrizione',
@@ -677,6 +722,7 @@ const messages: DeepPartial<Messages> = {
       authPrompt:
         "Non hai ancora effettuato l'accesso a Garminon. Vuoi accedere questa volta?",
     },
+    target: 'Destinazione',
   },
 
   auth: {
@@ -698,8 +744,14 @@ const messages: DeepPartial<Messages> = {
       success: 'Disconnessione avvenuta correttamente.',
       error: ({ err }) => addError(messages, 'Error logging out:', err),
     },
-    connect: {},
-    disconnect: {},
+    connect: {
+      label: 'Connetti',
+      success: 'Connesso',
+    },
+    disconnect: {
+      label: 'Disconnetti',
+      success: 'Disconnesso',
+    },
   },
 
   mapLayers: {
@@ -733,6 +785,19 @@ const messages: DeepPartial<Messages> = {
       s3: 'Strava (sport acquatici)',
       s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
+      '4': 'Ombreggiatura leggera del terreno (SK)',
+      '5': 'Ombreggiatura del terreno (SK)',
+      '6': 'Ombreggiatura della superficie (SK)',
+      '7': 'Ombreggiatura dettagliata della superficie (SK)',
+      '8': 'Ombreggiatura dettagliata della superficie (CZ)',
+
+      VO: 'OpenStreetMap Vettoriale',
+      VS: 'Strade Vettoriale',
+      VD: 'Dataviz Vettoriale',
+      VT: 'Outdoor Vettoriale',
+
+      h: 'Ombreggiatura parametrica (SK)',
+      z: 'Ombreggiatura parametrica (CZ)',
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',
@@ -744,6 +809,14 @@ const messages: DeepPartial<Messages> = {
     attr: {
       freemap: '©\xa0Freemap Slovakia',
       srtm: '©\xa0SRTM',
+      osmData: '© contributori di OpenStreetMap',
+      outdoorShadingAttribution: 'fornitori di DTM…',
+      maptiler: (
+        <MaptilerAttribution
+          tilesFrom="Tasselli vettoriali da"
+          hostedBy="ospitato da"
+        />
+      ),
     },
   },
 
@@ -767,7 +840,10 @@ const messages: DeepPartial<Messages> = {
     `,
   },
 
-  osm: {},
+  osm: {
+    fetchingError: ({ err }) =>
+      addError(messages, 'Errore durante il recupero dei dati OSM', err),
+  },
 
   tracking: {
     trackedDevices: {
