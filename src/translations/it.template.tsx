@@ -11,11 +11,7 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
-import {
-  DeepPartial,
-  DeepPartialKeepFunctionsAndStrings,
-  DeepPartialWithRequiredObjects,
-} from '../deepPartial.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './it-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 

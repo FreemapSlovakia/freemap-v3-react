@@ -3,6 +3,7 @@ import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
 import { AttributionDef, IntegratedLayerLetters } from '../mapDefinitions.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
@@ -786,7 +787,7 @@ export type Messages = {
 };
 
 export function addError(
-  dpMessages: DeepPartial<Messages>,
+  dpMessages: DeepPartialWithRequiredObjects<Messages>,
   message: string,
   err: unknown,
 ): string {

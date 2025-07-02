@@ -1,156 +1,156 @@
-import { AlertLink } from 'react-bootstrap';
-import { FaGem, FaKey } from 'react-icons/fa';
-import { Attribution } from '../components/Attribution.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { CookieConsent } from '../components/CookieConsent.js';
-import { ElevationInfo } from '../components/ElevationInfo.js';
-import { Emoji } from '../components/Emoji.js';
-import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
-import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
-import { DeepPartialWithRequiredObjects } from 'deepPartial.js';
-import shared from './de-shared.js';
-import { DeepPartial, Messages, addError } from './messagesInterface.js';
+// import { AlertLink } from 'react-bootstrap';
+// import { FaGem, FaKey } from 'react-icons/fa';
+// import { Attribution } from '../components/Attribution.js';
+// import { ChangesetDetails } from '../components/ChangesetDetails.js';
+// import { CookieConsent } from '../components/CookieConsent.js';
+// import { ElevationInfo } from '../components/ElevationInfo.js';
+// import { Emoji } from '../components/Emoji.js';
+// import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
+// import {
+//   ObjectDetailBasicProps,
+//   ObjectDetails,
+// } from '../components/ObjectDetails.js';
+// import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+// import { DeepPartialWithRequiredObjects } from 'deepPartial.js';
+// import shared from './de-shared.js';
+// import { DeepPartial, Messages, addError } from './messagesInterface.js';
 
-const nf33 = new Intl.NumberFormat('de', {
-  minimumFractionDigits: 3,
-  maximumFractionDigits: 3,
-});
+// const nf33 = new Intl.NumberFormat('de', {
+//   minimumFractionDigits: 3,
+//   maximumFractionDigits: 3,
+// });
 
-const nf00 = new Intl.NumberFormat('de', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+// const nf00 = new Intl.NumberFormat('de', {
+//   minimumFractionDigits: 0,
+//   maximumFractionDigits: 0,
+// });
 
-const masl = 'm\xa0n.\xa0m.';
+// const masl = 'm\xa0n.\xa0m.';
 
-const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
-<p>
-  ${
-    ticketId
-      ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
-      : ''
-  }
-  Chybu môžeš nahlásiť ${
-    ticketId ? 'aj ' : ''
-  }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
-  prípadne nám môžete poslať podrobnosti na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-</p>
-<p>
-  Ďakujeme.
-</p>`;
+// const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
+// <p>
+//   ${
+//     ticketId
+//       ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
+//       : ''
+//   }
+//   Chybu môžeš nahlásiť ${
+//     ticketId ? 'aj ' : ''
+//   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+//   prípadne nám môžete poslať podrobnosti na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
+// </p>
+// <p>
+//   Ďakujeme.
+// </p>`;
 
-const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
+// const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 
-const messages: DeepPartialWithRequiredObjects<Messages> = {
-  general: {},
-  selections: {},
-  tools: {},
-  routePlanner: {
-    ghParams: {},
-    point: {},
-    transportType: {},
-    mode: {},
-    noHomeAlert: {},
-  },
-  mainMenu: {},
-  main: {
-    infoBars: {},
-  },
-  gallery: {
-    f: {},
-    c: {},
-    viewer: {},
-    editForm: {
-      takenAt: {},
-    },
-    uploadModal: {},
-    locationPicking: {},
-    filterModal: {},
-    allMyPhotos: {},
-  },
-  measurement: {},
-  trackViewer: {
-    colorizingMode: {},
-    details: {},
-    uploadModal: {},
-  },
-  drawing: {
-    edit: {},
-    defProps: {},
-    projection: {},
-  },
-  purchases: {},
-  settings: {
-    map: {
-      homeLocation: {},
-    },
-    account: {},
-    general: {},
-  },
-  changesets: {
-    details: {},
-  },
-  mapDetails: {},
-  objects: {
-    lowZoomAlert: {},
-    icon: {},
-  },
-  external: {},
-  search: {},
-  embed: {},
-  documents: {},
-  exportMapFeatures: {
-    what: {},
-    garmin: {
-      at: {},
-    },
-  },
-  auth: {
-    provider: {},
-    connect: {},
-    disconnect: {},
-    logIn: {},
-    logOut: {},
-  },
-  mapLayers: {
-    letters: {},
-    type: {},
-    attr: {},
-  },
-  elevationChart: {},
-  errorCatcher: {},
-  osm: {},
-  tracking: {
-    trackedDevices: {},
-    accessToken: {},
-    accessTokens: {},
-    trackedDevice: {},
-    devices: {},
-    device: {},
-    visual: {},
-  },
-  mapExport: {
-    areas: {},
-    layers: {},
-  },
-  maps: {},
-  mapCtxMenu: {},
-  legend: {},
-  contacts: {},
-  premium: {},
-  credits: {
-    purchase: {},
-  },
-  offline: {},
-  errorStatus: {},
-  gpu: {},
-  downloadMap: {
-    area: {},
-  },
-};
+// const messages: DeepPartialWithRequiredObjects<Messages> = {
+//   general: {},
+//   selections: {},
+//   tools: {},
+//   routePlanner: {
+//     ghParams: {},
+//     point: {},
+//     transportType: {},
+//     mode: {},
+//     noHomeAlert: {},
+//   },
+//   mainMenu: {},
+//   main: {
+//     infoBars: {},
+//   },
+//   gallery: {
+//     f: {},
+//     c: {},
+//     viewer: {},
+//     editForm: {
+//       takenAt: {},
+//     },
+//     uploadModal: {},
+//     locationPicking: {},
+//     filterModal: {},
+//     allMyPhotos: {},
+//   },
+//   measurement: {},
+//   trackViewer: {
+//     colorizingMode: {},
+//     details: {},
+//     uploadModal: {},
+//   },
+//   drawing: {
+//     edit: {},
+//     defProps: {},
+//     projection: {},
+//   },
+//   purchases: {},
+//   settings: {
+//     map: {
+//       homeLocation: {},
+//     },
+//     account: {},
+//     general: {},
+//   },
+//   changesets: {
+//     details: {},
+//   },
+//   mapDetails: {},
+//   objects: {
+//     lowZoomAlert: {},
+//     icon: {},
+//   },
+//   external: {},
+//   search: {},
+//   embed: {},
+//   documents: {},
+//   exportMapFeatures: {
+//     what: {},
+//     garmin: {
+//       at: {},
+//     },
+//   },
+//   auth: {
+//     provider: {},
+//     connect: {},
+//     disconnect: {},
+//     logIn: {},
+//     logOut: {},
+//   },
+//   mapLayers: {
+//     letters: {},
+//     type: {},
+//     attr: {},
+//   },
+//   elevationChart: {},
+//   errorCatcher: {},
+//   osm: {},
+//   tracking: {
+//     trackedDevices: {},
+//     accessToken: {},
+//     accessTokens: {},
+//     trackedDevice: {},
+//     devices: {},
+//     device: {},
+//     visual: {},
+//   },
+//   mapExport: {
+//     areas: {},
+//     layers: {},
+//   },
+//   maps: {},
+//   mapCtxMenu: {},
+//   legend: {},
+//   contacts: {},
+//   premium: {},
+//   credits: {
+//     purchase: {},
+//   },
+//   offline: {},
+//   errorStatus: {},
+//   gpu: {},
+//   downloadMap: {
+//     area: {},
+//   },
+// };
 
-export default messages;
+// export default messages;

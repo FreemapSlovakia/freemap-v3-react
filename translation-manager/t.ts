@@ -1,6 +1,7 @@
 import * as babelParser from '@babel/parser';
 import {
   cloneNode,
+  isExportNamedDeclaration,
   isFile,
   isIdentifier,
   isImportDeclaration,
@@ -20,6 +21,12 @@ import {
 import { readFileSync, writeFileSync } from 'fs';
 import { parse, print, types } from 'recast';
 
+// const prefix = '../src/translations/';
+// const ext = 'tsx';
+
+const prefix = '../src/osm/osmTagToNameMapping-';
+const ext = 'ts';
+
 const parser = {
   parse(source: string) {
     return babelParser.parse(source, {
@@ -31,12 +38,9 @@ const parser = {
 };
 
 function parseFile(lang: string) {
-  const parsed: Node = parse(
-    readFileSync(`../src/translations/${lang}.tsx`, 'utf-8'),
-    {
-      parser,
-    },
-  );
+  const parsed: Node = parse(readFileSync(`${prefix}${lang}.${ext}`, 'utf-8'), {
+    parser,
+  });
 
   if (!isFile(parsed)) {
     throw new Error('expected File');
@@ -63,11 +67,24 @@ function findRoot(file: File) {
       }
     }
 
-    if (!isVariableDeclaration(statement)) {
+    if (
+      !isVariableDeclaration(statement) &&
+      !isExportNamedDeclaration(statement)
+    ) {
       continue;
     }
 
-    const [declaration] = statement.declarations;
+    let declaration;
+
+    if (isExportNamedDeclaration(statement)) {
+      if (!isVariableDeclaration(statement.declaration)) {
+        continue;
+      }
+
+      declaration = statement.declaration.declarations[0];
+    } else {
+      declaration = statement.declarations[0];
+    }
 
     const { id } = declaration;
 
@@ -174,7 +191,7 @@ for (const [lang, file, root] of roots) {
   mergeIntoLocale(enRoot, root);
 
   writeFileSync(
-    `../src/translations/${lang}.tsx`,
+    `${prefix}${lang}.${ext}`,
     print(file, { quote: 'single', trailingComma: true }).code,
   );
 }
