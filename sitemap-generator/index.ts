@@ -57,8 +57,8 @@ async function gen() {
           (tracking), export do GPX a GeoJSON, tlač máp, exportovanie mapy do
           PDF. Vloženie mapy do vlastnej stránky. Alternatíva k mapám ako
           ${' '}<a href="https://mapy.dennikn.sk">hiking.sk</a>,${' '}<a
-            href="https://mapy.cz"
-            >mapy.cz</a
+            href="https://mapy.com"
+            >mapy.com</a
           >${' '}alebo${' '}<a href="https://maps.google.com">maps.google.com</a
           >.
 
@@ -80,7 +80,7 @@ async function gen() {
               >
             </li>
             <li>
-              <a href="/?layers=X&show=supportUs&lang=sk">podporte Freemap</a>
+              <a href="/?layers=X&show=support-us&lang=sk">podporte Freemap</a>
             </li>
             <li>
               <a href="/?layers=X&show=tracking-watched&lang=sk"
@@ -94,23 +94,6 @@ async function gen() {
   );
 
   out.push(`https://www.freemap.sk/?layers=X&lang=sk`);
-
-  // // basic modals
-  // out.push(
-  //   ...[
-  //     'legend',
-  //     'upload-track',
-  //     'about',
-  //     'export-map-features',
-  //     'export-map',
-  //     'account',
-  //     'embed',
-  //     'supportUs',
-  //     'tracking-watched',
-  //     // 'tracking-my', // not logged in
-  //     // 'maps', // not logged in
-  //   ].map((modal) => `https://www.freemap.sk/?layers=X&show=${modal}&lang=sk`),
-  // );
 
   const documentsDir = '../src/documents';
 
@@ -144,7 +127,7 @@ async function gen() {
 
             <body>
               ${raw(
-                marked.parse(
+                await marked.parse(
                   await readFile(documentsDir + '/' + document, 'utf-8'),
                 ),
               )}

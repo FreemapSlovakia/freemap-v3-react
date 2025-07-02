@@ -1,10 +1,10 @@
 import { get } from 'idb-keyval';
 import { assert } from 'typia';
 import { authInit, authSetUser } from '../actions/authActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { User } from '../types/auth.js';
+import { StringDates } from '../types/common.js';
 
 function track(id: number | undefined) {
   window._paq.push(
@@ -23,11 +23,11 @@ export const authTrackProcessor: Processor = {
   },
 };
 
-export const authInitProcessor: Processor<typeof authInit> = {
+export const authInitProcessor: Processor = {
   actionCreator: authInit,
   id: 'lcd',
   errorKey: 'auth.logIn.verifyError',
-  async handle({ getState, dispatch, action }) {
+  async handle({ getState, dispatch }) {
     const { user } = getState().auth;
 
     track(user?.id);
@@ -44,21 +44,23 @@ export const authInitProcessor: Processor<typeof authInit> = {
 
         const ok = res.status === 200;
 
-        dispatch(authSetUser(ok ? assert<User>(await res.json()) : null));
+        let user: User | null;
 
-        if (
-          ok &&
-          action.payload.becamePremium &&
-          getState().auth.user?.isPremium // TODO else show error
-        ) {
-          dispatch(
-            toastsAdd({
-              style: 'success',
-              messageKey: 'premium.success',
-              timeout: 5000,
-            }),
-          );
+        if (ok) {
+          const rawUser = assert<StringDates<User>>(await res.json());
+
+          user = {
+            ...rawUser,
+            premiumExpiration:
+              rawUser.premiumExpiration === null
+                ? null
+                : new Date(rawUser.premiumExpiration),
+          };
+        } else {
+          user = null;
         }
+
+        dispatch(authSetUser(user));
       } catch (err) {
         if (typeof err !== 'object' || !err || 'status' in err) {
           throw err;
@@ -66,7 +68,7 @@ export const authInitProcessor: Processor<typeof authInit> = {
 
         const cm = await get('cacheMode');
 
-        if (!cm || cm === 'networkOnly') {
+        if (!cm || cm === 'networkOnly' || cm === 'networkFirst') {
           throw err;
         }
 

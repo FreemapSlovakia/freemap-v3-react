@@ -97,7 +97,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     midpoints,
     transportType,
     mode,
-    weighting,
     roundtripParams,
     isochroneParams,
   } = getState().routePlanner;
@@ -143,15 +142,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     if (ttDef.api === 'gh' && mode === 'isochrone') {
       const response = await httpRequest({
         getState,
-        // url: 'https://local.gruveo.com/gh/isochrone',
         url:
-          'https://graphhopper.freemap.sk/isochrone?' +
+          process.env['GRAPHHOPPER_URL'] +
+          '/isochrone?' +
           objectToURLSearchParams({
-            profile:
-              ttDef.vehicle +
-              (weighting === 'shortest' || weighting === 'fastest'
-                ? '_' + weighting
-                : ''),
+            profile: ttDef.profile,
             buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
             time_limit: isochroneParams.timeLimit,
             distance_limit: isochroneParams.distanceLimit || -1,
@@ -175,47 +170,22 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       const response = await httpRequest({
         getState,
         method: 'POST',
-        // url: 'https://local.gruveo.com/gh/route',
-        url: 'https://graphhopper.freemap.sk/route',
+        url: process.env['GRAPHHOPPER_URL'] + '/route',
         data: {
-          // avoid: 'toll', // wut? doesn't work
-          // snap_preventions: ['trunk', 'motorway'], // without effect
-
+          snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
           // elevation: true, // if to return also elevations
-
           algorithm:
             mode === 'roundtrip'
               ? 'round_trip'
               : midpoints.length > 0
                 ? undefined
                 : 'alternative_route',
-
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,
-
-          'ch.disable': weighting !== 'fastest' || mode === 'roundtrip',
-
+          'ch.disable': mode === 'roundtrip',
           'alternative_route.max_paths': 2, // default is 2
-          // 'alternative_route.max_weight_factor': 1.4,
-          // 'alternative_route.max_paths': 0.6,
-
           instructions: true,
-          details:
-            ttDef.vehicle === 'bike2' ||
-            ttDef.vehicle === 'mtb' ||
-            ttDef.vehicle === 'racingbike'
-              ? ['get_off_bike']
-              : undefined,
-
-          // profile: ttDef.profile,
-          // profile: 'wheelchair',
-
-          weighting, // fastest|short_fastest|shortest|curvature
-
-          // turn_costs: true,
-          vehicle: ttDef.vehicle,
-
-          // optimize: String(mode === 'trip'), // not included in (free) directions API
+          profile: ttDef.profile,
           points_encoded: false,
           locale: getState().l10n.language,
           points: finish
@@ -390,13 +360,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     const alternatives = routes || trips || [];
 
-    // const alts = routes || trips || [];
-    //
-    // const alternatives: Alternative[] =
-    //   transportType === 'imhd'
-    //     ? alts.map((alt: Alternative) => addMissingSegments(alt))
-    //     : alts;
-
     dispatch(
       routePlannerSetResult({
         timestamp: Date.now(),
@@ -440,60 +403,3 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 };
 
 export default handle;
-
-// function coord(step: Step) {
-//   return step.geometry.coordinates;
-// }
-//
-// function addMissingSegments(alt: Alternative) {
-//   const steps: Step[] = [];
-//
-//   const routeSteps = alt.legs.flatMap((leg) => leg.steps);
-//
-//   for (let i = 0; i < routeSteps.length; i += 1) {
-//     const step = routeSteps[i];
-//
-//     const prevStep = routeSteps[i - 1];
-//
-//     const nextStep = routeSteps[i + 1];
-//
-//     const prevStepLastPoint = prevStep
-//       ? coord(prevStep)[coord(prevStep).length - 1]
-//       : null;
-//
-//     const firstPoint = coord(step)[0];
-//
-//     const lastShapePoint = coord(step)[coord(step).length - 1];
-//
-//     const nextStepFirstPoint = nextStep?.geometry.coordinates[0] ?? null;
-//
-//     const c = coord(step);
-//
-//     const coordinates = [c[0], c[1]];
-//
-//     if (step.mode === 'foot') {
-//       if (
-//         prevStepLastPoint &&
-//         (Math.abs(prevStepLastPoint[0] - firstPoint[0]) > 0.0000001 ||
-//           Math.abs(prevStepLastPoint[1] - firstPoint[1]) > 0.0000001)
-//       ) {
-//         coordinates.unshift(prevStepLastPoint);
-//       }
-//
-//       if (
-//         nextStepFirstPoint &&
-//         (Math.abs(nextStepFirstPoint[0] - lastShapePoint[0]) > 0.0000001 ||
-//           Math.abs(nextStepFirstPoint[1] - lastShapePoint[1]) > 0.0000001)
-//       ) {
-//         coordinates.push(nextStepFirstPoint);
-//       }
-//     }
-//
-//     steps.push({
-//       ...step,
-//       geometry: { coordinates },
-//     });
-//   }
-//
-//   return { ...alt, itinerary: steps };
-// }

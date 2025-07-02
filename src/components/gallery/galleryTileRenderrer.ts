@@ -10,6 +10,7 @@ type Marble = LatLon & {
   takenAt?: number | null;
   pano?: 1;
   premium?: 1;
+  azimuth?: number;
 };
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
   zoom: number;
   dpr: number;
   colorizeBy: GalleryColorizeBy | null;
+  showDirection: boolean;
   data: Marble[];
   myUserId: number | null;
   size: { x: number; y: number };
@@ -47,6 +49,7 @@ export function renderGalleryTile({
   zoom,
   dpr,
   colorizeBy,
+  showDirection,
   data,
   myUserId,
   size,
@@ -64,8 +67,6 @@ export function renderGalleryTile({
   ctx.scale(dpr, dpr);
 
   ctx.strokeStyle = '#000';
-
-  ctx.fillStyle = '#ff0';
 
   ctx.lineWidth = zk; // zoom > 9 ? 1.5 : 1;
 
@@ -114,11 +115,23 @@ export function renderGalleryTile({
     }))
     .reverse();
 
-  for (const { lat, lon, pano } of marbles) {
+  for (const { lat, lon, pano, azimuth } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
+
+    if (showDirection && azimuth !== undefined) {
+      const az = azimuth * (Math.PI / 180) - (3 * Math.PI) / 4;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 13.5 * zk * Math.cos(az), y + 13.5 * zk * Math.sin(az));
+      ctx.arc(x, y, 13.5 * zk, az, az + Math.PI / 2);
+      ctx.closePath();
+      ctx.fillStyle = '#0000ff20';
+      ctx.fill();
+    }
 
     ctx.beginPath();
 
@@ -130,6 +143,8 @@ export function renderGalleryTile({
 
     ctx.stroke();
   }
+
+  ctx.fillStyle = '#ff0';
 
   ctx.lineWidth = 0.25 * zk; // zoom > 9 ? 1.5 : 1;
 
@@ -171,19 +186,25 @@ export function renderGalleryTile({
 
         break;
 
-      case 'takenAt':
-        ctx.fillStyle = takenAt
+      case 'createdAt':
+      case 'takenAt': {
+        const v = colorizeBy === 'createdAt' ? createdAt : takenAt;
+
+        ctx.fillStyle = v
           ? color
               .hsl(
                 60,
                 100,
-                // 100 - ((now - takenAt) * 10) ** 0.2,
-                100 - ((now - takenAt) * 100) ** 0.185,
+                (() => {
+                  const y = (now - v) / 60 / 60 / 24 / 365;
+                  return 100 - (0.333 * y * 100) / (1 + 0.333 * y);
+                })(),
               )
               .hex()
           : '#a22';
 
         break;
+      }
 
       case 'season':
         {
@@ -195,18 +216,20 @@ export function renderGalleryTile({
 
           const hs = 366 / 4;
 
-          const winter = [70, -5, -52];
+          type Color = [number, number, number];
 
-          const spring = [70, -62, 42];
+          const winter: Color = [70, -5, -52];
 
-          const summer = [90, -4, 74];
+          const spring: Color = [70, -62, 42];
 
-          const fall = [70, 48, 43];
+          const summer: Color = [90, -4, 74];
 
-          // 2847600
-          const x = ((takenAt - 1206000) % 31557600) / 60 / 60 / 24;
+          const fall: Color = [70, 48, 43];
 
-          const fill = (from: number[], to: number[], n: number) => {
+          // 2_847_600
+          const x = ((takenAt - 1_206_000) % 31_557_600) / 60 / 60 / 24;
+
+          const fill = (from: Color, to: Color, n: number) => {
             ctx.fillStyle = color
               .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
               .hex();
@@ -222,18 +245,6 @@ export function renderGalleryTile({
             fill(fall, winter, (x - 3 * hs) / hs);
           }
         }
-
-        break;
-
-      case 'createdAt':
-        ctx.fillStyle = color
-          .hsl(
-            60,
-            100,
-            // 100 - ((now - createdAt) * 10) ** 0.2,
-            100 - ((now - createdAt) * 100) ** 0.185,
-          )
-          .hex();
 
         break;
 

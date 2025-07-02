@@ -123,6 +123,7 @@ function getMapDataFromState(state: RootState): MapData {
       zoom: map.zoom,
       overlays: map.overlays,
       customLayers: map.customLayers,
+      shading: map.shading,
     },
   };
 }

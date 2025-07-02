@@ -19,6 +19,7 @@ import {
 import { convertToDrawingProcessor } from './processors/convertToDrawingProcessor.js';
 import { cookieConsentProcessor } from './processors/cookieConsentProcessor.js';
 import { deleteProcessor } from './processors/deleteProcessor.js';
+import { downloadMapProcessor } from './processors/downloadMapProcessor.js';
 import { elevationChartProcessor } from './processors/elevationChartProcessor.js';
 import { errorProcessor } from './processors/errorProcessor.js';
 import { exportMapFeaturesProcessor } from './processors/exportMapFeaturesProcessor.js';
@@ -174,6 +175,7 @@ export const processors = [
   authWithGarminProcessor,
   authWithGarmin2Processor,
   fetchPurchasesProcessor,
+  downloadMapProcessor,
   purchaseProcessor,
   urlProcessor,
 ];

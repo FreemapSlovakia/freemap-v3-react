@@ -5,11 +5,11 @@ import {
   galleryCancelShowOnTheMap,
   galleryClear,
   galleryColorizeBy,
-  GalleryColorizeBy,
+  type GalleryColorizeBy,
   galleryConfirmPickedPosition,
   galleryEditPicture,
-  GalleryFilter,
-  GalleryItem,
+  type GalleryFilter,
+  type GalleryItem,
   galleryMergeItem,
   galleryQuickAddTag,
   galleryRemoveItem,
@@ -27,18 +27,19 @@ import {
   gallerySetTags,
   gallerySetUsers,
   galleryShowOnTheMap,
-  GalleryTag,
+  type GalleryTag,
+  galleryToggleDirection,
   galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
-  GalleryUser,
-  Picture,
+  type GalleryUser,
+  type Picture,
 } from '../actions/galleryActions.js';
 import { l10nSetLanguage } from '../actions/l10nActions.js';
 import { clearMapFeatures, setActiveModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { mapsLoaded } from '../actions/mapsActions.js';
-import { PictureModel } from '../components/gallery/GalleryEditForm.js';
+import type { PictureModel } from '../components/gallery/GalleryEditForm.js';
 import { parseCoordinates } from '../coordinatesParser.js';
 import { toDatetimeLocal } from '../dateUtils.js';
 import { latLonToString } from '../geoutils.js';
@@ -65,6 +66,7 @@ export interface GalleryState {
   saveErrors: string[];
   colorizeBy: GalleryColorizeBy | null;
   recentTags: string[];
+  showDirection: boolean;
 }
 
 export const galleryInitialState: GalleryState = {
@@ -102,6 +104,7 @@ export const galleryInitialState: GalleryState = {
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
   colorizeBy: null,
   recentTags: [],
+  showDirection: true,
 };
 
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
@@ -290,6 +293,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             dirtyPosition: position
               ? latLonToString(position, state.language)
               : '',
+            azimuth:
+              typeof state.image?.azimuth === 'number'
+                ? String(state.image.azimuth)
+                : '',
             premium: Boolean(state.image?.premium),
           };
     })
@@ -324,6 +331,9 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(mapsLoaded, (state, action) => {
       state.filter =
         action.payload.data.galleryFilter ?? galleryInitialState.filter;
+    })
+    .addCase(galleryToggleDirection, (state, action) => {
+      state.showDirection = action.payload ?? !state.showDirection;
     })
     .addMatcher(
       isAnyOf(galleryAddTag, galleryQuickAddTag),

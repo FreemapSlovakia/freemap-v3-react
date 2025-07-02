@@ -8,9 +8,9 @@ const en: SupportUsMessages = {
   thanks: "We'll appreciate every donation. Thank you!",
   registration: 'Registered in MV/VVS/1-900/90-34343 at 2nd of October 2009',
   alert: {
-    line1: '<b>Attention!</b> Use this button to gain full access:',
+    line1: '<b>Attention!</b> Use this button to gain premium access:',
     line2:
-      'Payment via bank transfer or PayPal is a way to say thank you for the basic services, without gaining full access.',
+      'Payment via bank transfer or PayPal is a way to say thank you for the basic services, without gaining premium access.',
   },
   team: 'Team',
 };

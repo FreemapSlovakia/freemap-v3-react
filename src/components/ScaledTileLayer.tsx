@@ -72,35 +72,6 @@ class LScaledTileLayer extends TileLayer {
       };
     }
 
-    // TODO attempts for HDPI print, see https://github.com/FreemapSlovakia/freemap-v3-react/issues/458
-
-    // const picture = DomUtil.create('picture') as HTMLPictureElement;
-    // const printSource = DomUtil.create(
-    //   'source',
-    //   undefined,
-    //   picture,
-    // ) as HTMLSourceElement;
-
-    // const screenSource = DomUtil.create(
-    //   'source',
-    //   undefined,
-    //   picture,
-    // ) as HTMLSourceElement;
-
-    // picture.style.width = '256px';
-    // picture.style.height = '256px';
-
-    // const img = DomUtil.create('img', undefined, picture) as HTMLImageElement;
-
-    // printSource.srcset = `https://outdoor.tiles.freemap.sk/${coords.z}/${coords.x}/${coords.y}@3x`;
-    // printSource.media = 'print';
-
-    // screenSource.srcset = `https://outdoor.tiles.freemap.sk/${coords.z}/${coords.x}/${coords.y}`;
-    // screenSource.media = 'screen';
-
-    // img.srcset = `https://outdoor.tiles.freemap.sk/${coords.z}/${coords.x}/${coords.y}, https://outdoor.tiles.freemap.sk/${coords.z}/${coords.x}/${coords.y}@2x 2x, https://outdoor.tiles.freemap.sk/${coords.z}/${coords.x}/${coords.y}@3x 3x`;
-    // img.src = `https://outdoor.tiles.freemap.sk/${coords.z}/${coords.x}/${coords.y}`;
-
     return img;
   }
 }

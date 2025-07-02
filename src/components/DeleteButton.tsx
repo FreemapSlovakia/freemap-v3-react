@@ -5,7 +5,11 @@ import { useDispatch } from 'react-redux';
 import { deleteFeature } from '../actions/mainActions.js';
 import { useMessages } from '../l10nInjector.js';
 
-export function DeleteButton(): ReactElement {
+type Props = {
+  textClassName?: string;
+};
+
+export function DeleteButton({ textClassName }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -20,7 +24,7 @@ export function DeleteButton(): ReactElement {
       }}
     >
       <FaTrash />
-      <span className="d-none d-sm-inline">
+      <span className={textClassName ?? 'd-none d-sm-inline'}>
         {' '}
         {m?.general.delete} <kbd>Del</kbd>
       </span>

@@ -48,20 +48,12 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       title: item.title,
       description: item.description,
       position: parseCoordinates(item.dirtyPosition),
+      azimuth: item.azimuth,
       takenAt: item.takenAt?.toISOString(),
       tags: item.tags,
       premium: item.premium,
     }),
   );
-
-  // TODO doesn't work (at least in Chrome)
-  // formData.append('meta', new Blob([JSON.stringify({
-  //   title: item.title,
-  //   description: item.description,
-  //   position: item.position,
-  //   takenAt: item.takenAt?.toISOString(),
-  //   tags: item.tags,
-  // })], { type: 'application/json' }));
 
   try {
     await httpRequest({

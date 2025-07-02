@@ -15,7 +15,7 @@ export const trackingFollowProcessor: Processor = {
       track &&
       (!selectFeature.match(action) || action.payload?.type !== 'tracking') &&
       differs &&
-      (tp = track.trackPoints[track.trackPoints.length - 1])
+      (tp = track.trackPoints.at(-1))
     ) {
       const { lat, lon } = tp;
 

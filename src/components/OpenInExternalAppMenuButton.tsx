@@ -61,10 +61,7 @@ export function OpenInExternalAppMenuButton({
           zoom={zoom}
           mapType={mapType}
           includePoint={includePoint}
-          // pointTitle={pointTitle}
-          // pointDescription={pointDescription}
           url={url}
-          // onSelect={handleDropdownItemClick}
         />
       </Dropdown.Menu>
     </Dropdown>

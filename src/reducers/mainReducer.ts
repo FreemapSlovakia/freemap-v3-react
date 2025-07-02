@@ -29,7 +29,7 @@ import {
   enableUpdatingUrl,
   hideInfoBar,
   Modal,
-  removeAdsOnLogin,
+  purchaseOnLogin,
   saveHomeLocation,
   selectFeature,
   Selection,
@@ -46,6 +46,7 @@ import {
   Tool,
 } from '../actions/mainActions.js';
 import { DocumentKey } from '../documents/index.js';
+import { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
 
 interface Location extends LatLon {
@@ -66,7 +67,7 @@ export interface MainState {
   selection: Selection | null;
   cookieConsentResult: boolean | null; // true if analyticCookiesAllowed; false if not; null if no cookies accepted
   analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
-  removeAdsOnLogin: boolean;
+  purchaseOnLogin: Purchase | undefined;
   documentKey: DocumentKey | null;
   hiddenInfoBars: Record<string, number>;
   drawingColor: string;
@@ -88,7 +89,7 @@ export const mainInitialState: MainState = {
   selection: null,
   cookieConsentResult: null,
   analyticCookiesAllowed: true, // NOTE this is a local "thing" used only for applyCookieConsent action
-  removeAdsOnLogin: false,
+  purchaseOnLogin: undefined,
   documentKey: null,
   hiddenInfoBars: {},
   drawingColor: '#ff00ff',
@@ -127,7 +128,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.activeModal = action.payload;
 
       if (!action.payload) {
-        state.removeAdsOnLogin = false;
+        state.purchaseOnLogin = undefined;
       }
     })
     .addCase(startProgress, (state, action) => {
@@ -217,8 +218,8 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(setAnalyticCookiesAllowed, (state, action) => {
       state.analyticCookiesAllowed = action.payload;
     })
-    .addCase(removeAdsOnLogin, (state) => {
-      state.removeAdsOnLogin = true;
+    .addCase(purchaseOnLogin, (state, action) => {
+      state.purchaseOnLogin = action.payload;
     })
     .addCase(drawingLineSetLines, (state) => {
       state.selection =

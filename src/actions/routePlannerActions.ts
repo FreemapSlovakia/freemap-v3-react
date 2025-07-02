@@ -7,8 +7,6 @@ export type PickMode = 'start' | 'finish';
 
 export type RoutingMode = 'route' | 'trip' | 'roundtrip' | 'isochrone';
 
-export type Weighting = 'shortest' | 'short_fastest' | 'fastest';
-
 export type SliceMode =
   | 'foot'
   | 'walking'
@@ -28,29 +26,8 @@ export type ManeuerModifier =
   | 'left'
   | 'straight';
 
-export interface RouteAlternativeExtra {
-  duration: {
-    foot?: number;
-    bus?: number;
-    home?: number;
-    wait?: number;
-  };
-  price?: number;
-  arrival: number;
-  numbers?: number[];
-  distance: {
-    foot?: number;
-    bus?: number;
-    bicycle?: number;
-  };
-}
-
 export interface RouteStepExtra {
   type: 'foot' | 'bicycle';
-  // |'bus'
-  // |'tram'
-  // |'trolleybus'
-  // |'foot'
   destination: string;
   departure?: number;
   duration?: number;
@@ -61,13 +38,10 @@ export interface Leg {
   steps: Step[];
   distance: number;
   duration: number;
-  // weight: number;
-  // summary: string;
 }
 
 export interface Step {
   maneuver: {
-    // location: [number, number];
     type:
       | 'turn'
       | 'new name'
@@ -101,10 +75,6 @@ export interface Alternative {
   legs: Leg[];
   distance: number;
   duration: number;
-  extra?: RouteAlternativeExtra;
-  // geometry: any;
-  // weight: number;
-  // weight_name: string;
 }
 
 export interface Waypoint {
@@ -166,10 +136,6 @@ export const routePlannerSetGhMode = createAction<RoutingMode>(
   'ROUTE_PLANNER_SET_GH_MODE',
 );
 
-export const routePlannerSetWeighting = createAction<Weighting>(
-  'ROUTE_PLANNER_SET_WEIGHTING',
-);
-
 export const routePlannerSetPickMode = createAction<PickMode>(
   'ROUTE_PLANNER_SET_PICK_MODE',
 );
@@ -196,7 +162,6 @@ export const routePlannerSetParams = createAction<{
   midpoints: LatLon[];
   transportType: TransportType;
   mode?: RoutingMode | null;
-  weighting?: Weighting | null;
   milestones?: 'abs' | 'rel' | false;
   roundtripParams?: Partial<RoundtripParams>;
   isochroneParams?: Partial<IsochroneParams>;

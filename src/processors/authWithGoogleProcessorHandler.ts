@@ -27,7 +27,6 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
         connect: action.payload,
         accessToken: tokenResponse.access_token,
         language: getState().l10n.chosenLanguage,
-        // homeLocation: getState().main.homeLocation,
       },
     });
 

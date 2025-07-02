@@ -1,8 +1,5 @@
-import { Fragment } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { documentShow } from '../actions/mainActions.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
@@ -14,12 +11,18 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
 
 const nf33 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 3,
   maximumFractionDigits: 3,
+});
+
+const nf00 = new Intl.NumberFormat('sk', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 });
 
 const masl = 'm\xa0n.\xa0m.';
@@ -42,7 +45,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 
 const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 
-const messages: Messages = {
+const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
     iso: 'sk_SK',
     elevationProfile: 'Výškový profil',
@@ -103,7 +106,7 @@ const messages: Messages = {
     ),
     unauthenticatedError:
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
-    areYouSure: 'Ste si istí?',
+    areYouSure: 'Ste si istý/á?',
     export: 'Exportovať',
     success: 'Hotovo!',
     expiration: 'Exspirácia',
@@ -157,15 +160,8 @@ const messages: Messages = {
     },
     transportType: {
       car: 'Auto',
-      // 'car-toll': 'Auto, vrátane spoplatnených ciest',
-      // 'car-free': 'Auto, mimo spoplatnených ciest',
-      // bikesharing: 'Bike sharing',
-      // imhd: 'MHD v Bratislave',
+      car4wd: 'Auto 4x4',
       bike: 'Bicykel',
-      bicycle_touring: 'Cykloturistika',
-      'foot-stroller': 'S kočíkom / vozíčkom',
-      nordic: 'Bežky',
-      // ski: 'Zjazdové lyžovanie',
       foot: 'Pešo',
       hiking: 'Turistika',
       mtb: 'Horský bicykel',
@@ -179,11 +175,6 @@ const messages: Messages = {
       roundtrip: 'Návšteva miest (okruh)',
       'routndtrip-gh': 'Výlet',
       isochrone: 'Izochróny',
-    },
-    weighting: {
-      fastest: 'Najrýchlejšia',
-      short_fastest: 'Rýchla, krátka',
-      shortest: 'Najkratšia',
     },
     alternative: 'Alternatíva',
     distance: ({ value, diff }) => (
@@ -222,145 +213,6 @@ const messages: Messages = {
       'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba pri hľadaní trasy', err),
-    maneuverWithName: ({ type, modifier, name }) =>
-      `${type} ${modifier} na ${name}`,
-    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
-
-    maneuver: {
-      types: {
-        turn: 'odbočte',
-        'new name': 'choďte',
-        depart: 'začnite',
-        arrive: 'ukončite',
-        merge: 'pokračujte',
-        // 'ramp':
-        'on ramp': 'choďte na príjazdovú cestu',
-        'off ramp': 'opustite príjazdovú cestu',
-        fork: 'zvoľte cestu',
-        'end of road': 'pokračujte',
-        // 'use lane':
-        continue: 'pokračujte',
-        roundabout: 'vojdite na kruhový objazd',
-        rotary: 'vojdite na okružnú cestu',
-        'roundabout turn': 'na kruhovom objazde odbočte',
-        // 'notification':
-        'exit rotary': 'opustite okružnú cestu', // undocumented
-        'exit roundabout': 'opustite kruhový objazd', // undocumented
-        notification: 'poznámka',
-        'use lane': 'použite jazdný pruh',
-      },
-
-      modifiers: {
-        uturn: 'otočte sa',
-        'sharp right': 'prudko doprava',
-        'slight right': 'mierne doprava',
-        right: 'doprava',
-        'sharp left': 'prudko doľava',
-        'slight left': 'mierne doľava',
-        left: 'doľava',
-        straight: 'priamo',
-      },
-    },
-
-    imhd: {
-      total: {
-        short: ({ arrival, price, numbers }) => (
-          <>
-            Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
-            {numbers?.map((n, i) => (
-              <Fragment key={n}>
-                {i > 0 ? ', ' : ''}
-                <b>{n}</b>
-              </Fragment>
-            ))}
-          </>
-        ),
-        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
-          <>
-            Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
-            {numbers?.map((n, i) => (
-              <Fragment key={n}>
-                {i > 0 ? ', ' : ''}
-                <b>{n}</b>
-              </Fragment>
-            ))}{' '}
-            | Trvanie{' '}
-            <b>
-              {total} {numberize(total, ['minút', 'minúta', 'minúty'])}
-            </b>
-            <br />
-            Do odchodu: <b>{home}</b>, pešo: <b>{foot}</b>, MHD: <b>{bus}</b>,
-            čakanie:{' '}
-            <b>
-              {wait} {numberize(wait, ['minút', 'minúta', 'minúty'])}
-            </b>
-          </>
-        ),
-      },
-      step: {
-        foot: ({ departure, duration, destination }) => (
-          <>
-            o <b>{departure}</b> pešo{' '}
-            {duration !== undefined && (
-              <b>
-                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-              </b>
-            )}{' '}
-            {destination === 'TARGET' ? (
-              <b>do cieľa</b>
-            ) : (
-              <>
-                na <b>{destination}</b>
-              </>
-            )}
-          </>
-        ),
-        bus: ({ departure, type, number, destination }) => (
-          <>
-            o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b>
-          </>
-        ),
-      },
-      type: {
-        bus: 'autobusom',
-        tram: 'električkou',
-        trolleybus: 'trolejbusom',
-        foot: 'pešo',
-      },
-    },
-    bikesharing: {
-      step: {
-        foot: ({ duration, destination }) => (
-          <>
-            pešo{' '}
-            {duration !== undefined && (
-              <b>
-                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-              </b>
-            )}{' '}
-            {destination === 'TARGET' ? (
-              <b>do cieľa</b>
-            ) : (
-              <>
-                na <b>{destination}</b>
-              </>
-            )}
-          </>
-        ),
-        bicycle: ({ duration, destination }) => (
-          <>
-            bicyklom{' '}
-            {duration !== undefined && (
-              <b>
-                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-              </b>
-            )}{' '}
-            na <b>{destination}</b>
-          </>
-        ),
-      },
-    },
-    imhdAttribution: 'trasy liniek MHD',
   },
 
   mainMenu: {
@@ -410,34 +262,34 @@ const messages: Messages = {
       />
     ),
     infoBars: {
-      dp: () => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const dispatch = useDispatch();
+      // dp: () => {
+      //   // eslint-disable-next-line react-hooks/rules-of-hooks
+      //   const dispatch = useDispatch();
 
-        return (
-          <>
-            <span className="d-sm-none">Podporte nás prosím</span>
-            <span className="d-none d-sm-inline d-xl-none">
-              Podporte prosím prevádzku služieb Freemap.sk vašimi
-            </span>
-            <span className="d-none d-xl-inline">
-              Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
-              potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
-            </span>{' '}
-            <AlertLink
-              href="/#document=dvePercenta"
-              onClick={(e) => {
-                e.preventDefault();
+      //   return (
+      //     <>
+      //       <span className="d-sm-none">Podporte nás prosím</span>
+      //       <span className="d-none d-sm-inline d-xl-none">
+      //         Podporte prosím prevádzku služieb Freemap.sk vašimi
+      //       </span>
+      //       <span className="d-none d-xl-inline">
+      //         Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
+      //         potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
+      //       </span>{' '}
+      //       <AlertLink
+      //         href="/#document=dvePercenta"
+      //         onClick={(e) => {
+      //           e.preventDefault();
 
-                dispatch(documentShow('dvePercenta'));
-              }}
-            >
-              2% z dane
-            </AlertLink>
-            .
-          </>
-        );
-      },
+      //           dispatch(documentShow('dvePercenta'));
+      //         }}
+      //       >
+      //         2% z dane
+      //       </AlertLink>
+      //       .
+      //     </>
+      //   );
+      // },
       ua: () => {
         return (
           <>
@@ -455,9 +307,16 @@ const messages: Messages = {
         );
       },
     },
+    ad: (email) => (
+      <>
+        Máš záujem o vlastnú reklamu na tomto mieste? Neváhaj nás kontaktovať na{' '}
+        {email}.
+      </>
+    ),
   },
 
   gallery: {
+    legend: 'Legenda',
     recentTags: 'Nedávne tagy na priradenie:',
     filter: 'Filter',
     showPhotosFrom: 'Prezerať fotky',
@@ -473,6 +332,7 @@ const messages: Messages = {
       lastComment: 'od posledného komentára',
     },
     colorizeBy: 'Vyfarbiť podľa',
+    showDirection: 'Ukáž smer fotenia',
     c: {
       disable: 'nevyfarbiť',
       mine: 'odlíšiť moje',
@@ -500,7 +360,7 @@ const messages: Messages = {
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',
       premiumOnly:
-        'Túto fotografiu sprístupnil jej autor len používateľom s plným prístupom.',
+        'Túto fotografiu sprístupnil jej autor len používateľom s prémiovým prístupom.',
       noComments: 'Bez komentára',
     },
     editForm: {
@@ -512,6 +372,7 @@ const messages: Messages = {
         time: 'Čas fotenia',
       },
       location: 'Pozícia',
+      azimuth: 'Azimut',
       tags: 'Tagy',
       setLocation: 'Nastaviť pozíciu',
     },
@@ -526,7 +387,7 @@ const messages: Messages = {
           <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania odstránené.</li>
           <li>Nahrávajte len vlastné fotografie, alebo fotografie, pre ktoré máte udelený súhlas na zdieľanie.</li>
           <li>Popisky, alebo komentáre, ktoré sa priamo netýkajú obsahu načítaných fotografií, alebo odporujú všeobecne prijímaným zásadám civilizovaného spolužitia, budú odstránené. Porušovatelia tohoto pravidla budú varovaní a pri opakovanom porušovaní môže byť ich účet v aplikácii zrušený.</li>
-          <li>Nahraté fotografie sú ďalej šírené pod licenciou CC-BY-SA 4.0.</li>
+          <li>Nahraté fotografie sú ďalej šírené pod licenciou CC BY-SA 4.0.</li>
           <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
           <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu odstrániť, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
@@ -534,7 +395,7 @@ const messages: Messages = {
       `,
       success: 'Fotografie boli úspešne nahrané.',
       showPreview: 'Zobraziť náhľady (náročnejšie na výkon a pamäť)',
-      premium: 'Sprístupniť len používateľom s plným prístupom',
+      premium: 'Sprístupniť len používateľom s prémiovým prístupom',
     },
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
@@ -677,6 +538,17 @@ const messages: Messages = {
     },
   },
 
+  purchases: {
+    purchases: 'Nákupy',
+    premiumExpired: (at) => <>Váš prémiový prístup vypršal {at}</>,
+    date: 'Dátum',
+    item: 'Položka',
+    notPremiumYet: 'Ešte nemáte prémiový prístup.',
+    noPurchases: 'Žiadne nákupy',
+    premium: 'Prémium',
+    credits: (amount) => <>Kredity ({amount})</>,
+  },
+
   settings: {
     map: {
       overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
@@ -764,292 +636,6 @@ const messages: Messages = {
       ring: 'Okrúhla',
       square: 'Štvorcová',
     },
-    // categories: {
-    //   1: 'Príroda',
-    //   2: 'Služby',
-    //   3: 'Doprava',
-    //   4: 'Pamiatky',
-    //   5: 'Zdravotníctvo',
-    //   6: 'Obchody',
-    //   7: 'Energetika',
-    //   8: 'Ubytovanie a stravovanie',
-    //   9: 'Turizmus, turistika',
-    //   10: 'Územné členenie',
-    //   11: 'Ostatné',
-    //   12: 'Voľný čas',
-    //   13: 'Šport',
-    //   14: 'Vzdelávanie',
-    //   15: 'Bicyklovanie',
-    // },
-    // subcategories: {
-    //   1: 'Jaskyňa',
-    //   2: 'Vrch',
-    //   3: 'Čerpacia stanica',
-    //   4: 'Reštaurácia',
-    //   5: 'Hotel',
-    //   6: 'Parkovisko',
-    //   7: 'Letisko',
-    //   8: 'Železničná stanica',
-    //   9: 'Autobusová stanica',
-    //   10: 'Autobusová zastávka',
-    //   11: 'Hrad',
-    //   12: 'Zámok',
-    //   13: 'Zrúcanina',
-    //   14: 'Múzeum',
-    //   15: 'Pomník',
-    //   16: 'Pamätník',
-    //   17: 'Lekáreň',
-    //   18: 'Nemocnica',
-    //   19: 'Ordinácia',
-    //   20: 'Polícia',
-    //   21: 'Poliklinika',
-    //   22: 'Hraničný prechod',
-    //   23: 'Nemocnica s pohotovosťou',
-    //   24: 'Supermarket',
-    //   26: 'Jadrová elektráreň',
-    //   27: 'Tepelná elektráreň (uhlie)',
-    //   28: 'Vodná elektráreň',
-    //   29: 'Veterná elektráreň',
-    //   30: 'Potraviny',
-    //   31: 'Hasičská stanica',
-    //   32: 'Kostol',
-    //   33: 'Pohostinstvo',
-    //   34: 'Banka',
-    //   35: 'Bankomat',
-    //   36: 'Rýchle občerstvenie',
-    //   39: 'Banka',
-    //   40: 'Výhľad',
-    //   41: 'Kemping',
-    //   42: 'Chránené stromy',
-    //   43: 'Prameň',
-    //   44: 'Rázcestník',
-    //   45: 'Orientačná mapa',
-    //   46: 'Útulňa',
-    //   47: 'Prístrešok, altánok',
-    //   48: 'Poštový úrad',
-    //   49: 'Pamätník, bojisko',
-    //   50: 'Poľovnícky posed',
-    //   51: 'Vysielač',
-    //   52: 'Rozhľadňa',
-    //   53: 'Motel',
-    //   54: 'Penzión',
-    //   55: 'Privát',
-    //   56: 'Regionálne mesto',
-    //   57: 'Okresné mesto',
-    //   58: 'Veľké mesto',
-    //   59: 'Mesto',
-    //   60: 'Obec',
-    //   61: 'Osada',
-    //   62: 'Mestský obvod',
-    //   63: 'Horáreň',
-    //   64: 'Zubár',
-    //   65: 'Predajňa bicyklov',
-    //   66: 'Stojan na bicykle',
-    //   67: 'Prenájom bicyklov',
-    //   68: 'Predaj alkoholu',
-    //   69: 'Umenie',
-    //   70: 'Pekáreň',
-    //   71: 'Starostlivosť o krásu',
-    //   72: 'Postele',
-    //   73: 'Nápoje',
-    //   74: 'Kníhkupectvo',
-    //   75: 'Butik',
-    //   76: 'Mäsiarstvo',
-    //   77: 'Predaj áut',
-    //   78: 'Autoservis',
-    //   79: 'Charita',
-    //   80: 'Drogéria',
-    //   81: 'Oblečenie',
-    //   82: 'Počítače',
-    //   83: 'Cukrovinky',
-    //   84: 'Kopírovanie',
-    //   85: 'Záclony a závesy',
-    //   86: 'Delikatesy',
-    //   87: 'Obchodný dom',
-    //   89: 'Čistiareň',
-    //   90: 'Domáce výrobky',
-    //   91: 'Elektronika',
-    //   92: 'Erotika',
-    //   93: 'Firemná predajňa',
-    //   94: 'Farmárske produkty',
-    //   95: 'Kvetinárstvo',
-    //   96: 'Obrazy',
-    //   98: 'Pohrebný ústav',
-    //   99: 'Nábytok',
-    //   100: 'Záhradné centrum',
-    //   101: 'Rozličný tovar',
-    //   102: 'Darčeková predajňa',
-    //   103: 'Sklenárstvo',
-    //   104: 'Ovocie, zelenina',
-    //   105: 'Kaderníctvo',
-    //   106: 'Železiarstvo',
-    //   107: 'Načúvacie pomôcky',
-    //   108: 'HI-FI',
-    //   109: 'Zmrzlina',
-    //   110: 'Bytové doplnky',
-    //   111: 'Zlatníctvo',
-    //   112: 'Kiosk',
-    //   113: 'Kuchynské potreby',
-    //   114: 'Práčovňa',
-    //   115: 'Nákupné centrum',
-    //   116: 'Masáže',
-    //   117: 'Mobilné telefóny',
-    //   118: 'Pôžičky',
-    //   119: 'Motocykle',
-    //   120: 'Hudobné nástroje',
-    //   121: 'Noviny',
-    //   122: 'Optika',
-    //   124: 'Outdoor',
-    //   125: 'Farby',
-    //   126: 'Záložňa',
-    //   127: 'Zvieratá',
-    //   128: 'Plody mora',
-    //   129: 'Second hand',
-    //   130: 'Obuv',
-    //   131: 'Športové potreby',
-    //   132: 'Papiernictvo',
-    //   133: 'Tetovanie',
-    //   134: 'Hračkárstvo',
-    //   135: 'Stavebniny',
-    //   136: 'Prázdne priestory',
-    //   137: 'Vysávače',
-    //   138: 'Zmiešaný tovar',
-    //   139: 'Video/DVD',
-    //   140: 'ZOO',
-    //   141: 'Horská chata',
-    //   142: 'Atrakcia',
-    //   143: 'Toalety',
-    //   144: 'Telefón',
-    //   145: 'Miestny úrad',
-    //   146: 'Väznica',
-    //   147: 'Trhovisko',
-    //   148: 'Bar',
-    //   149: 'Kaviareň',
-    //   150: 'Verejný gril',
-    //   151: 'Pitná voda',
-    //   152: 'Taxi',
-    //   153: 'Knižnica',
-    //   154: 'Umývačka áut',
-    //   155: 'Veterinár',
-    //   156: 'Semafor',
-    //   157: 'Železničná zástavka',
-    //   158: 'Železničné priecestie',
-    //   159: 'Zástavka električky',
-    //   160: 'Heliport',
-    //   161: 'Vodárenská veža',
-    //   162: 'Veterný mlyn',
-    //   163: 'Sauna',
-    //   164: 'Čerpacia stanica LPG',
-    //   166: 'Park pre psov',
-    //   167: 'Športové centrum',
-    //   168: 'Kurzy golfu',
-    //   169: 'Štadión',
-    //   170: 'Ihrisko',
-    //   171: 'Vodný park',
-    //   172: 'Vypúšťanie lodí',
-    //   173: 'Rybolov',
-    //   174: 'Park',
-    //   175: 'Detské ihrisko',
-    //   176: 'Záhrada',
-    //   177: 'Verejná plocha',
-    //   178: 'Klzisko',
-    //   179: 'Mini-golf',
-    //   180: 'Tanec',
-    //   181: 'Základná škola',
-    //   182: 'Kužeľky',
-    //   183: 'Bowling',
-    //   184: 'Americký futbal (ragby)',
-    //   185: 'Lukostreľba',
-    //   186: 'Atletika',
-    //   187: 'Austrálsky futbal (ragby)',
-    //   188: 'Baseball',
-    //   189: 'Basketbal',
-    //   190: 'Plážový volejbal',
-    //   191: 'Bmx',
-    //   192: 'Guľové športy',
-    //   193: 'Bowls',
-    //   194: 'Kanadský futbal (ragby)',
-    //   195: 'Kanoe',
-    //   196: 'Šach',
-    //   197: 'Lezenie',
-    //   198: 'Kriket',
-    //   199: 'Tréning kriketu',
-    //   200: 'Kroket',
-    //   201: 'Bicyklovanie',
-    //   202: 'Potápanie',
-    //   203: 'Preteky psov',
-    //   204: 'Jazdenie na koni',
-    //   205: 'Futbal',
-    //   206: 'Írske ragby',
-    //   207: 'Golf',
-    //   208: 'Gymnastika',
-    //   209: 'Hokej',
-    //   210: 'horseshoes',
-    //   211: 'Dostihy',
-    //   212: 'ice_stock',
-    //   213: 'korfball',
-    //   214: 'Motorky',
-    //   215: 'Multi',
-    //   216: 'Orientačné preteky',
-    //   217: 'Padel',
-    //   218: 'Paragliding',
-    //   219: 'Pelota',
-    //   220: 'Raketbal',
-    //   221: 'Veslovanie',
-    //   222: 'Ligové ragby',
-    //   223: 'Európske ragby',
-    //   224: 'Streľba',
-    //   225: 'Korčuľovanie',
-    //   226: 'Skateboard',
-    //   227: 'Lyžovanie',
-    //   228: 'Futbal',
-    //   229: 'Plávanie',
-    //   230: 'Stolný tenis',
-    //   231: 'Hádzaná',
-    //   232: 'Tenis',
-    //   233: 'Tobogan',
-    //   234: 'Volejbal',
-    //   235: 'Vodné lyžovanie',
-    //   236: 'Univerzita',
-    //   237: 'Materská škola',
-    //   238: 'Stredná škola',
-    //   239: 'Autoškola',
-    //   240: 'Kaplnka',
-    //   241: 'Miesto na piknik',
-    //   242: 'Miesto s ohniskom',
-    //   243: 'Lokalita',
-    //   244: 'Vodopád',
-    //   245: 'Jazero',
-    //   246: 'Priehrada',
-    //   248: 'Prírodná rezervácia',
-    //   249: 'Prírodná pamiatka',
-    //   250: 'Chránený areál',
-    //   251: 'Chránená krajinná oblasť',
-    //   252: 'Národný park',
-    //   253: 'Automat na mlieko',
-    //   254: 'Významné mokriny (RAMSAR)',
-    //   255: 'Adresné body',
-    //   256: 'Banícka šachta',
-    //   257: 'Štôlňa',
-    //   258: 'Studňa',
-    //   259: 'Kríž',
-    //   260: 'Svätyňa',
-    //   261: 'Posilňovňa',
-    //   262: 'Paroplynová elektráreň',
-    //   263: 'Kaštieľ',
-    //   264: 'Geomorfologické členenie',
-    //   265: 'Vojenský bunker',
-    //   266: 'Príjazd/Výjazd z diaľnice',
-    //   267: 'Sochy',
-    //   268: 'Komín',
-    //   269: 'Paragliding',
-    //   270: 'Závesné lietanie',
-    //   271: 'Krmelec',
-    //   272: 'Ohnisko',
-    //   273: 'Bedminton/Squash',
-    //   274: 'Rázcestník',
-    //   275: 'Nabíjacia stanica pre bicykle',
-    // },
   },
 
   external: {
@@ -1059,7 +645,7 @@ const messages: Messages = {
     googleMaps: 'Google Mapy',
     hiking_sk: 'Hiking.sk',
     zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.cz',
+    mapy_cz: 'Mapy.com',
     josm: 'Editor JOSM',
     id: 'Editor iD',
     window: 'Nové okno',
@@ -1208,11 +794,13 @@ const messages: Messages = {
       '5': 'Tieňovanie terénu (SK)',
       '6': 'Tieňovanie povrchu (SK)',
       '7': 'Detailné tieňovanie povrchu (SK)',
+      '8': 'Detailné tieňovanie povrchu (CZ)',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
       h: 'Parametrické tieňovanie (SK)',
+      z: 'Parametrické tieňovanie (CZ)',
     },
     customBase: 'Vlastná mapa',
     customOverlay: 'Vlastné prekrytie mapy',
@@ -1230,8 +818,6 @@ const messages: Messages = {
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
           hostedBy="hostované na"
-          see="Pozri"
-          _3Dterrain="3D terén"
         />
       ),
     },
@@ -1578,14 +1164,14 @@ const messages: Messages = {
   },
 
   premium: {
-    title: 'Získať plný prístup',
+    title: 'Získať prémiový prístup',
     commonHeader: (
       <>
         <p>
           <strong>Podporte dobrovoľníkov vytvárajúcich túto mapu!</strong>
         </p>
         <p className="mb-1">
-          Za <b>5 hodín</b> vašej dobrovoľníckej práce* alebo <b>5 €</b> získate
+          Za <b>8 hodín</b> vašej dobrovoľníckej práce* alebo <b>8 €</b> získate
           na rok:
         </p>
         <ul>
@@ -1631,14 +1217,32 @@ const messages: Messages = {
         </a>
         , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
         získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
-        odstránenie reklám na www.freemap.sk.
+        získanie prémiového prístupu na www.freemap.sk alebo nákup kreditov.
       </p>
     ),
     continue: 'Pokračovať',
-    success: 'Gratulujeme, získali ste prístup ku všetkým funkciám!',
-    becomePremium: 'Získať plný prístup',
-    youArePremium: 'Máte prístup k všetkým funkciám',
-    premiumOnly: 'Dostupné len s plným prístupom.',
+    success: 'Gratulujeme, získali ste prémiový prístup!',
+    becomePremium: 'Získať prémiový prístup',
+    youArePremium: (date) => (
+      <>
+        Máte prémiový prístup do <b>{date}</b>.
+      </>
+    ),
+    premiumOnly: 'Dostupné len s prémiovým prístupom.',
+    alreadyPremium: 'Už máte prémiový prístup.',
+  },
+
+  credits: {
+    buyCredits: 'Kúpiť kredity',
+    amount: 'Kredity',
+    credits: 'kreditov',
+    buy: 'Kúpiť',
+    purchase: {
+      success: ({ amount }) => (
+        <>Váš kredit bol navýšený o {nf00.format(amount)}.</>
+      ),
+    },
+    youHaveCredits: (amount) => <>Máte {amount} kreditov.</>,
   },
 
   offline: {
@@ -1724,10 +1328,26 @@ const messages: Messages = {
     errorRequestingDevice: 'Nepodarilo sa vytvoriť GPU zariadenie: ',
     other: 'Chyba pri vykresľovaní: ',
   },
+  downloadMap: {
+    downloadMap: 'Stiahnuť mapu',
+    format: 'Formát',
+    map: 'Mapa',
+    downloadArea: 'Stiahnuť',
+    area: {
+      visible: 'Viditeľnú oblasť',
+      byPolygon: 'Oblasť pokrytú označeným polygónom',
+    },
+    name: 'Názov',
+    zoomRange: 'Rozsah priblíženia',
+    scale: 'Mierka',
+    email: 'Vaša e-mailová adresa',
+    emailInfo: 'Váš e-mail použijeme na zaslanie odkazu na stiahnutie.',
+    download: 'Stiahnuť',
+    success:
+      'Mapa sa pripravuje. Po dokončení vám bude emailom doručený odkaz na jej stiahnutie.',
+    summaryTiles: 'Dlaždíc',
+    summaryPrice: (amount) => <>Celková cena: {amount} kreditov</>,
+  },
 };
-
-function numberize(n: number, words: [string, string, string]) {
-  return n < 1 ? words[0] : n < 2 ? words[1] : n < 5 ? words[2] : words[0];
-}
 
 export default messages;

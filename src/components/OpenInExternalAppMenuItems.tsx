@@ -2,7 +2,6 @@ import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaClipboard,
-  // FaFacebook,
   FaLink,
   FaShareAlt,
   FaWindowMaximize,

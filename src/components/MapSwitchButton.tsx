@@ -21,11 +21,7 @@ import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
 import { setActiveModal } from '../actions/mainActions.js';
-import {
-  CustomBaseLayer,
-  CustomOverlayLayer,
-  mapRefocus,
-} from '../actions/mapActions.js';
+import { mapRefocus } from '../actions/mapActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
@@ -34,13 +30,18 @@ import { useMessages } from '../l10nInjector.js';
 import {
   BaseLayerLetters,
   baseLayers,
+  CustomBaseLayerDef,
+  CustomOverlayLayerDef,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
-  LayerDef,
-  NoncustomLayerLetters,
+  HasScaleWithDpi,
+  IntegratedLayerLetters,
+  IsCommonLayerDef,
+  IsIntegratedLayerDef,
   overlayLayers,
   OverlayLetters,
 } from '../mapDefinitions.js';
+import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
@@ -69,7 +70,7 @@ export function MapSwitchButton(): ReactElement {
 
   const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
 
-  const isPremium = useAppSelector((state) => !!state.auth.user?.isPremium);
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const becomePremium = useBecomePremium();
 
@@ -115,7 +116,7 @@ export function MapSwitchButton(): ReactElement {
       } else if (selection === 'mapSettings') {
         setShow(false);
 
-        dispatch(setActiveModal('mapSettings'));
+        dispatch(setActiveModal('map-settings'));
       } else if (selection.startsWith('b')) {
         const base = selection.slice(1);
 
@@ -182,12 +183,12 @@ export function MapSwitchButton(): ReactElement {
   const bases = [
     ...baseLayers,
     ...customLayers
-      .filter((cl): cl is CustomBaseLayer => cl.type.startsWith('.'))
+      .filter((cl): cl is CustomBaseLayerDef => cl.type.startsWith('.'))
       .map((cl) => ({
         ...cl,
         adminOnly: false,
         icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), false] as const,
+        key: ['Digit' + cl.type.slice(1), false] as [string, boolean],
         premiumFromZoom: undefined,
         experimental: undefined,
       })),
@@ -196,12 +197,12 @@ export function MapSwitchButton(): ReactElement {
   const ovls = [
     ...overlayLayers,
     ...customLayers
-      .filter((cl): cl is CustomOverlayLayer => cl.type.startsWith(':'))
+      .filter((cl): cl is CustomOverlayLayerDef => cl.type.startsWith(':'))
       .map((cl) => ({
         ...cl,
         adminOnly: false,
         icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), true] as const,
+        key: ['Digit' + cl.type.slice(1), true] as [string, boolean],
         premiumFromZoom: undefined,
         experimental: undefined,
       })),
@@ -216,10 +217,8 @@ export function MapSwitchButton(): ReactElement {
     experimental,
     premiumFromZoom,
     scaleWithDpi,
-  }: Pick<
-    LayerDef,
-    'icon' | 'experimental' | 'premiumFromZoom' | 'scaleWithDpi'
-  >) {
+  }: Pick<IsIntegratedLayerDef, 'icon' | 'experimental' | 'premiumFromZoom'> &
+    HasScaleWithDpi) {
     return (
       <>
         {icon}
@@ -232,13 +231,13 @@ export function MapSwitchButton(): ReactElement {
           />
         )}
 
-        {!isPremium &&
+        {!premium &&
         premiumFromZoom !== undefined &&
         zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
           <FaGem
             className="ms-1 text-warning"
-            title={isPremium ? undefined : m?.premium.premiumOnly}
-            onClick={isPremium ? undefined : becomePremium}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClick={premium ? undefined : becomePremium}
           />
         ) : null}
       </>
@@ -254,14 +253,11 @@ export function MapSwitchButton(): ReactElement {
       minZoom,
       experimental,
     }: Pick<
-      LayerDef,
-      | 'icon'
-      | 'key'
-      | 'premiumFromZoom'
-      | 'scaleWithDpi'
-      | 'minZoom'
-      | 'experimental'
-    >,
+      IsIntegratedLayerDef,
+      'icon' | 'key' | 'premiumFromZoom' | 'experimental'
+    > &
+      HasScaleWithDpi &
+      IsCommonLayerDef,
     name = '…',
   ) {
     return (
@@ -290,9 +286,9 @@ export function MapSwitchButton(): ReactElement {
         {premiumFromZoom !== undefined &&
         zoom >= premiumFromZoom - (scaleWithDpi ? 1 : 0) ? (
           <FaGem
-            className={'ms-1 ' + (isPremium ? 'text-success' : 'text-warning')}
-            title={isPremium ? undefined : m?.premium.premiumOnly}
-            onClickCapture={isPremium ? undefined : becomePremium}
+            className={'ms-1 ' + (premium ? 'text-success' : 'text-warning')}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClickCapture={premium ? undefined : becomePremium}
           />
         ) : null}
 
@@ -324,14 +320,14 @@ export function MapSwitchButton(): ReactElement {
               title={
                 type.startsWith('.')
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                  : m?.mapLayers.letters[type as NoncustomLayerLetters]
+                  : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
               key={type}
               data-type={type}
               active={mapType === type}
               onClick={handleBaseClick}
             >
-              {commonBadges(rest)}
+              {commonBadges({ scaleWithDpi: false, ...rest })}
             </Button>
           ))}
 
@@ -350,14 +346,14 @@ export function MapSwitchButton(): ReactElement {
               title={
                 type.startsWith(':')
                   ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                  : m?.mapLayers.letters[type as NoncustomLayerLetters]
+                  : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
               key={type}
               data-type={type}
               active={overlays.includes(type as OverlayLetters)}
               onClick={handleOverlayClick}
             >
-              {commonBadges(rest)}
+              {commonBadges({ scaleWithDpi: false, ...rest })}
 
               {pictureFilterIsActive && type === 'I' && (
                 <FaFilter
@@ -444,7 +440,9 @@ export function MapSwitchButton(): ReactElement {
                         rest,
                         type.startsWith('.')
                           ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                          : m?.mapLayers.letters[type as NoncustomLayerLetters],
+                          : m?.mapLayers.letters[
+                              type as IntegratedLayerLetters
+                            ],
                       )}
                     </Dropdown.Item>
                   ))
@@ -488,7 +486,9 @@ export function MapSwitchButton(): ReactElement {
                         rest,
                         type.startsWith(':')
                           ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                          : m?.mapLayers.letters[type as NoncustomLayerLetters],
+                          : m?.mapLayers.letters[
+                              type as IntegratedLayerLetters
+                            ],
                       )}
 
                       {type === 'I' && pictureFilterIsActive && (

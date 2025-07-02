@@ -27,19 +27,13 @@ import {
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
-  routePlannerSetWeighting,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
   RoutingMode,
   Waypoint,
-  Weighting,
 } from '../actions/routePlannerActions.js';
-import {
-  isSpecial,
-  TransportType,
-  transportTypeDefs,
-} from '../transportTypeDefs.js';
+import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
 
 export interface RoutePlannerCleanResultState {
@@ -89,7 +83,6 @@ export const cleanState: RoutePlannerCleanState = {
 export interface RoutePlannerState extends RoutePlannerCleanState {
   transportType: TransportType;
   mode: RoutingMode;
-  weighting: Weighting;
   milestones: 'abs' | 'rel' | false;
   preventHint: boolean;
 }
@@ -97,7 +90,6 @@ export interface RoutePlannerState extends RoutePlannerCleanState {
 export const routePlannerInitialState: RoutePlannerState = {
   transportType: 'hiking',
   mode: 'route',
-  weighting: 'fastest',
   milestones: false,
   preventHint: false,
   ...cleanState,
@@ -158,11 +150,6 @@ export const routePlannerReducer = createReducer(
               preventHint: state.preventHint,
               transportType: state.transportType,
               mode: state.mode,
-              weighting:
-                state.transportType === 'foot-stroller' &&
-                state.weighting === 'fastest'
-                  ? 'short_fastest'
-                  : state.weighting,
             }
           : {}),
         start: payload.start,
@@ -172,24 +159,17 @@ export const routePlannerReducer = createReducer(
             ? null
             : payload.finish,
         midpoints:
-          (transportTypeDefs[payload.transportType].api === 'gh' &&
-            (payload.mode ?? state.mode) !== 'route') ||
-          isSpecial(payload.transportType)
+          transportTypeDefs[payload.transportType].api === 'gh' &&
+          (payload.mode ?? state.mode) !== 'route'
             ? []
             : payload.midpoints,
         transportType: payload.transportType,
-        mode: isSpecial(payload.transportType)
-          ? 'route'
-          : transportTypeDefs[payload.transportType].api !== 'gh' &&
-              payload.mode === 'isochrone'
+        mode:
+          transportTypeDefs[payload.transportType].api !== 'gh' &&
+          payload.mode === 'isochrone'
             ? 'route'
             : payload.mode || 'route',
         milestones: payload.milestones ?? false,
-        weighting:
-          state.transportType === 'foot-stroller' &&
-          (payload.weighting ?? 'fastest') === 'fastest'
-            ? 'short_fastest'
-            : (payload.weighting ?? 'fastest'),
         roundtripParams: {
           ...state.roundtripParams,
           ...payload.roundtripParams,
@@ -207,7 +187,6 @@ export const routePlannerReducer = createReducer(
             transportTypeDefs[state.transportType].api === 'gh' &&
             state.mode !== 'route'
           ) &&
-          !isSpecial(state.transportType) &&
           !payload.move &&
           state.start
             ? [state.start, ...state.midpoints]
@@ -219,9 +198,7 @@ export const routePlannerReducer = createReducer(
           ? {
               // only possible in (round)trip mode
               ...state,
-              finish: state.midpoints.length
-                ? state.midpoints[state.midpoints.length - 1]
-                : null,
+              finish: state.midpoints.at(-1) ?? null,
               midpoints: state.midpoints.length
                 ? state.midpoints.slice(0, state.midpoints.length - 1)
                 : [],
@@ -231,7 +208,7 @@ export const routePlannerReducer = createReducer(
               ...state,
               finish: payload.finish,
               midpoints:
-                !isSpecial(state.transportType) && !payload.move && state.finish
+                !payload.move && state.finish
                   ? [...state.midpoints, state.finish]
                   : state.midpoints,
               pickMode: state.start ? 'finish' : 'start',
@@ -262,13 +239,10 @@ export const routePlannerReducer = createReducer(
           ...clearResult,
           transportType,
           mode:
-            isSpecial(transportType) ||
-            (transportTypeDefs[transportType].api !== 'gh' &&
-              state.mode === 'isochrone')
+            transportTypeDefs[transportType].api !== 'gh' &&
+            state.mode === 'isochrone'
               ? 'route'
               : state.mode,
-          weighting:
-            transportType === 'foot-stroller' ? 'short_fastest' : 'fastest',
         }),
       )
       .addCase(routePlannerSetMode, (state, { payload: mode }) => ({
@@ -285,16 +259,10 @@ export const routePlannerReducer = createReducer(
             ? null
             : state.finish,
         mode:
-          isSpecial(state.transportType) ||
-          (transportTypeDefs[state.transportType].api !== 'gh' &&
-            mode === 'isochrone')
+          transportTypeDefs[state.transportType].api !== 'gh' &&
+          mode === 'isochrone'
             ? 'route'
             : mode,
-      }))
-      .addCase(routePlannerSetWeighting, (state, action) => ({
-        ...state,
-        ...clearResult,
-        weighting: action.payload,
       }))
       .addCase(routePlannerSetPickMode, (state, action) => ({
         ...state,
@@ -306,10 +274,7 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(
         routePlannerSetResult,
-        (
-          state,
-          { payload: { alternatives, waypoints, timestamp, transportType } },
-        ) => ({
+        (state, { payload: { alternatives, waypoints, timestamp } }) => ({
           ...state,
           ...clearResult,
           alternatives,
@@ -317,9 +282,8 @@ export const routePlannerReducer = createReducer(
           timestamp,
           activeAlternativeIndex: 0,
           midpoints:
-            (transportTypeDefs[state.transportType].api === 'gh' &&
-              state.mode !== 'route') ||
-            isSpecial(transportType)
+            transportTypeDefs[state.transportType].api === 'gh' &&
+            state.mode !== 'route'
               ? []
               : state.midpoints,
         }),

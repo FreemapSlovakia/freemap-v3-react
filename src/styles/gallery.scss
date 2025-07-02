@@ -1,3 +1,25 @@
+.gallery-image-container {
+  width: fit-content;
+  margin: 0 auto;
+  position: relative;
+
+  > a {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #fffa;
+    padding: 0px 8px;
+    color: #008;
+    border-top-left-radius: 4px;
+
+    &:hover {
+      color: #22c;
+    }
+
+    z-index: 2;
+  }
+}
+
 .gallery-image {
   max-width: 100%;
   max-height: calc(var(--vh, 100vh) - 300px);
@@ -33,10 +55,6 @@ button.carousel-control-disabled:hover {
   cursor: not-allowed;
   opacity: 0.2 !important;
 }
-
-// .carousel-control-short {
-//   margin: 100px 0;
-// }
 
 .stars {
   display: inline-block;

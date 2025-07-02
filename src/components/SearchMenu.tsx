@@ -76,8 +76,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  // const inProgress = useAppSelector((state) => state.search.inProgress);
-
   const [value, setValue] = useState('');
 
   const [open, setOpen] = useState(false);

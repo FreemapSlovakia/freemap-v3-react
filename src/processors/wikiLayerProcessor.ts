@@ -138,17 +138,6 @@ export const wikiLayerProcessor: Processor = {
     }
 
     // NOTE we don't dispatch partial data yet as it would close popup of wikidata-only item
-    // dispatch(
-    //   wikiSetPoints(
-    //     [...m.values()].map((e: any) => ({
-    //       id: e.id,
-    //       lat: e.center?.lat ?? e.lat,
-    //       lon: e.center?.lon ?? e.lon,
-    //       name: e.tags?.name,
-    //       wikipedia: e.tags.wikipedia,
-    //     })),
-    //   ),
-    // );
 
     const { language } = getState().l10n;
 

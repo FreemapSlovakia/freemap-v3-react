@@ -1,6 +1,10 @@
 import { assert, is } from 'typia';
 import { authInit } from '../actions/authActions.js';
-import { removeAds } from '../actions/mainActions.js';
+import {
+  purchase,
+  purchaseOnLogin,
+  setActiveModal,
+} from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -12,14 +16,25 @@ type CallbackData = {
   };
 };
 
-export const purchaseProcessor: Processor = {
-  actionCreator: removeAds,
-  async handle({ getState, dispatch }) {
+export const purchaseProcessor: Processor<typeof purchase> = {
+  actionCreator: purchase,
+  async handle({ getState, dispatch, action }) {
     const { user } = getState().auth;
 
     if (!user) {
+      dispatch(purchaseOnLogin(action.payload));
+
+      dispatch(setActiveModal('login'));
+
       return;
     }
+
+    window._paq.push([
+      'trackEvent',
+      'Purchase',
+      'purchaseStart',
+      JSON.stringify(action.payload),
+    ]);
 
     const res = await httpRequest({
       getState,
@@ -27,29 +42,22 @@ export const purchaseProcessor: Processor = {
       method: 'POST',
       expectedStatus: 200,
       cancelActions: [],
+      data: action.payload,
     });
 
-    const token = assert<{ token: string; expiration: number }>(
-      await res.json(),
-    );
+    const { paymentUrl } = assert<{ paymentUrl: string }>(await res.json());
 
-    const w = window.open(
-      (user.name === 'New Payment Test'
-        ? 'https://dev.rovas.app/rewpro?paytype=project&recipient=35384'
-        : process.env['PURCHASE_URL_PREFIX']) +
-        '&token=' +
-        encodeURIComponent(token.token) +
-        '&callbackurl=' +
-        encodeURIComponent(process.env['BASE_URL'] + '/purchaseCallback.html') +
-        '&expiration=' +
-        token.expiration,
+    const left = window.screen.width / 2 - 800 / 2;
+
+    const top = window.screen.height / 2 - 680 / 2;
+
+    const windowProxy = window.open(
+      paymentUrl,
       'rovas',
-      `width=800,height=680,left=${window.screen.width / 2 - 800 / 2},top=${
-        window.screen.height / 2 - 680 / 2
-      }`,
+      `width=800,height=680,left=${left},top=${top}`,
     );
 
-    if (!w) {
+    if (!windowProxy) {
       dispatch(
         toastsAdd({
           id: 'enablePopup',
@@ -77,12 +85,12 @@ export const purchaseProcessor: Processor = {
 
           resolve(true);
 
-          w.close();
+          windowProxy.close();
         }
       };
 
       const timer = window.setInterval(() => {
-        if (w.closed) {
+        if (windowProxy.closed) {
           window.clearInterval(timer);
 
           window.removeEventListener('message', msgListener);
@@ -99,7 +107,43 @@ export const purchaseProcessor: Processor = {
         return;
       }
 
-      dispatch(authInit({ becamePremium: true }));
+      window._paq.push([
+        'trackEvent',
+        'Purchase',
+        'purchaseSuccess',
+        JSON.stringify(action.payload),
+      ]);
+
+      // refresh user data
+      dispatch(authInit());
+
+      const purchase = action.payload;
+
+      switch (purchase.type) {
+        case 'premium':
+          dispatch(
+            toastsAdd({
+              style: 'success',
+              messageKey: 'premium.success',
+            }),
+          );
+
+          break;
+        case 'credits':
+          dispatch(
+            toastsAdd({
+              style: 'success',
+              messageKey: 'credits.purchase.success',
+              messageParams: {
+                amount: purchase.amount,
+              },
+            }),
+          );
+
+          dispatch(setActiveModal(null));
+
+          break;
+      }
     } catch (err) {
       console.error(err);
 

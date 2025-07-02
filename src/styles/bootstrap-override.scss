@@ -62,9 +62,6 @@
     background-color: #23272b;
     border-color: #1d2124;
   }
-  // color: #5a6268;
-  // background-color: #fff;
-  // border-color: #5a6268;
 }
 
 kbd {
@@ -109,4 +106,9 @@ legend {
 
 .dropdown-item {
   white-space: normal; // to see all menu text on narrow mobile screens
+}
+
+// this can be enabled directly in bootstrap but i dunno how
+.m-n2 {
+  margin: -0.5rem;
 }

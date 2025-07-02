@@ -29,7 +29,9 @@ export const gallerySavePictureProcessor: Processor = {
         title: editModel.title || null,
         description: editModel.description || null,
         position: parseCoordinates(editModel.dirtyPosition),
+        dirtyPosition: undefined,
         takenAt: editModel.takenAt ? new Date(editModel.takenAt) : null,
+        azimuth: editModel.azimuth ? parseFloat(editModel.azimuth) : null,
       },
       expectedStatus: 204,
     });

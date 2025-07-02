@@ -45,7 +45,6 @@ const handle: ProcessorHandler<typeof authWithFacebook> = async ({
       connect,
       accessToken: response.authResponse.accessToken,
       language: getState().l10n.chosenLanguage,
-      // homeLocation: getState().main.homeLocation,
     },
   });
 

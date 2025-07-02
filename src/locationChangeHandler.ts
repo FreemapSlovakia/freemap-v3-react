@@ -31,7 +31,6 @@ import {
   Tool,
 } from './actions/mainActions.js';
 import {
-  type CustomLayer,
   mapRefocus,
   mapSetCustomLayers,
   mapSetShading,
@@ -44,10 +43,7 @@ import {
   osmLoadRelation,
   osmLoadWay,
 } from './actions/osmActions.js';
-import {
-  routePlannerSetParams,
-  Weighting,
-} from './actions/routePlannerActions.js';
+import { routePlannerSetParams } from './actions/routePlannerActions.js';
 import { searchSetQuery } from './actions/searchActions.js';
 import { trackingActions } from './actions/trackingActions.js';
 import {
@@ -65,6 +61,7 @@ import {
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import type { DocumentKey } from './documents/index.js';
+import type { CustomLayerDef } from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
@@ -179,7 +176,6 @@ export function handleLocationChange(store: MyStore): void {
         transportType,
         mode,
         milestones,
-        weighting,
         roundtripParams,
         isochroneParams,
       } = getState().routePlanner;
@@ -194,7 +190,7 @@ export function handleLocationChange(store: MyStore): void {
         .slice(1, latLons.length - 1)
         .filter((x): x is LatLon => !!x);
 
-      const nextFinish = latLons[latLons.length - 1];
+      const nextFinish = latLons.at(-1)!;
 
       if (
         query['transport'] !== transportType ||
@@ -206,8 +202,6 @@ export function handleLocationChange(store: MyStore): void {
             serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
-        (weighting === 'fastest' ? undefined : weighting) !==
-          query['route-weighting'] ||
         milestones !== reqMilestones ||
         String(roundtripParams.seed) !== (query['trip-seed'] ?? '0') ||
         String(roundtripParams.distance) !==
@@ -218,8 +212,6 @@ export function handleLocationChange(store: MyStore): void {
         String(isochroneParams.timeLimit) !== (query['iso-time-limit'] ?? '600')
       ) {
         const routeMode = query['route-mode'];
-
-        const weighting = query['route-weighting'];
 
         dispatch(
           routePlannerSetParams({
@@ -233,7 +225,6 @@ export function handleLocationChange(store: MyStore): void {
               routeMode === 'isochrone'
                 ? routeMode
                 : 'route',
-            weighting: is<Weighting>(weighting) ? weighting : undefined,
             milestones: reqMilestones,
             roundtripParams: {
               seed: Number(query['trip-seed']) || 0,
@@ -267,7 +258,7 @@ export function handleLocationChange(store: MyStore): void {
 
   if (
     typeof lang === 'string' &&
-    ['en', 'sk', 'cs', 'hu', 'it'].includes(lang as string)
+    ['en', 'sk', 'cs', 'hu', 'it', 'de'].includes(lang as string)
   ) {
     dispatch(l10nSetChosenLanguage({ language: lang }));
   }
@@ -464,7 +455,7 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const newCls = assert<CustomLayer[]>(JSON.parse(customLayers)).filter(
+      const newCls = assert<CustomLayerDef[]>(JSON.parse(customLayers)).filter(
         (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
       );
 
@@ -493,7 +484,8 @@ export function handleLocationChange(store: MyStore): void {
   if (
     shading &&
     !Array.isArray(shading) &&
-    getState().map.overlays.includes('h') &&
+    (getState().map.overlays.includes('h') ||
+      getState().map.overlays.includes('z')) &&
     shading !== serializeShading(getState().map.shading)
   ) {
     function toColor(color = '00000000') {
@@ -514,20 +506,24 @@ export function handleLocationChange(store: MyStore): void {
 
         let azimuth = 0;
         let elevation = 0;
+        let exaggeration = 1;
 
         switch (type) {
           case 'hillshade-classic':
             azimuth = Number(params.shift()) * (Math.PI / 180);
             elevation = Number(params.shift()) * (Math.PI / 180);
-
+            exaggeration = Number(params.shift());
             break;
           case 'hillshade-igor':
             azimuth = Number(params.shift()) * (Math.PI / 180);
+            exaggeration = Number(params.shift());
             break;
           case 'slope-classic':
             elevation = Number(params.shift()) * (Math.PI / 180);
+            exaggeration = Number(params.shift());
             break;
           case 'slope-igor':
+            exaggeration = Number(params.shift());
             break;
           case 'aspect':
           case 'color-relief':
@@ -575,6 +571,7 @@ export function handleLocationChange(store: MyStore): void {
           elevation,
           brightness: 0,
           contrast: 1,
+          exaggeration,
           colorStops,
         } satisfies ShadingComponent;
       })
@@ -597,6 +594,12 @@ export function handleLocationChange(store: MyStore): void {
     show = 'export-map-features';
   } else if (show === 'export-pdf') {
     show = 'export-map';
+  } else if (show === 'supportUs') {
+    show = 'support-us';
+  } else if (show === 'mapSettings') {
+    show = 'map-settings';
+  } else if (show === 'remove-ads') {
+    show = 'premium';
   }
 
   if (is<ShowModal>(show)) {

@@ -52,6 +52,7 @@ import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
 import { useMessages } from '../l10nInjector.js';
 import { setMapLeafletElement } from '../leafletElementHolder.js';
+import { isPremium } from '../premium.js';
 import {
   drawingLinePolys,
   selectingModeSelector,
@@ -62,6 +63,7 @@ import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
 import { DrawingPointsTool } from './DrawingPointsTool.js';
 import { GalleryModals } from './gallery/GalleryModals.js';
+import { PictureLegend } from './gallery/PictureLegend.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
 import { MainMenuButton } from './mainMenu/MainMenuButton.js';
@@ -113,6 +115,8 @@ const trackingModalFactory = () => import('./tracking/TrackingModal.js');
 
 const accountModalFactory = () => import('./AccountModal.js');
 
+const downloadMapModalFactory = () => import('./DownloadMapModal.js');
+
 const mapSettingsModalFactory = () => import('./MapSettingsModal.js');
 
 const embedMapModalFactory = () => import('./EmbedMapModal.js');
@@ -124,6 +128,8 @@ const exportMapModalFactory = () => import('./ExportMapModal.js');
 const documentModalFactory = () => import('./DocumentModal.js');
 
 const aboutModalFactory = () => import('./AboutModal.js');
+
+const buyCreditModalFactory = () => import('./BuyCreditsModal.js');
 
 const supportUsModalFactory = () =>
   import('./supportUsModal/SupportUsModal.js');
@@ -142,7 +148,8 @@ const loginModalFactory = () => import('./LoginModal.js');
 
 const mapsModalFactory = () => import('./MapsModal.js');
 
-const removeAdsModalFactory = () => import('./RemoveAdsModal.js');
+const premiumActivationModalFactory = () =>
+  import('./PremiumActivationModal.js');
 
 const galleryFilterModalFactory = () =>
   import('./gallery/GalleryFilterModal.js');
@@ -163,8 +170,9 @@ export function Main(): ReactElement {
 
   const mapType = useAppSelector((state) => state.map.mapType);
 
-  const hasParamShading = useAppSelector((state) =>
-    state.map.overlays.includes('h'),
+  const hasParamShading = useAppSelector(
+    (state) =>
+      state.map.overlays.includes('h') || state.map.overlays.includes('z'),
   );
 
   const showInteractiveLayer = useAppSelector(
@@ -188,7 +196,7 @@ export function Main(): ReactElement {
       !process.env['PREVENT_ADS'] &&
       !window.isRobot &&
       !window.fmEmbedded &&
-      !state.auth.user?.isPremium,
+      !isPremium(state.auth.user),
   );
 
   const showElevationChart = useAppSelector(
@@ -459,7 +467,7 @@ export function Main(): ReactElement {
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
-                <Card className="fm-toolbar mx-2 mt-2">
+                <Card className="fm-toolbar mt-2">
                   <Button
                     id="freemap-logo"
                     className={progress ? 'in-progress' : 'idle'}
@@ -561,6 +569,8 @@ export function Main(): ReactElement {
               {selectingHomeLocation !== false && (
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
+
+              <PictureLegend />
 
               {showAds && !askingCookieConsent && (
                 <AsyncComponent factory={adFactory} />
@@ -688,7 +698,12 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'mapSettings'}
+        show={activeModal === 'download-map'}
+        factory={downloadMapModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'map-settings'}
         factory={mapSettingsModalFactory}
       />
 
@@ -715,7 +730,12 @@ export function Main(): ReactElement {
       <AsyncModal show={activeModal === 'about'} factory={aboutModalFactory} />
 
       <AsyncModal
-        show={activeModal === 'supportUs'}
+        show={activeModal === 'buy-credits'}
+        factory={buyCreditModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'support-us'}
         factory={supportUsModalFactory}
       />
 
@@ -746,8 +766,8 @@ export function Main(): ReactElement {
       <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
 
       <AsyncModal
-        show={activeModal === 'remove-ads'}
-        factory={removeAdsModalFactory}
+        show={activeModal === 'premium'}
+        factory={premiumActivationModalFactory}
       />
 
       <AsyncModal

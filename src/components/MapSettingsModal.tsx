@@ -31,7 +31,6 @@ import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
-import { CustomLayer } from '../actions/mapActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
@@ -39,9 +38,10 @@ import { useMessages } from '../l10nInjector.js';
 import {
   BaseLayerLetters,
   baseLayers,
+  CustomLayerDef,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
-  NoncustomLayerLetters,
+  IntegratedLayerLetters,
   overlayLayers,
   OverlayLetters,
   overlayLetters,
@@ -94,13 +94,15 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     initialCustomLayersDef,
   );
 
-  let localCustomLayers: CustomLayer[];
+  let localCustomLayers: CustomLayerDef[];
 
   try {
-    localCustomLayers = assert<CustomLayer[]>(
+    localCustomLayers = assert<CustomLayerDef[]>(
       JSON.parse(customLayersDef || '[]'),
     );
-  } catch {
+  } catch (e) {
+    console.log(e);
+
     localCustomLayers = customLayers;
   }
 
@@ -164,17 +166,21 @@ export function MapSettingsModal({ show }: Props): ReactElement {
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
         ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-        : m?.mapLayers.letters[type as NoncustomLayerLetters];
+        : m?.mapLayers.letters[type as IntegratedLayerLetters];
   }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    let customLayers: CustomLayer[];
+    let customLayers: CustomLayerDef[];
 
     try {
-      customLayers = assert<CustomLayer[]>(JSON.parse(customLayersDef || '[]'));
-    } catch {
+      customLayers = assert<CustomLayerDef[]>(
+        JSON.parse(customLayersDef || '[]'),
+      );
+    } catch (e) {
+      console.log(e);
+
       dispatch(
         toastsAdd({
           id: 'cusomLayersDef',

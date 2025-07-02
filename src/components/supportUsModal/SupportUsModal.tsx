@@ -108,7 +108,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
                 2% z dane
               </a>
               . Násladne vás, podľa výpisu z daňového úradu, odmeníme predĺžením
-              plného prístupu o jeden rok.
+              prémiového prístupu o jeden rok.
             </p>
 
             <hr />

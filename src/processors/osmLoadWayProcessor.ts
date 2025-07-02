@@ -39,10 +39,8 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
               osmType: 'way',
               id,
               geojson:
-                positionsEqual(
-                  coordinates[0],
-                  coordinates[coordinates.length - 1],
-                ) && shouldBeArea(tags)
+                positionsEqual(coordinates[0], coordinates.at(-1)!) &&
+                shouldBeArea(tags)
                   ? polygon([coordinates], item.tags)
                   : lineString(coordinates, item.tags),
               tags,

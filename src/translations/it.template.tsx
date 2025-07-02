@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
@@ -12,6 +11,7 @@ import {
   ObjectDetails,
 } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './it-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 
@@ -20,10 +20,15 @@ const nf33 = new Intl.NumberFormat('it', {
   maximumFractionDigits: 3,
 });
 
+const nf00 = new Intl.NumberFormat('it', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 const masl = 'm\xa0a.s.l.';
 
 const getErrorMarkup = (ticketId?: string) => `
-<h1>Application error!</h1>
+<h1>Errore dell’applicazione!</h1>
 <p>
   ${
     ticketId
@@ -39,7 +44,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
-const messages: Messages = {
+const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -62,8 +67,10 @@ const messages: Messages = {
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
     back: 'Indietro',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+
     processorError: ({ err }) =>
       addError(messages, "Errore dell'applicazione:", err),
+
     seconds: 'secondi',
     minutes: 'minuti',
     meters: 'metri',
@@ -73,14 +80,18 @@ const messages: Messages = {
     add: 'Aggiungi nuovo',
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
+
     simplifyPrompt:
       'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
+
     copyUrl: 'Copia URL',
     copyPageUrl: 'Copia URL della pagina',
     savingError: ({ err }) => addError(messages, "Salva l'errore:", err),
     loadError: ({ err }) => addError(messages, "Caricamento dell'errore:", err),
+
     deleteError: ({ err }) =>
       addError(messages, "Eliminazione dell'errore:", err),
+
     operationError: ({ err }) =>
       addError(messages, "Errore dell'operazione:", err),
     deleted: 'Eliminato.',
@@ -100,11 +111,11 @@ const messages: Messages = {
     attribution: () => (
       <Attribution unknown="Licenza della mappa non specificata." />
     ),
-    unauthenticatedError: 'Please log-in to access this feature.', // TODO translate
-    areYouSure: 'Are you sure?', // TODO translate
     export: 'Esporta',
-    success: 'Success!', // TODO translate
     expiration: 'Scadenza',
+    unauthenticatedError: 'Accedi per utilizzare questa funzione.',
+    areYouSure: 'Sei sicuro/a?',
+    success: 'Fatto!',
   },
 
   selections: {
@@ -155,24 +166,13 @@ const messages: Messages = {
     },
     transportType: {
       car: 'Auto',
-      // 'car-free': 'Auto (escludi pedaggi)',
-      // bikesharing: 'Bike sharing',
-      // imhd: 'Trasporti pubblici',
+      car4wd: 'Auto 4x4',
       bike: 'Bici',
-      bicycle_touring: 'Cicloturismo',
-      'foot-stroller': 'Passeggino / Sedia a rotelle',
-      nordic: 'Sci nordico',
-      // ski: 'Sci',
       foot: 'Camminata',
       hiking: 'Escursione',
       mtb: 'Mountain bike',
       racingbike: 'Bici da corsa',
       motorcycle: 'Moto',
-    },
-    weighting: {
-      fastest: 'Più veloce',
-      short_fastest: 'Veloce, breve',
-      shortest: 'Più breve',
     },
     development: 'in sviluppo',
     mode: {
@@ -219,144 +219,6 @@ const messages: Messages = {
       'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error finding the route:', err),
-    maneuverWithName: ({ type, modifier, name }) =>
-      `${type} ${modifier} on ${name}`,
-    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
-
-    maneuver: {
-      types: {
-        turn: 'gira',
-        'new name': 'vai',
-        depart: 'partenza',
-        arrive: 'arrivo',
-        merge: 'continua',
-        // 'ramp':
-        'on ramp': 'entra nella via',
-        'off ramp': 'esci dalla via',
-        fork: 'scegli una via',
-        'end of road': 'continua',
-        // 'use lane':
-        continue: 'continua',
-        roundabout: 'entra in rotatoria',
-        rotary: 'enter nella rotonda',
-        'roundabout turn': 'alla rotatoria, gira',
-        // 'notification':
-        'exit rotary': 'esci dalla rotonda', // undocumented
-        'exit roundabout': 'esci dalla rotatoria', // undocumented
-        notification: 'notifica',
-        'use lane': 'utilizza la corsia',
-      },
-
-      modifiers: {
-        uturn: 'fai inversione a U',
-        'sharp right': 'a destra',
-        'slight right': 'leggermente a destra',
-        right: 'destra',
-        'sharp left': 'a sinistra',
-        'slight left': 'leggermente a sinistra',
-        left: 'sinistra',
-        straight: 'diritto',
-      },
-    },
-    imhd: {
-      total: {
-        short: ({ arrival, price, numbers }) => (
-          <>
-            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
-            {numbers?.map((n, i) => (
-              <Fragment key={n}>
-                {i > 0 ? ', ' : ''}
-                <b>{n}</b>
-              </Fragment>
-            ))}
-          </>
-        ),
-        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
-          <>
-            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
-            {numbers?.map((n, i) => (
-              <Fragment key={n}>
-                {i > 0 ? ', ' : ''}
-                <b>{n}</b>
-              </Fragment>
-            ))}{' '}
-            | Duration{' '}
-            <b>
-              {total} {numberize(total, ['minutes', 'minute'])}
-            </b>
-            <br />
-            To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.:{' '}
-            <b>{bus}</b>, waiting:{' '}
-            <b>
-              {wait} {numberize(wait, ['minutes', 'minute'])}
-            </b>
-          </>
-        ),
-      },
-      step: {
-        foot: ({ departure, duration, destination }) => (
-          <>
-            at <b>{departure}</b> walk{' '}
-            {duration !== undefined && (
-              <b>
-                {duration} {numberize(duration, ['minutes', 'minute'])}
-              </b>
-            )}{' '}
-            {destination === 'TARGET' ? (
-              <b>to destination</b>
-            ) : (
-              <>
-                to <b>{destination}</b>
-              </>
-            )}
-          </>
-        ),
-        bus: ({ departure, type, number, destination }) => (
-          <>
-            at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
-          </>
-        ),
-      },
-      type: {
-        bus: 'prendi un autobus',
-        tram: 'prendi un tram',
-        trolleybus: 'prendi un filobus',
-        foot: 'cammina',
-      },
-    },
-    bikesharing: {
-      step: {
-        foot: ({ duration, destination }) => (
-          <>
-            walk{' '}
-            {duration !== undefined && (
-              <b>
-                {duration} {numberize(duration, ['minutes', 'minute'])}
-              </b>
-            )}{' '}
-            {destination === 'TARGET' ? (
-              <b>alla destinazione</b>
-            ) : (
-              <>
-                to <b>{destination}</b>
-              </>
-            )}
-          </>
-        ),
-        bicycle: ({ duration, destination }) => (
-          <>
-            bicycle{' '}
-            {duration !== undefined && (
-              <b>
-                {duration} {numberize(duration, ['minutes', 'minute'])}
-              </b>
-            )}{' '}
-            to <b>{destination}</b>
-          </>
-        ),
-      },
-    },
-    imhdAttribution: 'public transport routes',
   },
 
   mainMenu: {
@@ -364,7 +226,7 @@ const messages: Messages = {
     logOut: 'Esci',
     logIn: 'Accedi',
     account: 'Account',
-    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa', // TODO google translatted
+    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa',
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
@@ -422,14 +284,21 @@ const messages: Messages = {
         </>
       ),
     },
+    ad: (email) => (
+      <>
+        Vuoi pubblicare il tuo annuncio qui? Non esitare a contattarci a {email}
+        .
+      </>
+    ),
   },
 
   gallery: {
-    recentTags: 'Recent tags to assign:', // TODO translate
+    legend: 'Legenda',
     filter: 'Filtro',
     showPhotosFrom: 'Vedi le foto',
     showLayer: 'Mostra il livello',
     upload: 'Carica',
+
     f: {
       firstUploaded: 'dai primi caricati',
       lastUploaded: 'dagli ultimi caricati',
@@ -439,7 +308,10 @@ const messages: Messages = {
       mostRated: 'dai più valutati',
       lastComment: "dall'ultimo commento",
     },
+
     colorizeBy: 'Colora in base',
+    showDirection: 'Mostra la direzione dello scatto',
+
     c: {
       disable: 'non colorare',
       mine: 'diversi dai miei',
@@ -448,8 +320,9 @@ const messages: Messages = {
       takenAt: 'data scatto',
       createdAt: 'data di caricamento',
       season: 'stagione',
-      premium: 'premium', // TODO translate
+      premium: 'premium',
     },
+
     viewer: {
       title: 'Foto',
       comments: 'Commenti',
@@ -467,9 +340,10 @@ const messages: Messages = {
       deletePrompt: 'Eliminare questa foto?',
       modify: 'Modifica',
       premiumOnly:
-        'This photo has been made available by its author only to users with full access.', // TODO translate
-      noComments: 'No comments', // TODO translate
+        'Questa foto è stata resa disponibile dal suo autore solo agli utenti con accesso premium.',
+      noComments: 'Nessun commento',
     },
+
     editForm: {
       name: 'Nome',
       description: 'Descrizione',
@@ -479,9 +353,11 @@ const messages: Messages = {
         time: 'Orario scatto',
       },
       location: 'Luogo',
+      azimuth: 'Azimut',
       tags: 'Tag',
       setLocation: 'Imposta il luogo',
     },
+
     uploadModal: {
       title: 'Carica foto',
       uploading: (n) => `Uploading (${n})`,
@@ -493,7 +369,7 @@ const messages: Messages = {
           <li>Carica soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>
           <li>Carica soltanto foto scattate da te e di tua proprietà.</li>
           <li>Didascalie o commenti che non si riferiscono direttamente al contenuto delle foto caricate o che contraddicono i principi generalmente accettati di convivenza civile verranno rimossi. I trasgressori di questa regola saranno avvisati e, in caso di ripetute violazioni, il loro account nell'applicazione potrebbe essere cancellato.</li>
-          <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini di licenza CC-BY-SA 4.0.</li>
+          <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini di licenza CC BY-SA 4.0.</li>
           <li>L'operatore (Freemap.sk) declina ogni responsabilità e non risponde per danni diretti o indiretti derivanti dalla pubblicazione di una foto in galleria. La persona che ha caricato l'immagine sul server è pienamente responsabile della foto.</li>
           <li>L'operatore si riserva il diritto di modificare la descrizione, il nome, la posizione e i tag della foto, o di eliminare la foto se il contenuto è inappropriato (in violazione di queste regole).</li>
           <li>L'operatore si riserva il diritto di eliminare l'account nel caso in cui l'utente violi ripetutamente la politica della galleria pubblicando contenuti inappropriati.</li>
@@ -501,26 +377,35 @@ const messages: Messages = {
       `,
       success: 'Le foto sono state caricate con successo.',
       showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
-      premium: 'Make available only to users with full access', // TODO translate
+      premium: 'Disponibile solo per gli utenti con accesso completo',
     },
+
     locationPicking: {
       title: "Selezione l'ubicazione della foto",
     },
+
     deletingError: ({ err }) =>
       addError(messages, 'Error deleting photo:', err),
+
     tagsFetchingError: ({ err }) =>
       addError(messages, 'Error fetching tags:', err),
+
     pictureFetchingError: ({ err }) =>
       addError(messages, 'Error fetching photo:', err),
+
     picturesFetchingError: ({ err }) =>
       addError(messages, 'Error fetching photos:', err),
+
     savingError: ({ err }) => addError(messages, 'Error saving photo:', err),
+
     commentAddingError: ({ err }) =>
       addError(messages, 'Error adding comment:', err),
+
     ratingError: ({ err }) => addError(messages, 'Error rating photo:', err),
     missingPositionError: 'Luogo mancante.',
     invalidPositionError: 'Formato coordinate di posizione non valide.',
     invalidTakenAt: 'Data e orario di scatto non valide.',
+
     filterModal: {
       title: 'Filtro foto',
       tag: 'Tag',
@@ -529,17 +414,20 @@ const messages: Messages = {
       author: 'Autore',
       rating: 'Valutazione',
       noTags: 'no tag',
-      pano: 'Panorama', // TODO translate
-      premium: 'Premium', // TODO translate
+      pano: 'Panorama',
+      premium: 'Premium',
     },
+
     noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
     linkToWww: 'foto su www.freemap.sk',
     linkToImage: 'file immagine',
-    // TODO translate
+
     allMyPhotos: {
-      premium: 'Include all my photos in premium content',
-      free: 'Make all my photos accessible to everyone',
+      premium: 'Includi tutte le mie foto nei contenuti premium',
+      free: 'Rendi tutte le mie foto accessibili a tutti',
     },
+
+    recentTags: 'Tag recenti da assegnare:',
   },
 
   measurement: {
@@ -628,24 +516,35 @@ const messages: Messages = {
       label: 'Etichetta:',
       width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
-      type: 'Geometry type', // TODO translate
+      type: 'Tipo di geometria',
     },
     continue: 'Continua',
     join: 'Unisci',
     split: 'Separa',
     stopDrawing: 'Ferma il disegno',
     selectPointToJoin: 'Seleziona un punto per unire le linee',
-    // TODO translate
     defProps: {
-      menuItem: 'Style settings',
-      title: 'Drawing style settings',
-      applyToAll: 'Save and apply to all',
+      menuItem: 'Impostazioni stile',
+      title: 'Impostazioni dello stile di disegno',
+      applyToAll: 'Salva e applica a tutti',
     },
+
     projection: {
       projectPoint: 'Proietta punto',
       distance: 'Distanza',
       azimuth: 'Azimut',
     },
+  },
+
+  purchases: {
+    purchases: 'Acquisti',
+    premiumExpired: (at) => <>Il tuo accesso premium è scaduto il {at}</>,
+    date: 'Data',
+    item: 'Elemento',
+    notPremiumYet: 'Non hai ancora un accesso premium.',
+    noPurchases: 'Nessun acquisto',
+    premium: 'Premium',
+    credits: (amount) => <>Crediti ({amount})</>,
   },
 
   settings: {
@@ -661,11 +560,11 @@ const messages: Messages = {
       name: 'Nome',
       email: 'Email',
       sendGalleryEmails: 'Notifica i commenti alle foto via email',
-      delete: 'Delete account', // TODO translate
-      deleteWarning:
-        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.', // TODO translate
       personalInfo: 'Dati personali',
       authProviders: 'Provider di accesso',
+      delete: 'Elimina account',
+      deleteWarning:
+        'Sei sicuro di voler eliminare il tuo account? Verranno rimossi tutte le tue foto, i commenti e le valutazioni delle foto, le tue mappe e i dispositivi monitorati.',
     },
     general: {
       tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
@@ -706,9 +605,9 @@ const messages: Messages = {
   },
 
   mapDetails: {
-    notFound: 'Niente trovato qui.', // TODO google translated
+    notFound: 'Niente trovato qui.',
     fetchingError: ({ err }) =>
-      addError(messages, 'Errore durante il recupero dei dettagli', err), // TODO google translated
+      addError(messages, 'Errore durante il recupero dei dettagli', err),
     detail: (props: ObjectDetailBasicProps) => (
       <ObjectDetails
         {...props}
@@ -733,293 +632,7 @@ const messages: Messages = {
       pin: 'Segnaposto',
       ring: "Dell'anello",
       square: 'Quadrata',
-    }, // TODO translated with google translate
-    // categorie: {
-    //   1: 'Natura',
-    //   2: 'Servizi',
-    //   3: 'Trasporti',
-    //   4: 'Monumenti',
-    //   5: 'Servizi per la salute',
-    //   6: 'Negozi',
-    //   7: 'Energetici',
-    //   8: 'Alloggio e cibo',
-    //   9: 'Turismo',
-    //   10: 'Divisione amministrativa',
-    //   11: 'Altri',
-    //   12: 'Tempo libero',
-    //   13: 'Sport',
-    //   14: 'Educazione',
-    //   15: 'Ciclismo',
-    // },
-    // sottocategorie: {
-    //   1: 'Cava',
-    //   2: 'Cima',
-    //   3: 'Stazione carburante',
-    //   4: 'Ristorante',
-    //   5: 'Hotel',
-    //   6: 'Parcheggio',
-    //   7: 'Aereoporto',
-    //   8: 'Stazione ferroviaria',
-    //   9: 'Stazione autobus',
-    //   10: 'Fermata autobus',
-    //   11: 'Castello',
-    //   12: 'Dimora',
-    //   13: 'Rovine',
-    //   14: 'Museo',
-    //   15: 'Monumento',
-    //   16: 'Memoriale',
-    //   17: 'Farmacia',
-    //   18: 'Ospedale',
-    //   19: 'Chirurgia',
-    //   20: 'Polizia',
-    //   21: 'Clinica',
-    //   22: 'Attraversamento frontiera',
-    //   23: 'Ospedale con Pronto Soccorso',
-    //   24: 'Supermarket',
-    //   26: 'Centrale nucleare',
-    //   27: 'Centrale a carbone',
-    //   28: 'Centrale idroelettrica',
-    //   29: 'Centrale eolica',
-    //   30: 'Drogheria',
-    //   31: 'Caserma dei pompieri',
-    //   32: 'Chiesa',
-    //   33: 'Pub',
-    //   34: 'Banca',
-    //   35: 'Bancomati',
-    //   36: 'Fast food',
-    //   39: 'Banca',
-    //   40: 'Punto panoramico',
-    //   41: 'Campeggio',
-    //   42: 'Alberi protetti',
-    //   43: 'Fonte',
-    //   44: 'Posto guida',
-    //   45: 'Mappa di orientamento',
-    //   46: 'Rifugio alpino',
-    //   47: 'Riparo',
-    //   48: 'Ufficio postale',
-    //   49: 'Memoriale, campo di battaglia',
-    //   50: 'Capanno di caccia',
-    //   51: 'Torre telecomunicazioni',
-    //   52: 'Torre di osservazione',
-    //   53: 'Motel',
-    //   54: 'Pensione',
-    //   55: 'Pensione per famiglie',
-    //   56: 'Città regionale',
-    //   57: 'Città distrettuale',
-    //   58: 'Città',
-    //   59: 'Paese',
-    //   60: 'Villaggio',
-    //   61: 'Borgo',
-    //   62: 'Quartiere',
-    //   63: 'Guardacaccia',
-    //   64: 'Dentista',
-    //   65: 'Negozio di biciclette',
-    //   66: 'Portabiciclette',
-    //   67: 'Noleggio biciclette',
-    //   68: 'Negozio di liquori',
-    //   69: 'Arte',
-    //   70: 'Panetteria',
-    //   71: 'Cura di bellezza',
-    //   72: 'Letti',
-    //   73: 'Bevande',
-    //   74: 'Libreria',
-    //   75: 'Boutique',
-    //   76: 'Macellaio',
-    //   77: 'Vendita auto',
-    //   78: 'Servizio auto',
-    //   79: 'Carità',
-    //   80: 'Drogheria',
-    //   81: 'Vestiti',
-    //   82: 'Computer',
-    //   83: 'Confetteria',
-    //   84: 'Copisteria',
-    //   85: 'Tende',
-    //   86: 'Gastronomia',
-    //   87: 'Grande magazzino',
-    //   89: 'Lavanderie a secco',
-    //   90: 'Domestici',
-    //   91: 'Elettronica',
-    //   92: 'Articoli erotici',
-    //   93: 'Spaccio di fabbrica',
-    //   94: 'Prodotti agricoli',
-    //   95: 'Negozio di fiori',
-    //   96: 'Dipinti',
-    //   98: 'Imprese funebri',
-    //   99: 'Mobili',
-    //   100: 'Centro giardinaggio',
-    //   101: 'Convenienza',
-    //   102: 'Negozio articoli da regalo',
-    //   103: 'Vetreria',
-    //   104: 'Frutta e verdura',
-    //   105: 'Parrucchieri',
-    //   106: 'Hardware',
-    //   107: 'Apparecchi acustici',
-    //   108: 'HI-FI',
-    //   109: 'Gelato',
-    //   110: 'Decorazione interni',
-    //   111: 'Orefice',
-    //   112: 'Chiosco',
-    //   113: 'Casalinghi',
-    //   114: 'Lavanderia',
-    //   115: 'Centro commerciale',
-    //   116: 'Massaggio',
-    //   117: 'Cellulari',
-    //   118: 'Prestiti di denaro',
-    //   119: 'Moto',
-    //   120: 'Negozio di musica',
-    //   121: 'Giornali',
-    //   122: 'Ottica',
-    //   124: 'Articoli outdoor',
-    //   125: 'Vernice',
-    //   126: 'Banco dei pegni',
-    //   127: 'Animali',
-    //   128: 'Frutti di mare',
-    //   129: 'Negozio usato',
-    //   130: 'Scarpe',
-    //   131: 'Articoli sportivi',
-    //   132: 'Cancelleria',
-    //   133: 'Tatuaggi',
-    //   134: 'Negozio di giocattoli',
-    //   135: 'Commercio',
-    //   136: 'Vacante',
-    //   137: 'Aspirapolveri',
-    //   138: 'Negozio di varietà',
-    //   139: 'Video/DVD',
-    //   140: 'ZOO',
-    //   141: 'Rifugio alpino',
-    //   142: 'Attrazione',
-    //   143: 'Toilette',
-    //   144: 'Telefono',
-    //   145: 'Autorità civiche',
-    //   146: 'Prigione',
-    //   147: 'Mercato',
-    //   148: 'Bar',
-    //   149: 'Caffè',
-    //   150: 'Griglia pubblica',
-    //   151: 'Acqua potabile',
-    //   152: 'Taxi',
-    //   153: 'Biblioteca',
-    //   154: 'Autolavaggio',
-    //   155: 'Vetrina',
-    //   156: 'Semaforo',
-    //   157: 'Stazione ferroviaria',
-    //   158: 'Attraversamento ferroviario',
-    //   159: 'Stazione del tram',
-    //   160: 'Eliporto',
-    //   161: 'Torre Acquedotto',
-    //   162: 'Mulino a vento',
-    //   163: 'Sauna',
-    //   164: 'Stazione GAS',
-    //   166: 'Area per cani',
-    //   167: 'Centro Sportivo',
-    //   168: 'Campo di Golf',
-    //   169: 'Stadio',
-    //   170: 'Tempo libero',
-    //   171: 'Parco acquatico',
-    //   172: 'nautica',
-    //   173: 'Pesca',
-    //   174: 'Parco',
-    //   175: 'Parco giochi',
-    //   176: 'Giardino',
-    //   177: 'Area pubblica',
-    //   178: 'Pista di pattinaggio',
-    //   179: 'Minigolf',
-    //   180: 'Danza',
-    //   181: 'Scuola elementare',
-    //   182: '9pin',
-    //   183: 'Bowling',
-    //   184: 'Football americano',
-    //   185: 'Tiro con l'arco',
-    //   186: 'Atletica',
-    //   187: 'Calcio australiano',
-    //   188: 'Baseball',
-    //   189: 'Pallacanestro',
-    //    190: 'Beach volley',
-    //   191: 'Bmx',
-    //   192: 'Bocce',
-    //   193: 'Bocce',
-    //   194: 'Calcio canadese',
-    //   195: 'Canoa',
-    //   196: 'Scacchi',
-    //   197: 'Arrampicata',
-    //   198: 'Cricket',
-    //   199: 'Reti da cricket',
-    //   200: 'Croquet',
-    //   201: 'Ciclismo',
-    //   202: 'Immersioni subacquee',
-    //   203: 'Corse di cani',
-    //   204: 'Equitazione',
-    //   205: 'Calcio',
-    //   206: 'Calcio gaelico',
-    //   207: 'Golf',
-    //   208: 'Ginnastica',
-    //   209: 'Hockey',
-    //   210: 'Ferri da cavallo',
-    //   211: 'Corsa di cavalli',
-    //   212: 'Curling',
-    //   213: 'Korfball',
-    //   214: 'Moto',
-    //   215: 'Multi',
-    //   216: 'Orientamento',
-    //   217: 'Paddle tennis',
-    //   218: 'Parapendio',
-    //   219: 'Pelota',
-    //   220: 'Racchette',
-    //   221: 'Canottaggio',
-    //   222: 'Rugby',
-    //   223: 'Unione rugby',
-    //   224: 'Ripresa',
-    //   225: 'Pattinaggio su ghiaccio',
-    //   226: 'Skateboard',
-    //   227: 'Sci',
-    //   228: 'Calcio',
-    //   229: 'Nuoto',
-    //   230: 'Ping-pong',
-    //   231: 'Pallamano',
-    //   232: 'Tennis',
-    //   233: 'Acquascivolo',
-    //   234: 'Pallavolo',
-    //   235: 'Sci nautico',
-    //   236: 'Università',
-    //   237: 'Asilo',
-    //   238: 'Scuola superiore',
-    //   239: 'Scuola guida',
-    //   240: 'Cappella',
-    //   241: 'Area picnic',
-    //   242: 'Bracere',
-    //   243: 'Località',
-    //   244: 'Cascata',
-    //   245: 'Lago',
-    //   246: 'Diga',
-    //   248: 'Riserva naturale',
-    //   249: 'Monumento naturale',
-    //   250: 'Area protetta',
-    //   251: 'Area paesaggistica protetta',
-    //   252: 'Parco Nazionale',
-    //   253: 'Distributore automatico di latte',
-    //   254: 'Zona umida (RAMSAR)',
-    //   255: 'Punti di indirizzo',
-    //   256: 'Pozzo minerario',
-    //   257: 'Modifica',
-    //   258: 'Bene',
-    //   259: 'Croce',
-    //   260: 'Santuario',
-    //   261: 'Fitness',
-    //   262: 'Centrale a vapore',
-    //   263: 'Casa padronale',
-    //   264: 'Classificazione geomorfologica',
-    //   265: 'Bunker militare',
-    //   266: 'Uscita autostrada',
-    //   267: 'Statua',
-    //   268: 'Camino',
-    //   269: 'Parapendio',
-    //   270: 'Deltaplano',
-    //   271: 'Luogo di alimentazione',
-    //   272: 'Camino',
-    //   273: 'Bedminton/Squash',
-    //   274: 'Guida',
-    //   275: 'Stazione di ricarica per biciclette',
-    // },
+    },
   },
 
   external: {
@@ -1029,7 +642,7 @@ const messages: Messages = {
     googleMaps: 'Google Maps',
     hiking_sk: 'Hiking.sk',
     zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.cz',
+    mapy_cz: 'Mapy.com',
     josm: 'Modifica con JOSM',
     id: 'Modifica con iD',
     window: 'Nuova finestra',
@@ -1067,8 +680,8 @@ const messages: Messages = {
   exportMapFeatures: {
     download: 'Download',
     format: 'Formato',
-    target: 'Target', // TODO translate
     exportError: ({ err }) => addError(messages, 'Error exporting:', err),
+
     what: {
       plannedRoute: 'trova percorso',
       plannedRouteWithStops: 'incluse fermate',
@@ -1079,14 +692,18 @@ const messages: Messages = {
       drawingPoints: 'disegno - punti',
       tracking: 'tracciamento in tempo reale',
       gpx: 'traccia GPX',
-      search: 'highlighted map feature', // TODO translate
+      search: 'elemento della mappa evidenziato',
     },
+
     disabledAlert:
       'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
+
     licenseAlert:
       'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
+
     exportedToDropbox: 'Il file è stato salvato su Dropbox.',
     exportedToGdrive: 'Il file è stato salvato su Google Drive.',
+
     garmin: {
       courseName: 'Nome del corso',
       description: 'Descrizione',
@@ -1106,6 +723,7 @@ const messages: Messages = {
       authPrompt:
         "Non hai ancora effettuato l'accesso a Garminon. Vuoi accedere questa volta?",
     },
+    target: 'Destinazione',
   },
 
   auth: {
@@ -1116,7 +734,7 @@ const messages: Messages = {
       garmin: 'Garmin',
     },
     logIn: {
-      with: 'Scegli un provider di accesso', // TODO google-translated
+      with: 'Scegli un provider di accesso',
       success: 'Accesso eseguito correttamente.',
       logInError: ({ err }) => addError(messages, 'Error logging in:', err),
       logInError2: 'Error logging in.',
@@ -1128,12 +746,12 @@ const messages: Messages = {
       error: ({ err }) => addError(messages, 'Error logging out:', err),
     },
     connect: {
-      label: 'Connect', // TODO translate
-      success: 'Connected', // TODO translate
+      label: 'Connetti',
+      success: 'Connesso',
     },
     disconnect: {
-      label: 'Disconnect', // TODO translate
-      success: 'Disconnected', // TODO translate
+      label: 'Disconnetti',
+      success: 'Disconnesso',
     },
   },
 
@@ -1168,15 +786,19 @@ const messages: Messages = {
       s3: 'Strava (sport acquatici)',
       s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
-      '4': 'Light terrain hillshading (SK)', // TODO translate
-      '5': 'Terrain hillshading (SK)', // TODO translate
-      '6': 'Surface hillshading (SK)', // TODO translate
-      '7': 'Detailed surface hillshading (SK)', // TODO translate
-      VO: 'OpenStreetMap Vector', // TODO translate
-      VS: 'Streets Vector', // TODO translate
-      VD: 'Dataviz Vector', // TODO translate
-      VT: 'Outdoor Vector', // TODO translate
-      h: 'Parametric shading (SK)', // TODO translate
+      '4': 'Ombreggiatura leggera del terreno (SK)',
+      '5': 'Ombreggiatura del terreno (SK)',
+      '6': 'Ombreggiatura della superficie (SK)',
+      '7': 'Ombreggiatura dettagliata della superficie (SK)',
+      '8': 'Ombreggiatura dettagliata della superficie (CZ)',
+
+      VO: 'OpenStreetMap Vettoriale',
+      VS: 'Strade Vettoriale',
+      VD: 'Dataviz Vettoriale',
+      VT: 'Outdoor Vettoriale',
+
+      h: 'Ombreggiatura parametrica (SK)',
+      z: 'Ombreggiatura parametrica (CZ)',
     },
     customBase: 'Mappa personalizzata',
     customOverlay: 'Sovrapposizione mappa personalizzata',
@@ -1187,16 +809,13 @@ const messages: Messages = {
     },
     attr: {
       freemap: '©\xa0Freemap Slovakia',
-      osmData: '©\xa0OpenStreetMap contributors',
       srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'DTM providers…', // TODO translate
+      osmData: '© contributori di OpenStreetMap',
+      outdoorShadingAttribution: 'fornitori di DTM…',
       maptiler: (
-        // TODO translate
         <MaptilerAttribution
-          tilesFrom="Vector tiles from"
-          hostedBy="hosted by"
-          see="See"
-          _3Dterrain="3D terrain"
+          tilesFrom="Tasselli vettoriali da"
+          hostedBy="ospitato da"
         />
       ),
     },
@@ -1224,7 +843,7 @@ const messages: Messages = {
 
   osm: {
     fetchingError: ({ err }) =>
-      addError(messages, 'Error fetching OSM data:', err),
+      addError(messages, 'Errore durante il recupero dei dati OSM', err),
   },
 
   tracking: {
@@ -1476,7 +1095,7 @@ const messages: Messages = {
 
   maps: {
     legacyMapWarning:
-      'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?', // TODO by google translate
+      'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?',
     noMapFound: 'Nessuna mappa trovata',
     save: 'Salva',
     delete: 'Elimina',
@@ -1540,14 +1159,14 @@ const messages: Messages = {
   },
 
   premium: {
-    title: 'Accesso completo',
+    title: 'Ottieni accesso premium',
     commonHeader: (
       <>
         <p>
           <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          Con <b>5 ore</b> di lavoro volontario oppure <b>5 €</b> otterrai un
+          Con <b>8 ore</b> di lavoro volontario oppure <b>8 €</b> otterrai un
           anno di accesso con:
         </p>
         <ul>
@@ -1556,8 +1175,7 @@ const messages: Messages = {
             accesso ai livelli mappa <FaGem /> premium
           </li>
           <li>
-            {/* TODO translate */}
-            access to <FaGem /> premium photos
+            accesso alle foto <FaGem /> premium
           </li>
         </ul>
       </>
@@ -1589,14 +1207,34 @@ const messages: Messages = {
         </a>
         , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato
         verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>,
-        che potrai usare per rimuovere gli annunci da www.freemap.sk.
+        che puoi utilizzare per ottenere l'accesso premium a www.freemap.sk o
+        acquistare crediti, che potrai usare per rimuovere gli annunci da
+        www.freemap.sk.
       </p>
     ),
     continue: 'Continua',
-    success: 'Congratulazioni, sei diventato un membro premium !', // TODO update translation
-    becomePremium: 'Accesso completo',
-    youArePremium: 'Hai accesso a tutte le funzionalità',
-    premiumOnly: 'Disponibile solo con accesso completo.', // TODO google translated
+    success: 'Congratulazioni, hai ottenuto l’accesso premium!',
+    becomePremium: 'Ottieni accesso premium',
+    youArePremium: (date) => (
+      <>
+        Hai accesso premium fino al <b>{date}</b>.
+      </>
+    ),
+    premiumOnly: 'Disponibile solo con accesso premium.',
+    alreadyPremium: 'Hai già accesso premium.',
+  },
+
+  credits: {
+    buyCredits: 'Acquista crediti',
+    amount: 'Crediti',
+    credits: 'crediti',
+    buy: 'Acquista',
+    purchase: {
+      success: ({ amount }) => (
+        <>Il tuo credito è stato aumentato di {nf00.format(amount)}.</>
+      ),
+    },
+    youHaveCredits: (amount) => <>Hai {amount} crediti.</>,
   },
 
   offline: {
@@ -1682,10 +1320,27 @@ const messages: Messages = {
     errorRequestingDevice: 'Impossibile creare il dispositivo GPU: ',
     other: 'Errore durante il rendering: ',
   },
+  downloadMap: {
+    downloadMap: 'Scarica mappa',
+    format: 'Formato',
+    map: 'Mappa',
+    downloadArea: 'Scarica',
+    area: {
+      visible: 'Area visibile',
+      byPolygon: 'Area coperta dal poligono selezionato',
+    },
+    name: 'Nome',
+    zoomRange: 'Intervallo di zoom',
+    scale: 'Scala',
+    email: 'Il tuo indirizzo email',
+    emailInfo:
+      'Utilizzeremo la tua email per inviarti il link per il download.',
+    download: 'Scarica',
+    success:
+      'La mappa è in preparazione. Al termine, riceverai via email un link per scaricarla.',
+    summaryTiles: 'Riquadri',
+    summaryPrice: (amount) => <>Prezzo totale: {amount} crediti</>,
+  },
 };
-
-function numberize(n: number, words: [string, string]) {
-  return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
-}
 
 export default messages;

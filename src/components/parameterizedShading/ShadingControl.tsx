@@ -135,6 +135,7 @@ export function ShadingControl() {
                     ],
                     brightness: 0,
                     contrast: 1,
+                    exaggeration: 1,
                   };
                 } else {
                   shadingComponent = {
@@ -156,6 +157,7 @@ export function ShadingControl() {
                         : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
                     brightness: 0,
                     contrast: 1,
+                    exaggeration: 1,
                   };
                 }
 
@@ -209,6 +211,12 @@ export function ShadingControl() {
             onSelect={(e) => setId(e ? Number(e) : undefined)}
           >
             <ListGroup.Item action eventKey="">
+              <span
+                className="fm-shading-color"
+                style={{
+                  backgroundColor: Color(shading.backgroundColor).hex(),
+                }}
+              />{' '}
               Background
             </ListGroup.Item>
 
@@ -224,6 +232,16 @@ export function ShadingControl() {
                   whiteSpace: 'nowrap',
                 }}
               >
+                {/^hillshade-|^slope-/.test(component.type) && (
+                  <span
+                    className=" fm-shading-color"
+                    style={{
+                      backgroundColor: Color(
+                        component.colorStops[0].color,
+                      ).hex(),
+                    }}
+                  />
+                )}{' '}
                 {component.type.replace(/hillshade/, 'hs')}
                 {component.type.startsWith('hillshade-') &&
                   ' ◯ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
@@ -277,6 +295,34 @@ export function ShadingControl() {
                   ))}
                 </Form.Select>
               </Form.Group> */}
+
+              {(selectedComponent.type.startsWith('hillshade-') ||
+                selectedComponent.type.startsWith('slope-')) && (
+                <Form.Group className="mt-3">
+                  <Form.Label>Exaggeration</Form.Label>
+
+                  <Form.Control
+                    type="number"
+                    min={0.1}
+                    step={0.1}
+                    value={selectedComponent.exaggeration.toFixed(1)}
+                    onChange={(e) => {
+                      const exaggeration = Number(e.currentTarget.value);
+
+                      dispatch(
+                        mapSetShading(
+                          produce(shading, (draft) => {
+                            draft.components.find(
+                              (component) =>
+                                component.id === selectedComponent.id,
+                            )!.exaggeration = exaggeration;
+                          }),
+                        ),
+                      );
+                    }}
+                  />
+                </Form.Group>
+              )}
 
               {selectedComponent.type.startsWith('hillshade-') && (
                 <Form.Group className="mt-3">

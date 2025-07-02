@@ -1,17 +1,27 @@
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
 import { authSetUser } from '../actions/authActions.js';
-import { removeAds, setActiveModal } from '../actions/mainActions.js';
+import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
+import { isPremium } from '../premium.js';
 import type { RootState } from '../store.js';
-import type { LoginResponse } from '../types/auth.js';
+import type { LoginResponse, User, UserSettings } from '../types/auth.js';
+import { StringDates } from '../types/common.js';
 
 export async function handleLoginResponse(
   res: Response,
   getState: () => RootState,
   dispatch: Dispatch,
 ) {
-  const { user, connect, clientData } = assert<LoginResponse>(await res.json());
+  const {
+    user: rawUser,
+    connect,
+    clientData,
+  } = assert<
+    Omit<LoginResponse, 'user'> & {
+      user: StringDates<Omit<User, 'settings'>> & { settings?: unknown };
+    }
+  >(await res.json());
 
   dispatch(
     toastsAdd({
@@ -22,10 +32,40 @@ export async function handleLoginResponse(
     }),
   );
 
-  dispatch(authSetUser(user));
+  const user = {
+    ...rawUser,
+    premiumExpiration: rawUser.premiumExpiration
+      ? new Date(rawUser.premiumExpiration)
+      : null,
+  };
 
-  if (!user.isPremium && getState().main.removeAdsOnLogin) {
-    dispatch(removeAds());
+  let settings: UserSettings | undefined;
+
+  try {
+    settings = assert<UserSettings>(user.settings);
+  } catch (e) {
+    console.error('Invalid user settings:', e);
+
+    settings = undefined;
+  }
+
+  dispatch(authSetUser({ ...user, settings }));
+
+  const { purchaseOnLogin } = getState().main;
+
+  if (purchaseOnLogin) {
+    if (isPremium(user) && purchaseOnLogin.type === 'premium') {
+      dispatch(
+        toastsAdd({
+          id: 'premiumAlready',
+          messageKey: 'premium.alreadyPremium',
+          style: 'info',
+          timeout: 5000,
+        }),
+      );
+    } else {
+      dispatch(purchase(purchaseOnLogin));
+    }
   }
 
   if (clientData?.successAction) {

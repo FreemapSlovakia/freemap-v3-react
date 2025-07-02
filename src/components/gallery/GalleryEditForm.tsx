@@ -13,6 +13,7 @@ import { galleryAddTag, GalleryTag } from '../../actions/galleryActions.js';
 import { getMessageByKey, useMessages } from '../../l10nInjector.js';
 import '../../styles/react-tags.scss';
 import { DateTime } from '../DateTime.js';
+import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 
 export interface PictureModel {
@@ -21,6 +22,7 @@ export interface PictureModel {
   tags: string[];
   takenAt: string;
   dirtyPosition: string;
+  azimuth: string;
   premium: boolean;
 }
 
@@ -60,6 +62,13 @@ export function GalleryEditForm({
   const handleDescriptionChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       changeModel('description', e.currentTarget.value || null);
+    },
+    [changeModel],
+  );
+
+  const handleAzimuthChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      changeModel('azimuth', e.currentTarget.value || null);
     },
     [changeModel],
   );
@@ -117,6 +126,11 @@ export function GalleryEditForm({
   useLayoutEffect(() => {
     setKey(1);
   }, []);
+
+  const handleAzimuthChange2 = useCallback(
+    (a: number) => changeModel('azimuth', a.toFixed(1)),
+    [changeModel],
+  );
 
   return (
     <div>
@@ -179,6 +193,25 @@ export function GalleryEditForm({
             <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
           </Button>
         </InputGroup>
+      </Form.Group>
+
+      <Form.Group className="mb-3 d-flex align-items-center">
+        <Form.Control
+          placeholder={m?.gallery.editForm.azimuth}
+          type="number"
+          value={model.azimuth}
+          onChange={handleAzimuthChange}
+          min={0}
+          max={360}
+          step="any"
+        />
+
+        <Azimuth
+          className="ms-2"
+          value={model.azimuth ? parseFloat(model.azimuth) : null}
+          size={34}
+          onChange={handleAzimuthChange2}
+        />
       </Form.Group>
 
       <Form.Group className="mb-3" key={key}>

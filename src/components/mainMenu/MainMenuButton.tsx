@@ -16,6 +16,7 @@ import { useMessages } from '../../l10nInjector.js';
 import { CacheMode } from '../../types/common.js';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
 import { DrawingSubmenu } from './DrawingSubmenu.js';
+import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
 import { GallerySubmenu } from './GallerySubmenu.js';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
@@ -151,6 +152,8 @@ export function MainMenuButton(): ReactElement {
             <LanguageSubmenu />
           ) : submenu === 'photos' ? (
             <GallerySubmenu />
+          ) : submenu === 'galleryColorizeBy' ? (
+            <GalleryColorizeBySubmenu />
           ) : submenu === 'tracking' ? (
             <TrackingSubmenu />
           ) : submenu === 'drawing' ? (

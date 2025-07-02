@@ -47,7 +47,9 @@ import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isPremium } from '../../premium.js';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton.js';
+import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 
 import '../../styles/gallery.scss';
@@ -156,21 +158,22 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const {
     title = '...',
-    description = undefined,
-    createdAt = undefined,
-    takenAt = undefined,
-    tags = undefined,
-    comments = undefined,
-    rating = undefined,
-    myStars = undefined,
+    description,
+    createdAt,
+    takenAt,
+    tags,
+    comments,
+    rating,
+    myStars,
     lat,
     lon,
+    azimuth,
   } = image || {};
 
   const premium = Boolean(image?.premium);
 
   const disabledPremium =
-    premium && !user?.isPremium && user?.id !== image?.user.id;
+    premium && !isPremium(user) && user?.id !== image?.user.id;
 
   const pano = Boolean(image?.pano);
 
@@ -406,13 +409,22 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     )}
                   </Alert>
                 ) : (
-                  <img
-                    key={imgKey}
-                    ref={setImageElement}
-                    className={`gallery-image ${loading ? 'loading' : ''}`}
-                    src={getImageUrl(activeImageId)}
-                    alt={title ?? undefined}
-                  />
+                  <div className="gallery-image-container">
+                    <img
+                      key={imgKey}
+                      ref={setImageElement}
+                      className={`gallery-image ${loading ? 'loading' : ''}`}
+                      src={getImageUrl(activeImageId)}
+                      alt={title ?? undefined}
+                    />
+                    <a
+                      href="https://creativecommons.org/licenses/by-sa/4.0/"
+                      target="cc-by-sa"
+                      rel="noreferrer"
+                    >
+                      CC BY-SA 4.0
+                    </a>
+                  </div>
                 )}
 
                 {nextImageId != null && !loading && (
@@ -489,6 +501,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   {m?.gallery.viewer.captured(
                     <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
                   )}
+                </>
+              )}
+
+              {azimuth != null && (
+                <>
+                  {' ｜ '}
+                  <Azimuth value={azimuth} size={18} />
                 </>
               )}
 
@@ -582,7 +601,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
 
                   {user && (
-                    <div className="d-flex f-gap-1 align-items-center mb-3">
+                    <div className="d-flex flex-wrap f-gap-1 align-items-center mb-3">
                       <span className="flex-shrink-0">
                         {m?.gallery.viewer.yourRating}
                       </span>

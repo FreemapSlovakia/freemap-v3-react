@@ -1,6 +1,8 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { setActiveModal } from 'actions/mainActions.js';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import { useMessages } from '../l10nInjector.js';
 
 export default ProjectPointModal;
@@ -33,6 +35,12 @@ export function ProjectPointModal({
   }, [show]);
 
   const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
 
   function isValid() {
     return parseFloat(distance) > 0 && !isNaN(parseFloat(azimuth));

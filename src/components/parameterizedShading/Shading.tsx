@@ -22,6 +22,7 @@ export type ShadingComponent = {
   azimuth: number;
   contrast: number;
   brightness: number;
+  exaggeration: number;
   colorStops: ColorStop[];
 };
 
@@ -40,15 +41,22 @@ export function serializeShading(shading: Shading) {
       case 'hillshade-classic':
         sub.push((component.azimuth * (180 / Math.PI)).toFixed(1));
         sub.push((component.elevation * (180 / Math.PI)).toFixed(1));
+        sub.push(component.exaggeration.toFixed(1));
         sub.push(Color(component.colorStops[0].color).hexa().slice(1));
         break;
       case 'hillshade-igor':
         sub.push((component.azimuth * (180 / Math.PI)).toFixed(1));
+        sub.push(component.exaggeration.toFixed(1));
         sub.push(Color(component.colorStops[0].color).hexa().slice(1));
         break;
       case 'slope-classic':
         sub.push((component.elevation * (180 / Math.PI)).toFixed(1));
+        sub.push(component.exaggeration.toFixed(1));
         sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        break;
+      case 'slope-igor':
+        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        sub.push(component.exaggeration.toFixed(1));
         break;
       case 'aspect':
       case 'color-relief':

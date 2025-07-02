@@ -1,22 +1,9 @@
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
-
 type Props = {
   tilesFrom: string;
   hostedBy: string;
-  see: string;
-  _3Dterrain: string;
 };
 
-export function MaptilerAttribution({
-  tilesFrom,
-  hostedBy,
-  see,
-  _3Dterrain,
-}: Props) {
-  const map = useAppSelector((state) => state.map);
-
-  const lang = useAppSelector((state) => state.l10n.language);
-
+export function MaptilerAttribution({ tilesFrom, hostedBy }: Props) {
   return (
     <>
       {tilesFrom + ' '}
@@ -26,16 +13,6 @@ export function MaptilerAttribution({
       {hostedBy + ' '}
       <a href="https://www.maptiler.com" target="_blank" rel="noreferrer">
         MapTiler
-      </a>
-      {`. ${see} `}
-      <a
-        href={`https://labs.maptiler.com/showcase/osm-3d-terrain/#map=${
-          map.zoom - 1
-        }/${map.lat}/${map.lon}&style=osm&is3d=true&language=${lang}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {_3Dterrain}
       </a>
       .
     </>

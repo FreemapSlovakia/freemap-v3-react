@@ -4,13 +4,13 @@ import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import missingTile from '../images/missing-tile-256x256.png';
 import { useMessages } from '../l10nInjector.js';
 import {
-  BaseLayerDef,
-  BaseLayerLetters,
   baseLayers,
-  OverlayLayerDef,
+  CustomBaseLayerDef,
+  CustomOverlayLayerDef,
+  LayerDef,
   overlayLayers,
-  OverlayLetters,
 } from '../mapDefinitions.js';
+import { isPremium } from '../premium.js';
 import { AsyncComponent } from './AsyncComponent.js';
 
 const galleryLayerFactory = () =>
@@ -36,6 +36,10 @@ export function Layers(): ReactElement | null {
 
   const galleryColorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
+  const galleryShowDirection = useAppSelector(
+    (state) => state.gallery.showDirection,
+  );
+
   const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);
 
   const user = useAppSelector((state) => state.auth.user);
@@ -44,65 +48,45 @@ export function Layers(): ReactElement | null {
 
   const m = useMessages();
 
-  const getTileLayer = (
-    {
-      type,
-      url,
-      minZoom,
-      maxNativeZoom,
-      zIndex = 1,
-      subdomains = 'abc',
-      extraScales,
-      tms,
-      errorTileUrl = missingTile,
-      scaleWithDpi = false,
-      cors = true,
-      premiumFromZoom,
-    }: Pick<
-      (BaseLayerDef & { zIndex: undefined }) | OverlayLayerDef,
-      | 'url'
-      | 'minZoom'
-      | 'maxNativeZoom'
-      | 'zIndex'
-      | 'subdomains'
-      | 'extraScales'
-      | 'tms'
-      | 'errorTileUrl'
-      | 'cors'
-      | 'scaleWithDpi'
-      | 'premiumFromZoom'
-    > & { type: BaseLayerLetters | OverlayLetters },
-    kind: 'base' | 'overlay',
-  ) => {
+  function getLayer(layerDef: LayerDef) {
+    const { type, minZoom } = layerDef;
+
     const opacity = layersSettings[type]?.opacity ?? 1;
 
-    if (type === 'I') {
+    if ('technology' in layerDef && layerDef.technology === 'gallery') {
       return (
         <AsyncComponent
           factory={galleryLayerFactory}
-          key={`I-${galleryDirtySeq}-${opacity}-${user?.id}-${JSON.stringify({
-            galleryFilter,
-            galleryColorizeBy,
-          })}`}
+          key={`I-${opacity}`}
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
           opacity={opacity}
-          zIndex={zIndex}
+          zIndex={layerDef.zIndex ?? 1}
           myUserId={user?.id}
           authToken={user?.authToken}
+          showDirection={galleryShowDirection}
+          dirtySeq={galleryDirtySeq}
         />
       );
     }
 
+    const scaleWithDpi = 'scaleWithDpi' in layerDef && layerDef.scaleWithDpi;
+
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
 
-    let effPremiumFromZoom = user?.isPremium ? undefined : premiumFromZoom;
+    let effPremiumFromZoom =
+      !('premiumFromZoom' in layerDef) || isPremium(user)
+        ? undefined
+        : layerDef.premiumFromZoom;
 
     if (effPremiumFromZoom && scaleWithDpi) {
       effPremiumFromZoom--;
     }
 
-    if (type === 'h' && url) {
+    if (
+      'technology' in layerDef &&
+      layerDef.technology === 'parametricShading'
+    ) {
       return (
         <AsyncComponent
           key={
@@ -114,19 +98,19 @@ export function Layers(): ReactElement | null {
             '-' +
             (effPremiumFromZoom ? m?.premium.premiumOnly : '')
           }
-          url={url}
+          url={layerDef.url}
           factory={shadingLayerFactory}
           opacity={opacity}
-          zIndex={zIndex}
+          zIndex={layerDef?.zIndex}
           tileSize={isHdpi ? 128 : 256}
           minZoom={minZoom}
           maxZoom={MAX_ZOOM}
           maxNativeZoom={
-            maxNativeZoom === undefined
+            layerDef.maxNativeZoom === undefined
               ? undefined
               : isHdpi
-                ? maxNativeZoom - 1
-                : maxNativeZoom
+                ? layerDef.maxNativeZoom - 1
+                : layerDef.maxNativeZoom
           }
           zoomOffset={isHdpi ? 1 : 0}
           shading={shading}
@@ -137,16 +121,12 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    if (type === 'w') {
-      return;
-    }
-
-    if (type[0] === 'V') {
+    if ('technology' in layerDef && layerDef.technology === 'maplibre') {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
           key={type}
-          style={url}
+          style={layerDef.url}
           maxZoom={MAX_ZOOM}
           minZoom={minZoom}
           language={language}
@@ -154,8 +134,8 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    return (
-      !!url && (
+    if (!('technology' in layerDef) || layerDef.technology === 'tile') {
+      return (
         <ScaledTileLayer
           key={
             type +
@@ -166,32 +146,34 @@ export function Layers(): ReactElement | null {
             '-' +
             (effPremiumFromZoom ? m?.premium.premiumOnly : '')
           }
-          url={url}
+          url={layerDef.url}
           minZoom={minZoom}
           maxZoom={MAX_ZOOM}
           maxNativeZoom={
-            maxNativeZoom === undefined
+            layerDef.maxNativeZoom === undefined
               ? undefined
               : isHdpi
-                ? maxNativeZoom - 1
-                : maxNativeZoom
+                ? layerDef.maxNativeZoom - 1
+                : layerDef.maxNativeZoom
           }
           opacity={opacity}
-          zIndex={zIndex}
-          subdomains={subdomains}
-          errorTileUrl={errorTileUrl}
-          extraScales={extraScales}
-          tms={tms}
+          zIndex={layerDef.zIndex ?? 1}
+          subdomains={layerDef.subdomains ?? 'abc'}
+          errorTileUrl={layerDef.errorTileUrl ?? missingTile}
+          extraScales={layerDef.extraScales}
+          tms={layerDef.tms}
           tileSize={isHdpi ? 128 : 256}
           zoomOffset={isHdpi ? 1 : 0}
-          cors={cors}
+          cors={layerDef.cors ?? true}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
-          className={`fm-${kind}-layer`}
+          className={`fm-${'layer' in layerDef ? layerDef.layer : layerDef.type.startsWith('.') ? 'base' : 'overlay'}-layer`}
         />
-      )
-    );
-  };
+      );
+    }
+
+    return null;
+  }
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
@@ -200,19 +182,19 @@ export function Layers(): ReactElement | null {
       {baseLayers
         .filter(({ type }) => type === mapType)
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
-        .map((item) => getTileLayer(item, 'base'))}
+        .map((item) => getLayer(item))}
       {customLayers
-        .filter(({ type }) => type === mapType)
-        .map((cm) => getTileLayer(cm, 'base'))}
+        .filter((layer): layer is CustomBaseLayerDef => layer.type === mapType)
+        .map((cm) => getLayer({ ...cm, layer: 'base', technology: 'tile' }))}
       {overlayLayers
         .filter(({ type }) => overlays.includes(type))
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
-        .map((item) => getTileLayer(item, 'overlay'))}
+        .map((item) => getLayer(item))}
       {customLayers
-        .filter(({ type }) =>
-          overlays.includes(type as (typeof overlays)[number]),
+        .filter((layer): layer is CustomOverlayLayerDef =>
+          overlays.includes(layer.type as (typeof overlays)[number]),
         )
-        .map((cm) => getTileLayer(cm, 'overlay'))}
+        .map((cm) => getLayer({ ...cm, layer: 'overlay', technology: 'tile' }))}
     </>
   );
 }

@@ -49,8 +49,7 @@ export function ElevationChart(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  const { climbUp, climbDown } =
-    elevationProfilePoints[elevationProfilePoints.length - 1];
+  const { climbUp, climbDown } = elevationProfilePoints.at(-1)!;
 
   const [width, setWidth] = useState(300);
 
@@ -61,8 +60,7 @@ export function ElevationChart(): ReactElement | null {
 
     const max = Math.max(...elevationProfilePoints.map((pt) => pt.ele));
 
-    const d =
-      elevationProfilePoints[elevationProfilePoints.length - 1].distance;
+    const d = elevationProfilePoints.at(-1)!.distance;
 
     function mapX(distance: number) {
       return ml + ((width - ml - mr) * distance) / d;

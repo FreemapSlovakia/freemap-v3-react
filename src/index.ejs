@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= lang %>">
+<html lang="<%= lang %>" class="notranslate" translate="no">
   <head>
     <title><%= title %></title>
 
@@ -152,6 +152,7 @@
       _paq.push(['setCustomUrl', '/']);
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['enableLinkTracking']);
+      _paq.push(['setCustomDimension', 1, fmEmbedded ? 'Embedded' : 'Top']);
       (function() {
         var u="//matomo.freemap.sk/";
         _paq.push(['setTrackerUrl', u+'matomo.php']);

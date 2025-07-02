@@ -20,10 +20,6 @@ export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
       clientData: {
         successAction,
       },
-      // extraQuery: {
-      //   connect,
-      //   successAction: successAction && JSON.stringify(successAction),
-      // },
     },
     expectedStatus: 200,
   });

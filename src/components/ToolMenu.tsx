@@ -28,7 +28,7 @@ export function ToolMenu({ children }: Props): ReactElement {
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Card className="fm-toolbar mx-2 mt-2">
+      <Card className="fm-toolbar mt-2">
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">

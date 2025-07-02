@@ -7,7 +7,13 @@ import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
-import { baseLayers, overlayLayers } from '../mapDefinitions.js';
+import {
+  baseLayers,
+  HasUrl,
+  IntegratedBaseLayerDef,
+  IntegratedOverlayLayerDef,
+  overlayLayers,
+} from '../mapDefinitions.js';
 import type { LatLon } from '../types/common.js';
 
 export type ElevationInfoBaseProps = {
@@ -49,18 +55,30 @@ export function ElevationInfo({
 
   const mapType = useAppSelector((state) => state.map.mapType);
 
+  const baseTileUrl =
+    substitute(
+      baseLayers
+        .filter(
+          (layer): layer is IntegratedBaseLayerDef & HasUrl => 'url' in layer,
+        )
+        .find((l) => l.type === mapType)?.url,
+    ) ?? '';
+
   const overlays = useAppSelector((state) => state.map.overlays);
 
   const overlayTileUrls = overlays
     .map((type) => ({
       type,
-
-      url: substitute(overlayLayers.find((l) => l.type === type)?.url)!,
+      url: substitute(
+        overlayLayers
+          .filter(
+            (layer): layer is IntegratedOverlayLayerDef & HasUrl =>
+              'url' in layer,
+          )
+          .find((l) => l.type === type)?.url,
+      )!,
     }))
     .filter(({ url }) => !!url);
-
-  const baseTileUrl =
-    substitute(baseLayers.find((l) => l.type === mapType)?.url) ?? '';
 
   const cookiesEnabled = useAppSelector(
     (state) => !!state.main.cookieConsentResult,

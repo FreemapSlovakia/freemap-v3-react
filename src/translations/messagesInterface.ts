@@ -1,10 +1,11 @@
 import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
-import { RoutingMode, Weighting } from '../actions/routePlannerActions.js';
+import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
-import { AttributionDef, NoncustomLayerLetters } from '../mapDefinitions.js';
+import { AttributionDef, IntegratedLayerLetters } from '../mapDefinitions.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
@@ -116,7 +117,6 @@ export type Messages = {
     transportType: Record<TransportTypeMsgKey, string>;
     development: string;
     mode: Record<RoutingMode | 'routndtrip-gh', string>;
-    weighting: Record<Weighting, string>;
     alternative: string;
     distance: ({
       value,
@@ -154,135 +154,6 @@ export type Messages = {
     gpsError: string;
     routeNotFound: string;
     fetchingError: ({ err }: Err) => string;
-    maneuverWithName: ({
-      type,
-      modifier,
-      name,
-    }: {
-      type: string;
-      modifier: string;
-      name: string;
-    }) => string;
-    maneuverWithoutName: ({
-      type,
-      modifier,
-      name,
-    }: {
-      type: string;
-      modifier: string;
-      name: string;
-    }) => string;
-    maneuver: {
-      types: {
-        turn: string;
-        'new name': string;
-        depart: string;
-        arrive: string;
-        merge: string;
-        'on ramp': string;
-        'off ramp': string;
-        fork: string;
-        'end of road': string;
-        continue: string;
-        roundabout: string;
-        rotary: string;
-        'roundabout turn': string;
-        'exit rotary': string;
-        'exit roundabout': string;
-        notification: string;
-        'use lane': string;
-      };
-      modifiers: {
-        uturn: string;
-        'sharp right': string;
-        'slight right': string;
-        right: string;
-        'sharp left': string;
-        'slight left': string;
-        left: string;
-        straight: string;
-      };
-    };
-    imhd: {
-      total: {
-        short: ({
-          arrival,
-          price,
-          numbers,
-        }: {
-          arrival: string;
-          price?: string;
-          numbers?: number[];
-        }) => JSX.Element;
-        full: ({
-          arrival,
-          price,
-          numbers,
-          total,
-          home,
-          foot,
-          bus,
-          wait,
-        }: {
-          arrival: string;
-          price?: string;
-          numbers?: number[];
-          total: number;
-          home: number;
-          foot: number;
-          walk: number;
-          bus: number;
-          wait: number;
-        }) => JSX.Element;
-      };
-      step: {
-        foot: ({
-          departure,
-          duration,
-          destination,
-        }: {
-          departure: string | undefined;
-          duration?: number;
-          destination: string;
-        }) => JSX.Element;
-        bus: ({
-          departure,
-          type,
-          number,
-          destination,
-        }: {
-          departure: string | undefined;
-          type: string;
-          number: number | undefined;
-          destination: string;
-        }) => JSX.Element;
-      };
-      type: {
-        bus: string;
-        tram: string;
-        trolleybus: string;
-        foot: string;
-      };
-    };
-    bikesharing: {
-      step: {
-        foot: ({
-          duration,
-          destination,
-        }: {
-          duration?: number;
-          destination: string;
-        }) => JSX.Element;
-        bicycle: ({
-          duration,
-          destination,
-        }: {
-          duration?: number;
-          destination: string;
-        }) => JSX.Element;
-      };
-    };
-    imhdAttribution: string;
   };
   mainMenu: {
     title: string;
@@ -320,8 +191,10 @@ export type Messages = {
     copyright: string;
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
+    ad: (email: ReactNode) => JSX.Element;
   };
   gallery: {
+    legend: string;
     recentTags: string;
     filter: string;
     showPhotosFrom: string;
@@ -337,6 +210,7 @@ export type Messages = {
       lastComment: string;
     };
     colorizeBy: string;
+    showDirection: string;
     c: {
       disable: string;
       mine: string;
@@ -371,6 +245,7 @@ export type Messages = {
     editForm: {
       name: string;
       description: string;
+      azimuth: string;
       takenAt: {
         datetime: string;
         date: string;
@@ -489,6 +364,16 @@ export type Messages = {
       distance: string;
       azimuth: string;
     };
+  };
+  purchases: {
+    purchases: string;
+    premiumExpired: (at: ReactNode) => JSX.Element;
+    date: string;
+    item: string;
+    notPremiumYet: string;
+    noPurchases: string;
+    premium: string;
+    credits: (amount: ReactNode) => JSX.Element;
   };
   settings: {
     map: {
@@ -683,7 +568,7 @@ export type Messages = {
     photoFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
-    letters: Record<NoncustomLayerLetters, string>;
+    letters: Record<IntegratedLayerLetters, string>;
     customBase: string;
     customOverlay: string;
     type: {
@@ -851,8 +736,19 @@ export type Messages = {
     continue: string;
     success: string;
     becomePremium: string;
-    youArePremium: string;
+    youArePremium: (date: string) => JSX.Element;
     premiumOnly: string;
+    alreadyPremium: string;
+  };
+  credits: {
+    buyCredits: string;
+    amount: string;
+    credits: string;
+    buy: string;
+    purchase: {
+      success: ({ amount }: { amount: number }) => JSX.Element;
+    };
+    youHaveCredits: (amount: ReactNode) => JSX.Element;
   };
   offline: {
     offlineMode: string;
@@ -872,13 +768,31 @@ export type Messages = {
     errorRequestingDevice: string;
     other: string;
   };
+  downloadMap: {
+    downloadMap: string;
+    format: string;
+    map: string;
+    downloadArea: string;
+    area: { visible: string; byPolygon: string };
+    name: string;
+    zoomRange: string;
+    scale: string;
+    email: string;
+    emailInfo: string;
+    download: string;
+    success: string;
+    summaryTiles: string;
+    summaryPrice: (amount: ReactNode) => JSX.Element;
+  };
 };
 
 export function addError(
-  messages: Messages,
+  dpMessages: DeepPartialWithRequiredObjects<Messages>,
   message: string,
   err: unknown,
 ): string {
+  const messages = dpMessages as Messages; // our message compiler will make it non-partial
+
   return (
     message +
     ': ' +

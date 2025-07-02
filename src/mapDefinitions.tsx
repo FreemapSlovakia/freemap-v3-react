@@ -65,6 +65,8 @@ const NLC_ATTR: AttributionDef = {
   url: 'http://www.nlcsk.org/',
 };
 
+const LLS_URL = 'https://www.geoportal.sk/sk/udaje/lls-dmr/';
+
 export const defaultMenuLayerLetters = [
   'T',
   'C',
@@ -100,6 +102,7 @@ export const baseLayerLetters = [
   '5',
   '6',
   '7',
+  '8',
   'VO',
   'VS',
   'VD',
@@ -120,52 +123,158 @@ export const overlayLetters = [
   's4',
   'w',
   'h',
+  'z',
 ] as const;
 
 export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
-export type NoncustomLayerLetters =
-  | (typeof baseLayerLetters)[number]
-  | (typeof overlayLetters)[number];
+export type CustomBaseLayerLetters = `.${Num1digit}`;
+
+export type CustomOverlayLayerLetters = `:${Num1digit}`;
+
+export type IntegratedBaseLayerLetters = (typeof baseLayerLetters)[number];
+
+export type IntegratedOverlayLayerLetters = (typeof overlayLetters)[number];
+
+export type IntegratedLayerLetters =
+  | IntegratedBaseLayerLetters
+  | IntegratedOverlayLayerLetters;
 
 export type BaseLayerLetters =
-  | (typeof baseLayerLetters)[number]
-  | `.${Num1digit}`;
+  | IntegratedBaseLayerLetters
+  | CustomBaseLayerLetters;
 
-export type OverlayLetters = (typeof overlayLetters)[number] | `:${Num1digit}`;
+export type OverlayLetters =
+  | IntegratedOverlayLayerLetters
+  | CustomOverlayLayerLetters;
 
-export interface LayerDef {
-  icon: ReactElement;
-  url?: string;
-  attribution: AttributionDef[];
-  minZoom?: number;
+export type HasUrl = {
+  url: string;
+};
+
+export type HasMaxNativeZoom = {
   maxNativeZoom?: number;
+};
+
+type HasZIndex = {
+  zIndex?: number;
+};
+
+export type IsIntegratedLayerDef = {
   adminOnly?: boolean;
-  subdomains?: string | string[];
-  tms?: boolean;
-  extraScales?: number[];
-  errorTileUrl?: string;
-  scaleWithDpi?: boolean;
-  cors?: boolean;
+  icon: ReactElement;
+  key?: [code: string, shift: boolean];
   premiumFromZoom?: number;
   experimental?: boolean;
-  key?: readonly [code: string, shift: boolean];
-}
+  attribution: AttributionDef[];
+};
 
-export interface BaseLayerDef extends LayerDef {
-  type: BaseLayerLetters;
-}
+export type HasScaleWithDpi = {
+  scaleWithDpi?: boolean;
+};
 
-export interface OverlayLayerDef extends LayerDef {
-  zIndex?: number;
-  type: OverlayLetters;
-}
+export type IsCommonLayerDef = {
+  minZoom?: number;
+};
+
+type IsParametricShadingLayerDef = HasUrl &
+  HasMaxNativeZoom &
+  HasZIndex &
+  HasScaleWithDpi & {
+    technology: 'parametricShading';
+  };
+
+type IsGalleryLayerDef = HasZIndex & {
+  technology: 'gallery';
+};
+
+type IsWikipediaLayerDef = HasZIndex & {
+  technology: 'wikipedia';
+};
+
+type IsInteractiveLayerDef = {
+  technology: 'interactive';
+};
+
+type IsMapLibreLayerDef = HasUrl & {
+  technology: 'maplibre';
+};
+
+export type IsTileLayerDef = HasUrl &
+  HasMaxNativeZoom &
+  HasZIndex &
+  HasScaleWithDpi & {
+    subdomains?: string | string[];
+    tms?: boolean;
+    extraScales?: number[];
+    errorTileUrl?: string;
+    cors?: boolean;
+  };
+
+export type IsIntegratedBaseLayerDef = {
+  type: IntegratedBaseLayerLetters;
+  layer: 'base';
+};
+
+export type IsCustomBaseLayerDef = {
+  type: CustomBaseLayerLetters;
+};
+
+export type IsIntegratedOverlayLayerDef = {
+  type: IntegratedOverlayLayerLetters;
+  layer: 'overlay';
+};
+
+export type IsCustomOverlayLayerDef = {
+  type: CustomOverlayLayerLetters;
+};
+
+export type IsAllTechnologiesLayerDef =
+  | (IsTileLayerDef & {
+      creditsPerMTile?: number;
+      technology: 'tile';
+    })
+  | IsMapLibreLayerDef
+  | IsParametricShadingLayerDef
+  | IsGalleryLayerDef
+  | IsInteractiveLayerDef
+  | IsWikipediaLayerDef;
+
+export type CustomBaseLayerDef = IsTileLayerDef &
+  IsCustomBaseLayerDef &
+  IsCommonLayerDef;
+
+export type CustomOverlayLayerDef = IsTileLayerDef &
+  IsCustomOverlayLayerDef &
+  IsCommonLayerDef;
+
+export type CustomLayerDef = CustomBaseLayerDef | CustomOverlayLayerDef;
+
+export type IntegratedBaseLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedBaseLayerDef;
+
+export type IntegratedOverlayLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedOverlayLayerDef;
+
+export type IntegratedLayerDef<
+  T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = IntegratedBaseLayerDef<T> | IntegratedOverlayLayerDef<T>;
+
+export type BaseLayerDef = IntegratedBaseLayerDef | CustomBaseLayerDef;
+
+export type OverlayLayerDef = IntegratedOverlayLayerDef | CustomOverlayLayerDef;
+
+export type LayerDef = CustomLayerDef | IntegratedLayerDef;
 
 function legacyFreemap(
-  type: BaseLayerLetters,
+  type: IntegratedBaseLayerLetters,
   icon: ReactElement,
-): BaseLayerDef {
+): IntegratedBaseLayerDef {
   return {
+    technology: 'tile',
+    layer: 'base',
     type,
     icon,
     url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
@@ -173,12 +282,15 @@ function legacyFreemap(
     minZoom: 8,
     maxNativeZoom: 16,
     key: ['Key' + type, false],
+    creditsPerMTile: 1000,
   };
 }
 
-export const baseLayers: BaseLayerDef[] = [
+export const baseLayers: IntegratedBaseLayerDef[] = [
   {
+    layer: 'base',
     type: 'X',
+    technology: 'tile',
     icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
     extraScales: [2, 3],
@@ -195,13 +307,16 @@ export const baseLayers: BaseLayerDef[] = [
     maxNativeZoom: 19,
     key: ['KeyX', false],
     premiumFromZoom: 19,
+    creditsPerMTile: 5000,
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
   legacyFreemap('C', <FaBicycle />),
   legacyFreemap('K', <FaSkiingNordic />),
   {
+    layer: 'base',
     type: 'O',
+    technology: 'tile',
     icon: <SiOpenstreetmap />,
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
@@ -210,7 +325,9 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyO', false],
   },
   {
+    layer: 'base',
     type: 'S',
+    technology: 'tile',
     url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     subdomains: ['server', 'services'],
     icon: <FaPlane />,
@@ -227,7 +344,9 @@ export const baseLayers: BaseLayerDef[] = [
     ],
   },
   {
+    layer: 'base',
     type: 'Z',
+    technology: 'tile',
     url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 20,
@@ -248,9 +367,12 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyZ', false],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'base',
     type: 'J',
+    technology: 'tile',
     url: 'https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 19,
@@ -265,9 +387,12 @@ export const baseLayers: BaseLayerDef[] = [
     ],
     key: ['KeyZ', true],
     errorTileUrl: white1x1,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'base',
     type: 'M',
+    technology: 'tile',
     url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
     minZoom: 3,
     maxNativeZoom: 18,
@@ -284,7 +409,9 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyQ', false],
   },
   {
+    layer: 'base',
     type: 'd',
+    technology: 'tile',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 18,
@@ -301,76 +428,115 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyQ', false],
   },
   {
+    layer: 'base',
     type: '4',
+    technology: 'tile',
     url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'base',
     type: '7',
+    technology: 'tile',
     url: 'https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 20,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyH', false],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'base',
+    type: '8',
+    technology: 'tile',
+    url: 'https://cz-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minZoom: 0,
+    maxNativeZoom: 18,
+    icon: <GiHills />,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: '©\xa0ČÚZK',
+        url: 'https://geoportal.cuzk.cz/',
+      },
+    ],
+    key: ['KeyL', false],
+    errorTileUrl: white1x1,
+    scaleWithDpi: true,
+    premiumFromZoom: 16,
+  },
+  {
+    layer: 'base',
     type: '5',
+    technology: 'tile',
     url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'base',
     type: '6',
+    technology: 'tile',
     url: 'https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 18,
     icon: <GiHills />,
     attribution: [
+      FM_ATTR,
       {
         type: 'data',
         name: 'DMP 1.0: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     key: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'base',
     type: 'VO',
+    technology: 'maplibre',
     url: maptiler('openstreetmap'),
     key: ['KeyV', false],
     icon: <FaMap />,
@@ -383,7 +549,9 @@ export const baseLayers: BaseLayerDef[] = [
     ],
   },
   {
+    layer: 'base',
     type: 'VS',
+    technology: 'maplibre',
     url: maptiler('streets-v2'),
     key: ['KeyR', false],
     icon: <FaMap />,
@@ -396,7 +564,9 @@ export const baseLayers: BaseLayerDef[] = [
     ],
   },
   {
+    layer: 'base',
     type: 'VD',
+    technology: 'maplibre',
     url: maptiler('dataviz-dark'),
     key: ['KeyM', false],
     icon: <FaMap />,
@@ -409,7 +579,9 @@ export const baseLayers: BaseLayerDef[] = [
     ],
   },
   {
+    layer: 'base',
     type: 'VT',
+    technology: 'maplibre',
     url: maptiler('outdoor-v2'),
     key: ['KeyU', false],
     icon: <FaMap />,
@@ -423,15 +595,19 @@ export const baseLayers: BaseLayerDef[] = [
   },
 ];
 
-export const overlayLayers: OverlayLayerDef[] = [
+export const overlayLayers: IntegratedOverlayLayerDef[] = [
   {
+    layer: 'overlay',
     type: 'i',
+    technology: 'interactive',
     icon: <FaPencilAlt />,
     key: ['KeyI', true],
     attribution: [],
   },
   {
+    layer: 'overlay',
     type: 'I',
+    technology: 'gallery',
     icon: <FaCamera />,
     minZoom: 0,
     key: ['KeyF', true],
@@ -439,12 +615,14 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [
       {
         type: 'photos',
-        name: 'CC-BY-SA',
+        name: 'CC BY-SA 4.0',
       },
     ],
   },
   {
+    layer: 'overlay',
     type: 'w',
+    technology: 'wikipedia',
     icon: <FaWikipediaW />,
     minZoom: 8,
     key: ['KeyW', true],
@@ -452,9 +630,12 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [],
   },
   {
+    layer: 'overlay',
     type: 'h',
+    technology: 'parametricShading',
     // url: 'https://parametric-shading.tiles.freemap.sk/{z}/{x}/{y}',
-    url: 'https://www.freemap.sk/tiles/parametric-shading/{z}/{x}/{y}',
+    url: 'https://www.freemap.sk/tiles/parametric-shading/sk/{z}/{x}/{y}',
+    // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <GiHills />,
     key: ['KeyJ', true],
     scaleWithDpi: true,
@@ -464,7 +645,7 @@ export const overlayLayers: OverlayLayerDef[] = [
       {
         type: 'data',
         name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
     ],
     experimental: true,
@@ -472,7 +653,30 @@ export const overlayLayers: OverlayLayerDef[] = [
     zIndex: 2,
   },
   {
+    layer: 'overlay',
+    type: 'z',
+    technology: 'parametricShading',
+    url: 'https://www.freemap.sk/tiles/parametric-shading/cz/{z}/{x}/{y}',
+    icon: <GiHills />,
+    key: ['KeyK', true],
+    scaleWithDpi: true,
+    maxNativeZoom: 18,
+    attribution: [
+      FM_ATTR,
+      {
+        type: 'data',
+        name: 'LLS DMR: ©\xa0ÚGKK SR',
+        url: LLS_URL,
+      },
+    ],
+    experimental: true,
+    premiumFromZoom: 13,
+    zIndex: 2,
+  },
+  {
+    layer: 'overlay',
     type: 'l',
+    technology: 'tile',
     icon: <FaTractor />,
     url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
     attribution: [NLC_ATTR],
@@ -482,6 +686,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
+    creditsPerMTile: 1000,
   },
   ...(
     [
@@ -494,7 +699,9 @@ export const overlayLayers: OverlayLayerDef[] = [
   ).map(
     ([type, stravaType]) =>
       ({
+        layer: 'overlay' as const,
         type,
+        technology: 'tile' as const,
         icon: <FaStrava />,
         url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
         attribution: [STRAVA_ATTR],
@@ -506,25 +713,31 @@ export const overlayLayers: OverlayLayerDef[] = [
         zIndex: 3,
         errorTileUrl: transparent1x1,
         premiumFromZoom: 13,
-      }) satisfies OverlayLayerDef,
+      }) satisfies IntegratedOverlayLayerDef,
   ),
   {
+    layer: 'overlay',
     type: 't',
+    technology: 'tile',
     icon: <FaHiking />,
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+    creditsPerMTile: 1000,
   },
   {
+    layer: 'overlay',
     type: 'c',
+    technology: 'tile',
     icon: <FaBicycle />,
     url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
     zIndex: 3,
+    creditsPerMTile: 1000,
   },
 ];
 

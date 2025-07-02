@@ -49,13 +49,10 @@ import {
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
-  routePlannerSetWeighting,
   routePlannerSwapEnds,
-  // routePlannerToggleItineraryVisibility,
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
   RoutingMode,
-  Weighting,
 } from '../actions/routePlannerActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
@@ -359,10 +356,6 @@ export function RoutePlannerMenu(): ReactElement {
 
   const activeMode = useAppSelector((state) => state.routePlanner.mode);
 
-  const activeWeighting = useAppSelector(
-    (state) => state.routePlanner.weighting,
-  );
-
   const pickPointMode = useAppSelector((state) => state.routePlanner.pickMode);
 
   const routeFound = useAppSelector(
@@ -481,9 +474,9 @@ export function RoutePlannerMenu(): ReactElement {
               {['car', 'car-toll', 'bikesharing'].includes(
                 activeTransportType,
               ) && <FaMoneyBill />}
-              <span className="d-none d-md-inline">
+              <span className="d-none d-lg-inline">
                 {' '}
-                {m?.routePlanner.transportType[activeTTDef.key].replace(
+                {m?.routePlanner.transportType[activeTTDef.msgKey].replace(
                   /\s*,.*/,
                   '',
                 ) ?? '…'}{' '}
@@ -509,7 +502,7 @@ export function RoutePlannerMenu(): ReactElement {
 
                 {Object.entries(transportTypeDefs)
                   .filter(([, def]) => !def.hidden && def.api === api)
-                  .map(([type, { icon, key }]) => (
+                  .map(([type, { icon, msgKey: key }]) => (
                     <Dropdown.Item
                       as="button"
                       eventKey={type}
@@ -529,34 +522,6 @@ export function RoutePlannerMenu(): ReactElement {
           </div>
         </Dropdown.Menu>
       </Dropdown>
-
-      {activeTTDef?.api === 'gh' && (
-        <Dropdown
-          className="ms-1"
-          onSelect={(weighting) => {
-            dispatch(routePlannerSetWeighting(weighting as Weighting));
-          }}
-        >
-          <Dropdown.Toggle id="mode" variant="secondary">
-            {m?.routePlanner.weighting[activeWeighting] ?? '…'}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {(
-              ['fastest', 'short_fastest', 'shortest'] satisfies Weighting[]
-            ).map((weighting) => (
-              <Dropdown.Item
-                eventKey={weighting}
-                key={weighting}
-                title={m?.routePlanner.weighting[weighting] ?? '…'}
-                active={activeWeighting === weighting}
-              >
-                {m?.routePlanner.weighting[weighting] ?? '…'}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
 
       {activeTTDef?.api === 'gh' && (
         <Dropdown
@@ -606,13 +571,7 @@ export function RoutePlannerMenu(): ReactElement {
             dispatch(routePlannerSetMode(mode as RoutingMode));
           }}
         >
-          <Dropdown.Toggle
-            id="mode"
-            variant="secondary"
-            // disabled={
-            //   transportType === 'imhd' || transportType === 'bikesharing'
-            // }
-          >
+          <Dropdown.Toggle id="mode" variant="secondary">
             {m?.routePlanner.mode[activeMode] ?? '…'}
           </Dropdown.Toggle>
 
@@ -793,7 +752,9 @@ export function RoutePlannerMenu(): ReactElement {
         </Dropdown>
       )}
 
-      {(routeFound || isochronesFound || canDelete) && <DeleteButton />}
+      {(routeFound || isochronesFound || canDelete) && (
+        <DeleteButton textClassName="d-none d-lg-inline" />
+      )}
     </ToolMenu>
   );
 }

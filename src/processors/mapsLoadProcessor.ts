@@ -67,7 +67,7 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
-    // backward compat.
+    // backward compatibility
     try {
       const { routePlanner } = data.data;
 
@@ -102,6 +102,8 @@ export const mapsLoadProcessor: Processor = {
         delete mapData.map.mapType;
 
         delete mapData.map.overlays;
+
+        delete mapData.map.shading;
       }
     }
 

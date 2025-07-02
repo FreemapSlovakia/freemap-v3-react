@@ -134,6 +134,15 @@ export function MainMenu(): ReactElement {
         <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
 
+      <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
+        <FaDownload />{' '}
+        <FaFlask
+          title={m?.general.experimentalFunction}
+          className="text-warning"
+        />{' '}
+        {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
+      </Dropdown.Item>
+
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">
         <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
       </Dropdown.Item>
@@ -144,7 +153,7 @@ export function MainMenu(): ReactElement {
         <FaBook /> {m?.mainMenu.help} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item href="#show=supportUs" eventKey="modal-supportUs">
+      <Dropdown.Item href="#show=support-us" eventKey="modal-support-us">
         <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
       </Dropdown.Item>
     </>

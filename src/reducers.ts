@@ -53,6 +53,7 @@ import { websocketReducer } from './reducers/websocketReducer.js';
 import { wikiReducer } from './reducers/wikiReducer.js';
 import type { RootState } from './store.js';
 import { transportTypeDefs } from './transportTypeDefs.js';
+import { StringDates } from './types/common.js';
 
 export const reducers = {
   auth: authReducer,
@@ -95,8 +96,20 @@ export function getInitialState() {
     initial.l10n = { ...l10nInitialState, ...persisted.l10n };
   }
 
-  if (is<Partial<AuthState>>(persisted.auth)) {
-    initial.auth = { ...authInitialState, ...persisted.auth };
+  if (is<Partial<StringDates<Omit<AuthState, 'purchases'>>>>(persisted.auth)) {
+    initial.auth = {
+      ...authInitialState,
+      ...persisted.auth,
+      user:
+        persisted.auth.user === undefined
+          ? authInitialState.user
+          : persisted.auth.user && {
+              ...persisted.auth.user,
+              premiumExpiration: persisted.auth.user.premiumExpiration
+                ? new Date(persisted.auth.user.premiumExpiration)
+                : null,
+            },
+    };
   }
 
   if (is<Partial<MainState>>(persisted.main)) {
@@ -122,9 +135,11 @@ export function getInitialState() {
   }
 
   if (
-    is<{ colorizeBy?: GalleryColorizeBy | null; recentTags?: string[] }>(
-      persisted.gallery,
-    )
+    is<{
+      colorizeBy?: GalleryColorizeBy | null;
+      recentTags?: string[];
+      showDirection?: boolean;
+    }>(persisted.gallery)
   ) {
     initial.gallery = {
       ...galleryInitialState,

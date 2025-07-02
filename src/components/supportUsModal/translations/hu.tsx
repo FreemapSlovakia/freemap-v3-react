@@ -8,9 +8,9 @@ const hu: SupportUsMessages = {
   thanks: 'Minden adományért hálásak vagyunk. Köszönjük!',
   registration: 'Bejegyzés: 2009. október 2. (MV/VVS/1-900/90-34343)',
   alert: {
-    line1: '<b>Figyelem!</b> A teljes hozzáféréshez használd ezt a gombot:',
+    line1: '<b>Figyelem!</b> A premium hozzáféréshez használd ezt a gombot:',
     line2:
-      'A banki átutalás vagy PayPal fizetés a köszönetnyilvánításra szolgál az alapvető szolgáltatásokért, de nem biztosít teljes hozzáférést.',
+      'A banki átutalás vagy PayPal fizetés a köszönetnyilvánításra szolgál az alapvető szolgáltatásokért, de nem biztosít premium hozzáférést.',
   },
   team: 'Csapat',
 };

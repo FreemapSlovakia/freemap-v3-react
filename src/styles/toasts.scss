@@ -5,16 +5,9 @@
   max-height: calc(100vh - 52px);
   z-index: 100000;
 
-  // max-width: calc(350px);
   overflow: auto;
   font-size: 0.875rem;
-  // background-color: hsla(0, 0%, 100%, 0.85);
   background-clip: padding-box;
-  // border: 1px solid rgba(0, 0, 0, 0.1);
-  // box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
-  // -webkit-backdrop-filter: blur(10px);
-  // backdrop-filter: blur(10px);
-  // border-radius: 0.25rem;
 }
 
 .fm-toast {

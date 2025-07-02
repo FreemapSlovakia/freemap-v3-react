@@ -12,6 +12,7 @@ import { Messages } from 'translations/messagesInterface.js';
 import { createWorkerPool, WorkerPool } from '../../workerPool.js';
 import { DataWriter } from './DataWriter.js';
 import { Color, Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
+import shadingWgslResource from './shading.wgsl';
 
 type ShadingLayerOptions = GridLayerOptions & {
   url: string;
@@ -130,7 +131,7 @@ class LShadingLayer extends LGridLayer {
         this.showError(new GpuError('lost', e.message));
       });
 
-      const shaderCode = await (await fetch('/shading.wgsl')).text();
+      const shaderCode = await (await fetch(shadingWgslResource)).text();
 
       const shaderModule = device.createShaderModule({ code: shaderCode });
 
@@ -242,7 +243,11 @@ class LShadingLayer extends LGridLayer {
     let res;
 
     try {
-      res = await fetch(Util.template(this._options.url, { x, y, z: zoom }), {
+      const url = Util.template(this._options.url, { x, y, z: zoom });
+
+      canvas.dataset['url'] = url;
+
+      res = await fetch(url, {
         signal,
       });
     } catch {
@@ -263,6 +268,8 @@ class LShadingLayer extends LGridLayer {
     if (res.status !== 200) {
       throw new Error('unexpected status ' + res.status);
     }
+
+    canvas.style.display = '';
 
     const compressed = new Uint8Array(await res.arrayBuffer());
 
@@ -332,8 +339,9 @@ class LShadingLayer extends LGridLayer {
         dw.f32(component.elevation);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
+        dw.f32(component.exaggeration);
         dw.u32(component.colorStops.length);
-        dw.pad32(2);
+        dw.pad32(1);
 
         for (const colorStop of component.colorStops) {
           dw.f32(colorStop.value);
@@ -400,6 +408,8 @@ class LShadingLayer extends LGridLayer {
 
     const canvas = document.createElement('canvas');
 
+    canvas.style.display = 'none';
+
     canvas.width = size.x * (1 << (this._options.zoomOffset ?? 0));
 
     canvas.height = size.y * (1 << (this._options.zoomOffset ?? 0));
@@ -438,8 +448,6 @@ class LShadingLayer extends LGridLayer {
     if (this.errorDiv) {
       return;
     }
-
-    console.error((err as unknown as Error).stack);
 
     this.workerPool?.destroy();
 

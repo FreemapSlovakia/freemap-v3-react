@@ -13,6 +13,7 @@ import { InjectManifest } from 'workbox-webpack-plugin';
 // import ESLintPlugin from 'eslint-webpack-plugin';
 
 import csMessages from './src/translations/cs-shared.js';
+import deMessages from './src/translations/de-shared.js';
 import enMessages from './src/translations/en-shared.js';
 import huMessages from './src/translations/hu-shared.js';
 import itMessages from './src/translations/it-shared.js';
@@ -154,11 +155,7 @@ const config: Configuration = {
         type: 'javascript/auto',
       },
       {
-        test: /zstd\.wasm/,
-        type: 'asset/resource',
-      },
-      {
-        test: /lerc-wasm\.wasm/,
+        test: /\.(wasm|wgsl)$/,
         type: 'asset/resource',
       },
     ],
@@ -170,7 +167,7 @@ const config: Configuration = {
       }),
     new InjectManifest({
       swSrc: './sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 100000000,
+      maximumFileSizeToCacheInBytes: 100_000_000,
     }),
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
@@ -183,29 +180,21 @@ const config: Configuration = {
       BASE_URL:
         {
           www: 'https://www.freemap.sk',
-          next: 'https://next.freemap.sk',
         }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:9000',
       API_URL:
         {
           www: 'https://backend.freemap.sk',
-          next: 'https://backend.freemap.sk',
         }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:3000',
-      MATOMO_SITE_ID:
-        { www: '1', next: null }[process.env['DEPLOYMENT']!] ?? null,
+      MATOMO_SITE_ID: { www: '1' }[process.env['DEPLOYMENT']!] ?? null,
       SENTRY_DSN:
         {
           www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2',
         }[process.env['DEPLOYMENT']!] ?? null,
-      FB_APP_ID:
-        { www: '681854635902254', next: '681854635902254' }[
-          process.env['DEPLOYMENT']!
-        ] ?? null,
-      PURCHASE_URL_PREFIX:
+      FB_APP_ID: { www: '681854635902254' }[process.env['DEPLOYMENT']!] ?? null,
+      GRAPHHOPPER_URL:
         {
-          www: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
-          next: 'https://rovas.app/rewpro?paytype=project&recipient=35384',
-        }[process.env['DEPLOYMENT']!] ||
-        'https://dev.rovas.app/rewpro?paytype=project&recipient=35384',
+          www: 'https://graphhopper.freemap.sk',
+        }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', //'http://localhost:8989',
     }),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
     new HtmlWebpackPlugin({
@@ -272,6 +261,21 @@ const config: Configuration = {
         loadingMessage: 'Caricamento…',
       },
     }),
+    new HtmlWebpackPlugin({
+      ...htmlPluginProps,
+      filename: 'index-de.html',
+      templateParameters: {
+        lang: 'de',
+        title: deMessages.title,
+        description: deMessages.description,
+        errorHtml:
+          '<h1>Fehler beim Starten der Anwendung</h1>' +
+          '<p>Bitte stellen Sie sicher, dass Sie eine aktuelle Version eines modernen Browsers verwenden (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+        nojsMessage:
+          'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
+        loadingMessage: 'Lade…',
+      },
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -292,12 +296,6 @@ const config: Configuration = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-    // TODO
-    // prod &&
-    //   new ESLintPlugin({
-    //     extensions: ['js', 'jsx', 'ts', 'tsx'],
-    //     threads: 4,
-    //   }),
   ].filter(Boolean),
 };
 

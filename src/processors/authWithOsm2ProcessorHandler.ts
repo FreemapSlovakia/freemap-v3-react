@@ -8,7 +8,7 @@ const handle: ProcessorHandler<typeof authWithOsm2> = async ({
   dispatch,
   action,
 }) => {
-  const { code } = action.payload;
+  const { code, connect } = action.payload;
 
   const res = await httpRequest({
     getState,
@@ -17,7 +17,7 @@ const handle: ProcessorHandler<typeof authWithOsm2> = async ({
     data: {
       code,
       language: getState().l10n.chosenLanguage,
-      // homeLocation: getState().main.homeLocation,
+      connect,
     },
     expectedStatus: 200,
   });

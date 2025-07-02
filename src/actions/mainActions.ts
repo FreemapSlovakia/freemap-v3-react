@@ -1,8 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import { basicModals, tools } from '../constants.js';
-import { DocumentKey } from '../documents/index.js';
+import type { DocumentKey } from '../documents/index.js';
+import type { CustomLayerDef } from '../mapDefinitions.js';
+import type { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
-import { CustomLayer, LayerSettings } from './mapActions.js';
+import type { LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];
 
@@ -93,7 +96,7 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
-  customLayers?: CustomLayer[];
+  customLayers?: CustomLayerDef[];
   drawingColor?: string;
   drawingWidth?: number;
 };
@@ -117,9 +120,9 @@ export const setErrorTicketId = createAction<string | undefined>(
 
 export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
 
-export const removeAdsOnLogin = createAction('REMOVE_ADS_ON_LOGIN');
+export const purchaseOnLogin = createAction<Purchase>('PURCHASE_ON_LOGIN');
 
-export const removeAds = createAction('REMOVE_ADS');
+export const purchase = createAction<Purchase>('PURCHASE');
 
 export const deleteFeature = createAction('DELETE_FEATURE');
 
@@ -173,7 +176,7 @@ export type ExternalTargets =
   | 'image'
   | 'josm'
   | 'mapillary'
-  | 'mapy.cz'
+  | 'mapy.com'
   | 'oma.sk'
   | 'openstreetcam'
   | 'osm.org'
@@ -206,3 +209,14 @@ export const hideInfoBar = createAction<{
   key: string;
   ts: number;
 }>('HIDE_INFO_BAR');
+
+export const downloadMap = createAction<{
+  name: string;
+  email: string;
+  map: string;
+  format: string;
+  maxZoom: number;
+  minZoom: number;
+  scale: number;
+  boundary: Feature<Polygon | MultiPolygon>;
+}>('DOWNLOAD_MAP');

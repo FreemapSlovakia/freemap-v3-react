@@ -15,7 +15,11 @@ import {
 } from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
-import { baseLayers } from '../mapDefinitions.js';
+import {
+  baseLayers,
+  HasMaxNativeZoom,
+  IntegratedBaseLayerDef,
+} from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
@@ -90,8 +94,12 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       (await mapPromise).fitBounds(geoJSON(geojson).getBounds(), {
         maxZoom: Math.min(
           action.payload.result.zoom ?? 18,
-          baseLayers.find((layer) => layer.type === mapType)?.maxNativeZoom ??
-            16,
+          baseLayers
+            .filter(
+              (layer): layer is HasMaxNativeZoom & IntegratedBaseLayerDef =>
+                'maxNativeZoom' in layer,
+            )
+            .find((layer) => layer.type === mapType)?.maxNativeZoom ?? 16,
         ),
       });
     }

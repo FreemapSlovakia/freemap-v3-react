@@ -33,7 +33,7 @@ export function CopyrightButton(): ReactElement {
           <FaQuestion />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu>
+        <Dropdown.Menu style={{ width: 'max-content' }}>
           <Dropdown.Item
             key="attribution"
             as="button"

@@ -5,47 +5,32 @@ import {
   FaHiking,
   FaMotorcycle,
   FaWalking,
-  FaWheelchair,
 } from 'react-icons/fa';
 
 export type TransportType =
-  // | 'car-toll'
-  // | 'car-free'
-  | 'foot-stroller'
+  | 'bike-osrm'
+  | 'car-osrm'
+  | 'foot-osrm'
   | 'car'
-  // | 'bikesharing'
-  // | 'imhd'
-  | 'bicycle_touring'
-  // | 'nordic'
-  // | 'ski'
+  | 'car4wd'
   | 'foot'
   | 'hiking'
-  | 'mtb'
-  // | 'bike'
-  | 'racingbike'
   | 'motorcycle'
-  | 'car-osm'
-  | 'bike-osm'
-  | 'foot-osm';
+  | 'mtb'
+  | 'racingbike';
 
 export type TransportTypeMsgKey =
-  | 'car'
-  // | 'car-toll'
-  // | 'car-free'
-  | 'bicycle_touring'
   | 'bike'
+  | 'car'
+  | 'car4wd'
   | 'foot'
   | 'hiking'
-  | 'nordic'
-  // | 'ski'
-  | 'foot-stroller'
+  | 'motorcycle'
   | 'mtb'
-  | 'bike'
-  | 'racingbike'
-  | 'motorcycle';
+  | 'racingbike';
 
 type TransportTypeDef = {
-  key: TransportTypeMsgKey;
+  msgKey: TransportTypeMsgKey;
   icon: ReactElement;
   special?: boolean;
   exclude?: string;
@@ -57,154 +42,77 @@ type TransportTypeDef = {
     }
   | {
       api: 'gh';
-      // profile: string;
-      vehicle:
+      profile:
         | 'car'
+        | 'car4wd'
         | 'foot'
         | 'hike'
-        | 'bike2'
-        | 'mtb'
-        | 'racingbike'
+        | 'bike'
         | 'motorcycle'
-        | 'car4wd'
-        | 'wheelchair'
-        | 'racingbike'
-        | 'motorcycle';
+        | 'mtb'
+        | 'racingbike';
     }
 );
 
-// const FM_URL = 'https://routing.freemap.sk/';
-
-// const EPS_URL = 'https://routing.epsilon.sk/';
-
 export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
-  // 'car-toll': {
-  //   key: 'car',
-  //   api: 'osrm',
-  //   icon: <FaCar />,
-  //   url: `${FM_URL}$MODE/v1/car`,
-  // },
-  // 'car-free': {
-  //   key: 'car-free',
-  //   api: 'osrm',
-  //   icon: <FaCar />,
-  //   url: `${FM_URL}$MODE/v1/car`,
-  //   exclude: 'toll',
-  // },
-  // imhd: { // not working
-  //   api: 'osrm',
-  //   icon: <FaBus />,
-  //   special: true,
-  //   url: `${EPS_URL}$MODE/v1/imhd`,
-  // },
-  'car-osm': {
-    key: 'car',
+  'car-osrm': {
+    msgKey: 'car',
     api: 'osrm',
     icon: <FaCar />,
     url: 'https://routing.openstreetmap.de/routed-car/$MODE/v1/driving',
   },
-  'bike-osm': {
-    key: 'bike',
+  'bike-osrm': {
+    msgKey: 'bike',
     api: 'osrm',
     icon: <FaBicycle />,
     url: 'https://routing.openstreetmap.de/routed-bike/$MODE/v1/driving',
   },
-  // bike: {
-  //   key: 'bicycle_touring',
-  //   api: 'osrm',
-  //   icon: <FaBicycle />,
-  //   url: `${FM_URL}$MODE/v1/bike`,
-  // },
-  'foot-osm': {
-    key: 'foot',
+  'foot-osrm': {
+    msgKey: 'foot',
     api: 'osrm',
     icon: <FaWalking />,
     url: 'https://routing.openstreetmap.de/routed-foot/$MODE/v1/driving',
   },
-  // { // not working
-  //   type: 'bikesharing',
-  //   api: 'osrm',
-  //   icon: <FaBicycle />,
-  //   special: true,
-  //   url: `${EPS_URL}$MODE/v1/bikesharing`,
-  //   development: true,
-  // },
-  // 'foot-stroller': {
-  //   api: 'osrm',
-  //   icon: <FaWheelchair />,
-  //   url: `${FM_URL}$MODE/v1/foot`,
-  //   exclude: 'stroller',
-  // },
-  // nordic: {
-  //   key: 'nordic',
-  //   api: 'osrm',
-  //   icon: <FaSkiingNordic />,
-  //   url: `${FM_URL}$MODE/v1/nordic`,
-  // },
-  // ski: {
-  //   key: 'ski',
-  //   api: 'osrm',
-  //   icon: <FaSkiing />,
-  //   url: `${FM_URL}$MODE/v1/ski`,
-  // },
   car: {
-    key: 'car',
+    msgKey: 'car',
     api: 'gh',
     icon: <FaCar />,
-    vehicle: 'car',
+    profile: 'car',
+  },
+  car4wd: {
+    msgKey: 'car4wd',
+    api: 'gh',
+    icon: <FaCar />,
+    profile: 'car4wd',
   },
   motorcycle: {
-    key: 'motorcycle',
+    msgKey: 'motorcycle',
     api: 'gh',
     icon: <FaMotorcycle />,
-    vehicle: 'motorcycle',
+    profile: 'motorcycle',
   },
   racingbike: {
-    key: 'racingbike',
+    msgKey: 'racingbike',
     api: 'gh',
     icon: <FaBicycle />,
-    vehicle: 'racingbike',
-  },
-  bicycle_touring: {
-    key: 'bicycle_touring',
-    api: 'gh',
-    icon: <FaBicycle />,
-    vehicle: 'bike2',
+    profile: 'racingbike',
   },
   mtb: {
-    key: 'mtb',
+    msgKey: 'mtb',
     api: 'gh',
     icon: <FaBicycle />,
-    vehicle: 'mtb',
+    profile: 'mtb',
   },
   foot: {
-    key: 'foot',
+    msgKey: 'foot',
     api: 'gh',
     icon: <FaWalking />,
-    vehicle: 'foot',
+    profile: 'foot',
   },
   hiking: {
-    key: 'hiking',
+    msgKey: 'hiking',
     api: 'gh',
     icon: <FaHiking />,
-    vehicle: 'hike',
-  },
-  'foot-stroller': {
-    key: 'foot-stroller',
-    api: 'gh',
-    icon: <FaWheelchair />,
-    vehicle: 'wheelchair', // wheelchair_fastest doesn't work
+    profile: 'hike',
   },
 };
-
-// const specials = transportTypeDefs
-//   .filter((def) => def.special)
-//   .map((def) => def.type);
-
-// export function isTransportType(candidate: string): candidate is TransportType {
-//   return !!transportTypeDefs.find((def) => def.type === candidate);
-// }
-
-export function isSpecial(transportType: TransportType): boolean {
-  return !transportType; // specials.includes(transportType);
-}

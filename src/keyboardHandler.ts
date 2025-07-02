@@ -88,15 +88,6 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     if (!showingModal && !suspendedModal && state.main.selection) {
-      // return (
-      //   selectFeature(
-      //     state.main.selection.type === 'tracking' ||
-      //       state.main.selection.id === undefined
-      //       ? null
-      //       : { type: state.main.selection.type },
-      //   ),
-      // );
-
       return selectFeature(null);
     }
 
@@ -296,7 +287,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return openInExternalApp({ where: 'osm.org/id' });
 
         case 'KeyM':
-          return openInExternalApp({ where: 'mapy.cz' });
+          return openInExternalApp({ where: 'mapy.com' });
 
         case 'KeyH':
           return openInExternalApp({ where: 'hiking.sk' });
@@ -350,6 +341,9 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
         case 'KeyD':
           return setActiveModal('drawing-properties');
+
+        case 'KeyM':
+          return setActiveModal('download-map');
       }
 
       return undefined;
