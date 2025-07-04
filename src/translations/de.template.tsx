@@ -242,14 +242,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     infoBars: {
       ua: () => (
         <>
-          <Emoji>🇺🇦</Emoji> Wir stehen an der Seite der Ukraine.{' '}
+          <Emoji>🇺🇦</Emoji>&ensp;Wir stehen an der Seite der Ukraine.{' '}
           <AlertLink
             href="https://bank.gov.ua/en/about/support-the-armed-forces"
             target="_blank"
             rel="noopener"
           >
             Spenden Sie an die ukrainische Armee ›
-          </AlertLink>{' '}
+          </AlertLink>
+          &ensp;
           <Emoji>🇺🇦</Emoji>
         </>
       ),
@@ -1275,7 +1276,71 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     cacheFirst: 'Zuerst Cache',
     cacheOnly: 'Nur Cache',
   },
-  errorStatus: {},
+  errorStatus: {
+    100: 'Weiter',
+    101: 'Protokollwechsel',
+    102: 'Verarbeitung',
+    103: 'Frühe Hinweise',
+    200: 'OK',
+    201: 'Erstellt',
+    202: 'Akzeptiert',
+    203: 'Nicht autorisierte Information',
+    204: 'Kein Inhalt',
+    205: 'Inhalt zurücksetzen',
+    206: 'Teilweiser Inhalt',
+    207: 'Multi-Status',
+    208: 'Bereits gemeldet',
+    226: 'IM verwendet',
+    300: 'Mehrere Auswahlmöglichkeiten',
+    301: 'Dauerhaft verschoben',
+    302: 'Gefunden',
+    303: 'Siehe andere',
+    304: 'Nicht geändert',
+    305: 'Proxy verwenden',
+    306: 'Proxy wechseln',
+    307: 'Temporäre Weiterleitung',
+    308: 'Permanente Weiterleitung',
+    400: 'Fehlerhafte Anfrage',
+    401: 'Nicht autorisiert',
+    402: 'Zahlung erforderlich',
+    403: 'Verboten',
+    404: 'Nicht gefunden',
+    405: 'Methode nicht erlaubt',
+    406: 'Nicht akzeptabel',
+    407: 'Proxy-Authentifizierung erforderlich',
+    408: 'Zeitüberschreitung der Anfrage',
+    409: 'Konflikt',
+    410: 'Gegangen',
+    411: 'Länge erforderlich',
+    412: 'Vorbedingung fehlgeschlagen',
+    413: 'Zu große Nutzlast',
+    414: 'URI zu lang',
+    415: 'Medientyp nicht unterstützt',
+    416: 'Bereich nicht erfüllbar',
+    417: 'Erwartung fehlgeschlagen',
+    418: 'Ich bin eine Teekanne',
+    421: 'Falsch zugewiesene Anfrage',
+    422: 'Nicht verarbeitbare Entität',
+    423: 'Gesperrt',
+    424: 'Abhängigkeit fehlgeschlagen',
+    425: 'Zu früh',
+    426: 'Upgrade erforderlich',
+    428: 'Vorbedingung erforderlich',
+    429: 'Zu viele Anfragen',
+    431: 'Anforderungsheader zu groß',
+    451: 'Aus rechtlichen Gründen nicht verfügbar',
+    500: 'Interner Serverfehler',
+    501: 'Nicht implementiert',
+    502: 'Fehlerhaftes Gateway',
+    503: 'Dienst nicht verfügbar',
+    504: 'Gateway-Zeitüberschreitung',
+    505: 'HTTP-Version nicht unterstützt',
+    506: 'Variante verhandelt ebenfalls',
+    507: 'Ungenügender Speicherplatz',
+    508: 'Schleife entdeckt',
+    510: 'Nicht erweitert',
+    511: 'Netzwerkauthentifizierung erforderlich',
+  },
   gpu: {
     lost: 'Das GPU-Gerät ging verloren: ',
     noAdapter: 'WebGPU-Adapter ist in diesem Browser nicht verfügbar.',

@@ -44,6 +44,14 @@ export function LanguageSubmenu(): JSX.Element {
 
       <Dropdown.Item
         as="button"
+        eventKey="lang-pl"
+        active={chosenLanguage === 'pl'}
+      >
+        <Emoji>🇵🇱</Emoji>&ensp;Polski
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        as="button"
         eventKey="lang-hu"
         active={chosenLanguage === 'hu'}
       >
