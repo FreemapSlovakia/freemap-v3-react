@@ -1,8 +1,8 @@
-import { setActiveModal } from 'actions/mainActions.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../actions/mainActions.js';
 import { useMessages } from '../l10nInjector.js';
 
 export default ProjectPointModal;

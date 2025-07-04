@@ -297,7 +297,7 @@ function process(template: string) {
     throw new Error('root not found for en');
   }
 
-  const langs = ['cs', 'hu', 'it', 'sk', 'de'];
+  const langs = ['cs', 'hu', 'it', 'sk', 'de', 'pl'];
 
   const roots = langs.map((lang) => {
     const file = parseFile(lang + '.template', template);
@@ -305,7 +305,7 @@ function process(template: string) {
     const root = findRoot(file);
 
     if (!root) {
-      throw new Error('root not found for ' + lang);
+      throw new Error('root not found for ' + lang + ' ' + template);
     }
 
     return [lang, file, root] as const;

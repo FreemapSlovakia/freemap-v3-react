@@ -18,6 +18,7 @@ import enMessages from './src/translations/en-shared.js';
 import huMessages from './src/translations/hu-shared.js';
 import itMessages from './src/translations/it-shared.js';
 import skMessages from './src/translations/sk-shared.js';
+import plMessages from './src/translations/pl-shared.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -274,6 +275,21 @@ const config: Configuration = {
         nojsMessage:
           'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
         loadingMessage: 'Lade…',
+      },
+    }),
+    new HtmlWebpackPlugin({
+      ...htmlPluginProps,
+      filename: 'index-pl.html',
+      templateParameters: {
+        lang: 'pl',
+        title: plMessages.title,
+        description: plMessages.description,
+        errorHtml:
+          '<h1>Nie udało się uruchomić aplikacji</h1>' +
+          '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+        nojsMessage:
+          'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
+        loadingMessage: 'Ładowanie…',
       },
     }),
     new CopyWebpackPlugin({
