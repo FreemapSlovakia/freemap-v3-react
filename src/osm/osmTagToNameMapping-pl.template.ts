@@ -930,7 +930,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
     railway: 'Kolej',
   };
 
-export const colorNamesForRoute: Record<string, string> = {
+export const colorNames: Record<string, string> = {
   red: 'Czerwona',
   blue: 'Niebieska',
   green: 'Zielona',
