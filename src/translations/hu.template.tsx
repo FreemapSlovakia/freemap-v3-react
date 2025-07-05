@@ -571,7 +571,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'Saját vonalak átlátszatlansága:',
       homeLocation: {
         label: 'Lakóhely:',
         select: 'Kijelölés a térképen',

@@ -1,39 +1,31 @@
-import {
-  FormEvent,
-  Fragment,
-  ReactElement,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
   Accordion,
   Button,
   ButtonGroup,
   Col,
   Container,
-  Dropdown,
-  DropdownButton,
   Form,
   Modal,
+  OverlayTrigger,
+  Popover,
   Row,
   Stack,
+  Table,
 } from 'react-bootstrap';
 import {
   FaCheck,
   FaCog,
   FaEllipsisH,
+  FaEye,
   FaRegListAlt,
   FaTimes,
 } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
-import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import {
   BaseLayerLetters,
@@ -44,7 +36,6 @@ import {
   IntegratedLayerLetters,
   overlayLayers,
   OverlayLetters,
-  overlayLetters,
 } from '../mapDefinitions.js';
 
 type Props = { show: boolean };
@@ -56,26 +47,11 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     (state) => state.map.layersSettings,
   );
 
-  const initOverlayPaneOpacity = useAppSelector(
-    (state) => state.map.overlayPaneOpacity,
-  );
-
   const m = useMessages();
 
   const [layersSettings, setLayersSettings] = useState(initLayersSettings);
 
-  const [overlayPaneOpacity, setOverlayPaneOpacity] = useState(
-    initOverlayPaneOpacity,
-  );
-
-  const [selectedLayer, setSelectedLeyer] = useState('X');
-
   const dispatch = useDispatch();
-
-  const nf = useNumberFormat({
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -90,76 +66,70 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     [],
   );
 
-  const [customLayersDef, setCustomLayersDef] = useState(
-    initialCustomLayersDef,
-  );
+  const [customLayersDef] = useState(initialCustomLayersDef);
 
-  let localCustomLayers: CustomLayerDef[];
+  //   let localCustomLayers: CustomLayerDef[];
 
-  try {
-    localCustomLayers = assert<CustomLayerDef[]>(
-      JSON.parse(customLayersDef || '[]'),
-    );
-  } catch (e) {
-    console.log(e);
+  //   try {
+  //     localCustomLayers = assert<CustomLayerDef[]>(
+  //       JSON.parse(customLayersDef || '[]'),
+  //     );
+  //   } catch (e) {
+  //     console.log(e);
 
-    localCustomLayers = customLayers;
-  }
+  //     localCustomLayers = customLayers;
+  //   }
 
-  const wasFocused = useRef(false);
+  //   const wasFocused = useRef(false);
 
-  const customLayersHelp = `// remove all commentes (starting with // to end of line) because it must be a valid JSON
-[
-  {
-    "type": ".1", // prefix 1-digit number with "." for base layers and ":" for overlay layers
-    "url": "https://example.com/{z}/{x}/{y}.jpg",
-    "minZoom": 0,
-    "maxNativeZoom": 18,
-    // "zIndex": 0, // for overlays
-    // "subdomains": "abc",
-    // "tms": false, // set to true for TMS, false for XYZ
-    // "extraScales": [2, 3], // for maps supporting multiple scales
-    // "scaleWithDpi": true,
-    // "cors": false
-  }
-]
-`;
+  //   const customLayersHelp = `// remove all commentes (starting with // to end of line) because it must be a valid JSON
+  // [
+  //   {
+  //     "type": ".1", // prefix 1-digit number with "." for base layers and ":" for overlay layers
+  //     "url": "https://example.com/{z}/{x}/{y}.jpg",
+  //     "minZoom": 0,
+  //     "maxNativeZoom": 18,
+  //     // "zIndex": 0, // for overlays
+  //     // "subdomains": "abc",
+  //     // "tms": false, // set to true for TMS, false for XYZ
+  //     // "extraScales": [2, 3], // for maps supporting multiple scales
+  //     // "scaleWithDpi": true,
+  //     // "cors": false
+  //   }
+  // ]
+  // `;
 
-  const handleCustomLayersDefFocus = () => {
-    if (!wasFocused.current && !customLayersDef) {
-      setCustomLayersDef(customLayersHelp);
-    }
+  // const handleCustomLayersDefFocus = () => {
+  //   if (!wasFocused.current && !customLayersDef) {
+  //     setCustomLayersDef(customLayersHelp);
+  //   }
 
-    wasFocused.current = true;
-  };
+  //   wasFocused.current = true;
+  // };
 
-  const bases = [
-    ...baseLayers,
-    ...localCustomLayers
-      .filter((cl) => cl.type.startsWith('.'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), false] as const,
-      })),
-  ];
+  // const bases = [
+  //   ...baseLayers,
+  //   ...localCustomLayers
+  //     .filter((cl) => cl.type.startsWith('.'))
+  //     .map((cl) => ({
+  //       ...cl,
+  //       adminOnly: false,
+  //       icon: <MdDashboardCustomize />,
+  //       key: ['Digit' + cl.type.slice(1), false] as const,
+  //     })),
+  // ];
 
-  const ovls = [
-    ...overlayLayers,
-    ...localCustomLayers
-      .filter((cl) => cl.type.startsWith(':'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), true] as const,
-      })),
-  ];
-
-  const selectedLayerDetails = [...bases, ...ovls].find(
-    ({ type }) => type === selectedLayer,
-  );
+  // const ovls = [
+  //   ...overlayLayers,
+  //   ...localCustomLayers
+  //     .filter((cl) => cl.type.startsWith(':'))
+  //     .map((cl) => ({
+  //       ...cl,
+  //       adminOnly: false,
+  //       icon: <MdDashboardCustomize />,
+  //       key: ['Digit' + cl.type.slice(1), true] as const,
+  //     })),
+  // ];
 
   function getName(type: BaseLayerLetters | OverlayLetters) {
     return type.startsWith('.')
@@ -197,7 +167,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
       saveSettings({
         settings: {
           layersSettings,
-          overlayPaneOpacity,
           customLayers,
         },
       }),
@@ -205,9 +174,33 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   };
 
   const userMadeChanges =
-    overlayPaneOpacity !== initOverlayPaneOpacity ||
     layersSettings !== initLayersSettings ||
     customLayersDef !== initialCustomLayersDef;
+
+  const [activeType, setActiveType] = useState('');
+
+  const popover = (
+    <Popover id="popover-basic">
+      <Popover.Header as="h3">{m?.settings.overlayOpacity}</Popover.Header>
+
+      <Popover.Body>
+        <Form.Range
+          min={0}
+          max={100}
+          value={(layersSettings[activeType]?.opacity ?? 1) * 100}
+          onChange={(e) =>
+            setLayersSettings({
+              ...layersSettings,
+              [activeType]: {
+                ...(layersSettings[activeType] ?? {}),
+                opacity: Number(e.currentTarget.value) / 100,
+              },
+            })
+          }
+        />
+      </Popover.Body>
+    </Popover>
+  );
 
   return (
     <Modal show={show} onHide={close}>
@@ -219,179 +212,109 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group className="mb-3">
-            <Form.Label>
-              {m?.settings.map.overlayPaneOpacity}{' '}
-              {nf.format(overlayPaneOpacity * 100)}
-              {' %'}
-            </Form.Label>
-
-            <Form.Range
-              value={overlayPaneOpacity}
-              min={0}
-              max={1}
-              step={0.05}
-              onChange={(e) =>
-                setOverlayPaneOpacity(Number(e.currentTarget.value))
-              }
-            />
-          </Form.Group>
-
-          {selectedLayerDetails && (
-            <>
-              <hr />
-
-              <Form.Group className="mb-3">
-                <Form.Label>{m?.settings.layer}</Form.Label>
-
-                <DropdownButton
-                  className="fm-map-layers-dropdown"
-                  variant="secondary"
-                  id="overlayOpacity"
-                  onSelect={(o) => {
-                    if (o !== null) {
-                      setSelectedLeyer(o);
-                    }
-                  }}
-                  title={
-                    <>
-                      {selectedLayerDetails.icon}{' '}
-                      {getName(selectedLayerDetails.type)}{' '}
-                      {nf.format(
-                        (layersSettings[selectedLayer]?.opacity ?? 1) * 100,
-                      )}{' '}
-                      %
-                    </>
-                  }
-                >
-                  {[...bases, ...ovls].map(({ type, icon }, i) => (
-                    <Fragment key={type}>
-                      {i === bases.length && <Dropdown.Divider />}
-                      <Dropdown.Item
-                        eventKey={type}
-                        active={type === selectedLayer}
-                      >
-                        {icon} {getName(type)}
-                        {((overlayLetters as readonly string[]).includes(
-                          type,
-                        ) ||
-                          type.charAt(0) === ':') && (
-                          <>
-                            {' ('}
-                            {nf.format(
-                              (layersSettings[type]?.opacity ?? 1) * 100,
-                            )}{' '}
-                            %)
-                          </>
-                        )}{' '}
-                        <FaEllipsisH
-                          color={
-                            (layersSettings[type]?.showInToolbar ??
-                            defaultToolbarLayerLetters.includes(type))
-                              ? ''
-                              : '#ddd'
-                          }
-                        />{' '}
-                        <FaRegListAlt
-                          color={
-                            (layersSettings[type]?.showInMenu ??
-                            defaultMenuLayerLetters.includes(type))
-                              ? ''
-                              : '#ddd'
-                          }
-                        />
-                      </Dropdown.Item>
-                    </Fragment>
-                  ))}
-                </DropdownButton>
-              </Form.Group>
-
-              <Form.Check
-                type="checkbox"
-                id="chk-showInToolbar"
-                label={
-                  <>
-                    <FaEllipsisH /> {m?.settings.showInToolbar}
-                  </>
-                }
-                checked={
-                  layersSettings[selectedLayer]?.showInToolbar ??
-                  defaultToolbarLayerLetters.includes(selectedLayer)
-                }
-                min={0.1}
-                max={1.0}
-                step={0.1}
-                onChange={(e) => {
-                  setLayersSettings({
-                    ...layersSettings,
-                    [selectedLayer]: {
-                      ...(layersSettings[selectedLayer] ?? {}),
-                      showInToolbar: e.currentTarget.checked,
-                    },
-                  });
-                }}
-              />
-
-              <Form.Check
-                type="checkbox"
-                id="chk-showInMenu"
-                label={
-                  <>
-                    <FaRegListAlt /> {m?.settings.showInMenu}
-                  </>
-                }
-                checked={
-                  layersSettings[selectedLayer]?.showInMenu ??
-                  defaultMenuLayerLetters.includes(selectedLayer)
-                }
-                min={0.1}
-                max={1.0}
-                step={0.1}
-                onChange={(e) => {
-                  setLayersSettings({
-                    ...layersSettings,
-                    [selectedLayer]: {
-                      ...(layersSettings[selectedLayer] ?? {}),
-                      showInMenu: e.currentTarget.checked,
-                    },
-                  });
-                }}
-              />
-
-              {(overlayLetters.includes(
-                selectedLayer as (typeof overlayLetters)[number],
-              ) ||
-                selectedLayer.charAt(0) === ':') && (
-                <Form.Group className="mt-2">
-                  <Form.Label>{m?.settings.overlayOpacity}</Form.Label>
-
-                  <Form.Range
-                    value={layersSettings[selectedLayer]?.opacity ?? 1}
-                    min={0.1}
-                    max={1.0}
-                    step={0.1}
-                    onChange={(e) => {
-                      setLayersSettings({
-                        ...layersSettings,
-                        [selectedLayer]: {
-                          ...(layersSettings[selectedLayer] ?? {}),
-                          opacity: Number(e.currentTarget.value),
-                        },
-                      });
-                    }}
-                  />
-                </Form.Group>
-              )}
-            </>
-          )}
-
-          <hr />
-
           <Accordion>
-            <Accordion.Item eventKey="0">
-              <Accordion.Header>
-                {m?.mapExport.advancedSettings}
-              </Accordion.Header>
+            <Accordion.Item eventKey="menuAndToolbar">
+              <Accordion.Header>{m?.mapLayers.menuAndToolbar}</Accordion.Header>
+
+              <Accordion.Body>
+                <Table striped borderless size="sm">
+                  <thead>
+                    <tr>
+                      <th />
+                      <th />
+                      <th>
+                        <FaEllipsisH title={m?.settings.showInToolbar} />
+                      </th>
+                      <th>
+                        <FaRegListAlt title={m?.settings.showInMenu} />
+                      </th>
+                      <th>
+                        <FaEye title={m?.settings.overlayOpacity} />
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {[...baseLayers, ...overlayLayers].map(
+                      ({ icon, type }, i) => (
+                        <tr key={type}>
+                          <td>{icon}</td>
+
+                          <td>{getName(type)}</td>
+
+                          <td>
+                            <Form.Check
+                              checked={
+                                layersSettings[type]?.showInToolbar ??
+                                defaultToolbarLayerLetters.includes(type) ??
+                                false
+                              }
+                              onChange={(e) => {
+                                setLayersSettings({
+                                  ...layersSettings,
+                                  [type]: {
+                                    ...(layersSettings[type] ?? {}),
+                                    showInToolbar: e.currentTarget.checked,
+                                  },
+                                });
+                              }}
+                            />
+                          </td>
+
+                          <td>
+                            <Form.Check
+                              checked={
+                                layersSettings[type]?.showInMenu ??
+                                defaultMenuLayerLetters.includes(type) ??
+                                false
+                              }
+                              onChange={(e) => {
+                                setLayersSettings({
+                                  ...layersSettings,
+                                  [type]: {
+                                    ...(layersSettings[type] ?? {}),
+                                    showInMenu: e.currentTarget.checked,
+                                  },
+                                });
+                              }}
+                            />
+                          </td>
+
+                          <td>
+                            {i > baseLayers.length && (
+                              <div>
+                                <OverlayTrigger
+                                  trigger="click"
+                                  placement="left"
+                                  overlay={popover}
+                                  rootClose
+                                >
+                                  <div className="fm-opacity-button">
+                                    <button
+                                      type="button"
+                                      style={{
+                                        opacity:
+                                          (layersSettings[type]?.opacity ?? 1) *
+                                            100 +
+                                          '%',
+                                      }}
+                                      onClick={() => setActiveType(type)}
+                                    />
+                                  </div>
+                                </OverlayTrigger>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ),
+                    )}
+                  </tbody>
+                </Table>
+              </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="customMaps">
+              <Accordion.Header>{m?.mapLayers.customMaps}</Accordion.Header>
 
               <Accordion.Body>
                 {/* <Form.Group className="mb-3">
@@ -416,6 +339,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 <Container fluid className="p-0">
                   <Row className="mb-3">
                     <Col>Base</Col>
+
                     <ButtonGroup as={Col}>
                       {Array(10)
                         .fill(0)
@@ -424,8 +348,10 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                         ))}
                     </ButtonGroup>
                   </Row>
+
                   <Row>
                     <Col>Overlay</Col>
+
                     <ButtonGroup as={Col}>
                       {Array(10)
                         .fill(0)

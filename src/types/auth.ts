@@ -15,7 +15,6 @@ export type PurchaseRecord = {
 
 export interface UserSettings {
   layersSettings?: Record<string, LayerSettings>;
-  overlayPaneOpacity?: number;
   customLayers?: CustomLayerDef[];
 }
 

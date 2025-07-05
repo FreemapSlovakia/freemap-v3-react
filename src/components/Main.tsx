@@ -212,10 +212,6 @@ export function Main(): ReactElement {
       !state.gallery.showPosition,
   );
 
-  const overlayPaneOpacity = useAppSelector(
-    (state) => state.map.overlayPaneOpacity,
-  );
-
   const language = useAppSelector((state) => state.l10n.language);
 
   const isUserValidated = useAppSelector((state) => state.auth.validated);
@@ -442,10 +438,6 @@ export function Main(): ReactElement {
 
   return (
     <>
-      <style>
-        {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
-      </style>
-
       {!window.fmHeadless && (
         <>
           {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}

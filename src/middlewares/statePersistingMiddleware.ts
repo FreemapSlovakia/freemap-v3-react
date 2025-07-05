@@ -54,7 +54,6 @@ function persistSelectedState(state: RootState) {
       },
       map: {
         layersSettings: state.map.layersSettings,
-        overlayPaneOpacity: state.map.overlayPaneOpacity,
         mapType: state.map.mapType,
         lat: state.map.lat,
         lon: state.map.lon,

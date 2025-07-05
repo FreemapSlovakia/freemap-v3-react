@@ -549,7 +549,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'La linea della mappa presenta opacità:',
       homeLocation: {
         label: 'Posizione di casa:',
         select: 'Seleziona sulla mappa',

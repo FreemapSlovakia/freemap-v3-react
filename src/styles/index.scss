@@ -421,3 +421,21 @@ button#freemap-logo {
 kbd {
   line-height: 0;
 }
+
+.fm-opacity-button {
+  background: repeating-conic-gradient(#808080 0 25%, #0000 0 50%) 50% / 8px 8px;
+
+  button {
+    width: 1em;
+    height: 1em;
+    background-color: #0d6efd;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    margin-top: 0.25em;
+    vertical-align: top;
+    border-radius: 3px;
+    position: relative;
+    left: 0.25rem;
+  }
+}

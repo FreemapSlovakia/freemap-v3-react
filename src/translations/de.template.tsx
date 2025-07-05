@@ -556,7 +556,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         select: 'Auf der Karte auswählen',
         undefined: 'nicht festgelegt',
       },
-      overlayPaneOpacity: 'Deckkraft der Kartenlinien:',
     },
 
     account: {

@@ -522,7 +522,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'Viditelnost čar na mapě:',
       homeLocation: {
         label: 'Domovská poloha:',
         select: 'Vybrat na mapě',
