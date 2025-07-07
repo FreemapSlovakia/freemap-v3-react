@@ -117,7 +117,8 @@ const accountModalFactory = () => import('./AccountModal.js');
 
 const downloadMapModalFactory = () => import('./DownloadMapModal.js');
 
-const mapSettingsModalFactory = () => import('./MapSettingsModal.js');
+const mapSettingsModalFactory = () =>
+  import('./mapSettings/MapSettingsModal.js');
 
 const embedMapModalFactory = () => import('./EmbedMapModal.js');
 

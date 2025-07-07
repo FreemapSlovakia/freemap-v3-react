@@ -132,6 +132,10 @@ export type CustomBaseLayerLetters = `.${Num1digit}`;
 
 export type CustomOverlayLayerLetters = `:${Num1digit}`;
 
+export type CustomLayerLetters =
+  | CustomBaseLayerLetters
+  | CustomOverlayLayerLetters;
+
 export type IntegratedBaseLayerLetters = (typeof baseLayerLetters)[number];
 
 export type IntegratedOverlayLayerLetters = (typeof overlayLetters)[number];
