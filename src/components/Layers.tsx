@@ -53,8 +53,6 @@ export function Layers(): ReactElement | null {
 
   const opacity = layersSettings['i']?.opacity;
 
-  console.log({ opacity });
-
   useEffect(() => {
     if (!map) {
       return;
