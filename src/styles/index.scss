@@ -439,3 +439,23 @@ kbd {
     left: 0.25rem;
   }
 }
+
+.fm-fb-icon {
+  color: #3b5998;
+
+  [data-bs-theme='dark'] & {
+    color: #77a2ff;
+  }
+}
+
+.fm-yt-icon {
+  color: #ff0000;
+}
+
+.fm-gh-icon {
+  color: #333;
+
+  [data-bs-theme='dark'] & {
+    color: #ccc;
+  }
+}

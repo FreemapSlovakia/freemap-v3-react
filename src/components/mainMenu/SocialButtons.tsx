@@ -17,7 +17,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         href="https://www.facebook.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"
-        style={{ color: '#3b5998' }}
+        className="fm-fb-icon"
         title={m?.mainMenu.facebook}
       >
         <FaFacebook />
@@ -27,7 +27,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
         target="_blank"
         rel="noopener noreferrer"
-        style={{ color: '#ff0000' }}
+        className="fm-yt-icon"
         title={m?.mainMenu.youtube}
       >
         <FaYoutube />
@@ -37,7 +37,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         href="https://github.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"
-        style={{ color: '#333' }}
+        className="fm-gh-icon"
         title={m?.mainMenu.github}
       >
         <FaGithub />

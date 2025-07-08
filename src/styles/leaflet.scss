@@ -6,8 +6,30 @@
   bottom: 0;
   top: 0;
 
-  .leaflet-tooltip.compact {
-    padding: 0 3px;
+  .leaflet-tooltip {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+
+    &-top:before {
+      border-top-color: var(--bs-body-bg);
+    }
+
+    &-bottom:before {
+      border-bottom-color: var(--bs-body-bg);
+    }
+
+    &-left:before {
+      border-left-color: var(--bs-body-bg);
+    }
+
+    &-right:before {
+      border-right-color: var(--bs-body-bg);
+    }
+
+    &.compact {
+      padding: 0 3px;
+    }
   }
 
   .fa-icon-inside-leaflet-icon-holder {
@@ -53,9 +75,9 @@ a.leaflet-control-layers-toggle {
 }
 
 .leaflet-marker-wiki-icon {
-  background-color: white;
+  background-color: var(--bs-body-bg);
   border-radius: 9px;
-  border: 1px solid black;
+  border: 1px solid var(--bs-body-color);
 
   & > * {
     position: absolute;
