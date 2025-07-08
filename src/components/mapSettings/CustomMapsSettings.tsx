@@ -6,39 +6,15 @@ import {
   Row,
   ToggleButton,
 } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { CustomLayerDef, CustomLayerLetters } from '../../mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
 
-type Props = {};
+type Props = {
+  value: CustomLayerDef[];
+  onChange: (prev: CustomLayerDef[]) => void;
+};
 
-export function CustomMapsSettings({}: Props): ReactElement {
-  const customLayers = useAppSelector((state) => state.map.customLayers);
-
-  const [customLayerDefs, setCustomLayerDefs] = useState(customLayers);
-
-  //   let localCustomLayers: CustomLayerDef[];
-
-  //   try {
-  //     localCustomLayers = assert<CustomLayerDef[]>(
-  //       JSON.parse(customLayersDef || '[]'),
-  //     );
-  //   } catch (e) {
-  //     console.log(e);
-
-  //     localCustomLayers = customLayers;
-  //   }
-
-  //   const wasFocused = useRef(false);
-
-  // const handleCustomLayersDefFocus = () => {
-  //   if (!wasFocused.current && !customLayersDef) {
-  //     setCustomLayersDef(customLayersHelp);
-  //   }
-
-  //   wasFocused.current = true;
-  // };
-
+export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
   // const bases = [
   //   ...baseLayers,
   //   ...localCustomLayers
@@ -69,19 +45,17 @@ export function CustomMapsSettings({}: Props): ReactElement {
     setType(e.currentTarget.value as CustomLayerLetters);
   }, []);
 
-  const handleCustomMapChange = useCallback(
-    (value?: CustomLayerDef) => {
-      setCustomLayerDefs((defs) => {
-        const newDefs = defs.filter((def) => def.type !== type);
+  const handleChange = useCallback(
+    (def?: CustomLayerDef) => {
+      const newDefs = value?.filter((def) => def.type !== type) ?? [];
 
-        if (value) {
-          newDefs.push(value);
-        }
+      if (def) {
+        newDefs.push(def);
+      }
 
-        return newDefs;
-      });
+      onChange(newDefs);
     },
-    [type],
+    [type, value, onChange],
   );
 
   return (
@@ -96,7 +70,7 @@ export function CustomMapsSettings({}: Props): ReactElement {
               .map((_, i) => (
                 <ToggleButton
                   variant={
-                    customLayerDefs.find((def) => def.type === '.' + i)
+                    value.find((def) => def.type === '.' + i)
                       ? 'primary'
                       : 'secondary'
                   }
@@ -123,7 +97,7 @@ export function CustomMapsSettings({}: Props): ReactElement {
               .map((_, i) => (
                 <ToggleButton
                   variant={
-                    customLayerDefs.find((def) => def.type === ':' + i)
+                    value.find((def) => def.type === ':' + i)
                       ? 'primary'
                       : 'secondary'
                   }
@@ -144,13 +118,11 @@ export function CustomMapsSettings({}: Props): ReactElement {
 
       <hr />
 
-      <span>TYPE: {JSON.stringify(customLayerDefs)}</span>
-
       <CustomMapForm
         key={type}
         type={type}
-        value={customLayerDefs.find((def) => def.type === type)}
-        onChange={handleCustomMapChange}
+        value={value.find((def) => def.type === type)}
+        onChange={handleChange}
       />
     </>
   );

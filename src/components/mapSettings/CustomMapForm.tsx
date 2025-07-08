@@ -14,7 +14,14 @@ type Props = {
   onChange: (value?: CustomLayerDef) => void;
 };
 
-type Model = { url: string; minZoom: string; maxNativeZoom: string };
+type Model = {
+  url: string;
+  minZoom: string;
+  maxNativeZoom: string;
+  zIndex: string;
+  scaleWithDpi: boolean;
+  extraScales: string[];
+};
 
 export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   function valueToModel(value?: CustomLayerDef) {
@@ -30,6 +37,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         : value.maxNativeZoom === undefined
           ? ''
           : value.maxNativeZoom.toString(),
+      zIndex: !value
+        ? ''
+        : value.zIndex === undefined
+          ? ''
+          : value.zIndex.toString(),
+      scaleWithDpi: value?.scaleWithDpi ?? false,
+      extraScales: (value?.extraScales ?? []).map((a) => a.toString()),
     };
   }
 
@@ -45,7 +59,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     setModel((model) =>
       model.url !== newModel.url ||
       model.minZoom !== newModel.minZoom ||
-      model.maxNativeZoom !== newModel.maxNativeZoom
+      model.maxNativeZoom !== newModel.maxNativeZoom ||
+      model.zIndex !== newModel.zIndex ||
+      model.scaleWithDpi !== newModel.scaleWithDpi ||
+      model.extraScales.join('|') !== newModel.extraScales.join('|')
         ? newModel
         : model,
     );
@@ -69,6 +86,12 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         return;
       }
 
+      const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
+
+      if (zIndex !== undefined && isNaN(zIndex)) {
+        return;
+      }
+
       if (!model.url) {
         onChange(undefined);
 
@@ -83,6 +106,11 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
               url: model.url,
               minZoom,
               maxNativeZoom,
+              zIndex,
+              scaleWithDpi: model.scaleWithDpi,
+              extraScales: model.extraScales
+                .map((a) => parseInt(a, 10))
+                .filter((a) => !isNaN(a)),
             },
       );
     },
@@ -116,40 +144,36 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     [update, model],
   );
 
-  // const bases = [
-  //   ...baseLayers,
-  //   ...localCustomLayers
-  //     .filter((cl) => cl.type.startsWith('.'))
-  //     .map((cl) => ({
-  //       ...cl,
-  //       adminOnly: false,
-  //       icon: <MdDashboardCustomize />,
-  //       key: ['Digit' + cl.type.slice(1), false] as const,
-  //     })),
-  // ];
+  const setZIndex = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const zIndex = e.currentTarget.value;
 
-  // const ovls = [
-  //   ...overlayLayers,
-  //   ...localCustomLayers
-  //     .filter((cl) => cl.type.startsWith(':'))
-  //     .map((cl) => ({
-  //       ...cl,
-  //       adminOnly: false,
-  //       icon: <MdDashboardCustomize />,
-  //       key: ['Digit' + cl.type.slice(1), true] as const,
-  //     })),
-  // ];
+      update({ ...model, zIndex });
+    },
+    [update, model],
+  );
+
+  const setScaleWithDpi = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const scaleWithDpi = e.currentTarget.checked;
+
+      update({ ...model, scaleWithDpi });
+    },
+    [update, model],
+  );
 
   return (
     <Stack gap={3}>
-      <Form.Group>
+      <Form.Group controlId="url">
         <Form.Label>Template</Form.Label>
+
         <Form.Control type="text" value={model.url} onChange={setUrl} />
       </Form.Group>
 
       <Stack direction="horizontal" gap={2}>
-        <Form.Group>
+        <Form.Group controlId="minZoom">
           <Form.Label>Min Zoom</Form.Label>
+
           <Form.Control
             type="number"
             min={0}
@@ -158,8 +182,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           />
         </Form.Group>
 
-        <Form.Group className="w-50">
+        <Form.Group controlId="maxNativeZoom" className="w-50">
           <Form.Label>Max Native Zoom</Form.Label>
+
           <Form.Control
             type="number"
             min={0}
@@ -170,21 +195,55 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       </Stack>
 
       <Stack direction="horizontal" gap={2}>
-        <Form.Group>
+        <Form.Group controlId="extraScales">
           <Form.Label>Extra scales</Form.Label>
-          <Form.Control type="text" />
+
+          <div className="d-flex gap-2 flex-wrap">
+            {[...model.extraScales, ''].map((a, i) => (
+              <Form.Control
+                key={i}
+                style={{ width: '4rem' }}
+                type="number"
+                min={1}
+                step={1}
+                value={a}
+                onChange={(e) => {
+                  const extraScales = [...model.extraScales];
+
+                  extraScales[i] = e.currentTarget.value;
+
+                  update({
+                    ...model,
+                    extraScales: extraScales.filter(Boolean),
+                  });
+                }}
+              />
+            ))}
+          </div>
         </Form.Group>
 
         <Form.Group className="w-50">
           <Form.Label>&nbsp;</Form.Label>
-          <Form.Check id="chk-scale-dpi" label="Scale with DPI" />
+
+          <Form.Check
+            id="chk-scale-dpi"
+            label="Scale with DPI"
+            checked={model.scaleWithDpi}
+            onChange={setScaleWithDpi}
+          />
         </Form.Group>
       </Stack>
 
       {type.startsWith(':') ? (
         <Form.Group>
           <Form.Label>Z-Index</Form.Label>
-          <Form.Control type="number" min={0} />
+
+          <Form.Control
+            type="number"
+            min={0}
+            value={model.zIndex}
+            onChange={setZIndex}
+          />
         </Form.Group>
       ) : undefined}
     </Stack>

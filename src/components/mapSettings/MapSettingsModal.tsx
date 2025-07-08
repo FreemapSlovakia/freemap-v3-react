@@ -1,13 +1,10 @@
-import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
+import { FormEvent, ReactElement, useCallback, useState } from 'react';
 import { Accordion, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
 import { saveSettings, setActiveModal } from '../../actions/mainActions.js';
-import { toastsAdd } from '../../actions/toastsActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
-import { CustomLayerDef } from '../../mapDefinitions.js';
 import { CustomMapsSettings } from './CustomMapsSettings.js';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -30,54 +27,25 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const initialCustomLayers = useAppSelector((state) => state.map.customLayers);
 
-  const initialCustomLayersDef = useMemo(
-    () => (customLayers.length ? JSON.stringify(customLayers, null, 2) : ''),
+  const [customLayers, setCustomLayers] = useState(initialCustomLayers);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
-
-  const [customLayersDef] = useState(initialCustomLayersDef);
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-
-    let customLayers: CustomLayerDef[];
-
-    try {
-      customLayers = assert<CustomLayerDef[]>(
-        JSON.parse(customLayersDef || '[]'),
-      );
-    } catch (e) {
-      console.log(e);
+  const handleSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
 
       dispatch(
-        toastsAdd({
-          id: 'cusomLayersDef',
-          style: 'danger',
-          timeout: 5000,
-          messageKey: 'settings.customLayersDefError',
+        saveSettings({
+          settings: {
+            layersSettings,
+            customLayers,
+          },
         }),
       );
-
-      return;
-    }
-
-    dispatch(
-      saveSettings({
-        settings: {
-          layersSettings,
-          customLayers,
-        },
-      }),
-    );
-  };
-
-  const userMadeChanges =
-    layersSettings !== initLayersSettings ||
-    customLayersDef !== initialCustomLayersDef;
+    },
+    [customLayers, dispatch, layersSettings],
+  );
 
   return (
     <Modal show={show} onHide={close}>
@@ -105,14 +73,24 @@ export function MapSettingsModal({ show }: Props): ReactElement {
               <Accordion.Header>{m?.mapLayers.customMaps}</Accordion.Header>
 
               <Accordion.Body>
-                <CustomMapsSettings />
+                <CustomMapsSettings
+                  value={customLayers}
+                  onChange={setCustomLayers}
+                />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" type="submit" disabled={!userMadeChanges}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={
+              layersSettings === initLayersSettings &&
+              customLayers === initialCustomLayers
+            }
+          >
             <FaCheck /> {m?.general.save}
           </Button>
 
