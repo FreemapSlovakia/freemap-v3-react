@@ -61,8 +61,6 @@ export function Layers(): ReactElement | null {
     for (const name of ['shadowPane', 'markerPane', 'overlayPane']) {
       const pane = map.getPane(name);
 
-      console.log({ name, opacity, pane });
-
       if (pane) {
         pane.style.opacity = String(opacity ?? 1);
       }
