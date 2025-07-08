@@ -802,6 +802,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     customBase: 'Własna mapa',
     customOverlay: 'Własna nakładka mapy',
+    menuAndToolbar: 'Mapy w menu i pasku narzędzi',
+    customMaps: 'Mapy własne',
+    base: 'Warstwy podstawowe',
+    overlay: 'Warstwy nakładkowe',
+    urlTemplate: 'Szablon URL',
+    minZoom: 'Minimalne powiększenie',
+    maxNativeZoom: 'Maksymalne natywne powiększenie',
+    extraScales: 'Dodatkowe rozdzielczości',
+    scaleWithDpi: 'Skaluj z DPI',
+    zIndex: 'Z-indeks',
   },
 
   elevationChart: {

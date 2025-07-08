@@ -578,6 +578,14 @@ export type Messages = {
     attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
     menuAndToolbar: string;
     customMaps: string;
+    base: string;
+    overlay: string;
+    urlTemplate: string;
+    minZoom: string;
+    maxNativeZoom: string;
+    extraScales: string;
+    scaleWithDpi: string;
+    zIndex: string;
   };
   elevationChart: {
     distance: string;

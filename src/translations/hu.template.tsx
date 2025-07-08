@@ -860,6 +860,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Az interaktív réteg rejtve van',
     customBase: 'Egyéni térkép',
     customOverlay: 'Egyéni térképátfedés',
+    menuAndToolbar: 'Térképek a menüben és az eszköztáron',
+    customMaps: 'Egyéni térképek',
+    base: 'Alaprétegek',
+    overlay: 'Fedőrétegek',
+    urlTemplate: 'URL sablon',
+    minZoom: 'Minimális nagyítás',
+    maxNativeZoom: 'Maximális natív nagyítás',
+    extraScales: 'Extra felbontások',
+    scaleWithDpi: 'Méretezés DPI alapján',
+    zIndex: 'Z-index',
   },
 
   elevationChart: {

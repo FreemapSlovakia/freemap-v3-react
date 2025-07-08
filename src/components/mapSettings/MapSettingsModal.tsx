@@ -65,6 +65,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 <MapLayersSettings
                   layersSettings={layersSettings}
                   setLayersSettings={setLayersSettings}
+                  customLayers={customLayers}
                 />
               </Accordion.Body>
             </Accordion.Item>

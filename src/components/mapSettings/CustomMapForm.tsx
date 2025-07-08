@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { Form, Stack } from 'react-bootstrap';
+import { useMessages } from '../../l10nInjector.js';
 
 type Props = {
   type: CustomLayerLetters;
@@ -162,17 +163,19 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     [update, model],
   );
 
+  const m = useMessages();
+
   return (
     <Stack gap={3}>
       <Form.Group controlId="url">
-        <Form.Label>Template</Form.Label>
+        <Form.Label>{m?.mapLayers.urlTemplate}</Form.Label>
 
         <Form.Control type="text" value={model.url} onChange={setUrl} />
       </Form.Group>
 
       <Stack direction="horizontal" gap={2}>
         <Form.Group controlId="minZoom">
-          <Form.Label>Min Zoom</Form.Label>
+          <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
 
           <Form.Control
             type="number"
@@ -183,7 +186,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="maxNativeZoom" className="w-50">
-          <Form.Label>Max Native Zoom</Form.Label>
+          <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
 
           <Form.Control
             type="number"
@@ -196,7 +199,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
       <Stack direction="horizontal" gap={2}>
         <Form.Group controlId="extraScales">
-          <Form.Label>Extra scales</Form.Label>
+          <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
 
           <div className="d-flex gap-2 flex-wrap">
             {[...model.extraScales, ''].map((a, i) => (
@@ -227,7 +230,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
           <Form.Check
             id="chk-scale-dpi"
-            label="Scale with DPI"
+            label={m?.mapLayers.scaleWithDpi}
             checked={model.scaleWithDpi}
             onChange={setScaleWithDpi}
           />
@@ -236,7 +239,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
       {type.startsWith(':') ? (
         <Form.Group>
-          <Form.Label>Z-Index</Form.Label>
+          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
 
           <Form.Control
             type="number"

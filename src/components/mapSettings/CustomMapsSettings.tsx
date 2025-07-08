@@ -6,6 +6,7 @@ import {
   Row,
   ToggleButton,
 } from 'react-bootstrap';
+import { useMessages } from '../../l10nInjector.js';
 import { CustomLayerDef, CustomLayerLetters } from '../../mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
 
@@ -15,30 +16,6 @@ type Props = {
 };
 
 export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
-  // const bases = [
-  //   ...baseLayers,
-  //   ...localCustomLayers
-  //     .filter((cl) => cl.type.startsWith('.'))
-  //     .map((cl) => ({
-  //       ...cl,
-  //       adminOnly: false,
-  //       icon: <MdDashboardCustomize />,
-  //       key: ['Digit' + cl.type.slice(1), false] as const,
-  //     })),
-  // ];
-
-  // const ovls = [
-  //   ...overlayLayers,
-  //   ...localCustomLayers
-  //     .filter((cl) => cl.type.startsWith(':'))
-  //     .map((cl) => ({
-  //       ...cl,
-  //       adminOnly: false,
-  //       icon: <MdDashboardCustomize />,
-  //       key: ['Digit' + cl.type.slice(1), true] as const,
-  //     })),
-  // ];
-
   const [type, setType] = useState<CustomLayerLetters>('.1');
 
   const handleSetType = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -58,11 +35,13 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
     [type, value, onChange],
   );
 
+  const m = useMessages();
+
   return (
     <>
       <Container fluid className="p-0">
         <Row className="mb-3">
-          <Col>Base</Col>
+          <Col className="align-self-center">{m?.mapLayers.base}</Col>
 
           <ButtonGroup as={Col}>
             {Array(10)
@@ -89,7 +68,7 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
         </Row>
 
         <Row className="mb-3">
-          <Col>Overlay</Col>
+          <Col className="align-self-center">{m?.mapLayers.overlay}</Col>
 
           <ButtonGroup as={Col}>
             {Array(10)

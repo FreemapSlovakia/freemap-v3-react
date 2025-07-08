@@ -818,6 +818,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
+    menuAndToolbar: 'Mappe nel menu e nella barra degli strumenti',
+    customMaps: 'Mappe personalizzate',
+    base: 'Livelli di base',
+    overlay: 'Livelli sovrapposti',
+    urlTemplate: 'Modello URL',
+    minZoom: 'Zoom minimo',
+    maxNativeZoom: 'Zoom nativo massimo',
+    extraScales: 'Risoluzioni extra',
+    scaleWithDpi: 'Scala con DPI',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

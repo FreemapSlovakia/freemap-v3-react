@@ -1,11 +1,13 @@
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import { FaEllipsisH, FaEye, FaRegListAlt } from 'react-icons/fa';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
 import {
   BaseLayerLetters,
   baseLayers,
+  CustomLayerDef,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
   IntegratedLayerLetters,
@@ -16,11 +18,13 @@ import {
 type Props = {
   layersSettings: Record<string, LayerSettings>;
   setLayersSettings: (s: Record<string, LayerSettings>) => void;
+  customLayers: CustomLayerDef[];
 };
 
 export function MapLayersSettings({
   layersSettings,
   setLayersSettings,
+  customLayers,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -57,6 +61,30 @@ export function MapLayersSettings({
     </Popover>
   );
 
+  const bases = [
+    ...baseLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith('.'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), false] as const,
+      })),
+  ];
+
+  const ovls = [
+    ...overlayLayers,
+    ...customLayers
+      .filter((cl) => cl.type.startsWith(':'))
+      .map((cl) => ({
+        ...cl,
+        adminOnly: false,
+        icon: <MdDashboardCustomize />,
+        key: ['Digit' + cl.type.slice(1), true] as const,
+      })),
+  ];
+
   return (
     <Table striped borderless size="sm">
       <thead>
@@ -76,7 +104,7 @@ export function MapLayersSettings({
       </thead>
 
       <tbody>
-        {[...baseLayers, ...overlayLayers].map(({ icon, type }, i) => (
+        {[...bases, ...ovls].map(({ icon, type }, i) => (
           <tr key={type}>
             <td>{icon}</td>
 
@@ -121,7 +149,7 @@ export function MapLayersSettings({
             </td>
 
             <td>
-              {i > baseLayers.length && (
+              {i > bases.length && (
                 <div>
                   <OverlayTrigger
                     trigger="click"

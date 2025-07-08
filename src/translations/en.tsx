@@ -772,6 +772,14 @@ const messages: Messages = {
     },
     menuAndToolbar: 'Maps in menu and toolbar',
     customMaps: 'Custom maps',
+    base: 'Base layers',
+    overlay: 'Overlay layers',
+    urlTemplate: 'URL Template',
+    minZoom: 'Min Zoom',
+    maxNativeZoom: 'Max Native Zoom',
+    extraScales: 'Extra resolutions',
+    scaleWithDpi: 'Scale with DPI',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

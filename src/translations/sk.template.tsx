@@ -820,6 +820,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
+    menuAndToolbar: 'Mapy v menu a lište',
+    customMaps: 'Vlastné mapy',
+    base: 'Základné vrstvy',
+    overlay: 'Prekryvné vrstvy',
+    urlTemplate: 'Šablóna URL',
+    minZoom: 'Minilálne priblíženie',
+    maxNativeZoom: 'Maximálne prirodzené priblíženie',
+    extraScales: 'Extra rozlíšenia máp',
+    scaleWithDpi: 'Škáluj s DPI',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

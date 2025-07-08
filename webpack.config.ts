@@ -244,7 +244,7 @@ const config: Configuration = {
           '<p>Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.</p>',
         nojsMessage:
           'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
-        loadingMessage: 'Loading…', // TODO translate
+        loadingMessage: 'Betöltés…',
       },
     }),
     new HtmlWebpackPlugin({
