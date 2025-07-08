@@ -22,7 +22,6 @@ export type LayerSettings = {
 
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
-  overlayPaneOpacity: number;
   customLayers: CustomLayerDef[];
 }
 

@@ -911,22 +911,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
       weir: 'Próg wodny',
     },
 
-    /* TODO translate; non-english translations:
-     * cs: 'Lanovka, vlek'
-     * hu: 'Felvonó, drótkötélpálya'
-     * it: 'Via aerea, ascensore'
-     * sk: 'Lanovka, vlek'
-     * de: 'Seilbahn, Aufzug'
-     */
     aerialway: 'Wyciąg linowy, kolejka',
-
-    /* TODO translate; non-english translations:
-     * cs: 'Železnice'
-     * hu: 'Vasút'
-     * it: 'Ferrovia'
-     * sk: 'Železnica'
-     * de: 'Eisenbahn'
-     */
     railway: 'Kolej',
   };
 

@@ -117,7 +117,8 @@ const accountModalFactory = () => import('./AccountModal.js');
 
 const downloadMapModalFactory = () => import('./DownloadMapModal.js');
 
-const mapSettingsModalFactory = () => import('./MapSettingsModal.js');
+const mapSettingsModalFactory = () =>
+  import('./mapSettings/MapSettingsModal.js');
 
 const embedMapModalFactory = () => import('./EmbedMapModal.js');
 
@@ -210,10 +211,6 @@ export function Main(): ReactElement {
       state.main.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition,
-  );
-
-  const overlayPaneOpacity = useAppSelector(
-    (state) => state.map.overlayPaneOpacity,
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -442,10 +439,6 @@ export function Main(): ReactElement {
 
   return (
     <>
-      <style>
-        {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
-      </style>
-
       {!window.fmHeadless && (
         <>
           {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}

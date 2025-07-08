@@ -522,7 +522,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'Viditelnost čar na mapě:',
       homeLocation: {
         label: 'Domovská poloha:',
         select: 'Vybrat na mapě',
@@ -791,6 +790,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
+    layerSettings: 'Mapové vrstvy',
+    customMaps: 'Vlastní mapy',
+    base: 'Základní vrstvy',
+    overlay: 'Překryvné vrstvy',
+    urlTemplate: 'Šablona URL',
+    minZoom: 'Minimální přiblížení',
+    maxNativeZoom: 'Maximální přirozené přiblížení',
+    extraScales: 'Další rozlišení',
+    scaleWithDpi: 'Škálovat podle DPI',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

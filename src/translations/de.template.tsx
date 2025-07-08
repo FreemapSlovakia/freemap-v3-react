@@ -556,7 +556,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         select: 'Auf der Karte auswählen',
         undefined: 'nicht festgelegt',
       },
-      overlayPaneOpacity: 'Deckkraft der Kartenlinien:',
     },
 
     account: {
@@ -830,6 +829,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     customBase: 'Benutzerdefinierte Karte',
     customOverlay: 'Benutzerdefiniertes Kartenoverlay',
+    customMaps: 'Benutzerdefinierte Karten',
+    base: 'Grundlegende Ebenen',
+    overlay: 'Überlagerungsebenen',
+    urlTemplate: 'URL-Vorlage',
+    minZoom: 'Min. Zoomstufe',
+    maxNativeZoom: 'Max. native Zoomstufe',
+    extraScales: 'Zusätzliche Auflösungen',
+    scaleWithDpi: 'Mit DPI skalieren',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

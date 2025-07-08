@@ -48,7 +48,6 @@ const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
-    // Note: German translations provided by ChatGPT; others by human.
     iso: 'pl_PL',
     elevationProfile: 'Profil wysokościowy',
     save: 'Zapisz',
@@ -62,7 +61,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fullscreen: 'Pełny ekran',
     yes: 'Tak',
     no: 'Nie',
-    masl: masl,
+    masl,
     copyCode: 'Skopiuj kod',
     loading: 'Ładowanie…',
     ok: 'OK',
@@ -540,7 +539,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         select: 'Wybierz na mapie',
         undefined: 'nieokreślona',
       },
-      overlayPaneOpacity: 'Przezroczystość linii na mapie:',
     },
 
     account: {
@@ -802,8 +800,18 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
     interactiveLayerWarning: 'Interaktywna warstwa jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
+    layerSettings: 'Mapové vrstvy',
     customBase: 'Własna mapa',
     customOverlay: 'Własna nakładka mapy',
+    customMaps: 'Mapy własne',
+    base: 'Warstwy podstawowe',
+    overlay: 'Warstwy nakładkowe',
+    urlTemplate: 'Szablon URL',
+    minZoom: 'Minimalne powiększenie',
+    maxNativeZoom: 'Maksymalne natywne powiększenie',
+    extraScales: 'Dodatkowe rozdzielczości',
+    scaleWithDpi: 'Skaluj z DPI',
+    zIndex: 'Z-indeks',
   },
 
   elevationChart: {
@@ -1162,7 +1170,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <strong>Wesprzyj wolontariuszy, którzy tworzą tę mapę!</strong>
         </p>
         <p className="mb-1">
-          Za <b>8 godzin</b> swojej pracy wolontariackiej* lub <b>8 €</b>
+          Za <b>8 godzin</b> swojej pracy wolontariackiej* lub <b>8 €</b>
           otrzymasz roczny dostęp obejmujący:
         </p>
         <ul>

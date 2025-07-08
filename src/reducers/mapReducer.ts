@@ -30,7 +30,6 @@ export const mapInitialState: MapState = {
   zoom: 8,
   overlays: [],
   layersSettings: {},
-  overlayPaneOpacity: 0.75,
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
@@ -67,10 +66,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(applySettings, (state, action) => {
       if (action.payload.layersSettings) {
         state.layersSettings = action.payload.layersSettings;
-      }
-
-      if (action.payload.overlayPaneOpacity) {
-        state.overlayPaneOpacity = action.payload.overlayPaneOpacity;
       }
 
       if (action.payload.customLayers) {
@@ -120,9 +115,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       }
 
       state.layersSettings = settings.layersSettings ?? state.layersSettings;
-
-      state.overlayPaneOpacity =
-        settings.overlayPaneOpacity ?? state.overlayPaneOpacity;
 
       state.customLayers = settings.customLayers?.length
         ? settings.customLayers

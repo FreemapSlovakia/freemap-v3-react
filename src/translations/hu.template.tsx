@@ -571,7 +571,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'Saját vonalak átlátszatlansága:',
       homeLocation: {
         label: 'Lakóhely:',
         select: 'Kijelölés a térképen',
@@ -859,8 +858,18 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Térkép beállítások',
     switch: 'Térképek',
     interactiveLayerWarning: 'Az interaktív réteg rejtve van',
+    layerSettings: 'Mapové vrstvy',
     customBase: 'Egyéni térkép',
     customOverlay: 'Egyéni térképátfedés',
+    customMaps: 'Egyéni térképek',
+    base: 'Alaprétegek',
+    overlay: 'Fedőrétegek',
+    urlTemplate: 'URL sablon',
+    minZoom: 'Minimális nagyítás',
+    maxNativeZoom: 'Maximális natív nagyítás',
+    extraScales: 'Extra felbontások',
+    scaleWithDpi: 'Méretezés DPI alapján',
+    zIndex: 'Z-index',
   },
 
   elevationChart: {

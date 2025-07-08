@@ -549,7 +549,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'La linea della mappa presenta opacità:',
       homeLocation: {
         label: 'Posizione di casa:',
         select: 'Seleziona sulla mappa',
@@ -819,6 +818,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
+    layerSettings: 'Mapové vrstvy',
+    customMaps: 'Mappe personalizzate',
+    base: 'Livelli di base',
+    overlay: 'Livelli sovrapposti',
+    urlTemplate: 'Modello URL',
+    minZoom: 'Zoom minimo',
+    maxNativeZoom: 'Zoom nativo massimo',
+    extraScales: 'Risoluzioni extra',
+    scaleWithDpi: 'Scala con DPI',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

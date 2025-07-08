@@ -510,7 +510,6 @@ const messages: Messages = {
 
   settings: {
     map: {
-      overlayPaneOpacity: 'Map line features opacity:',
       homeLocation: {
         label: 'Home location:',
         select: 'Select on the map',
@@ -771,6 +770,16 @@ const messages: Messages = {
         />
       ),
     },
+    layerSettings: 'Map layers',
+    customMaps: 'Custom maps',
+    base: 'Base layers',
+    overlay: 'Overlay layers',
+    urlTemplate: 'URL Template',
+    minZoom: 'Min Zoom',
+    maxNativeZoom: 'Max Native Zoom',
+    extraScales: 'Extra resolutions',
+    scaleWithDpi: 'Scale with DPI',
+    zIndex: 'Z-Index',
   },
 
   elevationChart: {

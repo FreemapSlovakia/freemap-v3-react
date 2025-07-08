@@ -377,7 +377,6 @@ export type Messages = {
   };
   settings: {
     map: {
-      overlayPaneOpacity: string;
       homeLocation: {
         label: string;
         select: string;
@@ -577,6 +576,16 @@ export type Messages = {
       photos: string;
     };
     attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
+    layerSettings: string;
+    customMaps: string;
+    base: string;
+    overlay: string;
+    urlTemplate: string;
+    minZoom: string;
+    maxNativeZoom: string;
+    extraScales: string;
+    scaleWithDpi: string;
+    zIndex: string;
   };
   elevationChart: {
     distance: string;
