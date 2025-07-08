@@ -576,7 +576,7 @@ export type Messages = {
       photos: string;
     };
     attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
-    menuAndToolbar: string;
+    layerSettings: string;
     customMaps: string;
     base: string;
     overlay: string;

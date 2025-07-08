@@ -770,7 +770,7 @@ const messages: Messages = {
         />
       ),
     },
-    menuAndToolbar: 'Maps in menu and toolbar',
+    layerSettings: 'Map layers',
     customMaps: 'Custom maps',
     base: 'Base layers',
     overlay: 'Overlay layers',

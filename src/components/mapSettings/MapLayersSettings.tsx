@@ -149,7 +149,7 @@ export function MapLayersSettings({
             </td>
 
             <td>
-              {i > bases.length && (
+              {i >= bases.length && (
                 <div>
                   <OverlayTrigger
                     trigger="click"

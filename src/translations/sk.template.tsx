@@ -820,7 +820,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    menuAndToolbar: 'Mapy v menu a lište',
+    layerSettings: 'Mapové vrstvy',
     customMaps: 'Vlastné mapy',
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',

@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useMap } from '../hooks/useMap.js';
 import missingTile from '../images/missing-tile-256x256.png';
 import { useMessages } from '../l10nInjector.js';
 import {
@@ -47,6 +48,28 @@ export function Layers(): ReactElement | null {
   const language = useAppSelector((state) => state.l10n.language);
 
   const m = useMessages();
+
+  const map = useMap();
+
+  const opacity = layersSettings['i']?.opacity;
+
+  console.log({ opacity });
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    for (const name of ['shadowPane', 'markerPane', 'overlayPane']) {
+      const pane = map.getPane(name);
+
+      console.log({ name, opacity, pane });
+
+      if (pane) {
+        pane.style.opacity = String(opacity ?? 1);
+      }
+    }
+  }, [map, opacity]);
 
   function getLayer(layerDef: LayerDef) {
     const { type, minZoom } = layerDef;

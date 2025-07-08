@@ -59,7 +59,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         <Modal.Body>
           <Accordion>
             <Accordion.Item eventKey="menuAndToolbar">
-              <Accordion.Header>{m?.mapLayers.menuAndToolbar}</Accordion.Header>
+              <Accordion.Header>{m?.mapLayers.layerSettings}</Accordion.Header>
 
               <Accordion.Body>
                 <MapLayersSettings

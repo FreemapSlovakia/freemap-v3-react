@@ -818,7 +818,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    menuAndToolbar: 'Mappe nel menu e nella barra degli strumenti',
+    layerSettings: 'Mapové vrstvy',
     customMaps: 'Mappe personalizzate',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',

@@ -17,8 +17,8 @@ import deMessages from './src/translations/de-shared.js';
 import enMessages from './src/translations/en-shared.js';
 import huMessages from './src/translations/hu-shared.js';
 import itMessages from './src/translations/it-shared.js';
-import skMessages from './src/translations/sk-shared.js';
 import plMessages from './src/translations/pl-shared.js';
+import skMessages from './src/translations/sk-shared.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
