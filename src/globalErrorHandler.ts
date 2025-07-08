@@ -75,6 +75,18 @@ function handle(id?: string) {
       <p>ID incidentu: ${id}.</p>
       <p>Na <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a> nám môžete zaslať toto ID a kroky, ako sa vám to podarilo.</p>
 
+      <h1>Chyba aplikace</h1>
+      <p>ID tiketu: ${id}.</p>
+      <p>Na <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a> nám můžete zaslat toto ID a kroky vedoucí k chybě.</p>
+
+      <h1>Błąd aplikacji</h1>
+      <p>ID zgłoszenia: ${id}.</p>
+      <p>Możesz wysłać ID zgłoszenia oraz kroki do odtworzenia błędu na adres <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>
+
+      <h1>Anwendungsfehler</h1>
+      <p>Ticket-ID: ${id}.</p>
+      <p>Sie können die Ticket-ID und die Schritte zur Reproduktion des Fehlers an <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a> senden.</p>
+
       <h1>Alkalmazáshiba</h1>
       <p>Jegyazonosító (ticket ID): ${id}.</p>
       <p>
