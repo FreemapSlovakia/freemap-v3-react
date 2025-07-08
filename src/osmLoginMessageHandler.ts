@@ -2,17 +2,16 @@ import { authWithOsm2 } from './actions/authActions.js';
 import { MyStore } from './store.js';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
-  window.addEventListener('message', (e) => {
-    if (
-      e.origin !== window.location.origin ||
-      typeof e.data !== 'object' ||
-      typeof e.data.freemap !== 'object' ||
-      e.data.freemap.action !== 'osmAuth'
-    ) {
+  const bc = new BroadcastChannel('freemap-osm-auth');
+
+  bc.onmessage = (e) => {
+    if (!e.data?.search) {
       return;
     }
 
-    const sp = new URLSearchParams(e.data.freemap.payload);
+    bc.postMessage({ ok: true });
+
+    const sp = new URLSearchParams(e.data.search);
 
     const code = sp.get('code');
 
@@ -24,5 +23,5 @@ export function attachOsmLoginMessageHandler(store: MyStore): void {
         }),
       );
     }
-  });
+  };
 }

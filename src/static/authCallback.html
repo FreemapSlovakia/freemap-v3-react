@@ -1,17 +1,13 @@
 <!doctype html>
-<html>
-  <head>
-    <title>Freemap</title>
-    <meta charset="UTF-8" />
-  </head>
+<title>Freemap</title>
+<script>
+  const bc = new BroadcastChannel('freemap-osm-auth');
 
-  <body>
-    <script>
-      opener.postMessage(
-        { freemap: { action: 'osmAuth', payload: window.location.search } },
-        location.origin,
-      );
+  bc.onmessage = (e) => {
+    if (e.data?.ok) {
       window.close();
-    </script>
-  </body>
-</html>
+    }
+  }
+
+  bc.postMessage({ search: window.location.search });
+</script>
