@@ -26,23 +26,14 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   handle: async ({ action, getState, dispatch }) => {
     const {
       where,
-      lat: lat0,
-      lon: lon0,
-      zoom: zoom0,
-      mapType: mapType0,
+      lat = getState().map.lat,
+      lon = getState().map.lon,
+      zoom = getState().map.zoom,
       includePoint,
       pointTitle,
       pointDescription,
       url,
     } = action.payload;
-
-    const lat = lat0 ?? getState().map.lat;
-
-    const lon = lon0 ?? getState().map.lon;
-
-    const zoom = zoom0 ?? getState().map.zoom;
-
-    const mapType = mapType0 ?? getState().map.mapType;
 
     window._paq.push(['trackEvent', 'Main', 'openInExternalApp', where]);
 
@@ -179,7 +170,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'oma.sk':
-        window.open(getOmaUrl(lat, lon, zoom, mapType));
+        window.open(getOmaUrl(lat, lon, zoom));
 
         break;
 

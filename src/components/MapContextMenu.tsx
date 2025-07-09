@@ -110,8 +110,6 @@ export function MapContextMenu(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
   const sc = useScrollClasses('vertical');
 
   const color = useAppSelector((state) => state.main.drawingColor);
@@ -323,7 +321,6 @@ export function MapContextMenu(): ReactElement {
                 lat={contextMenu.lat}
                 lon={contextMenu.lon}
                 zoom={zoom}
-                mapType={mapType}
                 includePoint
                 copy={false}
               />

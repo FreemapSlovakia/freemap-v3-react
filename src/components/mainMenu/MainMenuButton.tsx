@@ -27,8 +27,6 @@ import { SubmenuHeader } from './SubmenuHeader.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
 
 export function MainMenuButton(): ReactElement {
-  const mapType = useAppSelector((state) => state.map.mapType);
-
   const lat = useAppSelector((state) => state.map.lat);
 
   const lon = useAppSelector((state) => state.map.lon);
@@ -144,7 +142,6 @@ export function MainMenuButton(): ReactElement {
                 lat={lat}
                 lon={lon}
                 zoom={zoom}
-                mapType={mapType}
                 showKbdShortcut
               />
             </Fragment>

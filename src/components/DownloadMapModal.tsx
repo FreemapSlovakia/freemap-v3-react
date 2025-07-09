@@ -28,10 +28,10 @@ import { useMap } from '../hooks/useMap.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import {
-  baseLayers,
   IntegratedLayerDef,
+  integratedLayerDefs,
+  IntegratedLayerLetters,
   IsTileLayerDef,
-  overlayLayers,
 } from '../mapDefinitions.js';
 import { CreditsAlert } from './CredistAlert.js';
 
@@ -49,8 +49,6 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   }, [dispatch]);
 
   const user = useAppSelector((state) => state.auth.user);
-
-  const activeMapType = useAppSelector((state) => state.map.mapType);
 
   const [name, setName] = useState('');
 
@@ -75,24 +73,21 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const mapDefs = useMemo(
     () =>
-      [baseLayers, overlayLayers].flatMap((layers) =>
-        layers
-          .filter(
-            (
-              def,
-            ): def is IntegratedLayerDef<
-              IsTileLayerDef & {
-                creditsPerMTile: number;
-                technology: 'tile';
-              }
-            > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
-          )
-          .map((layer) => ({
-            ...layer,
-            overlay: layers === overlayLayers,
-            url: layer.url.startsWith('//') ? 'http:' + layer.url : layer.url,
-          })),
-      ),
+      integratedLayerDefs
+        .filter(
+          (
+            def,
+          ): def is IntegratedLayerDef<
+            IsTileLayerDef & {
+              creditsPerMTile: number;
+            }
+          > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
+        )
+        .map((layer) => ({
+          ...layer,
+          overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
+          url: layer.url.startsWith('//') ? 'http:' + layer.url : layer.url,
+        })),
     [],
   );
 
@@ -106,6 +101,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   //       minZoom: mapDef.minZoom,
   //       maxNativeZoom: mapDef.maxNativeZoom,
   //       creditsPerMTile: mapDef.creditsPerMTile,
+  //       layer: mapDef.layer,
   //       attribution: mapDef.attribution
   //         .map(
   //           (a) =>
@@ -118,8 +114,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   //   ),
   // );
 
+  const layers = useAppSelector((state) => state.map.layers);
+
   const [mapType, setMapType] = useState(
-    mapDefs.find((mapDef) => mapDef.type === activeMapType)?.type ?? 'X',
+    mapDefs.find(
+      (mapDef) => mapDef.creditsPerMTile && layers.includes(mapDef.type),
+    )?.type ?? 'X',
   );
 
   const [format, setFormat] = useState('mbtiles');
@@ -259,7 +259,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   useEffect(() => {
     setName((name) =>
-      name && nameChanged ? name : (m?.mapLayers.letters[mapType] ?? ''),
+      name && nameChanged
+        ? name
+        : (m?.mapLayers.letters[mapType as IntegratedLayerLetters] ?? ''),
     );
   }, [m, mapType, nameChanged]);
 
@@ -384,7 +386,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             >
               {mapDefs.map((layer) => (
                 <option key={layer.type} value={layer.type}>
-                  {m?.mapLayers.letters[layer.type]}
+                  {m?.mapLayers.letters[layer.type as IntegratedLayerLetters]}
                 </option>
               ))}
             </Form.Select>

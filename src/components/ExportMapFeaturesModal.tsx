@@ -88,7 +88,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       exportables.push('objects');
     }
 
-    if (state.map.overlays.includes('I')) {
+    if (state.map.layers.includes('I')) {
       exportables.push('pictures');
     }
 

@@ -1,6 +1,7 @@
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import type { GalleryColorizeBy } from './actions/galleryActions.js';
+import { upgradeCustomLayers } from './mapDefinitions.js';
 import {
   authInitialState,
   authReducer,
@@ -87,6 +88,23 @@ export function getInitialState() {
   }
 
   const initial: Partial<RootState> = {};
+
+  if (is<{ mapType: string; overlays: string[] }>(persisted.map)) {
+    (persisted.map as unknown as { layers: string[] }).layers = [
+      persisted.map.mapType,
+      ...persisted.map.overlays,
+    ];
+  }
+
+  if (!is<{ customLayers: unknown }>(persisted.map)) {
+    // nothing
+  } else if (is<{ customLayers: unknown[] }>(persisted.map)) {
+    persisted.map.customLayers = upgradeCustomLayers(
+      persisted.map.customLayers,
+    );
+  } else {
+    delete persisted.map.customLayers;
+  }
 
   if (is<Partial<MapState>>(persisted.map)) {
     initial.map = { ...mapInitialState, ...persisted.map };

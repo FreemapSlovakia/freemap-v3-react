@@ -33,12 +33,9 @@ export function useAttributionInfo() {
 
   const dispatch = useDispatch();
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const licenceShownForRef = useRef([
-    new Set<string>(),
     new Set<string>(),
     new Set<string>(),
   ] as const);
@@ -89,7 +86,7 @@ export function useAttributionInfo() {
   const [movedCount, setMovedCount] = useState(0);
 
   useEffect(() => {
-    if (mapType !== 'S' || !esriAttributions || !map) {
+    if (!layers.includes('S') || !esriAttributions || !map) {
       if (esriAttribution.length > 0) {
         dispatch(mapSetEsriAttribution([]));
       }
@@ -117,7 +114,7 @@ export function useAttributionInfo() {
     if (attributions.join('\n') !== esriAttribution.join('\n')) {
       dispatch(mapSetEsriAttribution(attributions));
     }
-  }, [esriAttributions, esriAttribution, movedCount, mapType, map, dispatch]);
+  }, [esriAttributions, esriAttribution, movedCount, layers, map, dispatch]);
 
   useEffect(() => {
     function handleMoveZoom() {
@@ -143,7 +140,7 @@ export function useAttributionInfo() {
 
   useEffect(() => {
     async function fetchAttributions() {
-      if (ea.current || mapType !== 'S') {
+      if (ea.current || !layers.includes('S')) {
         return;
       }
 
@@ -161,19 +158,17 @@ export function useAttributionInfo() {
     }
 
     fetchAttributions(); // TODO handle error
-  }, [mapType]);
+  }, [layers]);
 
   useEffect(() => {
     if (window.isRobot) {
       return;
     }
 
-    const [mapTypes, mapOverlays, esriAttributions] =
-      licenceShownForRef.current;
+    const [mapLayers, esriAttributions] = licenceShownForRef.current;
 
     if (
-      mapTypes.has(mapType) &&
-      overlays.every((o) => mapOverlays.has(o)) &&
+      layers.every((o) => mapLayers.has(o)) &&
       esriAttribution.every((a) => esriAttributions.has(a)) &&
       prevNonceRef.current === nonce
     ) {
@@ -182,10 +177,8 @@ export function useAttributionInfo() {
 
     prevNonceRef.current = nonce;
 
-    mapTypes.add(mapType);
-
-    for (const o of overlays) {
-      mapOverlays.add(o);
+    for (const o of layers) {
+      mapLayers.add(o);
     }
 
     for (const a of esriAttribution) {
@@ -200,7 +193,7 @@ export function useAttributionInfo() {
         timeout: 5000,
       }),
     );
-  }, [mapType, overlays, dispatch, nonce, esriAttribution]);
+  }, [layers, dispatch, nonce, esriAttribution]);
 
   return useCallback(() => {
     setNonce((n) => n + 1);

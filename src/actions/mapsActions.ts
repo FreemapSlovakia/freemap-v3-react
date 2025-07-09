@@ -37,13 +37,7 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   map?: Partial<
     Pick<
       MapState,
-      | 'mapType'
-      | 'lat'
-      | 'lon'
-      | 'zoom'
-      | 'overlays'
-      | 'customLayers'
-      | 'shading'
+      'lat' | 'lon' | 'zoom' | 'layers' | 'customLayers' | 'shading'
     >
   >;
   objectsV2?: {

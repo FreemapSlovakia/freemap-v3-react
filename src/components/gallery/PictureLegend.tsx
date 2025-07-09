@@ -4,7 +4,7 @@ import { useMessages } from '../../l10nInjector.js';
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(
-    (state) => state.map.overlays.includes('I') && state.gallery.colorizeBy,
+    (state) => state.map.layers.includes('I') && state.gallery.colorizeBy,
   );
 
   const m = useMessages();

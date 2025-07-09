@@ -169,16 +169,7 @@ export function Main(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const hasParamShading = useAppSelector(
-    (state) =>
-      state.map.overlays.includes('h') || state.map.overlays.includes('z'),
-  );
-
-  const showInteractiveLayer = useAppSelector(
-    (state) => !state.map.overlays.includes('i'),
-  );
+  const layers = useAppSelector((state) => state.map.layers);
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
@@ -569,7 +560,7 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
-              {hasParamShading && (
+              {(layers.includes('h') || layers.includes('z')) && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
                   <AsyncComponent factory={shadingControlFactory} />
                 </div>
@@ -605,7 +596,7 @@ export function Main(): ReactElement {
 
         <input {...getInputProps()} />
 
-        {mapType[0] === 'V' && (
+        {layers.some((layer) => layer[0] === 'V') && (
           <a
             href="https://www.maptiler.com"
             className="watermark"
@@ -641,7 +632,7 @@ export function Main(): ReactElement {
                 )}
                 {isSelecting && <SelectionTool />}
 
-                {showInteractiveLayer && (
+                {!layers.includes('i') && (
                   <>
                     <SearchResults />
                     {hasObjects && <ObjectsResult />}
@@ -732,7 +723,7 @@ export function Main(): ReactElement {
         factory={supportUsModalFactory}
       />
 
-      {mapType === 'X' ? (
+      {layers.includes('X') ? (
         <AsyncModal
           show={activeModal === 'legend'}
           factory={legendOutdoorModalFactory}

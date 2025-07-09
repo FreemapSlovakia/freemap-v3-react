@@ -41,9 +41,7 @@ export function useMenuHandler({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const [menuShown, setShow] = useState(false);
 
@@ -153,7 +151,6 @@ export function useMenuHandler({
               lat,
               lon,
               zoom,
-              mapType,
               pointTitle,
               pointDescription,
             }),
@@ -161,12 +158,12 @@ export function useMenuHandler({
         }
 
         setShow(false);
-      } else if (eventKey.startsWith('overlays-toggle-')) {
+      } else if (eventKey.startsWith('layers-toggle-')) {
         dispatch(
           mapRefocus({
-            overlays: overlays.includes('I')
-              ? overlays.filter((o) => o !== 'I')
-              : [...overlays, 'I'],
+            layers: layers.includes('I')
+              ? layers.filter((o) => o !== 'I')
+              : [...layers, 'I'],
           }),
         );
       } else if (eventKey.startsWith('galAll-')) {
@@ -195,11 +192,10 @@ export function useMenuHandler({
       dispatch,
       lat,
       lon,
-      mapType,
       pointDescription,
       pointTitle,
       zoom,
-      overlays,
+      layers,
       sendGalleryEmails,
     ],
   );

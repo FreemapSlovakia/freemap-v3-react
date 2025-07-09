@@ -19,7 +19,6 @@ import {
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
-import { is } from 'typia';
 import { setActiveModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
@@ -28,18 +27,13 @@ import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import {
-  BaseLayerLetters,
-  baseLayers,
-  CustomBaseLayerDef,
-  CustomOverlayLayerDef,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
   HasScaleWithDpi,
+  integratedLayerDefs,
   IntegratedLayerLetters,
   IsCommonLayerDef,
   IsIntegratedLayerDef,
-  overlayLayers,
-  OverlayLetters,
 } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
@@ -60,9 +54,7 @@ export function MapSwitchButton(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const activeLayers = useAppSelector((state) => state.map.layers);
 
   const pictureFilterIsActive = useAppSelector((state) =>
     Object.values(state.gallery.filter).some((x) => x !== undefined),
@@ -117,38 +109,25 @@ export function MapSwitchButton(): ReactElement {
         setShow(false);
 
         dispatch(setActiveModal('map-settings'));
-      } else if (selection.startsWith('b')) {
-        const base = selection.slice(1);
+      } else if (selection.startsWith('layer-')) {
+        const layer = selection.slice(6);
 
-        if (mapType !== base && is<BaseLayerLetters>(base)) {
-          dispatch(mapRefocus({ mapType: base }));
-        }
-      } else if (selection.startsWith('o')) {
-        const overlay = selection.slice(1);
+        // if (baseLayerLetters.includes(layer) || layer.startsWith('.')) {
+        // }
 
-        const s = new Set(overlays);
+        const s = new Set(activeLayers);
 
-        if (!is<OverlayLetters>(overlay)) {
-          // uh-oh
-        } else if (s.has(overlay)) {
-          s.delete(overlay);
+        if (s.has(layer)) {
+          s.delete(layer);
         } else {
-          s.add(overlay);
+          s.add(layer);
         }
 
-        dispatch(mapRefocus({ overlays: [...s] }));
+        dispatch(mapRefocus({ layers: [...s] }));
       }
     },
-    [dispatch, handlePossibleFilterClick, mapType, overlays],
+    [dispatch, handlePossibleFilterClick, activeLayers],
   );
-
-  const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
-    dispatch(
-      mapRefocus({
-        mapType: e.currentTarget.dataset['type'] as BaseLayerLetters,
-      }),
-    );
-  };
 
   const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (handlePossibleFilterClick(e)) {
@@ -157,11 +136,11 @@ export function MapSwitchButton(): ReactElement {
 
     const { type } = e.currentTarget.dataset;
 
-    if (!is<OverlayLetters>(type)) {
+    if (!type) {
       return;
     }
 
-    const s = new Set(overlays);
+    const s = new Set(activeLayers);
 
     if (s.has(type)) {
       s.delete(type);
@@ -169,7 +148,7 @@ export function MapSwitchButton(): ReactElement {
       s.add(type);
     }
 
-    dispatch(mapRefocus({ overlays: [...s] }));
+    dispatch(mapRefocus({ layers: [...s] }));
   };
 
   const isWide = useMediaQuery({ query: '(min-width: 576px)' });
@@ -180,32 +159,16 @@ export function MapSwitchButton(): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const bases = [
-    ...baseLayers,
-    ...customLayers
-      .filter((cl): cl is CustomBaseLayerDef => cl.type.startsWith('.'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), false] as [string, boolean],
-        premiumFromZoom: undefined,
-        experimental: undefined,
-      })),
-  ];
-
-  const ovls = [
-    ...overlayLayers,
-    ...customLayers
-      .filter((cl): cl is CustomOverlayLayerDef => cl.type.startsWith(':'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), true] as [string, boolean],
-        premiumFromZoom: undefined,
-        experimental: undefined,
-      })),
+  const layerDefs = [
+    ...integratedLayerDefs,
+    ...customLayers.map((cl) => ({
+      ...cl,
+      adminOnly: false,
+      icon: <MdDashboardCustomize />,
+      key: ['Digit' + cl.type.slice(1), false] as [string, boolean],
+      premiumFromZoom: undefined,
+      experimental: undefined,
+    })),
   ];
 
   const handleToggle = useCallback((nextShow: boolean) => {
@@ -302,17 +265,19 @@ export function MapSwitchButton(): ReactElement {
     );
   }
 
+  let lastLayer: undefined | 'base' | 'overlay';
+
   return (
     <>
       <div className="d-none d-sm-block me-1">{m?.mapLayers.switch}</div>
 
       <ButtonGroup>
-        {(isWide ? bases : [])
+        {(isWide ? layerDefs : [])
           .filter(
             ({ type }) =>
               (layersSettings[type]?.showInToolbar ??
                 defaultToolbarLayerLetters.includes(type)) ||
-              mapType === type,
+              activeLayers.includes(type),
           )
           .map(({ type, ...rest }) => (
             <Button
@@ -320,37 +285,13 @@ export function MapSwitchButton(): ReactElement {
               title={
                 type.startsWith('.')
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                  : m?.mapLayers.letters[type as IntegratedLayerLetters]
+                  : type.startsWith(':')
+                    ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                    : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
               key={type}
               data-type={type}
-              active={mapType === type}
-              onClick={handleBaseClick}
-            >
-              {commonBadges({ scaleWithDpi: false, ...rest })}
-            </Button>
-          ))}
-
-        {(isWide ? ovls : [])
-          .filter(
-            (l) =>
-              (l.type === 'i' && overlays.includes('i')) ||
-              (l.type === 'I' && pictureFilterIsActive) ||
-              (layersSettings[l.type]?.showInToolbar ??
-                defaultToolbarLayerLetters.includes(l.type)) ||
-              overlays.includes(l.type),
-          )
-          .map(({ type, ...rest }) => (
-            <Button
-              variant="secondary"
-              title={
-                type.startsWith(':')
-                  ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                  : m?.mapLayers.letters[type as IntegratedLayerLetters]
-              }
-              key={type}
-              data-type={type}
-              active={overlays.includes(type as OverlayLetters)}
+              active={activeLayers.includes(type)}
               onClick={handleOverlayClick}
             >
               {commonBadges({ scaleWithDpi: false, ...rest })}
@@ -363,7 +304,7 @@ export function MapSwitchButton(): ReactElement {
                 />
               )}
 
-              {overlays.includes('i') && type === 'i' && (
+              {activeLayers.includes('i') && type === 'i' && (
                 <FaExclamationTriangle
                   data-interactive="1"
                   title={m?.mapLayers.interactiveLayerWarning}
@@ -404,101 +345,71 @@ export function MapSwitchButton(): ReactElement {
 
               <Dropdown.Divider />
 
-              {
-                // TODO base and overlay layers have too much duplicate code
-                bases
-                  .filter(({ adminOnly }) => isAdmin || !adminOnly)
-                  .filter(
-                    (l) =>
-                      mapType === l.type ||
-                      show === 'all' ||
-                      (layersSettings[l.type]?.showInMenu ??
-                        defaultMenuLayerLetters.includes(l.type)),
-                  )
-                  .map(({ type, ...rest }) => (
-                    <Dropdown.Item
-                      href={`?layers=${type}`}
-                      key={type}
-                      eventKey={'b' + type}
-                      active={mapType === type}
-                      style={{
-                        opacity:
-                          show === 'all' ||
-                          (layersSettings[type]?.showInMenu ??
-                            defaultMenuLayerLetters.includes(type))
-                            ? 1
-                            : 0.5,
-                      }}
-                    >
-                      {mapType === type ? (
-                        <FaRegCheckCircle />
-                      ) : (
-                        <FaRegCircle />
-                      )}
-
-                      {menuItemCommons(
-                        rest,
-                        type.startsWith('.')
-                          ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                          : m?.mapLayers.letters[
-                              type as IntegratedLayerLetters
-                            ],
-                      )}
-                    </Dropdown.Item>
-                  ))
-              }
-
-              <Dropdown.Divider />
-
-              {ovls
+              {layerDefs
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .filter(
                   (l) =>
-                    overlays.includes(l.type as OverlayLetters) ||
                     show === 'all' ||
+                    activeLayers.includes(l.type) ||
                     (layersSettings[l.type]?.showInMenu ??
                       defaultMenuLayerLetters.includes(l.type)),
                 )
-                .map(({ type, ...rest }) => {
-                  const active =
-                    (type === 'i') !==
-                    overlays.includes(type as OverlayLetters);
+                .map(({ type, layer, ...rest }) => {
+                  const active = (type === 'i') !== activeLayers.includes(type);
+
+                  const oldLastLayer = lastLayer;
+
+                  lastLayer = layer;
 
                   return (
-                    <Dropdown.Item
-                      key={type}
-                      as="button"
-                      eventKey={'o' + type}
-                      active={active}
-                      style={{
-                        opacity:
-                          type === 'i' ||
-                          show === 'all' ||
-                          (layersSettings[type]?.showInMenu ??
-                            defaultMenuLayerLetters.includes(type))
-                            ? 1
-                            : 0.5,
-                      }}
-                    >
-                      <Checkbox value={active} />
-
-                      {menuItemCommons(
-                        rest,
-                        type.startsWith(':')
-                          ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                          : m?.mapLayers.letters[
-                              type as IntegratedLayerLetters
-                            ],
+                    <>
+                      {oldLastLayer && oldLastLayer !== lastLayer && (
+                        <Dropdown.Divider />
                       )}
 
-                      {type === 'I' && pictureFilterIsActive && (
-                        <FaFilter
-                          data-filter="1"
-                          title={m?.mapLayers.photoFilterWarning}
-                          className="text-warning ms-1"
-                        />
-                      )}
-                    </Dropdown.Item>
+                      <Dropdown.Item
+                        href={`?layers=${type}`}
+                        key={type}
+                        eventKey={'layer-' + type}
+                        active={active}
+                        style={{
+                          opacity:
+                            type === 'i' ||
+                            show === 'all' ||
+                            (layersSettings[type]?.showInMenu ??
+                              defaultMenuLayerLetters.includes(type))
+                              ? 1
+                              : 0.5,
+                        }}
+                      >
+                        {layer === 'base' ? (
+                          <Checkbox value={active} />
+                        ) : active ? (
+                          <FaRegCheckCircle />
+                        ) : (
+                          <FaRegCircle />
+                        )}
+
+                        {menuItemCommons(
+                          rest,
+                          type.startsWith('.')
+                            ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                            : type.startsWith(':')
+                              ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                              : m?.mapLayers.letters[
+                                  type as IntegratedLayerLetters
+                                ],
+                        )}
+
+                        {type === 'I' && pictureFilterIsActive && (
+                          <FaFilter
+                            data-filter="1"
+                            title={m?.mapLayers.photoFilterWarning}
+                            className="text-warning ms-1"
+                          />
+                        )}
+                      </Dropdown.Item>
+                    </>
                   );
                 })}
 

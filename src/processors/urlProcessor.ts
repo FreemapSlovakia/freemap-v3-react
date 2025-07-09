@@ -6,7 +6,6 @@ import { mapRefocus } from '../actions/mapActions.js';
 import { serializeShading } from '../components/parameterizedShading/Shading.js';
 import { basicModals } from '../constants.js';
 import { DocumentKey } from '../documents/index.js';
-import { OverlayLetters } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
@@ -51,8 +50,7 @@ export const urlProcessor: Processor = {
       map.lat,
       map.lon,
       map.zoom,
-      map.mapType,
-      map.overlays,
+      map.layers,
       map.customLayers,
       map.shading,
       routePlanner,
@@ -87,13 +85,10 @@ export const urlProcessor: Processor = {
 
     const queryParts: [string, string | number | boolean][] = [
       ['map', `${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`],
-      [
-        'layers',
-        `${map.mapType}${map.overlays.filter((l) => l !== 'i').join('')}`,
-      ],
+      ['layers', map.layers.filter((l) => l !== 'i').join('')],
     ];
 
-    if (map.overlays.includes('h') || map.overlays.includes('z')) {
+    if (map.layers.includes('h') || map.layers.includes('z')) {
       queryParts.push(['shading', serializeShading(map.shading)]);
     }
 
@@ -111,9 +106,8 @@ export const urlProcessor: Processor = {
       ? []
       : queryParts;
 
-    const filteredCustomLayers = map.customLayers?.filter(
-      ({ type }) =>
-        type === map.mapType || map.overlays.includes(type as OverlayLetters),
+    const filteredCustomLayers = map.customLayers?.filter(({ type }) =>
+      map.layers.includes(type),
     );
 
     if (filteredCustomLayers.length) {

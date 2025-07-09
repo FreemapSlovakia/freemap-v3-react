@@ -27,7 +27,7 @@ export function GallerySubmenu(): JSX.Element {
         .length > 0,
   );
 
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const showDirection = useAppSelector((state) => state.gallery.showDirection);
 
@@ -39,8 +39,8 @@ export function GallerySubmenu(): JSX.Element {
     <>
       <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
-      <Dropdown.Item as="button" eventKey="overlays-toggle-I">
-        <Checkbox value={overlays.includes('I')} /> <FaEye />{' '}
+      <Dropdown.Item as="button" eventKey="layers-toggle-I">
+        <Checkbox value={layers.includes('I')} /> <FaEye />{' '}
         {m?.gallery.showLayer} <kbd>⇧f</kbd>
       </Dropdown.Item>
 

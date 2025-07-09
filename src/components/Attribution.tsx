@@ -5,28 +5,19 @@ import { documentShow } from '../actions/mainActions.js';
 import type { DocumentKey } from '../documents/index.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
-import {
-  AttributionDef,
-  baseLayers,
-  overlayLayers,
-} from '../mapDefinitions.js';
+import { AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 
 export function Attribution({ unknown }: Props): ReactElement {
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const m = useMessages();
 
   const categorized = categorize(
-    [
-      ...baseLayers.filter(({ type }) => mapType === type),
-      ...overlayLayers.filter(({ type }) =>
-        (overlays as string[]).includes(type),
-      ),
-    ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+    integratedLayerDefs
+      .filter(({ type }) => layers.includes(type))
+      .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
@@ -34,7 +25,7 @@ export function Attribution({ unknown }: Props): ReactElement {
   const dispatch = useDispatch();
 
   return categorized.length === 0 ? (
-    <div>{unknown}</div>
+    <div>{unknown}</div> // TODO translate
   ) : (
     <ul className="m-0 ms-n4 me-n4">
       {categorized.map(({ type, attributions }) => (

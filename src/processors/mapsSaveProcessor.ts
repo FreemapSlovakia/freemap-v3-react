@@ -117,11 +117,10 @@ function getMapDataFromState(state: RootState): MapData {
     galleryFilter: gallery.filter,
     trackViewer,
     map: {
-      mapType: map.mapType,
       lat: map.lat,
       lon: map.lon,
       zoom: map.zoom,
-      overlays: map.overlays,
+      layers: map.layers,
       customLayers: map.customLayers,
       shading: map.shading,
     },

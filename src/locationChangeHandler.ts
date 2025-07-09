@@ -61,7 +61,7 @@ import {
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import type { DocumentKey } from './documents/index.js';
-import type { CustomLayerDef } from './mapDefinitions.js';
+import { type CustomLayerDef, upgradeCustomLayers } from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
@@ -455,9 +455,9 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const newCls = assert<CustomLayerDef[]>(JSON.parse(customLayers)).filter(
-        (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
-      );
+      const newCls = assert<CustomLayerDef[]>(
+        upgradeCustomLayers(JSON.parse(customLayers)),
+      ).filter((cl) => !existingClsStrings.includes(JSON.stringify(cl)));
 
       if (newCls.length) {
         for (const cm of newCls) {
@@ -481,12 +481,13 @@ export function handleLocationChange(store: MyStore): void {
 
   const { shading } = query;
 
+  const map = getState().map;
+
   if (
     shading &&
     !Array.isArray(shading) &&
-    (getState().map.overlays.includes('h') ||
-      getState().map.overlays.includes('z')) &&
-    shading !== serializeShading(getState().map.shading)
+    (map.layers.includes('h') || map.layers.includes('z')) &&
+    shading !== serializeShading(map.shading)
   ) {
     function toColor(color = '00000000') {
       const bands = Color('#' + color).array();

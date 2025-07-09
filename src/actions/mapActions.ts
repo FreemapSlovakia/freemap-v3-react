@@ -1,17 +1,12 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Shading } from '../components/parameterizedShading/Shading.js';
-import {
-  BaseLayerLetters,
-  CustomLayerDef,
-  OverlayLetters,
-} from '../mapDefinitions.js';
+import { CustomLayerDef } from '../mapDefinitions.js';
 
 export interface MapViewState {
-  mapType: BaseLayerLetters;
   lat: number;
   lon: number;
   zoom: number;
-  overlays: OverlayLetters[];
+  layers: string[];
 }
 
 export type LayerSettings = {
@@ -29,9 +24,10 @@ export const mapRefocus = createAction<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >('MAP_REFOCUS');
 
-export const mapSuppressLegacyMapWarning = createAction<{ forever: boolean }>(
-  'MAP_SUPPRESS_LEGACY_MAP_WARING',
-);
+export const mapSuppressLegacyMapWarning = createAction<{
+  type: string;
+  forever: boolean;
+}>('MAP_SUPPRESS_LEGACY_MAP_WARING');
 
 export const mapSetCustomLayers = createAction<CustomLayerDef[]>(
   'MAP_SET_CUSTOM_LAYERS',

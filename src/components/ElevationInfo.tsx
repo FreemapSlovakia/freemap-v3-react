@@ -2,18 +2,13 @@ import { pointToTile } from '@mapbox/tilebelt';
 import { useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { is } from 'typia';
 import useLocalStorageState from 'use-local-storage-state';
 import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
-import {
-  baseLayers,
-  HasUrl,
-  IntegratedBaseLayerDef,
-  IntegratedOverlayLayerDef,
-  overlayLayers,
-} from '../mapDefinitions.js';
+import { integratedLayerDefs, IsTileLayerDef } from '../mapDefinitions.js';
 import type { LatLon } from '../types/common.js';
 
 export type ElevationInfoBaseProps = {
@@ -53,30 +48,16 @@ export function ElevationInfo({
 
   const m = useMessages();
 
-  const mapType = useAppSelector((state) => state.map.mapType);
+  const layers = useAppSelector((state) => state.map.layers);
 
-  const baseTileUrl =
-    substitute(
-      baseLayers
-        .filter(
-          (layer): layer is IntegratedBaseLayerDef & HasUrl => 'url' in layer,
-        )
-        .find((l) => l.type === mapType)?.url,
-    ) ?? '';
+  const tileLayerTypes = integratedLayerDefs.filter((def) =>
+    is<IsTileLayerDef>(def),
+  );
 
-  const overlays = useAppSelector((state) => state.map.overlays);
-
-  const overlayTileUrls = overlays
+  const tileUrls = layers
     .map((type) => ({
       type,
-      url: substitute(
-        overlayLayers
-          .filter(
-            (layer): layer is IntegratedOverlayLayerDef & HasUrl =>
-              'url' in layer,
-          )
-          .find((l) => l.type === type)?.url,
-      )!,
+      url: substitute(tileLayerTypes.find((def) => def.type === type)?.url)!, // TODO check if zoom exists
     }))
     .filter(({ url }) => !!url);
 
@@ -136,15 +117,12 @@ export function ElevationInfo({
 
       {!window.fmEmbedded && (
         <div>
-          {tileMessage}:{' '}
-          <Alert.Link target="_blank" rel="noreferrer" href={baseTileUrl}>
-            {zoom}/{x}/{y}
-          </Alert.Link>
-          {overlayTileUrls.length > 0 && (
+          {tileMessage}: {zoom}/{x}/{y}
+          {tileUrls.length > 0 && (
             <>
               {' '}
               (
-              {overlayTileUrls.map((o, i) => (
+              {tileUrls.map((o, i) => (
                 <>
                   {i > 0 ? ', ' : null}
                   <Alert.Link href={o.url}>{o.type}</Alert.Link>

@@ -24,11 +24,10 @@ export interface MapState extends MapStateBase {
 }
 
 export const mapInitialState: MapState = {
-  mapType: 'X',
+  layers: ['X'],
   lat: 48.70714,
   lon: 19.4995,
   zoom: 8,
-  overlays: [],
   layersSettings: {},
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
@@ -61,7 +60,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         action.payload.forever
           ? 'legacyMapWarningSuppressions'
           : 'tempLegacyMapWarningSuppressions'
-      ].push(state.mapType);
+      ].push(action.type);
     })
     .addCase(applySettings, (state, action) => {
       if (action.payload.layersSettings) {
@@ -73,12 +72,12 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       }
     })
     .addCase(gallerySetFilter, (state) => {
-      if (!state.overlays.includes('I')) {
-        state.overlays.push('I');
+      if (!state.layers.includes('I')) {
+        state.layers.push('I');
       }
     })
     .addCase(mapRefocus, (state, action) => {
-      const { zoom, lat, lon, mapType, overlays } = action.payload;
+      const { zoom, lat, lon, layers } = action.payload;
 
       if (zoom) {
         state.zoom = zoom;
@@ -92,12 +91,8 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         state.lon = lon;
       }
 
-      if (mapType) {
-        state.mapType = mapType;
-      }
-
-      if (overlays) {
-        state.overlays = overlays;
+      if (layers) {
+        state.layers = layers;
       }
 
       if (
@@ -134,8 +129,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         lat: map?.lat ?? state.lat,
         lon: map?.lon ?? state.lon,
         zoom: map?.zoom ?? state.zoom,
-        mapType: map?.mapType ?? state.mapType,
-        overlays: map?.overlays ?? state.overlays,
+        layers: map?.layers ?? state.layers,
         customLayers: map?.customLayers ?? state.customLayers,
         shading: map?.shading ?? state.shading,
       }),

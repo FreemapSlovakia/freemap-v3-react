@@ -54,11 +54,10 @@ function persistSelectedState(state: RootState) {
       },
       map: {
         layersSettings: state.map.layersSettings,
-        mapType: state.map.mapType,
         lat: state.map.lat,
         lon: state.map.lon,
         zoom: state.map.zoom,
-        overlays: state.map.overlays,
+        layers: state.map.layers,
         customLayers: state.map.customLayers,
         legacyMapWarningSuppressions: state.map.legacyMapWarningSuppressions,
         shading: state.map.shading,

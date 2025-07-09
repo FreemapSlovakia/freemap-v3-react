@@ -38,8 +38,6 @@ export function OpenInExternalAppMenuButton({
     pointDescription,
   });
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
   const zoom = useAppSelector((state) => state.map.zoom);
 
   return (
@@ -59,7 +57,6 @@ export function OpenInExternalAppMenuButton({
           lat={lat}
           lon={lon}
           zoom={zoom}
-          mapType={mapType}
           includePoint={includePoint}
           url={url}
         />

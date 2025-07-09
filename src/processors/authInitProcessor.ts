@@ -1,9 +1,10 @@
 import { get } from 'idb-keyval';
-import { assert } from 'typia';
+import { assert, is } from 'typia';
 import { authInit, authSetUser } from '../actions/authActions.js';
 import { httpRequest } from '../httpRequest.js';
+import { upgradeCustomLayers } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
-import type { User } from '../types/auth.js';
+import type { User, UserSettings } from '../types/auth.js';
 import { StringDates } from '../types/common.js';
 
 function track(id: number | undefined) {
@@ -47,10 +48,29 @@ export const authInitProcessor: Processor = {
         let user: User | null;
 
         if (ok) {
-          const rawUser = assert<StringDates<User>>(await res.json());
+          const rawUser = assert<
+            StringDates<Omit<User, 'settings'>> & { settings?: unknown }
+          >(await res.json());
+
+          let settings: UserSettings | undefined;
+
+          if (is<{ customLayers: unknown[] }>(rawUser.settings)) {
+            rawUser.settings.customLayers = upgradeCustomLayers(
+              rawUser.settings.customLayers,
+            );
+          }
+
+          try {
+            settings = assert<UserSettings>(rawUser.settings);
+          } catch (e) {
+            console.error('Invalid user settings:', e);
+
+            settings = undefined;
+          }
 
           user = {
             ...rawUser,
+            settings,
             premiumExpiration:
               rawUser.premiumExpiration === null
                 ? null

@@ -7,7 +7,7 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import { useMessages } from '../../l10nInjector.js';
-import { CustomLayerDef, CustomLayerLetters } from '../../mapDefinitions.js';
+import { CustomLayerDef } from '../../mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
 
 type Props = {
@@ -16,10 +16,10 @@ type Props = {
 };
 
 export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
-  const [type, setType] = useState<CustomLayerLetters>('.1');
+  const [type, setType] = useState('.1');
 
   const handleSetType = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setType(e.currentTarget.value as CustomLayerLetters);
+    setType(e.currentTarget.value);
   }, []);
 
   const handleChange = useCallback(

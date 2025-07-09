@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import { GiHills, GiTreasureMap } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
+import { is } from 'typia';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
@@ -132,25 +133,21 @@ export type CustomBaseLayerLetters = `.${Num1digit}`;
 
 export type CustomOverlayLayerLetters = `:${Num1digit}`;
 
-export type CustomLayerLetters =
-  | CustomBaseLayerLetters
-  | CustomOverlayLayerLetters;
-
-export type IntegratedBaseLayerLetters = (typeof baseLayerLetters)[number];
-
-export type IntegratedOverlayLayerLetters = (typeof overlayLetters)[number];
+// export type CustomLayerLetters =
+//   | CustomBaseLayerLetters
+//   | CustomOverlayLayerLetters;
 
 export type IntegratedLayerLetters =
-  | IntegratedBaseLayerLetters
-  | IntegratedOverlayLayerLetters;
+  | (typeof baseLayerLetters)[number]
+  | (typeof overlayLetters)[number];
 
-export type BaseLayerLetters =
-  | IntegratedBaseLayerLetters
-  | CustomBaseLayerLetters;
+// export type BaseLayerLetters =
+//   | IntegratedBaseLayerLetters
+//   | CustomBaseLayerLetters;
 
-export type OverlayLetters =
-  | IntegratedOverlayLayerLetters
-  | CustomOverlayLayerLetters;
+// export type OverlayLetters =
+//   | IntegratedOverlayLayerLetters
+//   | CustomOverlayLayerLetters;
 
 export type HasUrl = {
   url: string;
@@ -208,6 +205,7 @@ export type IsTileLayerDef = HasUrl &
   HasMaxNativeZoom &
   HasZIndex &
   HasScaleWithDpi & {
+    technology: 'tile';
     subdomains?: string | string[];
     tms?: boolean;
     extraScales?: number[];
@@ -215,28 +213,33 @@ export type IsTileLayerDef = HasUrl &
     cors?: boolean;
   };
 
-export type IsIntegratedBaseLayerDef = {
-  type: IntegratedBaseLayerLetters;
+export type IsBaseLayerDef = {
   layer: 'base';
 };
 
-export type IsCustomBaseLayerDef = {
-  type: CustomBaseLayerLetters;
-};
-
-export type IsIntegratedOverlayLayerDef = {
-  type: IntegratedOverlayLayerLetters;
+export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
 };
 
-export type IsCustomOverlayLayerDef = {
-  type: CustomOverlayLayerLetters;
+export type IsIntegratedBaseLayerDef = IsBaseLayerDef & {
+  type: string;
+};
+
+export type IsCustomBaseLayerDef = IsBaseLayerDef & {
+  type: string;
+};
+
+export type IsIntegratedOverlayLayerDef = IsOverlayLayerDef & {
+  type: string;
+};
+
+export type IsCustomOverlayLayerDef = IsOverlayLayerDef & {
+  type: string;
 };
 
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
-      technology: 'tile';
     })
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
@@ -272,8 +275,23 @@ export type OverlayLayerDef = IntegratedOverlayLayerDef | CustomOverlayLayerDef;
 
 export type LayerDef = CustomLayerDef | IntegratedLayerDef;
 
+type OldCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'> & {
+  layer?: 'base' | 'overlay';
+  technology?: 'tile';
+};
+
+export function upgradeCustomLayers(customLayers: unknown[]) {
+  return customLayers
+    .filter((cl) => is<OldCustomLayerDef>(cl))
+    .map((cl) => ({
+      ...cl,
+      layer: cl.type.charAt(0) === ':' ? 'overlay' : 'base',
+      technology: 'tile',
+    }));
+}
+
 function legacyFreemap(
-  type: IntegratedBaseLayerLetters,
+  type: string,
   icon: ReactElement,
 ): IntegratedBaseLayerDef {
   return {
@@ -290,7 +308,7 @@ function legacyFreemap(
   };
 }
 
-export const baseLayers: IntegratedBaseLayerDef[] = [
+export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'X',
@@ -597,9 +615,6 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       },
     ],
   },
-];
-
-export const overlayLayers: IntegratedOverlayLayerDef[] = [
   {
     layer: 'overlay',
     type: 'i',

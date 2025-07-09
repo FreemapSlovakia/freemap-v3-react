@@ -1,4 +1,5 @@
 import { geoJSON } from 'leaflet';
+import { is } from 'typia';
 import {
   clearMapFeatures,
   convertToDrawing,
@@ -16,9 +17,9 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
 import {
-  baseLayers,
   HasMaxNativeZoom,
-  IntegratedBaseLayerDef,
+  integratedLayerDefs,
+  IsBaseLayerDef,
 } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
@@ -89,17 +90,14 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     }
 
     if (action.payload.focus !== false && geojson) {
-      const { mapType } = getState().map;
+      const { layers } = getState().map;
 
       (await mapPromise).fitBounds(geoJSON(geojson).getBounds(), {
         maxZoom: Math.min(
           action.payload.result.zoom ?? 18,
-          baseLayers
-            .filter(
-              (layer): layer is HasMaxNativeZoom & IntegratedBaseLayerDef =>
-                'maxNativeZoom' in layer,
-            )
-            .find((layer) => layer.type === mapType)?.maxNativeZoom ?? 16,
+          integratedLayerDefs
+            .filter((def) => is<IsBaseLayerDef & HasMaxNativeZoom>(def))
+            .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
         ),
       });
     }

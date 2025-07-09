@@ -2,17 +2,17 @@ import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import { FaEllipsisH, FaEye, FaRegListAlt } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
+import { is } from 'typia';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
 import {
-  BaseLayerLetters,
-  baseLayers,
   CustomLayerDef,
   defaultMenuLayerLetters,
   defaultToolbarLayerLetters,
+  integratedLayerDefs,
   IntegratedLayerLetters,
-  overlayLayers,
-  OverlayLetters,
+  IsBaseLayerDef,
+  IsOverlayLayerDef,
 } from '../../mapDefinitions.js';
 
 type Props = {
@@ -28,7 +28,7 @@ export function MapLayersSettings({
 }: Props): ReactElement {
   const m = useMessages();
 
-  function getName(type: BaseLayerLetters | OverlayLetters) {
+  function getName(type: string) {
     return type.startsWith('.')
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
@@ -61,28 +61,14 @@ export function MapLayersSettings({
     </Popover>
   );
 
-  const bases = [
-    ...baseLayers,
-    ...customLayers
-      .filter((cl) => cl.type.startsWith('.'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), false] as const,
-      })),
-  ];
-
-  const ovls = [
-    ...overlayLayers,
-    ...customLayers
-      .filter((cl) => cl.type.startsWith(':'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), true] as const,
-      })),
+  const layerDefs = [
+    ...integratedLayerDefs,
+    ...customLayers.map((cl) => ({
+      ...cl,
+      adminOnly: false,
+      icon: <MdDashboardCustomize />,
+      key: ['Digit' + cl.type.slice(1), false] as const,
+    })),
   ];
 
   return (
@@ -104,7 +90,7 @@ export function MapLayersSettings({
       </thead>
 
       <tbody>
-        {[...bases, ...ovls].map(({ icon, type }, i) => (
+        {layerDefs.map(({ icon, type, layer }, i) => (
           <tr key={type}>
             <td>{icon}</td>
 
@@ -149,7 +135,7 @@ export function MapLayersSettings({
             </td>
 
             <td>
-              {i >= bases.length && (
+              {layer === 'overlay' && (
                 <div>
                   <OverlayTrigger
                     trigger="click"

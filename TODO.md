@@ -1,0 +1,5 @@
+- interactive opacity vs wiki layer opacity
+- map tile (obey zoom)
+- custom maps - add: tms, subdomains, cors
+- layers[0]
+- layers.includes('$')

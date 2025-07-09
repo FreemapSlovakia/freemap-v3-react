@@ -16,7 +16,7 @@ export function CopyrightButton(): ReactElement {
     (['sk', 'cs'].includes(state.l10n.language)
       ? ['A', 'K', 'T', 'C', 'X', 'O']
       : ['X', 'O']
-    ).includes(state.map.mapType),
+    ).includes(state.map.layers[0]),
   );
 
   const showAttribution = useAttributionInfo();

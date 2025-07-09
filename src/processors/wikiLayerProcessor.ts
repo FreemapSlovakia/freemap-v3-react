@@ -36,17 +36,17 @@ export const wikiLayerProcessor: Processor = {
   errorKey: 'general.loadError',
   async handle({ getState, dispatch, prevState }) {
     const {
-      map: { overlays, lat, lon, zoom },
+      map: { layers, lat, lon, zoom },
       wiki: { points },
     } = getState();
 
     const prevMap = prevState.map;
 
-    const ok0 = overlays.includes('w');
+    const ok0 = layers.includes('w');
 
     const ok = ok0 && zoom >= 8;
 
-    const prevOk0 = prevMap.overlays.includes('w');
+    const prevOk0 = prevMap.layers.includes('w');
 
     const prevOk = prevOk0 && prevMap.zoom >= 8;
 

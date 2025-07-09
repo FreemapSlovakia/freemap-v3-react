@@ -13,14 +13,14 @@ export function HelpSubmenu(): JSX.Element {
 
   const skCz = ['sk', 'cs'].includes(language);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
+  const layers = useAppSelector((state) => state.map.layers);
 
   return (
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
       {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
-        mapType,
+        layers[0],
       ) && (
         <Dropdown.Item href="#show=legend" eventKey="modal-legend">
           <FaRegMap /> {m?.mainMenu.mapLegend}

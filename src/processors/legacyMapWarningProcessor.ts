@@ -11,18 +11,19 @@ import {
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const legacyMapWarningProcessor: Processor = {
-  stateChangePredicate: (state) => state.map.mapType,
+  stateChangePredicate: (state) =>
+    ['T', 'C', 'K'].some((type) => state.map.layers.includes(type)),
   actionCreator: enableUpdatingUrl,
   predicatesOperation: 'OR',
   async handle({ getState, dispatch }) {
     const {
-      mapType,
+      layers,
       legacyMapWarningSuppressions,
       tempLegacyMapWarningSuppressions,
     } = getState().map;
 
     if (
-      (mapType === 'T' || mapType === 'C' || mapType === 'K') &&
+      ['T', 'C', 'K'].some((type) => layers.includes(type)) &&
       !legacyMapWarningSuppressions.includes(mapType) &&
       !tempLegacyMapWarningSuppressions.includes(mapType)
     ) {
