@@ -1,7 +1,8 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { FaCopy } from 'react-icons/fa';
+import { TbDecimal } from 'react-icons/tb';
 import useLocalStorageState from 'use-local-storage-state';
 import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
@@ -26,6 +27,8 @@ export type ElevationInfoProps = ElevationInfoBaseProps & {
   tileMessage: string;
   maslMessage: string;
 };
+
+const FORMATS = ['D', 'DM', 'DMS'] as const;
 
 export function ElevationInfo({
   lang,
@@ -102,35 +105,37 @@ export function ElevationInfo({
     serializer,
   });
 
-  const handleMinusClick = useCallback(() => {
-    setFormat((f) => (f > 0 ? f - 1 : f));
+  const coordinates = useMemo(
+    () =>
+      format === 0
+        ? `${point.lat.toFixed(6)}, ${point.lon.toFixed(6)}`
+        : latLonToString(point, lang, FORMATS[format - 1]),
+    [format, lang, point],
+  );
+
+  const handleNextFormatClick = useCallback(() => {
+    console.log('next format');
+
+    setFormat((f) => (f + 1) % FORMATS.length);
   }, [setFormat]);
 
-  const handlePlusClick = useCallback(() => {
-    setFormat((f) => (f < 3 ? f + 1 : f));
-  }, [setFormat]);
+  console.log({ format });
+
+  const handleCopyClick = useCallback(() => {
+    navigator.clipboard.writeText(coordinates);
+  }, [coordinates]);
 
   return (
     <>
       <InputGroup size="sm">
-        <Button onClick={handleMinusClick}>
-          <FaAngleLeft />
+        <Form.Control readOnly className="fm-fs-content" value={coordinates} />
+
+        <Button type="button" onClick={handleNextFormatClick}>
+          <TbDecimal />
         </Button>
-        <Form.Control
-          readOnly
-          className="fm-fs-content"
-          value={
-            format === 0
-              ? `${point.lat.toFixed(6)}, ${point.lon.toFixed(6)}`
-              : latLonToString(
-                  point,
-                  lang,
-                  (['D', 'DM', 'DMS'] as const)[format - 1],
-                )
-          }
-        />
-        <Button onClick={handlePlusClick}>
-          <FaAngleRight />
+
+        <Button type="button" onClick={handleCopyClick}>
+          <FaCopy />
         </Button>
       </InputGroup>
 
