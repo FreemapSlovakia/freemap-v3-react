@@ -412,6 +412,8 @@ export function Main(): ReactElement {
     ),
   );
 
+  const maxZoom = useAppSelector((state) => state.map.maxZoom);
+
   return (
     <>
       {!window.fmHeadless && (
@@ -598,7 +600,8 @@ export function Main(): ReactElement {
           <MapContainer
             zoomControl={false}
             attributionControl={false}
-            maxZoom={20}
+            maxZoom={maxZoom}
+            key={maxZoom}
             ref={setMap}
             center={{ lat, lng: lon }}
             zoom={zoom}

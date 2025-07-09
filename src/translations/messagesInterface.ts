@@ -586,6 +586,8 @@ export type Messages = {
     extraScales: string;
     scaleWithDpi: string;
     zIndex: string;
+    generalSettings: string;
+    maxZoom: string;
   };
   elevationChart: {
     distance: string;

@@ -830,6 +830,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Extra rozlíšenia máp',
     scaleWithDpi: 'Škáluj s DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'Všeobecné nastavenia',
+    maxZoom: 'Maximálne problíženie',
   },
 
   elevationChart: {

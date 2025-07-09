@@ -21,8 +21,6 @@ const shadingLayerFactory = () =>
 
 const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 
-const MAX_ZOOM = 20;
-
 export function Layers(): ReactElement | null {
   const overlays = useAppSelector((state) => state.map.overlays);
 
@@ -45,6 +43,8 @@ export function Layers(): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const maxZoom = useAppSelector((state) => state.map.maxZoom);
 
   const m = useMessages();
 
@@ -104,7 +104,7 @@ export function Layers(): ReactElement | null {
           zIndex={layerDef?.zIndex}
           tileSize={isHdpi ? 128 : 256}
           minZoom={minZoom}
-          maxZoom={MAX_ZOOM}
+          maxZoom={maxZoom}
           maxNativeZoom={
             layerDef.maxNativeZoom === undefined
               ? undefined
@@ -127,7 +127,7 @@ export function Layers(): ReactElement | null {
           factory={maplibreLayerFactory}
           key={type}
           style={layerDef.url}
-          maxZoom={MAX_ZOOM}
+          maxZoom={maxZoom}
           minZoom={minZoom}
           language={language}
         />
@@ -148,7 +148,7 @@ export function Layers(): ReactElement | null {
           }
           url={layerDef.url}
           minZoom={minZoom}
-          maxZoom={MAX_ZOOM}
+          maxZoom={maxZoom}
           maxNativeZoom={
             layerDef.maxNativeZoom === undefined
               ? undefined

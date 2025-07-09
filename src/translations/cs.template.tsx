@@ -800,6 +800,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Další rozlišení',
     scaleWithDpi: 'Škálovat podle DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'Obecná nastavení',
+    maxZoom: 'Maximální přiblížení',
   },
 
   elevationChart: {

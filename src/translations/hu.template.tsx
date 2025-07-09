@@ -870,6 +870,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Extra felbontások',
     scaleWithDpi: 'Méretezés DPI alapján',
     zIndex: 'Z-index',
+    generalSettings: 'Általános beállítások',
+    maxZoom: 'Maximális nagyítás',
   },
 
   elevationChart: {

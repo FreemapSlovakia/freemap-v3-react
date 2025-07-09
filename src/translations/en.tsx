@@ -780,6 +780,8 @@ const messages: Messages = {
     extraScales: 'Extra resolutions',
     scaleWithDpi: 'Scale with DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'General settings',
+    maxZoom: 'Max zoom',
   },
 
   elevationChart: {

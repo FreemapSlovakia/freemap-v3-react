@@ -838,6 +838,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Zusätzliche Auflösungen',
     scaleWithDpi: 'Mit DPI skalieren',
     zIndex: 'Z-Index',
+    generalSettings: 'Allgemeine Einstellungen',
+    maxZoom: 'Maximale Zoomstufe',
   },
 
   elevationChart: {

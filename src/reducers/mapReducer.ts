@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { authSetUser } from '../actions/authActions.js';
 import { gallerySetFilter } from '../actions/galleryActions.js';
-import { applySettings, Selection } from '../actions/mainActions.js';
+import { applySettings } from '../actions/mainActions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
@@ -14,12 +14,12 @@ import { mapsLoaded } from '../actions/mapsActions.js';
 import { Shading } from '../components/parameterizedShading/Shading.js';
 
 export interface MapState extends MapStateBase {
-  selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
   legacyMapWarningSuppressions: string[];
   tempLegacyMapWarningSuppressions: string[];
   esriAttribution: string[];
+  maxZoom: number;
   shading: Shading;
 }
 
@@ -30,13 +30,13 @@ export const mapInitialState: MapState = {
   zoom: 8,
   overlays: [],
   layersSettings: {},
-  selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
   customLayers: [],
   legacyMapWarningSuppressions: [],
   tempLegacyMapWarningSuppressions: [],
   esriAttribution: [],
+  maxZoom: 20,
   shading: {
     backgroundColor: [0x00, 0x00, 0x00, 1],
     components: [
@@ -70,6 +70,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       if (action.payload.customLayers) {
         state.customLayers = action.payload.customLayers;
+      }
+
+      if (action.payload.maxZoom !== undefined) {
+        state.maxZoom = action.payload.maxZoom;
       }
     })
     .addCase(gallerySetFilter, (state) => {

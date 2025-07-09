@@ -99,6 +99,7 @@ type Settings = {
   customLayers?: CustomLayerDef[];
   drawingColor?: string;
   drawingWidth?: number;
+  maxZoom?: number;
 };
 
 export const saveSettings = createAction<{
