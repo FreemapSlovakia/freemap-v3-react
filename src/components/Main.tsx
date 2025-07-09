@@ -27,22 +27,14 @@ import {
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
 } from '../actions/trackViewerActions.js';
-import { ChangesetsResult } from '../components/ChangesetsResult.js';
 import { CopyrightButton } from '../components/CopyrightButton.js';
-import { DrawingLinesResult } from '../components/DrawingLinesResult.js';
-import { DrawingPointsResult } from '../components/DrawingPointsResult.js';
 import { GalleryPicker } from '../components/gallery/GalleryPicker.js';
 import { GalleryResult } from '../components/gallery/GalleryResult.js';
 import { Layers } from '../components/Layers.js';
-import { LocationResult } from '../components/LocationResult.js';
 import { MapControls } from '../components/MapControls.js';
 import { MapDetailsMenu } from '../components/MapDetailsMenu.js';
-import { ObjectsResult } from '../components/ObjectsResult.js';
-import { RoutePlannerResult } from '../components/RoutePlannerResult.js';
 import { SearchMenu } from '../components/SearchMenu.js';
-import { SearchResults } from '../components/SearchResults.js';
 import { Toasts } from '../components/Toasts.js';
-import { TrackingResult } from '../components/tracking/TrackingResult.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
@@ -54,24 +46,21 @@ import { useMessages } from '../l10nInjector.js';
 import { setMapLeafletElement } from '../leafletElementHolder.js';
 import { isPremium } from '../premium.js';
 import {
-  drawingLinePolys,
-  selectingModeSelector,
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../selectors/mainSelectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
-import { DrawingPointsTool } from './DrawingPointsTool.js';
 import { GalleryModals } from './gallery/GalleryModals.js';
 import { PictureLegend } from './gallery/PictureLegend.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
 import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
-import { MapDetailsTool } from './MapDetailsTool.js';
 import { MapsMenu } from './MapsMenu.js';
-import { SelectionTool } from './SelectionTool.js';
+import { Results } from './Results.js';
 import { ToolMenu } from './ToolMenu.js';
+import { Tools } from './Tools.js';
 import { TrackingSelection } from './TrackingSelection.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
 import { WikiLayer } from './WikiLayer.js';
@@ -108,8 +97,6 @@ const shadingControlFactory = () =>
   import('./parameterizedShading/ShadingControl.js');
 
 const elevationChartFactory = () => import('./ElevationChart.js');
-
-const drawingLinesToolFactory = () => import('./DrawingLinesTool.js');
 
 const trackingModalFactory = () => import('./tracking/TrackingModal.js');
 
@@ -176,10 +163,6 @@ export function Main(): ReactElement {
       state.map.overlays.includes('h') || state.map.overlays.includes('z'),
   );
 
-  const showInteractiveLayer = useAppSelector(
-    (state) => !state.map.overlays.includes('i'),
-  );
-
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
   const tool = useAppSelector((state) => state.main.tool);
@@ -211,6 +194,10 @@ export function Main(): ReactElement {
       state.main.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition,
+  );
+
+  const showResults = useAppSelector(
+    (state) => !state.map.overlays.includes('i'),
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -367,15 +354,11 @@ export function Main(): ReactElement {
     disabled: activeModal !== null,
   });
 
-  const isSelecting = useAppSelector(selectingModeSelector);
-
   const selectionMenu = showMenu ? selectionType : null;
 
   const scLogo = useScrollClasses('horizontal');
 
   const scMapControls = useScrollClasses('horizontal');
-
-  const drawingLines = useAppSelector(drawingLinePolys);
 
   const elevationChartActive = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
@@ -421,14 +404,6 @@ export function Main(): ReactElement {
 
   const pickingPosition = useAppSelector(
     (state) => state.gallery.pickingPositionForId !== null,
-  );
-
-  const trackGeojson = useAppSelector(
-    (state) => state.trackViewer.trackGeojson,
-  );
-
-  const hasObjects = useAppSelector(
-    (state) => state.objects.objects.length > 0,
   );
 
   const askingCookieConsent = useAppSelector((state) =>
@@ -632,38 +607,13 @@ export function Main(): ReactElement {
 
             <Layers />
 
-            {showMenu && (
-              <>
-                {tool === 'map-details' && <MapDetailsTool />}
-                {tool === 'draw-points' && <DrawingPointsTool />}
-                {drawingLines && (
-                  <AsyncComponent factory={drawingLinesToolFactory} />
-                )}
-                {isSelecting && <SelectionTool />}
+            <Tools />
 
-                {showInteractiveLayer && (
-                  <>
-                    <SearchResults />
-                    {hasObjects && <ObjectsResult />}
-                    <RoutePlannerResult />
-                    <DrawingLinesResult />
-                    <DrawingPointsResult />
-                    <LocationResult />
-                    {trackGeojson && (
-                      <AsyncComponent
-                        factory={() => import('./TrackViewerResult.js')}
-                        trackGeojson={trackGeojson}
-                      />
-                    )}
-                    <ChangesetsResult />
-                    <TrackingResult />
-                  </>
-                )}
+            {showMenu && showResults && <Results />}
 
-                {showGalleryPicker && <GalleryPicker />}
-                <WikiLayer />
-              </>
-            )}
+            {showMenu && <WikiLayer />}
+
+            {showGalleryPicker && <GalleryPicker />}
 
             {selectingHomeLocation !== false && <HomeLocationPickingResult />}
 

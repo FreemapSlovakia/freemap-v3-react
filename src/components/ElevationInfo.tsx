@@ -1,5 +1,5 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaCopy } from 'react-icons/fa';
 import { TbDecimal } from 'react-icons/tb';

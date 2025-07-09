@@ -3,7 +3,7 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { createRoot } from 'react-dom/client';
 import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
-import { Marker, Tooltip } from 'react-leaflet';
+import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { assertGuard } from 'typia';
 import {
@@ -63,6 +63,10 @@ export function WikiLayer(): ReactElement {
   const preview = useAppSelector((state) => state.wiki.preview);
 
   const loading = useAppSelector((state) => state.wiki.loading);
+
+  const opacity = useAppSelector(
+    (state) => state.map.layersSettings['w']?.opacity ?? 1,
+  );
 
   const dispatch = useDispatch();
 
@@ -139,33 +143,34 @@ export function WikiLayer(): ReactElement {
         </Modal.Footer>
       </Modal>
 
-      {points.map(({ id, lat, lon, name, wikipedia }) => (
-        <Marker
-          key={id}
-          position={{ lat, lng: lon }}
-          icon={wikiIcon}
-          eventHandlers={{
-            click() {
-              dispatch(wikiLoadPreview(wikipedia));
-            },
-          }}
-          // onclick={onSelects[i]}
-        >
-          {(wikipedia || name) && (
-            <Tooltip className="compact" direction="top" permanent>
-              <div
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: 150,
-                }}
-              >
-                {wikipedia.replace(/^[a-z]+:/, '') || name}
-              </div>
-            </Tooltip>
-          )}
-        </Marker>
-      ))}
+      <Pane name="wiki" style={{ opacity }} key={opacity}>
+        {points.map(({ id, lat, lon, name, wikipedia }) => (
+          <Marker
+            key={id}
+            position={{ lat, lng: lon }}
+            icon={wikiIcon}
+            eventHandlers={{
+              click() {
+                dispatch(wikiLoadPreview(wikipedia));
+              },
+            }}
+          >
+            {(wikipedia || name) && (
+              <Tooltip className="compact" direction="top" permanent>
+                <div
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: 150,
+                  }}
+                >
+                  {wikipedia.replace(/^[a-z]+:/, '') || name}
+                </div>
+              </Tooltip>
+            )}
+          </Marker>
+        ))}
+      </Pane>
     </>
   );
 }
