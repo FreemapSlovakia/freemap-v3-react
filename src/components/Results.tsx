@@ -1,4 +1,3 @@
-import 'leaflet/dist/leaflet.css';
 import { ReactElement } from 'react';
 import { Pane } from 'react-leaflet';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
