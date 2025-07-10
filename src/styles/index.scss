@@ -12,11 +12,7 @@ body {
   overflow: hidden;
 }
 
-.hidden {
-  display: none !important;
-}
-
-.header {
+.fm-header {
   position: absolute;
   z-index: 1010;
   top: 0px;
@@ -29,7 +25,7 @@ body {
   }
 }
 
-.info-bar {
+.fm-info-bar {
   @media screen {
     background-color: #ffa;
     color: black;
@@ -50,7 +46,7 @@ body {
   }
 }
 
-.menus {
+.fm-menus {
   pointer-events: none;
   & > * {
     pointer-events: auto;
@@ -59,14 +55,6 @@ body {
   flex-wrap: wrap;
   column-gap: 0.5rem;
   margin-inline: 0.5rem;
-}
-
-.tool-panel {
-  position: absolute;
-  z-index: 1010;
-  top: 10px;
-  left: 68px;
-  margin-right: 10px;
 }
 
 #freemap-logo-print {
@@ -169,11 +157,6 @@ button#freemap-logo {
   margin: 4px;
 }
 
-#tools-button {
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-
 .fm-type-zoom-control {
   display: flex;
   flex-wrap: wrap;
@@ -202,7 +185,7 @@ button#freemap-logo {
   }
 }
 
-.legend-item {
+.fm-legend-item {
   display: flex;
   margin-bottom: 2px;
   align-items: center;

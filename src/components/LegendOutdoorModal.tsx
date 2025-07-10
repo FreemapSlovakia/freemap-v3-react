@@ -86,7 +86,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
 
               <Accordion.Body>
                 {c.items.map(({ id, name }) => (
-                  <div key={id} className="legend-item">
+                  <div key={id} className="fm-legend-item">
                     <div>
                       <img
                         src={`${fmMapserverUrl}/legend-image/${id}`}

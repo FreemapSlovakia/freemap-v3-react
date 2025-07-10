@@ -430,10 +430,10 @@ export function Main(): ReactElement {
 
           <Toasts />
 
-          <div className="header">
+          <div className="fm-header">
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
-            <div className="menus">
+            <div className="fm-menus">
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 

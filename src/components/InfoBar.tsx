@@ -42,7 +42,7 @@ export function InfoBar(): ReactElement | null {
   const InfoBarContent = infoBars[key];
 
   return (
-    <div className="info-bar">
+    <div className="fm-info-bar">
       <CloseButton
         onClick={() => {
           setShow(0);
