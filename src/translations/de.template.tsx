@@ -511,9 +511,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   drawing: {
     edit: {
       title: 'Eigenschaften',
-      color: 'Farbe:',
-      label: 'Beschriftung:',
-      width: 'Breite:',
+      color: 'Farbe',
+      label: 'Beschriftung',
+      width: 'Breite',
       hint: 'Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
       type: 'Geometrietyp',
     },
@@ -677,10 +677,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Füge den folgenden Code in deine HTML-Seite ein:',
     example: 'Das Ergebnis wird folgendermaßen aussehen:',
-    dimensions: 'Größe:',
-    height: 'Höhe:',
-    width: 'Breite:',
-    enableFeatures: 'Funktionen aktivieren:',
+    dimensions: 'Größe',
+    height: 'Höhe',
+    width: 'Breite',
+    enableFeatures: 'Funktionen aktivieren',
     enableSearch: 'Suche',
     enableMapSwitch: 'Kartenebenen wechseln',
     enableLocateMe: 'Standort ermitteln',
@@ -1069,9 +1069,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
 
-    area: 'Exportbereich:',
-    format: 'Format:',
-    layersTitle: 'Optionale Ebenen:',
+    area: 'Exportbereich',
+    format: 'Format',
+    layersTitle: 'Optionale Ebenen',
     layers: {
       contours: 'Höhenlinien',
       shading: 'Schattiertes Relief',
@@ -1083,8 +1083,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Gefundene Route',
       track: 'GPX-Track',
     },
-
-    mapScale: 'Kartenauflösung:',
+    mapScale: 'Kartenauflösung',
 
     alert: () => (
       <>

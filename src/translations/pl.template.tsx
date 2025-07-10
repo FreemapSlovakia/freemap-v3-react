@@ -497,9 +497,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   drawing: {
     edit: {
       title: 'Właściwości',
-      color: 'Kolor:',
-      label: 'Etykieta:',
-      width: 'Szerokość:',
+      color: 'Kolor',
+      label: 'Etykieta',
+      width: 'Szerokość',
       hint: 'Aby usunąć etykietę, pozostaw to pole puste.',
       type: 'Typ geometrii',
     },
@@ -651,10 +651,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Umieść poniższy kod na swojej stronie HTML:',
     example: 'Wynik będzie wyglądał następująco:',
-    dimensions: 'Wymiary:',
-    height: 'Wysokość:',
-    width: 'Szerokość:',
-    enableFeatures: 'Włącz funkcje:',
+    dimensions: 'Wymiary',
+    height: 'Wysokość',
+    width: 'Szerokość',
+    enableFeatures: 'Włącz funkcje',
     enableSearch: 'wyszukiwanie',
     enableMapSwitch: 'przełączanie warstw mapy',
     enableLocateMe: 'znajdź mnie',
@@ -1052,10 +1052,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-    area: 'Obszar eksportu:',
-    format: 'Format:',
-    layersTitle: 'Opcjonalne warstwy:',
-    mapScale: 'Rozdzielczość mapy:',
+    area: 'Obszar eksportu',
+    format: 'Format',
+    layersTitle: 'Opcjonalne warstwy',
+    mapScale: 'Rozdzielczość mapy',
     alert: () => (
       <>
         Uwagi:

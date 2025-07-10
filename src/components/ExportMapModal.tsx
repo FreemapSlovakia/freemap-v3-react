@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { exportMap, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
+import { isInvalidInt } from '../numberValidator.js';
 
 type Props = { show: boolean };
 
@@ -39,7 +40,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
     canExportByPolygon ? 'selected' : 'visible',
   );
 
-  const [scale, setScale] = useState(100);
+  const [scale, setScale] = useState('100');
 
   const [format, setFormat] = useState<'jpeg' | 'png' | 'pdf' | 'svg'>('jpeg');
 
@@ -166,6 +167,8 @@ export function ExportMapModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
+  const invalidScale = isInvalidInt(scale, true, 60, 960);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -177,182 +180,191 @@ export function ExportMapModal({ show }: Props): ReactElement {
       <Modal.Body>
         <Alert variant="warning">{m?.mapExport.alert()}</Alert>
 
-        <p>{m?.mapExport.area}</p>
+        <Form.Group>
+          <Form.Label className="d-block">{m?.mapExport.area}</Form.Label>
 
-        <ButtonGroup>
-          <Button
-            variant="secondary"
-            active={area === 'visible'}
-            onClick={() => setArea('visible')}
-          >
-            <FaEye /> {m?.mapExport.areas.visible}
-          </Button>
+          <ButtonGroup>
+            <Button
+              variant="secondary"
+              active={area === 'visible'}
+              onClick={() => setArea('visible')}
+            >
+              <FaEye /> {m?.mapExport.areas.visible}
+            </Button>
 
-          <Button
-            variant="secondary"
-            active={area === 'selected'}
-            onClick={() => setArea('selected')}
-            disabled={!canExportByPolygon}
-          >
-            <FaDrawPolygon /> {m?.mapExport.areas.pinned}
-          </Button>
-        </ButtonGroup>
-
-        <hr />
-
-        <p>{m?.mapExport.format}</p>
-
-        <ButtonGroup>
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('jpeg')}
-            active={format === 'jpeg'}
-          >
-            JPEG
-          </Button>
-
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('png')}
-            active={format === 'png'}
-          >
-            PNG
-          </Button>
-
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('pdf')}
-            active={format === 'pdf'}
-          >
-            PDF{' '}
-            <FaFlask
-              title={m?.general.experimentalFunction}
-              className="text-warning"
-            />
-          </Button>
-
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('svg')}
-            active={format === 'svg'}
-          >
-            SVG{' '}
-            <FaFlask
-              title={m?.general.experimentalFunction}
-              className="text-warning"
-            />
-          </Button>
-        </ButtonGroup>
+            <Button
+              variant="secondary"
+              active={area === 'selected'}
+              onClick={() => setArea('selected')}
+              disabled={!canExportByPolygon}
+            >
+              <FaDrawPolygon /> {m?.mapExport.areas.pinned}
+            </Button>
+          </ButtonGroup>
+        </Form.Group>
 
         <hr />
 
-        <p>{m?.mapExport.layersTitle}</p>
+        <Form.Group>
+          <Form.Label className="d-block"> {m?.mapExport.format}</Form.Label>
 
-        <Form.Check
-          id="contours"
-          type="checkbox"
-          checked={contours}
-          onChange={() => {
-            setContours((b) => !b);
-          }}
-          label={m?.mapExport.layers.contours}
-        />
+          <ButtonGroup>
+            <Button
+              variant="secondary"
+              onClick={() => setFormat('jpeg')}
+              active={format === 'jpeg'}
+            >
+              JPEG
+            </Button>
 
-        <Form.Check
-          id="shading"
-          type="checkbox"
-          checked={shadedRelief}
-          onChange={() => setShadedRelief((b) => !b)}
-          label={m?.mapExport.layers.shading}
-        />
+            <Button
+              variant="secondary"
+              onClick={() => setFormat('png')}
+              active={format === 'png'}
+            >
+              PNG
+            </Button>
 
-        <Form.Check
-          id="hikingTrails"
-          type="checkbox"
-          checked={hikingTrails}
-          onChange={() => {
-            setHikingTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.hikingTrails}
-        />
+            <Button
+              variant="secondary"
+              onClick={() => setFormat('pdf')}
+              active={format === 'pdf'}
+            >
+              PDF{' '}
+              <FaFlask
+                title={m?.general.experimentalFunction}
+                className="text-warning"
+              />
+            </Button>
 
-        <Form.Check
-          id="bicycleTrails"
-          checked={bicycleTrails}
-          onChange={() => {
-            setBicycleTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.bicycleTrails}
-        />
-
-        <Form.Check
-          id="skiTrails"
-          type="checkbox"
-          checked={skiTrails}
-          onChange={() => {
-            setSkiTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.skiTrails}
-        />
-
-        <Form.Check
-          id="horseTrails"
-          type="checkbox"
-          checked={horseTrails}
-          onChange={() => {
-            setHorseTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.horseTrails}
-        />
-
-        <Form.Check
-          id="drawing"
-          type="checkbox"
-          checked={drawing}
-          onChange={() => {
-            setDrawing((b) => !b);
-          }}
-          label={m?.mapExport.layers.drawing}
-        />
-
-        <Form.Check
-          id="plannedRoute"
-          type="checkbox"
-          checked={plannedRoute}
-          onChange={() => {
-            setPlannedRoute((b) => !b);
-          }}
-          label={m?.mapExport.layers.plannedRoute}
-        />
-
-        <Form.Check
-          id="track"
-          type="checkbox"
-          checked={track}
-          onChange={() => {
-            setTrack((b) => !b);
-          }}
-          label={m?.mapExport.layers.track}
-        />
+            <Button
+              variant="secondary"
+              onClick={() => setFormat('svg')}
+              active={format === 'svg'}
+            >
+              SVG{' '}
+              <FaFlask
+                title={m?.general.experimentalFunction}
+                className="text-warning"
+              />
+            </Button>
+          </ButtonGroup>
+        </Form.Group>
 
         <hr />
 
-        <p>{m?.mapExport.mapScale}</p>
+        <Form.Group>
+          <Form.Label>{m?.mapExport.layersTitle}</Form.Label>
 
-        <InputGroup>
-          <Form.Control
-            type="number"
-            value={scale}
-            min={60}
-            max={960}
-            step={10}
-            onChange={(e) => {
-              setScale(Number(e.currentTarget.value));
+          <Form.Check
+            id="contours"
+            type="checkbox"
+            checked={contours}
+            onChange={() => {
+              setContours((b) => !b);
             }}
+            label={m?.mapExport.layers.contours}
           />
 
-          <InputGroup.Text>DPI</InputGroup.Text>
-        </InputGroup>
+          <Form.Check
+            id="shading"
+            type="checkbox"
+            checked={shadedRelief}
+            onChange={() => setShadedRelief((b) => !b)}
+            label={m?.mapExport.layers.shading}
+          />
+
+          <Form.Check
+            id="hikingTrails"
+            type="checkbox"
+            checked={hikingTrails}
+            onChange={() => {
+              setHikingTrails((b) => !b);
+            }}
+            label={m?.mapExport.layers.hikingTrails}
+          />
+
+          <Form.Check
+            id="bicycleTrails"
+            checked={bicycleTrails}
+            onChange={() => {
+              setBicycleTrails((b) => !b);
+            }}
+            label={m?.mapExport.layers.bicycleTrails}
+          />
+
+          <Form.Check
+            id="skiTrails"
+            type="checkbox"
+            checked={skiTrails}
+            onChange={() => {
+              setSkiTrails((b) => !b);
+            }}
+            label={m?.mapExport.layers.skiTrails}
+          />
+
+          <Form.Check
+            id="horseTrails"
+            type="checkbox"
+            checked={horseTrails}
+            onChange={() => {
+              setHorseTrails((b) => !b);
+            }}
+            label={m?.mapExport.layers.horseTrails}
+          />
+
+          <Form.Check
+            id="drawing"
+            type="checkbox"
+            checked={drawing}
+            onChange={() => {
+              setDrawing((b) => !b);
+            }}
+            label={m?.mapExport.layers.drawing}
+          />
+
+          <Form.Check
+            id="plannedRoute"
+            type="checkbox"
+            checked={plannedRoute}
+            onChange={() => {
+              setPlannedRoute((b) => !b);
+            }}
+            label={m?.mapExport.layers.plannedRoute}
+          />
+
+          <Form.Check
+            id="track"
+            type="checkbox"
+            checked={track}
+            onChange={() => {
+              setTrack((b) => !b);
+            }}
+            label={m?.mapExport.layers.track}
+          />
+        </Form.Group>
+
+        <hr />
+
+        <Form.Group controlId="mapScale">
+          <Form.Label>{m?.mapExport.mapScale}</Form.Label>
+
+          <InputGroup>
+            <Form.Control
+              type="number"
+              value={scale}
+              min={60}
+              max={960}
+              step={10}
+              isInvalid={invalidScale}
+              onChange={(e) => {
+                setScale(e.currentTarget.value);
+              }}
+            />
+
+            <InputGroup.Text>DPI</InputGroup.Text>
+          </InputGroup>
+        </Form.Group>
 
         <hr />
 
@@ -388,11 +400,12 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
       <Modal.Footer>
         <Button
+          disabled={invalidScale}
           onClick={() =>
             dispatch(
               exportMap({
                 area,
-                scale: scale / 96,
+                scale: parseInt(scale, 10) / 96,
                 format,
                 contours,
                 shadedRelief,

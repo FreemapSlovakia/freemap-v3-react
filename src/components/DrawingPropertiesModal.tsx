@@ -6,7 +6,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
@@ -16,6 +16,7 @@ import { toastsAdd } from '../actions/toastsActions.js';
 import { colors } from '../constants.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
+import { isInvalidFloat } from '../numberValidator.js';
 import { DrawingRecentColors } from './DrawingRecentColors.js';
 
 type Props = { show: boolean };
@@ -40,15 +41,15 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
       ? state.drawingPoints.points[selection.id]?.color
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
         ? state.drawingLines.lines[selection.id]?.color
-        : '???';
+        : '#ff0000';
   });
 
   const width = useAppSelector((state) => {
     const { selection } = state.main;
 
     return selection?.type === 'draw-line-poly' && selection.id !== undefined
-      ? state.drawingLines.lines[selection.id]?.width
-      : '???';
+      ? String(state.drawingLines.lines[selection.id]?.width)
+      : '';
   });
 
   const type = useAppSelector((state) => {
@@ -75,7 +76,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
   const [editedColor, setEditedColor] = useState(color);
 
-  const [editedWidth, setEditedWidth] = useState(String(width || 4));
+  const [editedWidth, setEditedWidth] = useState(width || '4');
 
   const [editedType, setEditedType] = useState<'polygon' | 'line'>(
     type ?? 'line',
@@ -244,7 +245,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               properties: {
                 label: editedLabel || undefined,
                 color: editedColor,
-                width: Number(editedWidth) || undefined,
+                width: parseFloat(editedWidth) || undefined,
                 type: editedType,
               },
             })
@@ -292,6 +293,8 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
     [],
   );
 
+  const invalidWidth = isInvalidFloat(editedWidth, false, 1, 12);
+
   return (
     <Modal show={show} onHide={close}>
       <Form onSubmit={handleSubmit}>
@@ -309,11 +312,11 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               value={editedLabel ?? ''}
               onChange={handleLocalLabelChange}
             />
-          </Form.Group>
 
-          <Alert variant="secondary" className="mb-3">
-            {m?.drawing.edit.hint}
-          </Alert>
+            <Form.Text className="mb-3" muted>
+              {m?.drawing.edit.hint}
+            </Form.Text>
+          </Form.Group>
 
           <Form.Group controlId="color" className="mb-3">
             <Form.Label>{m?.drawing.edit.color}</Form.Label>
@@ -337,13 +340,13 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
                   value={editedWidth}
                   min={1}
                   max={12}
-                  step={0.1}
+                  isInvalid={invalidWidth}
                   onChange={handleLocalWidthChange}
                 />
               </Form.Group>
 
               <Form.Group controlId="type" className="mb-3">
-                <Form.Label>{m?.drawing.edit.type}:</Form.Label>
+                <Form.Label>{m?.drawing.edit.type}</Form.Label>
 
                 <Form.Control
                   as="select"
@@ -361,7 +364,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" variant="info">
+          <Button type="submit" variant="info" disabled={invalidWidth}>
             <FaCheck /> {m?.general.save}
           </Button>
 

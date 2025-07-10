@@ -33,6 +33,7 @@ import {
   IsTileLayerDef,
   overlayLayers,
 } from '../mapDefinitions.js';
+import { isInvalidInt } from '../numberValidator.js';
 import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
@@ -186,7 +187,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         count += (to[0] - from[0] + 1) * (from[1] - to[1] + 1);
       }
 
-      return count;
+      return count > 1_000_000_000 ? Infinity : count;
     }
 
     return undefined;
@@ -204,6 +205,23 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     maximumFractionDigits: 0,
   });
 
+  const invalidMinZoom = isInvalidInt(
+    minZoom,
+    true,
+    mapDef?.minZoom ?? 0,
+    Math.min(
+      mapDef?.maxNativeZoom ?? Infinity,
+      parseInt(maxZoom, 10) || Infinity,
+    ),
+  );
+
+  const invalidMaxZoom = isInvalidInt(
+    maxZoom,
+    true,
+    Math.max(parseInt(minZoom, 10) || 0, mapDef?.minZoom ?? 0),
+    mapDef?.maxNativeZoom,
+  );
+
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -214,9 +232,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           name,
           map: mapType,
           format,
-          maxZoom: Number(maxZoom),
-          minZoom: Number(minZoom),
-          scale: Number(scale),
+          maxZoom: parseInt(maxZoom, 10),
+          minZoom: parseInt(minZoom, 10),
+          scale: parseInt(scale, 10),
           boundary:
             selectedLine?.type === 'polygon' && area === 'selected'
               ? polygon([
@@ -250,10 +268,14 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     dispatch(authInit());
   }, [dispatch]);
 
-  const price =
-    mapDef && tileCount
-      ? Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000)
-      : Infinity;
+  const price = (() => {
+    const price =
+      mapDef && tileCount
+        ? Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000)
+        : 0;
+
+    return price < 1_000_000_000 ? price : Infinity;
+  })();
 
   const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -452,7 +474,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           {mapDef && (
             <Form.Group controlId="zoomRange" className="mb-3">
-              <Form.Label>{m?.downloadMap.zoomRange}</Form.Label>
+              <Form.Label className="required">
+                {m?.downloadMap.zoomRange}
+              </Form.Label>
 
               <InputGroup>
                 <Form.Control
@@ -460,6 +484,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                   min={mapDef.minZoom ?? 0}
                   max={mapDef.maxNativeZoom}
                   value={minZoom}
+                  isInvalid={invalidMinZoom}
                   onChange={(e) => setMinZoom(e.currentTarget.value)}
                 />
 
@@ -470,6 +495,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                   min={mapDef.minZoom ?? 0}
                   max={mapDef.maxNativeZoom}
                   value={maxZoom}
+                  isInvalid={invalidMaxZoom}
                   onChange={(e) => setMaxZoom(e.currentTarget.value)}
                 />
               </InputGroup>
@@ -496,9 +522,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           )}
 
           <Form.Group controlId="email" className="mb-3">
-            <Form.Label>
-              {m?.downloadMap.email} <sup>*</sup>
-            </Form.Label>
+            <Form.Label className="required">{m?.downloadMap.email}</Form.Label>
 
             <Form.Control
               type="email"
@@ -532,7 +556,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             variant="primary"
             onClick={close}
             type="submit"
-            disabled={invalidEmail || price >= Math.floor(user?.credits ?? 0)}
+            disabled={
+              invalidEmail ||
+              invalidMinZoom ||
+              invalidMaxZoom ||
+              price >= Math.floor(user?.credits ?? 0)
+            }
           >
             <FaDownload /> {m?.downloadMap.download} <kbd>Enter</kbd>
           </Button>

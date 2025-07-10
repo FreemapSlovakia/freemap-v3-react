@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { saveSettings, setActiveModal } from '../../actions/mainActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isInvalidInt } from '../../numberValidator.js';
 import { CustomMapsSettings } from './CustomMapsSettings.js';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -40,6 +41,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
 
   const [maxZoom, setMaxZoom] = useState(initialMaxZoom);
+
+  const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
@@ -92,6 +95,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                     min={0}
                     max={99}
                     value={maxZoom}
+                    isInvalid={invalidMaxZoom}
                     onChange={handleMaxZoomChange}
                   />
                 </Form.Group>
@@ -128,9 +132,10 @@ export function MapSettingsModal({ show }: Props): ReactElement {
             variant="primary"
             type="submit"
             disabled={
-              layersSettings === initLayersSettings &&
-              customLayers === initialCustomLayers &&
-              maxZoom === initialMaxZoom
+              (layersSettings === initLayersSettings &&
+                customLayers === initialCustomLayers &&
+                maxZoom === initialMaxZoom) ||
+              invalidMaxZoom
             }
           >
             <FaCheck /> {m?.general.save}

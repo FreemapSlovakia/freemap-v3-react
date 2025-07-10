@@ -487,8 +487,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Vlastnosti',
       color: 'Barva',
-      label: 'Popis:',
-      width: 'Šířka:',
+      label: 'Popis',
+      width: 'Šířka',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
       type: 'Typ geometrie',
     },
@@ -641,10 +641,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Vložte na vaši stránku tento html kód:',
     example: 'Výsledek bude vypadat následovně:',
-    dimensions: 'Velikost:',
-    height: 'Výška:',
-    width: 'Šířka:',
-    enableFeatures: 'Povolit funkce:',
+    dimensions: 'Velikost',
+    height: 'Výška',
+    width: 'Šířka',
+    enableFeatures: 'Povolit funkce',
     enableSearch: 'vyhledávání',
     enableMapSwitch: 'přepínání vrstev mapy',
     enableLocateMe: 'nalezení vlastní pozice',
@@ -1014,13 +1014,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </Alert.Link>
       </>
     ),
-    area: 'Exportovat oblast:',
+    area: 'Exportovat oblast',
     areas: {
       visible: 'Viditelnou oblast mapy',
       pinned: 'Plochu obsahující označený polygon (kreslení)',
     },
-    format: 'Formát:',
-    layersTitle: 'Volitelné vrstvy:',
+    format: 'Formát',
+    layersTitle: 'Volitelné vrstvy',
     layers: {
       contours: 'Vrstevnice',
       shading: 'Stínovaný reliéf',
@@ -1032,7 +1032,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Vyhledanou trasu',
       track: 'GPX trasu',
     },
-    mapScale: 'Rozlišení mapy:',
+    mapScale: 'Rozlišení mapy',
     alert: () => (
       <>
         Upozornění:

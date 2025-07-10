@@ -474,10 +474,10 @@ const messages: Messages = {
     modify: 'Properties',
     edit: {
       title: 'Properties',
-      color: 'Color:',
-      label: 'Label:',
-      width: 'Width:',
-      hint: 'To remove label leave its field empty.',
+      color: 'Color',
+      label: 'Label',
+      width: 'Width',
+      hint: 'To remove label leave this field empty.',
       type: 'Geometry type',
     },
     continue: 'Continue',
@@ -622,10 +622,10 @@ const messages: Messages = {
   embed: {
     code: 'Put the following code to your HTML page:',
     example: 'The result will look like this:',
-    dimensions: 'Dimensions:',
-    height: 'Height:',
-    width: 'Width:',
-    enableFeatures: 'Enable features:',
+    dimensions: 'Dimensions',
+    height: 'Height',
+    width: 'Width',
+    enableFeatures: 'Enable features',
     enableSearch: 'search',
     enableMapSwitch: 'map layer switch',
     enableLocateMe: 'find me',
@@ -993,13 +993,13 @@ const messages: Messages = {
         </AlertLink>
       </>
     ),
-    area: 'Export area:',
+    area: 'Export area',
     areas: {
       visible: 'Visible area of the map',
       pinned: 'Area containing selected polygon (drawing)',
     },
-    format: 'Format:',
-    layersTitle: 'Optional layers:',
+    format: 'Format',
+    layersTitle: 'Optional layers',
     layers: {
       contours: 'Contours',
       shading: 'Shaded relief',
@@ -1011,7 +1011,7 @@ const messages: Messages = {
       plannedRoute: 'Found route',
       track: 'GPX track',
     },
-    mapScale: 'Map resolution:',
+    mapScale: 'Map resolution',
     alert: () => (
       <>
         Notes:

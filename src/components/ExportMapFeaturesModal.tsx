@@ -265,10 +265,8 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
         <Modal.Body>
           <Alert variant="warning">{m?.exportMapFeatures.licenseAlert}</Alert>
 
-          <Alert variant="warning">{m?.exportMapFeatures.disabledAlert}</Alert>
-
           <Form.Group controlId="target" className="mb-3">
-            <Form.Label>{m?.exportMapFeatures.target}:</Form.Label>
+            <Form.Label>{m?.exportMapFeatures.target}</Form.Label>
 
             <div>
               <ButtonGroup vertical={!isWide}>
@@ -385,7 +383,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             </>
           ) : (
             <Form.Group controlId="format" className="mb-3">
-              <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
+              <Form.Label>{m?.exportMapFeatures.format}</Form.Label>
 
               <div>
                 <ButtonGroup>
@@ -408,7 +406,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
           )}
 
           <Form.Group controlId="download" className="mb-3">
-            <Form.Label>{m?.exportMapFeatures.download}:</Form.Label>
+            <Form.Label>{m?.exportMapFeatures.download}</Form.Label>
 
             <div>
               {exportableDefinitions
@@ -469,6 +467,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   </Fragment>
                 ))}
             </div>
+
+            <Form.Text muted className="d-block mt-3">
+              {m?.exportMapFeatures.disabledAlert}
+            </Form.Text>
           </Form.Group>
         </Modal.Body>
 

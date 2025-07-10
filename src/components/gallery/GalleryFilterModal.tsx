@@ -13,6 +13,7 @@ import { gallerySetFilter } from '../../actions/galleryActions.js';
 import { setActiveModal } from '../../actions/mainActions.js';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isInvalidInt } from '../../numberValidator.js';
 
 type Props = { show: boolean };
 
@@ -238,6 +239,19 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     }
   }, [premiumCheck, premium]);
 
+  const invalidRatingFrom = isInvalidInt(
+    ratingFrom,
+    false,
+    1,
+    parseInt(ratingTo, 10) ?? 5,
+  );
+  const invalidRatingTo = isInvalidInt(
+    ratingTo,
+    false,
+    parseInt(ratingFrom, 10) ?? 1,
+    5,
+  );
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -341,6 +355,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 max={ratingTo || 5}
                 step="any"
                 value={ratingFrom}
+                isInvalid={invalidRatingFrom}
                 onChange={handleRatingFromChange}
               />
 
@@ -352,6 +367,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 max={5}
                 step="any"
                 value={ratingTo}
+                isInvalid={invalidRatingTo}
                 onChange={handleRatingToChange}
               />
             </InputGroup>
@@ -377,7 +393,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit">
+          <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
             <FaCheck /> {m?.general.apply}
           </Button>
 

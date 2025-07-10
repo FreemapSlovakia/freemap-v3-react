@@ -12,6 +12,7 @@ import { useMessages } from '../l10nInjector.js';
 import { Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { isInvalidInt } from '../numberValidator.js';
 
 type Props = { show: boolean };
 
@@ -122,6 +123,10 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     allow.push('geolocation');
   }
 
+  const invalidWidth = isInvalidInt(width, true, 100, 1600);
+
+  const invalidHeight = isInvalidInt(width, true, 100, 1200);
+
   return (
     <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
@@ -136,7 +141,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           className="mb-3"
           style={{ maxWidth: '542px' }}
         >
-          <Form.Label>{m?.embed.dimensions}</Form.Label>
+          <Form.Label className="required">{m?.embed.dimensions}</Form.Label>
 
           <InputGroup>
             <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
@@ -147,6 +152,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               min={100}
               max={1600}
               step={10}
+              isInvalid={invalidWidth}
               required
               onChange={({ currentTarget }) => {
                 setWidth(currentTarget.value);
@@ -161,6 +167,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               min={100}
               max={1200}
               step={10}
+              isInvalid={invalidHeight}
               required
               onChange={({ currentTarget }) => {
                 setHeight(currentTarget.value);
@@ -169,7 +176,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Label className="mb-3">{m?.embed.enableFeatures}</Form.Label>
+        <Form.Label>{m?.embed.enableFeatures}</Form.Label>
 
         <Form.Check
           id="enableSearch"
@@ -203,42 +210,52 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
         <hr />
 
-        <p>{m?.embed.code}</p>
+        <Form.Label>{m?.embed.code}</Form.Label>
 
         <Form.Control
           ref={setFormControl}
           as="textarea"
-          value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen allow="${allow.join(
-            ';',
-          )}"></iframe>`}
+          value={
+            invalidWidth || invalidHeight
+              ? ''
+              : `<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen allow="${allow.join(
+                  ';',
+                )}"></iframe>`
+          }
           readOnly
           rows={3}
+          disabled={invalidWidth || invalidHeight}
         />
 
-        <br />
+        {!(invalidWidth || invalidHeight) && (
+          <div className="mt-3">
+            <Form.Label>{m?.embed.example}</Form.Label>
 
-        <p>{m?.embed.example}</p>
-
-        <div style={{ overflowX: 'auto' }}>
-          <iframe
-            title="Freemap.sk"
-            style={{
-              width: `${width}px`,
-              height: `${height}px`,
-              border: '0',
-              display: 'block',
-              margin: '0 auto',
-            }}
-            src={iframeUrl}
-            allowFullScreen
-            allow={allow.join(';')}
-            ref={iframe}
-          />
-        </div>
+            <div style={{ overflowX: 'auto' }}>
+              <iframe
+                title="Freemap.sk"
+                style={{
+                  width: `${width}px`,
+                  height: `${height}px`,
+                  border: '0',
+                  display: 'block',
+                  margin: '0 auto',
+                }}
+                src={iframeUrl}
+                allowFullScreen
+                allow={allow.join(';')}
+                ref={iframe}
+              />
+            </div>
+          </div>
+        )}
       </Modal.Body>
 
       <Modal.Footer>
-        <Button onClick={handleCopyClick}>
+        <Button
+          onClick={handleCopyClick}
+          disabled={invalidWidth || invalidHeight}
+        >
           <FaClipboard /> {m?.general.copyCode}
         </Button>
 

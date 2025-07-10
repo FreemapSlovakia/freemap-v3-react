@@ -41,7 +41,7 @@
   height: 30px;
 }
 
-.form-group.required .form-label:after {
+.form-label.required:after {
   content: ' *';
   color: red;
 }

@@ -512,8 +512,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     modify: 'Proprietà',
     edit: {
       title: 'Proprietà',
-      color: 'Colore:',
-      label: 'Etichetta:',
+      color: 'Colore',
+      label: 'Etichetta',
       width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
       type: 'Tipo di geometria',
@@ -663,10 +663,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Inserisci il codice seguente nella tua pagina HTML:',
     example: 'Il risultato sarà simile a questo:',
-    dimensions: 'Dimensioni:',
-    height: 'Altezza:',
-    width: 'Larghezza:',
-    enableFeatures: 'Abilita caratteristiche:',
+    dimensions: 'Dimensioni',
+    height: 'Altezza',
+    width: 'Larghezza',
+    enableFeatures: 'Abilita caratteristiche',
     enableSearch: 'cerca',
     enableMapSwitch: 'Cambia livello mappa',
     enableLocateMe: 'trovami',
@@ -1041,13 +1041,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-    area: 'Esporta area:',
+    area: 'Esporta area',
     areas: {
       visible: 'Area visibile della mappa',
       pinned: 'Area contenente i poligoni selezionati (disegno)',
     },
-    format: 'Formato:',
-    layersTitle: 'Livelli opzionali:',
+    format: 'Formato',
+    layersTitle: 'Livelli opzionali',
     layers: {
       contours: 'Curve di livello',
       shading: 'Rilievi ombreggiati',
@@ -1059,7 +1059,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Trova percorso',
       track: 'Traccia GPX',
     },
-    mapScale: 'Risoluzione mappa:',
+    mapScale: 'Risoluzione mappa',
     alert: () => (
       <>
         Note:

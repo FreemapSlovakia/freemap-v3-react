@@ -120,6 +120,11 @@ export function AccountModal({ show }: Props): ReactElement | null {
     }
   }
 
+  const invalidEmail =
+    !!email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const invalidName = !name.trim();
+
   return !user ? null : (
     <Modal show={show} onHide={close}>
       <Form
@@ -224,10 +229,13 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
               <Accordion.Body>
                 <Form.Group controlId="name" className="mb-3">
-                  <Form.Label>{m?.settings.account.name}</Form.Label>
+                  <Form.Label className="required">
+                    {m?.settings.account.name}
+                  </Form.Label>
 
                   <Form.Control
                     value={name}
+                    isInvalid={invalidName}
                     onChange={(e) => {
                       setName(e.target.value);
                     }}
@@ -242,6 +250,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   <Form.Control
                     type="email"
                     value={email}
+                    isInvalid={invalidEmail}
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
@@ -253,7 +262,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   className="ms-auto d-block"
                   variant="primary"
                   type="submit"
-                  disabled={!userMadeChanges}
+                  disabled={!userMadeChanges || invalidName || invalidEmail}
                 >
                   <FaCheck /> {m?.general.save}
                 </Button>

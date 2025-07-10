@@ -516,7 +516,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Vlastnosti',
       color: 'Farba',
-      label: 'Popis:',
+      label: 'Popis',
       width: 'Šírka',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
       type: 'Typ geometrie',
@@ -671,10 +671,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Vložte na vašu stránku tento html kód:',
     example: 'Výsledok bude vyzerať nasledovne:',
-    dimensions: 'Veľkosť:',
-    height: 'Výška:',
-    width: 'Šírka:',
-    enableFeatures: 'Povoliť funkcie:',
+    dimensions: 'Veľkosť',
+    height: 'Výška',
+    width: 'Šírka',
+    enableFeatures: 'Povoliť funkcie',
     enableSearch: 'vyhľadávanie',
     enableMapSwitch: 'prepínanie vrstiev mapy',
     enableLocateMe: 'nájdenie vlastnej pozície',
@@ -1047,13 +1047,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-    area: 'Exportovať oblasť:',
+    area: 'Exportovať oblasť',
     areas: {
       visible: 'Viditeľnú oblasť mapy',
       pinned: 'Plochu obsahujúcu označený polygón (kreslenie)',
     },
-    format: 'Formát:',
-    layersTitle: 'Voliteľné vrstvy:',
+    format: 'Formát',
+    layersTitle: 'Voliteľné vrstvy',
     layers: {
       contours: 'Vrstevnice',
       shading: 'Tieňovaný reliéf',
@@ -1065,7 +1065,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Vyhľadanú trasu',
       track: 'GPX trasu',
     },
-    mapScale: 'Rozlíšenie mapy:',
+    mapScale: 'Rozlíšenie mapy',
     alert: () => (
       <>
         Upozornenia:

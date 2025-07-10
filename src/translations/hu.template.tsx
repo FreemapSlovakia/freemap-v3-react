@@ -535,7 +535,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Tulajdonságok',
       color: 'Szín',
-      label: 'Felirat:',
+      label: 'Felirat',
       width: 'Szélesség',
       hint: 'A felirat eltávolításához hagyja üresen ezt a mezőt.',
       type: 'Geometria típusa',
@@ -700,10 +700,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'A következő kódot írja be HTML-oldalába:',
     example: 'Az eredmény így fog kinézni:',
-    dimensions: 'Méretek:',
-    height: 'Magasság:',
-    width: 'Szélesség:',
-    enableFeatures: 'Funkciók engedélyezése:',
+    dimensions: 'Méretek',
+    height: 'Magasság',
+    width: 'Szélesség',
+    enableFeatures: 'Funkciók engedélyezése',
     enableSearch: 'keresés',
     enableMapSwitch: 'térképréteg-kapcsoló',
     enableLocateMe: 'saját hely megtalálása',
@@ -1095,17 +1095,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-
-    area: 'Exportálandó terület:',
-
+    area: 'Exportálandó terület',
     areas: {
       visible: 'A térkép látható területe',
       pinned: 'A kijelölt sokszöget (rajzot) tartalmazó terület',
     },
-
-    format: 'Formátum:',
-    layersTitle: 'Választható rétegek:',
-
+    format: 'Formátum',
+    layersTitle: 'Választható rétegek',
     layers: {
       contours: 'Szintvonalak',
       shading: 'Domborzatárnyékolás',
@@ -1117,9 +1113,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Tervezett útvonal',
       track: 'GPX-nyomvonal',
     },
-
-    mapScale: 'Térkép felbontása:',
-
+    mapScale: 'Térkép felbontása',
     alert: () => (
       <>
         Megjegyzések:
