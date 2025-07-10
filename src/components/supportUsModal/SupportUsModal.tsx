@@ -69,6 +69,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
               action="https://www.paypal.com/cgi-bin/webscr"
               method="post"
               target="_blank"
+              className="mb-3"
             >
               <input name="cmd" value="_s-xclick" type="hidden" />
 
