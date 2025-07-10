@@ -23,7 +23,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';

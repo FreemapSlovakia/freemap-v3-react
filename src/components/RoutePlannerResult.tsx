@@ -42,7 +42,7 @@ import { ElevationChartActivePoint } from '../components/ElevationChartActivePoi
 import { RichMarker } from '../components/RichMarker.js';
 import { colors } from '../constants.js';
 import { formatDistance } from '../distanceFormatter.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';

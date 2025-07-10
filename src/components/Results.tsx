@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { Pane } from 'react-leaflet';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ChangesetsResult } from './ChangesetsResult.js';
 import { DrawingLinesResult } from './DrawingLinesResult.js';

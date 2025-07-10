@@ -45,7 +45,7 @@ import {
   exportTypes,
   setActiveModal,
 } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 
 const exportableDefinitions: readonly [

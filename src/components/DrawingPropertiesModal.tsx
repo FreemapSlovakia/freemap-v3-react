@@ -14,7 +14,7 @@ import { drawingPointChangeProperties } from '../actions/drawingPointActions.js'
 import { setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { colors } from '../constants.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { isInvalidFloat } from '../numberValidator.js';
 import { DrawingRecentColors } from './DrawingRecentColors.js';

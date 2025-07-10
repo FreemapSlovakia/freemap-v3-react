@@ -10,7 +10,7 @@ import {
   drawingLineJoinStart,
   drawingLineSplit,
 } from '../actions/drawingLineActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { Selection } from './Selection.js';
 import { Toolbar } from './Toolbar.js';

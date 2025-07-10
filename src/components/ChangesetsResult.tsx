@@ -10,7 +10,7 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { RichMarker } from '../components/RichMarker.js';
 import { colors } from '../constants.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import '../styles/changesets.scss';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;

@@ -8,7 +8,7 @@ import {
   toastsStopTimeout,
 } from '../actions/toastsActions.js';
 import { Toast } from '../components/Toast.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { getMessageByKey, useMessages } from '../l10nInjector.js';
 import '../styles/toasts.scss';
 import { Messages } from '../translations/messagesInterface.js';

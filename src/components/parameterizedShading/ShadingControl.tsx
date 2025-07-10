@@ -14,7 +14,7 @@ import {
 } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { mapSetShading } from '../../actions/mapActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import {
   ColorStop,

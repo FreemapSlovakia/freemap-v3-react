@@ -34,7 +34,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '../actions/routePlannerActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';

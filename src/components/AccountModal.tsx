@@ -29,7 +29,7 @@ import {
 } from '../actions/authActions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';

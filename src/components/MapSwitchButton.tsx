@@ -23,7 +23,7 @@ import { is } from 'typia';
 import { setActiveModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';

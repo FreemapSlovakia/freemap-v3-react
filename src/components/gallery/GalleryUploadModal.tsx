@@ -17,7 +17,7 @@ import { setActiveModal } from '../../actions/mainActions.js';
 import { toastsAdd } from '../../actions/toastsActions.js';
 import { GalleryUploadItem } from '../../components/gallery/GalleryUploadItem.js';
 import { toDatetimeLocal } from '../../dateUtils.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { usePictureDropHandler } from '../../hooks/usePictureDropHandler.js';
 import { useMessages } from '../../l10nInjector.js';
 import { PictureModel } from './GalleryEditForm.js';

@@ -19,7 +19,7 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { exportMap, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { isInvalidInt } from '../numberValidator.js';
 

@@ -24,7 +24,7 @@ import {
   trackViewerUploadTrack,
 } from '../actions/trackViewerActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { trackGeojsonIsSuitableForElevationChart } from '../selectors/mainSelectors.js';
 import '../styles/trackViewer.scss';

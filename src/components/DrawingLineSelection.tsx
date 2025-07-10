@@ -19,7 +19,7 @@ import {
   elevationChartSetTrackGeojson,
 } from '../actions/elevationChartActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import ProjectPointModal from './ProjectPointModal.js';
 import { Selection } from './Selection.js';

@@ -15,7 +15,7 @@ import {
   setSelectedIcon,
 } from '../actions/objectsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';

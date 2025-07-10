@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../../actions/trackingActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 

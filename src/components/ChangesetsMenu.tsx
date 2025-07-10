@@ -4,7 +4,7 @@ import { FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsSetParams } from '../actions/changesetsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { ToolMenu } from './ToolMenu.js';
 

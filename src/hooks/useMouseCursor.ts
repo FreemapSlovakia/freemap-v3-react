@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { mouseCursorSelector } from '../selectors/mainSelectors.js';
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 // TODO handle also dropdown menus (.dropdown-menu.show)
 

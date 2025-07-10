@@ -24,7 +24,7 @@ import {
 import { mapRefocus } from '../actions/mapActions.js';
 import { Submenu } from '../components/mainMenu/submenu.js';
 import { DocumentKey } from '../documents/index.js';
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 export function useMenuHandler({
   pointTitle,

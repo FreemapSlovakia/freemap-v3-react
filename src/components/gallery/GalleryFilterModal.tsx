@@ -11,7 +11,7 @@ import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gallerySetFilter } from '../../actions/galleryActions.js';
 import { setActiveModal } from '../../actions/mainActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { isInvalidInt } from '../../numberValidator.js';
 

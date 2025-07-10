@@ -6,7 +6,7 @@ import { TbAngle } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { drawingPointAdd } from '../actions/drawingPointActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';

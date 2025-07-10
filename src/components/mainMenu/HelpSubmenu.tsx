@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
 import { documents } from '../../documents/index.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 

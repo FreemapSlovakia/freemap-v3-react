@@ -5,7 +5,7 @@ import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { toggleLocate } from '../actions/mainActions.js';
 import { mapRefocus, MapViewState } from '../actions/mapActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMessages } from '../l10nInjector.js';
 import { MapSwitchButton } from './MapSwitchButton.js';

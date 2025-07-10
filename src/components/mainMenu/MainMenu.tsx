@@ -20,7 +20,7 @@ import {
   FaSignInAlt,
   FaUser,
 } from 'react-icons/fa';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { toolDefinitions } from '../../toolDefinitions.js';
 

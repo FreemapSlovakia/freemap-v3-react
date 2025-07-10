@@ -1,6 +1,6 @@
 import { type ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 
 export interface PictureModel {

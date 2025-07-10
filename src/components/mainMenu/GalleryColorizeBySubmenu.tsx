@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaCamera, FaRegCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 

@@ -7,7 +7,7 @@ import {
   FaPencilRuler,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 

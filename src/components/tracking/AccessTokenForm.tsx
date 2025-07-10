@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap';
 import { trackingActions } from '../../actions/trackingActions.js';
 import { DateTime } from '../../components/DateTime.js';
 import { toDatetimeLocal } from '../../dateUtils.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useTextInputState } from '../../hooks/useTextInputState.js';
 import { useMessages } from '../../l10nInjector.js';
 

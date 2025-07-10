@@ -4,7 +4,7 @@ import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { searchSelectResult } from '../actions/searchActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import {
   getGenericNameFromOsmElement,
   getNameFromOsmElement,

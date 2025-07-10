@@ -56,7 +56,7 @@ import {
 } from '../actions/routePlannerActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';

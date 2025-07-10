@@ -9,7 +9,7 @@ import {
 import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { fixedPopperConfig } from '../../fixedPopperConfig.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMenuHandler } from '../../hooks/useMenuHandler.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import { useMessages } from '../../l10nInjector.js';

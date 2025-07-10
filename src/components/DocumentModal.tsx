@@ -4,7 +4,7 @@ import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow } from '../actions/mainActions.js';
 import { documents } from '../documents/index.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { navigate } from '../navigationUtils.js';
 

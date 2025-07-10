@@ -14,7 +14,7 @@ import {
   mapsSave,
 } from '../actions/mapsActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useOnline } from '../hooks/useOnline.js';
 import { useMessages } from '../l10nInjector.js';

@@ -2,7 +2,7 @@ import { length as turfLength } from '@turf/length';
 import { useMemo } from 'react';
 import { assert } from 'typia';
 import { TrackPoint } from '../actions/trackViewerActions.js';
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
   const trackGeojson = useAppSelector(

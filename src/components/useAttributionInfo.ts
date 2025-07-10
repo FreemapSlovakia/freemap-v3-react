@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import { mapSetEsriAttribution } from '../actions/mapActions.js';
 import { toastsAdd, toastsRemove } from '../actions/toastsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 
 type EsriWorldImageryAttribution = {

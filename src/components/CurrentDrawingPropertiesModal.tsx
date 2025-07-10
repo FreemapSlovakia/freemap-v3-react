@@ -9,7 +9,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { applySettings, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { DrawingRecentColors } from './DrawingRecentColors.js';
 

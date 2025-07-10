@@ -2,7 +2,7 @@ import { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../../actions/galleryActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMap } from '../../hooks/useMap.js';
 import { showGalleryViewerSelector } from '../../selectors/mainSelectors.js';
 import '../../styles/gallery.scss';

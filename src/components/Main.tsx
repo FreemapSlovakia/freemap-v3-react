@@ -35,7 +35,7 @@ import { MapControls } from '../components/MapControls.js';
 import { MapDetailsMenu } from '../components/MapDetailsMenu.js';
 import { SearchMenu } from '../components/SearchMenu.js';
 import { Toasts } from '../components/Toasts.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';

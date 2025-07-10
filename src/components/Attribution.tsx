@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { documentShow } from '../actions/mainActions.js';
 import type { DocumentKey } from '../documents/index.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import {
   AttributionDef,

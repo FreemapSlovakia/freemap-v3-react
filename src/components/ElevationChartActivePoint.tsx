@@ -4,7 +4,7 @@ import { FaInfo } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { RichMarker } from '../components/RichMarker.js';
 import { formatDistance } from '../distanceFormatter.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 

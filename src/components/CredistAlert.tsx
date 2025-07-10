@@ -3,7 +3,7 @@ import { Alert, Button } from 'react-bootstrap';
 import { FaCoins } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 

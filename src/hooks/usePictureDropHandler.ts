@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { GalleryItem } from '../actions/galleryActions.js';
 import { latLonToString } from '../geoutils.js';
 import { loadPreview } from '../imagePreview.js';
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 let nextId = 1;
 

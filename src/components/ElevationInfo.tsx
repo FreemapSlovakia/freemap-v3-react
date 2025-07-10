@@ -5,7 +5,7 @@ import { FaCopy } from 'react-icons/fa';
 import { TbDecimal } from 'react-icons/tb';
 import useLocalStorageState from 'use-local-storage-state';
 import { latLonToString } from '../geoutils.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import {

@@ -37,7 +37,7 @@ import { selectFeature } from '../actions/mainActions.js';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { colors } from '../constants.js';
 import { formatDistance } from '../distanceFormatter.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { isEventOnMap } from '../mapUtils.js';
 import {

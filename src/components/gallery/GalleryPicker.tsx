@@ -3,7 +3,7 @@ import { type ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { galleryRequestImages } from '../../actions/galleryActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { isEventOnMap } from '../../mapUtils.js';
 import type { LatLon } from '../../types/common.js';
 

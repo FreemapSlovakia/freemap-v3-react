@@ -2,7 +2,7 @@ import { JSX, ReactElement } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';
 import { useMessages } from '../l10nInjector.js';
 import type { LatLon } from '../types/common.js';

@@ -4,7 +4,7 @@ import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../../actions/trackingActions.js';
 import { AccessToken } from '../../components/tracking/AccessToken.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 
 export function AccessTokens(): ReactElement {

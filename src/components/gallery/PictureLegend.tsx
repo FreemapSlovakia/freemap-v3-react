@@ -1,4 +1,4 @@
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Toolbar } from '../Toolbar.js';
 

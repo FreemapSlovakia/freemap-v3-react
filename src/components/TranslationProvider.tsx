@@ -1,5 +1,5 @@
 import { createContext, ReactElement, ReactNode } from 'react';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { Messages } from '../translations/messagesInterface.js';
 
 const MessagesContext = createContext<Messages | undefined>(undefined);

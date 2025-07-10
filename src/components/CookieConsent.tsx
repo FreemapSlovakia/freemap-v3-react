@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { setAnalyticCookiesAllowed } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 
 type Props = { prompt: string; local: string; analytics: string };
 

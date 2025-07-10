@@ -11,7 +11,7 @@ import {
   WikiPreview,
   wikiSetPreview,
 } from '../actions/wikiActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 
 class WikiIcon extends Icon {
