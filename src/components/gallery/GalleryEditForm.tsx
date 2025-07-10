@@ -146,7 +146,7 @@ export function GalleryEditForm({
         </Alert>
       ))}
 
-      <Form.Group className="mb-3">
+      <Form.Group controlId="pictureName" className="mb-3">
         <Form.Control
           placeholder={m?.gallery.editForm.name}
           type="text"
@@ -156,7 +156,7 @@ export function GalleryEditForm({
         />
       </Form.Group>
 
-      <Form.Group className="mb-3">
+      <Form.Group controlId="pictureDescription" className="mb-3">
         <Form.Control
           placeholder={m?.gallery.editForm.description}
           as="textarea"
@@ -167,7 +167,7 @@ export function GalleryEditForm({
       </Form.Group>
 
       {m && (
-        <Form.Group className="mb-3">
+        <Form.Group controlId="takenAt" className="mb-3">
           <DateTime
             value={model.takenAt}
             onChange={handleTakenAtChange}
@@ -180,7 +180,7 @@ export function GalleryEditForm({
         </Form.Group>
       )}
 
-      <Form.Group className="mb-3">
+      <Form.Group controlId="location" className="mb-3">
         <InputGroup>
           <Form.Control
             type="text"
@@ -195,7 +195,10 @@ export function GalleryEditForm({
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className="mb-3 d-flex align-items-center">
+      <Form.Group
+        controlId="azimuth"
+        className="mb-3 d-flex align-items-center"
+      >
         <Form.Control
           placeholder={m?.gallery.editForm.azimuth}
           type="number"
@@ -214,7 +217,7 @@ export function GalleryEditForm({
         />
       </Form.Group>
 
-      <Form.Group className="mb-3" key={key}>
+      <Form.Group controlId="tags" className="mb-3" key={key}>
         <ReactTags
           placeholderText={m?.gallery.editForm.tags}
           selected={model.tags.map((tag) => ({ label: tag, value: tag }))}

@@ -144,7 +144,11 @@ function TripSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.tripParameters}</legend>
 
-        <Form.Group as="form" onSubmit={handleDistanceSubmit}>
+        <Form.Group
+          controlId="distance"
+          as="form"
+          onSubmit={handleDistanceSubmit}
+        >
           <Form.Label>{ghParams?.distance}</Form.Label>
 
           <InputGroup>
@@ -161,7 +165,7 @@ function TripSettings() {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group as="form" onSubmit={handleSeedSubmit}>
+        <Form.Group controlId="seed" as="form" onSubmit={handleSeedSubmit}>
           <Form.Label className="mt-2">{ghParams?.seed}</Form.Label>
 
           <InputGroup>
@@ -249,7 +253,11 @@ function IsochroneSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.isochroneParameters}</legend>
 
-        <Form.Group as="form" onSubmit={handleTimeLimitSubmit}>
+        <Form.Group
+          controlId="timeLimit"
+          as="form"
+          onSubmit={handleTimeLimitSubmit}
+        >
           <Form.Label>{ghParams?.timeLimit}</Form.Label>
 
           <InputGroup>
@@ -267,7 +275,11 @@ function IsochroneSettings() {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group as="form" onSubmit={handleDistanceLimitSubmit}>
+        <Form.Group
+          controlId="distanceLimit"
+          as="form"
+          onSubmit={handleDistanceLimitSubmit}
+        >
           <Form.Label className="mt-2">{ghParams?.distanceLimit}</Form.Label>
 
           <InputGroup>
@@ -284,7 +296,11 @@ function IsochroneSettings() {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group as="form" onSubmit={handleBucketsSubmit}>
+        <Form.Group
+          controlId="buckets"
+          as="form"
+          onSubmit={handleBucketsSubmit}
+        >
           <Form.Label className="mt-2">{ghParams?.buckets}</Form.Label>
 
           <Form.Control

@@ -390,7 +390,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group controlId="downloadArea">
             <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
             <ButtonGroup className="d-block mb-3">

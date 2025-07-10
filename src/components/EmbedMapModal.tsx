@@ -131,7 +131,11 @@ export function EmbedMapModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="mb-3" style={{ maxWidth: '542px' }}>
+        <Form.Group
+          controlId="dimensions"
+          className="mb-3"
+          style={{ maxWidth: '542px' }}
+        >
           <Form.Label>{m?.embed.dimensions}</Form.Label>
 
           <InputGroup>

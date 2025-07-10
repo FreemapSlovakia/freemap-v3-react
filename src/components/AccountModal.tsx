@@ -223,7 +223,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
               </Accordion.Header>
 
               <Accordion.Body>
-                <Form.Group className="mb-3">
+                <Form.Group controlId="name" className="mb-3">
                   <Form.Label>{m?.settings.account.name}</Form.Label>
 
                   <Form.Control
@@ -236,7 +236,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   />
                 </Form.Group>
 
-                <Form.Group className="mb-3">
+                <Form.Group controlId="email" className="mb-3">
                   <Form.Label>{m?.settings.account.email}</Form.Label>
 
                   <Form.Control

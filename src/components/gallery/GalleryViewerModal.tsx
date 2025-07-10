@@ -573,7 +573,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
                   {user && (
                     <Form onSubmit={handleCommentFormSubmit}>
-                      <Form.Group className="mb-3">
+                      <Form.Group controlId="comment" className="mb-3">
                         <InputGroup>
                           <Form.Control
                             type="text"

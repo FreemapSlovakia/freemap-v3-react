@@ -78,7 +78,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group>
+          <Form.Group controlId="color">
             <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
             <Form.Control
@@ -90,7 +90,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
             <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group controlId="width">
             <Form.Label>{m?.drawing.edit.width}</Form.Label>
 
             <Form.Control

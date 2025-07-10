@@ -300,7 +300,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group className="mb-3">
+          <Form.Group controlId="label" className="mb-3">
             <Form.Label>{m?.drawing.edit.label}</Form.Label>
 
             <Form.Control
@@ -315,7 +315,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
             {m?.drawing.edit.hint}
           </Alert>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="color" className="mb-3">
             <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
             <Form.Control
@@ -329,7 +329,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
 
           {drawType === 'draw-line-poly' && (
             <>
-              <Form.Group className="mb-3">
+              <Form.Group controlId="width" className="mb-3">
                 <Form.Label>{m?.drawing.edit.width}</Form.Label>
 
                 <Form.Control
@@ -342,7 +342,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3">
+              <Form.Group controlId="type" className="mb-3">
                 <Form.Label>{m?.drawing.edit.type}:</Form.Label>
 
                 <Form.Control

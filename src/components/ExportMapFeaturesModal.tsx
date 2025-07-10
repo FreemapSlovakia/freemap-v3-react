@@ -267,7 +267,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
           <Alert variant="warning">{m?.exportMapFeatures.disabledAlert}</Alert>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="target" className="mb-3">
             <Form.Label>{m?.exportMapFeatures.target}:</Form.Label>
 
             <div>
@@ -324,7 +324,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
           {isGarmin ? (
             <>
-              <Form.Group className="mb-3">
+              <Form.Group controlId="courseName" className="mb-3">
                 <Form.Label>
                   {m?.exportMapFeatures.garmin.courseName}:
                 </Form.Label>
@@ -335,7 +335,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3">
+              <Form.Group controlId="description" className="mb-3">
                 <Form.Label>
                   {m?.exportMapFeatures.garmin.description}:
                 </Form.Label>
@@ -348,7 +348,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3">
+              <Form.Group controlId="activityType" className="mb-3">
                 <Form.Label>
                   {m?.exportMapFeatures.garmin.activityType}:
                 </Form.Label>
@@ -384,7 +384,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
               </Form.Group>
             </>
           ) : (
-            <Form.Group className="mb-3">
+            <Form.Group controlId="format" className="mb-3">
               <Form.Label>{m?.exportMapFeatures.format}:</Form.Label>
 
               <div>
@@ -407,7 +407,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             </Form.Group>
           )}
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="download" className="mb-3">
             <Form.Label>{m?.exportMapFeatures.download}:</Form.Label>
 
             <div>

@@ -298,7 +298,7 @@ export function ShadingControl() {
 
               {(selectedComponent.type.startsWith('hillshade-') ||
                 selectedComponent.type.startsWith('slope-')) && (
-                <Form.Group className="mt-3">
+                <Form.Group controlId="exaggeration" className="mt-3">
                   <Form.Label>Exaggeration</Form.Label>
 
                   <Form.Control
@@ -325,7 +325,7 @@ export function ShadingControl() {
               )}
 
               {selectedComponent.type.startsWith('hillshade-') && (
-                <Form.Group className="mt-3">
+                <Form.Group controlId="azimuth" className="mt-3">
                   <Form.Label>Azimuth</Form.Label>
 
                   <Form.Control
@@ -357,7 +357,7 @@ export function ShadingControl() {
               )}
 
               {selectedComponent.type.endsWith('-classic') && (
-                <Form.Group className="mt-3">
+                <Form.Group controlId="elevation" className="mt-3">
                   <Form.Label>Elevation</Form.Label>
 
                   <Form.Control

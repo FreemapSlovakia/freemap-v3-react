@@ -361,7 +361,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             <Accordion.Header>{m?.mapExport.advancedSettings}</Accordion.Header>
 
             <Accordion.Body>
-              <Form.Group className="mb-3">
+              <Form.Group controlId="styles" className="mb-3">
                 <Form.Label>
                   {m?.mapExport.styles}{' '}
                   <a

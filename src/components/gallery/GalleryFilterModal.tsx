@@ -246,7 +246,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
 
       <Form onSubmit={handleFormSubmit}>
         <Modal.Body>
-          <Form.Group className="mb-3">
+          <Form.Group controlId="tag" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
 
             <Form.Select value={tag} onChange={handleTagChange}>
@@ -261,7 +261,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="author" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
 
             <Form.Select value={userId} onChange={handleUserIdChange}>
@@ -291,7 +291,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="createdAt" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
 
             <InputGroup>
@@ -311,7 +311,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="takenAt" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
 
             <InputGroup>
@@ -331,7 +331,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="rating" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
 
             <InputGroup>
