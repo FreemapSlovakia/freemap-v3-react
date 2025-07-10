@@ -1,11 +1,12 @@
 import { type ReactElement, ReactNode } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { selectFeature } from '../actions/mainActions.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { DeleteButton } from './DeleteButton.js';
+import { Toolbar } from './Toolbar.js';
 
 export function Selection({
   title,
@@ -28,7 +29,7 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2">
         <ButtonToolbar>
           <span className="align-self-center ms-1">
             {icon}
@@ -49,7 +50,7 @@ export function Selection({
             <FaTimes />
           </Button>
         </ButtonToolbar>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

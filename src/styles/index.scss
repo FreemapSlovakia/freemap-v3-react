@@ -53,8 +53,6 @@ body {
   }
   display: flex;
   flex-wrap: wrap;
-  column-gap: 0.5rem;
-  margin-inline: 0.5rem;
 }
 
 #freemap-logo-print {
@@ -134,6 +132,7 @@ button#freemap-logo {
     align-items: center;
 
     padding: 0.25rem;
+    margin-inline: 0.5rem;
   }
 
   @media print {
@@ -250,7 +249,7 @@ button#freemap-logo {
 .fm-ib-scroller > div:first-child::before {
   width: 2rem;
   height: 3rem;
-  right: 0.5rem;
+  right: 0;
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,

@@ -1,5 +1,5 @@
 import { type ReactElement, ReactNode } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setTool } from '../actions/mainActions.js';
@@ -7,6 +7,7 @@ import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { toolDefinitions } from '../toolDefinitions.js';
+import { Toolbar } from './Toolbar.js';
 
 type Props = {
   children?: ReactNode;
@@ -27,7 +28,7 @@ export function ToolMenu({ children }: Props): ReactElement {
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2">
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">
@@ -54,7 +55,7 @@ export function ToolMenu({ children }: Props): ReactElement {
 
           {children}
         </ButtonToolbar>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

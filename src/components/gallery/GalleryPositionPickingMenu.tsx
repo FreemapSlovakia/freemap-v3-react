@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -7,6 +7,7 @@ import {
   gallerySetItemForPositionPicking,
 } from '../../actions/galleryActions.js';
 import { useMessages } from '../../l10nInjector.js';
+import { Toolbar } from '../Toolbar.js';
 
 export default GalleryPositionPickingMenu;
 
@@ -17,7 +18,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
 
   return (
     <div>
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2">
         <div className="m-2">{m?.gallery.locationPicking.title}</div>
 
         <Button
@@ -39,7 +40,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
           <span className="d-none d-sm-inline"> {m?.general.cancel}</span>{' '}
           <kbd>Esc</kbd>
         </Button>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { CgArrowsMergeAltH } from 'react-icons/cg';
 import { FaDrawPolygon, FaRegPlayCircle, FaTimes } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
@@ -13,6 +13,7 @@ import {
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
 import { Selection } from './Selection.js';
+import { Toolbar } from './Toolbar.js';
 
 export default DrawingLinePointSelection;
 
@@ -39,7 +40,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
     joining /* TODO show joining toolbar */
   ) {
     return (
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2">
         <span className="me-2">{m?.drawing.selectPointToJoin}</span>
 
         <Button
@@ -52,7 +53,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
           <span className="d-none d-sm-inline"> {m?.general.cancel}</span>{' '}
           <kbd>Esc</kbd>
         </Button>
-      </Card>
+      </Toolbar>
     );
   }
 

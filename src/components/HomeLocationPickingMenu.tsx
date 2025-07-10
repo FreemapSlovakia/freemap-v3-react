@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -8,6 +8,7 @@ import {
 } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
+import { Toolbar } from './Toolbar.js';
 
 export default HomeLocationPickingMenu;
 
@@ -22,7 +23,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
 
   return (
     <div>
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2">
         <div className="m-1">Zvoľte domovskú pozíciu</div>
 
         <Button
@@ -43,7 +44,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
           <FaTimes />
           <span className="d-none d-sm-inline"> {m?.general.cancel}</span>
         </Button>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

@@ -1,10 +1,11 @@
 import type { ReactElement } from 'react';
-import { Card, Dropdown } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
+import { Toolbar } from './Toolbar.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 
 export function CopyrightButton(): ReactElement {
@@ -22,7 +23,7 @@ export function CopyrightButton(): ReactElement {
   const showAttribution = useAttributionInfo();
 
   return (
-    <Card className="fm-toolbar me-2 mb-2">
+    <Toolbar className="me-2 mb-2">
       <Dropdown>
         <Dropdown.Toggle
           bsPrefix="fm-dropdown-toggle-nocaret"
@@ -71,6 +72,6 @@ export function CopyrightButton(): ReactElement {
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
-    </Card>
+    </Toolbar>
   );
 }

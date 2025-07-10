@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
@@ -59,6 +59,7 @@ import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapsMenu } from './MapsMenu.js';
 import { Results } from './Results.js';
+import { Toolbar } from './Toolbar.js';
 import { ToolMenu } from './ToolMenu.js';
 import { Tools } from './Tools.js';
 import { TrackingSelection } from './TrackingSelection.js';
@@ -437,7 +438,7 @@ export function Main(): ReactElement {
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
-                <Card className="fm-toolbar mt-2">
+                <Toolbar className="mt-2">
                   <Button
                     id="freemap-logo"
                     className={progress ? 'in-progress' : 'idle'}
@@ -452,11 +453,11 @@ export function Main(): ReactElement {
                       preventShortcut={!!activeModal || !!documentKey}
                     />
                   )}
-                </Card>
+                </Toolbar>
               </div>
 
               {window.fmEmbedded && (trackFound || routeFound) && (
-                <Card className="fm-toolbar mx-2 mt-2">
+                <Toolbar className="mx-2 mt-2">
                   <ButtonToolbar>
                     {trackFound && (
                       <Button
@@ -494,7 +495,7 @@ export function Main(): ReactElement {
                       </Button>
                     )}
                   </ButtonToolbar>
-                </Card>
+                </Toolbar>
               )}
 
               {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}

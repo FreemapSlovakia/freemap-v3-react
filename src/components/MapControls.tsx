@@ -9,6 +9,7 @@ import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMessages } from '../l10nInjector.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
+import { Toolbar } from './Toolbar.js';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();
@@ -57,7 +58,7 @@ export function MapControls(): ReactElement | null {
   }, [forceUpdate, setForceUpdate]);
 
   return !map ? null : (
-    <div className="card fm-toolbar mx-2 mb-2">
+    <Toolbar className="mx-2 mb-2">
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />
       )}
@@ -118,6 +119,6 @@ export function MapControls(): ReactElement | null {
           )}
         </Button>
       )}
-    </div>
+    </Toolbar>
   );
 }

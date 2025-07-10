@@ -1,11 +1,12 @@
 import type { ReactElement } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { mapsDisconnect, mapsSave } from '../actions/mapsActions.js';
 import { useAppSelector } from '../hooks/reduxSelectHook.js';
 import { useMessages } from '../l10nInjector.js';
+import { Toolbar } from './Toolbar.js';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -15,7 +16,7 @@ export function MapsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   return (
-    <Card className="fm-toolbar mx-2 mt-2">
+    <Toolbar className="mx-2 mt-2">
       <ButtonToolbar>
         <Button
           variant="primary"
@@ -49,6 +50,6 @@ export function MapsMenu(): ReactElement {
           <FaUnlink />
         </Button>
       </ButtonToolbar>
-    </Card>
+    </Toolbar>
   );
 }

@@ -1,6 +1,6 @@
-import { Card } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks/reduxSelectHook.js';
 import { useMessages } from '../../l10nInjector.js';
+import { Toolbar } from '../Toolbar.js';
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(
@@ -33,7 +33,7 @@ export function PictureLegend() {
 
   return (
     <div className="w-100" style={{ maxWidth: '400px' }}>
-      <Card className="fm-toolbar mt-2 d-flex">
+      <Toolbar className="mt-2 d-flex">
         <div>{m?.gallery.legend}</div>
 
         <div
@@ -121,7 +121,7 @@ export function PictureLegend() {
             ) : null}
           </div>
         </div>
-      </Card>
+      </Toolbar>
     </div>
   );
 }
