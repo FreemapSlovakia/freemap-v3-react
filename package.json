@@ -82,7 +82,6 @@
     "reselect": "^5.1.1",
     "typia": "^9.4.0",
     "use-debounce": "^10.0.5",
-    "use-local-storage-state": "^19.5.0",
     "vhtml": "^2.2.0"
   },
   "devDependencies": {
