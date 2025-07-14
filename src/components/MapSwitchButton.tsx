@@ -316,15 +316,14 @@ export function MapSwitchButton(): ReactElement {
                   : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
             >
-              {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-              {({ label, labelClassName, ...porps }) => (
+              {({ props }) => (
                 <Button
                   variant="secondary"
                   key={type}
                   data-type={type}
                   active={mapType === type}
                   onClick={handleBaseClick}
-                  {...porps}
+                  {...props}
                 >
                   {commonBadges({ scaleWithDpi: false, ...rest })}
                 </Button>
@@ -391,7 +390,6 @@ export function MapSwitchButton(): ReactElement {
           <LongPressTooltip breakpoint="sm" label={m?.mapLayers.layers}>
             {({ props }) => (
               <Dropdown.Toggle
-                title={m?.mapLayers.layers}
                 bsPrefix="fm-dropdown-toggle-nocaret"
                 variant={isWide ? 'secondary' : 'primary'}
                 {...props}

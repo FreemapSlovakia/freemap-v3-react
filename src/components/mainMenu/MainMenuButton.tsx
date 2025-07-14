@@ -115,11 +115,7 @@ export function MainMenuButton(): ReactElement {
     >
       <LongPressTooltip label={m?.mainMenu.title}>
         {({ props }) => (
-          <Dropdown.Toggle
-            title={m?.mainMenu.title}
-            bsPrefix="fm-dropdown-toggle-nocaret"
-            {...props}
-          >
+          <Dropdown.Toggle bsPrefix="fm-dropdown-toggle-nocaret" {...props}>
             <FaBars />
           </Dropdown.Toggle>
         )}

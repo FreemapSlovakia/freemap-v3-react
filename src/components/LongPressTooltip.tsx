@@ -1,5 +1,6 @@
 import {
   MouseEvent,
+  PointerEvent,
   ReactNode,
   useCallback,
   useEffect,
@@ -19,12 +20,8 @@ type Props = {
   children: (props: {
     props: {
       ref: (el: HTMLElement | null) => void;
-      onMouseDown: () => void;
-      onMouseUp: () => void;
-      onMouseLeave: () => void;
-      onTouchStart: () => void;
-      onTouchEnd: () => void;
-      onTouchCancel: () => void;
+      onPointerEnter: (e: PointerEvent) => void;
+      onPointerLeave: (e: PointerEvent) => void;
       onClickCapture: (e: MouseEvent) => void;
       onContextMenuCapture: (e: MouseEvent) => void;
       title?: string;
@@ -54,7 +51,6 @@ function getMinWidthForBreakpoint(breakpoint: Breakpoint): number {
 export function LongPressTooltip({
   label = '…',
   kbd,
-  title,
   delay = 500,
   breakpoint,
   children,
@@ -88,17 +84,26 @@ export function LongPressTooltip({
     return () => window.removeEventListener('resize', checkVisibility);
   }, [breakpoint]);
 
-  const handleStart = useCallback(() => {
-    if (labelHidden) {
+  const handleStart = useCallback(
+    (e: PointerEvent) => {
+      if (!labelHidden || timeoutRef.current) {
+        return;
+      }
+
+      const type = e.type;
+
       timeoutRef.current = setTimeout(() => {
-        preventClickRef.current = true;
+        preventClickRef.current = type !== 'pointerenter';
 
         setShow(true);
       }, delay);
-    }
-  }, [delay, labelHidden]);
+    },
+    [delay, labelHidden],
+  );
 
-  const handleClear = useCallback(() => {
+  const handleClear = useCallback((e: PointerEvent) => {
+    console.log(e.type);
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -116,6 +121,8 @@ export function LongPressTooltip({
     if (preventClickRef.current) {
       e.preventDefault();
       e.stopPropagation();
+    } else {
+      setShow(false);
     }
   }, []);
 
@@ -131,17 +138,10 @@ export function LongPressTooltip({
           ref: (el) => {
             setTarget(el);
           },
-          onMouseDown: handleStart,
-          onMouseUp: handleClear,
-          onMouseLeave: handleClear,
-          onTouchStart: handleStart,
-          onTouchEnd: handleClear,
-          onTouchCancel: handleClear,
+          onPointerEnter: handleStart,
+          onPointerLeave: handleClear,
           onClickCapture: handleClickCapture,
           onContextMenuCapture: handleContextMenuCapture,
-          title: !labelHidden
-            ? undefined
-            : (title ?? (typeof label === 'string' ? label : undefined)),
         },
         label: kbd ? (
           <>
