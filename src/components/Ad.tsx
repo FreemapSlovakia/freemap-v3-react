@@ -62,7 +62,11 @@ export function Ad(): ReactElement | null {
           </div>
         ) : ad === 'rovas' ? (
           <a href="https://rovas.app" target="_blank" rel="noreferrer">
-            <img className="border rounded" src={rovasAd} />
+            <img
+              className="border rounded w-100"
+              src={rovasAd}
+              style={{ maxWidth: '360px' }}
+            />
           </a>
         ) : ad === 'tShirt' ? (
           <a
