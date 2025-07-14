@@ -8,6 +8,7 @@ import { drawingPointAdd } from '../actions/drawingPointActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { OpenInExternalAppMenuButton } from './OpenInExternalAppMenuButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
 import { Selection } from './Selection.js';
@@ -65,44 +66,59 @@ export function DrawingPointSelection(): ReactElement | null {
       />
       <Selection
         icon={<FaMapMarkerAlt />}
-        title={m?.selections.drawPoints}
+        label={m?.selections.drawPoints}
         deletable
       >
-        <Button
-          className="ms-1"
-          variant="secondary"
-          onClick={() => dispatch(setActiveModal('edit-label'))}
-        >
-          <FaTag />
-          <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
-        </Button>
+        <LongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => dispatch(setActiveModal('edit-label'))}
+              {...props}
+            >
+              <FaTag />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
-        <Button
-          className="ms-1"
-          variant="secondary"
-          onClick={() => setProjectPointDialogVisible(true)}
+        <LongPressTooltip
+          breakpoint="sm"
+          label={m?.drawing.projection.projectPoint}
         >
-          <TbAngle />
-          <span className="d-none d-sm-inline">
-            {' '}
-            {m?.drawing.projection.projectPoint}
-          </span>
-        </Button>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => setProjectPointDialogVisible(true)}
+              {...props}
+            >
+              <TbAngle />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
-        <OpenInExternalAppMenuButton
-          className="ms-1"
-          lat={point.lat}
-          lon={point.lon}
-          includePoint
-          pointTitle={point.label}
-          url={`/?point=${point.lat}/${point.lon}`}
+        <LongPressTooltip
+          breakpoint="sm"
+          label={m?.gallery.viewer.openInNewWindow}
         >
-          <FaExternalLinkAlt />
-          <span className="d-none d-sm-inline">
-            {' '}
-            {m?.gallery.viewer.openInNewWindow}
-          </span>
-        </OpenInExternalAppMenuButton>
+          {({ label, labelClassName, props }) => (
+            <OpenInExternalAppMenuButton
+              className="ms-1"
+              lat={point.lat}
+              lon={point.lon}
+              includePoint
+              pointTitle={point.label}
+              url={`/?point=${point.lat}/${point.lon}`}
+              {...props}
+            >
+              <FaExternalLinkAlt />
+              <span className={labelClassName}> {label}</span>
+            </OpenInExternalAppMenuButton>
+          )}
+        </LongPressTooltip>
       </Selection>
     </>
   );

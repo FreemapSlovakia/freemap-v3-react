@@ -21,6 +21,7 @@ import {
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import ProjectPointModal from './ProjectPointModal.js';
 import { Selection } from './Selection.js';
 
@@ -109,7 +110,7 @@ export function DrawingLineSelection(): ReactElement | null {
 
       <Selection
         icon={line.type === 'line' ? <TbTimeline /> : <FaDrawPolygon />}
-        title={
+        label={
           line.type === 'line'
             ? m?.selections.drawLines
             : m?.selections.drawPolygons
@@ -117,55 +118,73 @@ export function DrawingLineSelection(): ReactElement | null {
         deletable
       >
         {drawing && (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => dispatch(drawingLineStopDrawing())}
+          <LongPressTooltip
+            breakpoint="sm"
+            label={m?.drawing.stopDrawing}
+            kbd="Esc"
           >
-            <FaRegStopCircle />
-            <span className="d-none d-sm-inline">
-              {' '}
-              {m?.drawing.stopDrawing} <kbd>Esc</kbd>
-            </span>
-          </Button>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(drawingLineStopDrawing())}
+                {...props}
+              >
+                <FaRegStopCircle />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
 
-        <Button
-          className="ms-1"
-          variant="secondary"
-          onClick={() => dispatch(setActiveModal('edit-label'))}
-        >
-          <FaTag />
-          <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
-        </Button>
+        <LongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => dispatch(setActiveModal('edit-label'))}
+              {...props}
+            >
+              <FaTag />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
         {line.type === 'line' && line.points.length > 0 && (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => setProjectPointDialogVisible(true)}
+          <LongPressTooltip
+            breakpoint="sm"
+            label={m?.drawing.projection.projectPoint}
           >
-            <TbAngle />
-            <span className="d-none d-sm-inline">
-              {' '}
-              {m?.drawing.projection.projectPoint}
-            </span>
-          </Button>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => setProjectPointDialogVisible(true)}
+                {...props}
+              >
+                <TbAngle />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
 
         {line.type === 'line' && line.points.length > 1 && (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            active={showElevationChart}
-            onClick={toggleElevationChart}
-          >
-            <FaChartArea />
-            <span className="d-none d-sm-inline">
-              {' '}
-              {m?.general.elevationProfile}
-            </span>
-          </Button>
+          <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                active={showElevationChart}
+                onClick={toggleElevationChart}
+                {...props}
+              >
+                <FaChartArea />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
       </Selection>
     </>

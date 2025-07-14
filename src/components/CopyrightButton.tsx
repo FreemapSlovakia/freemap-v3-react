@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 
@@ -25,14 +26,21 @@ export function CopyrightButton(): ReactElement {
   return (
     <Toolbar className="me-2 mb-2">
       <Dropdown>
-        <Dropdown.Toggle
-          bsPrefix="fm-dropdown-toggle-nocaret"
-          id="dropdown-basic"
-          title={m?.mainMenu.mapLegend + ', Privacy policy'}
-          variant="secondary"
+        <LongPressTooltip
+          breakpoint="always"
+          title={(m?.mainMenu.mapLegend ?? '…') + ', Privacy policy'}
         >
-          <FaQuestion />
-        </Dropdown.Toggle>
+          {({ props }) => (
+            <Dropdown.Toggle
+              bsPrefix="fm-dropdown-toggle-nocaret"
+              id="dropdown-basic"
+              variant="secondary"
+              {...props}
+            >
+              <FaQuestion />
+            </Dropdown.Toggle>
+          )}
+        </LongPressTooltip>
 
         <Dropdown.Menu style={{ width: 'max-content' }}>
           <Dropdown.Item

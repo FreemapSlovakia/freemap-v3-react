@@ -55,6 +55,7 @@ import { GalleryModals } from './gallery/GalleryModals.js';
 import { PictureLegend } from './gallery/PictureLegend.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapsMenu } from './MapsMenu.js';
@@ -460,39 +461,46 @@ export function Main(): ReactElement {
                 <Toolbar className="mx-2 mt-2">
                   <ButtonToolbar>
                     {trackFound && (
-                      <Button
-                        variant="secondary"
-                        active={elevationChartActive}
-                        onClick={() =>
-                          dispatch(trackViewerToggleElevationChart())
-                        }
+                      <LongPressTooltip
+                        breakpoint="sm"
+                        label={m?.general.elevationProfile}
                       >
-                        <FaChartArea />
-
-                        <span className="d-none d-sm-inline">
-                          {' '}
-                          {m?.general.elevationProfile}
-                        </span>
-                      </Button>
+                        {({ label, labelClassName, props }) => (
+                          <Button
+                            variant="secondary"
+                            active={elevationChartActive}
+                            onClick={() =>
+                              dispatch(trackViewerToggleElevationChart())
+                            }
+                            {...props}
+                          >
+                            <FaChartArea />
+                            <span className={labelClassName}> {label}</span>
+                          </Button>
+                        )}
+                      </LongPressTooltip>
                     )}
 
                     {routeFound && (
-                      <Button
-                        className={trackFound ? 'ms-1' : ''}
-                        variant="secondary"
-                        onClick={() =>
-                          dispatch(routePlannerToggleElevationChart())
-                        }
-                        active={elevationChartActive}
-                        title={m?.general.elevationProfile}
+                      <LongPressTooltip
+                        breakpoint="sm"
+                        label={m?.general.elevationProfile}
                       >
-                        <FaChartArea />
-
-                        <span className="d-none d-sm-inline">
-                          {' '}
-                          {m?.general.elevationProfile ?? '…'}
-                        </span>
-                      </Button>
+                        {({ label, labelClassName, props }) => (
+                          <Button
+                            className={trackFound ? 'ms-1' : ''}
+                            variant="secondary"
+                            onClick={() =>
+                              dispatch(routePlannerToggleElevationChart())
+                            }
+                            active={elevationChartActive}
+                            {...props}
+                          >
+                            <FaChartArea />
+                            <span className={labelClassName}> {label}</span>
+                          </Button>
+                        )}
+                      </LongPressTooltip>
                     )}
                   </ButtonToolbar>
                 </Toolbar>

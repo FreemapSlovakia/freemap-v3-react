@@ -6,6 +6,7 @@ import {
   galleryConfirmPickedPosition,
   gallerySetItemForPositionPicking,
 } from '../../actions/galleryActions.js';
+import { LongPressTooltip } from '../../components/LongPressTooltip.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Toolbar } from '../Toolbar.js';
 
@@ -21,25 +22,30 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
       <Toolbar className="mt-2">
         <div className="m-2">{m?.gallery.locationPicking.title}</div>
 
-        <Button
-          className="me-1"
-          onClick={() => {
-            dispatch(galleryConfirmPickedPosition());
-          }}
-        >
-          <FaCheck />
-          <span className="d-none d-sm-inline"> {m?.general.ok}</span>
-        </Button>
+        <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="me-1"
+              onClick={() => dispatch(galleryConfirmPickedPosition())}
+              {...props}
+            >
+              <FaCheck />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
-        <Button
-          onClick={() => {
-            dispatch(gallerySetItemForPositionPicking(null));
-          }}
-        >
-          <FaTimes />
-          <span className="d-none d-sm-inline"> {m?.general.cancel}</span>{' '}
-          <kbd>Esc</kbd>
-        </Button>
+        <LongPressTooltip breakpoint="sm" label={m?.general.cancel} kbd="Esc">
+          {({ label, labelClassName, props }) => (
+            <Button
+              onClick={() => dispatch(gallerySetItemForPositionPicking(null))}
+              {...props}
+            >
+              <FaTimes />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
       </Toolbar>
     </div>
   );

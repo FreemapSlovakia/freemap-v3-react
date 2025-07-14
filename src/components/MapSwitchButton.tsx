@@ -316,20 +316,28 @@ export function MapSwitchButton(): ReactElement {
               mapType === type,
           )
           .map(({ type, ...rest }) => (
-            <Button
-              variant="secondary"
-              title={
+            <LongPressTooltip
+              label={
                 type.startsWith('.')
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
                   : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
-              key={type}
-              data-type={type}
-              active={mapType === type}
-              onClick={handleBaseClick}
+              breakpoint="always"
             >
-              {commonBadges({ scaleWithDpi: false, ...rest })}
-            </Button>
+              {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+              {({ label, labelClassName, ...porps }) => (
+                <Button
+                  variant="secondary"
+                  key={type}
+                  data-type={type}
+                  active={mapType === type}
+                  onClick={handleBaseClick}
+                  {...porps}
+                >
+                  {commonBadges({ scaleWithDpi: false, ...rest })}
+                </Button>
+              )}
+            </LongPressTooltip>
           ))}
 
         {(isWide ? ovls : [])
@@ -342,36 +350,43 @@ export function MapSwitchButton(): ReactElement {
               overlays.includes(l.type),
           )
           .map(({ type, ...rest }) => (
-            <Button
-              variant="secondary"
-              title={
+            <LongPressTooltip
+              label={
                 type.startsWith(':')
                   ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
                   : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
-              key={type}
-              data-type={type}
-              active={overlays.includes(type as OverlayLetters)}
-              onClick={handleOverlayClick}
+              breakpoint="always"
             >
-              {commonBadges({ scaleWithDpi: false, ...rest })}
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  key={type}
+                  data-type={type}
+                  active={overlays.includes(type as OverlayLetters)}
+                  onClick={handleOverlayClick}
+                  {...props}
+                >
+                  {commonBadges({ scaleWithDpi: false, ...rest })}
 
-              {pictureFilterIsActive && type === 'I' && (
-                <FaFilter
-                  data-filter="1"
-                  title={m?.mapLayers.photoFilterWarning}
-                  className="text-warning ms-2"
-                />
-              )}
+                  {pictureFilterIsActive && type === 'I' && (
+                    <FaFilter
+                      data-filter="1"
+                      title={m?.mapLayers.photoFilterWarning}
+                      className="text-warning ms-2"
+                    />
+                  )}
 
-              {overlays.includes('i') && type === 'i' && (
-                <FaExclamationTriangle
-                  data-interactive="1"
-                  title={m?.mapLayers.interactiveLayerWarning}
-                  className="text-warning ms-2"
-                />
+                  {overlays.includes('i') && type === 'i' && (
+                    <FaExclamationTriangle
+                      data-interactive="1"
+                      title={m?.mapLayers.interactiveLayerWarning}
+                      className="text-warning ms-2"
+                    />
+                  )}
+                </Button>
               )}
-            </Button>
+            </LongPressTooltip>
           ))}
 
         <Dropdown
@@ -383,8 +398,7 @@ export function MapSwitchButton(): ReactElement {
           as={ButtonGroup}
         >
           <LongPressTooltip breakpoint="sm" label={m?.mapLayers.layers}>
-            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-            {({ label, labelClassName, title, ...props }) => (
+            {({ props }) => (
               <Dropdown.Toggle
                 title={m?.mapLayers.layers}
                 bsPrefix="fm-dropdown-toggle-nocaret"

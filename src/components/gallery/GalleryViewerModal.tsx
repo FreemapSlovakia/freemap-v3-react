@@ -649,7 +649,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         {canEdit && (
           <>
             <LongPressTooltip breakpoint="sm" label={m?.general.modify} kbd="m">
-              {({ label, labelClassName, ...props }) => (
+              {({ label, labelClassName, props }) => (
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -660,17 +660,17 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 >
                   <FaPencilAlt />
 
-                  <span className={labelClassName}>{label}</span>
+                  <span className={labelClassName}> {label}</span>
                 </Button>
               )}
             </LongPressTooltip>
 
             <LongPressTooltip breakpoint="sm" label={m?.general.delete}>
-              {({ label, labelClassName, ...props }) => (
+              {({ label, labelClassName, props }) => (
                 <Button onClick={handleDelete} variant="danger" {...props}>
                   <FaTrash />
 
-                  <span className={labelClassName}>{label}</span>
+                  <span className={labelClassName}> {label}</span>
                 </Button>
               )}
             </LongPressTooltip>
@@ -682,7 +682,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           label={m?.gallery.viewer.showOnTheMap}
           kbd="s"
         >
-          {({ label, labelClassName, ...props }) => (
+          {({ label, labelClassName, props }) => (
             <Button
               variant="secondary"
               onClick={() => {
@@ -692,7 +692,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             >
               <FaRegDotCircle />
 
-              <span className={labelClassName}>{label}</span>
+              <span className={labelClassName}> {label}</span>
             </Button>
           )}
         </LongPressTooltip>
@@ -703,33 +703,37 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             label={m?.general.fullscreen}
             kbd="f"
           >
-            {({ label, labelClassName, ...props }) => (
+            {({ label, labelClassName, props }) => (
               <Button variant="secondary" onClick={handleFullscreen} {...props}>
                 <RiFullscreenLine />
 
-                <span className={labelClassName}>{label}</span>
+                <span className={labelClassName}> {label}</span>
               </Button>
             )}
           </LongPressTooltip>
         )}
 
         {lat !== undefined && lon !== undefined && (
-          <OpenInExternalAppMenuButton
-            lat={lat}
-            lon={lon}
-            placement="top"
-            includePoint
-            pointTitle={title ?? undefined}
-            pointDescription={description ?? undefined}
-            url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
+          <LongPressTooltip
+            breakpoint="md"
+            label={m?.gallery.viewer.openInNewWindow}
           >
-            <FaExternalLinkAlt />
-
-            <span className="d-none d-md-inline">
-              {' '}
-              {m?.gallery.viewer.openInNewWindow}
-            </span>
-          </OpenInExternalAppMenuButton>
+            {({ label, labelClassName, props }) => (
+              <OpenInExternalAppMenuButton
+                lat={lat}
+                lon={lon}
+                placement="top"
+                includePoint
+                pointTitle={title ?? undefined}
+                pointDescription={description ?? undefined}
+                url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
+                {...props}
+              >
+                <FaExternalLinkAlt />
+                <span className={labelClassName}> {label}</span>
+              </OpenInExternalAppMenuButton>
+            )}
+          </LongPressTooltip>
         )}
 
         <LongPressTooltip
@@ -737,11 +741,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           breakpoint="md"
           kbd={editModel ? undefined : 'Esc'}
         >
-          {({ label, labelClassName, ...props }) => (
+          {({ label, labelClassName, props }) => (
             <Button variant="dark" onClick={close} {...props}>
               <FaTimes />
 
-              <span className={labelClassName}>{label}</span>
+              <span className={labelClassName}> {label}</span>
             </Button>
           )}
         </LongPressTooltip>

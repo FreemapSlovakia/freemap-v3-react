@@ -66,8 +66,7 @@ export function MapControls(): ReactElement | null {
 
       <ButtonGroup className="ms-1">
         <LongPressTooltip label={m?.main.zoomIn} breakpoint="always">
-          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-          {({ label, labelClassName, ...props }) => (
+          {({ props }) => (
             <Button
               variant="secondary"
               onClick={() => {
@@ -82,8 +81,7 @@ export function MapControls(): ReactElement | null {
         </LongPressTooltip>
 
         <LongPressTooltip label={m?.main.zoomOut} breakpoint="always">
-          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-          {({ label, labelClassName, ...props }) => (
+          {({ props }) => (
             <Button
               variant="secondary"
               onClick={() => {
@@ -100,8 +98,7 @@ export function MapControls(): ReactElement | null {
 
       {(!window.fmEmbedded || !embedFeatures.includes('noLocateMe')) && (
         <LongPressTooltip label={m?.main.locateMe} breakpoint="always">
-          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-          {({ label, labelClassName, ...props }) => (
+          {({ props }) => (
             <Button
               className="ms-1"
               onClick={() => {
@@ -126,8 +123,7 @@ export function MapControls(): ReactElement | null {
           }
           breakpoint="always"
         >
-          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-          {({ label, labelClassName, ...props }) => (
+          {({ props }) => (
             <Button
               className="ms-1"
               variant="secondary"

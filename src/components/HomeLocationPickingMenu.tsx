@@ -8,6 +8,7 @@ import {
 } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 
 export default HomeLocationPickingMenu;
@@ -26,24 +27,34 @@ export function HomeLocationPickingMenu(): ReactElement | null {
       <Toolbar className="mt-2">
         <div className="m-1">Zvoľte domovskú pozíciu</div>
 
-        <Button
-          className="ms-1"
-          variant="primary"
-          onClick={() => dispatch(saveHomeLocation())}
-          disabled={!selectingHomeLocation}
-        >
-          <FaCheck />
-          <span className="d-none d-sm-inline"> {m?.general.save}</span>
-        </Button>
+        <LongPressTooltip breakpoint="sm" label={m?.general.save}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="primary"
+              onClick={() => dispatch(saveHomeLocation())}
+              disabled={!selectingHomeLocation}
+              {...props}
+            >
+              <FaCheck />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
-        <Button
-          className="ms-1"
-          variant="dark"
-          onClick={() => dispatch(setSelectingHomeLocation(false))}
-        >
-          <FaTimes />
-          <span className="d-none d-sm-inline"> {m?.general.cancel}</span>
-        </Button>
+        <LongPressTooltip breakpoint="sm" label={m?.general.cancel}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="dark"
+              onClick={() => dispatch(setSelectingHomeLocation(false))}
+              {...props}
+            >
+              <FaTimes />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
       </Toolbar>
     </div>
   );

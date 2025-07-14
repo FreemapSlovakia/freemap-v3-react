@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { galleryCancelShowOnTheMap } from '../../actions/galleryActions.js';
+import { LongPressTooltip } from '../../components/LongPressTooltip.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Toolbar } from '../Toolbar.js';
 
@@ -19,11 +20,14 @@ export function GalleryShowPositionMenu(): ReactElement | null {
 
   return (
     <Toolbar className="mt-2">
-      <Button onClick={close}>
-        <FaChevronLeft />
-        <span className="d-none d-sm-inline"> {m?.general.back}</span>{' '}
-        <kbd>Esc</kbd>
-      </Button>
+      <LongPressTooltip breakpoint="sm" label={m?.general.back} kbd="Esc">
+        {({ label, labelClassName, props }) => (
+          <Button onClick={close} {...props}>
+            <FaChevronLeft />
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
     </Toolbar>
   );
 }

@@ -14,6 +14,7 @@ import { useMenuHandler } from '../../hooks/useMenuHandler.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import { useMessages } from '../../l10nInjector.js';
 import { CacheMode } from '../../types/common.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
 import { DrawingSubmenu } from './DrawingSubmenu.js';
 import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
@@ -112,12 +113,17 @@ export function MainMenuButton(): ReactElement {
       show={menuShown}
       onToggle={handleMenuToggle}
     >
-      <Dropdown.Toggle
-        title={m?.mainMenu.title}
-        bsPrefix="fm-dropdown-toggle-nocaret"
-      >
-        <FaBars />
-      </Dropdown.Toggle>
+      <LongPressTooltip label={m?.mainMenu.title} breakpoint="always">
+        {({ props }) => (
+          <Dropdown.Toggle
+            title={m?.mainMenu.title}
+            bsPrefix="fm-dropdown-toggle-nocaret"
+            {...props}
+          >
+            <FaBars />
+          </Dropdown.Toggle>
+        )}
+      </LongPressTooltip>
 
       <Dropdown.Menu popperConfig={fixedPopperConfig}>
         <div className="fm-menu-scroller" ref={sc}>

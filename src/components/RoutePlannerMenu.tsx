@@ -480,6 +480,10 @@ export function RoutePlannerMenu(): ReactElement {
 
   return (
     <ToolMenu>
+      {(routeFound || isochronesFound || canDelete) && (
+        <DeleteButton breakpoint="lg" />
+      )}
+
       <Dropdown
         className="ms-1"
         id="transport-type"
@@ -501,13 +505,13 @@ export function RoutePlannerMenu(): ReactElement {
           }
           title={ttLabel}
         >
-          {({ label, labelClassName, ...props }) => (
+          {({ label, labelClassName, props }) => (
             <Dropdown.Toggle variant="secondary" {...props}>
               {activeTTDef.icon}{' '}
               {['car', 'car-toll', 'bikesharing'].includes(
                 activeTransportType,
               ) && <FaMoneyBill />}
-              <span className={labelClassName}>{label}</span>
+              <span className={labelClassName}> {label}</span>
             </Dropdown.Toggle>
           )}
         </LongPressTooltip>
@@ -629,7 +633,7 @@ export function RoutePlannerMenu(): ReactElement {
           }}
         >
           <LongPressTooltip breakpoint="md" label={m?.routePlanner.start}>
-            {({ label, labelClassName, ...props }) => (
+            {({ label, labelClassName, props }) => (
               <Dropdown.Toggle
                 variant="secondary"
                 active={pickPointMode === 'start'}
@@ -696,7 +700,7 @@ export function RoutePlannerMenu(): ReactElement {
               }}
             >
               <LongPressTooltip breakpoint="md" label={m?.routePlanner.finish}>
-                {({ label, labelClassName, ...props }) => (
+                {({ label, labelClassName, props }) => (
                   <Dropdown.Toggle
                     variant="secondary"
                     active={pickPointMode === 'finish'}
@@ -776,10 +780,6 @@ export function RoutePlannerMenu(): ReactElement {
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-      )}
-
-      {(routeFound || isochronesFound || canDelete) && (
-        <DeleteButton textClassName="d-none d-lg-inline" />
       )}
     </ToolMenu>
   );

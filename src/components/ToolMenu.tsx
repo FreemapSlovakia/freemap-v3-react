@@ -49,7 +49,7 @@ export function ToolMenu({ children }: Props): ReactElement {
           )}
 
           <LongPressTooltip label={m?.general.close} kbd="Esc" breakpoint="xl">
-            {({ label, labelClassName, ...props }) => (
+            {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
                 variant="secondary"
@@ -58,7 +58,7 @@ export function ToolMenu({ children }: Props): ReactElement {
               >
                 <FaTimes />
 
-                <span className={labelClassName}>{label}</span>
+                <span className={labelClassName}> {label}</span>
               </Button>
             )}
           </LongPressTooltip>

@@ -8,7 +8,15 @@ import {
 } from 'react';
 import { Overlay, Tooltip } from 'react-bootstrap';
 
-type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'never' | 'always';
+export type Breakpoint =
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl'
+  | 'xxl'
+  | 'never'
+  | 'always';
 
 type Props = {
   label?: ReactNode;
@@ -17,16 +25,18 @@ type Props = {
   title?: string;
   kbd?: string;
   children: (props: {
-    ref: (el: HTMLElement | null) => void;
-    onMouseDown: () => void;
-    onMouseUp: () => void;
-    onMouseLeave: () => void;
-    onTouchStart: () => void;
-    onTouchEnd: () => void;
-    onTouchCancel: () => void;
-    onClickCapture: (e: MouseEvent) => void;
-    onContextMenuCapture: (e: MouseEvent) => void;
-    title?: string;
+    props: {
+      ref: (el: HTMLElement | null) => void;
+      onMouseDown: () => void;
+      onMouseUp: () => void;
+      onMouseLeave: () => void;
+      onTouchStart: () => void;
+      onTouchEnd: () => void;
+      onTouchCancel: () => void;
+      onClickCapture: (e: MouseEvent) => void;
+      onContextMenuCapture: (e: MouseEvent) => void;
+      title?: string;
+    };
     label: ReactNode;
     labelClassName: string;
   }) => ReactNode;
@@ -132,20 +142,22 @@ export function LongPressTooltip({
   return (
     <>
       {children({
-        ref: (el) => {
-          setTarget(el);
+        props: {
+          ref: (el) => {
+            setTarget(el);
+          },
+          onMouseDown: handleStart,
+          onMouseUp: handleClear,
+          onMouseLeave: handleClear,
+          onTouchStart: handleStart,
+          onTouchEnd: handleClear,
+          onTouchCancel: handleClear,
+          onClickCapture: handleClickCapture,
+          onContextMenuCapture: handleContextMenuCapture,
+          title: !labelHidden
+            ? undefined
+            : (title ?? (typeof label === 'string' ? label : undefined)),
         },
-        onMouseDown: handleStart,
-        onMouseUp: handleClear,
-        onMouseLeave: handleClear,
-        onTouchStart: handleStart,
-        onTouchEnd: handleClear,
-        onTouchCancel: handleClear,
-        onClickCapture: handleClickCapture,
-        onContextMenuCapture: handleContextMenuCapture,
-        title: !labelHidden
-          ? undefined
-          : (title ?? (typeof label === 'string' ? label : undefined)),
         label: kbd ? (
           <>
             {label} <kbd>{kbd}</kbd>

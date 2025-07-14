@@ -6,15 +6,16 @@ import { selectFeature } from '../actions/mainActions.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { DeleteButton } from './DeleteButton.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 
 export function Selection({
-  title,
+  label,
   icon,
   deletable,
   children,
 }: {
-  title?: string;
+  label?: string;
   icon: ReactElement;
   deletable?: boolean;
   children?: ReactNode;
@@ -31,24 +32,33 @@ export function Selection({
 
       <Toolbar className="mt-2">
         <ButtonToolbar>
-          <span className="align-self-center ms-1">
-            {icon}
+          <LongPressTooltip breakpoint="sm" label={label}>
+            {({ label, labelClassName, props }) => (
+              <span className="align-self-center ms-1" {...props}>
+                {icon}
+                <span className={labelClassName}> {label}</span>
+              </span>
+            )}
+          </LongPressTooltip>
 
-            <span className="d-none d-sm-inline"> {title}</span>
-          </span>
+          <LongPressTooltip label={m?.general.close} kbd="Esc" breakpoint="xl">
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(selectFeature(null))}
+                {...props}
+              >
+                <FaTimes />
 
-          {children}
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
 
           {deletable && <DeleteButton />}
 
-          <Button
-            variant="secondary"
-            className="ms-1"
-            onClick={() => dispatch(selectFeature(null))}
-            title={m?.general.close + ' [Esc]'}
-          >
-            <FaTimes />
-          </Button>
+          {children}
         </ButtonToolbar>
       </Toolbar>
     </div>
