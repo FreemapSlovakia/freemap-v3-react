@@ -484,7 +484,7 @@ export function Main(): ReactElement {
                           dispatch(routePlannerToggleElevationChart())
                         }
                         active={elevationChartActive}
-                        title={m?.general.elevationProfile ?? '…'}
+                        title={m?.general.elevationProfile}
                       >
                         <FaChartArea />
 

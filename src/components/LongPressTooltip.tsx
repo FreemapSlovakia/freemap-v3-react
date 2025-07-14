@@ -8,13 +8,14 @@ import {
 } from 'react';
 import { Overlay, Tooltip } from 'react-bootstrap';
 
-type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'never' | 'always';
 
 type Props = {
-  label: ReactNode;
+  label?: ReactNode;
   delay?: number;
-  breakpoint?: Breakpoint; // default: 'sm'
+  breakpoint: Breakpoint;
   title?: string;
+  kbd?: string;
   children: (props: {
     ref: (el: HTMLElement | null) => void;
     onMouseDown: () => void;
@@ -24,6 +25,7 @@ type Props = {
     onTouchEnd: () => void;
     onTouchCancel: () => void;
     onClickCapture: (e: MouseEvent) => void;
+    onContextMenuCapture: (e: MouseEvent) => void;
     title?: string;
     label: ReactNode;
     labelClassName: string;
@@ -44,14 +46,19 @@ function getMinWidthForBreakpoint(breakpoint: Breakpoint): number {
       return 1200;
     case 'xxl':
       return 1400;
+    case 'never':
+      return -Infinity;
+    case 'always':
+      return Infinity;
   }
 }
 
 export function LongPressTooltip({
-  label,
+  label = '…',
+  kbd,
   title,
   delay = 500,
-  breakpoint = 'sm',
+  breakpoint,
   children,
 }: Props) {
   const preventClickRef = useRef(false);
@@ -65,6 +72,16 @@ export function LongPressTooltip({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    if (breakpoint === 'never') {
+      setLabelHidden(true);
+      return;
+    }
+
+    if (breakpoint === 'always') {
+      setLabelHidden(true);
+      return;
+    }
+
     function checkVisibility() {
       setLabelHidden(window.innerWidth < getMinWidthForBreakpoint(breakpoint));
     }
@@ -107,6 +124,11 @@ export function LongPressTooltip({
     }
   }, []);
 
+  const handleContextMenuCapture = useCallback((e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
   return (
     <>
       {children({
@@ -120,10 +142,17 @@ export function LongPressTooltip({
         onTouchEnd: handleClear,
         onTouchCancel: handleClear,
         onClickCapture: handleClickCapture,
+        onContextMenuCapture: handleContextMenuCapture,
         title: !labelHidden
           ? undefined
           : (title ?? (typeof label === 'string' ? label : undefined)),
-        label,
+        label: kbd ? (
+          <>
+            {label} <kbd>{kbd}</kbd>
+          </>
+        ) : (
+          label
+        ),
         labelClassName: `d-none d-${breakpoint}-inline`,
       })}
 

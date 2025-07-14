@@ -43,6 +43,7 @@ import {
 } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
   return (
@@ -381,14 +382,20 @@ export function MapSwitchButton(): ReactElement {
           onToggle={handleToggle}
           as={ButtonGroup}
         >
-          <Dropdown.Toggle
-            title={m?.mapLayers.layers}
-            bsPrefix="fm-dropdown-toggle-nocaret"
-            variant={isWide ? 'secondary' : 'primary'}
-          >
-            <FaEllipsisV className="d-none d-sm-block" />
-            <FaRegMap className="d-sm-none" />
-          </Dropdown.Toggle>
+          <LongPressTooltip breakpoint="sm" label={m?.mapLayers.layers}>
+            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+            {({ label, labelClassName, title, ...props }) => (
+              <Dropdown.Toggle
+                title={m?.mapLayers.layers}
+                bsPrefix="fm-dropdown-toggle-nocaret"
+                variant={isWide ? 'secondary' : 'primary'}
+                {...props}
+              >
+                <FaEllipsisV className="d-none d-sm-block" />
+                <FaRegMap className="d-sm-none" />
+              </Dropdown.Toggle>
+            )}
+          </LongPressTooltip>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <div className="fm-menu-scroller" ref={sc}>

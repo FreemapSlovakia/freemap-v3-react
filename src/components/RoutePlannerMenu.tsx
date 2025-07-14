@@ -473,6 +473,11 @@ export function RoutePlannerMenu(): ReactElement {
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
     useState(false);
 
+  const ttLabel = m?.routePlanner.transportType[activeTTDef.msgKey].replace(
+    /\s*,.*/,
+    '',
+  );
+
   return (
     <ToolMenu>
       <Dropdown
@@ -488,15 +493,13 @@ export function RoutePlannerMenu(): ReactElement {
           breakpoint="lg"
           label={
             <>
-              {m?.routePlanner.transportType[activeTTDef.msgKey].replace(
-                /\s*,.*/,
-                '',
-              ) ?? '…'}{' '}
+              {ttLabel ?? '…'}{' '}
               <small className="text-dark">
                 {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
               </small>
             </>
           }
+          title={ttLabel}
         >
           {({ label, labelClassName, ...props }) => (
             <Dropdown.Toggle variant="secondary" {...props}>
@@ -526,7 +529,7 @@ export function RoutePlannerMenu(): ReactElement {
                       as="button"
                       eventKey={type}
                       key={type}
-                      title={m?.routePlanner.transportType[key] ?? '…'}
+                      title={m?.routePlanner.transportType[key]}
                       active={activeTransportType === type}
                     >
                       {icon}{' '}
@@ -570,7 +573,7 @@ export function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
-                  title={m?.routePlanner.mode[mode] ?? '…'}
+                  title={m?.routePlanner.mode[mode]}
                   active={activeMode === mode}
                 >
                   {m?.routePlanner.mode[
@@ -600,7 +603,7 @@ export function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
-                  title={m?.routePlanner.mode[mode] ?? '…'}
+                  title={m?.routePlanner.mode[mode]}
                   active={activeMode === mode}
                 >
                   {m?.routePlanner.mode[mode] ?? '…'}
@@ -625,10 +628,7 @@ export function RoutePlannerMenu(): ReactElement {
             }
           }}
         >
-          <LongPressTooltip
-            breakpoint="md"
-            label={m?.routePlanner.start ?? '…'}
-          >
+          <LongPressTooltip breakpoint="md" label={m?.routePlanner.start}>
             {({ label, labelClassName, ...props }) => (
               <Dropdown.Toggle
                 variant="secondary"
@@ -677,7 +677,7 @@ export function RoutePlannerMenu(): ReactElement {
               variant="secondary"
               onClick={() => dispatch(routePlannerSwapEnds())}
               disabled={!canSwap}
-              title={m?.routePlanner.swap ?? '…'}
+              title={m?.routePlanner.swap}
             >
               ⇆
             </Button>
@@ -695,10 +695,7 @@ export function RoutePlannerMenu(): ReactElement {
                 }
               }}
             >
-              <LongPressTooltip
-                breakpoint="md"
-                label={m?.routePlanner.finish ?? '…'}
-              >
+              <LongPressTooltip breakpoint="md" label={m?.routePlanner.finish}>
                 {({ label, labelClassName, ...props }) => (
                   <Dropdown.Toggle
                     variant="secondary"

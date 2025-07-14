@@ -8,6 +8,7 @@ import { mapRefocus, MapViewState } from '../actions/mapActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMessages } from '../l10nInjector.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 import { Toolbar } from './Toolbar.js';
 
@@ -64,60 +65,83 @@ export function MapControls(): ReactElement | null {
       )}
 
       <ButtonGroup className="ms-1">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            onMapRefocus({ zoom: zoom + 1 });
-          }}
-          title={m?.main.zoomIn}
-          disabled={zoom >= map.getMaxZoom()}
-        >
-          <FaPlus />
-        </Button>
+        <LongPressTooltip label={m?.main.zoomIn} breakpoint="always">
+          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+          {({ label, labelClassName, ...props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                onMapRefocus({ zoom: zoom + 1 });
+              }}
+              disabled={zoom >= map.getMaxZoom()}
+              {...props}
+            >
+              <FaPlus />
+            </Button>
+          )}
+        </LongPressTooltip>
 
-        <Button
-          variant="secondary"
-          onClick={() => {
-            onMapRefocus({ zoom: zoom - 1 });
-          }}
-          title={m?.main.zoomOut}
-          disabled={zoom <= map.getMinZoom()}
-        >
-          <FaMinus />
-        </Button>
+        <LongPressTooltip label={m?.main.zoomOut} breakpoint="always">
+          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+          {({ label, labelClassName, ...props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                onMapRefocus({ zoom: zoom - 1 });
+              }}
+              disabled={zoom <= map.getMinZoom()}
+              {...props}
+            >
+              <FaMinus />
+            </Button>
+          )}
+        </LongPressTooltip>
       </ButtonGroup>
 
       {(!window.fmEmbedded || !embedFeatures.includes('noLocateMe')) && (
-        <Button
-          className="ms-1"
-          onClick={() => {
-            dispatch(toggleLocate(undefined));
-          }}
-          title={m?.main.locateMe}
-          active={locate}
-          variant={gpsTracked ? 'warning' : 'secondary'}
-        >
-          <FaRegDotCircle />
-        </Button>
+        <LongPressTooltip label={m?.main.locateMe} breakpoint="always">
+          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+          {({ label, labelClassName, ...props }) => (
+            <Button
+              className="ms-1"
+              onClick={() => {
+                dispatch(toggleLocate(undefined));
+              }}
+              active={locate}
+              variant={gpsTracked ? 'warning' : 'secondary'}
+              {...props}
+            >
+              <FaRegDotCircle />
+            </Button>
+          )}
+        </LongPressTooltip>
       )}
 
       {'exitFullscreen' in document && (
-        <Button
-          className="ms-1"
-          variant="secondary"
-          onClick={handleFullscreenClick}
-          title={
+        <LongPressTooltip
+          label={
             document.fullscreenElement
               ? m?.general.exitFullscreen
               : m?.general.fullscreen
           }
+          breakpoint="always"
         >
-          {document.fullscreenElement ? (
-            <RiFullscreenExitLine />
-          ) : (
-            <RiFullscreenLine />
+          {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+          {({ label, labelClassName, ...props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={handleFullscreenClick}
+              {...props}
+            >
+              {document.fullscreenElement ? (
+                <RiFullscreenExitLine />
+              ) : (
+                <RiFullscreenLine />
+              )}
+            </Button>
           )}
-        </Button>
+        </LongPressTooltip>
       )}
     </Toolbar>
   );

@@ -43,6 +43,7 @@ import {
   GalleryEditForm,
   PictureModel,
 } from '../../components/gallery/GalleryEditForm.js';
+import { LongPressTooltip } from '../../components/LongPressTooltip.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
@@ -647,55 +648,69 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       <Modal.Footer>
         {canEdit && (
           <>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(galleryEditPicture());
-              }}
-              active={!!editModel}
-            >
-              <FaPencilAlt />
+            <LongPressTooltip breakpoint="sm" label={m?.general.modify} kbd="m">
+              {({ label, labelClassName, ...props }) => (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    dispatch(galleryEditPicture());
+                  }}
+                  active={!!editModel}
+                  {...props}
+                >
+                  <FaPencilAlt />
 
-              <span className="d-none d-sm-inline">
-                {' '}
-                {m?.general.modify} <kbd>m</kbd>
-              </span>
-            </Button>
+                  <span className={labelClassName}>{label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
 
-            <Button onClick={handleDelete} variant="danger">
-              <FaTrash />
+            <LongPressTooltip breakpoint="sm" label={m?.general.delete}>
+              {({ label, labelClassName, ...props }) => (
+                <Button onClick={handleDelete} variant="danger" {...props}>
+                  <FaTrash />
 
-              <span className="d-none d-sm-inline">
-                {' '}
-                {m?.general.delete} <kbd>Del</kbd>
-              </span>
-            </Button>
+                  <span className={labelClassName}>{label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
           </>
         )}
 
-        <Button
-          variant="secondary"
-          onClick={() => {
-            dispatch(galleryShowOnTheMap());
-          }}
+        <LongPressTooltip
+          breakpoint="md"
+          label={m?.gallery.viewer.showOnTheMap}
+          kbd="s"
         >
-          <FaRegDotCircle />
+          {({ label, labelClassName, ...props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(galleryShowOnTheMap());
+              }}
+              {...props}
+            >
+              <FaRegDotCircle />
 
-          <span className="d-none d-md-inline">
-            {' '}
-            {m?.gallery.viewer.showOnTheMap} <kbd>s</kbd>
-          </span>
-        </Button>
+              <span className={labelClassName}>{label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
         {'exitFullscreen' in document && (
-          <Button variant="secondary" onClick={handleFullscreen}>
-            <RiFullscreenLine />
+          <LongPressTooltip
+            breakpoint="md"
+            label={m?.general.fullscreen}
+            kbd="f"
+          >
+            {({ label, labelClassName, ...props }) => (
+              <Button variant="secondary" onClick={handleFullscreen} {...props}>
+                <RiFullscreenLine />
 
-            <span className="d-none d-md-inline">
-              {' '}
-              {m?.general.fullscreen} <kbd>f</kbd>
-            </span>
-          </Button>
+                <span className={labelClassName}>{label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
 
         {lat !== undefined && lon !== undefined && (
@@ -717,14 +732,19 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           </OpenInExternalAppMenuButton>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes />
+        <LongPressTooltip
+          label={m?.general.close}
+          breakpoint="md"
+          kbd={editModel ? undefined : 'Esc'}
+        >
+          {({ label, labelClassName, ...props }) => (
+            <Button variant="dark" onClick={close} {...props}>
+              <FaTimes />
 
-          <span className="d-none d-md-inline">
-            {' '}
-            {m?.general.close} {editModel ? null : <kbd>Esc</kbd>}
-          </span>
-        </Button>
+              <span className={labelClassName}>{label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
       </Modal.Footer>
     </Modal>
   );

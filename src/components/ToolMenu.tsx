@@ -33,7 +33,10 @@ export function ToolMenu({ children }: Props): ReactElement {
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">
-              <LongPressTooltip label={m?.tools[toolDef.msgKey] ?? ''}>
+              <LongPressTooltip
+                breakpoint="sm"
+                label={m?.tools[toolDef.msgKey]}
+              >
                 {({ label, labelClassName, ...handlers }) => (
                   <span {...handlers}>
                     {toolDef.icon}
@@ -45,15 +48,7 @@ export function ToolMenu({ children }: Props): ReactElement {
             </span>
           )}
 
-          <LongPressTooltip
-            label={
-              <>
-                {m?.general.close ?? '…'} <kbd>Esc</kbd>
-              </>
-            }
-            breakpoint="xl"
-            title={m?.general.close ?? '…'}
-          >
+          <LongPressTooltip label={m?.general.close} kbd="Esc" breakpoint="xl">
             {({ label, labelClassName, ...props }) => (
               <Button
                 className="ms-1"
