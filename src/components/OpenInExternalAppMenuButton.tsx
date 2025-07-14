@@ -4,6 +4,7 @@ import { Dropdown } from 'react-bootstrap';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import type { LatLon } from '../types/common.js';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
@@ -42,6 +43,8 @@ export function OpenInExternalAppMenuButton({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <Dropdown
       placement={placement}
@@ -55,14 +58,18 @@ export function OpenInExternalAppMenuButton({
       </Dropdown.Toggle>
 
       <Dropdown.Menu popperConfig={fixedPopperConfig}>
-        <OpenInExternalAppDropdownItems
-          lat={lat}
-          lon={lon}
-          zoom={zoom}
-          mapType={mapType}
-          includePoint={includePoint}
-          url={url}
-        />
+        <div className="fm-menu-scroller" ref={sc}>
+          <div />
+
+          <OpenInExternalAppDropdownItems
+            lat={lat}
+            lon={lon}
+            zoom={zoom}
+            mapType={mapType}
+            includePoint={includePoint}
+            url={url}
+          />
+        </div>
       </Dropdown.Menu>
     </Dropdown>
   );
