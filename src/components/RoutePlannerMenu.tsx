@@ -61,6 +61,7 @@ import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { DeleteButton } from './DeleteButton.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { ToolMenu } from './ToolMenu.js';
 
 export default RoutePlannerMenu;
@@ -483,28 +484,30 @@ export function RoutePlannerMenu(): ReactElement {
           }
         }}
       >
-        <Dropdown.Toggle variant="secondary">
-          {activeTTDef ? (
+        <LongPressTooltip
+          breakpoint="lg"
+          label={
             <>
+              {m?.routePlanner.transportType[activeTTDef.msgKey].replace(
+                /\s*,.*/,
+                '',
+              ) ?? '…'}{' '}
+              <small className="text-dark">
+                {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
+              </small>
+            </>
+          }
+        >
+          {({ label, labelClassName, ...props }) => (
+            <Dropdown.Toggle variant="secondary" {...props}>
               {activeTTDef.icon}{' '}
               {['car', 'car-toll', 'bikesharing'].includes(
                 activeTransportType,
               ) && <FaMoneyBill />}
-              <span className="d-none d-lg-inline">
-                {' '}
-                {m?.routePlanner.transportType[activeTTDef.msgKey].replace(
-                  /\s*,.*/,
-                  '',
-                ) ?? '…'}{' '}
-                <small className="text-dark">
-                  {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
-                </small>
-              </span>
-            </>
-          ) : (
-            ''
+              <span className={labelClassName}>{label}</span>
+            </Dropdown.Toggle>
           )}
-        </Dropdown.Toggle>
+        </LongPressTooltip>
 
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
           <div className="dropdown-long" ref={sc}>
@@ -622,17 +625,22 @@ export function RoutePlannerMenu(): ReactElement {
             }
           }}
         >
-          <Dropdown.Toggle
-            variant="secondary"
-            active={pickPointMode === 'start'}
+          <LongPressTooltip
+            breakpoint="md"
+            label={m?.routePlanner.start ?? '…'}
           >
-            <FaPlay color="#409a40" />
+            {({ label, labelClassName, ...props }) => (
+              <Dropdown.Toggle
+                variant="secondary"
+                active={pickPointMode === 'start'}
+                {...props}
+              >
+                <FaPlay color="#409a40" />
 
-            <span className="d-none d-md-inline">
-              {' '}
-              {m?.routePlanner.start ?? '…'}
-            </span>
-          </Dropdown.Toggle>
+                <span className={labelClassName}> {label}</span>
+              </Dropdown.Toggle>
+            )}
+          </LongPressTooltip>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item eventKey="pick">
@@ -687,17 +695,22 @@ export function RoutePlannerMenu(): ReactElement {
                 }
               }}
             >
-              <Dropdown.Toggle
-                variant="secondary"
-                active={pickPointMode === 'finish'}
+              <LongPressTooltip
+                breakpoint="md"
+                label={m?.routePlanner.finish ?? '…'}
               >
-                <FaStop color="#d9534f" />
+                {({ label, labelClassName, ...props }) => (
+                  <Dropdown.Toggle
+                    variant="secondary"
+                    active={pickPointMode === 'finish'}
+                    {...props}
+                  >
+                    <FaStop color="#d9534f" />
 
-                <span className="d-none d-md-inline">
-                  {' '}
-                  {m?.routePlanner.finish ?? '…'}
-                </span>
-              </Dropdown.Toggle>
+                    <span className={labelClassName}> {label}</span>
+                  </Dropdown.Toggle>
+                )}
+              </LongPressTooltip>
 
               <Dropdown.Menu popperConfig={fixedPopperConfig}>
                 <Dropdown.Item eventKey="pick">

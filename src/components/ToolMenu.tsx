@@ -7,6 +7,7 @@ import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { toolDefinitions } from '../toolDefinitions.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 
 type Props = {
@@ -32,26 +33,40 @@ export function ToolMenu({ children }: Props): ReactElement {
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">
-              <span>
-                {toolDef.icon}
+              <LongPressTooltip label={m?.tools[toolDef.msgKey] ?? ''}>
+                {({ label, labelClassName, ...handlers }) => (
+                  <span {...handlers}>
+                    {toolDef.icon}
 
-                <span className="d-none d-sm-inline">
-                  {' '}
-                  {m?.tools[toolDef.msgKey]}
-                </span>
-              </span>
+                    <span className={labelClassName}> {label}</span>
+                  </span>
+                )}
+              </LongPressTooltip>
             </span>
           )}
 
-          <Button
-            className="ms-1"
-            variant="secondary"
-            // size="sm"
-            onClick={() => dispatch(setTool(null))}
-            title={m?.general.close + ' [Esc]'}
+          <LongPressTooltip
+            label={
+              <>
+                {m?.general.close ?? '…'} <kbd>Esc</kbd>
+              </>
+            }
+            breakpoint="xl"
+            title={m?.general.close ?? '…'}
           >
-            <FaTimes />
-          </Button>
+            {({ label, labelClassName, ...props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(setTool(null))}
+                {...props}
+              >
+                <FaTimes />
+
+                <span className={labelClassName}>{label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
 
           {children}
         </ButtonToolbar>
