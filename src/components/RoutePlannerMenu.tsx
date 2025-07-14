@@ -677,14 +677,18 @@ export function RoutePlannerMenu(): ReactElement {
 
         {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
           <>
-            <Button
-              variant="secondary"
-              onClick={() => dispatch(routePlannerSwapEnds())}
-              disabled={!canSwap}
-              title={m?.routePlanner.swap}
-            >
-              ⇆
-            </Button>
+            <LongPressTooltip label={m?.routePlanner.swap}>
+              {({ label, labelClassName, props }) => (
+                <Button
+                  variant="secondary"
+                  onClick={() => dispatch(routePlannerSwapEnds())}
+                  disabled={!canSwap}
+                  {...props}
+                >
+                  ⇆<span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
 
             <Dropdown
               id="set-finish-dropdown"

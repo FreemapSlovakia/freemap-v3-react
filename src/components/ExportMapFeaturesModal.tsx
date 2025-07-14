@@ -23,7 +23,6 @@ import {
   FaDrawPolygon,
   FaDropbox,
   FaFileExport,
-  FaFlask,
   FaGoogle,
   FaMapMarkerAlt,
   FaMapSigns,
@@ -47,6 +46,7 @@ import {
 } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { ExperimentalFunction } from './ExperimentalFunction.js';
 
 const exportableDefinitions: readonly [
   type: Exportable,
@@ -306,10 +306,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                               }}
                             />
                             &ensp;Garmin&ensp;
-                            <FaFlask
-                              title={m?.general.experimentalFunction}
-                              className="text-warning"
-                            />
+                            <ExperimentalFunction />
                           </>
                         ),
                       }[targ]

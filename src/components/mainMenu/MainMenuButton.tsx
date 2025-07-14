@@ -113,7 +113,7 @@ export function MainMenuButton(): ReactElement {
       show={menuShown}
       onToggle={handleMenuToggle}
     >
-      <LongPressTooltip label={m?.mainMenu.title} breakpoint="always">
+      <LongPressTooltip label={m?.mainMenu.title}>
         {({ props }) => (
           <Dropdown.Toggle
             title={m?.mainMenu.title}

@@ -15,6 +15,7 @@ import { copyToClipboard } from '../../clipboardUtils.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Device as DeviceType } from '../../types/trackingTypes.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 
 type Props = {
   device: DeviceType;
@@ -82,38 +83,37 @@ export function Device({ device }: Props): ReactElement {
             ? `${device.token.slice(5)} (TK102B IMEI)`
             : device.token}
         {!device.token.includes(':') && (
-          <>
-            {' '}
-            <OverlayTrigger
-              trigger={['hover', 'focus']}
-              placement="right"
-              overlay={
-                <Tooltip id={device.token}>
-                  <span style={{ overflowWrap: 'break-word' }}>
-                    {process.env['API_URL']}/tracking/track/{device.token}
-                  </span>
-                </Tooltip>
-              }
-            >
-              <span>
-                {/iPhone|iPad|iPod|Android/i.test(
-                  window.navigator.userAgent,
-                ) ? (
-                  <Button
-                    variant="secondary"
-                    onClick={handleCopyClick}
-                    size="sm"
-                    title={m?.general.copyUrl}
-                    type="button"
-                  >
-                    <FaClipboard />
-                  </Button>
-                ) : (
-                  <FaMobileAlt />
-                )}
-              </span>
-            </OverlayTrigger>
-          </>
+          <OverlayTrigger
+            trigger={['hover', 'focus']}
+            placement="right"
+            overlay={
+              <Tooltip id={device.token}>
+                <span style={{ overflowWrap: 'break-word' }}>
+                  {process.env['API_URL']}/tracking/track/{device.token}
+                </span>
+              </Tooltip>
+            }
+          >
+            <span>
+              {/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent) ? (
+                <LongPressTooltip label={m?.general.copyUrl}>
+                  {({ props }) => (
+                    <Button
+                      variant="secondary"
+                      onClick={handleCopyClick}
+                      size="sm"
+                      type="button"
+                      {...props}
+                    >
+                      <FaClipboard />
+                    </Button>
+                  )}
+                </LongPressTooltip>
+              ) : (
+                <FaMobileAlt />
+              )}
+            </span>
+          </OverlayTrigger>
         )}
       </td>
       <td>{device.maxCount}</td>
@@ -124,42 +124,49 @@ export function Device({ device }: Props): ReactElement {
       </td>
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>
-        <Button
-          size="sm"
-          type="button"
-          variant="secondary"
-          onClick={handleModify}
-          title={m?.general.modify}
-        >
-          <FaEdit />
-        </Button>{' '}
-        <Button
-          size="sm"
-          type="button"
-          variant="secondary"
-          onClick={handleShowAccessTokens}
-          title={m?.tracking.devices.watchTokens}
-        >
-          <FaKey />
-        </Button>{' '}
-        {/* <Button
-          size="sm"
-          type="button"
-          variant="secondary"
-          onClick={handleView}
-          title={m?.tracking.devices.watchPrivately}
-        >
-          <FaRegEye />
-        </Button>{' '} */}
-        <Button
-          variant="danger"
-          size="sm"
-          type="button"
-          onClick={handleDelete}
-          title={m?.general.delete}
-        >
-          <FaTimes />
-        </Button>
+        <LongPressTooltip label={m?.general.modify}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              type="button"
+              variant="secondary"
+              onClick={handleModify}
+              {...props}
+            >
+              <FaEdit />
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <LongPressTooltip label={m?.tracking.devices.watchTokens}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              type="button"
+              variant="secondary"
+              onClick={handleShowAccessTokens}
+              className="ms-1"
+              {...props}
+            >
+              <FaKey />
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <LongPressTooltip label={m?.general.delete}>
+          {({ props }) => (
+            <Button
+              variant="danger"
+              size="sm"
+              type="button"
+              onClick={handleDelete}
+              className="ms-1"
+              {...props}
+            >
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
       </td>
     </tr>
   );

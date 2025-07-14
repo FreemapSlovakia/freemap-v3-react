@@ -216,7 +216,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               />
 
               {!!selectedResult && (
-                <LongPressTooltip label={m?.general.clear} breakpoint="always">
+                <LongPressTooltip label={m?.general.clear}>
                   {({ props }) => (
                     <Button
                       className="w-auto"
@@ -231,15 +231,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 </LongPressTooltip>
               )}
 
-              <LongPressTooltip
-                label={m?.search.buttonTitle}
-                breakpoint="always"
-              >
+              <LongPressTooltip label={m?.search.buttonTitle}>
                 {({ props }) => (
                   <Button
                     variant="secondary"
                     type="submit"
-                    title={m?.search.buttonTitle}
                     disabled={!value}
                     {...props}
                   >
@@ -274,7 +270,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
           <ButtonGroup className="ms-1">
-            <LongPressTooltip label={m?.search.routeFrom} breakpoint="always">
+            <LongPressTooltip label={m?.search.routeFrom}>
               {({ props }) => (
                 <Button
                   variant="secondary"
@@ -302,7 +298,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               )}
             </LongPressTooltip>
 
-            <LongPressTooltip label={m?.search.routeTo} breakpoint="always">
+            <LongPressTooltip label={m?.search.routeTo}>
               {({ props }) => (
                 <Button
                   variant="secondary"
@@ -331,10 +327,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             </LongPressTooltip>
           </ButtonGroup>
 
-          <LongPressTooltip
-            label={m?.general.convertToDrawing}
-            breakpoint="always"
-          >
+          <LongPressTooltip label={m?.general.convertToDrawing}>
             {({ props }) => (
               <Button
                 className="ms-1"

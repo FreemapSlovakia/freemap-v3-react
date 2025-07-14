@@ -10,7 +10,6 @@ import {
   FaDownload,
   FaEraser,
   FaExternalLinkAlt,
-  FaFlask,
   FaHeart,
   FaLanguage,
   FaMobileAlt,
@@ -23,6 +22,7 @@ import {
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { toolDefinitions } from '../../toolDefinitions.js';
+import { ExperimentalFunction } from '../ExperimentalFunction.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
@@ -104,12 +104,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="submenu-offline">
-        <BiWifiOff />{' '}
-        <FaFlask
-          title={m?.general.experimentalFunction}
-          className="text-warning"
-        />{' '}
-        {m?.offline.offlineMode}
+        <BiWifiOff /> <ExperimentalFunction /> {m?.offline.offlineMode}
         <FaChevronRight />
       </Dropdown.Item>
 
@@ -135,12 +130,8 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
-        <FaDownload />{' '}
-        <FaFlask
-          title={m?.general.experimentalFunction}
-          className="text-warning"
-        />{' '}
-        {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
+        <FaDownload /> <ExperimentalFunction /> {m?.downloadMap.downloadMap}{' '}
+        <kbd>e</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">

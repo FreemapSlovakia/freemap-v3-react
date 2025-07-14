@@ -8,20 +8,12 @@ import {
 } from 'react';
 import { Overlay, Tooltip } from 'react-bootstrap';
 
-export type Breakpoint =
-  | 'xs'
-  | 'sm'
-  | 'md'
-  | 'lg'
-  | 'xl'
-  | 'xxl'
-  | 'never'
-  | 'always';
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 type Props = {
   label?: ReactNode;
   delay?: number;
-  breakpoint: Breakpoint;
+  breakpoint?: Breakpoint;
   title?: string;
   kbd?: string;
   children: (props: {
@@ -56,10 +48,6 @@ function getMinWidthForBreakpoint(breakpoint: Breakpoint): number {
       return 1200;
     case 'xxl':
       return 1400;
-    case 'never':
-      return -Infinity;
-    case 'always':
-      return Infinity;
   }
 }
 
@@ -82,18 +70,15 @@ export function LongPressTooltip({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (breakpoint === 'never') {
+    if (!breakpoint) {
       setLabelHidden(true);
       return;
     }
 
-    if (breakpoint === 'always') {
-      setLabelHidden(true);
-      return;
-    }
+    const breakpoint1 = breakpoint;
 
     function checkVisibility() {
-      setLabelHidden(window.innerWidth < getMinWidthForBreakpoint(breakpoint));
+      setLabelHidden(window.innerWidth < getMinWidthForBreakpoint(breakpoint1));
     }
 
     checkVisibility();

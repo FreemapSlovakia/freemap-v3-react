@@ -64,6 +64,7 @@ export function DrawingPointSelection(): ReactElement | null {
         onClose={() => setProjectPointDialogVisible(false)}
         onAdd={projectPoint}
       />
+
       <Selection
         icon={<FaMapMarkerAlt />}
         label={m?.selections.drawPoints}
@@ -100,25 +101,20 @@ export function DrawingPointSelection(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        <LongPressTooltip
-          breakpoint="sm"
-          label={m?.gallery.viewer.openInNewWindow}
+        <OpenInExternalAppMenuButton
+          className="ms-1"
+          lat={point.lat}
+          lon={point.lon}
+          includePoint
+          pointTitle={point.label}
+          url={`/?point=${point.lat}/${point.lon}`}
         >
-          {({ label, labelClassName, props }) => (
-            <OpenInExternalAppMenuButton
-              className="ms-1"
-              lat={point.lat}
-              lon={point.lon}
-              includePoint
-              pointTitle={point.label}
-              url={`/?point=${point.lat}/${point.lon}`}
-              {...props}
-            >
-              <FaExternalLinkAlt />
-              <span className={labelClassName}> {label}</span>
-            </OpenInExternalAppMenuButton>
-          )}
-        </LongPressTooltip>
+          <FaExternalLinkAlt />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.gallery.viewer.openInNewWindow}
+          </span>
+        </OpenInExternalAppMenuButton>
       </Selection>
     </>
   );

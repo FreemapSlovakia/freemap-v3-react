@@ -27,8 +27,7 @@ export function CopyrightButton(): ReactElement {
     <Toolbar className="me-2 mb-2">
       <Dropdown>
         <LongPressTooltip
-          breakpoint="always"
-          title={(m?.mainMenu.mapLegend ?? '…') + ', Privacy policy'}
+          label={(m?.mainMenu.mapLegend ?? '…') + ', Privacy policy'}
         >
           {({ props }) => (
             <Dropdown.Toggle

@@ -54,7 +54,6 @@ export function DrawingLinePointSelection(): ReactElement | null {
               {...props}
             >
               <FaTimes />
-
               <span className={labelClassName}>{label}</span>
             </Button>
           )}
@@ -92,7 +91,6 @@ export function DrawingLinePointSelection(): ReactElement | null {
               {...props}
             >
               <RiScissorsFill />
-
               <span className={labelClassName}> {label}</span>
             </Button>
           )}

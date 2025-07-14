@@ -9,6 +9,7 @@ import { copyToClipboard } from '../../clipboardUtils.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
 import { AccessToken as AccessTokenType } from '../../types/trackingTypes.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 
 type Props = {
   accessToken: AccessTokenType;
@@ -85,15 +86,21 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           }
         >
           <span>
-            {accessToken.token}{' '}
-            <Button
-              onClick={handleCopyClick}
-              size="sm"
-              title={m?.general.copyUrl}
-              type="button"
-            >
-              <FaClipboard />
-            </Button>
+            <span>{accessToken.token}</span>
+
+            <LongPressTooltip label={m?.general.copyUrl}>
+              {({ props }) => (
+                <Button
+                  onClick={handleCopyClick}
+                  size="sm"
+                  type="button"
+                  className="ms-1"
+                  {...props}
+                >
+                  <FaClipboard />
+                </Button>
+              )}
+            </LongPressTooltip>
           </span>
         </OverlayTrigger>
       </td>
@@ -103,31 +110,42 @@ export function AccessToken({ accessToken }: Props): ReactElement {
       {/* <td>{accessToken.listingLabel}</td> */}
       <td>{accessToken.note}</td>
       <td>
-        <Button
-          size="sm"
-          type="button"
-          onClick={handleView}
-          title={m?.tracking.devices.watch}
-        >
-          <FaRegEye />
-        </Button>{' '}
-        <Button
-          size="sm"
-          type="button"
-          onClick={handleModify}
-          title={m?.general.modify}
-        >
-          <FaEdit />
-        </Button>{' '}
-        <Button
-          variant="danger"
-          size="sm"
-          type="button"
-          onClick={handleDelete}
-          title={m?.general.delete}
-        >
-          <FaTimes />
-        </Button>
+        <LongPressTooltip label={m?.tracking.devices.watch}>
+          {({ props }) => (
+            <Button size="sm" type="button" onClick={handleView} {...props}>
+              <FaRegEye />
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <LongPressTooltip label={m?.general.modify}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              type="button"
+              onClick={handleModify}
+              className="ms-1"
+              {...props}
+            >
+              <FaEdit />
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <LongPressTooltip label={m?.general.delete}>
+          {({ props }) => (
+            <Button
+              variant="danger"
+              size="sm"
+              type="button"
+              onClick={handleDelete}
+              className="ms-1"
+              {...props}
+            >
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
       </td>
     </tr>
   );

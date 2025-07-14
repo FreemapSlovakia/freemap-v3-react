@@ -225,12 +225,7 @@ export function ShadingControl() {
                 action
                 key={component.id}
                 eventKey={component.id}
-                style={{
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
+                className="fm-ellipsis"
               >
                 {/^hillshade-|^slope-/.test(component.type) && (
                   <span

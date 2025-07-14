@@ -43,6 +43,7 @@ import {
 } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
+import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
@@ -225,11 +226,7 @@ export function MapSwitchButton(): ReactElement {
         {icon}
 
         {experimental && (
-          <FaExclamationTriangle
-            data-interactive="1"
-            title={m?.general.experimentalFunction}
-            className="text-warning ms-1"
-          />
+          <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
         {!premium &&
@@ -277,11 +274,7 @@ export function MapSwitchButton(): ReactElement {
         {getKbdShortcut(key)}
 
         {experimental && (
-          <FaExclamationTriangle
-            data-interactive="1"
-            title={m?.general.experimentalFunction}
-            className="text-warning ms-1"
-          />
+          <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
         {premiumFromZoom !== undefined &&
@@ -322,7 +315,6 @@ export function MapSwitchButton(): ReactElement {
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
                   : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
-              breakpoint="always"
             >
               {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
               {({ label, labelClassName, ...porps }) => (
@@ -356,7 +348,6 @@ export function MapSwitchButton(): ReactElement {
                   ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
                   : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
-              breakpoint="always"
             >
               {({ props }) => (
                 <Button

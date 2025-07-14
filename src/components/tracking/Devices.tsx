@@ -53,9 +53,7 @@ export function Devices(): ReactElement {
       <Modal.Footer>
         <Button
           type="button"
-          onClick={() => {
-            dispatch(trackingActions.modifyDevice(null));
-          }}
+          onClick={() => dispatch(trackingActions.modifyDevice(null))}
         >
           {m?.general.add}
         </Button>
@@ -63,9 +61,7 @@ export function Devices(): ReactElement {
         <Button
           variant="dark"
           type="button"
-          onClick={() => {
-            dispatch(setActiveModal(null));
-          }}
+          onClick={() => dispatch(setActiveModal(null))}
         >
           {m?.general.close} <kbd>Esc</kbd>
         </Button>

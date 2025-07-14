@@ -65,7 +65,7 @@ export function MapControls(): ReactElement | null {
       )}
 
       <ButtonGroup className="ms-1">
-        <LongPressTooltip label={m?.main.zoomIn} breakpoint="always">
+        <LongPressTooltip label={m?.main.zoomIn}>
           {({ props }) => (
             <Button
               variant="secondary"
@@ -80,7 +80,7 @@ export function MapControls(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        <LongPressTooltip label={m?.main.zoomOut} breakpoint="always">
+        <LongPressTooltip label={m?.main.zoomOut}>
           {({ props }) => (
             <Button
               variant="secondary"
@@ -97,7 +97,7 @@ export function MapControls(): ReactElement | null {
       </ButtonGroup>
 
       {(!window.fmEmbedded || !embedFeatures.includes('noLocateMe')) && (
-        <LongPressTooltip label={m?.main.locateMe} breakpoint="always">
+        <LongPressTooltip label={m?.main.locateMe}>
           {({ props }) => (
             <Button
               className="ms-1"
@@ -121,7 +121,6 @@ export function MapControls(): ReactElement | null {
               ? m?.general.exitFullscreen
               : m?.general.fullscreen
           }
-          breakpoint="always"
         >
           {({ props }) => (
             <Button

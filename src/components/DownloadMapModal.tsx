@@ -13,13 +13,7 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
-import {
-  FaDownload,
-  FaDrawPolygon,
-  FaEye,
-  FaFlask,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
@@ -35,6 +29,8 @@ import {
 } from '../mapDefinitions.js';
 import { isInvalidInt } from '../numberValidator.js';
 import { CreditsAlert } from './CredistAlert.js';
+import { ExperimentalFunction } from './ExperimentalFunction.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 type Props = { show: boolean };
 
@@ -290,12 +286,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDownload />{' '}
-            <FaFlask
-              title={m?.general.experimentalFunction}
-              className="text-warning"
-            />{' '}
-            {m?.downloadMap.downloadMap}
+            <FaDownload /> <ExperimentalFunction /> {m?.downloadMap.downloadMap}
           </Modal.Title>
         </Modal.Header>
 
@@ -415,8 +406,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <Form.Group controlId="downloadArea">
             <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
-            <ButtonGroup className="d-block mb-3">
+            <ButtonGroup className="d-flex mb-3">
               <Button
+                className="fm-ellipsis"
                 variant="secondary"
                 active={area === 'visible'}
                 onClick={() => setArea('visible')}
@@ -425,6 +417,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </Button>
 
               <Button
+                className="fm-ellipsis"
                 variant="secondary"
                 active={area === 'selected'}
                 onClick={() => setArea('selected')}
@@ -452,23 +445,31 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Label>{m?.downloadMap.format}</Form.Label>
 
             <ButtonGroup className="d-block">
-              <Button
-                variant="secondary"
-                active={format === 'mbtiles'}
-                onClick={() => setFormat('mbtiles')}
-                title="Locus Map, Guru Maps, OruxMaps"
-              >
-                MBTiles
-              </Button>
+              <LongPressTooltip label="Locus Map, Guru Maps, OruxMaps">
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    active={format === 'mbtiles'}
+                    onClick={() => setFormat('mbtiles')}
+                    {...props}
+                  >
+                    MBTiles
+                  </Button>
+                )}
+              </LongPressTooltip>
 
-              <Button
-                variant="secondary"
-                active={format === 'sqlitedb'}
-                onClick={() => setFormat('sqlitedb')}
-                title="OSMAnd, Locus Map"
-              >
-                SQLiteDB
-              </Button>
+              <LongPressTooltip label="OSMAnd, Locus Map">
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    active={format === 'sqlitedb'}
+                    onClick={() => setFormat('sqlitedb')}
+                    {...props}
+                  >
+                    SQLiteDB
+                  </Button>
+                )}
+              </LongPressTooltip>
             </ButtonGroup>
           </Form.Group>
 

@@ -12,7 +12,6 @@ import {
   FaDownload,
   FaDrawPolygon,
   FaEye,
-  FaFlask,
   FaPrint,
   FaRegQuestionCircle,
   FaTimes,
@@ -22,6 +21,7 @@ import { exportMap, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { isInvalidInt } from '../numberValidator.js';
+import { ExperimentalFunction } from './ExperimentalFunction.js';
 
 type Props = { show: boolean };
 
@@ -183,8 +183,9 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <Form.Group>
           <Form.Label className="d-block">{m?.mapExport.area}</Form.Label>
 
-          <ButtonGroup>
+          <ButtonGroup className="d-flex">
             <Button
+              className="fm-ellipsis"
               variant="secondary"
               active={area === 'visible'}
               onClick={() => setArea('visible')}
@@ -193,6 +194,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             </Button>
 
             <Button
+              className="fm-ellipsis"
               variant="secondary"
               active={area === 'selected'}
               onClick={() => setArea('selected')}
@@ -230,11 +232,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               onClick={() => setFormat('pdf')}
               active={format === 'pdf'}
             >
-              PDF{' '}
-              <FaFlask
-                title={m?.general.experimentalFunction}
-                className="text-warning"
-              />
+              PDF <ExperimentalFunction />
             </Button>
 
             <Button
@@ -242,11 +240,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               onClick={() => setFormat('svg')}
               active={format === 'svg'}
             >
-              SVG{' '}
-              <FaFlask
-                title={m?.general.experimentalFunction}
-                className="text-warning"
-              />
+              SVG <ExperimentalFunction />
             </Button>
           </ButtonGroup>
         </Form.Group>
