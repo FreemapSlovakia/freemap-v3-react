@@ -247,7 +247,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu
-            className="fm-search-dropdown"
+            className="fm-search-dropdown fm-dropdown-with-scroller"
             popperConfig={fixedPopperConfig}
           >
             <div className="dropdown-long" ref={sc}>

@@ -292,6 +292,7 @@ export function MapContextMenu(): ReactElement {
       />
 
       <Dropdown.Menu
+        className="fm-dropdown-with-scroller"
         // this modifier somehow fixes menu
         popperConfig={{
           modifiers: [

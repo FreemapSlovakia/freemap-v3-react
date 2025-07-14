@@ -5,7 +5,19 @@
 @use './leaflet.scss';
 
 :root {
-  --scroller-mix-blend-mode: multiply;
+  --scroller-mix-blend-mode: normal;
+
+  --scroller-pct: 5%;
+}
+
+[data-bs-theme='light'] {
+  --scroller-from: rgba(224, 224, 224, 0);
+  --scroller-to: rgb(180, 180, 180);
+}
+
+[data-bs-theme='dark'] {
+  --scroller-from: rgba(40, 40, 40, 0);
+  --scroller-to: rgb(160, 160, 160);
 }
 
 body {
@@ -241,8 +253,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
-    rgba(224, 224, 224, 1) 5%,
-    rgba(224, 224, 224, 0)
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
   );
 }
 
@@ -253,8 +265,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
-    rgba(224, 224, 224, 0) 5%,
-    rgb(224, 224, 224)
+    var(--scroller-from) var(--scroller-pct),
+    var(--scroller-to)
   );
 }
 
@@ -264,8 +276,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
-    rgb(224, 224, 224) 5%,
-    rgba(224, 224, 224, 0)
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
   );
 }
 
@@ -281,8 +293,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
-    rgb(224, 224, 224) 5%,
-    rgba(224, 224, 224, 0)
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
   );
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
@@ -296,8 +308,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
-    rgba(224, 224, 224, 0) 5%,
-    rgb(224, 224, 224)
+    var(--scroller-from) var(--scroller-pct),
+    var(--scroller-to)
   );
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -447,4 +459,12 @@ kbd {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.fm-dropdown-with-scroller {
+  padding: 0;
+
+  & > div {
+    padding-block: 0.5rem;
+  }
 }

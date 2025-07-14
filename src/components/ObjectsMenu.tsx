@@ -218,7 +218,10 @@ export function ObjectsMenu(): ReactElement {
           />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <Dropdown.Menu
+          popperConfig={fixedPopperConfig}
+          className="fm-dropdown-with-scroller"
+        >
           <div className="dropdown-long" ref={sc}>
             <div />
 

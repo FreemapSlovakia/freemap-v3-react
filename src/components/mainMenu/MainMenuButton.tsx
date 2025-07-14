@@ -121,7 +121,10 @@ export function MainMenuButton(): ReactElement {
         )}
       </LongPressTooltip>
 
-      <Dropdown.Menu popperConfig={fixedPopperConfig}>
+      <Dropdown.Menu
+        popperConfig={fixedPopperConfig}
+        className="fm-dropdown-with-scroller"
+      >
         <div className="fm-menu-scroller" ref={sc}>
           <div />
 
