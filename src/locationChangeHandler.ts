@@ -489,13 +489,19 @@ export function handleLocationChange(store: MyStore): void {
     shading !== serializeShading(getState().map.shading)
   ) {
     function toColor(color = '00000000') {
-      const bands = Color('#' + color).array();
+      try {
+        const bands = Color('#' + color).array();
 
-      if (bands.length === 3) {
-        bands.push(1);
+        if (bands.length === 3) {
+          bands.push(1);
+        }
+
+        return bands as ColorType;
+      } catch {
+        console.error('error parsing color: ' + color);
+
+        return [0, 0, 0, 1] as ColorType;
       }
-
-      return bands as ColorType;
     }
 
     const [bg, ...comps] = shading.split('!');
@@ -533,8 +539,6 @@ export function handleLocationChange(store: MyStore): void {
         }
 
         let colorStops: ColorStop[];
-
-        console.log(type, [...params]);
 
         switch (type) {
           case 'hillshade-classic':
