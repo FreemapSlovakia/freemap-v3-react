@@ -102,8 +102,6 @@ export function LongPressTooltip({
   );
 
   const handleClear = useCallback((e: PointerEvent) => {
-    console.log(e.type);
-
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
