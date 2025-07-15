@@ -7,8 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import {
   elevationChartClose,
@@ -21,12 +20,12 @@ import '../styles/elevationChart.scss';
 
 const ml = 50,
   mr = 30,
-  mt = 20,
-  mb = 40;
+  mt = 10,
+  mb = 44;
 
-const ticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((k) =>
-  [1, 2.5, 2, 5].map((x) => x * 10 ** k),
-);
+const ticks = Array(11)
+  .fill(0)
+  .flatMap((_, k) => [1, 2.5, 2, 5].map((x) => x * 10 ** k));
 
 export default ElevationChart;
 
@@ -55,15 +54,18 @@ export function ElevationChart(): ReactElement | null {
 
   const [height, setHeight] = useState(300);
 
-  const [mapX, mapY, d, xLines, yLines] = useMemo(() => {
-    let min = Math.min(...elevationProfilePoints.map((pt) => pt.ele));
+  const [mapX, mapY, d, vLines, hLines] = useMemo(() => {
+    const eles = elevationProfilePoints.map((pt) => pt.ele);
 
-    let max = Math.max(...elevationProfilePoints.map((pt) => pt.ele));
+    const min = Math.min(...eles);
+
+    const max = Math.max(...eles);
 
     const diff = max - min;
 
-    min -= diff / 20;
-    max += diff / 20;
+    const chartMin = min - diff / 20;
+
+    const chartMax = max + diff / 20;
 
     const d = elevationProfilePoints.at(-1)!.distance;
 
@@ -72,28 +74,41 @@ export function ElevationChart(): ReactElement | null {
     }
 
     function mapY(ele: number) {
-      return height - mb - ((ele - min) / (max - min)) * (height - mt - mb);
+      return (
+        height -
+        mb -
+        ((ele - chartMin) / (chartMax - chartMin)) * (height - mt - mb)
+      );
     }
 
-    const yLines: number[] = [];
+    const hLines: number[] = [];
 
     const yStep = ticks.find((step) => mapY(0) - mapY(step) > 20) ?? 10000;
 
-    for (let y = Math.ceil(min / yStep) * yStep; y < max; y += yStep) {
-      yLines.push(y);
+    for (
+      let y = Math.ceil(chartMin / yStep) * yStep;
+      y < chartMax;
+      y += yStep
+    ) {
+      hLines.push(y);
     }
 
-    const xLines: number[] = [];
+    hLines.push(min);
+    hLines.push(max);
+
+    const vLines: number[] = [];
 
     const xStep =
       ticks.find((step) => mapX(step) - mapX(0) > 25) ??
       Number.POSITIVE_INFINITY;
 
     for (let x = 0; x < d; x += xStep) {
-      xLines.push(x);
+      vLines.push(x);
     }
 
-    return [mapX, mapY, d, xLines, yLines];
+    vLines.push(d);
+
+    return [mapX, mapY, d, vLines, hLines];
   }, [elevationProfilePoints, width, height]);
 
   const [pointerX, setPointerX] = useState<number | undefined>();
@@ -213,14 +228,7 @@ export function ElevationChart(): ReactElement | null {
 
   return (
     <div className="elevationChart m-2 p-2 rounded" ref={setRef} style={pos}>
-      <Button
-        variant="dark"
-        size="sm"
-        onClick={() => dispatch(elevationChartClose())}
-      >
-        <FaTimes />
-      </Button>
-
+      <CloseButton onClick={() => dispatch(elevationChartClose())} />
       <svg width={width} height={height}>
         <rect
           x={ml}
@@ -265,74 +273,92 @@ export function ElevationChart(): ReactElement | null {
           />
         )}
 
-        {yLines.map((y, i) => (
-          <Fragment key={'y' + i}>
-            <line
-              x1={ml}
-              x2={width - mr}
-              y1={mapY(y)}
-              y2={mapY(y)}
-              stroke="black"
-              strokeWidth={1}
-              opacity={0.2}
-              strokeDasharray="2 2"
-            />
+        {hLines.map((y, i) => {
+          const limit = hLines.length - i < 3;
 
-            {/* tick */}
-            <line
-              x1={ml - 4}
-              x2={ml}
-              y1={mapY(y)}
-              y2={mapY(y)}
-              stroke="black"
-              strokeWidth={1}
-            />
+          return (
+            <Fragment key={'y' + i}>
+              <line
+                x1={ml}
+                x2={width - mr}
+                y1={mapY(y)}
+                y2={mapY(y)}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+                opacity={limit ? 0.4 : 0.2}
+                strokeDasharray="2 2"
+              />
 
-            <text
-              x={ml - 10}
-              y={mapY(y)}
-              textAnchor="end"
-              dominantBaseline="middle"
-            >
-              {nf0.format(y)}
-            </text>
-          </Fragment>
-        ))}
+              {/* tick */}
 
-        {xLines.map((x, i) => (
-          <Fragment key={'x' + i}>
-            <line
-              x1={mapX(x)}
-              x2={mapX(x)}
-              y1={mt}
-              y2={height - mb + 5}
-              stroke="black"
-              strokeWidth={1}
-              opacity={0.2}
-              strokeDasharray="2 2"
-            />
+              <line
+                x1={ml - 4}
+                x2={ml}
+                y1={mapY(y)}
+                y2={mapY(y)}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+              />
 
-            {/* tick */}
-            <line
-              x1={mapX(x)}
-              x2={mapX(x)}
-              y1={height - mb}
-              y2={height - mb + 4}
-              stroke="black"
-              strokeWidth={1}
-            />
+              {(limit ||
+                (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
+                  Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14)) && (
+                <text
+                  x={ml - 10}
+                  y={mapY(y)}
+                  textAnchor="end"
+                  dominantBaseline="middle"
+                  fill={limit ? 'var(--bs-red)' : 'black'}
+                >
+                  {nf0.format(y)}
+                </text>
+              )}
+            </Fragment>
+          );
+        })}
 
-            <text
-              x={mapX(x) - 5}
-              y={height - mb + 15}
-              textAnchor="start"
-              dominantBaseline="middle"
-              transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
-            >
-              {nf1.format(x / 1000)}
-            </text>
-          </Fragment>
-        ))}
+        {vLines.map((x, i) => {
+          const limit = i === vLines.length - 1;
+
+          return (
+            <Fragment key={'x' + i}>
+              <line
+                x1={mapX(x)}
+                x2={mapX(x)}
+                y1={mt}
+                y2={height - mb}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+                opacity={limit ? 0.4 : 0.2}
+                strokeDasharray="2 2"
+              />
+
+              {/* tick */}
+
+              <line
+                x1={mapX(x)}
+                x2={mapX(x)}
+                y1={height - mb}
+                y2={height - mb + 4}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+              />
+
+              {(limit || Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20) && (
+                <text
+                  x={mapX(x) - 5}
+                  y={height - mb + 15}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
+                  fill={limit ? 'var(--bs-red)' : 'black'}
+                >
+                  {nf1.format(x / 1000)}
+                </text>
+              )}
+            </Fragment>
+          );
+        })}
 
         {/* x-axis */}
         <line
