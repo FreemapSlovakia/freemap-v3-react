@@ -55,10 +55,15 @@ export function ElevationChart(): ReactElement | null {
 
   const [height, setHeight] = useState(300);
 
-  const [mapX, mapY, min, max, d, xLines, yLines] = useMemo(() => {
-    const min = Math.min(...elevationProfilePoints.map((pt) => pt.ele));
+  const [mapX, mapY, d, xLines, yLines] = useMemo(() => {
+    let min = Math.min(...elevationProfilePoints.map((pt) => pt.ele));
 
-    const max = Math.max(...elevationProfilePoints.map((pt) => pt.ele));
+    let max = Math.max(...elevationProfilePoints.map((pt) => pt.ele));
+
+    const diff = max - min;
+
+    min -= diff / 20;
+    max += diff / 20;
 
     const d = elevationProfilePoints.at(-1)!.distance;
 
@@ -70,7 +75,7 @@ export function ElevationChart(): ReactElement | null {
       return height - mb - ((ele - min) / (max - min)) * (height - mt - mb);
     }
 
-    const yLines: number[] = [min];
+    const yLines: number[] = [];
 
     const yStep = ticks.find((step) => mapY(0) - mapY(step) > 20) ?? 10000;
 
@@ -78,9 +83,7 @@ export function ElevationChart(): ReactElement | null {
       yLines.push(y);
     }
 
-    yLines.push(max);
-
-    const xLines: number[] = [0];
+    const xLines: number[] = [];
 
     const xStep =
       ticks.find((step) => mapX(step) - mapX(0) > 25) ??
@@ -90,9 +93,7 @@ export function ElevationChart(): ReactElement | null {
       xLines.push(x);
     }
 
-    xLines.push(d);
-
-    return [mapX, mapY, min, max, d, xLines, yLines];
+    return [mapX, mapY, d, xLines, yLines];
   }, [elevationProfilePoints, width, height]);
 
   const [pointerX, setPointerX] = useState<number | undefined>();
@@ -247,7 +248,7 @@ export function ElevationChart(): ReactElement | null {
           points={elevationProfilePoints
             .map((pt) => mapX(pt.distance) + ',' + mapY(pt.ele))
             .join(' ')}
-          stroke="var(--primary)"
+          stroke="var(--bs-primary)"
           strokeWidth={1}
           fill="none"
         />
@@ -259,7 +260,7 @@ export function ElevationChart(): ReactElement | null {
             x2={pointerX}
             y1={mt}
             y2={height - mb}
-            stroke="var(--red)"
+            stroke="var(--bs-red)"
             strokeWidth={1}
           />
         )}
@@ -287,18 +288,14 @@ export function ElevationChart(): ReactElement | null {
               strokeWidth={1}
             />
 
-            {(y === min ||
-              y === max ||
-              (mapY(min) - mapY(y) > 12 && mapY(y) - mapY(max) > 12)) && (
-              <text
-                x={ml - 10}
-                y={mapY(y)}
-                textAnchor="end"
-                dominantBaseline="middle"
-              >
-                {nf0.format(y)}
-              </text>
-            )}
+            <text
+              x={ml - 10}
+              y={mapY(y)}
+              textAnchor="end"
+              dominantBaseline="middle"
+            >
+              {nf0.format(y)}
+            </text>
           </Fragment>
         ))}
 
@@ -325,19 +322,15 @@ export function ElevationChart(): ReactElement | null {
               strokeWidth={1}
             />
 
-            {(x === 0 ||
-              x === d ||
-              (mapX(x) - mapX(0) > 20 && mapX(d) - mapX(x) > 20)) && (
-              <text
-                x={mapX(x) - 5}
-                y={height - mb + 15}
-                textAnchor="start"
-                dominantBaseline="middle"
-                transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
-              >
-                {nf1.format(x / 1000)}
-              </text>
-            )}
+            <text
+              x={mapX(x) - 5}
+              y={height - mb + 15}
+              textAnchor="start"
+              dominantBaseline="middle"
+              transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
+            >
+              {nf1.format(x / 1000)}
+            </text>
           </Fragment>
         ))}
 
