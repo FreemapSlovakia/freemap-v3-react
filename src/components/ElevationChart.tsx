@@ -51,9 +51,9 @@ export function ElevationChart(): ReactElement | null {
 
   const { climbUp, climbDown } = elevationProfilePoints.at(-1)!;
 
-  const [width, setWidth] = useState(300);
+  const [width, setWidth] = useState(400);
 
-  const [height, setHeight] = useState(150);
+  const [height, setHeight] = useState(300);
 
   const [mapX, mapY, min, max, d, xLines, yLines] = useMemo(() => {
     const min = Math.min(...elevationProfilePoints.map((pt) => pt.ele));
@@ -124,23 +124,31 @@ export function ElevationChart(): ReactElement | null {
   const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!ref) {
+      return;
+    }
+
     const ro = new ResizeObserver((e) => {
       setWidth(e[0].contentRect.width);
 
       setHeight(e[0].contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
-    if (ref) {
-      ref.style.width = window.innerWidth / 2 + 'px';
+    ref.style.width =
+      Math.min(
+        Math.max(window.innerWidth / 2, 400),
+        Math.max(window.innerWidth - 14, 40),
+      ) + 'px';
 
-      ref.style.height = window.innerHeight / 2 + 'px';
+    ref.style.height =
+      Math.min(
+        Math.max(window.innerHeight / 2, 300),
+        Math.max(window.innerHeight - 130, 40),
+      ) + 'px';
 
-      ro.observe(ref);
-    }
+    ro.observe(ref);
 
-    return () => {
-      ro.disconnect();
-    };
+    return () => ro.disconnect();
   }, [ref, ref2]);
 
   const startPosRef = useRef<[number, number]>(undefined);
@@ -160,41 +168,45 @@ export function ElevationChart(): ReactElement | null {
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-      if (startPosRef.current) {
-        const pos = [
-          e.clientX - startPosRef.current[0] + posRef.current[0],
-          e.clientY - startPosRef.current[1] + posRef.current[1],
-        ];
-
-        setPos({ left: pos[0], top: pos[1] });
-
-        posRef.current = pos;
-
-        startPosRef.current = undefined;
+      if (!startPosRef.current) {
+        return;
       }
+
+      const pos = [
+        e.clientX - startPosRef.current[0] + posRef.current[0],
+        e.clientY - startPosRef.current[1] + posRef.current[1],
+      ];
+
+      setPos({ left: pos[0], top: pos[1] });
+
+      posRef.current = pos;
+
+      startPosRef.current = undefined;
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (startPosRef.current) {
-        setPos({
-          left: posRef.current[0] + e.clientX - startPosRef.current[0],
-          top: posRef.current[1] + e.clientY - startPosRef.current[1],
-        });
+      if (!startPosRef.current) {
+        return;
       }
+
+      setPos({
+        left: posRef.current[0] + e.clientX - startPosRef.current[0],
+        top: posRef.current[1] + e.clientY - startPosRef.current[1],
+      });
     };
 
-    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('pointerdown', handleMouseDown);
 
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('pointerup', handleMouseUp);
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('pointermove', handleMouseMove);
 
     return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('pointerdown', handleMouseDown);
 
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointerup', handleMouseUp);
 
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('pointermove', handleMouseMove);
     };
   }, []);
 

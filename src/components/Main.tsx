@@ -551,7 +551,7 @@ export function Main(): ReactElement {
 
               <PictureLegend />
 
-              {showAds && !askingCookieConsent && (
+              {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />
               )}
 
