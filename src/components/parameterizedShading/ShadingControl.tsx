@@ -138,6 +138,14 @@ export function ShadingControl() {
                     exaggeration: 1,
                   };
                 } else {
+                  function interpolate(
+                    ratio: number,
+                    from = type0 === 'aspect' ? 0 : 90,
+                    to = type0 === 'aspect' ? 2 * Math.PI : 2660,
+                  ) {
+                    return (to - from) * ratio + from;
+                  }
+
                   shadingComponent = {
                     id,
                     type: type0 as ShadingComponentType,
@@ -146,13 +154,34 @@ export function ShadingControl() {
                     colorStops:
                       type0 === 'color-relief' || type0 === 'aspect'
                         ? [
-                            { value: 0 / 6, color: [255, 0, 0, 1] },
-                            { value: 1 / 6, color: [255, 255, 0, 1] },
-                            { value: 2 / 6, color: [0, 255, 0, 1] },
-                            { value: 3 / 6, color: [0, 255, 255, 1] },
-                            { value: 4 / 6, color: [0, 0, 255, 1] },
-                            { value: 5 / 6, color: [255, 0, 255, 1] },
-                            { value: 6 / 6, color: [255, 0, 0, 1] },
+                            {
+                              value: interpolate(0 / 6),
+                              color: [255, 0, 0, 1],
+                            },
+                            {
+                              value: interpolate(1 / 6),
+                              color: [255, 255, 0, 1],
+                            },
+                            {
+                              value: interpolate(2 / 6),
+                              color: [0, 255, 0, 1],
+                            },
+                            {
+                              value: interpolate(3 / 6),
+                              color: [0, 255, 255, 1],
+                            },
+                            {
+                              value: interpolate(4 / 6),
+                              color: [0, 0, 255, 1],
+                            },
+                            {
+                              value: interpolate(5 / 6),
+                              color: [255, 0, 255, 1],
+                            },
+                            {
+                              value: interpolate(6 / 6),
+                              color: [255, 0, 0, 1],
+                            },
                           ]
                         : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
                     brightness: 0,
