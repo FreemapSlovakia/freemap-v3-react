@@ -101,7 +101,7 @@ export function LongPressTooltip({
     [delay, labelHidden],
   );
 
-  const handleClear = useCallback((e: PointerEvent) => {
+  const handleClear = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }

@@ -1,7 +1,7 @@
 import {
   Fragment,
   ReactElement,
-  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
   useEffect,
   useMemo,
   useRef,
@@ -95,14 +95,14 @@ export function ElevationChart(): ReactElement | null {
     return [mapX, mapY, min, max, d, xLines, yLines];
   }, [elevationProfilePoints, width, height]);
 
-  const [mouseX, setMouseX] = useState<number | undefined>();
+  const [pointerX, setPointerX] = useState<number | undefined>();
 
-  const handleMouseMove = (e: ReactMouseEvent<SVGRectElement>) => {
+  const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
 
-    setMouseX(x + ml);
+    setPointerX(x + ml);
 
     for (const pt of elevationProfilePoints) {
       if (pt.distance > (d / (width - ml - mr)) * x) {
@@ -113,8 +113,8 @@ export function ElevationChart(): ReactElement | null {
     }
   };
 
-  const handleMouseOut = () => {
-    setMouseX(undefined);
+  const handlePointerOut = () => {
+    setPointerX(undefined);
 
     dispatch(elevationChartSetActivePoint(null));
   };
@@ -158,7 +158,7 @@ export function ElevationChart(): ReactElement | null {
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
+    const handleWindowPointerDown = (e: PointerEvent) => {
       if (
         e.target instanceof Element &&
         e.target.matches('.elevationChart svg, .elevationChart svg *')
@@ -167,7 +167,7 @@ export function ElevationChart(): ReactElement | null {
       }
     };
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleWindowPointerUp = (e: PointerEvent) => {
       if (!startPosRef.current) {
         return;
       }
@@ -184,7 +184,7 @@ export function ElevationChart(): ReactElement | null {
       startPosRef.current = undefined;
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleWindowPointerMove = (e: PointerEvent) => {
       if (!startPosRef.current) {
         return;
       }
@@ -195,18 +195,18 @@ export function ElevationChart(): ReactElement | null {
       });
     };
 
-    window.addEventListener('pointerdown', handleMouseDown);
+    window.addEventListener('pointerdown', handleWindowPointerDown);
 
-    window.addEventListener('pointerup', handleMouseUp);
+    window.addEventListener('pointerup', handleWindowPointerUp);
 
-    window.addEventListener('pointermove', handleMouseMove);
+    window.addEventListener('pointermove', handleWindowPointerMove);
 
     return () => {
-      window.removeEventListener('pointerdown', handleMouseDown);
+      window.removeEventListener('pointerdown', handleWindowPointerDown);
 
-      window.removeEventListener('pointerup', handleMouseUp);
+      window.removeEventListener('pointerup', handleWindowPointerUp);
 
-      window.removeEventListener('pointermove', handleMouseMove);
+      window.removeEventListener('pointermove', handleWindowPointerMove);
     };
   }, []);
 
@@ -226,8 +226,9 @@ export function ElevationChart(): ReactElement | null {
           y={mt}
           width={width - ml - mr}
           height={height - mt - mb}
-          onMouseMove={handleMouseMove}
-          onMouseOut={handleMouseOut}
+          onMouseMove={handlePointerMove} // for mobiles
+          onPointerMove={handlePointerMove}
+          onPointerOut={handlePointerOut}
           fill="white"
         />
 
@@ -251,11 +252,11 @@ export function ElevationChart(): ReactElement | null {
           fill="none"
         />
 
-        {mouseX !== undefined && (
+        {pointerX !== undefined && (
           <line
-            key="mousex"
-            x1={mouseX}
-            x2={mouseX}
+            key="pointerx"
+            x1={pointerX}
+            x2={pointerX}
             y1={mt}
             y2={height - mb}
             stroke="var(--red)"
@@ -365,8 +366,9 @@ export function ElevationChart(): ReactElement | null {
           y={mt}
           width={width - ml - mr}
           height={height - mt - mb}
-          onMouseMove={handleMouseMove}
-          onMouseOut={handleMouseOut}
+          onPointerDown={handlePointerMove} // for mobiles
+          onPointerMove={handlePointerMove}
+          onPointerOut={handlePointerOut}
           opacity={0}
         />
       </svg>
