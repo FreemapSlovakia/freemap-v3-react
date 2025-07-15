@@ -614,6 +614,7 @@ export function Main(): ReactElement {
             ref={setMap}
             center={{ lat, lng: lon }}
             zoom={zoom}
+            wheelPxPerZoomLevel={100}
           >
             <ScaleControl imperial={false} position="bottomleft" />
 
