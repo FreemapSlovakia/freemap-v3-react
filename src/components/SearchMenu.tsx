@@ -284,10 +284,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
                       dispatch(
                         routePlannerSetStart({
-                          start: {
-                            lat: c[1],
-                            lon: c[0],
-                          },
+                          lat: c[1],
+                          lon: c[0],
                         }),
                       );
                     }
@@ -311,10 +309,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
                       dispatch(
                         routePlannerSetFinish({
-                          finish: {
-                            lat: c[1],
-                            lon: c[0],
-                          },
+                          lat: c[1],
+                          lon: c[0],
                         }),
                       );
                     }

@@ -379,25 +379,16 @@ export function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
-  const isochronesFound = useAppSelector(
-    (state) => !!state.routePlanner.isochrones,
-  );
-
   const elevationProfileIsVisible = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const canSwap = useAppSelector(
-    (state) => !!(state.routePlanner.start && state.routePlanner.finish),
+    (state) => state.routePlanner.points.length > 1,
   );
 
   const canDelete = useAppSelector(
-    (state) =>
-      !!(
-        state.routePlanner.start ||
-        state.routePlanner.finish ||
-        state.routePlanner.midpoints.length > 0
-      ),
+    (state) => state.routePlanner.points.length > 0 && !state.main.selection,
   );
 
   const handleMoreSelect = (eventKey: string | null) => {
@@ -460,9 +451,9 @@ export function RoutePlannerMenu(): ReactElement {
         }),
       );
     } else if (pointType === 'start') {
-      dispatch(routePlannerSetStart({ start: homeLocation }));
+      dispatch(routePlannerSetStart(homeLocation));
     } else if (pointType === 'finish') {
-      dispatch(routePlannerSetFinish({ finish: homeLocation }));
+      dispatch(routePlannerSetFinish(homeLocation));
     }
   }
 
@@ -480,9 +471,7 @@ export function RoutePlannerMenu(): ReactElement {
 
   return (
     <ToolMenu>
-      {(routeFound || isochronesFound || canDelete) && (
-        <DeleteButton breakpoint="lg" />
-      )}
+      {canDelete && <DeleteButton breakpoint="lg" />}
 
       <Dropdown
         className="ms-1"

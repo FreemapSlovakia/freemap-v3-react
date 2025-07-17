@@ -153,12 +153,18 @@ export interface TrackingSelection {
   id: string | number;
 }
 
+export interface RoutePointSelection {
+  type: 'route-point';
+  id: number;
+}
+
 export type Selection =
   | LinePointSelection
   | DrawPointSelection
   | ObjectsSelection
   | DrawLinePolySelection
-  | TrackingSelection;
+  | TrackingSelection
+  | RoutePointSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 

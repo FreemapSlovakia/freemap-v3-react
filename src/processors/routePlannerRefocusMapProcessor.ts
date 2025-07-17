@@ -13,15 +13,15 @@ export const routePlannerRefocusMapProcessor: Processor<
   actionCreator: [routePlannerSetStart, routePlannerSetFinish],
   handle: async ({ dispatch, getState, action }) => {
     const {
-      routePlanner: { start, finish },
+      routePlanner: { points, finishOnly },
     } = getState();
 
-    let focusPoint: LatLon | null | undefined;
+    let focusPoint: LatLon | undefined;
 
     if (routePlannerSetStart.match(action)) {
-      focusPoint = start;
+      focusPoint = finishOnly ? undefined : points[0];
     } else if (routePlannerSetFinish.match(action)) {
-      focusPoint = finish;
+      focusPoint = points.at(-1);
     }
 
     if (

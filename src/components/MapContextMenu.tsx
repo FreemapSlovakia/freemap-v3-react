@@ -223,10 +223,8 @@ export function MapContextMenu(): ReactElement {
 
           dispatch(
             routePlannerSetStart({
-              start: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
+              lat: contextMenu.lat,
+              lon: contextMenu.lon,
             }),
           );
 
@@ -239,10 +237,8 @@ export function MapContextMenu(): ReactElement {
 
           dispatch(
             routePlannerSetFinish({
-              finish: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
+              lat: contextMenu.lat,
+              lon: contextMenu.lon,
             }),
           );
 

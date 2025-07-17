@@ -174,24 +174,23 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
 
 function addPlannedRoute(
   fc: FeatureCollection,
-  { alternatives, start, finish, midpoints }: RoutePlannerState,
+  { alternatives, points, finishOnly }: RoutePlannerState,
   withStops: boolean,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
   if (withStops) {
-    if (start) {
-      fc.features.push(point([start.lon, start.lat], { name: 'Štart' })); // TODO translate
-    }
-
-    if (finish) {
-      fc.features.push(point([finish.lon, finish.lat], { name: 'Cieľ' })); // TODO translate
-    }
-
-    midpoints.forEach((midpoint, i: number) => {
+    points.forEach((pt, i: number) => {
       fc.features.push(
-        point([midpoint.lon, midpoint.lat], { name: `Zastávka ${i + 1}` }), // TODO translate
+        point([pt.lon, pt.lat], {
+          name:
+            i === 0 && !finishOnly
+              ? 'Štart'
+              : i === points.length - 1
+                ? 'Cieľ' // TODO not for roundtrip?
+                : `Zastávka ${i + 1}`,
+        }), // TODO translate: ;
       );
     });
   }

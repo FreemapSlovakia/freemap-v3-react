@@ -3,6 +3,8 @@ import { Feature, Polygon } from 'geojson';
 import { TransportType } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
 
+export type RoutePoint = LatLon & { manual?: boolean };
+
 export type PickMode = 'start' | 'finish';
 
 export type RoutingMode = 'route' | 'trip' | 'roundtrip' | 'isochrone';
@@ -96,32 +98,30 @@ export type IsochroneParams = {
   timeLimit: number;
 };
 
-export const routePlannerSetStart = createAction<{
-  start: LatLon | null;
-  move?: boolean;
-}>('ROUTE_PLANNER_SET_START');
+export const routePlannerSetStart = createAction<RoutePoint>(
+  'ROUTE_PLANNER_SET_START',
+);
 
-export const routePlannerSetFinish = createAction<{
-  finish: LatLon | null;
-  move?: boolean;
-}>('ROUTE_PLANNER_SET_FINISH');
+export const routePlannerSetFinish = createAction<RoutePoint | null>(
+  'ROUTE_PLANNER_SET_FINISH',
+);
 
 export const routePlannerSetFromCurrentPosition = createAction<PickMode>(
   'ROUTE_PLANNER_SET_FROM_CURRENT_POSITION',
 );
 
-export const routePlannerAddMidpoint = createAction<{
-  midpoint: LatLon;
+export const routePlannerAddPoint = createAction<{
+  point: RoutePoint;
   position: number;
-}>('ROUTE_PLANNER_ADD_MIDPOINT');
+}>('ROUTE_PLANNER_ADD_POINT');
 
-export const routePlannerSetMidpoint = createAction<{
-  midpoint: LatLon;
+export const routePlannerSetPoint = createAction<{
+  point: RoutePoint;
   position: number;
-}>('ROUTE_PLANNER_SET_MIDPOINT');
+}>('ROUTE_PLANNER_SET_POINT');
 
-export const routePlannerRemoveMidpoint = createAction<number>(
-  'ROUTE_PLANNER_REMOVE_MIDPOINT',
+export const routePlannerRemovePoint = createAction<number>(
+  'ROUTE_PLANNER_REMOVE_POINT',
 );
 
 export const routePlannerSetTransportType = createAction<TransportType>(
@@ -157,9 +157,8 @@ export const routePlannerToggleItineraryVisibility = createAction(
 );
 
 export const routePlannerSetParams = createAction<{
-  start: LatLon | null;
-  finish: LatLon | null;
-  midpoints: LatLon[];
+  points: RoutePoint[];
+  finishOnly: boolean;
   transportType: TransportType;
   mode?: RoutingMode | null;
   milestones?: 'abs' | 'rel' | false;

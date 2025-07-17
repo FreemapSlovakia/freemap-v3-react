@@ -101,12 +101,12 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
     .addCase(setTool, (state, action) => {
       if (!window.fmEmbedded) {
-        state.tool = action.payload;
-
         state.selection =
           action.payload === state.tool || action.payload === null
             ? state.selection
             : null;
+
+        state.tool = action.payload;
       }
     })
     .addCase(drawingLineStopDrawing, (state) => {
@@ -184,14 +184,16 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (!window.fmEmbedded) {
         state.selection = action.payload;
 
-        state.tool =
-          state.tool === 'objects' ||
-          state.tool === 'changesets' ||
-          state.tool === 'track-viewer' ||
-          (action.payload === null && state.tool !== 'route-planner')
-            ? /* && state.tool !== 'track-viewer' */
-              state.tool
-            : null;
+        if (
+          state.tool !== 'objects' &&
+          state.tool !== 'changesets' &&
+          state.tool !== 'track-viewer' &&
+          (state.tool !== 'route-planner' ||
+            action.payload?.type !== 'route-point') &&
+          action.payload !== null
+        ) {
+          state.tool = null;
+        }
       }
     })
     .addCase(convertToDrawing, (state) => {

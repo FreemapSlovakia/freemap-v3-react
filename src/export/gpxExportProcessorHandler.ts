@@ -406,44 +406,30 @@ function addObjects(doc: Document, { objects }: ObjectsState) {
 
 function addPlannedRoute(
   doc: Document,
-  { alternatives, start, finish, midpoints }: RoutePlannerState,
+  { alternatives, points, finishOnly }: RoutePlannerState,
   withStops: boolean,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
   if (withStops) {
-    if (start) {
-      const startWptEle = createElement(
-        doc.documentElement,
-        'wpt',
-        undefined,
-        toLatLon(start),
-      );
-
-      createElement(startWptEle, 'name', 'Štart'); // TODO translate
-    }
-
-    if (finish) {
-      const finishWptEle = createElement(
-        doc.documentElement,
-        'wpt',
-        undefined,
-        toLatLon(finish),
-      );
-
-      createElement(finishWptEle, 'name', 'Cieľ'); // TODO translate
-    }
-
-    midpoints.forEach((midpoint, i: number) => {
+    points.forEach((point, i: number) => {
       const midpointWptEle = createElement(
         doc.documentElement,
         'wpt',
         undefined,
-        toLatLon(midpoint),
+        toLatLon(point),
       );
 
-      createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`); // TODO translate
+      createElement(
+        midpointWptEle,
+        'name',
+        i === 0 && !finishOnly
+          ? 'Štart'
+          : i === points.length - 1
+            ? 'Cieľ' // TODO not for roundtrip?
+            : `Zastávka ${i + 1}`,
+      ); // TODO translate
     });
   }
 

@@ -25,9 +25,8 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   routePlanner?: Pick<
     RoutePlannerState,
     | 'transportType'
-    | 'start'
-    | 'midpoints'
-    | 'finish'
+    | 'points'
+    | 'finishOnly'
     | 'pickMode'
     | 'mode'
     | 'milestones'

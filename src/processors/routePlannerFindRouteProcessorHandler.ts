@@ -92,16 +92,15 @@ type OsrmResult = {
 
 const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   const {
-    start,
-    finish,
-    midpoints,
+    points,
+    finishOnly,
     transportType,
     mode,
     roundtripParams,
     isochroneParams,
   } = getState().routePlanner;
 
-  if (!start || !transportType) {
+  if (points.length === 0 || finishOnly || !transportType) {
     return;
   }
 
@@ -111,7 +110,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     throw new Error(`unknown transport type: ${transportType}`);
   }
 
-  if (!finish && !(ttDef.api === 'gh' && mode !== 'route')) {
+  if (points.length < 2 && !(ttDef.api === 'gh' && mode !== 'route')) {
     return;
   }
 
@@ -150,7 +149,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
             time_limit: isochroneParams.timeLimit,
             distance_limit: isochroneParams.distanceLimit || -1,
-            point: start.lat + ',' + start.lon,
+            point: points[0].lat + ',' + points[0].lon,
           }),
         expectedStatus: 200,
         cancelActions: cancelTypes,
@@ -177,7 +176,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           algorithm:
             mode === 'roundtrip'
               ? 'round_trip'
-              : midpoints.length > 0
+              : points.length > 2
                 ? undefined
                 : 'alternative_route',
           'round_trip.distance': roundtripParams.distance,
@@ -188,13 +187,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           profile: ttDef.profile,
           points_encoded: false,
           locale: getState().l10n.language,
-          points: finish
-            ? [
-                [start.lon, start.lat],
-                ...midpoints.map((mp) => [mp.lon, mp.lat]),
-                [finish.lon, finish.lat],
-              ]
-            : [[start.lon, start.lat]],
+          points: points.map((point) => [point.lon, point.lat]),
         },
         expectedStatus: [200, 400],
         cancelActions: cancelTypes,
@@ -236,12 +229,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
         return;
       }
-    } else if (finish) {
-      const allPoints = [
-        [start.lon, start.lat].join(','),
-        ...midpoints.map((mp) => [mp.lon, mp.lat].join(',')),
-        [finish.lon, finish.lat].join(','),
-      ].join(';');
+    } else if (points.length > 1) {
+      const allPoints = points
+        .map((point) => [point.lon, point.lat].join(','))
+        .join(';');
 
       const response = await httpRequest({
         getState,
@@ -375,13 +366,12 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     routePlannerSetFinish,
   );
 
-  const showHint =
+  if (
     !(ttDef.api === 'gh' && mode !== 'route') &&
     !getState().routePlanner.preventHint &&
-    !midpoints.length &&
-    isStartOrFinishAction(action);
-
-  if (showHint) {
+    points.length < 3 &&
+    isStartOrFinishAction(action)
+  ) {
     const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
 
     if (getState().main.cookieConsentResult) {

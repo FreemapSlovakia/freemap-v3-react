@@ -60,6 +60,7 @@ import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapsMenu } from './MapsMenu.js';
 import { Results } from './Results.js';
+import RoutePointSelection from './RoutePointSelection.js';
 import { Toolbar } from './Toolbar.js';
 import { ToolMenu } from './ToolMenu.js';
 import { Tools } from './Tools.js';
@@ -535,6 +536,8 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={objectSelectionFactory} />
               ) : selectionMenu === 'tracking' ? (
                 <TrackingSelection />
+              ) : selectionMenu === 'route-point' ? (
+                <RoutePointSelection />
               ) : null}
 
               {pickingPosition && (

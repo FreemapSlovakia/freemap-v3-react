@@ -139,7 +139,7 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   {
-    const points =
+    const qPoints =
       typeof query['points'] === 'string'
         ? query['points']
             .split(',')
@@ -149,10 +149,10 @@ export function handleLocationChange(store: MyStore): void {
         : [];
 
     const pointsOk =
-      points.length > 0 &&
-      points.every(
+      qPoints.length > 0 &&
+      qPoints.every(
         (point, i) =>
-          (point !== null || i === 0 || i === points.length - 1) &&
+          (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
             (point.length === 2 &&
               !Number.isNaN(point[0]) &&
@@ -170,9 +170,8 @@ export function handleLocationChange(store: MyStore): void {
 
     if (is<TransportType>(query['transport']) && pointsOk) {
       const {
-        start,
-        finish,
-        midpoints,
+        points,
+        finishOnly,
         transportType,
         mode,
         milestones,
@@ -180,26 +179,22 @@ export function handleLocationChange(store: MyStore): void {
         isochroneParams,
       } = getState().routePlanner;
 
-      const latLons = points.map((point) =>
+      const latLons = qPoints.map((point) =>
         point ? { lat: point[0], lon: point[1] } : null,
       );
 
-      const nextStart = latLons[0];
+      const nextFinishOnly = latLons.length > 0 && !latLons[0];
 
-      const nextMidpoints = latLons
-        .slice(1, latLons.length - 1)
-        .filter((x): x is LatLon => !!x);
-
-      const nextFinish = latLons.at(-1)!;
+      if (nextFinishOnly) {
+        latLons.shift();
+      }
 
       if (
+        finishOnly !== nextFinishOnly ||
         query['transport'] !== transportType ||
-        serializePoint(start) !== serializePoint(nextStart) ||
-        serializePoint(finish) !== serializePoint(nextFinish) ||
-        midpoints.length !== nextMidpoints.length ||
-        midpoints.some(
-          (midpoint, i) =>
-            serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
+        points.length !== latLons.length ||
+        points.some(
+          (point, i) => serializePoint(point) !== serializePoint(latLons[i]),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         milestones !== reqMilestones ||
@@ -215,9 +210,8 @@ export function handleLocationChange(store: MyStore): void {
 
         dispatch(
           routePlannerSetParams({
-            start: nextStart,
-            finish: nextFinish,
-            midpoints: nextMidpoints,
+            points: latLons as LatLon[],
+            finishOnly: nextFinishOnly,
             transportType: query['transport'],
             mode:
               routeMode === 'trip' ||
@@ -238,15 +232,11 @@ export function handleLocationChange(store: MyStore): void {
           }),
         );
       }
-    } else if (
-      getState().routePlanner.start ||
-      getState().routePlanner.finish
-    ) {
+    } else if (getState().routePlanner.points) {
       dispatch(
         routePlannerSetParams({
-          start: null,
-          finish: null,
-          midpoints: [],
+          points: [],
+          finishOnly: false,
           transportType: getState().routePlanner.transportType,
           milestones: reqMilestones,
         }),

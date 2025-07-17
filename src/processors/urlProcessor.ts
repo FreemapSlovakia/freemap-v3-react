@@ -56,11 +56,10 @@ export const urlProcessor: Processor = {
       map.customLayers,
       map.shading,
       routePlanner,
-      routePlanner.finish,
-      routePlanner.midpoints,
+      routePlanner.points,
+      routePlanner.finishOnly,
       routePlanner.milestones,
       routePlanner.mode,
-      routePlanner.start,
       routePlanner.transportType,
       routePlanner.roundtripParams,
       main.documentKey,
@@ -123,16 +122,11 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (
-      routePlanner.start ||
-      routePlanner.finish ||
-      routePlanner.midpoints.length
-    ) {
+    if (routePlanner.points.length) {
       historyParts.push([
         'points',
-        [routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
-          .map((point) => serializePoint(point))
-          .join(','),
+        (routePlanner.finishOnly ? ',' : '') +
+          routePlanner.points.map((point) => serializePoint(point)).join(','),
       ]);
 
       historyParts.push(['transport', routePlanner.transportType]);
