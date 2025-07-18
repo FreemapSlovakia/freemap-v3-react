@@ -1,6 +1,10 @@
 import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
+import {
+  GalleryColorizeBy,
+  GalleryListOrder,
+} from '../actions/galleryActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
@@ -110,6 +114,7 @@ export type Messages = {
     finish: string;
     swap: string;
     point: {
+      point: string;
       pick: string;
       current: string;
       home: string;
@@ -200,27 +205,11 @@ export type Messages = {
     showPhotosFrom: string;
     showLayer: string;
     upload: string;
-    f: {
-      firstUploaded: string;
-      lastUploaded: string;
-      firstCaptured: string;
-      lastCaptured: string;
-      leastRated: string;
-      mostRated: string;
-      lastComment: string;
-    };
+    f: Record<GalleryListOrder, string>;
     colorizeBy: string;
     showDirection: string;
-    c: {
-      disable: string;
-      mine: string;
-      author: string;
-      rating: string;
-      takenAt: string;
-      createdAt: string;
-      season: string;
-      premium: string;
-    };
+    showLegend: string;
+    c: Record<GalleryColorizeBy | 'disable', string>;
     viewer: {
       title: string;
       comments: string;

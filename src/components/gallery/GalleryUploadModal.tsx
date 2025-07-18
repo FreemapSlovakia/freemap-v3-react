@@ -1,7 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
-import { FaTimes, FaUpload } from 'react-icons/fa';
+import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   galleryAddItem,
@@ -134,7 +134,9 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
+        <Modal.Title>
+          <FaCamera /> <FaUpload /> {m?.gallery.uploadModal.title}
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>

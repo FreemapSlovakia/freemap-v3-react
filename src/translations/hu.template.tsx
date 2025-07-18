@@ -318,26 +318,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     upload: 'Feltöltés',
 
     f: {
-      firstUploaded: 'az először feltöltöttől',
-      lastUploaded: 'a legutóbb feltöltöttől',
-      firstCaptured: 'a legrégebben készülttől',
-      lastCaptured: 'a legutóbb készülttől',
-      leastRated: 'a leggyöngébbre értékelttől',
-      mostRated: 'a legjobbra értékelttől',
-      lastComment: 'from last comment',
+      '-createdAt': 'a legutóbb feltöltöttől',
+      '-takenAt': 'a legutóbb készülttől',
+      '-rating': 'a legjobbra értékelttől',
+      '-lastCommentedAt': 'from last comment',
     },
 
     showDirection: 'Mutasd a fényképezés irányát',
 
     c: {
-      disable: 'ne színezd',
-      mine: 'különítsd el a sajátjaimat',
-      author: 'szerző',
-      rating: 'értékelés',
-      takenAt: 'készítés dátuma',
-      createdAt: 'feltöltés dátuma',
-      season: 'évszak',
-      premium: 'prémium',
+      disable: 'Ne színezd',
+      mine: 'Különítsd el a sajátjaimat',
+      userId: 'Szerző',
+      rating: 'Értékelés',
+      takenAt: 'Készítés dátuma',
+      createdAt: 'Feltöltés dátuma',
+      season: 'Évszak',
+      premium: 'Prémium',
     },
 
     viewer: {

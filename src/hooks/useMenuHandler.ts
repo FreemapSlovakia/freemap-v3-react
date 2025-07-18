@@ -1,14 +1,7 @@
+import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import {
-  GalleryColorizeBy,
-  GalleryListOrder,
-  galleryAllPremiumOrFree,
-  galleryColorizeBy,
-  galleryList,
-  galleryToggleDirection,
-} from '../actions/galleryActions.js';
 import { l10nSetChosenLanguage } from '../actions/l10nActions.js';
 import {
   ExternalTargets,
@@ -123,20 +116,17 @@ export function useMenuHandler({
         dispatch(setTool((eventKey.slice(5) || null) as Tool | null));
 
         setShow(false);
+      } else if (eventKey === 'drawing') {
+        const tool = storage.getItem('drawingTool') ?? 'draw-points';
+        if (is<Tool>(tool)) {
+          dispatch(setTool(tool));
+        }
+
+        setShow(false);
       } else if (eventKey === 'clear-map-features') {
         dispatch(clearMapFeatures());
 
         setShow(false);
-      } else if (eventKey.startsWith('photosBy-')) {
-        dispatch(galleryList(eventKey.slice(9) as GalleryListOrder));
-
-        setShow(false);
-      } else if (eventKey.startsWith('photosColorizeBy-')) {
-        dispatch(
-          galleryColorizeBy(
-            (eventKey.slice(17) || null) as GalleryColorizeBy | null,
-          ),
-        );
       } else if (eventKey.startsWith('lang-')) {
         dispatch(
           l10nSetChosenLanguage({ language: eventKey.slice(5) || null }),
@@ -169,12 +159,6 @@ export function useMenuHandler({
               : [...overlays, 'I'],
           }),
         );
-      } else if (eventKey.startsWith('galAll-')) {
-        setShow(false);
-
-        dispatch(
-          galleryAllPremiumOrFree(eventKey.slice(7) as 'premium' | 'free'),
-        );
       } else if (eventKey === 'close' || eventKey === 'url') {
         setShow(false);
       } else if (eventKey === 'galEmails') {
@@ -185,8 +169,6 @@ export function useMenuHandler({
             },
           }),
         );
-      } else if (eventKey === 'galDirection') {
-        dispatch(galleryToggleDirection());
       } else if (extraHandler.current?.(eventKey)) {
         // nothing
       }

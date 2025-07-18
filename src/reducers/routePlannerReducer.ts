@@ -120,9 +120,16 @@ export const routePlannerReducer = createReducer(
               : action.payload.type,
         };
       })
-      .addCase(selectFeature, (state) => ({
+      .addCase(selectFeature, (state, { payload }) => ({
         ...state,
-        pickMode: null,
+        pickMode:
+          payload?.type === 'route-point'
+            ? payload.id === 0 && !state.finishOnly
+              ? 'start'
+              : payload.id === state.points.length - 1
+                ? 'finish'
+                : null
+            : null,
       }))
       .addCase(setTool, (state) => ({
         ...state,

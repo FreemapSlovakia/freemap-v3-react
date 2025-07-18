@@ -15,7 +15,6 @@ type Props = {
   label?: ReactNode;
   delay?: number;
   breakpoint?: Breakpoint;
-  title?: string;
   kbd?: string;
   children: (props: {
     props: {
@@ -24,7 +23,6 @@ type Props = {
       onPointerLeave: (e: PointerEvent) => void;
       onClickCapture: (e: MouseEvent) => void;
       onContextMenuCapture: (e: MouseEvent) => void;
-      title?: string;
     };
     label: ReactNode;
     labelClassName: string;
@@ -129,6 +127,12 @@ export function LongPressTooltip({
     e.stopPropagation();
   }, []);
 
+  const kbdEl = (kbd?.split(' ') ?? []).map((kbd) => (
+    <>
+      {' '}
+      <kbd key={kbd}>{kbd}</kbd>
+    </>
+  ));
   return (
     <>
       {children({
@@ -143,7 +147,7 @@ export function LongPressTooltip({
         },
         label: kbd ? (
           <>
-            {label} <kbd>{kbd}</kbd>
+            {label} {kbdEl}
           </>
         ) : (
           label
@@ -153,7 +157,12 @@ export function LongPressTooltip({
 
       {target && labelHidden && (
         <Overlay target={target} show={show} placement="top" flip>
-          {(props) => <Tooltip {...props}>{label}</Tooltip>}
+          {(props) => (
+            <Tooltip {...props}>
+              {label}
+              {kbdEl}
+            </Tooltip>
+          )}
         </Overlay>
       )}
     </>

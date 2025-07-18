@@ -289,19 +289,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   gallery: {
     f: {
-      firstUploaded: 'von zuerst hochgeladenen',
-      lastUploaded: 'von zuletzt hochgeladenen',
-      firstCaptured: 'von ältesten aufgenommenen',
-      lastCaptured: 'von neuesten aufgenommenen',
-      leastRated: 'von am niedrigsten bewerteten',
-      mostRated: 'von am höchsten bewerteten',
-      lastComment: 'vom letzten Kommentar',
+      '-createdAt': 'von zuletzt hochgeladenen',
+      '-takenAt': 'von neuesten aufgenommenen',
+      '-rating': 'von am höchsten bewerteten',
+      '-lastCommentedAt': 'vom letzten Kommentar',
     },
 
     c: {
-      disable: 'nicht einfärben',
-      mine: 'meine hervorheben',
-      author: 'Autor',
+      disable: 'Nicht einfärben',
+      mine: 'Meine hervorheben',
+      userId: 'Autor',
       rating: 'Bewertung',
       takenAt: 'Aufnahmedatum',
       createdAt: 'Hochladedatum',

@@ -1,6 +1,7 @@
 import { type ReactElement } from 'react';
-import { FaMapSigns } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaMapSigns } from 'react-icons/fa';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { useMessages } from '../l10nInjector.js';
 import { Selection } from './Selection.js';
 
 export default RoutePointSelection;
@@ -12,7 +13,19 @@ export function RoutePointSelection(): ReactElement | undefined {
       : undefined,
   );
 
+  const m = useMessages();
+
   return (
-    point && <Selection icon={<FaMapSigns />} label="Route point" deletable />
+    point && (
+      <Selection
+        icon={
+          <>
+            <FaMapSigns /> <FaMapMarkerAlt />
+          </>
+        }
+        label={m?.routePlanner.point.point}
+        deletable
+      />
+    )
   );
 }

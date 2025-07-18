@@ -46,12 +46,6 @@
   color: red;
 }
 
-@media (max-width: 767px) {
-  kbd {
-    display: none;
-  }
-}
-
 // let active looks like dark variant
 .btn-secondary:not(:disabled):not(.disabled).active {
   background-color: #343a40;
@@ -65,7 +59,16 @@
 }
 
 kbd {
-  background-color: #bbb;
+  display: none;
+
+  // https://stackoverflow.com/a/47703337/289827
+  @media (hover: hover) and (pointer: fine) {
+    & {
+      background-color: #bbb;
+      line-height: 0;
+      display: inline;
+    }
+  }
 }
 
 .f-gap-1 {

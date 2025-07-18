@@ -52,7 +52,6 @@ import {
 import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
 import { GalleryModals } from './gallery/GalleryModals.js';
-import { PictureLegend } from './gallery/PictureLegend.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
@@ -76,6 +75,8 @@ const trackViewerMenuFactory = () => import('./TrackViewerMenu.js');
 
 const changesetsMenuFactory = () => import('./ChangesetsMenu.js');
 
+const drawingMenuFactory = () => import('./DrawingMenu.js');
+
 const drawingLineSelectionFactory = () => import('./DrawingLineSelection.js');
 
 const drawingLinePointSelectionFactory = () =>
@@ -93,6 +94,8 @@ const galleryShowPositionMenuFactory = () =>
 
 const homeLocationPickingMenuFactory = () =>
   import('./HomeLocationPickingMenu.js');
+
+const galleryMenuFactory = () => import('./gallery/GalleryMenu.js');
 
 const adFactory = () => import('./Ad.js');
 
@@ -201,6 +204,10 @@ export function Main(): ReactElement {
 
   const showResults = useAppSelector(
     (state) => !state.map.overlays.includes('i'),
+  );
+
+  const showPictures = useAppSelector((state) =>
+    state.map.overlays.includes('I'),
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -518,6 +525,10 @@ export function Main(): ReactElement {
                   <AsyncComponent factory={trackViewerMenuFactory} />
                 ) : tool === 'changesets' ? (
                   <AsyncComponent factory={changesetsMenuFactory} />
+                ) : tool === 'draw-lines' ||
+                  tool === 'draw-points' ||
+                  tool === 'draw-polygons' ? (
+                  <AsyncComponent factory={drawingMenuFactory} />
                 ) : tool === 'map-details' ? (
                   <MapDetailsMenu />
                 ) : (
@@ -552,7 +563,7 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
 
-              <PictureLegend />
+              {showPictures && <AsyncComponent factory={galleryMenuFactory} />}
 
               {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />

@@ -104,15 +104,16 @@ export function RoutePlannerResult(): ReactElement {
 
   const tool = useAppSelector((state) => state.main.tool);
 
-  const interactive0 = tool === 'route-planner';
+  const routePlannerToolActive = tool === 'route-planner';
+
+  const interactive =
+    useAppSelector(selectingModeSelector) || routePlannerToolActive;
 
   const selectedPoint = useAppSelector((state) =>
     state.main.selection?.type === 'route-point'
       ? state.main.selection.id
       : undefined,
   );
-
-  const interactive1 = useAppSelector(selectingModeSelector) || interactive0; // markers, lines
 
   const [dragging, setDragging] = useState(false);
 
@@ -141,6 +142,8 @@ export function RoutePlannerResult(): ReactElement {
               lon: latlng.lng,
             }),
           );
+        } else {
+          dispatch(setTool(null));
         }
       },
       [pickMode, dispatch, tool, dragging, onlyStart],
@@ -312,7 +315,7 @@ export function RoutePlannerResult(): ReactElement {
       return distance && duration ? (
         <Tooltip direction="top" permanent>
           {/* <div>{getPointDetails2(distance, duration)}</div> */}
-          <div>{getPointDetails(points.length, showDiff, true)}</div>
+          <div>{getPointDetails(points.length - 2, showDiff, true)}</div>
         </Tooltip>
       ) : null;
     },
@@ -347,7 +350,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const handlePolyMouseMove = useCallback(
     (e: LeafletMouseEvent, segment: number, alt: number) => {
-      if (!interactive0 || draggingRef.current) {
+      if (!routePlannerToolActive || draggingRef.current) {
         return;
       }
 
@@ -365,7 +368,7 @@ export function RoutePlannerResult(): ReactElement {
 
       setDragAlt(alt);
     },
-    [interactive0],
+    [routePlannerToolActive],
   );
 
   const resetOnTimeout = useCallback(() => {
@@ -477,13 +480,14 @@ export function RoutePlannerResult(): ReactElement {
 
   const pointElements = useMemo(
     () =>
-      points.map(({ lat, lon }, i) => (
+      points.map((point, i) => (
         <RichMarker
-          key={`pt-${i}-${interactive0}-${interactive1}`}
-          position={{ lat, lng: lon }}
-          interactive={interactive1 || selectedPoint === i}
+          key={`pt-${i}-${routePlannerToolActive}-${interactive}`}
+          position={{ lat: point.lat, lng: point.lon }}
+          interactive={interactive || selectedPoint === i}
           draggable={
-            (interactive0 || selectedPoint === i) && !window.fmEmbedded
+            (routePlannerToolActive || selectedPoint === i) &&
+            !window.fmEmbedded
           }
           label={
             i === 0 || (i === points.length - 1 && mode !== 'roundtrip')
@@ -531,13 +535,25 @@ export function RoutePlannerResult(): ReactElement {
                 }
           }
         >
-          {!dragging && <Tooltip direction="top">{getPointDetails(i)}</Tooltip>}
+          {dragging ? null : i === points.length - 1 /* finish */ ? (
+            mode === 'roundtrip' ? (
+              <Tooltip direction="top">
+                {getPointDetails(points.length - 2)}
+              </Tooltip>
+            ) : (
+              getSummary(i === pointHovering)
+            )
+          ) : i === 0 && !finishOnly /* start */ ? (
+            mode === 'roundtrip' && getSummary(i === pointHovering)
+          ) : (
+            <Tooltip direction="top">{getPointDetails(i - 1)}</Tooltip>
+          )}
         </RichMarker>
       )),
     [
       points,
-      interactive0,
-      interactive1,
+      routePlannerToolActive,
+      interactive,
       selectedPoint,
       mode,
       waypoints,
@@ -549,6 +565,8 @@ export function RoutePlannerResult(): ReactElement {
       handleRouteMarkerDragEnd,
       handlePointClick,
       handlePointMouseOver,
+      getSummary,
+      pointHovering,
     ],
   );
 
@@ -570,8 +588,8 @@ export function RoutePlannerResult(): ReactElement {
               .map((routeSlice, i: number) =>
                 routeSlice.geometry.coordinates.length < 2 ? null : (
                   <Polyline
-                    key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
-                    interactive={interactive1}
+                    key={`slice-${i}-${interactive ? 'a' : 'b'}`}
+                    interactive={interactive}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={10}
@@ -600,7 +618,7 @@ export function RoutePlannerResult(): ReactElement {
                 routeSlice.geometry.coordinates.length < 2 ? null : (
                   <Polyline
                     key={`slice-${timestamp}-${alt}-${i}-${
-                      interactive1 ? 'a' : 'b'
+                      interactive ? 'a' : 'b'
                     }`}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
@@ -633,7 +651,7 @@ export function RoutePlannerResult(): ReactElement {
       alternatives,
       activeAlternativeIndex,
       timestamp,
-      interactive1,
+      interactive,
       bringToFront,
       handlePolyMouseOut,
       changeAlternative,
@@ -644,7 +662,7 @@ export function RoutePlannerResult(): ReactElement {
   return (
     <>
       {!window.fmEmbedded &&
-        interactive0 &&
+        routePlannerToolActive &&
         dragLat !== undefined &&
         dragLon !== undefined && (
           <Marker

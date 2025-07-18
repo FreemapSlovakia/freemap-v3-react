@@ -281,24 +281,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   gallery: {
     f: {
-      firstUploaded: 'od pierwszych przesłanych',
-      lastUploaded: 'od ostatnich przesłanych',
-      firstCaptured: 'od najstarszych',
-      lastCaptured: 'od najnowszych',
-      leastRated: 'od najniżej ocenianych',
-      mostRated: 'od najwyżej ocenianych',
-      lastComment: 'od ostatniego komentarza',
+      '-createdAt': 'od ostatnich przesłanych',
+      '-takenAt': 'od najnowszych',
+      '-rating': 'od najwyżej ocenianych',
+      '-lastCommentedAt': 'od ostatniego komentarza',
     },
 
     c: {
-      disable: 'nie koloruj',
-      mine: 'wyróżnij moje',
-      author: 'autor',
-      rating: 'ocena',
-      takenAt: 'data wykonania',
-      createdAt: 'data przesłania',
-      season: 'pora roku',
-      premium: 'premium',
+      disable: 'Nie koloruj',
+      mine: 'Wyróżnij moje',
+      userId: 'Autor',
+      rating: 'Ocena',
+      takenAt: 'Data wykonania',
+      createdAt: 'Data przesłania',
+      season: 'Sezon',
+      premium: 'Premium',
     },
 
     viewer: {

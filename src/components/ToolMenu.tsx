@@ -1,6 +1,6 @@
 import { type ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { FaPencilRuler, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setTool } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
@@ -29,18 +29,19 @@ export function ToolMenu({ children }: Props): ReactElement {
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className="mt-2">
+      <Toolbar className="mt-2 fm-toolmenu">
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">
               <LongPressTooltip
                 breakpoint="sm"
-                label={m?.tools[toolDef.msgKey]}
+                label={
+                  toolDef.draw ? m?.tools.measurement : m?.tools[toolDef.msgKey]
+                }
               >
-                {({ label, labelClassName, ...handlers }) => (
-                  <span {...handlers}>
-                    {toolDef.icon}
-
+                {({ label, labelClassName, props }) => (
+                  <span {...props}>
+                    {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
                     <span className={labelClassName}> {label}</span>
                   </span>
                 )}
@@ -48,22 +49,20 @@ export function ToolMenu({ children }: Props): ReactElement {
             </span>
           )}
 
-          <LongPressTooltip label={m?.general.close} kbd="Esc" breakpoint="xl">
-            {({ label, labelClassName, props }) => (
+          {children}
+
+          <LongPressTooltip label={m?.general.close} kbd="Esc">
+            {({ props }) => (
               <Button
                 className="ms-1"
-                variant="secondary"
+                variant="dark"
                 onClick={() => dispatch(setTool(null))}
                 {...props}
               >
                 <FaTimes />
-
-                <span className={labelClassName}> {label}</span>
               </Button>
             )}
           </LongPressTooltip>
-
-          {children}
         </ButtonToolbar>
       </Toolbar>
     </div>

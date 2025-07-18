@@ -2,9 +2,7 @@ export type Submenu =
   | 'openExternally'
   | 'help'
   | 'language'
-  | 'photos'
   | 'tracking'
-  | 'drawing'
+  | 'tools'
   | 'offline'
-  | 'galleryColorizeBy'
   | null;

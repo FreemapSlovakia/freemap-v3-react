@@ -1,5 +1,7 @@
+import { FaCamera, FaPalette } from 'react-icons/fa';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 import { Toolbar } from '../Toolbar.js';
 
 export function PictureLegend() {
@@ -34,7 +36,14 @@ export function PictureLegend() {
   return (
     <div className="w-100" style={{ maxWidth: '400px' }}>
       <Toolbar className="mt-2 d-flex">
-        <div>{m?.gallery.legend}</div>
+        <LongPressTooltip label={m?.gallery.legend} breakpoint="sm">
+          {({ props, label, labelClassName }) => (
+            <span className="align-self-center ms-1" {...props}>
+              <FaCamera /> <FaPalette />{' '}
+              <span className={labelClassName}>{label}</span>
+            </span>
+          )}
+        </LongPressTooltip>
 
         <div
           className="mx-2"

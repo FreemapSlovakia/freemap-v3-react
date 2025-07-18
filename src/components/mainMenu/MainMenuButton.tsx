@@ -16,15 +16,13 @@ import { useMessages } from '../../l10nInjector.js';
 import { CacheMode } from '../../types/common.js';
 import { LongPressTooltip } from '../LongPressTooltip.js';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
-import { DrawingSubmenu } from './DrawingSubmenu.js';
-import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
-import { GallerySubmenu } from './GallerySubmenu.js';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
 import { MainMenu } from './MainMenu.js';
 import { OfflineSubmenu } from './OfflineSubmenu.js';
 import { SocialButtons } from './SocialButtons.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
+import { ToolsSubmenu } from './ToolsSubmenu.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
 
 export function MainMenuButton(): ReactElement {
@@ -130,6 +128,8 @@ export function MainMenuButton(): ReactElement {
 
           {submenu === null ? (
             <MainMenu />
+          ) : submenu === 'tools' ? (
+            <ToolsSubmenu />
           ) : submenu === 'offline' ? (
             <OfflineSubmenu
               cacheMode={cacheMode}
@@ -155,14 +155,8 @@ export function MainMenuButton(): ReactElement {
             </Fragment>
           ) : submenu === 'language' ? (
             <LanguageSubmenu />
-          ) : submenu === 'photos' ? (
-            <GallerySubmenu />
-          ) : submenu === 'galleryColorizeBy' ? (
-            <GalleryColorizeBySubmenu />
           ) : submenu === 'tracking' ? (
             <TrackingSubmenu />
-          ) : submenu === 'drawing' ? (
-            <DrawingSubmenu />
           ) : null}
 
           {submenu === null && (

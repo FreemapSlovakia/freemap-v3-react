@@ -33,8 +33,9 @@ import {
   FaRegSquare,
   FaStop,
 } from 'react-icons/fa';
+import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
+import { assert } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   convertToDrawing,
@@ -476,11 +477,11 @@ export function RoutePlannerMenu(): ReactElement {
       <Dropdown
         className="ms-1"
         id="transport-type"
-        onSelect={(transportType) => {
-          if (is<TransportType>(transportType)) {
-            dispatch(routePlannerSetTransportType(transportType));
-          }
-        }}
+        onSelect={(transportType) =>
+          dispatch(
+            routePlannerSetTransportType(assert<TransportType>(transportType)),
+          )
+        }
       >
         <LongPressTooltip
           breakpoint="lg"
@@ -492,7 +493,6 @@ export function RoutePlannerMenu(): ReactElement {
               </small>
             </>
           }
-          title={ttLabel}
         >
           {({ label, labelClassName, props }) => (
             <Dropdown.Toggle variant="secondary" {...props}>
@@ -554,11 +554,20 @@ export function RoutePlannerMenu(): ReactElement {
             }
           }}
         >
-          <Dropdown.Toggle id="mode" variant="secondary">
-            {m?.routePlanner.mode[
-              activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
-            ] ?? '…'}
-          </Dropdown.Toggle>
+          <LongPressTooltip
+            label={
+              m?.routePlanner.mode[
+                activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
+              ]
+            }
+            breakpoint="sm"
+          >
+            {({ props, label, labelClassName }) => (
+              <Dropdown.Toggle id="mode" variant="secondary" {...props}>
+                <MdTimeline /> <span className={labelClassName}>{label}</span>
+              </Dropdown.Toggle>
+            )}
+          </LongPressTooltip>
 
           <Dropdown.Menu
             popperConfig={fixedPopperConfig}

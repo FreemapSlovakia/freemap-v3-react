@@ -10,7 +10,7 @@ type Props = {
   breakpoint?: Breakpoint;
 };
 
-export function DeleteButton({ breakpoint = 'lg' }: Props): ReactElement {
+export function DeleteButton({ breakpoint = 'xl' }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

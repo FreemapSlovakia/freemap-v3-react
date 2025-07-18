@@ -30,7 +30,7 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className="mt-2">
+      <Toolbar className="mt-2 fm-selection">
         <ButtonToolbar>
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (
@@ -41,24 +41,22 @@ export function Selection({
             )}
           </LongPressTooltip>
 
-          <LongPressTooltip label={m?.general.close} kbd="Esc" breakpoint="xl">
-            {({ label, labelClassName, props }) => (
+          {children}
+
+          {deletable && <DeleteButton />}
+
+          <LongPressTooltip label={m?.general.close} kbd="Esc">
+            {({ props }) => (
               <Button
                 className="ms-1"
-                variant="secondary"
+                variant="dark"
                 onClick={() => dispatch(selectFeature(null))}
                 {...props}
               >
                 <FaTimes />
-
-                <span className={labelClassName}> {label}</span>
               </Button>
             )}
           </LongPressTooltip>
-
-          {deletable && <DeleteButton />}
-
-          {children}
         </ButtonToolbar>
       </Toolbar>
     </div>

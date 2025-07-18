@@ -33,6 +33,13 @@ export const toolDefinitions: ToolDefinition[] = [
     kbd: 'KeyO',
   },
   {
+    tool: 'draw-points',
+    icon: <FaMapMarkerAlt />,
+    msgKey: 'drawPoints',
+    kbd: 'KeyP',
+    draw: true,
+  },
+  {
     tool: 'draw-lines',
     icon: <MdTimeline />,
     msgKey: 'drawLines',
@@ -44,13 +51,6 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaDrawPolygon />,
     msgKey: 'drawPolygons',
     kbd: 'KeyN',
-    draw: true,
-  },
-  {
-    tool: 'draw-points',
-    icon: <FaMapMarkerAlt />,
-    msgKey: 'drawPoints',
-    kbd: 'KeyP',
     draw: true,
   },
   {

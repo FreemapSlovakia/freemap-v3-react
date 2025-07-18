@@ -29,6 +29,7 @@ import {
   galleryShowOnTheMap,
   type GalleryTag,
   galleryToggleDirection,
+  galleryToggleLegend,
   galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
@@ -67,6 +68,7 @@ export interface GalleryState {
   colorizeBy: GalleryColorizeBy | null;
   recentTags: string[];
   showDirection: boolean;
+  showLegend: boolean;
 }
 
 export const galleryInitialState: GalleryState = {
@@ -105,6 +107,7 @@ export const galleryInitialState: GalleryState = {
   colorizeBy: null,
   recentTags: [],
   showDirection: true,
+  showLegend: true,
 };
 
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
@@ -334,6 +337,9 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(galleryToggleDirection, (state, action) => {
       state.showDirection = action.payload ?? !state.showDirection;
+    })
+    .addCase(galleryToggleLegend, (state, action) => {
+      state.showLegend = action.payload ?? !state.showLegend;
     })
     .addMatcher(
       isAnyOf(galleryAddTag, galleryQuickAddTag),

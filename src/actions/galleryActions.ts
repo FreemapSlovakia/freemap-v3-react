@@ -18,11 +18,8 @@ export interface GalleryItem {
 }
 
 export type GalleryListOrder =
-  | '+createdAt'
   | '-createdAt'
-  | '+takenAt'
   | '-takenAt'
-  | '+rating'
   | '-rating'
   | '-lastCommentedAt';
 
@@ -182,4 +179,8 @@ export const galleryAllPremiumOrFree = createAction<'premium' | 'free'>(
 
 export const galleryToggleDirection = createAction<boolean | undefined>(
   'GALLERY_TOGGLE_DIRECTION',
+);
+
+export const galleryToggleLegend = createAction<boolean | undefined>(
+  'GALLERY_TOGGLE_LEGEND',
 );

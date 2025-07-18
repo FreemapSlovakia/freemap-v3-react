@@ -39,7 +39,7 @@ export function GalleryColorizeBySubmenu(): JSX.Element {
 
       <Dropdown.Item as="button" eventKey="photosColorizeBy-userId">
         {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.author}
+        {m?.gallery.c.userId}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="photosColorizeBy-rating">

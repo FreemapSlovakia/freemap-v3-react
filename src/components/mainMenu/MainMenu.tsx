@@ -4,7 +4,6 @@ import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaBullseye,
-  FaCamera,
   FaChevronRight,
   FaCode,
   FaDownload,
@@ -13,31 +12,20 @@ import {
   FaHeart,
   FaLanguage,
   FaMobileAlt,
-  FaPencilRuler,
   FaPrint,
   FaRegMap,
   FaSignInAlt,
+  FaToolbox,
   FaUser,
 } from 'react-icons/fa';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
-import { toolDefinitions } from '../../toolDefinitions.js';
 import { ExperimentalFunction } from '../ExperimentalFunction.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
 
   const m = useMessages();
-
-  const tool = useAppSelector((state) => state.main.tool);
-
-  const toolDef = toolDefinitions.find(
-    (t) =>
-      t.tool ===
-      (tool === 'draw-polygons' || tool === 'draw-points'
-        ? 'draw-lines'
-        : tool),
-  ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
   return (
     <>
@@ -66,37 +54,10 @@ export function MainMenu(): ReactElement {
         <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="submenu-drawing">
-        <FaPencilRuler /> {m?.tools.measurement}
+      <Dropdown.Item as="button" eventKey="submenu-tools">
+        <FaToolbox /> {m?.tools.tools}
         <FaChevronRight />
       </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="submenu-photos">
-        <FaCamera /> {m?.tools.photos}
-        <FaChevronRight />
-      </Dropdown.Item>
-
-      {toolDefinitions
-        .filter(({ draw }) => !draw)
-        .map(
-          ({ tool: newTool, icon, msgKey, kbd }) =>
-            newTool && (
-              <Dropdown.Item
-                href={`?tool=${tool}`}
-                key={newTool}
-                eventKey={'tool-' + newTool}
-                active={toolDef?.tool === newTool}
-              >
-                {icon} {m?.tools[msgKey]}{' '}
-                {kbd && (
-                  <>
-                    <kbd>g</kbd>{' '}
-                    <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
-                  </>
-                )}
-              </Dropdown.Item>
-            ),
-        )}
 
       <Dropdown.Item as="button" eventKey="submenu-tracking">
         <FaBullseye /> {m?.tools.tracking}

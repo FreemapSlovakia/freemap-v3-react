@@ -67,6 +67,7 @@ function persistSelectedState(state: RootState) {
       gallery: {
         colorizeBy: state.gallery.colorizeBy,
         showDirection: state.gallery.showDirection,
+        showLegend: state.gallery.showLegend,
         recentTags: state.gallery.recentTags,
       },
     } as Partial<RootState>),

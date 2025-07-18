@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Alert, Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import {
+  FaCamera,
   FaExternalLinkAlt,
   FaGem,
   FaPencilAlt,
@@ -342,7 +343,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} size="xl" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {m?.gallery.viewer.title}{' '}
+          <FaCamera /> {m?.gallery.viewer.title}{' '}
           {imageIds && (
             <Form.Select
               value={index}

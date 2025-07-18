@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
+import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gallerySetFilter } from '../../actions/galleryActions.js';
 import { setActiveModal } from '../../actions/mainActions.js';
@@ -255,7 +255,9 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
+        <Modal.Title>
+          <FaCamera /> <FaFilter /> {m?.gallery.filterModal.title}
+        </Modal.Title>
       </Modal.Header>
 
       <Form onSubmit={handleFormSubmit}>

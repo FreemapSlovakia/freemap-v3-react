@@ -412,10 +412,6 @@ button#freemap-logo {
   border: 1px solid black;
 }
 
-kbd {
-  line-height: 0;
-}
-
 .fm-opacity-button {
   background: repeating-conic-gradient(#808080 0 25%, #0000 0 50%) 50% / 8px 8px;
 
@@ -467,4 +463,22 @@ kbd {
   & > div {
     padding-block: 0.5rem;
   }
+}
+
+.fm-selection {
+  background: linear-gradient(
+    to right,
+    rgba(204, 204, 255, 0.8),
+    rgba(255, 255, 255, 0.8) 4rem,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+}
+
+.fm-toolmenu {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 153, 0.8),
+    rgba(255, 255, 255, 0.8) 4rem,
+    rgba(255, 255, 255, 0.8) 100%
+  );
 }
