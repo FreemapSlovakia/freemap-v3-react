@@ -10,6 +10,7 @@ import {
   routePlannerSetIsochrones,
   routePlannerSetResult,
   routePlannerSetStart,
+  RoutePoint,
   Step,
   Waypoint,
 } from '../actions/routePlannerActions.js';
@@ -135,129 +136,144 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     timeout: 5000,
   });
 
-  let data: unknown;
+  const [routedSegmetns, manualSegmetns] = segmentize(points);
 
-  try {
-    if (ttDef.api === 'gh' && mode === 'isochrone') {
-      const response = await httpRequest({
-        getState,
-        url:
-          process.env['GRAPHHOPPER_URL'] +
-          '/isochrone?' +
-          objectToURLSearchParams({
-            profile: ttDef.profile,
-            buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
-            time_limit: isochroneParams.timeLimit,
-            distance_limit: isochroneParams.distanceLimit || -1,
-            point: points[0].lat + ',' + points[0].lon,
-          }),
-        expectedStatus: 200,
-        cancelActions: cancelTypes,
-      });
+  const datas: unknown[] = [];
 
-      dispatch(
-        routePlannerSetIsochrones({
-          isochrones: assert<IsochroneResponse>(await response.json()).polygons,
-          timestamp: Date.now(),
-        }),
-      );
-
-      return;
-    }
-
-    if (ttDef.api === 'gh') {
-      const response = await httpRequest({
-        getState,
-        method: 'POST',
-        url: process.env['GRAPHHOPPER_URL'] + '/route',
-        data: {
-          snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
-          // elevation: true, // if to return also elevations
-          algorithm:
-            mode === 'roundtrip'
-              ? 'round_trip'
-              : points.length > 2
-                ? undefined
-                : 'alternative_route',
-          'round_trip.distance': roundtripParams.distance,
-          'round_trip.seed': roundtripParams.seed,
-          'ch.disable': mode === 'roundtrip',
-          'alternative_route.max_paths': 2, // default is 2
-          instructions: true,
-          profile: ttDef.profile,
-          points_encoded: false,
-          locale: getState().l10n.language,
-          points: points.map((point) => [point.lon, point.lat]),
-        },
-        expectedStatus: [200, 400],
-        cancelActions: cancelTypes,
-      });
-
-      data = await response.json();
-
-      if (response.status === 400) {
-        dispatch(clearResultAction);
-
-        let err: string | undefined;
-
-        if (data && typeof data === 'object' && 'message' in data) {
-          const msg = String(data['message']);
-
-          if (
-            msg.startsWith('Cannot find point ') ||
-            msg.startsWith('Connection between locations not found')
-          ) {
-            dispatch(rnfToastAction);
-          } else {
-            err = msg;
-          }
-        } else {
-          err = '?';
-        }
-
-        if (err) {
-          dispatch(
-            toastsAdd({
-              id: 'routePlanner',
-              messageKey: 'general.operationError',
-              messageParams: { err },
-              style: 'danger',
-              timeout: 5000,
+  const promise = Promise.all(
+    routedSegmetns.map((points) => async () => {
+      if (ttDef.api === 'gh' && mode === 'isochrone') {
+        const response = await httpRequest({
+          getState,
+          url:
+            process.env['GRAPHHOPPER_URL'] +
+            '/isochrone?' +
+            objectToURLSearchParams({
+              profile: ttDef.profile,
+              buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
+              time_limit: isochroneParams.timeLimit,
+              distance_limit: isochroneParams.distanceLimit || -1,
+              point: points[0].lat + ',' + points[0].lon,
             }),
-          );
-        }
+          expectedStatus: 200,
+          cancelActions: cancelTypes,
+        });
+
+        dispatch(
+          routePlannerSetIsochrones({
+            isochrones: assert<IsochroneResponse>(await response.json())
+              .polygons,
+            timestamp: Date.now(),
+          }),
+        );
 
         return;
       }
-    } else if (points.length > 1) {
-      const allPoints = points
-        .map((point) => [point.lon, point.lat].join(','))
-        .join(';');
 
-      const response = await httpRequest({
-        getState,
-        url:
-          `${ttDef.url.replace(
-            '$MODE',
-            mode === 'route' ? 'route' : 'trip',
-          )}/${allPoints}?` +
-          objectToURLSearchParams({
-            alternatives: mode === 'route' || undefined,
-            steps: true,
-            geometries: 'geojson',
-            roundtrip:
-              mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
-            source: mode === 'route' ? undefined : 'first',
-            destination: mode === 'trip' ? 'last' : undefined,
-            // continue_straight: true,
-            exclude: ttDef.exclude,
-          }),
-        expectedStatus: [200, 400],
-        cancelActions: cancelTypes,
-      });
+      if (ttDef.api === 'gh') {
+        const response = await httpRequest({
+          getState,
+          method: 'POST',
+          url: process.env['GRAPHHOPPER_URL'] + '/route',
+          data: {
+            snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
+            // elevation: true, // if to return also elevations
+            algorithm:
+              mode === 'roundtrip'
+                ? 'round_trip'
+                : points.length > 2
+                  ? undefined
+                  : 'alternative_route',
+            'round_trip.distance': roundtripParams.distance,
+            'round_trip.seed': roundtripParams.seed,
+            'ch.disable': mode === 'roundtrip',
+            'alternative_route.max_paths': 2, // default is 2
+            instructions: true,
+            profile: ttDef.profile,
+            points_encoded: false,
+            locale: getState().l10n.language,
+            points: points.map((point) => [point.lon, point.lat]),
+          },
+          expectedStatus: [200, 400],
+          cancelActions: cancelTypes,
+        });
 
-      data = await response.json();
-    }
+        const data = await response.json();
+
+        if (response.status === 400) {
+          dispatch(clearResultAction);
+
+          let err: string | undefined;
+
+          if (data && typeof data === 'object' && 'message' in data) {
+            const msg = String(data['message']);
+
+            if (
+              msg.startsWith('Cannot find point ') ||
+              msg.startsWith('Connection between locations not found')
+            ) {
+              dispatch(rnfToastAction);
+            } else {
+              err = msg;
+            }
+          } else {
+            err = '?';
+          }
+
+          if (err) {
+            dispatch(
+              toastsAdd({
+                id: 'routePlanner',
+                messageKey: 'general.operationError',
+                messageParams: { err },
+                style: 'danger',
+                timeout: 5000,
+              }),
+            );
+          }
+
+          return;
+        }
+
+        datas.push(data);
+      } else if (points.length > 1) {
+        const allPoints = points
+          .map((point) => [point.lon, point.lat].join(','))
+          .join(';');
+
+        const response = await httpRequest({
+          getState,
+          url:
+            `${ttDef.url.replace(
+              '$MODE',
+              mode === 'route' ? 'route' : 'trip',
+            )}/${allPoints}?` +
+            objectToURLSearchParams({
+              alternatives: mode === 'route' || undefined,
+              steps: true,
+              geometries: 'geojson',
+              roundtrip:
+                mode === 'roundtrip'
+                  ? true
+                  : mode === 'trip'
+                    ? false
+                    : undefined,
+              source: mode === 'route' ? undefined : 'first',
+              destination: mode === 'trip' ? 'last' : undefined,
+              // continue_straight: true,
+              exclude: ttDef.exclude,
+            }),
+          expectedStatus: [200, 400],
+          cancelActions: cancelTypes,
+        });
+
+        datas.push(await response.json());
+      }
+    }),
+  );
+
+  try {
+    await promise;
   } catch (err) {
     dispatch(clearResultAction);
 
@@ -391,5 +407,40 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     );
   }
 };
+
+function segmentize(points: RoutePoint[]) {
+  const routedSegmetns: RoutePoint[][] = [];
+  const manualSegmetns: RoutePoint[][] = [];
+
+  let manual = false;
+  let prevPoint: RoutePoint | undefined;
+
+  for (const point of points) {
+    if (prevPoint?.manual && point.manual) {
+      if (!manual) {
+        manualSegmetns.push([prevPoint]);
+        manual = true;
+      }
+
+      manualSegmetns.at(-1)?.push(point);
+    } else {
+      if (manual) {
+        if (prevPoint) {
+          routedSegmetns.push([prevPoint]);
+        }
+      } else if (!prevPoint) {
+        routedSegmetns.push([]);
+      }
+
+      manual = false;
+
+      routedSegmetns.at(-1)?.push(point);
+    }
+
+    prevPoint = point;
+  }
+
+  return [routedSegmetns, manualSegmetns];
+}
 
 export default handle;
