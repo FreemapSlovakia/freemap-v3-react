@@ -151,7 +151,7 @@ export function useMenuHandler({
         }
 
         setShow(false);
-      } else if (eventKey.startsWith('overlays-toggle-')) {
+      } else if (eventKey.startsWith('gallery')) {
         dispatch(
           mapRefocus({
             overlays: overlays.includes('I')
@@ -159,6 +159,8 @@ export function useMenuHandler({
               : [...overlays, 'I'],
           }),
         );
+
+        setShow(false);
       } else if (eventKey === 'close' || eventKey === 'url') {
         setShow(false);
       } else if (eventKey === 'galEmails') {

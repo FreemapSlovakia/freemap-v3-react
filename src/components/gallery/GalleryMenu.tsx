@@ -101,6 +101,24 @@ export function GalleryMenu() {
             </LongPressTooltip>
 
             <LongPressTooltip
+              label={m?.gallery.upload}
+              kbd="p u"
+              breakpoint="md"
+            >
+              {({ props, label, labelClassName }) => (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="ms-1"
+                  onClick={() => dispatch(setActiveModal('gallery-upload'))}
+                  {...props}
+                >
+                  <FaUpload /> <span className={labelClassName}>{label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
+
+            <LongPressTooltip
               label={m?.gallery.filter}
               kbd="p f"
               breakpoint="lg"
@@ -115,24 +133,6 @@ export function GalleryMenu() {
                   {...props}
                 >
                   <FaFilter /> <span className={labelClassName}>{label}</span>
-                </Button>
-              )}
-            </LongPressTooltip>
-
-            <LongPressTooltip
-              label={m?.gallery.upload}
-              kbd="p u"
-              breakpoint="md"
-            >
-              {({ props, label, labelClassName }) => (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="ms-1"
-                  onClick={() => dispatch(setActiveModal('gallery-upload'))}
-                  {...props}
-                >
-                  <FaUpload /> <span className={labelClassName}>{label}</span>
                 </Button>
               )}
             </LongPressTooltip>
