@@ -100,7 +100,16 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     isochroneParams,
   } = getState().routePlanner;
 
-  if (points.length === 0 || finishOnly || !transportType) {
+  const clearResultAction = routePlannerSetResult({
+    timestamp: Date.now(),
+    transportType,
+    alternatives: [],
+    waypoints: [],
+  });
+
+  if (points.length === 0 || finishOnly) {
+    dispatch(clearResultAction);
+
     return;
   }
 
@@ -111,6 +120,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   }
 
   if (points.length < 2 && !(ttDef.api === 'gh' && mode !== 'route')) {
+    dispatch(clearResultAction);
+
     return;
   }
 
@@ -120,13 +131,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     'search',
     new URLSearchParams({ transportType, mode }).toString(),
   ]);
-
-  const clearResultAction = routePlannerSetResult({
-    timestamp: Date.now(),
-    transportType,
-    alternatives: [],
-    waypoints: [],
-  });
 
   const rnfToastAction = toastsAdd({
     id: 'routePlanner',
