@@ -546,7 +546,9 @@ export function RoutePlannerResult(): ReactElement {
           ) : i === 0 && !finishOnly /* start */ ? (
             mode === 'roundtrip' && getSummary(i === pointHovering)
           ) : (
-            <Tooltip direction="top">{getPointDetails(i - 1)}</Tooltip>
+            <Tooltip direction="top" key={points.length}>
+              {getPointDetails(i - 1)}
+            </Tooltip>
           )}
         </RichMarker>
       )),
