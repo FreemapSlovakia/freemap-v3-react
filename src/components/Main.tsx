@@ -514,6 +514,12 @@ export function Main(): ReactElement {
                 </Toolbar>
               )}
 
+              {showMenu && showMapsMenu && !window.fmEmbedded && <MapsMenu />}
+
+              {showMenu && showPictures && (
+                <AsyncComponent factory={galleryMenuFactory} />
+              )}
+
               {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
 
               {showMenu &&
@@ -534,8 +540,6 @@ export function Main(): ReactElement {
                 ) : (
                   <ToolMenu />
                 ))}
-
-              {showMenu && showMapsMenu && !window.fmEmbedded && <MapsMenu />}
 
               {selectionMenu === 'draw-line-poly' ? (
                 <AsyncComponent factory={drawingLineSelectionFactory} />
@@ -562,8 +566,6 @@ export function Main(): ReactElement {
               {selectingHomeLocation !== false && (
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
-
-              {showPictures && <AsyncComponent factory={galleryMenuFactory} />}
 
               {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />

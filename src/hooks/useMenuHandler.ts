@@ -118,6 +118,7 @@ export function useMenuHandler({
         setShow(false);
       } else if (eventKey === 'drawing') {
         const tool = storage.getItem('drawingTool') ?? 'draw-points';
+
         if (is<Tool>(tool)) {
           dispatch(setTool(tool));
         }
