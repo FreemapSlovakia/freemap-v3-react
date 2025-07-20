@@ -1,3 +1,4 @@
+import { ExportableLayer } from 'actions/mainActions.js';
 import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
@@ -667,17 +668,7 @@ export type Messages = {
     };
     format: string;
     layersTitle: string;
-    layers: {
-      contours: string;
-      shading: string;
-      hikingTrails: string;
-      bicycleTrails: string;
-      skiTrails: string;
-      horseTrails: string;
-      drawing: string;
-      plannedRoute: string;
-      track: string;
-    };
+    layers: Record<ExportableLayer, string>;
     mapScale: string;
     alert: () => JSX.Element;
     advancedSettings: string;
