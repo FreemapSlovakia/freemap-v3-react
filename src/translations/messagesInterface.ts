@@ -252,6 +252,7 @@ export type Messages = {
       rules: string;
       success: string;
       showPreview: string;
+      loadPreview: string;
       premium: string;
     };
     locationPicking: {

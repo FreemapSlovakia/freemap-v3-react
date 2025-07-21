@@ -356,7 +356,9 @@ const messages: Messages = {
         </ul>
       `,
       success: 'Pictures have been successfully uploaded.',
-      showPreview: 'Show previews (uses more CPU load and memory)',
+      showPreview:
+        'Automatically show previews (uses more CPU load and memory)',
+      loadPreview: 'Load preview',
       premium: 'Make available only to users with premium access',
     },
     locationPicking: {

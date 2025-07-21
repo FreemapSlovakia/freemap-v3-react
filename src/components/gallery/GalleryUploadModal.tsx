@@ -140,48 +140,55 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        {items.map(
-          ({
-            id,
-            file,
-            previewKey,
-            title,
-            description,
-            takenAt,
-            tags,
-            errors,
-            dirtyPosition,
-            azimuth,
-            premium,
-          }) => (
-            <GalleryUploadItem
-              key={id}
-              id={id}
-              m={m}
-              filename={file.name}
-              previewKey={previewKey}
-              model={{
-                premium,
-                dirtyPosition,
-                azimuth: typeof azimuth === 'number' ? String(azimuth) : '',
+        {items.length > 0 && (
+          <div className="fm-gallery-upload-items">
+            {items.map(
+              ({
+                id,
+                file,
+                previewKey,
                 title,
                 description,
-                takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
+                takenAt,
                 tags,
-              }}
-              allTags={allTags}
-              errors={errors}
-              onRemove={handleItemRemove}
-              onPositionPick={handlePositionPick}
-              onModelChange={handleModelChange}
-              disabled={uploading}
-              showPreview={showPreview}
-            />
-          ),
+                errors,
+                dirtyPosition,
+                azimuth,
+                premium,
+              }) => (
+                <GalleryUploadItem
+                  key={id}
+                  id={id}
+                  m={m}
+                  file={file}
+                  previewKey={previewKey}
+                  model={{
+                    premium,
+                    dirtyPosition,
+                    azimuth: typeof azimuth === 'number' ? String(azimuth) : '',
+                    title,
+                    description,
+                    takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
+                    tags,
+                  }}
+                  allTags={allTags}
+                  errors={errors}
+                  onRemove={handleItemRemove}
+                  onPositionPick={handlePositionPick}
+                  onModelChange={handleModelChange}
+                  disabled={uploading}
+                  showPreview={showPreview}
+                  onPreview={handleItemMerge}
+                />
+              ),
+            )}
+          </div>
         )}
 
         {!uploading && (
           <>
+            {items.length > 0 && <hr />}
+
             <Form.Check
               id="chk-preview"
               type="checkbox"

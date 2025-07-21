@@ -362,7 +362,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Fotografie byly úspěšně nahrány.',
-      showPreview: 'Zobrazit náhledy (náročnější na výkon a paměť)',
+      showPreview: 'Automaticky zobrazit náhledy (náročnější na výkon a paměť)',
+      loadPreview: 'Načíst náhled',
       premium: 'Zpřístupnit pouze uživatelům s prémiovým přístupem',
     },
     locationPicking: {

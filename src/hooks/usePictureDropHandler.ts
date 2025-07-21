@@ -36,8 +36,6 @@ export function usePictureDropHandler(
           tags = {} as Tags;
         }
 
-        console.log(tags);
-
         const keywords: string[] = [];
 
         // try {
@@ -181,15 +179,15 @@ type WeirdGpsCoordinate = {
 };
 
 // adds support for Olympus and other weirdos
-function adaptGpsCoordinate(x: WeirdGpsCoordinate) {
-  if (x) {
-    if (typeof x.description === 'number') {
-      return [x.description];
+function adaptGpsCoordinate(coord: WeirdGpsCoordinate) {
+  if (coord) {
+    if (typeof coord.description === 'number') {
+      return [coord.description];
     }
 
     // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
 
-    const { description, value } = x;
+    const { description, value } = coord;
 
     const p = /^(?:(\d+),)?(\d+(?:\.\d+)?)([NSWE])?$/;
 

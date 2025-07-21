@@ -373,7 +373,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Le foto sono state caricate con successo.',
-      showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
+      showPreview:
+        "Mostra automaticamente l'anteprima (aumenta il consumo di CPU e memoria)",
       premium: 'Disponibile solo per gli utenti con accesso completo',
     },
 
