@@ -79,7 +79,7 @@ export const galleryInitialState: GalleryState = {
   items: [],
   pickingPositionForId: null,
   pickingPosition: null,
-  showPreview: true,
+  showPreview: false,
   premium: true,
 
   uploadingId: null,

@@ -4,6 +4,7 @@ import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaBullseye,
+  FaCamera,
   FaChevronRight,
   FaCode,
   FaDownload,
@@ -24,6 +25,10 @@ import { ExperimentalFunction } from '../ExperimentalFunction.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
+
+  const galleryActive = useAppSelector((state) =>
+    state.map.overlays.includes('I'),
+  );
 
   const m = useMessages();
 
@@ -48,6 +53,15 @@ export function MainMenu(): ReactElement {
 
       <Dropdown.Item as="button" eventKey="clear-map-features">
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        href="?layers=I"
+        key="gallery"
+        eventKey="gallery"
+        active={galleryActive}
+      >
+        <FaCamera /> {m?.tools.photos} <kbd>⇧f</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="modal-maps">

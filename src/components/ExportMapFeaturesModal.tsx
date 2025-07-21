@@ -1,5 +1,7 @@
 import { Position } from 'geojson';
+import storage from 'local-storage-fallback';
 import {
+  ChangeEvent,
   FormEvent,
   Fragment,
   ReactElement,
@@ -34,6 +36,7 @@ import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import { is } from 'typia';
 import { authWithGarmin } from '../actions/authActions.js';
 import {
   ExportTarget,
@@ -65,6 +68,10 @@ const exportableDefinitions: readonly [
 ];
 
 type Props = { show: boolean };
+
+const TYPE_STORAGE_KEY = 'fm.exportFeatures.format';
+
+const TARGET_STORAGE_KEY = 'fm.exportFeatures.target';
 
 export default ExportMapFeaturesModal;
 
@@ -121,9 +128,17 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const [exportables, setExportables] = useState<string>('|');
 
-  const [type, setType] = useState<ExportType>('gpx');
+  const [type, setType] = useState<ExportType>(() => {
+    const fmt = storage.getItem(TYPE_STORAGE_KEY);
 
-  const [target, setTarget] = useState<ExportTarget>('download');
+    return is<ExportType>(fmt) ? fmt : 'gpx';
+  });
+
+  const [target, setTarget] = useState<ExportTarget>(() => {
+    const target = storage.getItem(TARGET_STORAGE_KEY);
+
+    return is<ExportTarget>(target) ? target : 'download';
+  });
 
   const [name, setName] = useState('');
 
@@ -253,6 +268,18 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const isWide = useMediaQuery({ query: '(min-width: 992px)' });
 
+  const handleTypeChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    storage.setItem(TYPE_STORAGE_KEY, e.currentTarget.value);
+
+    setType(e.currentTarget.value as ExportType);
+  }, []);
+
+  const handleTargetChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    storage.setItem(TARGET_STORAGE_KEY, e.currentTarget.value);
+
+    setTarget(e.currentTarget.value as ExportTarget);
+  }, []);
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Form onSubmit={runExport}>
@@ -270,14 +297,14 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
             <div>
               <ButtonGroup vertical={!isWide}>
-                {exportTargets.map((targ) => (
+                {exportTargets.map((exportTarget) => (
                   <ToggleButton
-                    id={targ}
-                    key={targ}
+                    id={exportTarget}
+                    key={exportTarget}
                     type="radio"
-                    checked={target === targ}
-                    value={targ}
-                    onChange={() => setTarget(targ)}
+                    checked={target === exportTarget}
+                    value={exportTarget}
+                    onChange={handleTargetChange}
                     disabled={!initExportables}
                   >
                     {
@@ -309,7 +336,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                             <ExperimentalFunction />
                           </>
                         ),
-                      }[targ]
+                      }[exportTarget]
                     }
                   </ToggleButton>
                 ))}
@@ -384,17 +411,17 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
               <div>
                 <ButtonGroup>
-                  {exportTypes.map((type1) => (
+                  {exportTypes.map((exportType) => (
                     <ToggleButton
-                      id={type1}
-                      key={type1}
+                      id={exportType}
+                      key={exportType}
                       type="radio"
-                      value={type1}
-                      checked={type === type1}
-                      onChange={() => setType(type1)}
+                      value={exportType}
+                      checked={type === exportType}
+                      onChange={handleTypeChange}
                       disabled={!exportables.length}
                     >
-                      {type1 === 'gpx' ? 'GPX' : 'GeoJSON'}
+                      {exportType === 'gpx' ? 'GPX' : 'GeoJSON'}
                     </ToggleButton>
                   ))}
                 </ButtonGroup>

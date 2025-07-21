@@ -359,7 +359,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Fotos wurden erfolgreich hochgeladen.',
-      showPreview: 'Vorschauen anzeigen (erhöht CPU- und Speicherbedarf)',
+      showPreview:
+        'Vorschauen automatisch anzeigen (erhöht CPU- und Speicherbedarf)',
       premium: 'Nur für Nutzer mit Premiumzugang verfügbar machen',
     },
     locationPicking: {

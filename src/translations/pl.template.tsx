@@ -351,7 +351,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Zdjęcia zostały pomyślnie przesłane.',
-      showPreview: 'Pokaż podgląd (zwiększone zużycie procesora i pamięci)',
+      showPreview:
+        'Automatyczne wyświetlanie podglądu (zwiększone zużycie procesora i pamięci)',
       premium: 'Udostępnij tylko użytkownikom z dostępem premium',
     },
 

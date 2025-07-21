@@ -391,7 +391,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `,
       success: 'A képek sikeresen fel lettek töltve.',
       showPreview:
-        'Előnézetek megjelenítése (több processzorteljesítményt és memóriát használ)',
+        'Előnézet automatikus megjelenítése (több processzorteljesítményt és memóriát használ)',
       premium:
         'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
     },

@@ -98,3 +98,14 @@ button.carousel-control-disabled:hover {
 .react-tags__suggestions {
   z-index: 10;
 }
+
+.fm-gallery-upload-items {
+  & > * {
+    &:nth-child(odd) {
+      background-color: var(--bs-light);
+      border-radius: var(--bs-border-radius);
+    }
+
+    padding: 1rem;
+  }
+}

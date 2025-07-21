@@ -472,6 +472,15 @@ button#freemap-logo {
     rgba(255, 255, 255, 0.8) 4rem,
     rgba(255, 255, 255, 0.8) 100%
   );
+
+  [data-bs-theme='dark'] & {
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 180, 0.8),
+      rgba(0, 0, 0, 0.8) 4rem,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+  }
 }
 
 .fm-toolmenu {
@@ -481,4 +490,13 @@ button#freemap-logo {
     rgba(255, 255, 255, 0.8) 4rem,
     rgba(255, 255, 255, 0.8) 100%
   );
+
+  [data-bs-theme='dark'] & {
+    background: linear-gradient(
+      to right,
+      rgba(100, 100, 0, 0.8),
+      rgba(0, 0, 0, 0.8) 4rem,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+  }
 }

@@ -29,19 +29,27 @@ export const setLocation = createAction<{
   accuracy: number;
 }>('SET_LOCATION');
 
+export const LAYERS = [
+  'contours',
+  'shading',
+  'hikingTrails',
+  'bicycleTrails',
+  'skiTrails',
+  'horseTrails',
+  'drawing',
+  'plannedRoute',
+  'track',
+] as const;
+
+export type ExportableLayer = (typeof LAYERS)[number];
+
+export type ExportFormat = 'jpeg' | 'png' | 'pdf' | 'svg';
+
 export interface MapExportOptions {
-  contours: boolean;
-  shadedRelief: boolean;
-  hikingTrails: boolean;
-  bicycleTrails: boolean;
-  skiTrails: boolean;
-  horseTrails: boolean;
-  drawing: boolean;
-  plannedRoute: boolean;
-  track: boolean;
+  layers: ExportableLayer[];
   scale: number;
   area: 'visible' | 'selected';
-  format: 'png' | 'jpeg' | 'svg' | 'pdf';
+  format: ExportFormat;
   style: string;
 }
 
