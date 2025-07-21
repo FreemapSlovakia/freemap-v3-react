@@ -111,9 +111,13 @@ export function GalleryUploadItem({
           onModelChange={handleModelChange}
         />
 
-        <Button onClick={handleRemove} variant="danger">
-          <FaTimes /> {m?.general.remove}
-        </Button>
+        <div className="d-flex justify-content-between align-items-end">
+          <Button onClick={handleRemove} variant="danger">
+            <FaTimes /> {m?.general.remove}
+          </Button>
+
+          <small className="text-muted lh-1">{file.name}</small>
+        </div>
       </fieldset>
     </div>
   );
