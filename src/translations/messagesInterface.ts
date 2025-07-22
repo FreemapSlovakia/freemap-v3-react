@@ -86,7 +86,6 @@ export type Messages = {
   };
   tools: {
     none: string;
-    tools: string;
     routePlanner: string;
     objects: string;
     photos: string;

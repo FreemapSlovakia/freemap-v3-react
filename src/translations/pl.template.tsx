@@ -121,7 +121,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   tools: {
     none: 'Zamknij narzędzie',
-    tools: 'Narzędzia',
     routePlanner: 'Wyszukiwarka tras',
     objects: 'Obiekty (POI)',
     photos: 'Zdjęcia',

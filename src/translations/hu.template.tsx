@@ -145,7 +145,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Eszköz bezárása',
-    tools: 'Eszközök',
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',

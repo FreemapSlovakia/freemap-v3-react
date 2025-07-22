@@ -13,14 +13,15 @@ import {
   FaHeart,
   FaLanguage,
   FaMobileAlt,
+  FaPencilRuler,
   FaPrint,
   FaRegMap,
   FaSignInAlt,
-  FaToolbox,
   FaUser,
 } from 'react-icons/fa';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
+import { toolDefinitions } from '../../toolDefinitions.js';
 import { ExperimentalFunction } from '../ExperimentalFunction.js';
 
 export function MainMenu(): ReactElement {
@@ -29,6 +30,10 @@ export function MainMenu(): ReactElement {
   const galleryActive = useAppSelector((state) =>
     state.map.overlays.includes('I'),
   );
+
+  const tool = useAppSelector((state) => state.main.tool);
+
+  const toolDef = toolDefinitions.find((t) => t.tool === tool);
 
   const m = useMessages();
 
@@ -68,10 +73,31 @@ export function MainMenu(): ReactElement {
         <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="submenu-tools">
-        <FaToolbox /> {m?.tools.tools}
-        <FaChevronRight />
+      <Dropdown.Item as="button" eventKey="drawing">
+        <FaPencilRuler /> {m?.tools.measurement}
       </Dropdown.Item>
+
+      {toolDefinitions
+        .filter(({ draw }) => !draw)
+        .map(
+          ({ tool: newTool, icon, msgKey, kbd }) =>
+            newTool && (
+              <Dropdown.Item
+                href={`?tool=${tool}`}
+                key={newTool}
+                eventKey={'tool-' + newTool}
+                active={toolDef?.tool === newTool}
+              >
+                {icon} {m?.tools[msgKey]}{' '}
+                {kbd && (
+                  <>
+                    <kbd>g</kbd>{' '}
+                    <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
+                  </>
+                )}
+              </Dropdown.Item>
+            ),
+        )}
 
       <Dropdown.Item as="button" eventKey="submenu-tracking">
         <FaBullseye /> {m?.tools.tracking}

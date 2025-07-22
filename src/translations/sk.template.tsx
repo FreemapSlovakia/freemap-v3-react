@@ -124,7 +124,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Zavrieť nástroj',
-    tools: 'Nástroje',
     routePlanner: 'Vyhľadávač trás',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
@@ -225,7 +224,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
-    help: 'Pomoc',
+    help: 'Info a pomoc',
     back: 'Naspäť',
     mapLegend: 'Legenda mapy',
     contacts: 'Kontakty',

@@ -118,7 +118,6 @@ const messages: Messages = {
 
   tools: {
     none: 'Close tool',
-    tools: 'Tools',
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
     photos: 'Photos',
@@ -218,7 +217,7 @@ const messages: Messages = {
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
-    help: 'Help',
+    help: 'Info & help',
     back: 'Back',
     mapLegend: 'Map legend',
     contacts: 'Contacts',
