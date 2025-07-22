@@ -59,8 +59,6 @@ export function GalleryUploadItem({
   const canvasContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log({ previewKey });
-
     const canvas = previewKey && getPreview(previewKey);
 
     if (canvas) {

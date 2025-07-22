@@ -1,4 +1,6 @@
 import { isAnyOf } from '@reduxjs/toolkit';
+import { feature } from '@turf/helpers';
+import length from '@turf/length';
 import { Feature, LineString, Polygon } from 'geojson';
 import { assert } from 'typia';
 import { clearMapFeatures, setTool } from '../actions/mainActions.js';
@@ -59,21 +61,22 @@ type GraphhopperInstruction = {
   turn_angle?: number; // only for USE_ROUNDABOUT instructions
 };
 
+type GraphhopperDetailSegment = [from: number, to: number, value: unknown];
+
 type GraphhopperPath = {
   distance: number;
-  weight: number;
+  // weight: number;
   time: number;
-  transfers: number;
-  points_encoded: boolean;
-  bbox: [number, number, number, number];
+  // transfers: number;
+  // points_encoded: boolean;
+  // bbox: [number, number, number, number];
   points: LineString;
   instructions: GraphhopperInstruction[];
-  legs?: unknown[]; // missing in doc
-  details: Record<string, [number, number, unknown][]>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
-  ascend: number;
-  descend: number;
-  snapped_waypoints: unknown; // LineString;
-  points_order?: number[]; // Only present if the optimize parameter was used.
+  details: Record<string, GraphhopperDetailSegment[]>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
+  // ascend: number;
+  // descend: number;
+  // snapped_waypoints: unknown; // LineString;
+  // points_order?: number[]; // Only present if the optimize parameter was used.
 };
 
 type GraphhopperResult = {
@@ -145,135 +148,137 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   const datas: unknown[] = [];
 
   const promise = Promise.all(
-    routedSegmetns.map((points) => async () => {
-      if (ttDef.api === 'gh' && mode === 'isochrone') {
-        const response = await httpRequest({
-          getState,
-          url:
-            process.env['GRAPHHOPPER_URL'] +
-            '/isochrone?' +
-            objectToURLSearchParams({
-              profile: ttDef.profile,
-              buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
-              time_limit: isochroneParams.timeLimit,
-              distance_limit: isochroneParams.distanceLimit || -1,
-              point: points[0].lat + ',' + points[0].lon,
-            }),
-          expectedStatus: 200,
-          cancelActions: cancelTypes,
-        });
-
-        dispatch(
-          routePlannerSetIsochrones({
-            isochrones: assert<IsochroneResponse>(await response.json())
-              .polygons,
-            timestamp: Date.now(),
-          }),
-        );
-
-        return;
-      }
-
-      if (ttDef.api === 'gh') {
-        const response = await httpRequest({
-          getState,
-          method: 'POST',
-          url: process.env['GRAPHHOPPER_URL'] + '/route',
-          data: {
-            snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
-            // elevation: true, // if to return also elevations
-            algorithm:
-              mode === 'roundtrip'
-                ? 'round_trip'
-                : points.length > 2
-                  ? undefined
-                  : 'alternative_route',
-            'round_trip.distance': roundtripParams.distance,
-            'round_trip.seed': roundtripParams.seed,
-            'ch.disable': mode === 'roundtrip',
-            'alternative_route.max_paths': 2, // default is 2
-            instructions: true,
-            profile: ttDef.profile,
-            points_encoded: false,
-            locale: getState().l10n.language,
-            points: points.map((point) => [point.lon, point.lat]),
-          },
-          expectedStatus: [200, 400],
-          cancelActions: cancelTypes,
-        });
-
-        const data = await response.json();
-
-        if (response.status === 400) {
-          dispatch(clearResultAction);
-
-          let err: string | undefined;
-
-          if (data && typeof data === 'object' && 'message' in data) {
-            const msg = String(data['message']);
-
-            if (
-              msg.startsWith('Cannot find point ') ||
-              msg.startsWith('Connection between locations not found')
-            ) {
-              dispatch(rnfToastAction);
-            } else {
-              err = msg;
-            }
-          } else {
-            err = '?';
-          }
-
-          if (err) {
-            dispatch(
-              toastsAdd({
-                id: 'routePlanner',
-                messageKey: 'general.operationError',
-                messageParams: { err },
-                style: 'danger',
-                timeout: 5000,
+    routedSegmetns.map((points) =>
+      (async () => {
+        if (ttDef.api === 'gh' && mode === 'isochrone') {
+          const response = await httpRequest({
+            getState,
+            url:
+              process.env['GRAPHHOPPER_URL'] +
+              '/isochrone?' +
+              objectToURLSearchParams({
+                profile: ttDef.profile,
+                buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
+                time_limit: isochroneParams.timeLimit,
+                distance_limit: isochroneParams.distanceLimit || -1,
+                point: points[0].lat + ',' + points[0].lon,
               }),
-            );
-          }
+            expectedStatus: 200,
+            cancelActions: cancelTypes,
+          });
+
+          dispatch(
+            routePlannerSetIsochrones({
+              isochrones: assert<IsochroneResponse>(await response.json())
+                .polygons,
+              timestamp: Date.now(),
+            }),
+          );
 
           return;
         }
 
-        datas.push(data);
-      } else if (points.length > 1) {
-        const allPoints = points
-          .map((point) => [point.lon, point.lat].join(','))
-          .join(';');
-
-        const response = await httpRequest({
-          getState,
-          url:
-            `${ttDef.url.replace(
-              '$MODE',
-              mode === 'route' ? 'route' : 'trip',
-            )}/${allPoints}?` +
-            objectToURLSearchParams({
-              alternatives: mode === 'route' || undefined,
-              steps: true,
-              geometries: 'geojson',
-              roundtrip:
+        if (ttDef.api === 'gh') {
+          const response = await httpRequest({
+            getState,
+            method: 'POST',
+            url: process.env['GRAPHHOPPER_URL'] + '/route',
+            data: {
+              snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
+              // elevation: true, // if to return also elevations
+              algorithm:
                 mode === 'roundtrip'
-                  ? true
-                  : mode === 'trip'
-                    ? false
-                    : undefined,
-              source: mode === 'route' ? undefined : 'first',
-              destination: mode === 'trip' ? 'last' : undefined,
-              // continue_straight: true,
-              exclude: ttDef.exclude,
-            }),
-          expectedStatus: [200, 400],
-          cancelActions: cancelTypes,
-        });
+                  ? 'round_trip'
+                  : points.length > 2
+                    ? undefined
+                    : 'alternative_route',
+              'round_trip.distance': roundtripParams.distance,
+              'round_trip.seed': roundtripParams.seed,
+              'ch.disable': mode === 'roundtrip',
+              'alternative_route.max_paths': 2, // default is 2
+              instructions: true,
+              profile: ttDef.profile,
+              points_encoded: false,
+              locale: getState().l10n.language,
+              points: points.map((point) => [point.lon, point.lat]),
+            },
+            expectedStatus: [200, 400],
+            cancelActions: cancelTypes,
+          });
 
-        datas.push(await response.json());
-      }
-    }),
+          const data = await response.json();
+
+          if (response.status === 400) {
+            dispatch(clearResultAction);
+
+            let err: string | undefined;
+
+            if (data && typeof data === 'object' && 'message' in data) {
+              const msg = String(data['message']);
+
+              if (
+                msg.startsWith('Cannot find point ') ||
+                msg.startsWith('Connection between locations not found')
+              ) {
+                dispatch(rnfToastAction);
+              } else {
+                err = msg;
+              }
+            } else {
+              err = '?';
+            }
+
+            if (err) {
+              dispatch(
+                toastsAdd({
+                  id: 'routePlanner',
+                  messageKey: 'general.operationError',
+                  messageParams: { err },
+                  style: 'danger',
+                  timeout: 5000,
+                }),
+              );
+            }
+
+            return;
+          }
+
+          datas.push(data);
+        } else if (points.length > 1) {
+          const allPoints = points
+            .map((point) => [point.lon, point.lat].join(','))
+            .join(';');
+
+          const response = await httpRequest({
+            getState,
+            url:
+              `${ttDef.url.replace(
+                '$MODE',
+                mode === 'route' ? 'route' : 'trip',
+              )}/${allPoints}?` +
+              objectToURLSearchParams({
+                alternatives: mode === 'route' || undefined,
+                steps: true,
+                geometries: 'geojson',
+                roundtrip:
+                  mode === 'roundtrip'
+                    ? true
+                    : mode === 'trip'
+                      ? false
+                      : undefined,
+                source: mode === 'route' ? undefined : 'first',
+                destination: mode === 'trip' ? 'last' : undefined,
+                // continue_straight: true,
+                exclude: ttDef.exclude,
+              }),
+            expectedStatus: [200, 400],
+            cancelActions: cancelTypes,
+          });
+
+          datas.push(await response.json());
+        }
+      })(),
+    ),
   );
 
   try {
@@ -285,15 +290,108 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   }
 
   if (ttDef.api === 'gh') {
-    const g = assert<GraphhopperResult>(data);
+    const parts = assert<GraphhopperResult[]>(datas);
+
+    for (let i = 0; i < manualSegmetns.length; i++) {
+      const points: LineString = {
+        type: 'LineString',
+        coordinates: manualSegmetns[i].map((ms) => [ms.lon, ms.lat]),
+      };
+
+      const distance = length(feature(points), { units: 'meters' });
+
+      parts.splice(i * 2 + 1, 0, {
+        paths: [
+          {
+            details: {},
+            instructions: [
+              {
+                distance,
+                interval: [0, manualSegmetns[i].length],
+                sign: 0,
+                time: 0,
+                text: '',
+                street_name: '',
+              },
+            ],
+            distance,
+            time: 0,
+            points,
+          },
+        ],
+      });
+    }
+
+    console.log(parts);
+
+    let paths;
+
+    if (parts.length > 1) {
+      const details: Record<string, GraphhopperDetailSegment[]> = {};
+
+      const instructions: GraphhopperInstruction[] = [];
+
+      let offset = 0;
+
+      for (const part of parts) {
+        for (const instruction of part.paths[0].instructions) {
+          instructions.push({
+            ...instruction,
+            interval: [
+              instruction.interval[0] + offset,
+              instruction.interval[1] + offset,
+            ],
+          });
+        }
+
+        for (const [detailName, detailSegments] of Object.entries(
+          part.paths[0].details,
+        )) {
+          (details[detailName] ??= []).push(
+            ...detailSegments.map(
+              (ds) =>
+                [
+                  ds[0] + offset,
+                  ds[1] + offset,
+                  ds[2],
+                ] as GraphhopperDetailSegment,
+            ),
+          );
+        }
+
+        offset += part.paths[0].points.coordinates.length;
+      }
+
+      paths = [
+        {
+          time: parts.reduce((a, c) => a + c.paths[0].time, 0),
+          distance: parts.reduce((a, c) => a + c.paths[0].distance, 0),
+          instructions: parts.reduce(
+            (a, c) => [...a, ...c.paths[0].instructions],
+            [] as GraphhopperInstruction[],
+          ),
+          details,
+          points: {
+            type: 'LineString',
+            coordinates: parts.flatMap(
+              (part) => part.paths[0].points.coordinates,
+            ),
+          },
+        } satisfies GraphhopperPath,
+      ];
+    } else {
+      paths = assert<GraphhopperResult>(datas[0]).paths;
+    }
+
+    console.log(paths);
 
     dispatch(
       routePlannerSetResult({
         timestamp: Date.now(),
         transportType,
-        alternatives: g.paths.map((p) => ({
-          duration: p.time,
-          distance: p.distance,
+        alternatives: paths.map((path) => ({
+          duration: path.time,
+          distance: path.distance,
           legs: (() => {
             let dist = 0;
 
@@ -303,9 +401,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
             let steps: Step[] = [];
 
-            const gob = (p.details['get_off_bike'] ?? []).filter((q) => q[2]);
+            const gob = (path.details['get_off_bike'] ?? []).filter(
+              (q) => q[2],
+            );
 
-            for (const instruction of p.instructions) {
+            for (const instruction of path.instructions) {
               dist += instruction.distance;
 
               time += instruction.time;
@@ -327,7 +427,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
                   ? 'foot'
                   : 'cycling', // TODO for non-cycling...; TODO can it happen that not whole interval has the same GOB value?
                 geometry: {
-                  coordinates: p.points.coordinates.slice(
+                  coordinates: path.points.coordinates.slice(
                     instruction.interval[0],
                     instruction.interval[1] + 1,
                   ) as [number, number][],
@@ -359,7 +459,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }),
     );
   } else {
-    const { code, trips, routes, waypoints } = assert<OsrmResult>(data);
+    const { code, trips, routes, waypoints } = assert<OsrmResult>(datas);
 
     if (code !== 'Ok') {
       dispatch(clearResultAction);

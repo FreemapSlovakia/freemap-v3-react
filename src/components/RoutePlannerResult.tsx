@@ -436,6 +436,7 @@ export function RoutePlannerResult(): ReactElement {
           point: {
             lat: e.target.getLatLng().lat,
             lon: e.target.getLatLng().lng,
+            // manual: TODO,
           },
           position: dragSegment,
         }),
@@ -473,9 +474,18 @@ export function RoutePlannerResult(): ReactElement {
 
       const { lat, lng: lon } = event.target.getLatLng();
 
-      dispatch(routePlannerSetPoint({ position, point: { lat, lon } }));
+      dispatch(
+        routePlannerSetPoint({
+          position,
+          point: {
+            lat,
+            lon,
+            manual: points[position].manual,
+          },
+        }),
+      );
     },
-    [dispatch],
+    [dispatch, points],
   );
 
   const pointElements = useMemo(

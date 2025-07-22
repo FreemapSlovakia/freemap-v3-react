@@ -4,7 +4,6 @@ const elements = new Set<HTMLDivElement>();
 
 function update() {
   for (const target of elements) {
-    // console.log('a');
     const left = target.getBoundingClientRect().left;
 
     const removeMargin = left > 40;
