@@ -102,7 +102,7 @@ button.carousel-control-disabled:hover {
 .fm-gallery-upload-items {
   & > * {
     &:nth-child(odd) {
-      background-color: var(--bs-light);
+      background-color: var(--bs-secondary-bg);
       border-radius: var(--bs-border-radius);
     }
 
