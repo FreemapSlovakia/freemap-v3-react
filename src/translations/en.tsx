@@ -104,6 +104,7 @@ const messages: Messages = {
     export: 'Export',
     success: 'Success!',
     expiration: 'Expiration',
+    privacyPolicy: 'Privacy policy',
   },
 
   selections: {

@@ -223,7 +223,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Karte für GPS-Geräte',
     embedMap: 'Karte einbetten',
     supportUs: 'Freemap unterstützen',
-    help: 'Hilfe',
+    help: ' Info & Hilfe',
     back: 'Zurück',
     mapLegend: 'Kartenlegende',
     contacts: 'Kontakt',

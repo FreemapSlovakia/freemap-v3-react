@@ -110,6 +110,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Exportovať',
     success: 'Hotovo!',
     expiration: 'Exspirácia',
+    privacyPolicy: 'Zásady ochrany osobných údajov',
   },
 
   selections: {

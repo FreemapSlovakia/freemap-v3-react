@@ -1,3 +1,7 @@
+---
+title: Mappa per apparati GPS
+---
+
 Freemap crea esportazioni regolari di mappe per varie applicazioni/dispositivi mobili. Puoi scaricarli qui. Se la procedura di installazione della mappa per la tua applicazione/dispositivo non è elencata qui, devi cercarla sul sito web dell'applicazione/dispositivo che stai utilizzando.
 
 Dati mappa © OpenStreetMap Contributors. Concesso in licenza in base a ODbL 1.0.

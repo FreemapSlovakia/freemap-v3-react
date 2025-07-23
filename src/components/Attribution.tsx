@@ -1,8 +1,6 @@
 import { Fragment, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import { documentShow } from '../actions/mainActions.js';
-import type { DocumentKey } from '../documents/index.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import {
@@ -49,15 +47,13 @@ export function Attribution({ unknown }: Props): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  if (a.url?.startsWith('?document=')) {
-                    const docKey = a.url.slice(5);
-
-                    if (is<DocumentKey>(docKey)) {
-                      e.preventDefault();
-
-                      dispatch(documentShow(docKey));
-                    }
+                  if (!a.url?.startsWith('?document=')) {
+                    return;
                   }
+
+                  e.preventDefault();
+
+                  dispatch(documentShow(a.url.slice(5)));
                 }}
               >
                 {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}

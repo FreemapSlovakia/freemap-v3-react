@@ -242,7 +242,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
-    help: 'Súgó',
+    help: 'Információk és segítség',
     back: 'Vissza',
     mapLegend: 'Jelmagyarázat',
     contacts: 'Kapcsolat',

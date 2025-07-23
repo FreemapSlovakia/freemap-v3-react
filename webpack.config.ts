@@ -10,6 +10,7 @@ import type SassLoader from 'sass-loader';
 import type { Configuration } from 'webpack';
 import webpack from 'webpack';
 import { InjectManifest } from 'workbox-webpack-plugin';
+import { MarkdownDictPlugin } from './MarkdownDictPlugin.js';
 // import ESLintPlugin from 'eslint-webpack-plugin';
 
 import csMessages from './src/translations/cs-shared.js';
@@ -162,6 +163,7 @@ const config: Configuration = {
     ],
   },
   plugins: [
+    new MarkdownDictPlugin({ dir: 'src/documents' }),
     !prod &&
       new ReactRefreshWebpackPlugin({
         overlay: false,

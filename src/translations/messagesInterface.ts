@@ -74,6 +74,7 @@ export type Messages = {
     export: string;
     success: string;
     expiration: string;
+    privacyPolicy: string;
   };
   selections: {
     objects: string;

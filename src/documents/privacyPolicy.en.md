@@ -1,3 +1,9 @@
+---
+title: Privacy Policy
+listed: false
+icon: FaLock
+---
+
 # Privacy Policy
 
 Last updated: May 02, 2022

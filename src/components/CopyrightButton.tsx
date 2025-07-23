@@ -75,7 +75,7 @@ export function CopyrightButton(): ReactElement {
               dispatch(documentShow('privacyPolicy'));
             }}
           >
-            <FaLock /> Privacy policy
+            <FaLock /> {m?.general.privacyPolicy}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

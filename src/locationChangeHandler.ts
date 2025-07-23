@@ -60,7 +60,6 @@ import {
   ShadingComponent,
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
-import type { DocumentKey } from './documents/index.js';
 import type { CustomLayerDef } from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
@@ -606,7 +605,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const doc = query['document'] ?? query['tip'];
 
-  if (is<DocumentKey>(doc)) {
+  if (typeof doc === 'string') {
     if (getState().main.documentKey !== doc) {
       dispatch(documentShow(doc));
     }

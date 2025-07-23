@@ -1,7 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import { basicModals, tools } from '../constants.js';
-import type { DocumentKey } from '../documents/index.js';
 import type { CustomLayerDef } from '../mapDefinitions.js';
 import type { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
@@ -17,7 +16,7 @@ export const setTool = createAction<Tool | null>('SET_TOOL');
 
 export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
 
-export const documentShow = createAction<DocumentKey | null>('DOCUMENT_SHOW');
+export const documentShow = createAction<string | null>('DOCUMENT_SHOW');
 
 export const startProgress = createAction<string | number>('START_PROGRESS');
 
