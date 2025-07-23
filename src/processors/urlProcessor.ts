@@ -5,7 +5,6 @@ import { ShowModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { serializeShading } from '../components/parameterizedShading/Shading.js';
 import { basicModals } from '../constants.js';
-import { DocumentKey } from '../documents/index.js';
 import { OverlayLetters } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
@@ -297,7 +296,7 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (is<DocumentKey>(main.documentKey)) {
+    if (main.documentKey !== null) {
       queryParts.push(['document', main.documentKey]);
     }
 

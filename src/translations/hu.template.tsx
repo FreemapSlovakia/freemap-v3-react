@@ -145,7 +145,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Eszköz bezárása',
-    tools: 'Eszközök',
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
@@ -243,7 +242,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
-    help: 'Súgó',
+    help: 'Információk és segítség',
     back: 'Vissza',
     mapLegend: 'Jelmagyarázat',
     contacts: 'Kapcsolat',

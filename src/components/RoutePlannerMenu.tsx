@@ -472,8 +472,6 @@ export function RoutePlannerMenu(): ReactElement {
 
   return (
     <ToolMenu>
-      {canDelete && <DeleteButton breakpoint="lg" />}
-
       <Dropdown
         className="ms-1"
         id="transport-type"
@@ -786,6 +784,8 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       )}
+
+      {canDelete && <DeleteButton breakpoint="lg" />}
     </ToolMenu>
   );
 }

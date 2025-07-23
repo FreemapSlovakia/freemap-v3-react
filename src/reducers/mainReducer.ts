@@ -45,7 +45,6 @@ import {
   toggleLocate,
   Tool,
 } from '../actions/mainActions.js';
-import { DocumentKey } from '../documents/index.js';
 import { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
 
@@ -68,7 +67,7 @@ export interface MainState {
   cookieConsentResult: boolean | null; // true if analyticCookiesAllowed; false if not; null if no cookies accepted
   analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
   purchaseOnLogin: Purchase | undefined;
-  documentKey: DocumentKey | null;
+  documentKey: string | null;
   hiddenInfoBars: Record<string, number>;
   drawingColor: string;
   drawingWidth: number;

@@ -1,3 +1,7 @@
+---
+title: Exporty máp
+---
+
 Freemap Slovakia vytvára pravidelné exporty mapy pre rôzne mobilné aplikácie/zariadenia. Tu si ich môžete stiahnuť. Ak tu nie je uvedený postup inštalácie mapy pre Vašu aplikáciu/zariadenie, je potrebné ho hľadať na webovej stránke Vami používanej aplikácie/zariadenia.
 
 Mapové dáta © OpenStreetMap prispievatelia. Licencované pod ODbL 1.0.

@@ -22,7 +22,6 @@ import { MainMenu } from './MainMenu.js';
 import { OfflineSubmenu } from './OfflineSubmenu.js';
 import { SocialButtons } from './SocialButtons.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
-import { ToolsSubmenu } from './ToolsSubmenu.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
 
 export function MainMenuButton(): ReactElement {
@@ -128,8 +127,6 @@ export function MainMenuButton(): ReactElement {
 
           {submenu === null ? (
             <MainMenu />
-          ) : submenu === 'tools' ? (
-            <ToolsSubmenu />
           ) : submenu === 'offline' ? (
             <OfflineSubmenu
               cacheMode={cacheMode}

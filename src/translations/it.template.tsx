@@ -130,7 +130,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Chiudi lo strumento',
-    tools: 'Strumenti',
     routePlanner: 'Cerca percorso',
     objects: 'Oggetti (POI)',
     photos: 'Foto',
@@ -230,7 +229,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
-    help: 'Aiuto',
+    help: 'Info e aiuto',
     back: 'Indietro',
     mapLegend: 'Legenda',
     contacts: 'Contatti',

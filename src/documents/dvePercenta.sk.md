@@ -1,3 +1,9 @@
+---
+title: Dve percentá
+icon: FaPercent
+order: 1000
+---
+
 ## Venujte 2% z daní Freemapu
 
 Milí priaznivci Freemap Slovakia a OpenStreetMap na Slovensku.

@@ -16,7 +16,6 @@ import {
 } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { Submenu } from '../components/mainMenu/submenu.js';
-import { DocumentKey } from '../documents/index.js';
 import { useAppSelector } from './useAppSelector.js';
 
 export function useMenuHandler({
@@ -109,7 +108,7 @@ export function useMenuHandler({
       } else if (eventKey.startsWith('submenu-')) {
         setSubmenu((eventKey.slice(8) || null) as Submenu);
       } else if (eventKey.startsWith('document-')) {
-        dispatch(documentShow(eventKey.slice(9) as DocumentKey));
+        dispatch(documentShow(eventKey.slice(9)));
 
         setShow(false);
       } else if (eventKey.startsWith('tool-')) {

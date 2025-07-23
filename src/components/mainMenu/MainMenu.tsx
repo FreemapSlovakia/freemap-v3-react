@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -11,17 +11,20 @@ import {
   FaEraser,
   FaExternalLinkAlt,
   FaHeart,
-  FaLanguage,
   FaMobileAlt,
+  FaPencilRuler,
   FaPrint,
   FaRegMap,
   FaSignInAlt,
-  FaToolbox,
   FaUser,
 } from 'react-icons/fa';
+import { IoLanguage } from 'react-icons/io5';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
+import { toolDefinitions } from '../../toolDefinitions.js';
 import { ExperimentalFunction } from '../ExperimentalFunction.js';
+
+const LANGUAGES = ['Language', 'Lingua', 'Jazyk', 'Język', 'Sprache', 'Nyelv'];
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
@@ -30,13 +33,50 @@ export function MainMenu(): ReactElement {
     state.map.overlays.includes('I'),
   );
 
+  const tool = useAppSelector((state) => state.main.tool);
+
+  const toolDef = toolDefinitions.find((t) => t.tool === tool);
+
   const m = useMessages();
+
+  const [currentIndex, setCurrentIndex] = useState(
+    Math.floor(Math.random() * LANGUAGES.length),
+  );
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFading(true);
+
+      setTimeout(() => {
+        setCurrentIndex((i) => (i + 1) % LANGUAGES.length);
+        setFading(false);
+      }, 200);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const prevIndex = (currentIndex + LANGUAGES.length - 1) % LANGUAGES.length;
 
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <FaLanguage /> Language / Jazyk / Nyelv / Lingua
-        <FaChevronRight />
+        <span className="position-relative">
+          <span
+            key={prevIndex}
+            className={`position-absolute top-0 start-0 transition-opacity ${fading ? 'opacity-0' : 'opacity-100'} text-nowrap fm-transition`}
+          >
+            <IoLanguage /> {LANGUAGES[prevIndex]} <FaChevronRight />
+          </span>
+          <span
+            key={currentIndex}
+            className={`position-absolute top-0 start-0 transition-opacity ${fading ? 'opacity-100' : 'opacity-0'} text-nowrap fm-transition`}
+          >
+            <IoLanguage /> {LANGUAGES[currentIndex]} <FaChevronRight />
+          </span>
+          &nbsp;
+        </span>
       </Dropdown.Item>
 
       {user ? (
@@ -68,10 +108,31 @@ export function MainMenu(): ReactElement {
         <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="submenu-tools">
-        <FaToolbox /> {m?.tools.tools}
-        <FaChevronRight />
+      <Dropdown.Item as="button" eventKey="drawing">
+        <FaPencilRuler /> {m?.tools.measurement}
       </Dropdown.Item>
+
+      {toolDefinitions
+        .filter(({ draw }) => !draw)
+        .map(
+          ({ tool: newTool, icon, msgKey, kbd }) =>
+            newTool && (
+              <Dropdown.Item
+                href={`?tool=${tool}`}
+                key={newTool}
+                eventKey={'tool-' + newTool}
+                active={toolDef?.tool === newTool}
+              >
+                {icon} {m?.tools[msgKey]}{' '}
+                {kbd && (
+                  <>
+                    <kbd>g</kbd>{' '}
+                    <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
+                  </>
+                )}
+              </Dropdown.Item>
+            ),
+        )}
 
       <Dropdown.Item as="button" eventKey="submenu-tracking">
         <FaBullseye /> {m?.tools.tracking}
