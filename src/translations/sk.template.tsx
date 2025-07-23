@@ -140,6 +140,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   routePlanner: {
+    manual: 'Manuálne',
+    manualTooltip: 'Prepoj nasledujúci segment priamou čiarou',
     ghParams: {
       tripParameters: 'Parametre výletu',
       seed: 'Random seed',

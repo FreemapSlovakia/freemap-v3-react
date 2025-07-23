@@ -191,8 +191,14 @@ export const routePlannerReducer = createReducer(
           ) &&
             getStart(state)) ||
           state.finishOnly
-            ? [payload, ...state.points]
-            : [payload, ...state.points.slice(1)],
+            ? [
+                { manual: state.points[0]?.manual ?? false, ...payload },
+                ...state.points,
+              ]
+            : [
+                { manual: state.points[0]?.manual ?? false, ...payload },
+                ...state.points.slice(1),
+              ],
         finishOnly: false,
         pickMode: getFinish(state) ? state.pickMode : 'finish',
       }))
@@ -207,7 +213,17 @@ export const routePlannerReducer = createReducer(
             }
           : {
               ...state,
-              points: [...state.points, payload],
+              points:
+                state.points.length > 1
+                  ? [
+                      ...state.points.slice(0, -1),
+                      {
+                        ...state.points.at(-1)!,
+                        manual: state.points.at(-2)!.manual,
+                      },
+                      { manual: false, ...payload },
+                    ]
+                  : [...state.points, { manual: false, ...payload }],
               pickMode: getStart(state) ? 'finish' : 'start',
               finishOnly: state.points.length === 0,
             },
@@ -218,7 +234,10 @@ export const routePlannerReducer = createReducer(
       .addCase(
         routePlannerAddPoint,
         (state, { payload: { position, point: midpoint } }) => {
-          state.points.splice(position + 1, 0, midpoint);
+          state.points.splice(position + 1, 0, {
+            ...midpoint,
+            manual: midpoint.manual ?? state.points[position]?.manual ?? false,
+          });
         },
       )
       .addCase(routePlannerSetPoint, (state, action) => {

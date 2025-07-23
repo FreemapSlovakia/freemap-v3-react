@@ -436,7 +436,6 @@ export function RoutePlannerResult(): ReactElement {
           point: {
             lat: e.target.getLatLng().lat,
             lon: e.target.getLatLng().lng,
-            // manual: TODO,
           },
           position: dragSegment,
         }),
@@ -507,17 +506,21 @@ export function RoutePlannerResult(): ReactElement {
                 : waypoints[i]?.waypoint_index
           }
           color={
-            i === 0 && !finishOnly
+            point.manual
               ? selectedPoint === i
-                ? '#a2daa2'
-                : '#409a40'
-              : mode !== 'roundtrip' && i === points.length - 1
+                ? '#ffb14aff'
+                : '#af6301ff'
+              : i === 0 && !finishOnly
                 ? selectedPoint === i
-                  ? '#feaca9'
-                  : '#d9534f'
-                : selectedPoint === i
-                  ? '#9fb7ff'
-                  : '#3e64d5'
+                  ? '#a2daa2'
+                  : '#409a40'
+                : mode !== 'roundtrip' && i === points.length - 1
+                  ? selectedPoint === i
+                    ? '#feaca9'
+                    : '#d9534f'
+                  : selectedPoint === i
+                    ? '#9fb7ff'
+                    : '#3e64d5'
           }
           faIcon={
             i === 0 && !finishOnly ? (
@@ -639,13 +642,15 @@ export function RoutePlannerResult(): ReactElement {
                       color:
                         alt !== activeAlternativeIndex
                           ? '#868e96'
-                          : routeSlice.legIndex % 2
-                            ? 'hsl(211, 100%, 66%)'
-                            : 'hsl(211, 100%, 50%)',
+                          : routeSlice.mode === 'manual'
+                            ? '#af6301ff'
+                            : routeSlice.legIndex % 2
+                              ? 'hsl(211, 100%, 66%)'
+                              : 'hsl(211, 100%, 50%)',
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={
-                      ['foot', 'pushing bike', 'ferry'].includes(
+                      ['manual', 'foot', 'pushing bike', 'ferry'].includes(
                         routeSlice.mode,
                       )
                         ? '0, 10'

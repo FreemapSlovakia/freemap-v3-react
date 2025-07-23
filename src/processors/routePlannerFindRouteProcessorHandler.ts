@@ -1,4 +1,5 @@
 import { isAnyOf } from '@reduxjs/toolkit';
+import distance from '@turf/distance';
 import { feature } from '@turf/helpers';
 import length from '@turf/length';
 import { Feature, LineString, Polygon } from 'geojson';
@@ -19,6 +20,7 @@ import {
 import { ToastAction, toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { isPremium } from '../premium.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';
@@ -143,39 +145,82 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     timeout: 5000,
   });
 
-  const [routedSegmetns, manualSegmetns] = segmentize(points);
+  if (ttDef.api === 'gh' && mode === 'isochrone') {
+    const response = await httpRequest({
+      getState,
+      url:
+        process.env['GRAPHHOPPER_URL'] +
+        '/isochrone?' +
+        objectToURLSearchParams({
+          profile: ttDef.profile,
+          buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
+          time_limit: isochroneParams.timeLimit,
+          distance_limit: isochroneParams.distanceLimit || -1,
+          point: points[0].lat + ',' + points[0].lon,
+        }),
+      expectedStatus: 200,
+      cancelActions: cancelTypes,
+    });
 
-  const datas: unknown[] = [];
+    dispatch(
+      routePlannerSetIsochrones({
+        isochrones: assert<IsochroneResponse>(await response.json()).polygons,
+        timestamp: Date.now(),
+      }),
+    );
+
+    return;
+  }
+
+  const segments =
+    ttDef.api !== 'gh' || points.length < 2 || !isPremium(getState().auth.user)
+      ? [{ manual: false, points }]
+      : segmentize(points);
 
   const promise = Promise.all(
-    routedSegmetns.map((points) =>
+    segments.map((segment) =>
       (async () => {
-        if (ttDef.api === 'gh' && mode === 'isochrone') {
-          const response = await httpRequest({
-            getState,
-            url:
-              process.env['GRAPHHOPPER_URL'] +
-              '/isochrone?' +
-              objectToURLSearchParams({
-                profile: ttDef.profile,
-                buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
-                time_limit: isochroneParams.timeLimit,
-                distance_limit: isochroneParams.distanceLimit || -1,
-                point: points[0].lat + ',' + points[0].lon,
-              }),
-            expectedStatus: 200,
-            cancelActions: cancelTypes,
-          });
+        if (ttDef.api === 'gh' && segment.manual) {
+          const points: LineString = {
+            type: 'LineString',
+            coordinates: segment.points.map((rp) => [rp.lon, rp.lat]),
+          };
 
-          dispatch(
-            routePlannerSetIsochrones({
-              isochrones: assert<IsochroneResponse>(await response.json())
-                .polygons,
-              timestamp: Date.now(),
-            }),
-          );
-
-          return;
+          return {
+            paths: [
+              {
+                distance: length(feature(points), { units: 'meters' }),
+                time: Infinity, // will be computed later
+                details: { manual: [[0, segment.points.length, true]] },
+                points,
+                instructions: segment.points.slice(1).flatMap((_, i) => [
+                  {
+                    distance: distance(
+                      points.coordinates[i],
+                      points.coordinates[i + 1],
+                      { units: 'meters' },
+                    ),
+                    time: Infinity, // will be computed later
+                    sign: GraphhopperSign.UNKNOWN,
+                    street_name: '',
+                    interval: [i, i + 1],
+                    text: 'Choďte rovno',
+                  },
+                  {
+                    distance: 0,
+                    time: 0,
+                    sign:
+                      i === segment.points.length - 1
+                        ? GraphhopperSign.REACHED_VIA
+                        : GraphhopperSign.FINISH,
+                    street_name: '',
+                    interval: [i + 1, i + 1],
+                    text: 'Cieľ!',
+                  },
+                ]),
+              },
+            ],
+          } satisfies GraphhopperResult;
         }
 
         if (ttDef.api === 'gh') {
@@ -189,7 +234,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
               algorithm:
                 mode === 'roundtrip'
                   ? 'round_trip'
-                  : points.length > 2
+                  : segment.points.length > 2
                     ? undefined
                     : 'alternative_route',
               'round_trip.distance': roundtripParams.distance,
@@ -200,7 +245,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
               profile: ttDef.profile,
               points_encoded: false,
               locale: getState().l10n.language,
-              points: points.map((point) => [point.lon, point.lat]),
+              points: segment.points.map((point) => [point.lon, point.lat]),
             },
             expectedStatus: [200, 400],
             cancelActions: cancelTypes,
@@ -243,9 +288,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             return;
           }
 
-          datas.push(data);
-        } else if (points.length > 1) {
-          const allPoints = points
+          return data;
+        }
+
+        if (segment.points.length > 1) {
+          const allPoints = segment.points
             .map((point) => [point.lon, point.lat].join(','))
             .join(';');
 
@@ -275,14 +322,16 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             cancelActions: cancelTypes,
           });
 
-          datas.push(await response.json());
+          return await response.json();
         }
       })(),
     ),
   );
 
+  let datas;
+
   try {
-    await promise;
+    datas = await promise;
   } catch (err) {
     dispatch(clearResultAction);
 
@@ -292,39 +341,47 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   if (ttDef.api === 'gh') {
     const parts = assert<GraphhopperResult[]>(datas);
 
-    for (let i = 0; i < manualSegmetns.length; i++) {
-      const points: LineString = {
-        type: 'LineString',
-        coordinates: manualSegmetns[i].map((ms) => [ms.lon, ms.lat]),
-      };
-
-      const distance = length(feature(points), { units: 'meters' });
-
-      parts.splice(i * 2 + 1, 0, {
-        paths: [
-          {
-            details: {},
-            instructions: [
-              {
-                distance,
-                interval: [0, manualSegmetns[i].length],
-                sign: 0,
-                time: 0,
-                text: '',
-                street_name: '',
-              },
-            ],
-            distance,
-            time: 0,
-            points,
-          },
-        ],
-      });
-    }
-
-    console.log(parts);
-
     let paths;
+
+    const [rDistance, rTime] = parts.reduce(
+      (a, c, i) =>
+        segments[i].manual
+          ? a
+          : [a[0] + c.paths[0].distance, a[1] + c.paths[0].time],
+      [0, 0],
+    );
+
+    const tpd = rTime / rDistance;
+
+    for (let i = 0; i < parts.length; i++) {
+      const segment = segments[i];
+      const path = parts[i].paths[0];
+
+      if (segment.manual) {
+        {
+          const lastPt = parts[i - 1]?.paths[0].points.coordinates.at(-1);
+
+          if (lastPt) {
+            path.points.coordinates[0] = lastPt;
+          }
+        }
+
+        {
+          const firstPt = parts[i + 1]?.paths[0].points.coordinates[0];
+
+          if (firstPt) {
+            path.points.coordinates[path.points.coordinates.length - 1] =
+              firstPt;
+          }
+        }
+
+        path.time = path.distance * tpd;
+
+        for (let i = 0; i < path.instructions.length; i += 2) {
+          path.instructions[i].time = path.instructions[i].distance * tpd;
+        }
+      }
+    }
 
     if (parts.length > 1) {
       const details: Record<string, GraphhopperDetailSegment[]> = {};
@@ -366,10 +423,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         {
           time: parts.reduce((a, c) => a + c.paths[0].time, 0),
           distance: parts.reduce((a, c) => a + c.paths[0].distance, 0),
-          instructions: parts.reduce(
-            (a, c) => [...a, ...c.paths[0].instructions],
-            [] as GraphhopperInstruction[],
-          ),
+          instructions,
           details,
           points: {
             type: 'LineString',
@@ -382,8 +436,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     } else {
       paths = assert<GraphhopperResult>(datas[0]).paths;
     }
-
-    console.log(paths);
 
     dispatch(
       routePlannerSetResult({
@@ -405,6 +457,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
               (q) => q[2],
             );
 
+            const manual = (path.details['manual'] ?? []).filter((q) => q[2]);
+
             for (const instruction of path.instructions) {
               dist += instruction.distance;
 
@@ -419,13 +473,19 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
                   type: 'continue',
                 },
                 name: instruction.text,
-                mode: gob.some(
+                mode: manual.some(
                   (seg) =>
                     instruction.interval[0] >= seg[0] &&
                     instruction.interval[1] <= seg[1],
                 )
-                  ? 'foot'
-                  : 'cycling', // TODO for non-cycling...; TODO can it happen that not whole interval has the same GOB value?
+                  ? 'manual'
+                  : gob.some(
+                        (seg) =>
+                          instruction.interval[0] >= seg[0] &&
+                          instruction.interval[1] <= seg[1],
+                      )
+                    ? 'foot'
+                    : 'cycling', // TODO for non-cycling...; TODO can it happen that not whole interval has the same GOB value?
                 geometry: {
                   coordinates: path.points.coordinates.slice(
                     instruction.interval[0],
@@ -459,7 +519,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }),
     );
   } else {
-    const { code, trips, routes, waypoints } = assert<OsrmResult>(datas);
+    const { code, trips, routes, waypoints } = assert<OsrmResult>(datas[0]);
 
     if (code !== 'Ok') {
       dispatch(clearResultAction);
@@ -513,38 +573,31 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 };
 
 function segmentize(points: RoutePoint[]) {
-  const routedSegmetns: RoutePoint[][] = [];
-  const manualSegmetns: RoutePoint[][] = [];
+  const segments: { manual: boolean; points: RoutePoint[] }[] = [];
 
-  let manual = false;
   let prevPoint: RoutePoint | undefined;
 
   for (const point of points) {
-    if (prevPoint?.manual && point.manual) {
-      if (!manual) {
-        manualSegmetns.push([prevPoint]);
-        manual = true;
-      }
+    if (!prevPoint) {
+      prevPoint = point;
 
-      manualSegmetns.at(-1)?.push(point);
-    } else {
-      if (manual) {
-        if (prevPoint) {
-          routedSegmetns.push([prevPoint]);
-        }
-      } else if (!prevPoint) {
-        routedSegmetns.push([]);
-      }
-
-      manual = false;
-
-      routedSegmetns.at(-1)?.push(point);
+      continue;
     }
+
+    if (prevPoint?.manual) {
+      if (!segments.at(-1)?.manual) {
+        segments.push({ manual: true, points: [prevPoint] });
+      }
+    } else if (!(segments.at(-1)?.manual === false)) {
+      segments.push({ manual: false, points: [prevPoint] });
+    }
+
+    segments.at(-1)?.points.push(point);
 
     prevPoint = point;
   }
 
-  return [routedSegmetns, manualSegmetns];
+  return segments;
 }
 
 export default handle;

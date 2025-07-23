@@ -3,7 +3,9 @@ import { Feature, Polygon } from 'geojson';
 import { TransportType } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
 
-export type RoutePoint = LatLon & { manual?: boolean };
+export type RoutePoint = LatLon & { manual: boolean };
+
+export type NewRoutePoint = LatLon & { manual?: boolean };
 
 export type PickMode = 'start' | 'finish';
 
@@ -16,7 +18,8 @@ export type SliceMode =
   | 'driving'
   | 'ferry'
   | 'train'
-  | 'pushing bike';
+  | 'pushing bike'
+  | 'manual';
 
 export type ManeuerModifier =
   | 'uturn'
@@ -98,11 +101,11 @@ export type IsochroneParams = {
   timeLimit: number;
 };
 
-export const routePlannerSetStart = createAction<RoutePoint>(
+export const routePlannerSetStart = createAction<NewRoutePoint>(
   'ROUTE_PLANNER_SET_START',
 );
 
-export const routePlannerSetFinish = createAction<RoutePoint | null>(
+export const routePlannerSetFinish = createAction<NewRoutePoint | null>(
   'ROUTE_PLANNER_SET_FINISH',
 );
 
@@ -111,7 +114,7 @@ export const routePlannerSetFromCurrentPosition = createAction<PickMode>(
 );
 
 export const routePlannerAddPoint = createAction<{
-  point: RoutePoint;
+  point: NewRoutePoint;
   position: number;
 }>('ROUTE_PLANNER_ADD_POINT');
 
