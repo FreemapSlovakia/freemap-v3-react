@@ -179,13 +179,13 @@ export function RoutePlannerResult(): ReactElement {
                   : formatDistance(distanceDiff, language),
             })}
           </div>
-          {durationSum !== undefined && (
+          {!isNaN(durationSum) && (
             <div>
               {m?.routePlanner.duration({
                 h: Math.floor(Math.round(durationSum / 60) / 60),
                 m: Math.round(durationSum / 60) % 60,
                 diff:
-                  durationDiff === undefined
+                  durationDiff === undefined || isNaN(durationDiff)
                     ? undefined
                     : {
                         h: Math.floor(Math.round(durationDiff / 60) / 60),
@@ -309,12 +309,11 @@ export function RoutePlannerResult(): ReactElement {
 
   const getSummary = useCallback(
     (showDiff?: boolean) => {
-      const { distance = undefined, duration = undefined } =
+      const { distance } =
         alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
-      return distance && duration ? (
+      return distance ? (
         <Tooltip direction="top" permanent>
-          {/* <div>{getPointDetails2(distance, duration)}</div> */}
           <div>{getPointDetails(points.length - 2, showDiff, true)}</div>
         </Tooltip>
       ) : null;

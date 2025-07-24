@@ -11,7 +11,7 @@ export type PickMode = 'start' | 'finish';
 
 export type RoutingMode = 'route' | 'trip' | 'roundtrip' | 'isochrone';
 
-export type SliceMode =
+export type StepMode =
   | 'foot'
   | 'walking'
   | 'cycling'
@@ -69,7 +69,7 @@ export interface Step {
   distance: number;
   duration: number;
   name: string;
-  mode: SliceMode;
+  mode: StepMode;
   geometry: {
     coordinates: [number, number][];
   };

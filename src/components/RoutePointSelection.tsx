@@ -6,7 +6,6 @@ import { routePlannerSetPoint } from '../actions/routePlannerActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useMessages } from '../l10nInjector.js';
-import { transportTypeDefs } from '../transportTypeDefs.js';
 import { Selection } from './Selection.js';
 
 export default RoutePointSelection;
@@ -28,7 +27,6 @@ export function RoutePointSelection(): ReactElement | undefined | false {
     (state) =>
       state.main.selection?.type === 'route-point' &&
       state.routePlanner.mode === 'route' &&
-      transportTypeDefs[state.routePlanner.transportType]?.api === 'gh' &&
       state.main.selection.id < state.routePlanner.points.length - 1,
   );
 
@@ -68,6 +66,7 @@ export function RoutePointSelection(): ReactElement | undefined | false {
               </>
             }
             id="manual"
+            disabled={!!becomePremium}
             onChange={(e) =>
               dispatch(
                 routePlannerSetPoint({
