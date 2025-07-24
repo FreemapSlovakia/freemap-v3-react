@@ -179,13 +179,13 @@ export function RoutePlannerResult(): ReactElement {
                   : formatDistance(distanceDiff, language),
             })}
           </div>
-          {durationSum !== undefined && (
+          {!isNaN(durationSum) && (
             <div>
               {m?.routePlanner.duration({
                 h: Math.floor(Math.round(durationSum / 60) / 60),
                 m: Math.round(durationSum / 60) % 60,
                 diff:
-                  durationDiff === undefined
+                  durationDiff === undefined || isNaN(durationDiff)
                     ? undefined
                     : {
                         h: Math.floor(Math.round(durationDiff / 60) / 60),
@@ -309,12 +309,11 @@ export function RoutePlannerResult(): ReactElement {
 
   const getSummary = useCallback(
     (showDiff?: boolean) => {
-      const { distance = undefined, duration = undefined } =
+      const { distance } =
         alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
-      return distance && duration ? (
+      return distance ? (
         <Tooltip direction="top" permanent>
-          {/* <div>{getPointDetails2(distance, duration)}</div> */}
           <div>{getPointDetails(points.length - 2, showDiff, true)}</div>
         </Tooltip>
       ) : null;
@@ -473,9 +472,18 @@ export function RoutePlannerResult(): ReactElement {
 
       const { lat, lng: lon } = event.target.getLatLng();
 
-      dispatch(routePlannerSetPoint({ position, point: { lat, lon } }));
+      dispatch(
+        routePlannerSetPoint({
+          position,
+          point: {
+            lat,
+            lon,
+            manual: points[position].manual,
+          },
+        }),
+      );
     },
-    [dispatch],
+    [dispatch, points],
   );
 
   const pointElements = useMemo(
@@ -497,17 +505,21 @@ export function RoutePlannerResult(): ReactElement {
                 : waypoints[i]?.waypoint_index
           }
           color={
-            i === 0 && !finishOnly
+            mode === 'route' && point.manual
               ? selectedPoint === i
-                ? '#a2daa2'
-                : '#409a40'
-              : mode !== 'roundtrip' && i === points.length - 1
+                ? '#ffb14aff'
+                : '#af6301ff'
+              : i === 0 && !finishOnly
                 ? selectedPoint === i
-                  ? '#feaca9'
-                  : '#d9534f'
-                : selectedPoint === i
-                  ? '#9fb7ff'
-                  : '#3e64d5'
+                  ? '#a2daa2'
+                  : '#409a40'
+                : mode !== 'roundtrip' && i === points.length - 1
+                  ? selectedPoint === i
+                    ? '#feaca9'
+                    : '#d9534f'
+                  : selectedPoint === i
+                    ? '#9fb7ff'
+                    : '#3e64d5'
           }
           faIcon={
             i === 0 && !finishOnly ? (
@@ -629,13 +641,15 @@ export function RoutePlannerResult(): ReactElement {
                       color:
                         alt !== activeAlternativeIndex
                           ? '#868e96'
-                          : routeSlice.legIndex % 2
-                            ? 'hsl(211, 100%, 66%)'
-                            : 'hsl(211, 100%, 50%)',
+                          : routeSlice.mode === 'manual'
+                            ? '#af6301ff'
+                            : routeSlice.legIndex % 2
+                              ? 'hsl(211, 100%, 66%)'
+                              : 'hsl(211, 100%, 50%)',
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={
-                      ['foot', 'pushing bike', 'ferry'].includes(
+                      ['manual', 'foot', 'pushing bike', 'ferry'].includes(
                         routeSlice.mode,
                       )
                         ? '0, 10'

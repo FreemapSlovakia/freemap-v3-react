@@ -125,7 +125,9 @@ export const urlProcessor: Processor = {
       historyParts.push([
         'points',
         (routePlanner.finishOnly ? ',' : '') +
-          routePlanner.points.map((point) => serializePoint(point)).join(','),
+          routePlanner.points
+            .map((point) => (point.manual ? 'm' : '') + serializePoint(point))
+            .join(','),
       ]);
 
       historyParts.push(['transport', routePlanner.transportType]);

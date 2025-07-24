@@ -134,6 +134,8 @@ const messages: Messages = {
   },
 
   routePlanner: {
+    manual: 'Manual',
+    manualTooltip: 'Connect following segment with direct line',
     ghParams: {
       tripParameters: 'Trip parameters',
       seed: 'Random seed',

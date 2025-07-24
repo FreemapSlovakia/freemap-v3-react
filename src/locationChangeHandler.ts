@@ -43,7 +43,10 @@ import {
   osmLoadRelation,
   osmLoadWay,
 } from './actions/osmActions.js';
-import { routePlannerSetParams } from './actions/routePlannerActions.js';
+import {
+  routePlannerSetParams,
+  RoutePoint,
+} from './actions/routePlannerActions.js';
 import { searchSetQuery } from './actions/searchActions.js';
 import { trackingActions } from './actions/trackingActions.js';
 import {
@@ -140,12 +143,18 @@ export function handleLocationChange(store: MyStore): void {
   {
     const qPoints =
       typeof query['points'] === 'string'
-        ? query['points']
-            .split(',')
-            .map((point) =>
-              point ? point.split('/').map((coord) => parseFloat(coord)) : null,
-            )
-        : [];
+        ? (query['points'].split(',').map((point) =>
+            point
+              ? [
+                  point[0] === 'm',
+                  ...point
+                    .slice(point[0] === 'm' ? 1 : 0)
+                    .split('/', 2)
+                    .map((coord) => parseFloat(coord)),
+                ]
+              : null,
+          ) as [boolean, number | null, number | null][])
+        : ([] as [boolean, number | null, number | null][]);
 
     const pointsOk =
       qPoints.length > 0 &&
@@ -153,9 +162,9 @@ export function handleLocationChange(store: MyStore): void {
         (point, i) =>
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
-            (point.length === 2 &&
-              !Number.isNaN(point[0]) &&
-              !Number.isNaN(point[1]))),
+            (point.length === 3 &&
+              !Number.isNaN(point[1]) &&
+              !Number.isNaN(point[2]))),
       );
 
     const qMilestones = query['milestones'];
@@ -179,7 +188,13 @@ export function handleLocationChange(store: MyStore): void {
       } = getState().routePlanner;
 
       const latLons = qPoints.map((point) =>
-        point ? { lat: point[0], lon: point[1] } : null,
+        point
+          ? {
+              manual: point[0],
+              lat: point[1],
+              lon: point[2],
+            }
+          : null,
       );
 
       const nextFinishOnly = latLons.length > 0 && !latLons[0];
@@ -193,7 +208,10 @@ export function handleLocationChange(store: MyStore): void {
         query['transport'] !== transportType ||
         points.length !== latLons.length ||
         points.some(
-          (point, i) => serializePoint(point) !== serializePoint(latLons[i]),
+          (point, i) =>
+            (point.manual ? 'm' : '') + serializePoint(point) !==
+            (latLons[i]?.manual ? 'm' : '') +
+              serializePoint(latLons[i] as unknown as RoutePoint),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         milestones !== reqMilestones ||
@@ -209,7 +227,7 @@ export function handleLocationChange(store: MyStore): void {
 
         dispatch(
           routePlannerSetParams({
-            points: latLons as LatLon[],
+            points: latLons as unknown as RoutePoint[],
             finishOnly: nextFinishOnly,
             transportType: query['transport'],
             mode:
