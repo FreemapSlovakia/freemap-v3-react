@@ -505,7 +505,7 @@ export function RoutePlannerResult(): ReactElement {
                 : waypoints[i]?.waypoint_index
           }
           color={
-            point.manual
+            mode === 'route' && point.manual
               ? selectedPoint === i
                 ? '#ffb14aff'
                 : '#af6301ff'
