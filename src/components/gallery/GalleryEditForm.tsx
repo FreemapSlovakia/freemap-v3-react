@@ -220,6 +220,8 @@ export function GalleryEditForm({
       <Form.Group controlId="tags" className="mb-3" key={key}>
         <ReactTags
           placeholderText={m?.gallery.editForm.tags}
+          newOptionText={m?.general.newOptionText}
+          deleteButtonText={m?.general.deleteButtonText}
           selected={model.tags.map((tag) => ({ label: tag, value: tag }))}
           suggestions={allTags.map(({ name }) => ({
             label: name,

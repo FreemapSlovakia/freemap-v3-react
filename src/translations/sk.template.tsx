@@ -111,6 +111,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     success: 'Hotovo!',
     expiration: 'Exspirácia',
     privacyPolicy: 'Zásady ochrany osobných údajov',
+    newOptionText: 'Pridať %value%',
+    deleteButtonText: 'Odobrať %value% zo zoznamu',
   },
 
   selections: {
@@ -831,7 +833,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoom: 'Minilálne priblíženie',
     maxNativeZoom: 'Maximálne prirodzené priblíženie',
     extraScales: 'Extra rozlíšenia máp',
-    scaleWithDpi: 'Škáluj s DPI',
+    scaleWithDpi: 'Škálovať s DPI',
     zIndex: 'Z-Index',
     generalSettings: 'Všeobecné nastavenia',
     maxZoom: 'Maximálne priblíženie',
@@ -1143,6 +1145,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     writers: 'Editori',
+    addWriter: 'Pridať editora',
     conflictError: 'Mapa bola medzičasom modifikovaná.',
   },
 

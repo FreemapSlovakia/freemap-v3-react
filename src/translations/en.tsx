@@ -105,6 +105,8 @@ const messages: Messages = {
     success: 'Success!',
     expiration: 'Expiration',
     privacyPolicy: 'Privacy policy',
+    newOptionText: 'Add %value%',
+    deleteButtonText: 'Remove %value% from the list',
   },
 
   selections: {
@@ -1084,6 +1086,7 @@ const messages: Messages = {
       </>
     ),
     writers: 'Editors',
+    addWriter: 'Add an editor',
     conflictError: 'The map has been modified in the meantime.',
   },
 

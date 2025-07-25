@@ -189,6 +189,9 @@ export function MapsModal({ show }: Props): ReactElement {
                   <Form.Label>{m?.maps.writers}</Form.Label>
 
                   <ReactTags
+                    placeholderText={m?.maps.addWriter}
+                    newOptionText={m?.general.newOptionText}
+                    deleteButtonText={m?.general.deleteButtonText}
                     selected={writers?.map((id) => ({
                       value: id,
                       label: userMap.get(id) ?? '???',

@@ -75,6 +75,8 @@ export type Messages = {
     success: string;
     expiration: string;
     privacyPolicy: string;
+    newOptionText: string;
+    deleteButtonText: string;
   };
   selections: {
     objects: string;
@@ -696,6 +698,7 @@ export type Messages = {
     newMap: string;
     SomeMap: (props: { name: string }) => JSX.Element;
     writers: string;
+    addWriter: string;
     conflictError: string;
   };
   legend: {
