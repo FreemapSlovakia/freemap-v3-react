@@ -82,6 +82,9 @@ const config: Configuration = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         loader: 'ts-loader',
+        options: {
+          experimentalWatchApi: true,
+        },
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
