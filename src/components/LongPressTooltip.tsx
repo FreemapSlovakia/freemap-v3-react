@@ -1,4 +1,5 @@
 import {
+  Fragment,
   MouseEvent,
   PointerEvent,
   ReactNode,
@@ -128,11 +129,12 @@ export function LongPressTooltip({
   }, []);
 
   const kbdEl = (kbd?.split(' ') ?? []).map((kbd) => (
-    <>
+    <Fragment key={kbd}>
       {' '}
-      <kbd key={kbd}>{kbd}</kbd>
-    </>
+      <kbd>{kbd}</kbd>
+    </Fragment>
   ));
+
   return (
     <>
       {children({
