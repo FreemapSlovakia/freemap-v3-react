@@ -1,6 +1,8 @@
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+// import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import { EsbuildPlugin } from 'esbuild-loader';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { fileURLToPath } from 'node:url';
@@ -25,6 +27,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const prod = process.env['DEPLOYMENT'] && process.env['DEPLOYMENT'] !== 'dev';
 
+const BASE_URL =
+  {
+    www: 'https://www.freemap.sk',
+  }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:9000';
+
 const htmlPluginProps = {
   filename: 'index.html',
   template: 'index.ejs',
@@ -39,6 +46,13 @@ const htmlPluginProps = {
     nojsMessage:
       'JavaScript enabled browser is required to run this application.',
     loadingMessage: 'Loading…',
+    BASE_URL,
+    MATOMO_SITE_ID: { www: '1' }[process.env['DEPLOYMENT']!] ?? null,
+    SENTRY_DSN:
+      {
+        www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2',
+      }[process.env['DEPLOYMENT']!] ?? null,
+    FB_APP_ID: { www: '681854635902254' }[process.env['DEPLOYMENT']!] ?? null,
   },
 };
 
@@ -72,16 +86,35 @@ const config: Configuration = {
   },
   optimization: {
     // moduleIds: 'deterministic',
-    minimizer: ['...', new CssMinimizerPlugin()],
+    minimizer: [
+      '...',
+      // new CssMinimizerPlugin(),
+      new EsbuildPlugin({
+        target: 'es2022',
+        css: true,
+      }),
+    ],
   },
   // more info: https://webpack.js.org/configuration/devtool/
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
+      // {
+      //   test: /\.tsx?$/,
+      //   exclude: /node_modules/,
+      //   loader: 'ts-loader',
+      //   options: {
+      //     experimentalWatchApi: true,
+      //   },
+      // },
       {
-        test: /\.tsx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        loader: 'esbuild-loader',
+        options: {
+          loader: 'tsx',
+          target: 'es2022',
+        },
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
@@ -163,6 +196,12 @@ const config: Configuration = {
     ],
   },
   plugins: [
+    new ForkTsCheckerWebpackPlugin({
+      typescript: {
+        memoryLimit: 4096,
+        configFile: '../tsconfig.json',
+      },
+    }),
     new MarkdownDictPlugin({ dir: 'src/documents' }),
     !prod &&
       new ReactRefreshWebpackPlugin({
@@ -172,32 +211,32 @@ const config: Configuration = {
       swSrc: './sw/sw.ts',
       maximumFileSizeToCacheInBytes: 100_000_000,
     }),
-    new webpack.EnvironmentPlugin({
-      ...(prod ? { NODE_ENV: 'production' } : null), // for react
-      BROWSER: 'true',
-      PREVENT_ADS: 'PREVENT_ADS' in process.env,
-      DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
-      FM_MAPSERVER_URL:
-        process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
-      MAX_GPX_TRACK_SIZE_IN_MB: '15',
-      BASE_URL:
-        {
-          www: 'https://www.freemap.sk',
-        }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:9000',
-      API_URL:
-        {
-          www: 'https://backend.freemap.sk',
-        }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:3000',
-      MATOMO_SITE_ID: { www: '1' }[process.env['DEPLOYMENT']!] ?? null,
-      SENTRY_DSN:
-        {
-          www: 'https://18bd1845f6304063aef58be204a77149@glitchtip.freemap.sk/2',
-        }[process.env['DEPLOYMENT']!] ?? null,
-      FB_APP_ID: { www: '681854635902254' }[process.env['DEPLOYMENT']!] ?? null,
-      GRAPHHOPPER_URL:
-        {
-          www: 'https://graphhopper.freemap.sk',
-        }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', //'http://localhost:8989',
+    new EsbuildPlugin({
+      define: {
+        ...(prod
+          ? { 'process.env.NODE_ENV': JSON.stringify('production') }
+          : null), // for react
+        'process.env.BROWSER': JSON.stringify(true),
+        'process.env.PREVENT_ADS': JSON.stringify('PREVENT_ADS' in process.env),
+        'process.env.DEPLOYMENT': JSON.stringify(
+          process.env['DEPLOYMENT'] ?? null,
+        ),
+        'process.env.FM_MAPSERVER_URL': JSON.stringify(
+          process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
+        ),
+        'process.env.MAX_GPX_TRACK_SIZE_IN_MB': JSON.stringify(15),
+        'process.env.BASE_URL': JSON.stringify(BASE_URL),
+        'process.env.API_URL': JSON.stringify(
+          {
+            www: 'https://backend.freemap.sk',
+          }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:3000',
+        ),
+        'process.env.GRAPHHOPPER_URL': JSON.stringify(
+          {
+            www: 'https://graphhopper.freemap.sk',
+          }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', // http://localhost:8989,s
+        ),
+      },
     }),
     new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
     new HtmlWebpackPlugin({
@@ -208,6 +247,7 @@ const config: Configuration = {
       ...htmlPluginProps,
       filename: 'index-sk.html',
       templateParameters: {
+        ...htmlPluginProps.templateParameters,
         lang: 'sk',
         title: skMessages.title,
         description: skMessages.description,
@@ -223,6 +263,7 @@ const config: Configuration = {
       ...htmlPluginProps,
       filename: 'index-cs.html',
       templateParameters: {
+        ...htmlPluginProps.templateParameters,
         lang: 'cs',
         title: csMessages.title,
         description: csMessages.description,
@@ -238,6 +279,7 @@ const config: Configuration = {
       ...htmlPluginProps,
       filename: 'index-hu.html',
       templateParameters: {
+        ...htmlPluginProps.templateParameters,
         lang: 'hu',
         title: huMessages.title,
         description: huMessages.description,
@@ -253,6 +295,7 @@ const config: Configuration = {
       ...htmlPluginProps,
       filename: 'index-it.html',
       templateParameters: {
+        ...htmlPluginProps.templateParameters,
         lang: 'it',
         title: itMessages.title,
         description: itMessages.description,
@@ -268,6 +311,7 @@ const config: Configuration = {
       ...htmlPluginProps,
       filename: 'index-de.html',
       templateParameters: {
+        ...htmlPluginProps.templateParameters,
         lang: 'de',
         title: deMessages.title,
         description: deMessages.description,
@@ -283,6 +327,7 @@ const config: Configuration = {
       ...htmlPluginProps,
       filename: 'index-pl.html',
       templateParameters: {
+        ...htmlPluginProps.templateParameters,
         lang: 'pl',
         title: plMessages.title,
         description: plMessages.description,
