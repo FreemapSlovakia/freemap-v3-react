@@ -310,6 +310,7 @@ export function MapSwitchButton(): ReactElement {
           )
           .map(({ type, ...rest }) => (
             <LongPressTooltip
+              key={type}
               label={
                 type.startsWith('.')
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
@@ -319,7 +320,6 @@ export function MapSwitchButton(): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  key={type}
                   data-type={type}
                   active={mapType === type}
                   onClick={handleBaseClick}
@@ -342,6 +342,7 @@ export function MapSwitchButton(): ReactElement {
           )
           .map(({ type, ...rest }) => (
             <LongPressTooltip
+              key={type}
               label={
                 type.startsWith(':')
                   ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
@@ -351,7 +352,6 @@ export function MapSwitchButton(): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  key={type}
                   data-type={type}
                   active={overlays.includes(type as OverlayLetters)}
                   onClick={handleOverlayClick}
