@@ -410,12 +410,14 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   if (segments.some((segment) => segment.manual)) {
     const tpd = alternatives[0].duration / alternatives[0].distance;
 
-    console.log(tpd);
+    let legIndex = 0;
 
     for (let j = 0; j < segments.length; j++) {
       const segment = segments[j];
 
       if (!segment.manual) {
+        legIndex += segment.points.length - 1;
+
         continue;
       }
 
@@ -426,7 +428,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       {
         const lastPt =
           segments[j - 1]?.manual === false &&
-          alternatives[0].legs[j - 1]?.steps
+          alternatives[0].legs[legIndex - 1]?.steps
             .at(-1)
             ?.geometry.coordinates.at(-1);
 
@@ -438,7 +440,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       {
         const firstPt =
           segments[j + 1]?.manual === false &&
-          alternatives[0].legs[j]?.steps[0]?.geometry.coordinates[0];
+          alternatives[0].legs[legIndex]?.steps[0]?.geometry.coordinates[0];
 
         if (firstPt) {
           coordinates[coordinates.length - 1] = firstPt;
@@ -470,6 +472,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       };
 
       alternatives[0].legs.splice(j, 0, leg);
+
+      legIndex += segment.points.length - 1;
     }
 
     alternatives[0].distance = alternatives[0].legs.reduce(
