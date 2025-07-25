@@ -367,7 +367,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         }
 
         return {
-          duration: path.time,
+          duration: path.time / 1000,
           distance: path.distance,
           legs,
         };
@@ -409,6 +409,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   if (segments.some((segment) => segment.manual)) {
     const tpd = alternatives[0].duration / alternatives[0].distance;
+
+    console.log(tpd);
 
     for (let j = 0; j < segments.length; j++) {
       const segment = segments[j];
