@@ -18,8 +18,8 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "ES2022",
+    // "noUncheckedIndexedAccess": true, // TODO one day
     "types": [
-      // "noUncheckedIndexedAccess": true, // TODO one day
       "gapi",
       "facebook-js-sdk",
       "facebook-pixel",
