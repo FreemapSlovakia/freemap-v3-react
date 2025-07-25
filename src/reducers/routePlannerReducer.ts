@@ -230,6 +230,12 @@ export const routePlannerReducer = createReducer(
       )
       .addCase(routePlannerSwapEnds, (state) => {
         state.points.reverse();
+
+        for (let i = 1; i < state.points.length; i++) {
+          state.points[i - 1].manual = state.points[i].manual;
+        }
+
+        state.points[state.points.length - 1].manual = false;
       })
       .addCase(
         routePlannerAddPoint,
