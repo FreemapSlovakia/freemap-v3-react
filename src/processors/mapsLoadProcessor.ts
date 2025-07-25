@@ -89,7 +89,9 @@ export const mapsLoadProcessor: Processor = {
           routePlanner.start,
           ...routePlanner.midpoints,
           routePlanner.finish,
-        ].filter(Boolean);
+        ]
+          .filter(Boolean)
+          .map((pt) => ({ ...pt, manual: pt.manual ?? false }));
 
         routePlanner.finishOnly = !!routePlanner.finish && !routePlanner.start;
 
