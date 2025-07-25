@@ -11,6 +11,8 @@ import {
 
 type Props = { unknown: string };
 
+const PREFIX = '?document=';
+
 export function Attribution({ unknown }: Props): ReactElement {
   const mapType = useAppSelector((state) => state.map.mapType);
 
@@ -47,13 +49,13 @@ export function Attribution({ unknown }: Props): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  if (!a.url?.startsWith('?document=')) {
+                  if (!a.url?.startsWith(PREFIX)) {
                     return;
                   }
 
                   e.preventDefault();
 
-                  dispatch(documentShow(a.url.slice(5)));
+                  dispatch(documentShow(a.url.slice(PREFIX.length)));
                 }}
               >
                 {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
