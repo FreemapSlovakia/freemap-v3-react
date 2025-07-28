@@ -202,7 +202,7 @@ export function Main(): ReactElement {
   );
 
   const showPictures = useAppSelector((state) =>
-    state.map.overlays.includes('I'),
+    state.map.layers.includes('I'),
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -216,50 +216,6 @@ export function Main(): ReactElement {
   }, [dispatch, map]);
 
   useMouseCursor(map?.getContainer());
-
-  // useEffect(() => {
-  //   if (!map) {
-  //     return;
-  //   }
-
-  //   const m = map;
-
-  //   let t: number | undefined;
-
-  //   function handleMapMoveEnd() {
-  //     if (t) {
-  //       window.clearTimeout(t);
-  //     }
-
-  //     t = window.setTimeout(() => {
-  //       const { lat: newLat, lng: newLon } = m.getCenter();
-
-  //       const newZoom = m.getZoom();
-
-  //       const delta = 5 / Math.pow(2, zoom);
-
-  //       if (
-  //         zoom !== newZoom ||
-  //         newLat - delta > lat ||
-  //         newLat + delta < lat ||
-  //         newLon - delta > lon ||
-  //         newLon + delta < lon
-  //       ) {
-  //         dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
-  //       }
-  //     }, 250);
-  //   }
-
-  //   m.on('moveend', handleMapMoveEnd);
-
-  //   return () => {
-  //     m.off('moveend', handleMapMoveEnd);
-
-  //     if (t) {
-  //       window.clearTimeout(t);
-  //     }
-  //   };
-  // }, [dispatch, lat, lon, map, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (window.fmEmbedded) {

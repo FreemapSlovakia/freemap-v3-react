@@ -2,7 +2,6 @@ import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import { FaEllipsisH, FaEye, FaRegListAlt } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { is } from 'typia';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
 import {
@@ -11,8 +10,6 @@ import {
   defaultToolbarLayerLetters,
   integratedLayerDefs,
   IntegratedLayerLetters,
-  IsBaseLayerDef,
-  IsOverlayLayerDef,
 } from '../../mapDefinitions.js';
 
 type Props = {
@@ -90,7 +87,7 @@ export function MapLayersSettings({
       </thead>
 
       <tbody>
-        {layerDefs.map(({ icon, type, layer }, i) => (
+        {layerDefs.map(({ icon, type, layer }) => (
           <tr key={type}>
             <td>{icon}</td>
 
