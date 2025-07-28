@@ -13,17 +13,11 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
-import {
-  FaDownload,
-  FaDrawPolygon,
-  FaEye,
-  FaFlask,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
@@ -33,7 +27,10 @@ import {
   IntegratedLayerLetters,
   IsTileLayerDef,
 } from '../mapDefinitions.js';
+import { isInvalidInt } from '../numberValidator.js';
 import { CreditsAlert } from './CredistAlert.js';
+import { ExperimentalFunction } from './ExperimentalFunction.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 type Props = { show: boolean };
 
@@ -186,7 +183,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         count += (to[0] - from[0] + 1) * (from[1] - to[1] + 1);
       }
 
-      return count;
+      return count > 1_000_000_000 ? Infinity : count;
     }
 
     return undefined;
@@ -204,6 +201,23 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     maximumFractionDigits: 0,
   });
 
+  const invalidMinZoom = isInvalidInt(
+    minZoom,
+    true,
+    mapDef?.minZoom ?? 0,
+    Math.min(
+      mapDef?.maxNativeZoom ?? Infinity,
+      parseInt(maxZoom, 10) || Infinity,
+    ),
+  );
+
+  const invalidMaxZoom = isInvalidInt(
+    maxZoom,
+    true,
+    Math.max(parseInt(minZoom, 10) || 0, mapDef?.minZoom ?? 0),
+    mapDef?.maxNativeZoom,
+  );
+
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -214,9 +228,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           name,
           map: mapType,
           format,
-          maxZoom: Number(maxZoom),
-          minZoom: Number(minZoom),
-          scale: Number(scale),
+          maxZoom: parseInt(maxZoom, 10),
+          minZoom: parseInt(minZoom, 10),
+          scale: parseInt(scale, 10),
           boundary:
             selectedLine?.type === 'polygon' && area === 'selected'
               ? polygon([
@@ -250,10 +264,14 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     dispatch(authInit());
   }, [dispatch]);
 
-  const price =
-    mapDef && tileCount
-      ? Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000)
-      : Infinity;
+  const price = (() => {
+    const price =
+      mapDef && tileCount
+        ? Math.ceil((tileCount * mapDef.creditsPerMTile) / 1_000_000)
+        : 0;
+
+    return price < 1_000_000_000 ? price : Infinity;
+  })();
 
   const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -270,12 +288,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDownload />{' '}
-            <FaFlask
-              title={m?.general.experimentalFunction}
-              className="text-warning"
-            />{' '}
-            {m?.downloadMap.downloadMap}
+            <FaDownload /> <ExperimentalFunction /> {m?.downloadMap.downloadMap}
           </Modal.Title>
         </Modal.Header>
 
@@ -392,11 +405,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group controlId="downloadArea">
             <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
-            <ButtonGroup className="d-block mb-3">
+            <ButtonGroup className="d-flex mb-3">
               <Button
+                className="fm-ellipsis"
                 variant="secondary"
                 active={area === 'visible'}
                 onClick={() => setArea('visible')}
@@ -405,6 +419,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </Button>
 
               <Button
+                className="fm-ellipsis"
                 variant="secondary"
                 active={area === 'selected'}
                 onClick={() => setArea('selected')}
@@ -432,29 +447,39 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Label>{m?.downloadMap.format}</Form.Label>
 
             <ButtonGroup className="d-block">
-              <Button
-                variant="secondary"
-                active={format === 'mbtiles'}
-                onClick={() => setFormat('mbtiles')}
-                title="Locus Map, Guru Maps, OruxMaps"
-              >
-                MBTiles
-              </Button>
+              <LongPressTooltip label="Locus Map, Guru Maps, OruxMaps">
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    active={format === 'mbtiles'}
+                    onClick={() => setFormat('mbtiles')}
+                    {...props}
+                  >
+                    MBTiles
+                  </Button>
+                )}
+              </LongPressTooltip>
 
-              <Button
-                variant="secondary"
-                active={format === 'sqlitedb'}
-                onClick={() => setFormat('sqlitedb')}
-                title="OSMAnd, Locus Map"
-              >
-                SQLiteDB
-              </Button>
+              <LongPressTooltip label="OSMAnd, Locus Map">
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    active={format === 'sqlitedb'}
+                    onClick={() => setFormat('sqlitedb')}
+                    {...props}
+                  >
+                    SQLiteDB
+                  </Button>
+                )}
+              </LongPressTooltip>
             </ButtonGroup>
           </Form.Group>
 
           {mapDef && (
             <Form.Group controlId="zoomRange" className="mb-3">
-              <Form.Label>{m?.downloadMap.zoomRange}</Form.Label>
+              <Form.Label className="required">
+                {m?.downloadMap.zoomRange}
+              </Form.Label>
 
               <InputGroup>
                 <Form.Control
@@ -462,6 +487,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                   min={mapDef.minZoom ?? 0}
                   max={mapDef.maxNativeZoom}
                   value={minZoom}
+                  isInvalid={invalidMinZoom}
                   onChange={(e) => setMinZoom(e.currentTarget.value)}
                 />
 
@@ -472,6 +498,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                   min={mapDef.minZoom ?? 0}
                   max={mapDef.maxNativeZoom}
                   value={maxZoom}
+                  isInvalid={invalidMaxZoom}
                   onChange={(e) => setMaxZoom(e.currentTarget.value)}
                 />
               </InputGroup>
@@ -498,9 +525,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           )}
 
           <Form.Group controlId="email" className="mb-3">
-            <Form.Label>
-              {m?.downloadMap.email} <sup>*</sup>
-            </Form.Label>
+            <Form.Label className="required">{m?.downloadMap.email}</Form.Label>
 
             <Form.Control
               type="email"
@@ -534,7 +559,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             variant="primary"
             onClick={close}
             type="submit"
-            disabled={invalidEmail || price >= Math.floor(user?.credits ?? 0)}
+            disabled={
+              invalidEmail ||
+              invalidMinZoom ||
+              invalidMaxZoom ||
+              price >= Math.floor(user?.credits ?? 0)
+            }
           >
             <FaDownload /> {m?.downloadMap.download} <kbd>Enter</kbd>
           </Button>

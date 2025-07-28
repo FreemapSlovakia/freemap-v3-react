@@ -2,6 +2,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useAd } from '../hooks/useAd.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
+import { useLeftMarginAdjuster } from '../hooks/useLeftMarginAdjuster.js';
 import tShirt from '../images/fm-t-shirt.jpg';
 import rovasAd from '../images/rovas_reklama.svg';
 import { useMessages } from '../l10nInjector.js';
@@ -43,11 +44,13 @@ export function Ad(): ReactElement | null {
 
   const ad = useAd(ads);
 
+  const ref = useLeftMarginAdjuster();
+
   return (
     <div
       className={`mt-2 d-flex flex-column ${closed ? 'invisible' : 'visible'}`}
     >
-      <div className="border rounded-top rounded-start fm-toolbar">
+      <div className="border rounded-top rounded-start fm-toolbar" ref={ref}>
         {ad === 'self' ? (
           <div
             className="border px-3 py-2 rounded bg-body text-body"
@@ -59,7 +62,11 @@ export function Ad(): ReactElement | null {
           </div>
         ) : ad === 'rovas' ? (
           <a href="https://rovas.app" target="_blank" rel="noreferrer">
-            <img className="border rounded" src={rovasAd} />
+            <img
+              className="border rounded w-100"
+              src={rovasAd}
+              style={{ maxWidth: '360px' }}
+            />
           </a>
         ) : ad === 'tShirt' ? (
           <a
@@ -76,7 +83,7 @@ export function Ad(): ReactElement | null {
         ) : null}
       </div>
 
-      <div className="align-self-end d-flex">
+      <div className="align-self-end d-flex me-2">
         {height < 600 && (
           <Button
             className="py-0 rounded-bottom me-1"

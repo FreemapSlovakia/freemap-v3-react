@@ -3,7 +3,7 @@ import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../../actions/mainActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { useLocalMessages, useMessages } from '../../l10nInjector.js';
 import { navigate } from '../../navigationUtils.js';
@@ -69,6 +69,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
               action="https://www.paypal.com/cgi-bin/webscr"
               method="post"
               target="_blank"
+              className="mb-3"
             >
               <input name="cmd" value="_s-xclick" type="hidden" />
 

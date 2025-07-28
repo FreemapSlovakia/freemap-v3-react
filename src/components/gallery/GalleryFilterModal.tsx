@@ -7,12 +7,13 @@ import {
   useState,
 } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
+import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gallerySetFilter } from '../../actions/galleryActions.js';
 import { setActiveModal } from '../../actions/mainActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isInvalidInt } from '../../numberValidator.js';
 
 type Props = { show: boolean };
 
@@ -238,15 +239,30 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
     }
   }, [premiumCheck, premium]);
 
+  const invalidRatingFrom = isInvalidInt(
+    ratingFrom,
+    false,
+    1,
+    parseInt(ratingTo, 10) ?? 5,
+  );
+  const invalidRatingTo = isInvalidInt(
+    ratingTo,
+    false,
+    parseInt(ratingFrom, 10) ?? 1,
+    5,
+  );
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
+        <Modal.Title>
+          <FaCamera /> <FaFilter /> {m?.gallery.filterModal.title}
+        </Modal.Title>
       </Modal.Header>
 
       <Form onSubmit={handleFormSubmit}>
         <Modal.Body>
-          <Form.Group className="mb-3">
+          <Form.Group controlId="tag" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
 
             <Form.Select value={tag} onChange={handleTagChange}>
@@ -261,7 +277,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="author" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
 
             <Form.Select value={userId} onChange={handleUserIdChange}>
@@ -291,7 +307,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="createdAt" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
 
             <InputGroup>
@@ -311,7 +327,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="takenAt" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
 
             <InputGroup>
@@ -331,7 +347,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group controlId="rating" className="mb-3">
             <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
 
             <InputGroup>
@@ -341,6 +357,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 max={ratingTo || 5}
                 step="any"
                 value={ratingFrom}
+                isInvalid={invalidRatingFrom}
                 onChange={handleRatingFromChange}
               />
 
@@ -352,6 +369,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 max={5}
                 step="any"
                 value={ratingTo}
+                isInvalid={invalidRatingTo}
                 onChange={handleRatingToChange}
               />
             </InputGroup>
@@ -377,7 +395,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit">
+          <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
             <FaCheck /> {m?.general.apply}
           </Button>
 

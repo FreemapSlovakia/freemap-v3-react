@@ -9,15 +9,13 @@ import {
 import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { fixedPopperConfig } from '../../fixedPopperConfig.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMenuHandler } from '../../hooks/useMenuHandler.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import { useMessages } from '../../l10nInjector.js';
 import { CacheMode } from '../../types/common.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 import { OpenInExternalAppDropdownItems } from '../OpenInExternalAppMenuItems.js';
-import { DrawingSubmenu } from './DrawingSubmenu.js';
-import { GalleryColorizeBySubmenu } from './GalleryColorizeBySubmenu.js';
-import { GallerySubmenu } from './GallerySubmenu.js';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
 import { MainMenu } from './MainMenu.js';
@@ -110,14 +108,18 @@ export function MainMenuButton(): ReactElement {
       show={menuShown}
       onToggle={handleMenuToggle}
     >
-      <Dropdown.Toggle
-        title={m?.mainMenu.title}
-        bsPrefix="fm-dropdown-toggle-nocaret"
-      >
-        <FaBars />
-      </Dropdown.Toggle>
+      <LongPressTooltip label={m?.mainMenu.title}>
+        {({ props }) => (
+          <Dropdown.Toggle bsPrefix="fm-dropdown-toggle-nocaret" {...props}>
+            <FaBars />
+          </Dropdown.Toggle>
+        )}
+      </LongPressTooltip>
 
-      <Dropdown.Menu popperConfig={fixedPopperConfig}>
+      <Dropdown.Menu
+        popperConfig={fixedPopperConfig}
+        className="fm-dropdown-with-scroller"
+      >
         <div className="fm-menu-scroller" ref={sc}>
           <div />
 
@@ -147,14 +149,8 @@ export function MainMenuButton(): ReactElement {
             </Fragment>
           ) : submenu === 'language' ? (
             <LanguageSubmenu />
-          ) : submenu === 'photos' ? (
-            <GallerySubmenu />
-          ) : submenu === 'galleryColorizeBy' ? (
-            <GalleryColorizeBySubmenu />
           ) : submenu === 'tracking' ? (
             <TrackingSubmenu />
-          ) : submenu === 'drawing' ? (
-            <DrawingSubmenu />
           ) : null}
 
           {submenu === null && (

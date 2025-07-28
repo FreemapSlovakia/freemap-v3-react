@@ -34,7 +34,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '../actions/routePlannerActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
@@ -221,10 +221,8 @@ export function MapContextMenu(): ReactElement {
 
           dispatch(
             routePlannerSetStart({
-              start: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
+              lat: contextMenu.lat,
+              lon: contextMenu.lon,
             }),
           );
 
@@ -237,10 +235,8 @@ export function MapContextMenu(): ReactElement {
 
           dispatch(
             routePlannerSetFinish({
-              finish: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
+              lat: contextMenu.lat,
+              lon: contextMenu.lon,
             }),
           );
 
@@ -290,6 +286,7 @@ export function MapContextMenu(): ReactElement {
       />
 
       <Dropdown.Menu
+        className="fm-dropdown-with-scroller"
         // this modifier somehow fixes menu
         popperConfig={{
           modifiers: [

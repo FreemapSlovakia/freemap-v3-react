@@ -7,6 +7,6 @@ export function TrackingSelection(): ReactElement {
   const m = useMessages();
 
   return (
-    <Selection icon={<FaBullseye />} title={m?.selections.tracking} deletable />
+    <Selection icon={<FaBullseye />} label={m?.selections.tracking} deletable />
   );
 }

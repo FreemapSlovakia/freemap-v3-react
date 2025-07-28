@@ -32,7 +32,7 @@ import {
   searchSetResults,
 } from '../actions/searchActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
@@ -43,6 +43,7 @@ import {
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
 import '../styles/search.scss';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 type Props = {
   hidden?: boolean;
@@ -215,30 +216,38 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               />
 
               {!!selectedResult && (
-                <Button
-                  className="w-auto"
-                  variant="secondary"
-                  type="button"
-                  title={m?.general.clear}
-                  onClick={handleClearClick}
-                >
-                  <FaTimes />
-                </Button>
+                <LongPressTooltip label={m?.general.clear}>
+                  {({ props }) => (
+                    <Button
+                      className="w-auto"
+                      variant="secondary"
+                      type="button"
+                      onClick={handleClearClick}
+                      {...props}
+                    >
+                      <FaTimes />
+                    </Button>
+                  )}
+                </LongPressTooltip>
               )}
 
-              <Button
-                variant="secondary"
-                type="submit"
-                title={m?.search.buttonTitle}
-                disabled={!value}
-              >
-                <FaSearch />
-              </Button>
+              <LongPressTooltip label={m?.search.buttonTitle}>
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    type="submit"
+                    disabled={!value}
+                    {...props}
+                  >
+                    <FaSearch />
+                  </Button>
+                )}
+              </LongPressTooltip>
             </InputGroup>
           </Dropdown.Toggle>
 
           <Dropdown.Menu
-            className="fm-search-dropdown"
+            className="fm-search-dropdown fm-dropdown-with-scroller"
             popperConfig={fixedPopperConfig}
           >
             <div className="dropdown-long" ref={sc}>
@@ -261,82 +270,92 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
           <ButtonGroup className="ms-1">
-            <Button
-              variant="secondary"
-              title={m?.search.routeFrom}
-              onClick={() => {
-                dispatch(setTool('route-planner'));
+            <LongPressTooltip label={m?.search.routeFrom}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  {...props}
+                  onClick={() => {
+                    dispatch(setTool('route-planner'));
 
-                if (selectedResult.geojson) {
-                  const c = center(selectedResult.geojson).geometry.coordinates;
+                    if (selectedResult.geojson) {
+                      const c = center(selectedResult.geojson).geometry
+                        .coordinates;
 
-                  dispatch(
-                    routePlannerSetStart({
-                      start: {
-                        lat: c[1],
-                        lon: c[0],
-                      },
-                    }),
-                  );
-                }
-              }}
-            >
-              <FaPlay color="#32CD32" />
-            </Button>
+                      dispatch(
+                        routePlannerSetStart({
+                          lat: c[1],
+                          lon: c[0],
+                        }),
+                      );
+                    }
+                  }}
+                >
+                  <FaPlay color="#32CD32" />
+                </Button>
+              )}
+            </LongPressTooltip>
 
-            <Button
-              variant="secondary"
-              title={m?.search.routeTo}
-              onClick={() => {
-                dispatch(setTool('route-planner'));
+            <LongPressTooltip label={m?.search.routeTo}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    dispatch(setTool('route-planner'));
 
-                if (selectedResult.geojson) {
-                  const c = center(selectedResult.geojson).geometry.coordinates;
+                    if (selectedResult.geojson) {
+                      const c = center(selectedResult.geojson).geometry
+                        .coordinates;
 
-                  dispatch(
-                    routePlannerSetFinish({
-                      finish: {
-                        lat: c[1],
-                        lon: c[0],
-                      },
-                    }),
-                  );
-                }
-              }}
-            >
-              <FaStop color="#FF6347" />
-            </Button>
+                      dispatch(
+                        routePlannerSetFinish({
+                          lat: c[1],
+                          lon: c[0],
+                        }),
+                      );
+                    }
+                  }}
+                  {...props}
+                >
+                  <FaStop color="#FF6347" />
+                </Button>
+              )}
+            </LongPressTooltip>
           </ButtonGroup>
 
-          <Button
-            className="ms-1"
-            title={m?.general.convertToDrawing}
-            variant="secondary"
-            onClick={() => {
-              const ask =
-                (selectedResult.geojson?.type === 'FeatureCollection' &&
-                  selectedResult.geojson.features.some(
-                    (feature) => !feature.geometry.type.endsWith('Point'),
-                  )) ||
-                (selectedResult.geojson?.type === 'Feature' &&
-                  !selectedResult.geojson.geometry.type.endsWith('Point'));
+          <LongPressTooltip label={m?.general.convertToDrawing}>
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => {
+                  const ask =
+                    (selectedResult.geojson?.type === 'FeatureCollection' &&
+                      selectedResult.geojson.features.some(
+                        (feature) => !feature.geometry.type.endsWith('Point'),
+                      )) ||
+                    (selectedResult.geojson?.type === 'Feature' &&
+                      !selectedResult.geojson.geometry.type.endsWith('Point'));
 
-              const tolerance = ask
-                ? window.prompt(m?.general.simplifyPrompt, '50')
-                : '50';
+                  const tolerance = ask
+                    ? window.prompt(m?.general.simplifyPrompt, '50')
+                    : '50';
 
-              if (tolerance !== null) {
-                dispatch(
-                  convertToDrawing({
-                    type: 'search-result',
-                    tolerance: Number(tolerance || '0') / 100_000,
-                  }),
-                );
-              }
-            }}
-          >
-            <FaPencilAlt />
-          </Button>
+                  if (tolerance !== null) {
+                    dispatch(
+                      convertToDrawing({
+                        type: 'search-result',
+                        tolerance: Number(tolerance || '0') / 100_000,
+                      }),
+                    );
+                  }
+                }}
+                {...props}
+              >
+                <FaPencilAlt />
+              </Button>
+            )}
+          </LongPressTooltip>
         </>
       )}
     </>

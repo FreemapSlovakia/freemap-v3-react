@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -10,9 +10,7 @@ import {
   FaDownload,
   FaEraser,
   FaExternalLinkAlt,
-  FaFlask,
   FaHeart,
-  FaLanguage,
   FaMobileAlt,
   FaPencilRuler,
   FaPrint,
@@ -20,30 +18,65 @@ import {
   FaSignInAlt,
   FaUser,
 } from 'react-icons/fa';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { IoLanguage } from 'react-icons/io5';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { toolDefinitions } from '../../toolDefinitions.js';
+import { ExperimentalFunction } from '../ExperimentalFunction.js';
+
+const LANGUAGES = ['Language', 'Lingua', 'Jazyk', 'Język', 'Sprache', 'Nyelv'];
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
 
-  const m = useMessages();
+  const galleryActive = useAppSelector((state) =>
+    state.map.overlays.includes('I'),
+  );
 
   const tool = useAppSelector((state) => state.main.tool);
 
-  const toolDef = toolDefinitions.find(
-    (t) =>
-      t.tool ===
-      (tool === 'draw-polygons' || tool === 'draw-points'
-        ? 'draw-lines'
-        : tool),
-  ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
+  const toolDef = toolDefinitions.find((t) => t.tool === tool);
+
+  const m = useMessages();
+
+  const [currentIndex, setCurrentIndex] = useState(
+    Math.floor(Math.random() * LANGUAGES.length),
+  );
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFading(true);
+
+      setTimeout(() => {
+        setCurrentIndex((i) => (i + 1) % LANGUAGES.length);
+        setFading(false);
+      }, 200);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const prevIndex = (currentIndex + LANGUAGES.length - 1) % LANGUAGES.length;
 
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <FaLanguage /> Language / Jazyk / Nyelv / Lingua
-        <FaChevronRight />
+        <span className="position-relative">
+          <span
+            key={prevIndex}
+            className={`position-absolute top-0 start-0 transition-opacity ${fading ? 'opacity-0' : 'opacity-100'} text-nowrap fm-transition`}
+          >
+            <IoLanguage /> {LANGUAGES[prevIndex]} <FaChevronRight />
+          </span>
+          <span
+            key={currentIndex}
+            className={`position-absolute top-0 start-0 transition-opacity ${fading ? 'opacity-100' : 'opacity-0'} text-nowrap fm-transition`}
+          >
+            <IoLanguage /> {LANGUAGES[currentIndex]} <FaChevronRight />
+          </span>
+          &nbsp;
+        </span>
       </Dropdown.Item>
 
       {user ? (
@@ -62,18 +95,21 @@ export function MainMenu(): ReactElement {
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
       </Dropdown.Item>
 
+      <Dropdown.Item
+        href="?layers=I"
+        key="gallery"
+        eventKey="gallery"
+        active={galleryActive}
+      >
+        <FaCamera /> {m?.tools.photos} <kbd>⇧f</kbd>
+      </Dropdown.Item>
+
       <Dropdown.Item as="button" eventKey="modal-maps">
         <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="submenu-drawing">
+      <Dropdown.Item as="button" eventKey="drawing">
         <FaPencilRuler /> {m?.tools.measurement}
-        <FaChevronRight />
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="submenu-photos">
-        <FaCamera /> {m?.tools.photos}
-        <FaChevronRight />
       </Dropdown.Item>
 
       {toolDefinitions
@@ -104,12 +140,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="submenu-offline">
-        <BiWifiOff />{' '}
-        <FaFlask
-          title={m?.general.experimentalFunction}
-          className="text-warning"
-        />{' '}
-        {m?.offline.offlineMode}
+        <BiWifiOff /> <ExperimentalFunction /> {m?.offline.offlineMode}
         <FaChevronRight />
       </Dropdown.Item>
 
@@ -135,12 +166,8 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
-        <FaDownload />{' '}
-        <FaFlask
-          title={m?.general.experimentalFunction}
-          className="text-warning"
-        />{' '}
-        {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
+        <FaDownload /> <ExperimentalFunction /> {m?.downloadMap.downloadMap}{' '}
+        <kbd>e</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">

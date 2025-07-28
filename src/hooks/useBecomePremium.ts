@@ -4,7 +4,7 @@ import { galleryClear } from '../actions/galleryActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
 import { isPremium } from '../premium.js';
 import { showGalleryViewerSelector } from '../selectors/mainSelectors.js';
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 export function useBecomePremium() {
   const dispatch = useDispatch();

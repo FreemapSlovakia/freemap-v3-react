@@ -125,7 +125,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Werkzeug schließen',
-    tools: 'Werkzeuge',
     routePlanner: 'Routenplaner',
     objects: 'Objekte (POIs)',
     photos: 'Fotos',
@@ -224,7 +223,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Karte für GPS-Geräte',
     embedMap: 'Karte einbetten',
     supportUs: 'Freemap unterstützen',
-    help: 'Hilfe',
+    help: ' Info & Hilfe',
     back: 'Zurück',
     mapLegend: 'Kartenlegende',
     contacts: 'Kontakt',
@@ -289,19 +288,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   gallery: {
     f: {
-      firstUploaded: 'von zuerst hochgeladenen',
-      lastUploaded: 'von zuletzt hochgeladenen',
-      firstCaptured: 'von ältesten aufgenommenen',
-      lastCaptured: 'von neuesten aufgenommenen',
-      leastRated: 'von am niedrigsten bewerteten',
-      mostRated: 'von am höchsten bewerteten',
-      lastComment: 'vom letzten Kommentar',
+      '-createdAt': 'von zuletzt hochgeladenen',
+      '-takenAt': 'von neuesten aufgenommenen',
+      '-rating': 'von am höchsten bewerteten',
+      '-lastCommentedAt': 'vom letzten Kommentar',
     },
 
     c: {
-      disable: 'nicht einfärben',
-      mine: 'meine hervorheben',
-      author: 'Autor',
+      disable: 'Nicht einfärben',
+      mine: 'Meine hervorheben',
+      userId: 'Autor',
       rating: 'Bewertung',
       takenAt: 'Aufnahmedatum',
       createdAt: 'Hochladedatum',
@@ -362,7 +358,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Fotos wurden erfolgreich hochgeladen.',
-      showPreview: 'Vorschauen anzeigen (erhöht CPU- und Speicherbedarf)',
+      showPreview:
+        'Vorschauen automatisch anzeigen (erhöht CPU- und Speicherbedarf)',
       premium: 'Nur für Nutzer mit Premiumzugang verfügbar machen',
     },
     locationPicking: {
@@ -511,9 +508,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   drawing: {
     edit: {
       title: 'Eigenschaften',
-      color: 'Farbe:',
-      label: 'Beschriftung:',
-      width: 'Breite:',
+      color: 'Farbe',
+      label: 'Beschriftung',
+      width: 'Breite',
       hint: 'Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
       type: 'Geometrietyp',
     },
@@ -677,10 +674,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Füge den folgenden Code in deine HTML-Seite ein:',
     example: 'Das Ergebnis wird folgendermaßen aussehen:',
-    dimensions: 'Größe:',
-    height: 'Höhe:',
-    width: 'Breite:',
-    enableFeatures: 'Funktionen aktivieren:',
+    dimensions: 'Größe',
+    height: 'Höhe',
+    width: 'Breite',
+    enableFeatures: 'Funktionen aktivieren',
     enableSearch: 'Suche',
     enableMapSwitch: 'Kartenebenen wechseln',
     enableLocateMe: 'Standort ermitteln',
@@ -838,6 +835,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Zusätzliche Auflösungen',
     scaleWithDpi: 'Mit DPI skalieren',
     zIndex: 'Z-Index',
+    generalSettings: 'Allgemeine Einstellungen',
+    maxZoom: 'Maximale Zoomstufe',
   },
 
   elevationChart: {
@@ -1067,9 +1066,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
 
-    area: 'Exportbereich:',
-    format: 'Format:',
-    layersTitle: 'Optionale Ebenen:',
+    area: 'Exportbereich',
+    format: 'Format',
+    layersTitle: 'Optionale Ebenen',
     layers: {
       contours: 'Höhenlinien',
       shading: 'Schattiertes Relief',
@@ -1081,8 +1080,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Gefundene Route',
       track: 'GPX-Track',
     },
-
-    mapScale: 'Kartenauflösung:',
+    mapScale: 'Kartenauflösung',
 
     alert: () => (
       <>

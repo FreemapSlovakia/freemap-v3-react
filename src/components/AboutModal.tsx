@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 
 type Props = { show: boolean };

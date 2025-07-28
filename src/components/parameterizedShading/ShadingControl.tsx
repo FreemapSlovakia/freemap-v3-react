@@ -14,7 +14,7 @@ import {
 } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { mapSetShading } from '../../actions/mapActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import {
   ColorStop,
@@ -138,6 +138,14 @@ export function ShadingControl() {
                     exaggeration: 1,
                   };
                 } else {
+                  function interpolate(
+                    ratio: number,
+                    from = type0 === 'aspect' ? 0 : 90,
+                    to = type0 === 'aspect' ? 2 * Math.PI : 2660,
+                  ) {
+                    return (to - from) * ratio + from;
+                  }
+
                   shadingComponent = {
                     id,
                     type: type0 as ShadingComponentType,
@@ -146,13 +154,34 @@ export function ShadingControl() {
                     colorStops:
                       type0 === 'color-relief' || type0 === 'aspect'
                         ? [
-                            { value: 0 / 6, color: [255, 0, 0, 1] },
-                            { value: 1 / 6, color: [255, 255, 0, 1] },
-                            { value: 2 / 6, color: [0, 255, 0, 1] },
-                            { value: 3 / 6, color: [0, 255, 255, 1] },
-                            { value: 4 / 6, color: [0, 0, 255, 1] },
-                            { value: 5 / 6, color: [255, 0, 255, 1] },
-                            { value: 6 / 6, color: [255, 0, 0, 1] },
+                            {
+                              value: interpolate(0 / 6),
+                              color: [255, 0, 0, 1],
+                            },
+                            {
+                              value: interpolate(1 / 6),
+                              color: [255, 255, 0, 1],
+                            },
+                            {
+                              value: interpolate(2 / 6),
+                              color: [0, 255, 0, 1],
+                            },
+                            {
+                              value: interpolate(3 / 6),
+                              color: [0, 255, 255, 1],
+                            },
+                            {
+                              value: interpolate(4 / 6),
+                              color: [0, 0, 255, 1],
+                            },
+                            {
+                              value: interpolate(5 / 6),
+                              color: [255, 0, 255, 1],
+                            },
+                            {
+                              value: interpolate(6 / 6),
+                              color: [255, 0, 0, 1],
+                            },
                           ]
                         : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
                     brightness: 0,
@@ -225,12 +254,7 @@ export function ShadingControl() {
                 action
                 key={component.id}
                 eventKey={component.id}
-                style={{
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
+                className="fm-ellipsis"
               >
                 {/^hillshade-|^slope-/.test(component.type) && (
                   <span
@@ -298,7 +322,7 @@ export function ShadingControl() {
 
               {(selectedComponent.type.startsWith('hillshade-') ||
                 selectedComponent.type.startsWith('slope-')) && (
-                <Form.Group className="mt-3">
+                <Form.Group controlId="exaggeration" className="mt-3">
                   <Form.Label>Exaggeration</Form.Label>
 
                   <Form.Control
@@ -325,7 +349,7 @@ export function ShadingControl() {
               )}
 
               {selectedComponent.type.startsWith('hillshade-') && (
-                <Form.Group className="mt-3">
+                <Form.Group controlId="azimuth" className="mt-3">
                   <Form.Label>Azimuth</Form.Label>
 
                   <Form.Control
@@ -357,7 +381,7 @@ export function ShadingControl() {
               )}
 
               {selectedComponent.type.endsWith('-classic') && (
-                <Form.Group className="mt-3">
+                <Form.Group controlId="elevation" className="mt-3">
                   <Form.Label>Elevation</Form.Label>
 
                   <Form.Control

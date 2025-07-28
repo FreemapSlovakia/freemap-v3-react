@@ -48,6 +48,8 @@ export const mapsLoadProcessor: Processor = {
 
     const data = await res.json();
 
+    // backward compatibility
+
     try {
       const features = data.data.trackViewer.trackGeojson.features;
 
@@ -68,7 +70,6 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
-    // backward compatibility
     try {
       const { routePlanner } = data.data;
 
@@ -96,6 +97,28 @@ export const mapsLoadProcessor: Processor = {
         if (!is<CustomLayerDef[]>(map.customLayers)) {
           delete map.customLayers;
         }
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      const { routePlanner } = data.data;
+
+      if (!routePlanner.points) {
+        routePlanner.points = [
+          routePlanner.start,
+          ...routePlanner.midpoints,
+          routePlanner.finish,
+        ]
+          .filter(Boolean)
+          .map((pt) => ({ ...pt, manual: pt.manual ?? false }));
+
+        routePlanner.finishOnly = !!routePlanner.finish && !routePlanner.start;
+
+        delete routePlanner.start;
+        delete routePlanner.midpoints;
+        delete routePlanner.finish;
       }
     } catch {
       // ignore

@@ -10,7 +10,7 @@ import {
   TrackingPoint,
 } from '../../components/tracking/TrackingPoint.js';
 import { toLatLng, toLatLngArr } from '../../geoutils.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '../../hooks/useNumberFormat.js';
 import { selectingModeSelector } from '../../selectors/mainSelectors.js';

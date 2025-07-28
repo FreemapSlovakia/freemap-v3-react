@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
+import { isInvalidInt } from '../numberValidator.js';
 import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
@@ -33,7 +34,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     maximumFractionDigits: 2,
   });
 
-  const invalidCredits = !/^[1-9]\d*$/.test(credits) || Number(credits) < 500;
+  const invalidCredits = isInvalidInt(credits, true, undefined, 500);
 
   return (
     <Modal show={show} onHide={close}>
@@ -47,8 +48,8 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         <Modal.Body>
           <CreditsAlert buy={false} />
 
-          <Form.Group>
-            <Form.Label>{m?.credits.amount}</Form.Label>
+          <Form.Group controlId="amount">
+            <Form.Label className="required">{m?.credits.amount}</Form.Label>
 
             <InputGroup>
               <Form.Control

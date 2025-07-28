@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { DeleteButton } from './DeleteButton.js';
 import { ToolMenu } from './ToolMenu.js';
 

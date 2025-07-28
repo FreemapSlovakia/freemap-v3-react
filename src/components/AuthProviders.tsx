@@ -10,7 +10,7 @@ import {
   authWithGoogle,
   authWithOsm,
 } from '../actions/authActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import type { AuthProvider } from '../types/auth.js';
 

@@ -16,6 +16,8 @@ export type Picture = {
   tags: string[];
   user: string;
   rating: number;
+  premium?: 1;
+  hmac?: string;
 };
 
 export async function fetchPictures(getState: () => RootState) {
@@ -39,6 +41,7 @@ export async function fetchPictures(getState: () => RootState) {
           'tags',
           'user',
           'premium',
+          'hmac',
         ],
       }),
     expectedStatus: 200,

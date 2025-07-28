@@ -1,32 +1,31 @@
 import {
   Fragment,
   ReactElement,
-  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
 } from '../actions/elevationChartActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import '../styles/elevationChart.scss';
 
 const ml = 50,
   mr = 30,
-  mt = 20,
-  mb = 40;
+  mt = 10,
+  mb = 44;
 
-const ticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((k) =>
-  [1, 2.5, 2, 5].map((x) => x * 10 ** k),
-);
+const ticks = Array(11)
+  .fill(0)
+  .flatMap((_, k) => [1, 2.5, 2, 5].map((x) => x * 10 ** k));
 
 export default ElevationChart;
 
@@ -51,14 +50,22 @@ export function ElevationChart(): ReactElement | null {
 
   const { climbUp, climbDown } = elevationProfilePoints.at(-1)!;
 
-  const [width, setWidth] = useState(300);
+  const [width, setWidth] = useState(400);
 
-  const [height, setHeight] = useState(150);
+  const [height, setHeight] = useState(300);
 
-  const [mapX, mapY, min, max, d, xLines, yLines] = useMemo(() => {
-    const min = Math.min(...elevationProfilePoints.map((pt) => pt.ele));
+  const [mapX, mapY, d, vLines, hLines] = useMemo(() => {
+    const eles = elevationProfilePoints.map((pt) => pt.ele);
 
-    const max = Math.max(...elevationProfilePoints.map((pt) => pt.ele));
+    const min = Math.min(...eles);
+
+    const max = Math.max(...eles);
+
+    const diff = max - min;
+
+    const chartMin = min - diff / 20;
+
+    const chartMax = max + diff / 20;
 
     const d = elevationProfilePoints.at(-1)!.distance;
 
@@ -67,42 +74,51 @@ export function ElevationChart(): ReactElement | null {
     }
 
     function mapY(ele: number) {
-      return height - mb - ((ele - min) / (max - min)) * (height - mt - mb);
+      return (
+        height -
+        mb -
+        ((ele - chartMin) / (chartMax - chartMin)) * (height - mt - mb)
+      );
     }
 
-    const yLines: number[] = [min];
+    const hLines: number[] = [];
 
     const yStep = ticks.find((step) => mapY(0) - mapY(step) > 20) ?? 10000;
 
-    for (let y = Math.ceil(min / yStep) * yStep; y < max; y += yStep) {
-      yLines.push(y);
+    for (
+      let y = Math.ceil(chartMin / yStep) * yStep;
+      y < chartMax;
+      y += yStep
+    ) {
+      hLines.push(y);
     }
 
-    yLines.push(max);
+    hLines.push(min);
+    hLines.push(max);
 
-    const xLines: number[] = [0];
+    const vLines: number[] = [];
 
     const xStep =
       ticks.find((step) => mapX(step) - mapX(0) > 25) ??
       Number.POSITIVE_INFINITY;
 
     for (let x = 0; x < d; x += xStep) {
-      xLines.push(x);
+      vLines.push(x);
     }
 
-    xLines.push(d);
+    vLines.push(d);
 
-    return [mapX, mapY, min, max, d, xLines, yLines];
+    return [mapX, mapY, d, vLines, hLines];
   }, [elevationProfilePoints, width, height]);
 
-  const [mouseX, setMouseX] = useState<number | undefined>();
+  const [pointerX, setPointerX] = useState<number | undefined>();
 
-  const handleMouseMove = (e: ReactMouseEvent<SVGRectElement>) => {
+  const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
 
-    setMouseX(x + ml);
+    setPointerX(x + ml);
 
     for (const pt of elevationProfilePoints) {
       if (pt.distance > (d / (width - ml - mr)) * x) {
@@ -113,8 +129,8 @@ export function ElevationChart(): ReactElement | null {
     }
   };
 
-  const handleMouseOut = () => {
-    setMouseX(undefined);
+  const handlePointerOut = () => {
+    setPointerX(undefined);
 
     dispatch(elevationChartSetActivePoint(null));
   };
@@ -124,23 +140,31 @@ export function ElevationChart(): ReactElement | null {
   const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!ref) {
+      return;
+    }
+
     const ro = new ResizeObserver((e) => {
       setWidth(e[0].contentRect.width);
 
       setHeight(e[0].contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
-    if (ref) {
-      ref.style.width = window.innerWidth / 2 + 'px';
+    ref.style.width =
+      Math.min(
+        Math.max(window.innerWidth / 2, 400),
+        Math.max(window.innerWidth - 14, 40),
+      ) + 'px';
 
-      ref.style.height = window.innerHeight / 2 + 'px';
+    ref.style.height =
+      Math.min(
+        Math.max(window.innerHeight / 2, 300),
+        Math.max(window.innerHeight - 130, 40),
+      ) + 'px';
 
-      ro.observe(ref);
-    }
+    ro.observe(ref);
 
-    return () => {
-      ro.disconnect();
-    };
+    return () => ro.disconnect();
   }, [ref, ref2]);
 
   const startPosRef = useRef<[number, number]>(undefined);
@@ -150,7 +174,7 @@ export function ElevationChart(): ReactElement | null {
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
+    const handleWindowPointerDown = (e: PointerEvent) => {
       if (
         e.target instanceof Element &&
         e.target.matches('.elevationChart svg, .elevationChart svg *')
@@ -159,63 +183,61 @@ export function ElevationChart(): ReactElement | null {
       }
     };
 
-    const handleMouseUp = (e: MouseEvent) => {
-      if (startPosRef.current) {
-        const pos = [
-          e.clientX - startPosRef.current[0] + posRef.current[0],
-          e.clientY - startPosRef.current[1] + posRef.current[1],
-        ];
-
-        setPos({ left: pos[0], top: pos[1] });
-
-        posRef.current = pos;
-
-        startPosRef.current = undefined;
+    const handleWindowPointerUp = (e: PointerEvent) => {
+      if (!startPosRef.current) {
+        return;
       }
+
+      const pos = [
+        e.clientX - startPosRef.current[0] + posRef.current[0],
+        e.clientY - startPosRef.current[1] + posRef.current[1],
+      ];
+
+      setPos({ left: pos[0], top: pos[1] });
+
+      posRef.current = pos;
+
+      startPosRef.current = undefined;
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (startPosRef.current) {
-        setPos({
-          left: posRef.current[0] + e.clientX - startPosRef.current[0],
-          top: posRef.current[1] + e.clientY - startPosRef.current[1],
-        });
+    const handleWindowPointerMove = (e: PointerEvent) => {
+      if (!startPosRef.current) {
+        return;
       }
+
+      setPos({
+        left: posRef.current[0] + e.clientX - startPosRef.current[0],
+        top: posRef.current[1] + e.clientY - startPosRef.current[1],
+      });
     };
 
-    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('pointerdown', handleWindowPointerDown);
 
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('pointerup', handleWindowPointerUp);
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('pointermove', handleWindowPointerMove);
 
     return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('pointerdown', handleWindowPointerDown);
 
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointerup', handleWindowPointerUp);
 
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('pointermove', handleWindowPointerMove);
     };
   }, []);
 
   return (
     <div className="elevationChart m-2 p-2 rounded" ref={setRef} style={pos}>
-      <Button
-        variant="dark"
-        size="sm"
-        onClick={() => dispatch(elevationChartClose())}
-      >
-        <FaTimes />
-      </Button>
-
+      <CloseButton onClick={() => dispatch(elevationChartClose())} />
       <svg width={width} height={height}>
         <rect
           x={ml}
           y={mt}
           width={width - ml - mr}
           height={height - mt - mb}
-          onMouseMove={handleMouseMove}
-          onMouseOut={handleMouseOut}
+          onMouseMove={handlePointerMove} // for mobiles
+          onPointerMove={handlePointerMove}
+          onPointerOut={handlePointerOut}
           fill="white"
         />
 
@@ -234,99 +256,109 @@ export function ElevationChart(): ReactElement | null {
           points={elevationProfilePoints
             .map((pt) => mapX(pt.distance) + ',' + mapY(pt.ele))
             .join(' ')}
-          stroke="var(--primary)"
+          stroke="var(--bs-primary)"
           strokeWidth={1}
           fill="none"
         />
 
-        {mouseX !== undefined && (
+        {pointerX !== undefined && (
           <line
-            key="mousex"
-            x1={mouseX}
-            x2={mouseX}
+            key="pointerx"
+            x1={pointerX}
+            x2={pointerX}
             y1={mt}
             y2={height - mb}
-            stroke="var(--red)"
+            stroke="var(--bs-red)"
             strokeWidth={1}
           />
         )}
 
-        {yLines.map((y, i) => (
-          <Fragment key={'y' + i}>
-            <line
-              x1={ml}
-              x2={width - mr}
-              y1={mapY(y)}
-              y2={mapY(y)}
-              stroke="black"
-              strokeWidth={1}
-              opacity={0.2}
-              strokeDasharray="2 2"
-            />
+        {hLines.map((y, i) => {
+          const limit = hLines.length - i < 3;
 
-            {/* tick */}
-            <line
-              x1={ml - 4}
-              x2={ml}
-              y1={mapY(y)}
-              y2={mapY(y)}
-              stroke="black"
-              strokeWidth={1}
-            />
+          return (
+            <Fragment key={'y' + i}>
+              <line
+                x1={ml}
+                x2={width - mr}
+                y1={mapY(y)}
+                y2={mapY(y)}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+                opacity={limit ? 0.4 : 0.2}
+                strokeDasharray="2 2"
+              />
 
-            {(y === min ||
-              y === max ||
-              (mapY(min) - mapY(y) > 12 && mapY(y) - mapY(max) > 12)) && (
-              <text
-                x={ml - 10}
-                y={mapY(y)}
-                textAnchor="end"
-                dominantBaseline="middle"
-              >
-                {nf0.format(y)}
-              </text>
-            )}
-          </Fragment>
-        ))}
+              {/* tick */}
 
-        {xLines.map((x, i) => (
-          <Fragment key={'x' + i}>
-            <line
-              x1={mapX(x)}
-              x2={mapX(x)}
-              y1={mt}
-              y2={height - mb + 5}
-              stroke="black"
-              strokeWidth={1}
-              opacity={0.2}
-              strokeDasharray="2 2"
-            />
+              <line
+                x1={ml - 4}
+                x2={ml}
+                y1={mapY(y)}
+                y2={mapY(y)}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+              />
 
-            {/* tick */}
-            <line
-              x1={mapX(x)}
-              x2={mapX(x)}
-              y1={height - mb}
-              y2={height - mb + 4}
-              stroke="black"
-              strokeWidth={1}
-            />
+              {(limit ||
+                (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
+                  Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14)) && (
+                <text
+                  x={ml - 10}
+                  y={mapY(y)}
+                  textAnchor="end"
+                  dominantBaseline="middle"
+                  fill={limit ? 'var(--bs-red)' : 'black'}
+                >
+                  {nf0.format(y)}
+                </text>
+              )}
+            </Fragment>
+          );
+        })}
 
-            {(x === 0 ||
-              x === d ||
-              (mapX(x) - mapX(0) > 20 && mapX(d) - mapX(x) > 20)) && (
-              <text
-                x={mapX(x) - 5}
-                y={height - mb + 15}
-                textAnchor="start"
-                dominantBaseline="middle"
-                transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
-              >
-                {nf1.format(x / 1000)}
-              </text>
-            )}
-          </Fragment>
-        ))}
+        {vLines.map((x, i) => {
+          const limit = i === vLines.length - 1;
+
+          return (
+            <Fragment key={'x' + i}>
+              <line
+                x1={mapX(x)}
+                x2={mapX(x)}
+                y1={mt}
+                y2={height - mb}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+                opacity={limit ? 0.4 : 0.2}
+                strokeDasharray="2 2"
+              />
+
+              {/* tick */}
+
+              <line
+                x1={mapX(x)}
+                x2={mapX(x)}
+                y1={height - mb}
+                y2={height - mb + 4}
+                strokeWidth={1}
+                stroke={limit ? 'var(--bs-red)' : 'black'}
+              />
+
+              {(limit || Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20) && (
+                <text
+                  x={mapX(x) - 5}
+                  y={height - mb + 15}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
+                  fill={limit ? 'var(--bs-red)' : 'black'}
+                >
+                  {nf1.format(x / 1000)}
+                </text>
+              )}
+            </Fragment>
+          );
+        })}
 
         {/* x-axis */}
         <line
@@ -353,8 +385,9 @@ export function ElevationChart(): ReactElement | null {
           y={mt}
           width={width - ml - mr}
           height={height - mt - mb}
-          onMouseMove={handleMouseMove}
-          onMouseOut={handleMouseOut}
+          onPointerDown={handlePointerMove} // for mobiles
+          onPointerMove={handlePointerMove}
+          onPointerOut={handlePointerOut}
           opacity={0}
         />
       </svg>

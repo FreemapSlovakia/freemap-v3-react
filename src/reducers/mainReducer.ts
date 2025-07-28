@@ -45,7 +45,6 @@ import {
   toggleLocate,
   Tool,
 } from '../actions/mainActions.js';
-import { DocumentKey } from '../documents/index.js';
 import { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
 
@@ -68,7 +67,7 @@ export interface MainState {
   cookieConsentResult: boolean | null; // true if analyticCookiesAllowed; false if not; null if no cookies accepted
   analyticCookiesAllowed: boolean; // NOTE this is a local "thing"
   purchaseOnLogin: Purchase | undefined;
-  documentKey: DocumentKey | null;
+  documentKey: string | null;
   hiddenInfoBars: Record<string, number>;
   drawingColor: string;
   drawingWidth: number;
@@ -101,12 +100,12 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
     .addCase(setTool, (state, action) => {
       if (!window.fmEmbedded) {
-        state.tool = action.payload;
-
         state.selection =
           action.payload === state.tool || action.payload === null
             ? state.selection
             : null;
+
+        state.tool = action.payload;
       }
     })
     .addCase(drawingLineStopDrawing, (state) => {
@@ -184,14 +183,16 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (!window.fmEmbedded) {
         state.selection = action.payload;
 
-        state.tool =
-          state.tool === 'objects' ||
-          state.tool === 'changesets' ||
-          state.tool === 'track-viewer' ||
-          (action.payload === null && state.tool !== 'route-planner')
-            ? /* && state.tool !== 'track-viewer' */
-              state.tool
-            : null;
+        if (
+          state.tool !== 'objects' &&
+          state.tool !== 'changesets' &&
+          state.tool !== 'track-viewer' &&
+          (state.tool !== 'route-planner' ||
+            action.payload?.type !== 'route-point') &&
+          action.payload !== null
+        ) {
+          state.tool = null;
+        }
       }
     })
     .addCase(convertToDrawing, (state) => {

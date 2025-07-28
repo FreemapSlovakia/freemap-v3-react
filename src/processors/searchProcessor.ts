@@ -168,8 +168,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
     // do geocoding
 
-    console.log(getState().l10n.language);
-
     const res = await httpRequest({
       getState,
       url:

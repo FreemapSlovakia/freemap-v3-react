@@ -54,7 +54,7 @@ export function ProjectPointModal({
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group className="mb-3">
+          <Form.Group controlId="distance" className="mb-3">
             <Form.Label>{m?.drawing.projection.distance}</Form.Label>
 
             <InputGroup>
@@ -69,7 +69,7 @@ export function ProjectPointModal({
             </InputGroup>
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group controlId="azimuth">
             <Form.Label>{m?.drawing.projection.azimuth}</Form.Label>
 
             <InputGroup>

@@ -6,7 +6,7 @@ import {
   drawingMeasure,
   drawingPointAdd,
 } from '../actions/drawingPointActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 
 export function DrawingPointsTool(): null {
   const color = useAppSelector((state) => state.main.drawingColor);

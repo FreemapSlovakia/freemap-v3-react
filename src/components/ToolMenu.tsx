@@ -1,13 +1,14 @@
-import 'leaflet/dist/leaflet.css';
 import { type ReactElement, ReactNode } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { Button, ButtonToolbar } from 'react-bootstrap';
+import { FaPencilRuler, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setTool } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { toolDefinitions } from '../toolDefinitions.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
+import { Toolbar } from './Toolbar.js';
 
 type Props = {
   children?: ReactNode;
@@ -28,34 +29,42 @@ export function ToolMenu({ children }: Props): ReactElement {
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2 fm-toolmenu">
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">
-              <span>
-                {toolDef.icon}
-
-                <span className="d-none d-sm-inline">
-                  {' '}
-                  {m?.tools[toolDef.msgKey]}
-                </span>
-              </span>
+              <LongPressTooltip
+                breakpoint="sm"
+                label={
+                  toolDef.draw ? m?.tools.measurement : m?.tools[toolDef.msgKey]
+                }
+              >
+                {({ label, labelClassName, props }) => (
+                  <span {...props}>
+                    {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
+                    <span className={labelClassName}> {label}</span>
+                  </span>
+                )}
+              </LongPressTooltip>
             </span>
           )}
 
-          <Button
-            className="ms-1"
-            variant="secondary"
-            // size="sm"
-            onClick={() => dispatch(setTool(null))}
-            title={m?.general.close + ' [Esc]'}
-          >
-            <FaTimes />
-          </Button>
-
           {children}
+
+          <LongPressTooltip label={m?.general.close} kbd="Esc">
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="dark"
+                onClick={() => dispatch(setTool(null))}
+                {...props}
+              >
+                <FaTimes />
+              </Button>
+            )}
+          </LongPressTooltip>
         </ButtonToolbar>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

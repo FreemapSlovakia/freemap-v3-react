@@ -14,7 +14,7 @@ import { RichMarker } from '../components/RichMarker.js';
 import { colors } from '../constants.js';
 import { formatDistance } from '../distanceFormatter.js';
 import { smoothElevations } from '../geoutils.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';

@@ -1,11 +1,13 @@
 import type { ReactElement } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { mapsDisconnect, mapsSave } from '../actions/mapsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
+import { Toolbar } from './Toolbar.js';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -15,40 +17,55 @@ export function MapsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   return (
-    <Card className="fm-toolbar mx-2 mt-2">
+    <Toolbar className="mt-2">
       <ButtonToolbar>
-        <Button
-          variant="primary"
-          onClick={() => dispatch(setActiveModal('maps'))}
-          title={m?.tools.maps}
-        >
-          <FaRegMap />
-        </Button>
+        <LongPressTooltip breakpoint="xl" label={m?.tools.maps}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant="primary"
+              onClick={() => dispatch(setActiveModal('maps'))}
+              {...props}
+            >
+              <FaRegMap />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
 
-        <span className="align-self-center ms-1 me-2">
+        <span className="align-self-center mx-1">
           {activeMap?.name ?? '???'}
         </span>
 
         {activeMap?.canWrite && (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => dispatch(mapsSave(undefined))}
-            title={m?.maps.save}
-          >
-            <FaSave />
-          </Button>
+          <LongPressTooltip breakpoint="xl" label={m?.maps.save}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(mapsSave(undefined))}
+                {...props}
+              >
+                <FaSave />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
 
-        <Button
-          className="ms-1"
-          variant="secondary"
-          onClick={() => dispatch(mapsDisconnect())}
-          title={m?.maps.disconnect}
-        >
-          <FaUnlink />
-        </Button>
+        <LongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => dispatch(mapsDisconnect())}
+              {...props}
+            >
+              <FaUnlink />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
       </ButtonToolbar>
-    </Card>
+    </Toolbar>
   );
 }

@@ -6,9 +6,10 @@ import { selectFeature } from '../../actions/mainActions.js';
 import { trackingActions } from '../../actions/trackingActions.js';
 import { DateTime } from '../../components/DateTime.js';
 import { toDatetimeLocal } from '../../dateUtils.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useTextInputState } from '../../hooks/useTextInputState.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isInvalidFloat, isInvalidInt } from '../../numberValidator.js';
 import { TrackedDevice } from '../../types/trackingTypes.js';
 
 export function TrackedDeviceForm(): ReactElement {
@@ -67,6 +68,12 @@ export function TrackedDeviceForm(): ReactElement {
     device?.splitDuration?.toString() ?? '',
   );
 
+  const invalidWidth = isInvalidFloat(width, false, 1);
+  const invalidMaxCount = isInvalidInt(maxCount, false, 0);
+  const invalidMaxAge = isInvalidInt(maxAge, false, 0);
+  const invalidSplitDistance = isInvalidFloat(splitDistance, false, 0);
+  const invalidSplitDuration = isInvalidInt(splitDuration, false, 0);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -107,26 +114,33 @@ export function TrackedDeviceForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="mb-3 required">
+        <Form.Group controlId="token" className="mb-3 ">
           {/* TODD: or ID */}
-          <Form.Label>{m?.tracking.trackedDevice.token}</Form.Label>
+          <Form.Label className="required">
+            {m?.tracking.trackedDevice.token}
+          </Form.Label>
 
-          <Form.Control value={id} onChange={setId} required />
+          <Form.Control
+            isInvalid={!id.trim()}
+            value={id}
+            onChange={setId}
+            required
+          />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="label" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.label}</Form.Label>
           <Form.Control value={label} onChange={setLabel} />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="color" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.color}</Form.Label>
           <InputGroup>
             <Form.Control type="color" value={color} onChange={setColor} />
           </InputGroup>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="width" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.width}</Form.Label>
 
           <InputGroup>
@@ -135,18 +149,19 @@ export function TrackedDeviceForm(): ReactElement {
               onChange={setWidth}
               type="number"
               min="1"
+              isInvalid={invalidWidth}
             />
             <InputGroup.Text>px</InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="fromTime" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.fromTime}</Form.Label>
 
           <DateTime value={fromTime} onChange={setFromTime} />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="maxAge" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.maxAge}</Form.Label>
 
           <InputGroup>
@@ -154,6 +169,7 @@ export function TrackedDeviceForm(): ReactElement {
               type="number"
               min="0"
               step="1"
+              isInvalid={invalidMaxAge}
               value={maxAge}
               onChange={setMaxAge}
             />
@@ -161,27 +177,27 @@ export function TrackedDeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="maxCount" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.maxCount}</Form.Label>
 
           <Form.Control
             type="number"
             min="0"
             step="1"
+            isInvalid={invalidMaxCount}
             value={maxCount}
             onChange={setMaxCount}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="splitDistance" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.splitDistance}</Form.Label>
 
           <InputGroup>
             <Form.Control
               type="number"
               min="0"
-              step="1"
-              value={splitDistance}
+              isInvalid={invalidSplitDistance}
               onChange={setSplitDistance}
             />
 
@@ -189,7 +205,7 @@ export function TrackedDeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="splitDuration" className="mb-3">
           <Form.Label>{m?.tracking.trackedDevice.splitDuration}</Form.Label>
 
           <InputGroup>
@@ -197,6 +213,7 @@ export function TrackedDeviceForm(): ReactElement {
               type="number"
               min="0"
               step="1"
+              isInvalid={invalidSplitDuration}
               value={splitDuration}
               onChange={setSplitDuration}
             />
@@ -207,7 +224,19 @@ export function TrackedDeviceForm(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button type="submit">{m?.general.save}</Button>
+        <Button
+          type="submit"
+          disabled={
+            !id.trim() ||
+            invalidSplitDistance ||
+            invalidSplitDuration ||
+            invalidMaxCount ||
+            invalidMaxAge ||
+            invalidWidth
+          }
+        >
+          {m?.general.save}
+        </Button>
 
         <Button
           variant="dark"

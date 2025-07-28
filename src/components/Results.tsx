@@ -1,7 +1,6 @@
-import 'leaflet/dist/leaflet.css';
-import { ReactElement } from 'react';
-import { Pane } from 'react-leaflet';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { ReactElement, useEffect } from 'react';
+import { useAppSelector } from '../hooks/useAppSelector.js';
+import { useMap } from '../hooks/useMap.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ChangesetsResult } from './ChangesetsResult.js';
 import { DrawingLinesResult } from './DrawingLinesResult.js';
@@ -25,8 +24,24 @@ export function Results(): ReactElement {
     (state) => state.map.layersSettings['i']?.opacity ?? 1,
   );
 
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    for (const name of ['shadowPane', 'markerPane', 'overlayPane']) {
+      const pane = map.getPane(name);
+
+      if (pane) {
+        pane.style.opacity = String(opacity ?? 1);
+      }
+    }
+  }, [map, opacity]);
+
   return (
-    <Pane name="interactive" style={{ opacity }} key={opacity}>
+    <>
       <SearchResults />
 
       {hasObjects && <ObjectsResult />}
@@ -49,6 +64,6 @@ export function Results(): ReactElement {
       <ChangesetsResult />
 
       <TrackingResult />
-    </Pane>
+    </>
   );
 }

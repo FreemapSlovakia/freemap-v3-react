@@ -4,7 +4,7 @@ import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../../actions/mainActions.js';
 import { trackingActions } from '../../actions/trackingActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Device } from './Device.js';
 
@@ -53,9 +53,7 @@ export function Devices(): ReactElement {
       <Modal.Footer>
         <Button
           type="button"
-          onClick={() => {
-            dispatch(trackingActions.modifyDevice(null));
-          }}
+          onClick={() => dispatch(trackingActions.modifyDevice(null))}
         >
           {m?.general.add}
         </Button>
@@ -63,9 +61,7 @@ export function Devices(): ReactElement {
         <Button
           variant="dark"
           type="button"
-          onClick={() => {
-            dispatch(setActiveModal(null));
-          }}
+          onClick={() => dispatch(setActiveModal(null))}
         >
           {m?.general.close} <kbd>Esc</kbd>
         </Button>

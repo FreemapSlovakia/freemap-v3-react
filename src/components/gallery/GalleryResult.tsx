@@ -4,7 +4,7 @@ import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../../actions/galleryActions.js';
 import { RichMarker } from '../../components/RichMarker.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import '../../styles/gallery.scss';
 
 export function GalleryResult(): ReactElement {

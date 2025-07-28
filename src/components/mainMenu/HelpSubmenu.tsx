@@ -1,8 +1,8 @@
 import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
-import { documents } from '../../documents/index.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { getDocuments } from '../../documents/index.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
@@ -46,20 +46,20 @@ export function HelpSubmenu(): JSX.Element {
           </Dropdown.Item>
 
           <Dropdown.Divider />
-
-          {documents.map(([key, name, icon, hidden]) =>
-            hidden ? null : (
-              <Dropdown.Item
-                key={key}
-                href={`?document=${key}`}
-                eventKey={'document-' + key}
-              >
-                {icon} {name}
-              </Dropdown.Item>
-            ),
-          )}
         </>
       )}
+
+      {getDocuments(language)
+        .filter((item) => item.listed !== false)
+        .map(({ key, icon, title }) => (
+          <Dropdown.Item
+            key={key}
+            href={`?document=${key}`}
+            eventKey={'document-' + key}
+          >
+            {icon} {title}
+          </Dropdown.Item>
+        ))}
     </>
   );
 }

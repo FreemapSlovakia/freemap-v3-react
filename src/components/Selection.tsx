@@ -1,19 +1,21 @@
 import { type ReactElement, ReactNode } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { selectFeature } from '../actions/mainActions.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { DeleteButton } from './DeleteButton.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
+import { Toolbar } from './Toolbar.js';
 
 export function Selection({
-  title,
+  label,
   icon,
   deletable,
   children,
 }: {
-  title?: string;
+  label?: string;
   icon: ReactElement;
   deletable?: boolean;
   children?: ReactNode;
@@ -28,28 +30,35 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Card className="fm-toolbar mt-2">
+      <Toolbar className="mt-2 fm-selection">
         <ButtonToolbar>
-          <span className="align-self-center ms-1">
-            {icon}
-
-            <span className="d-none d-sm-inline"> {title}</span>
-          </span>
+          <LongPressTooltip breakpoint="sm" label={label}>
+            {({ label, labelClassName, props }) => (
+              <span className="align-self-center ms-1" {...props}>
+                {icon}
+                <span className={labelClassName}> {label}</span>
+              </span>
+            )}
+          </LongPressTooltip>
 
           {children}
 
           {deletable && <DeleteButton />}
 
-          <Button
-            variant="secondary"
-            className="ms-1"
-            onClick={() => dispatch(selectFeature(null))}
-            title={m?.general.close + ' [Esc]'}
-          >
-            <FaTimes />
-          </Button>
+          <LongPressTooltip label={m?.general.close} kbd="Esc">
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="dark"
+                onClick={() => dispatch(selectFeature(null))}
+                {...props}
+              >
+                <FaTimes />
+              </Button>
+            )}
+          </LongPressTooltip>
         </ButtonToolbar>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

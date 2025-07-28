@@ -10,7 +10,7 @@ import {
 } from '../actions/drawingPointActions.js';
 import { selectFeature } from '../actions/mainActions.js';
 import { colors } from '../constants.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 import { RichMarker } from './RichMarker.js';
 

@@ -14,7 +14,7 @@ import {
   mapsSave,
 } from '../actions/mapsActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useOnline } from '../hooks/useOnline.js';
 import { useMessages } from '../l10nInjector.js';
@@ -173,7 +173,7 @@ export function MapsModal({ show }: Props): ReactElement {
 
             <Form>
               {(isOwnMap || !activeMap) && (
-                <Form.Group className="mb-3">
+                <Form.Group controlId="mapName" className="mb-3">
                   <Form.Label>{m?.general.name}</Form.Label>
 
                   <Form.Control
@@ -185,10 +185,13 @@ export function MapsModal({ show }: Props): ReactElement {
               )}
 
               {(isOwnMap || !activeMap) && (
-                <Form.Group className="mb-3">
+                <Form.Group controlId="writers" className="mb-3">
                   <Form.Label>{m?.maps.writers}</Form.Label>
 
                   <ReactTags
+                    placeholderText={m?.maps.addWriter}
+                    newOptionText={m?.general.newOptionText}
+                    deleteButtonText={m?.general.deleteButtonText}
                     selected={writers?.map((id) => ({
                       value: id,
                       label: userMap.get(id) ?? '???',

@@ -4,7 +4,10 @@ import {
 } from '../actions/drawingLineActions.js';
 import { drawingPointDelete } from '../actions/drawingPointActions.js';
 import { deleteFeature, selectFeature } from '../actions/mainActions.js';
-import { routePlannerDelete } from '../actions/routePlannerActions.js';
+import {
+  routePlannerDelete,
+  routePlannerRemovePoint,
+} from '../actions/routePlannerActions.js';
 import { trackingActions } from '../actions/trackingActions.js';
 import { trackViewerDelete } from '../actions/trackViewerActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -34,6 +37,10 @@ export const deleteProcessor: Processor = {
       dispatch(selectFeature(null));
 
       dispatch(trackingActions.delete({ token: state.main.selection.id }));
+    } else if (state.main.selection?.type === 'route-point') {
+      dispatch(selectFeature(null));
+
+      dispatch(routePlannerRemovePoint(state.main.selection.id));
     } else if (
       state.main.tool === 'track-viewer' ||
       state.main.tool === 'map-details'

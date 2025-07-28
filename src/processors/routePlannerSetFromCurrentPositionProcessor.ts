@@ -15,9 +15,9 @@ export const routePlannerSetFromCurrentPositionProcessor: Processor<
     const { lat, lon } = await getCurrentPosition();
 
     if (action.payload === 'start') {
-      dispatch(routePlannerSetStart({ start: { lat, lon } }));
+      dispatch(routePlannerSetStart({ lat, lon }));
     } else {
-      dispatch(routePlannerSetFinish({ finish: { lat, lon } }));
+      dispatch(routePlannerSetFinish({ lat, lon }));
     }
   },
 };

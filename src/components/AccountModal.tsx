@@ -29,7 +29,7 @@ import {
 } from '../actions/authActions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';
@@ -119,6 +119,11 @@ export function AccountModal({ show }: Props): ReactElement | null {
         return 'Unknown';
     }
   }
+
+  const invalidEmail =
+    !!email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const invalidName = !name.trim();
 
   return !user ? null : (
     <Modal show={show} onHide={close}>
@@ -223,11 +228,14 @@ export function AccountModal({ show }: Props): ReactElement | null {
               </Accordion.Header>
 
               <Accordion.Body>
-                <Form.Group className="mb-3">
-                  <Form.Label>{m?.settings.account.name}</Form.Label>
+                <Form.Group controlId="name" className="mb-3">
+                  <Form.Label className="required">
+                    {m?.settings.account.name}
+                  </Form.Label>
 
                   <Form.Control
                     value={name}
+                    isInvalid={invalidName}
                     onChange={(e) => {
                       setName(e.target.value);
                     }}
@@ -236,12 +244,13 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   />
                 </Form.Group>
 
-                <Form.Group className="mb-3">
+                <Form.Group controlId="email" className="mb-3">
                   <Form.Label>{m?.settings.account.email}</Form.Label>
 
                   <Form.Control
                     type="email"
                     value={email}
+                    isInvalid={invalidEmail}
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
@@ -253,7 +262,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   className="ms-auto d-block"
                   variant="primary"
                   type="submit"
-                  disabled={!userMadeChanges}
+                  disabled={!userMadeChanges || invalidName || invalidEmail}
                 >
                   <FaCheck /> {m?.general.save}
                 </Button>

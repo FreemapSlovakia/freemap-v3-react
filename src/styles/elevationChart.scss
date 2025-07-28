@@ -5,6 +5,7 @@
   overflow: hidden;
   width: 300px;
   height: 150px;
+  touch-action: none;
 
   & > button {
     position: absolute;

@@ -145,7 +145,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Eszköz bezárása',
-    tools: 'Eszközök',
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
@@ -243,7 +242,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Térkép GPS-készülékekhez',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
-    help: 'Súgó',
+    help: 'Információk és segítség',
     back: 'Vissza',
     mapLegend: 'Jelmagyarázat',
     contacts: 'Kapcsolat',
@@ -318,26 +317,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     upload: 'Feltöltés',
 
     f: {
-      firstUploaded: 'az először feltöltöttől',
-      lastUploaded: 'a legutóbb feltöltöttől',
-      firstCaptured: 'a legrégebben készülttől',
-      lastCaptured: 'a legutóbb készülttől',
-      leastRated: 'a leggyöngébbre értékelttől',
-      mostRated: 'a legjobbra értékelttől',
-      lastComment: 'from last comment',
+      '-createdAt': 'a legutóbb feltöltöttől',
+      '-takenAt': 'a legutóbb készülttől',
+      '-rating': 'a legjobbra értékelttől',
+      '-lastCommentedAt': 'from last comment',
     },
 
     showDirection: 'Mutasd a fényképezés irányát',
 
     c: {
-      disable: 'ne színezd',
-      mine: 'különítsd el a sajátjaimat',
-      author: 'szerző',
-      rating: 'értékelés',
-      takenAt: 'készítés dátuma',
-      createdAt: 'feltöltés dátuma',
-      season: 'évszak',
-      premium: 'prémium',
+      disable: 'Ne színezd',
+      mine: 'Különítsd el a sajátjaimat',
+      userId: 'Szerző',
+      rating: 'Értékelés',
+      takenAt: 'Készítés dátuma',
+      createdAt: 'Feltöltés dátuma',
+      season: 'Évszak',
+      premium: 'Prémium',
     },
 
     viewer: {
@@ -394,7 +390,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `,
       success: 'A képek sikeresen fel lettek töltve.',
       showPreview:
-        'Előnézetek megjelenítése (több processzorteljesítményt és memóriát használ)',
+        'Előnézet automatikus megjelenítése (több processzorteljesítményt és memóriát használ)',
       premium:
         'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
     },
@@ -535,7 +531,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Tulajdonságok',
       color: 'Szín',
-      label: 'Felirat:',
+      label: 'Felirat',
       width: 'Szélesség',
       hint: 'A felirat eltávolításához hagyja üresen ezt a mezőt.',
       type: 'Geometria típusa',
@@ -700,10 +696,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'A következő kódot írja be HTML-oldalába:',
     example: 'Az eredmény így fog kinézni:',
-    dimensions: 'Méretek:',
-    height: 'Magasság:',
-    width: 'Szélesség:',
-    enableFeatures: 'Funkciók engedélyezése:',
+    dimensions: 'Méretek',
+    height: 'Magasság',
+    width: 'Szélesség',
+    enableFeatures: 'Funkciók engedélyezése',
     enableSearch: 'keresés',
     enableMapSwitch: 'térképréteg-kapcsoló',
     enableLocateMe: 'saját hely megtalálása',
@@ -870,6 +866,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Extra felbontások',
     scaleWithDpi: 'Méretezés DPI alapján',
     zIndex: 'Z-index',
+    generalSettings: 'Általános beállítások',
+    maxZoom: 'Maximális nagyítás',
   },
 
   elevationChart: {
@@ -1093,17 +1091,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-
-    area: 'Exportálandó terület:',
-
+    area: 'Exportálandó terület',
     areas: {
       visible: 'A térkép látható területe',
       pinned: 'A kijelölt sokszöget (rajzot) tartalmazó terület',
     },
-
-    format: 'Formátum:',
-    layersTitle: 'Választható rétegek:',
-
+    format: 'Formátum',
+    layersTitle: 'Választható rétegek',
     layers: {
       contours: 'Szintvonalak',
       shading: 'Domborzatárnyékolás',
@@ -1115,9 +1109,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Tervezett útvonal',
       track: 'GPX-nyomvonal',
     },
-
-    mapScale: 'Térkép felbontása:',
-
+    mapScale: 'Térkép felbontása',
     alert: () => (
       <>
         Megjegyzések:

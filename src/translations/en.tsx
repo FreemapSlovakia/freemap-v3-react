@@ -104,6 +104,9 @@ const messages: Messages = {
     export: 'Export',
     success: 'Success!',
     expiration: 'Expiration',
+    privacyPolicy: 'Privacy policy',
+    newOptionText: 'Add %value%',
+    deleteButtonText: 'Remove %value% from the list',
   },
 
   selections: {
@@ -118,7 +121,6 @@ const messages: Messages = {
 
   tools: {
     none: 'Close tool',
-    tools: 'Tools',
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
     photos: 'Photos',
@@ -134,6 +136,8 @@ const messages: Messages = {
   },
 
   routePlanner: {
+    manual: 'Manual',
+    manualTooltip: 'Connect following segment with direct line',
     ghParams: {
       tripParameters: 'Trip parameters',
       seed: 'Random seed',
@@ -148,6 +152,7 @@ const messages: Messages = {
     finish: 'Finish',
     swap: 'Swap start and finish',
     point: {
+      point: 'Route point',
       pick: 'Select on the map',
       current: 'Your position',
       home: 'Home position',
@@ -217,7 +222,7 @@ const messages: Messages = {
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
-    help: 'Help',
+    help: 'Info & help',
     back: 'Back',
     mapLegend: 'Map legend',
     contacts: 'Contacts',
@@ -286,25 +291,23 @@ const messages: Messages = {
     showLayer: 'Show the layer',
     upload: 'Upload',
     f: {
-      firstUploaded: 'from first uploaded',
-      lastUploaded: 'from last uploaded',
-      firstCaptured: 'from oldest',
-      lastCaptured: 'from newest',
-      leastRated: 'from least rated',
-      mostRated: 'from most rated',
-      lastComment: 'from last comment',
+      '-createdAt': 'from last uploaded',
+      '-takenAt': 'from newest',
+      '-rating': 'from most rated',
+      '-lastCommentedAt': 'from last comment',
     },
     colorizeBy: 'Colorize by',
     showDirection: 'Show shooting direction',
+    showLegend: 'Show colorizing legend',
     c: {
-      disable: "don't colorize",
-      mine: 'differ mine',
-      author: 'author',
-      rating: 'rating',
-      takenAt: 'taken date',
-      createdAt: 'upload date',
-      season: 'season',
-      premium: 'premium',
+      disable: "Don't colorize",
+      mine: 'Differ mine',
+      userId: 'Author',
+      rating: 'Rating',
+      takenAt: 'Taken date',
+      createdAt: 'Upload date',
+      season: 'Season',
+      premium: 'Premium',
     },
     viewer: {
       title: 'Photo',
@@ -357,7 +360,9 @@ const messages: Messages = {
         </ul>
       `,
       success: 'Pictures have been successfully uploaded.',
-      showPreview: 'Show previews (uses more CPU load and memory)',
+      showPreview:
+        'Automatically show previews (uses more CPU load and memory)',
+      loadPreview: 'Load preview',
       premium: 'Make available only to users with premium access',
     },
     locationPicking: {
@@ -474,10 +479,10 @@ const messages: Messages = {
     modify: 'Properties',
     edit: {
       title: 'Properties',
-      color: 'Color:',
-      label: 'Label:',
-      width: 'Width:',
-      hint: 'To remove label leave its field empty.',
+      color: 'Color',
+      label: 'Label',
+      width: 'Width',
+      hint: 'To remove label leave this field empty.',
       type: 'Geometry type',
     },
     continue: 'Continue',
@@ -622,10 +627,10 @@ const messages: Messages = {
   embed: {
     code: 'Put the following code to your HTML page:',
     example: 'The result will look like this:',
-    dimensions: 'Dimensions:',
-    height: 'Height:',
-    width: 'Width:',
-    enableFeatures: 'Enable features:',
+    dimensions: 'Dimensions',
+    height: 'Height',
+    width: 'Width',
+    enableFeatures: 'Enable features',
     enableSearch: 'search',
     enableMapSwitch: 'map layer switch',
     enableLocateMe: 'find me',
@@ -780,6 +785,8 @@ const messages: Messages = {
     extraScales: 'Extra resolutions',
     scaleWithDpi: 'Scale with DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'General settings',
+    maxZoom: 'Max zoom',
   },
 
   elevationChart: {
@@ -991,13 +998,13 @@ const messages: Messages = {
         </AlertLink>
       </>
     ),
-    area: 'Export area:',
+    area: 'Export area',
     areas: {
       visible: 'Visible area of the map',
       pinned: 'Area containing selected polygon (drawing)',
     },
-    format: 'Format:',
-    layersTitle: 'Optional layers:',
+    format: 'Format',
+    layersTitle: 'Optional layers',
     layers: {
       contours: 'Contours',
       shading: 'Shaded relief',
@@ -1009,7 +1016,7 @@ const messages: Messages = {
       plannedRoute: 'Found route',
       track: 'GPX track',
     },
-    mapScale: 'Map resolution:',
+    mapScale: 'Map resolution',
     alert: () => (
       <>
         Notes:
@@ -1079,6 +1086,7 @@ const messages: Messages = {
       </>
     ),
     writers: 'Editors',
+    addWriter: 'Add an editor',
     conflictError: 'The map has been modified in the meantime.',
   },
 

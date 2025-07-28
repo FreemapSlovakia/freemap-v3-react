@@ -1,6 +1,8 @@
-import { Card } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { FaCamera, FaPalette } from 'react-icons/fa';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
+import { Toolbar } from '../Toolbar.js';
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(
@@ -33,8 +35,15 @@ export function PictureLegend() {
 
   return (
     <div className="w-100" style={{ maxWidth: '400px' }}>
-      <Card className="fm-toolbar mt-2 d-flex">
-        <div>{m?.gallery.legend}</div>
+      <Toolbar className="mt-2 d-flex">
+        <LongPressTooltip label={m?.gallery.legend} breakpoint="sm">
+          {({ props, label, labelClassName }) => (
+            <span className="align-self-center ms-1" {...props}>
+              <FaCamera /> <FaPalette />{' '}
+              <span className={labelClassName}>{label}</span>
+            </span>
+          )}
+        </LongPressTooltip>
 
         <div
           className="mx-2"
@@ -121,7 +130,7 @@ export function PictureLegend() {
             ) : null}
           </div>
         </div>
-      </Card>
+      </Toolbar>
     </div>
   );
 }

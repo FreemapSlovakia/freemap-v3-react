@@ -2,7 +2,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { hideInfoBar } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 
 export function InfoBar(): ReactElement | null {
@@ -42,7 +42,7 @@ export function InfoBar(): ReactElement | null {
   const InfoBarContent = infoBars[key];
 
   return (
-    <div className="info-bar">
+    <div className="fm-info-bar">
       <CloseButton
         onClick={() => {
           setShow(0);

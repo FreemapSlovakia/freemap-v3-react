@@ -1,4 +1,11 @@
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import storage from 'local-storage-fallback';
+import {
+  ChangeEvent,
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import {
   Accordion,
   Alert,
@@ -12,17 +19,30 @@ import {
   FaDownload,
   FaDrawPolygon,
   FaEye,
-  FaFlask,
   FaPrint,
   FaRegQuestionCircle,
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { exportMap, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { is } from 'typia';
+import {
+  ExportableLayer,
+  ExportFormat,
+  exportMap,
+  LAYERS,
+  setActiveModal,
+} from '../actions/mainActions.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { isInvalidInt } from '../numberValidator.js';
 
 type Props = { show: boolean };
+
+const FORMAT_STORAGE_KEY = 'fm.exportMap.format';
+
+const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
+
+const SCALE_STORAGE_KEY = 'fm.exportMap.scale';
 
 export default ExportMapModal;
 
@@ -39,27 +59,33 @@ export function ExportMapModal({ show }: Props): ReactElement {
     canExportByPolygon ? 'selected' : 'visible',
   );
 
-  const [scale, setScale] = useState(100);
+  const [scale, setScale] = useState(
+    () => storage.getItem(SCALE_STORAGE_KEY) ?? '100',
+  );
 
-  const [format, setFormat] = useState<'jpeg' | 'png' | 'pdf' | 'svg'>('jpeg');
+  const [format, setFormat] = useState<ExportFormat>(() => {
+    const target = storage.getItem(FORMAT_STORAGE_KEY);
 
-  const [contours, setContours] = useState(true);
+    return is<ExportFormat>(target) ? target : 'jpeg';
+  });
 
-  const [shadedRelief, setShadedRelief] = useState(true);
+  const [layers, setLayers] = useState(() => {
+    const layers = storage.getItem(LAYERS_STORAGE_KEY);
 
-  const [hikingTrails, setHikingTrails] = useState(true);
+    if (!layers) {
+      return new Set(LAYERS);
+    }
 
-  const [bicycleTrails, setBicycleTrails] = useState(true);
+    const set = new Set<ExportableLayer>();
 
-  const [skiTrails, setSkiTrails] = useState(true);
+    for (const str of layers.split(',')) {
+      if (is<ExportableLayer>(str)) {
+        set.add(str);
+      }
+    }
 
-  const [horseTrails, setHorseTrails] = useState(true);
-
-  const [drawing, setDrawing] = useState(true);
-
-  const [plannedRoute, setPlannedRoute] = useState(true);
-
-  const [track, setTrack] = useState(true);
+    return set;
+  });
 
   const [style, setStyle] = useState(`<Style name="custom-polygons">
   <Rule>
@@ -166,6 +192,38 @@ export function ExportMapModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
+  const invalidScale = isInvalidInt(scale, true, 60, 960);
+
+  const handleFormatChange = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+    storage.setItem(FORMAT_STORAGE_KEY, e.currentTarget.value);
+
+    setFormat(e.currentTarget.value as ExportFormat);
+  }, []);
+
+  const handleLayersChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value as ExportableLayer;
+
+    setLayers((prev) => {
+      const n = new Set(prev);
+
+      if (n.has(value)) {
+        n.delete(value);
+      } else {
+        n.add(value);
+      }
+
+      storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
+
+      return n;
+    });
+  }, []);
+
+  const handleScaleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    storage.setItem(SCALE_STORAGE_KEY, e.currentTarget.value);
+
+    setScale(e.currentTarget.value);
+  }, []);
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -177,182 +235,88 @@ export function ExportMapModal({ show }: Props): ReactElement {
       <Modal.Body>
         <Alert variant="warning">{m?.mapExport.alert()}</Alert>
 
-        <p>{m?.mapExport.area}</p>
+        <Form.Group>
+          <Form.Label className="d-block">{m?.mapExport.area}</Form.Label>
 
-        <ButtonGroup>
-          <Button
-            variant="secondary"
-            active={area === 'visible'}
-            onClick={() => setArea('visible')}
-          >
-            <FaEye /> {m?.mapExport.areas.visible}
-          </Button>
+          <ButtonGroup className="d-flex">
+            <Button
+              className="fm-ellipsis"
+              variant="secondary"
+              active={area === 'visible'}
+              onClick={() => setArea('visible')}
+            >
+              <FaEye /> {m?.mapExport.areas.visible}
+            </Button>
 
-          <Button
-            variant="secondary"
-            active={area === 'selected'}
-            onClick={() => setArea('selected')}
-            disabled={!canExportByPolygon}
-          >
-            <FaDrawPolygon /> {m?.mapExport.areas.pinned}
-          </Button>
-        </ButtonGroup>
+            <Button
+              className="fm-ellipsis"
+              variant="secondary"
+              active={area === 'selected'}
+              onClick={() => setArea('selected')}
+              disabled={!canExportByPolygon}
+            >
+              <FaDrawPolygon /> {m?.mapExport.areas.pinned}
+            </Button>
+          </ButtonGroup>
+        </Form.Group>
 
         <hr />
 
-        <p>{m?.mapExport.format}</p>
+        <Form.Group>
+          <Form.Label className="d-block"> {m?.mapExport.format}</Form.Label>
 
-        <ButtonGroup>
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('jpeg')}
-            active={format === 'jpeg'}
-          >
-            JPEG
-          </Button>
+          <ButtonGroup>
+            {['jpeg', 'png', 'pdf', 'svg'].map((fmt) => (
+              <Button
+                variant="secondary"
+                key={fmt}
+                value={fmt}
+                onClick={handleFormatChange}
+                active={format === fmt}
+              >
+                {fmt.toUpperCase()}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Form.Group>
 
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('png')}
-            active={format === 'png'}
-          >
-            PNG
-          </Button>
+        <hr />
 
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('pdf')}
-            active={format === 'pdf'}
-          >
-            PDF{' '}
-            <FaFlask
-              title={m?.general.experimentalFunction}
-              className="text-warning"
+        <Form.Group>
+          <Form.Label>{m?.mapExport.layersTitle}</Form.Label>
+
+          {LAYERS.map((layer) => (
+            <Form.Check
+              key={layer}
+              id={layer}
+              value={layer}
+              type="checkbox"
+              checked={layers.has(layer)}
+              onChange={handleLayersChange}
+              label={m?.mapExport.layers[layer]}
             />
-          </Button>
+          ))}
+        </Form.Group>
 
-          <Button
-            variant="secondary"
-            onClick={() => setFormat('svg')}
-            active={format === 'svg'}
-          >
-            SVG{' '}
-            <FaFlask
-              title={m?.general.experimentalFunction}
-              className="text-warning"
+        <hr />
+
+        <Form.Group controlId="mapScale">
+          <Form.Label>{m?.mapExport.mapScale}</Form.Label>
+
+          <InputGroup>
+            <Form.Control
+              type="number"
+              value={scale}
+              min={60}
+              max={960}
+              step={10}
+              isInvalid={invalidScale}
+              onChange={handleScaleChange}
             />
-          </Button>
-        </ButtonGroup>
 
-        <hr />
-
-        <p>{m?.mapExport.layersTitle}</p>
-
-        <Form.Check
-          id="contours"
-          type="checkbox"
-          checked={contours}
-          onChange={() => {
-            setContours((b) => !b);
-          }}
-          label={m?.mapExport.layers.contours}
-        />
-
-        <Form.Check
-          id="shading"
-          type="checkbox"
-          checked={shadedRelief}
-          onChange={() => setShadedRelief((b) => !b)}
-          label={m?.mapExport.layers.shading}
-        />
-
-        <Form.Check
-          id="hikingTrails"
-          type="checkbox"
-          checked={hikingTrails}
-          onChange={() => {
-            setHikingTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.hikingTrails}
-        />
-
-        <Form.Check
-          id="bicycleTrails"
-          checked={bicycleTrails}
-          onChange={() => {
-            setBicycleTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.bicycleTrails}
-        />
-
-        <Form.Check
-          id="skiTrails"
-          type="checkbox"
-          checked={skiTrails}
-          onChange={() => {
-            setSkiTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.skiTrails}
-        />
-
-        <Form.Check
-          id="horseTrails"
-          type="checkbox"
-          checked={horseTrails}
-          onChange={() => {
-            setHorseTrails((b) => !b);
-          }}
-          label={m?.mapExport.layers.horseTrails}
-        />
-
-        <Form.Check
-          id="drawing"
-          type="checkbox"
-          checked={drawing}
-          onChange={() => {
-            setDrawing((b) => !b);
-          }}
-          label={m?.mapExport.layers.drawing}
-        />
-
-        <Form.Check
-          id="plannedRoute"
-          type="checkbox"
-          checked={plannedRoute}
-          onChange={() => {
-            setPlannedRoute((b) => !b);
-          }}
-          label={m?.mapExport.layers.plannedRoute}
-        />
-
-        <Form.Check
-          id="track"
-          type="checkbox"
-          checked={track}
-          onChange={() => {
-            setTrack((b) => !b);
-          }}
-          label={m?.mapExport.layers.track}
-        />
-
-        <hr />
-
-        <p>{m?.mapExport.mapScale}</p>
-
-        <InputGroup>
-          <Form.Control
-            type="number"
-            value={scale}
-            min={60}
-            max={960}
-            step={10}
-            onChange={(e) => {
-              setScale(Number(e.currentTarget.value));
-            }}
-          />
-
-          <InputGroup.Text>DPI</InputGroup.Text>
-        </InputGroup>
+            <InputGroup.Text>DPI</InputGroup.Text>
+          </InputGroup>
+        </Form.Group>
 
         <hr />
 
@@ -361,7 +325,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             <Accordion.Header>{m?.mapExport.advancedSettings}</Accordion.Header>
 
             <Accordion.Body>
-              <Form.Group className="mb-3">
+              <Form.Group controlId="styles" className="mb-3">
                 <Form.Label>
                   {m?.mapExport.styles}{' '}
                   <a
@@ -377,7 +341,11 @@ export function ExportMapModal({ show }: Props): ReactElement {
                   value={style}
                   onChange={handleStyleChange}
                   rows={12}
-                  disabled={!(drawing || plannedRoute || track)}
+                  disabled={
+                    !layers.has('drawing') &&
+                    !layers.has('plannedRoute') &&
+                    !layers.has('track')
+                  }
                   className="text-monospace"
                 />
               </Form.Group>
@@ -388,21 +356,14 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
       <Modal.Footer>
         <Button
+          disabled={invalidScale}
           onClick={() =>
             dispatch(
               exportMap({
                 area,
-                scale: scale / 96,
+                scale: parseInt(scale, 10) / 96,
                 format,
-                contours,
-                shadedRelief,
-                hikingTrails,
-                bicycleTrails,
-                skiTrails,
-                horseTrails,
-                drawing,
-                plannedRoute,
-                track,
+                layers: [...layers],
                 style,
               }),
             )

@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { GalleryItem } from '../actions/galleryActions.js';
 import { latLonToString } from '../geoutils.js';
 import { loadPreview } from '../imagePreview.js';
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 let nextId = 1;
 
@@ -35,8 +35,6 @@ export function usePictureDropHandler(
 
           tags = {} as Tags;
         }
-
-        console.log(tags);
 
         const keywords: string[] = [];
 
@@ -181,15 +179,15 @@ type WeirdGpsCoordinate = {
 };
 
 // adds support for Olympus and other weirdos
-function adaptGpsCoordinate(x: WeirdGpsCoordinate) {
-  if (x) {
-    if (typeof x.description === 'number') {
-      return [x.description];
+function adaptGpsCoordinate(coord: WeirdGpsCoordinate) {
+  if (coord) {
+    if (typeof coord.description === 'number') {
+      return [coord.description];
     }
 
     // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
 
-    const { description, value } = x;
+    const { description, value } = coord;
 
     const p = /^(?:(\d+),)?(\d+(?:\.\d+)?)([NSWE])?$/;
 

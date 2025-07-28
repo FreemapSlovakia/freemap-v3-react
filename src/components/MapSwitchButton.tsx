@@ -22,7 +22,7 @@ import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
@@ -37,6 +37,8 @@ import {
 } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
+import { ExperimentalFunction } from './ExperimentalFunction.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 function getKbdShortcut(key?: readonly [string, boolean]) {
   return (
@@ -129,7 +131,7 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, handlePossibleFilterClick, activeLayers],
   );
 
-  const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleLayerButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (handlePossibleFilterClick(e)) {
       return;
     }
@@ -187,11 +189,7 @@ export function MapSwitchButton(): ReactElement {
         {icon}
 
         {experimental && (
-          <FaExclamationTriangle
-            data-interactive="1"
-            title={m?.general.experimentalFunction}
-            className="text-warning ms-1"
-          />
+          <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
         {!premium &&
@@ -239,11 +237,7 @@ export function MapSwitchButton(): ReactElement {
         {getKbdShortcut(key)}
 
         {experimental && (
-          <FaExclamationTriangle
-            data-interactive="1"
-            title={m?.general.experimentalFunction}
-            className="text-warning ms-1"
-          />
+          <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
         {premiumFromZoom !== undefined &&
@@ -280,38 +274,52 @@ export function MapSwitchButton(): ReactElement {
               activeLayers.includes(type),
           )
           .map(({ type, ...rest }) => (
-            <Button
-              variant="secondary"
-              title={
+            <LongPressTooltip
+              key={type}
+              label={
                 type.startsWith('.')
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
                   : type.startsWith(':')
                     ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
                     : m?.mapLayers.letters[type as IntegratedLayerLetters]
               }
-              key={type}
-              data-type={type}
-              active={activeLayers.includes(type)}
-              onClick={handleOverlayClick}
             >
-              {commonBadges({ scaleWithDpi: false, ...rest })}
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  title={
+                    type.startsWith('.')
+                      ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                      : type.startsWith(':')
+                        ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                        : m?.mapLayers.letters[type as IntegratedLayerLetters]
+                  }
+                  key={type}
+                  data-type={type}
+                  active={activeLayers.includes(type)}
+                  onClick={handleLayerButtonClick}
+                  {...props}
+                >
+                  {commonBadges({ scaleWithDpi: false, ...rest })}
 
-              {pictureFilterIsActive && type === 'I' && (
-                <FaFilter
-                  data-filter="1"
-                  title={m?.mapLayers.photoFilterWarning}
-                  className="text-warning ms-2"
-                />
-              )}
+                  {pictureFilterIsActive && type === 'I' && (
+                    <FaFilter
+                      data-filter="1"
+                      title={m?.mapLayers.photoFilterWarning}
+                      className="text-warning ms-2"
+                    />
+                  )}
 
-              {activeLayers.includes('i') && type === 'i' && (
-                <FaExclamationTriangle
-                  data-interactive="1"
-                  title={m?.mapLayers.interactiveLayerWarning}
-                  className="text-warning ms-2"
-                />
+                  {activeLayers.includes('i') && type === 'i' && (
+                    <FaExclamationTriangle
+                      data-interactive="1"
+                      title={m?.mapLayers.interactiveLayerWarning}
+                      className="text-warning ms-2"
+                    />
+                  )}
+                </Button>
               )}
-            </Button>
+            </LongPressTooltip>
           ))}
 
         <Dropdown

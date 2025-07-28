@@ -3,8 +3,8 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow } from '../actions/mainActions.js';
-import { documents } from '../documents/index.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { getDocuments } from '../documents/index.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { navigate } from '../navigationUtils.js';
 
@@ -25,11 +25,20 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
   const [content, setContent] = useState<string | null>(null);
 
+  const document = useMemo(
+    () => getDocuments(language).find(({ key }) => key === documentKey),
+    [documentKey, language],
+  );
+
   useEffect(() => {
+    if (!document) {
+      // TODO show not found error
+      return;
+    }
+
     setLoading(true);
 
-    import(`../documents/${documentKey}.${language}.md`)
-      .catch(() => import(`../documents/${documentKey}.md`))
+    import(`../documents/${document.key}.${document.lang}.md`)
       .then(({ default: content }) => {
         setContent(content);
       })
@@ -39,12 +48,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
       .then(() => {
         setLoading(false);
       });
-  }, [documentKey, m, language]);
-
-  const document = useMemo(
-    () => documents.find(([key]) => key === documentKey),
-    [documentKey],
-  );
+  }, [document, m]);
 
   function close() {
     dispatch(documentShow(null));
@@ -79,7 +83,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
     return null;
   }
 
-  const [, title, icon] = document;
+  const { title, icon } = document;
 
   return (
     <Modal show={show} onHide={close} size="lg">
@@ -92,7 +96,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
               {'\u00A0 | \u00A0'}
             </>
           )} */}
-          {title && icon ? (
+          {title ? (
             <>
               {icon} {title}
             </>

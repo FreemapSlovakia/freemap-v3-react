@@ -43,7 +43,10 @@ import {
   osmLoadRelation,
   osmLoadWay,
 } from './actions/osmActions.js';
-import { routePlannerSetParams } from './actions/routePlannerActions.js';
+import {
+  routePlannerSetParams,
+  RoutePoint,
+} from './actions/routePlannerActions.js';
 import { searchSetQuery } from './actions/searchActions.js';
 import { trackingActions } from './actions/trackingActions.js';
 import {
@@ -60,7 +63,6 @@ import {
   ShadingComponent,
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
-import type { DocumentKey } from './documents/index.js';
 import { type CustomLayerDef, upgradeCustomLayers } from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
@@ -139,24 +141,30 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   {
-    const points =
+    const qPoints =
       typeof query['points'] === 'string'
-        ? query['points']
-            .split(',')
-            .map((point) =>
-              point ? point.split('/').map((coord) => parseFloat(coord)) : null,
-            )
-        : [];
+        ? (query['points'].split(',').map((point) =>
+            point
+              ? [
+                  point[0] === 'm',
+                  ...point
+                    .slice(point[0] === 'm' ? 1 : 0)
+                    .split('/', 2)
+                    .map((coord) => parseFloat(coord)),
+                ]
+              : null,
+          ) as [boolean, number | null, number | null][])
+        : ([] as [boolean, number | null, number | null][]);
 
     const pointsOk =
-      points.length > 0 &&
-      points.every(
+      qPoints.length > 0 &&
+      qPoints.every(
         (point, i) =>
-          (point !== null || i === 0 || i === points.length - 1) &&
+          (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
-            (point.length === 2 &&
-              !Number.isNaN(point[0]) &&
-              !Number.isNaN(point[1]))),
+            (point.length === 3 &&
+              !Number.isNaN(point[1]) &&
+              !Number.isNaN(point[2]))),
       );
 
     const qMilestones = query['milestones'];
@@ -170,9 +178,8 @@ export function handleLocationChange(store: MyStore): void {
 
     if (is<TransportType>(query['transport']) && pointsOk) {
       const {
-        start,
-        finish,
-        midpoints,
+        points,
+        finishOnly,
         transportType,
         mode,
         milestones,
@@ -180,26 +187,31 @@ export function handleLocationChange(store: MyStore): void {
         isochroneParams,
       } = getState().routePlanner;
 
-      const latLons = points.map((point) =>
-        point ? { lat: point[0], lon: point[1] } : null,
+      const latLons = qPoints.map((point) =>
+        point
+          ? {
+              manual: point[0],
+              lat: point[1],
+              lon: point[2],
+            }
+          : null,
       );
 
-      const nextStart = latLons[0];
+      const nextFinishOnly = latLons.length > 0 && !latLons[0];
 
-      const nextMidpoints = latLons
-        .slice(1, latLons.length - 1)
-        .filter((x): x is LatLon => !!x);
-
-      const nextFinish = latLons.at(-1)!;
+      if (nextFinishOnly) {
+        latLons.shift();
+      }
 
       if (
+        finishOnly !== nextFinishOnly ||
         query['transport'] !== transportType ||
-        serializePoint(start) !== serializePoint(nextStart) ||
-        serializePoint(finish) !== serializePoint(nextFinish) ||
-        midpoints.length !== nextMidpoints.length ||
-        midpoints.some(
-          (midpoint, i) =>
-            serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
+        points.length !== latLons.length ||
+        points.some(
+          (point, i) =>
+            (point.manual ? 'm' : '') + serializePoint(point) !==
+            (latLons[i]?.manual ? 'm' : '') +
+              serializePoint(latLons[i] as unknown as RoutePoint),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         milestones !== reqMilestones ||
@@ -215,9 +227,8 @@ export function handleLocationChange(store: MyStore): void {
 
         dispatch(
           routePlannerSetParams({
-            start: nextStart,
-            finish: nextFinish,
-            midpoints: nextMidpoints,
+            points: latLons as unknown as RoutePoint[],
+            finishOnly: nextFinishOnly,
             transportType: query['transport'],
             mode:
               routeMode === 'trip' ||
@@ -238,15 +249,11 @@ export function handleLocationChange(store: MyStore): void {
           }),
         );
       }
-    } else if (
-      getState().routePlanner.start ||
-      getState().routePlanner.finish
-    ) {
+    } else if (getState().routePlanner.points) {
       dispatch(
         routePlannerSetParams({
-          start: null,
-          finish: null,
-          midpoints: [],
+          points: [],
+          finishOnly: false,
           transportType: getState().routePlanner.transportType,
           milestones: reqMilestones,
         }),
@@ -490,13 +497,19 @@ export function handleLocationChange(store: MyStore): void {
     shading !== serializeShading(map.shading)
   ) {
     function toColor(color = '00000000') {
-      const bands = Color('#' + color).array();
+      try {
+        const bands = Color('#' + color).array();
 
-      if (bands.length === 3) {
-        bands.push(1);
+        if (bands.length === 3) {
+          bands.push(1);
+        }
+
+        return bands as ColorType;
+      } catch {
+        console.error('error parsing color: ' + color);
+
+        return [0, 0, 0, 1] as ColorType;
       }
-
-      return bands as ColorType;
     }
 
     const [bg, ...comps] = shading.split('!');
@@ -534,8 +547,6 @@ export function handleLocationChange(store: MyStore): void {
         }
 
         let colorStops: ColorStop[];
-
-        console.log(type, [...params]);
 
         switch (type) {
           case 'hillshade-classic':
@@ -613,7 +624,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const doc = query['document'] ?? query['tip'];
 
-  if (is<DocumentKey>(doc)) {
+  if (typeof doc === 'string') {
     if (getState().main.documentKey !== doc) {
       dispatch(documentShow(doc));
     }

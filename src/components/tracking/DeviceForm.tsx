@@ -1,7 +1,7 @@
 import { FormEvent, ReactElement, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { trackingActions } from '../../actions/trackingActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useTextInputState } from '../../hooks/useTextInputState.js';
 import { useMessages } from '../../l10nInjector.js';
 
@@ -14,6 +14,7 @@ import {
 } from 'react-bootstrap';
 import { FaBullseye, FaSync } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { isInvalidInt } from '../../numberValidator.js';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
@@ -85,6 +86,14 @@ export function DeviceForm(): ReactElement {
     setRegenerateToken((rt) => !rt);
   }, [setRegenerateToken]);
 
+  const invalidMaxCount = isInvalidInt(maxCount, false, 0);
+
+  const invalidMaxAge = isInvalidInt(maxAge, false, 0);
+
+  const invalidName = !/.*\w.*/.test(name) || name.length > 255;
+
+  const invalidToken = type === 'url' || !!device?.id ? false : !token.trim();
+
   return (
     <Form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
@@ -99,11 +108,15 @@ export function DeviceForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="mb-3 required">
-          <Form.Label>{m?.tracking.device.name}</Form.Label>
+        <Form.Group controlId="deviceName" className="mb-3">
+          <Form.Label className="required">
+            {m?.tracking.device.name}
+          </Form.Label>
+
           <Form.Control
             type="text"
             value={name}
+            isInvalid={invalidName}
             onChange={setName}
             required
             pattern=".*\w.*"
@@ -111,8 +124,9 @@ export function DeviceForm(): ReactElement {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3 required">
-          <Form.Label>Token</Form.Label>
+        <Form.Group controlId="token" className="mb-3 ">
+          <Form.Label className="required">Token</Form.Label>
+
           <InputGroup>
             <DropdownButton
               variant="secondary"
@@ -143,6 +157,7 @@ export function DeviceForm(): ReactElement {
                   ? m?.tracking.device.generatedToken
                   : token
               }
+              isInvalid={invalidToken}
               onChange={setToken}
             />
 
@@ -157,7 +172,7 @@ export function DeviceForm(): ReactElement {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="maxCount" className="mb-3">
           <Form.Label>{m?.tracking.device.maxCount}</Form.Label>
 
           <Form.Control
@@ -165,11 +180,12 @@ export function DeviceForm(): ReactElement {
             min="0"
             step="1"
             value={maxCount}
+            isInvalid={invalidMaxCount}
             onChange={setMaxCount}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="maxAge" className="mb-3">
           <Form.Label>{m?.tracking.device.maxAge}</Form.Label>
 
           <InputGroup>
@@ -178,6 +194,7 @@ export function DeviceForm(): ReactElement {
               min="0"
               step="1"
               value={maxAge}
+              isInvalid={invalidMaxAge}
               onChange={setMaxAge}
             />
 
@@ -187,7 +204,14 @@ export function DeviceForm(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button type="submit">{m?.general.save}</Button>
+        <Button
+          type="submit"
+          disabled={
+            invalidName || invalidMaxCount || invalidMaxAge || invalidToken
+          }
+        >
+          {m?.general.save}
+        </Button>
 
         <Button
           type="button"

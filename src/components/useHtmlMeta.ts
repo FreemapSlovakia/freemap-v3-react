@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Modal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { getMessageByKey, useMessages } from '../l10nInjector.js';
 import type { MessagePaths } from '../types/common.js';
 

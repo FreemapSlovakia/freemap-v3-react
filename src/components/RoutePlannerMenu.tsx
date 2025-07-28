@@ -33,8 +33,9 @@ import {
   FaRegSquare,
   FaStop,
 } from 'react-icons/fa';
+import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
+import { assert } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   convertToDrawing,
@@ -56,11 +57,12 @@ import {
 } from '../actions/routePlannerActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { DeleteButton } from './DeleteButton.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { ToolMenu } from './ToolMenu.js';
 
 export default RoutePlannerMenu;
@@ -144,7 +146,11 @@ function TripSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.tripParameters}</legend>
 
-        <Form.Group as="form" onSubmit={handleDistanceSubmit}>
+        <Form.Group
+          controlId="distance"
+          as="form"
+          onSubmit={handleDistanceSubmit}
+        >
           <Form.Label>{ghParams?.distance}</Form.Label>
 
           <InputGroup>
@@ -161,7 +167,7 @@ function TripSettings() {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group as="form" onSubmit={handleSeedSubmit}>
+        <Form.Group controlId="seed" as="form" onSubmit={handleSeedSubmit}>
           <Form.Label className="mt-2">{ghParams?.seed}</Form.Label>
 
           <InputGroup>
@@ -249,7 +255,11 @@ function IsochroneSettings() {
       <fieldset className="mx-4 mb-4 w-auto">
         <legend>{ghParams?.isochroneParameters}</legend>
 
-        <Form.Group as="form" onSubmit={handleTimeLimitSubmit}>
+        <Form.Group
+          controlId="timeLimit"
+          as="form"
+          onSubmit={handleTimeLimitSubmit}
+        >
           <Form.Label>{ghParams?.timeLimit}</Form.Label>
 
           <InputGroup>
@@ -267,7 +277,11 @@ function IsochroneSettings() {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group as="form" onSubmit={handleDistanceLimitSubmit}>
+        <Form.Group
+          controlId="distanceLimit"
+          as="form"
+          onSubmit={handleDistanceLimitSubmit}
+        >
           <Form.Label className="mt-2">{ghParams?.distanceLimit}</Form.Label>
 
           <InputGroup>
@@ -284,7 +298,11 @@ function IsochroneSettings() {
           </InputGroup>
         </Form.Group>
 
-        <Form.Group as="form" onSubmit={handleBucketsSubmit}>
+        <Form.Group
+          controlId="buckets"
+          as="form"
+          onSubmit={handleBucketsSubmit}
+        >
           <Form.Label className="mt-2">{ghParams?.buckets}</Form.Label>
 
           <Form.Control
@@ -362,25 +380,16 @@ export function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
-  const isochronesFound = useAppSelector(
-    (state) => !!state.routePlanner.isochrones,
-  );
-
   const elevationProfileIsVisible = useAppSelector(
     (state) => !!state.elevationChart.elevationProfilePoints,
   );
 
   const canSwap = useAppSelector(
-    (state) => !!(state.routePlanner.start && state.routePlanner.finish),
+    (state) => state.routePlanner.points.length > 1,
   );
 
   const canDelete = useAppSelector(
-    (state) =>
-      !!(
-        state.routePlanner.start ||
-        state.routePlanner.finish ||
-        state.routePlanner.midpoints.length > 0
-      ),
+    (state) => state.routePlanner.points.length > 0 && !state.main.selection,
   );
 
   const handleMoreSelect = (eventKey: string | null) => {
@@ -443,9 +452,9 @@ export function RoutePlannerMenu(): ReactElement {
         }),
       );
     } else if (pointType === 'start') {
-      dispatch(routePlannerSetStart({ start: homeLocation }));
+      dispatch(routePlannerSetStart(homeLocation));
     } else if (pointType === 'finish') {
-      dispatch(routePlannerSetFinish({ finish: homeLocation }));
+      dispatch(routePlannerSetFinish(homeLocation));
     }
   }
 
@@ -456,41 +465,48 @@ export function RoutePlannerMenu(): ReactElement {
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
     useState(false);
 
+  const ttLabel = m?.routePlanner.transportType[activeTTDef.msgKey].replace(
+    /\s*,.*/,
+    '',
+  );
+
   return (
     <ToolMenu>
       <Dropdown
         className="ms-1"
         id="transport-type"
-        onSelect={(transportType) => {
-          if (is<TransportType>(transportType)) {
-            dispatch(routePlannerSetTransportType(transportType));
-          }
-        }}
+        onSelect={(transportType) =>
+          dispatch(
+            routePlannerSetTransportType(assert<TransportType>(transportType)),
+          )
+        }
       >
-        <Dropdown.Toggle variant="secondary">
-          {activeTTDef ? (
+        <LongPressTooltip
+          breakpoint="lg"
+          label={
             <>
+              {ttLabel ?? '…'}{' '}
+              <small className="text-dark">
+                {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
+              </small>
+            </>
+          }
+        >
+          {({ label, labelClassName, props }) => (
+            <Dropdown.Toggle variant="secondary" {...props}>
               {activeTTDef.icon}{' '}
               {['car', 'car-toll', 'bikesharing'].includes(
                 activeTransportType,
               ) && <FaMoneyBill />}
-              <span className="d-none d-lg-inline">
-                {' '}
-                {m?.routePlanner.transportType[activeTTDef.msgKey].replace(
-                  /\s*,.*/,
-                  '',
-                ) ?? '…'}{' '}
-                <small className="text-dark">
-                  {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
-                </small>
-              </span>
-            </>
-          ) : (
-            ''
+              <span className={labelClassName}> {label}</span>
+            </Dropdown.Toggle>
           )}
-        </Dropdown.Toggle>
+        </LongPressTooltip>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <Dropdown.Menu
+          popperConfig={fixedPopperConfig}
+          className="fm-dropdown-with-scroller"
+        >
           <div className="dropdown-long" ref={sc}>
             <div />
 
@@ -507,7 +523,7 @@ export function RoutePlannerMenu(): ReactElement {
                       as="button"
                       eventKey={type}
                       key={type}
-                      title={m?.routePlanner.transportType[key] ?? '…'}
+                      title={m?.routePlanner.transportType[key]}
                       active={activeTransportType === type}
                     >
                       {icon}{' '}
@@ -536,11 +552,20 @@ export function RoutePlannerMenu(): ReactElement {
             }
           }}
         >
-          <Dropdown.Toggle id="mode" variant="secondary">
-            {m?.routePlanner.mode[
-              activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
-            ] ?? '…'}
-          </Dropdown.Toggle>
+          <LongPressTooltip
+            label={
+              m?.routePlanner.mode[
+                activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
+              ]
+            }
+            breakpoint="sm"
+          >
+            {({ props, label, labelClassName }) => (
+              <Dropdown.Toggle id="mode" variant="secondary" {...props}>
+                <MdTimeline /> <span className={labelClassName}>{label}</span>
+              </Dropdown.Toggle>
+            )}
+          </LongPressTooltip>
 
           <Dropdown.Menu
             popperConfig={fixedPopperConfig}
@@ -551,7 +576,7 @@ export function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
-                  title={m?.routePlanner.mode[mode] ?? '…'}
+                  title={m?.routePlanner.mode[mode]}
                   active={activeMode === mode}
                 >
                   {m?.routePlanner.mode[
@@ -581,7 +606,7 @@ export function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
-                  title={m?.routePlanner.mode[mode] ?? '…'}
+                  title={m?.routePlanner.mode[mode]}
                   active={activeMode === mode}
                 >
                   {m?.routePlanner.mode[mode] ?? '…'}
@@ -606,17 +631,19 @@ export function RoutePlannerMenu(): ReactElement {
             }
           }}
         >
-          <Dropdown.Toggle
-            variant="secondary"
-            active={pickPointMode === 'start'}
-          >
-            <FaPlay color="#409a40" />
+          <LongPressTooltip breakpoint="md" label={m?.routePlanner.start}>
+            {({ label, labelClassName, props }) => (
+              <Dropdown.Toggle
+                variant="secondary"
+                active={pickPointMode === 'start'}
+                {...props}
+              >
+                <FaPlay color="#409a40" />
 
-            <span className="d-none d-md-inline">
-              {' '}
-              {m?.routePlanner.start ?? '…'}
-            </span>
-          </Dropdown.Toggle>
+                <span className={labelClassName}> {label}</span>
+              </Dropdown.Toggle>
+            )}
+          </LongPressTooltip>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item eventKey="pick">
@@ -649,14 +676,18 @@ export function RoutePlannerMenu(): ReactElement {
 
         {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
           <>
-            <Button
-              variant="secondary"
-              onClick={() => dispatch(routePlannerSwapEnds())}
-              disabled={!canSwap}
-              title={m?.routePlanner.swap ?? '…'}
-            >
-              ⇆
-            </Button>
+            <LongPressTooltip label={m?.routePlanner.swap}>
+              {({ label, labelClassName, props }) => (
+                <Button
+                  variant="secondary"
+                  onClick={() => dispatch(routePlannerSwapEnds())}
+                  disabled={!canSwap}
+                  {...props}
+                >
+                  ⇆<span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
 
             <Dropdown
               id="set-finish-dropdown"
@@ -671,17 +702,19 @@ export function RoutePlannerMenu(): ReactElement {
                 }
               }}
             >
-              <Dropdown.Toggle
-                variant="secondary"
-                active={pickPointMode === 'finish'}
-              >
-                <FaStop color="#d9534f" />
+              <LongPressTooltip breakpoint="md" label={m?.routePlanner.finish}>
+                {({ label, labelClassName, props }) => (
+                  <Dropdown.Toggle
+                    variant="secondary"
+                    active={pickPointMode === 'finish'}
+                    {...props}
+                  >
+                    <FaStop color="#d9534f" />
 
-                <span className="d-none d-md-inline">
-                  {' '}
-                  {m?.routePlanner.finish ?? '…'}
-                </span>
-              </Dropdown.Toggle>
+                    <span className={labelClassName}> {label}</span>
+                  </Dropdown.Toggle>
+                )}
+              </LongPressTooltip>
 
               <Dropdown.Menu popperConfig={fixedPopperConfig}>
                 <Dropdown.Item eventKey="pick">
@@ -752,9 +785,7 @@ export function RoutePlannerMenu(): ReactElement {
         </Dropdown>
       )}
 
-      {(routeFound || isochronesFound || canDelete) && (
-        <DeleteButton textClassName="d-none d-lg-inline" />
-      )}
+      {canDelete && <DeleteButton breakpoint="lg" />}
     </ToolMenu>
   );
 }

@@ -121,7 +121,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   tools: {
     none: 'Zamknij narzędzie',
-    tools: 'Narzędzia',
     routePlanner: 'Wyszukiwarka tras',
     objects: 'Obiekty (POI)',
     photos: 'Zdjęcia',
@@ -218,7 +217,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Mapa do urządzeń GPS',
     embedMap: 'Osadź mapę',
     supportUs: 'Wesprzyj Freemap',
-    help: 'Pomoc',
+    help: 'Informacje i pomoc',
     back: 'Wstecz',
     mapLegend: 'Legenda mapy',
     contacts: 'Kontakt',
@@ -281,24 +280,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   gallery: {
     f: {
-      firstUploaded: 'od pierwszych przesłanych',
-      lastUploaded: 'od ostatnich przesłanych',
-      firstCaptured: 'od najstarszych',
-      lastCaptured: 'od najnowszych',
-      leastRated: 'od najniżej ocenianych',
-      mostRated: 'od najwyżej ocenianych',
-      lastComment: 'od ostatniego komentarza',
+      '-createdAt': 'od ostatnich przesłanych',
+      '-takenAt': 'od najnowszych',
+      '-rating': 'od najwyżej ocenianych',
+      '-lastCommentedAt': 'od ostatniego komentarza',
     },
 
     c: {
-      disable: 'nie koloruj',
-      mine: 'wyróżnij moje',
-      author: 'autor',
-      rating: 'ocena',
-      takenAt: 'data wykonania',
-      createdAt: 'data przesłania',
-      season: 'pora roku',
-      premium: 'premium',
+      disable: 'Nie koloruj',
+      mine: 'Wyróżnij moje',
+      userId: 'Autor',
+      rating: 'Ocena',
+      takenAt: 'Data wykonania',
+      createdAt: 'Data przesłania',
+      season: 'Sezon',
+      premium: 'Premium',
     },
 
     viewer: {
@@ -354,7 +350,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Zdjęcia zostały pomyślnie przesłane.',
-      showPreview: 'Pokaż podgląd (zwiększone zużycie procesora i pamięci)',
+      showPreview:
+        'Automatyczne wyświetlanie podglądu (zwiększone zużycie procesora i pamięci)',
       premium: 'Udostępnij tylko użytkownikom z dostępem premium',
     },
 
@@ -497,9 +494,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   drawing: {
     edit: {
       title: 'Właściwości',
-      color: 'Kolor:',
-      label: 'Etykieta:',
-      width: 'Szerokość:',
+      color: 'Kolor',
+      label: 'Etykieta',
+      width: 'Szerokość',
       hint: 'Aby usunąć etykietę, pozostaw to pole puste.',
       type: 'Typ geometrii',
     },
@@ -651,10 +648,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Umieść poniższy kod na swojej stronie HTML:',
     example: 'Wynik będzie wyglądał następująco:',
-    dimensions: 'Wymiary:',
-    height: 'Wysokość:',
-    width: 'Szerokość:',
-    enableFeatures: 'Włącz funkcje:',
+    dimensions: 'Wymiary',
+    height: 'Wysokość',
+    width: 'Szerokość',
+    enableFeatures: 'Włącz funkcje',
     enableSearch: 'wyszukiwanie',
     enableMapSwitch: 'przełączanie warstw mapy',
     enableLocateMe: 'znajdź mnie',
@@ -812,6 +809,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Dodatkowe rozdzielczości',
     scaleWithDpi: 'Skaluj z DPI',
     zIndex: 'Z-indeks',
+    generalSettings: 'Ustawienia ogólne',
+    maxZoom: 'Maksymalne powiększenie',
   },
 
   elevationChart: {
@@ -1050,10 +1049,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-    area: 'Obszar eksportu:',
-    format: 'Format:',
-    layersTitle: 'Opcjonalne warstwy:',
-    mapScale: 'Rozdzielczość mapy:',
+    area: 'Obszar eksportu',
+    format: 'Format',
+    layersTitle: 'Opcjonalne warstwy',
+    mapScale: 'Rozdzielczość mapy',
     alert: () => (
       <>
         Uwagi:

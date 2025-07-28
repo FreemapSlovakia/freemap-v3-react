@@ -240,7 +240,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       </Stack>
 
       {type.startsWith(':') ? (
-        <Form.Group>
+        <Form.Group controlId="zIndex">
           <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
 
           <Form.Control

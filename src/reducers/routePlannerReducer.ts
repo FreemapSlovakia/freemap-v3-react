@@ -11,18 +11,18 @@ import {
   IsochroneParams,
   PickMode,
   RoundtripParams,
-  routePlannerAddMidpoint,
+  routePlannerAddPoint,
   routePlannerDelete,
   routePlannerPreventHint,
-  routePlannerRemoveMidpoint,
+  routePlannerRemovePoint,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
-  routePlannerSetMidpoint,
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetPickMode,
+  routePlannerSetPoint,
   routePlannerSetResult,
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
@@ -30,11 +30,11 @@ import {
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
+  RoutePoint,
   RoutingMode,
   Waypoint,
 } from '../actions/routePlannerActions.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
-import type { LatLon } from '../types/common.js';
 
 export interface RoutePlannerCleanResultState {
   alternatives: Alternative[];
@@ -45,9 +45,8 @@ export interface RoutePlannerCleanResultState {
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
-  start: LatLon | null;
-  midpoints: LatLon[];
-  finish: LatLon | null;
+  points: RoutePoint[];
+  finishOnly: boolean;
   pickMode: PickMode | null;
   itineraryIsVisible: boolean;
   roundtripParams: RoundtripParams;
@@ -63,9 +62,8 @@ const clearResult: RoutePlannerCleanResultState = {
 };
 
 export const cleanState: RoutePlannerCleanState = {
-  start: null,
-  midpoints: [],
-  finish: null,
+  points: [],
+  finishOnly: false,
   pickMode: null,
   itineraryIsVisible: false,
   roundtripParams: {
@@ -122,17 +120,20 @@ export const routePlannerReducer = createReducer(
               : action.payload.type,
         };
       })
-      .addCase(selectFeature, (state) => ({
+      .addCase(selectFeature, (state, { payload }) => ({
         ...state,
-        pickMode: null,
-      }))
-      .addCase(setTool, (state, action) => ({
-        ...state,
-        pickMode: !state.start
-          ? 'start'
-          : action.payload === 'route-planner'
-            ? state.pickMode
+        pickMode:
+          payload?.type === 'route-point'
+            ? payload.id === 0 && !state.finishOnly
+              ? 'start'
+              : payload.id === state.points.length - 1
+                ? 'finish'
+                : null
             : null,
+      }))
+      .addCase(setTool, (state) => ({
+        ...state,
+        pickMode: 'start',
       }))
       .addCase(clearMapFeatures, (state) => ({
         ...routePlannerInitialState,
@@ -144,7 +145,7 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(routePlannerSetParams, (state, { payload }) => ({
         ...state,
-        ...(payload.start === null || payload.finish === null
+        ...(payload.points.length === 0
           ? {
               ...routePlannerInitialState,
               preventHint: state.preventHint,
@@ -152,17 +153,19 @@ export const routePlannerReducer = createReducer(
               mode: state.mode,
             }
           : {}),
-        start: payload.start,
-        finish:
-          transportTypeDefs[payload.transportType].api === 'gh' &&
-          (payload.mode ?? state.mode) !== 'route'
-            ? null
-            : payload.finish,
-        midpoints:
-          transportTypeDefs[payload.transportType].api === 'gh' &&
-          (payload.mode ?? state.mode) !== 'route'
-            ? []
-            : payload.midpoints,
+        points: payload.points, // TODO mangle - see below old commented code
+        finishOnly: payload.finishOnly,
+        // start: payload.start,
+        // finish:
+        //   transportTypeDefs[payload.transportType].api === 'gh' &&
+        //   (payload.mode ?? state.mode) !== 'route'
+        //     ? null
+        //     : payload.finish,
+        // midpoints:
+        //   transportTypeDefs[payload.transportType].api === 'gh' &&
+        //   (payload.mode ?? state.mode) !== 'route'
+        //     ? []
+        //     : payload.midpoints,
         transportType: payload.transportType,
         mode:
           transportTypeDefs[payload.transportType].api !== 'gh' &&
@@ -181,56 +184,73 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(routePlannerSetStart, (state, { payload }) => ({
         ...state,
-        start: payload.start,
-        midpoints:
-          !(
+        points:
+          (!(
             transportTypeDefs[state.transportType].api === 'gh' &&
             state.mode !== 'route'
           ) &&
-          !payload.move &&
-          state.start
-            ? [state.start, ...state.midpoints]
-            : state.midpoints,
-        pickMode: state.finish ? state.pickMode : 'finish',
+            getStart(state)) ||
+          state.finishOnly
+            ? [
+                { manual: state.points[0]?.manual ?? false, ...payload },
+                ...state.points,
+              ]
+            : [
+                { manual: state.points[0]?.manual ?? false, ...payload },
+                ...state.points.slice(1),
+              ],
+        finishOnly: false,
+        pickMode: getFinish(state) ? state.pickMode : 'finish',
       }))
       .addCase(routePlannerSetFinish, (state, { payload }) =>
-        payload.finish === null
+        // only possible in (round)trip mode
+        payload === null
           ? {
-              // only possible in (round)trip mode
               ...state,
-              finish: state.midpoints.at(-1) ?? null,
-              midpoints: state.midpoints.length
-                ? state.midpoints.slice(0, state.midpoints.length - 1)
-                : [],
-              pickMode: state.start ? 'finish' : 'start',
+              points: state.points.slice(0, state.points.length - 1),
+              pickMode: getStart(state) ? 'finish' : 'start',
+              finishOnly: false,
             }
           : {
               ...state,
-              finish: payload.finish,
-              midpoints:
-                !payload.move && state.finish
-                  ? [...state.midpoints, state.finish]
-                  : state.midpoints,
-              pickMode: state.start ? 'finish' : 'start',
+              points:
+                state.points.length > 1
+                  ? [
+                      ...state.points.slice(0, -1),
+                      {
+                        ...state.points.at(-1)!,
+                        manual: state.points.at(-2)!.manual,
+                      },
+                      { manual: false, ...payload },
+                    ]
+                  : [...state.points, { manual: false, ...payload }],
+              pickMode: getStart(state) ? 'finish' : 'start',
+              finishOnly: state.points.length === 0,
             },
       )
-      .addCase(routePlannerSwapEnds, (state) => ({
-        ...state,
-        start: state.finish,
-        finish: state.start,
-        midpoints: [...state.midpoints].reverse(),
-      }))
+      .addCase(routePlannerSwapEnds, (state) => {
+        state.points.reverse();
+
+        for (let i = 1; i < state.points.length; i++) {
+          state.points[i - 1].manual = state.points[i].manual;
+        }
+
+        state.points[state.points.length - 1].manual = false;
+      })
       .addCase(
-        routePlannerAddMidpoint,
-        (state, { payload: { position, midpoint } }) => {
-          state.midpoints.splice(position, 0, midpoint);
+        routePlannerAddPoint,
+        (state, { payload: { position, point: midpoint } }) => {
+          state.points.splice(position + 1, 0, {
+            ...midpoint,
+            manual: midpoint.manual ?? state.points[position]?.manual ?? false,
+          });
         },
       )
-      .addCase(routePlannerSetMidpoint, (state, action) => {
-        state.midpoints[action.payload.position] = action.payload.midpoint;
+      .addCase(routePlannerSetPoint, (state, action) => {
+        state.points[action.payload.position] = action.payload.point;
       })
-      .addCase(routePlannerRemoveMidpoint, (state, action) => {
-        state.midpoints.splice(action.payload, 1);
+      .addCase(routePlannerRemovePoint, (state, action) => {
+        state.points.splice(action.payload, 1);
       })
       .addCase(
         routePlannerSetTransportType,
@@ -239,31 +259,31 @@ export const routePlannerReducer = createReducer(
           ...clearResult,
           transportType,
           mode:
-            transportTypeDefs[transportType].api !== 'gh' &&
-            state.mode === 'isochrone'
-              ? 'route'
-              : state.mode,
+            transportTypeDefs[transportType].api === 'gh'
+              ? state.mode === 'roundtrip'
+                ? 'route'
+                : state.mode
+              : state.mode === 'isochrone'
+                ? 'route'
+                : state.mode,
         }),
       )
-      .addCase(routePlannerSetMode, (state, { payload: mode }) => ({
-        ...state,
-        ...clearResult,
-        midpoints:
+      .addCase(routePlannerSetMode, (state, { payload: mode }) => {
+        if (
           transportTypeDefs[state.transportType].api === 'gh' &&
           mode !== 'route'
-            ? []
-            : state.midpoints,
-        finish:
-          transportTypeDefs[state.transportType].api === 'gh' &&
-          mode !== 'route'
-            ? null
-            : state.finish,
-        mode:
+        ) {
+          state.finishOnly = false;
+
+          state.points.splice(1);
+        }
+
+        state.mode =
           transportTypeDefs[state.transportType].api !== 'gh' &&
           mode === 'isochrone'
             ? 'route'
-            : mode,
-      }))
+            : mode;
+      })
       .addCase(routePlannerSetPickMode, (state, action) => ({
         ...state,
         pickMode: action.payload,
@@ -281,11 +301,6 @@ export const routePlannerReducer = createReducer(
           waypoints,
           timestamp,
           activeAlternativeIndex: 0,
-          midpoints:
-            transportTypeDefs[state.transportType].api === 'gh' &&
-            state.mode !== 'route'
-              ? []
-              : state.midpoints,
         }),
       )
       .addCase(
@@ -331,10 +346,7 @@ export const routePlannerReducer = createReducer(
           transportType:
             routePlanner?.transportType ??
             routePlannerInitialState.transportType,
-          start: routePlanner?.start ?? routePlannerInitialState.start,
-          midpoints:
-            routePlanner?.midpoints ?? routePlannerInitialState.midpoints,
-          finish: routePlanner?.finish ?? routePlannerInitialState.finish,
+          points: routePlanner?.points ?? routePlannerInitialState.points,
           pickMode: routePlanner?.pickMode ?? routePlannerInitialState.pickMode,
           mode: routePlanner?.mode ?? routePlannerInitialState.mode,
           milestones:
@@ -342,3 +354,13 @@ export const routePlannerReducer = createReducer(
         }),
       ),
 );
+
+function getStart(state: RoutePlannerState) {
+  return state.finishOnly ? null : state.points[0];
+}
+
+function getFinish(state: RoutePlannerState) {
+  return !state.finishOnly && state.points.length < 2
+    ? undefined
+    : state.points.at(-1);
+}

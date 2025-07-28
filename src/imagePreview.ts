@@ -1,5 +1,7 @@
 export const cache = new WeakMap<{}, HTMLCanvasElement>();
 
+let nextDbg = 0;
+
 export function loadPreview(
   file: File,
   targetWidth: number,
@@ -34,7 +36,7 @@ export function loadPreview(
 
     ctx.drawImage(img, 0, 0, width, height);
 
-    const key = {};
+    const key = { dbg: ++nextDbg };
 
     cache.set(key, canvas);
 

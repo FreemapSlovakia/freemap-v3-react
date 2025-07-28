@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectFeature } from '../actions/mainActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
 import { colors } from '../constants.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';

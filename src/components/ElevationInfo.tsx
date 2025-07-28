@@ -1,12 +1,12 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import { useCallback, useMemo } from 'react';
+import storage from 'local-storage-fallback';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaCopy } from 'react-icons/fa';
 import { TbDecimal } from 'react-icons/tb';
 import { is } from 'typia';
-import useLocalStorageState from 'use-local-storage-state';
 import { latLonToString } from '../geoutils.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import { integratedLayerDefs, IsTileLayerDef } from '../mapDefinitions.js';
@@ -24,6 +24,8 @@ export type ElevationInfoProps = ElevationInfoBaseProps & {
 };
 
 const FORMATS = ['D', 'DM', 'DMS'] as const;
+
+const STORAGE_KEY = 'fm.ele.gpsFormat';
 
 export function ElevationInfo({
   lang,
@@ -68,23 +70,15 @@ export function ElevationInfo({
     (state) => !!state.main.cookieConsentResult,
   );
 
-  const serializer = useMemo(() => {
-    return cookiesEnabled
-      ? undefined
-      : {
-          stringify() {
-            throw new Error('cookies not enabled');
-          },
-          parse() {
-            throw new Error('cookies not enabled');
-          },
-        };
-  }, [cookiesEnabled]);
+  const [format, setFormat] = useState(
+    Number(storage.getItem(STORAGE_KEY)) || 0,
+  );
 
-  const [format, setFormat] = useLocalStorageState<number>('fm.ele.gpsFormat', {
-    defaultValue: 0,
-    serializer,
-  });
+  useEffect(() => {
+    if (cookiesEnabled) {
+      storage.setItem(STORAGE_KEY, format.toString());
+    }
+  }, [cookiesEnabled, format]);
 
   const coordinates = useMemo(
     () =>
@@ -95,12 +89,8 @@ export function ElevationInfo({
   );
 
   const handleNextFormatClick = useCallback(() => {
-    console.log('next format');
-
     setFormat((f) => (f + 1) % FORMATS.length);
   }, [setFormat]);
-
-  console.log({ format });
 
   const handleCopyClick = useCallback(() => {
     navigator.clipboard.writeText(coordinates);

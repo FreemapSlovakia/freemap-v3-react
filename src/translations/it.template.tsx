@@ -130,7 +130,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Chiudi lo strumento',
-    tools: 'Strumenti',
     routePlanner: 'Cerca percorso',
     objects: 'Oggetti (POI)',
     photos: 'Foto',
@@ -230,7 +229,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Mappa per apparati GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
-    help: 'Aiuto',
+    help: 'Info e aiuto',
     back: 'Indietro',
     mapLegend: 'Legenda',
     contacts: 'Contatti',
@@ -300,27 +299,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     upload: 'Carica',
 
     f: {
-      firstUploaded: 'dai primi caricati',
-      lastUploaded: 'dagli ultimi caricati',
-      firstCaptured: 'dai più vecchi',
-      lastCaptured: 'dai più recenti',
-      leastRated: 'dai meno valutati',
-      mostRated: 'dai più valutati',
-      lastComment: "dall'ultimo commento",
+      '-createdAt': 'dagli ultimi caricati',
+      '-takenAt': 'dai più recenti',
+      '-rating': 'dai più valutati',
+      '-lastCommentedAt': "dall'ultimo commento",
     },
 
     colorizeBy: 'Colora in base',
     showDirection: 'Mostra la direzione dello scatto',
 
     c: {
-      disable: 'non colorare',
-      mine: 'diversi dai miei',
-      author: 'autore',
-      rating: 'valutazioni',
-      takenAt: 'data scatto',
-      createdAt: 'data di caricamento',
-      season: 'stagione',
-      premium: 'premium',
+      disable: 'Non colorare',
+      mine: 'Diversi dai miei',
+      userId: 'Autore',
+      rating: 'Valutazioni',
+      takenAt: 'Data scatto',
+      createdAt: 'Data di caricamento',
+      season: 'Stagione',
+      premium: 'Premium',
     },
 
     viewer: {
@@ -376,7 +372,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Le foto sono state caricate con successo.',
-      showPreview: 'Mostra anteprima (aumenta il consumo di CPU e memoria)',
+      showPreview:
+        "Mostra automaticamente l'anteprima (aumenta il consumo di CPU e memoria)",
       premium: 'Disponibile solo per gli utenti con accesso completo',
     },
 
@@ -512,8 +509,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     modify: 'Proprietà',
     edit: {
       title: 'Proprietà',
-      color: 'Colore:',
-      label: 'Etichetta:',
+      color: 'Colore',
+      label: 'Etichetta',
       width: 'Larghezza',
       hint: "Per rimuovere l'etichetta lascia il campo vuoto.",
       type: 'Tipo di geometria',
@@ -663,10 +660,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Inserisci il codice seguente nella tua pagina HTML:',
     example: 'Il risultato sarà simile a questo:',
-    dimensions: 'Dimensioni:',
-    height: 'Altezza:',
-    width: 'Larghezza:',
-    enableFeatures: 'Abilita caratteristiche:',
+    dimensions: 'Dimensioni',
+    height: 'Altezza',
+    width: 'Larghezza',
+    enableFeatures: 'Abilita caratteristiche',
     enableSearch: 'cerca',
     enableMapSwitch: 'Cambia livello mappa',
     enableLocateMe: 'trovami',
@@ -828,6 +825,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Risoluzioni extra',
     scaleWithDpi: 'Scala con DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'Impostazioni generali',
+    maxZoom: 'Zoom massimo',
   },
 
   elevationChart: {
@@ -1039,13 +1038,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-    area: 'Esporta area:',
+    area: 'Esporta area',
     areas: {
       visible: 'Area visibile della mappa',
       pinned: 'Area contenente i poligoni selezionati (disegno)',
     },
-    format: 'Formato:',
-    layersTitle: 'Livelli opzionali:',
+    format: 'Formato',
+    layersTitle: 'Livelli opzionali',
     layers: {
       contours: 'Curve di livello',
       shading: 'Rilievi ombreggiati',
@@ -1057,7 +1056,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Trova percorso',
       track: 'Traccia GPX',
     },
-    mapScale: 'Risoluzione mappa:',
+    mapScale: 'Risoluzione mappa',
     alert: () => (
       <>
         Note:

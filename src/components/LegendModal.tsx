@@ -44,7 +44,7 @@ export function LegendModal({ show }: Props): ReactElement {
 
               <Accordion.Body>
                 {c.items.map((e) => (
-                  <div key={e.n} className="legend-item">
+                  <div key={e.n} className="fm-legend-item">
                     <div>
                       <div>
                         <img src={require(`../legend/${e.i}`)} alt={e.n} />

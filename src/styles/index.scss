@@ -5,18 +5,26 @@
 @use './leaflet.scss';
 
 :root {
-  --scroller-mix-blend-mode: multiply;
+  --scroller-mix-blend-mode: normal;
+
+  --scroller-pct: 5%;
+}
+
+[data-bs-theme='light'] {
+  --scroller-from: rgba(224, 224, 224, 0);
+  --scroller-to: rgb(180, 180, 180);
+}
+
+[data-bs-theme='dark'] {
+  --scroller-from: rgba(40, 40, 40, 0);
+  --scroller-to: rgb(160, 160, 160);
 }
 
 body {
   overflow: hidden;
 }
 
-.hidden {
-  display: none !important;
-}
-
-.header {
+.fm-header {
   position: absolute;
   z-index: 1010;
   top: 0px;
@@ -29,7 +37,7 @@ body {
   }
 }
 
-.info-bar {
+.fm-info-bar {
   @media screen {
     background-color: #ffa;
     color: black;
@@ -50,23 +58,13 @@ body {
   }
 }
 
-.menus {
+.fm-menus {
   pointer-events: none;
   & > * {
     pointer-events: auto;
   }
   display: flex;
   flex-wrap: wrap;
-  column-gap: 0.5rem;
-  margin-inline: 0.5rem;
-}
-
-.tool-panel {
-  position: absolute;
-  z-index: 1010;
-  top: 10px;
-  left: 68px;
-  margin-right: 10px;
 }
 
 #freemap-logo-print {
@@ -146,6 +144,7 @@ button#freemap-logo {
     align-items: center;
 
     padding: 0.25rem;
+    margin-inline: 0.5rem;
   }
 
   @media print {
@@ -167,11 +166,6 @@ button#freemap-logo {
 
 .fm-label {
   margin: 4px;
-}
-
-#tools-button {
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
 }
 
 .fm-type-zoom-control {
@@ -202,7 +196,7 @@ button#freemap-logo {
   }
 }
 
-.legend-item {
+.fm-legend-item {
   display: flex;
   margin-bottom: 2px;
   align-items: center;
@@ -259,20 +253,20 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
-    rgba(224, 224, 224, 1) 5%,
-    rgba(224, 224, 224, 0)
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
   );
 }
 
 .fm-ib-scroller > div:first-child::before {
   width: 2rem;
   height: 3rem;
-  right: 0.5rem;
+  right: 0;
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
-    rgba(224, 224, 224, 0) 5%,
-    rgb(224, 224, 224)
+    var(--scroller-from) var(--scroller-pct),
+    var(--scroller-to)
   );
 }
 
@@ -282,8 +276,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
-    rgb(224, 224, 224) 5%,
-    rgba(224, 224, 224, 0)
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
   );
 }
 
@@ -299,8 +293,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
-    rgb(224, 224, 224) 5%,
-    rgba(224, 224, 224, 0)
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
   );
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
@@ -314,8 +308,8 @@ button#freemap-logo {
   mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
-    rgba(224, 224, 224, 0) 5%,
-    rgb(224, 224, 224)
+    var(--scroller-from) var(--scroller-pct),
+    var(--scroller-to)
   );
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -336,6 +330,10 @@ button#freemap-logo {
 .scroll-top::before,
 .scroll-bottom > div:first-child::before {
   opacity: 1;
+  transition: opacity 0.25s;
+}
+
+.fm-transition {
   transition: opacity 0.25s;
 }
 
@@ -418,10 +416,6 @@ button#freemap-logo {
   border: 1px solid black;
 }
 
-kbd {
-  line-height: 0;
-}
-
 .fm-opacity-button {
   background: repeating-conic-gradient(#808080 0 25%, #0000 0 50%) 50% / 8px 8px;
 
@@ -457,5 +451,56 @@ kbd {
 
   [data-bs-theme='dark'] & {
     color: #ccc;
+  }
+}
+
+.fm-ellipsis {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-dropdown-with-scroller {
+  padding: 0;
+
+  & > div {
+    padding-block: 0.5rem;
+  }
+}
+
+.fm-selection {
+  background: linear-gradient(
+    to right,
+    rgba(204, 204, 255, 0.8),
+    rgba(255, 255, 255, 0.8) 4rem,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+
+  [data-bs-theme='dark'] & {
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 180, 0.8),
+      rgba(0, 0, 0, 0.8) 4rem,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+  }
+}
+
+.fm-toolmenu {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 153, 0.8),
+    rgba(255, 255, 255, 0.8) 4rem,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+
+  [data-bs-theme='dark'] & {
+    background: linear-gradient(
+      to right,
+      rgba(100, 100, 0, 0.8),
+      rgba(0, 0, 0, 0.8) 4rem,
+      rgba(0, 0, 0, 0.8) 100%
+    );
   }
 }

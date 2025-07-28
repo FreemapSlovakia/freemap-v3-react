@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap';
 import { trackingActions } from '../../actions/trackingActions.js';
 import { DateTime } from '../../components/DateTime.js';
 import { toDatetimeLocal } from '../../dateUtils.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useTextInputState } from '../../hooks/useTextInputState.js';
 import { useMessages } from '../../l10nInjector.js';
 
@@ -76,19 +76,19 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="mb-3">
+        <Form.Group controlId="timeFrom" className="mb-3">
           <Form.Label>{m?.tracking.accessToken.timeFrom}</Form.Label>
 
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="timeTo" className="mb-3">
           <Form.Label>{m?.tracking.accessToken.timeTo}</Form.Label>
 
           <DateTime value={timeTo} onChange={setTimeTo} />
         </Form.Group>
 
-        {/* <Form.Group className="mb-3">
+        {/* <Form.Group  controlId="listingLabel" className="mb-3">
           <Form.Label>{m?.tracking.accessToken.listingLabel}</Form.Label>
           <Form.Control
             value={listingLabel}
@@ -97,7 +97,7 @@ export function AccessTokenForm(): ReactElement {
           />
         </Form.Group> */}
 
-        <Form.Group className="mb-3">
+        <Form.Group controlId="note" className="mb-3">
           <Form.Label>{m?.tracking.accessToken.note}</Form.Label>
 
           <Form.Control value={note} onChange={setNote} maxLength={255} />

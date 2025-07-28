@@ -2,7 +2,7 @@ import { Fragment, ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { toastsAdd } from '../actions/toastsActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import {
   categoryKeys,
   getNameFromOsmElement,

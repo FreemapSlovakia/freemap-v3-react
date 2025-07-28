@@ -124,7 +124,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Zavřít nástroj',
-    tools: 'Nástroje',
     routePlanner: 'Vyhledávač tras',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
@@ -294,25 +293,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showLayer: 'Zobrazit vrstvu',
     upload: 'Nahrát',
     f: {
-      firstUploaded: 'od první nahrané',
-      lastUploaded: 'od poslední nahrané',
-      firstCaptured: 'od nejstarší vyfocené',
-      lastCaptured: 'od nejnovější vyfocené',
-      leastRated: 'od nejmenšího hodnocení',
-      mostRated: 'od největšího hodnocení',
-      lastComment: 'od posledního komentáře',
+      '-createdAt': 'od poslední nahrané',
+      '-takenAt': 'od nejnovější vyfocené',
+      '-rating': 'od největšího hodnocení',
+      '-lastCommentedAt': 'od posledního komentáře',
     },
     colorizeBy: 'Vybarvit podle',
     showDirection: 'Ukaž směr focení',
     c: {
-      disable: 'nevybarvit',
-      mine: 'odlišit moje',
-      author: 'autora',
-      rating: 'hodnocení',
-      takenAt: 'data vyfocení',
-      createdAt: 'data nahrání',
-      season: 'ročního období',
-      premium: 'prémiové',
+      disable: 'Nevybarvit',
+      mine: 'Odlišit moje',
+      userId: 'Autor',
+      rating: 'Hodnocení',
+      takenAt: 'Datum vyfocení',
+      createdAt: 'Datum nahrání',
+      season: 'Roční období',
+      premium: 'Prémiové',
     },
     viewer: {
       title: 'Fotografie',
@@ -365,7 +361,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Fotografie byly úspěšně nahrány.',
-      showPreview: 'Zobrazit náhledy (náročnější na výkon a paměť)',
+      showPreview: 'Automaticky zobrazit náhledy (náročnější na výkon a paměť)',
+      loadPreview: 'Načíst náhled',
       premium: 'Zpřístupnit pouze uživatelům s prémiovým přístupem',
     },
     locationPicking: {
@@ -487,8 +484,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Vlastnosti',
       color: 'Barva',
-      label: 'Popis:',
-      width: 'Šířka:',
+      label: 'Popis',
+      width: 'Šířka',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
       type: 'Typ geometrie',
     },
@@ -641,10 +638,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Vložte na vaši stránku tento html kód:',
     example: 'Výsledek bude vypadat následovně:',
-    dimensions: 'Velikost:',
-    height: 'Výška:',
-    width: 'Šířka:',
-    enableFeatures: 'Povolit funkce:',
+    dimensions: 'Velikost',
+    height: 'Výška',
+    width: 'Šířka',
+    enableFeatures: 'Povolit funkce',
     enableSearch: 'vyhledávání',
     enableMapSwitch: 'přepínání vrstev mapy',
     enableLocateMe: 'nalezení vlastní pozice',
@@ -800,6 +797,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Další rozlišení',
     scaleWithDpi: 'Škálovat podle DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'Obecná nastavení',
+    maxZoom: 'Maximální přiblížení',
   },
 
   elevationChart: {
@@ -1012,13 +1011,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </Alert.Link>
       </>
     ),
-    area: 'Exportovat oblast:',
+    area: 'Exportovat oblast',
     areas: {
       visible: 'Viditelnou oblast mapy',
       pinned: 'Plochu obsahující označený polygon (kreslení)',
     },
-    format: 'Formát:',
-    layersTitle: 'Volitelné vrstvy:',
+    format: 'Formát',
+    layersTitle: 'Volitelné vrstvy',
     layers: {
       contours: 'Vrstevnice',
       shading: 'Stínovaný reliéf',
@@ -1030,7 +1029,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Vyhledanou trasu',
       track: 'GPX trasu',
     },
-    mapScale: 'Rozlišení mapy:',
+    mapScale: 'Rozlišení mapy',
     alert: () => (
       <>
         Upozornění:

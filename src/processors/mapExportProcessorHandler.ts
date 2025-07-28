@@ -25,21 +25,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
   getState,
   action,
 }) => {
-  const {
-    scale,
-    area,
-    format,
-    shadedRelief,
-    contours,
-    hikingTrails,
-    bicycleTrails,
-    skiTrails,
-    horseTrails,
-    drawing,
-    plannedRoute,
-    track,
-    style,
-  } = action.payload;
+  const { scale, area, format, layers: exportLayers, style } = action.payload;
 
   const {
     main: { selection },
@@ -83,7 +69,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
   const features: Feature[] = [];
 
-  if (drawing) {
+  if (exportLayers.includes('drawing')) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
@@ -133,7 +119,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     }
   }
 
-  if (plannedRoute) {
+  if (exportLayers.includes('plannedRoute')) {
     const { alternatives, activeAlternativeIndex } = getState().routePlanner;
 
     const alt = alternatives[activeAlternativeIndex];
@@ -151,7 +137,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     }
   }
 
-  if (track) {
+  if (exportLayers.includes('track')) {
     const { trackGeojson } = getState().trackViewer;
 
     if (trackGeojson && trackGeojson.type === 'FeatureCollection') {
@@ -203,12 +189,12 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
       format,
       scale,
       features: {
-        shading: shadedRelief,
-        contours,
-        hikingTrails,
-        bicycleTrails,
-        skiTrails,
-        horseTrails,
+        shading: exportLayers.includes('shading'),
+        contours: exportLayers.includes('contours'),
+        hikingTrails: exportLayers.includes('hikingTrails'),
+        bicycleTrails: exportLayers.includes('bicycleTrails'),
+        skiTrails: exportLayers.includes('skiTrails'),
+        horseTrails: exportLayers.includes('horseTrails'),
       },
       custom: layers.length
         ? { layers, styles: [{ Style: { '@name': '_new_' }, style }] } // TODO ugly hacked to support XML styles

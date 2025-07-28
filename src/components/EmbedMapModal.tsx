@@ -1,4 +1,6 @@
+import storage from 'local-storage-fallback';
 import {
+  ChangeEvent,
   type ReactElement,
   useCallback,
   useEffect,
@@ -12,8 +14,20 @@ import { useMessages } from '../l10nInjector.js';
 import { Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { is } from 'typia';
+import { isInvalidInt } from '../numberValidator.js';
 
 type Props = { show: boolean };
+
+const WIDTH_STORAGE_KEY = 'fm.embedMap.width';
+
+const HEIGHT_STORAGE_KEY = 'fm.embedMap.height';
+
+const FEATURES_STORAGE_KEY = 'fm.embedMap.features';
+
+const FEATURES = ['search', 'mapSwitch', 'locateMe'] as const;
+
+type Feature = (typeof FEATURES)[number];
 
 export default EmbedMapModal;
 
@@ -22,24 +36,40 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const [width, setWidth] = useState('640');
+  const [width, setWidth] = useState(
+    () => storage.getItem(WIDTH_STORAGE_KEY) ?? '640',
+  );
 
-  const [height, setHeight] = useState('480');
+  const [height, setHeight] = useState(
+    () => storage.getItem(HEIGHT_STORAGE_KEY) ?? '480',
+  );
 
-  const [enableSearch, setEnableSearch] = useState(true);
+  const [features, setFeatures] = useState(() => {
+    const features = storage.getItem(FEATURES_STORAGE_KEY);
 
-  const [enableMapSwitch, setEnableMapSwitch] = useState(true);
+    if (!features) {
+      return new Set(FEATURES);
+    }
 
-  const [enableLocateMe, setEnableLocateMe] = useState(true);
+    const set = new Set<Feature>();
+
+    for (const feature of features.split(',')) {
+      if (is<Feature>(feature)) {
+        set.add(feature);
+      }
+    }
+
+    return set;
+  });
 
   const getEmbedFeatures = useCallback(
     () =>
       [
-        enableSearch && 'search',
-        !enableMapSwitch && 'noMapSwitch',
-        !enableLocateMe && 'noLocateMe',
-      ].filter((x) => x) as string[],
-    [enableLocateMe, enableMapSwitch, enableSearch],
+        features.has('search') && 'search',
+        !features.has('mapSwitch') && 'noMapSwitch',
+        !features.has('locateMe') && 'noLocateMe',
+      ].filter(Boolean) as string[],
+    [features],
   );
 
   const getUrl = useCallback(
@@ -118,9 +148,46 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
   const allow = ['fullscreen'];
 
-  if (enableLocateMe) {
+  if (features.has('locateMe')) {
     allow.push('geolocation');
   }
+
+  const invalidWidth = isInvalidInt(width, true, 100, 1600);
+
+  const invalidHeight = isInvalidInt(width, true, 100, 1200);
+
+  const handleFeaturesChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.currentTarget.value as Feature;
+
+      setFeatures((prev) => {
+        const next = new Set(prev);
+
+        if (next.has(value)) {
+          next.delete(value);
+        } else {
+          next.add(value);
+        }
+
+        storage.setItem(FEATURES_STORAGE_KEY, [...next].join(','));
+
+        return next;
+      });
+    },
+    [],
+  );
+
+  const handleWidthChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setWidth(e.currentTarget.value);
+
+    storage.setItem(WIDTH_STORAGE_KEY, e.currentTarget.value);
+  }, []);
+
+  const handleHeightChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setHeight(e.currentTarget.value);
+
+    storage.setItem(HEIGHT_STORAGE_KEY, e.currentTarget.value);
+  }, []);
 
   return (
     <Modal show={show} onHide={close} className="dynamic">
@@ -131,8 +198,12 @@ export function EmbedMapModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Form.Group className="mb-3" style={{ maxWidth: '542px' }}>
-          <Form.Label>{m?.embed.dimensions}</Form.Label>
+        <Form.Group
+          controlId="dimensions"
+          className="mb-3"
+          style={{ maxWidth: '542px' }}
+        >
+          <Form.Label className="required">{m?.embed.dimensions}</Form.Label>
 
           <InputGroup>
             <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
@@ -143,10 +214,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               min={100}
               max={1600}
               step={10}
+              isInvalid={invalidWidth}
               required
-              onChange={({ currentTarget }) => {
-                setWidth(currentTarget.value);
-              }}
+              onChange={handleWidthChange}
             />
 
             <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
@@ -157,84 +227,90 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               min={100}
               max={1200}
               step={10}
+              isInvalid={invalidHeight}
               required
-              onChange={({ currentTarget }) => {
-                setHeight(currentTarget.value);
-              }}
+              onChange={handleHeightChange}
             />
           </InputGroup>
         </Form.Group>
 
-        <Form.Label className="mb-3">{m?.embed.enableFeatures}</Form.Label>
+        <Form.Label>{m?.embed.enableFeatures}</Form.Label>
 
         <Form.Check
           id="enableSearch"
           type="checkbox"
-          onChange={({ currentTarget }) => {
-            setEnableSearch(currentTarget.checked);
-          }}
-          checked={enableSearch}
+          value="search"
+          onChange={handleFeaturesChange}
+          checked={features.has('search')}
           label={m?.embed.enableSearch}
         />
 
         <Form.Check
           id="enableMapSwitch"
           type="checkbox"
-          onChange={({ currentTarget }) => {
-            setEnableMapSwitch(currentTarget.checked);
-          }}
-          checked={enableMapSwitch}
+          value="mapSwitch"
+          onChange={handleFeaturesChange}
+          checked={features.has('mapSwitch')}
           label={m?.embed.enableMapSwitch}
         />
 
         <Form.Check
           id="enableLocateMe"
           type="checkbox"
-          onChange={({ currentTarget }) => {
-            setEnableLocateMe(currentTarget.checked);
-          }}
-          checked={enableLocateMe}
+          value="locateMe"
+          onChange={handleFeaturesChange}
+          checked={features.has('locateMe')}
           label={m?.embed.enableLocateMe}
         />
 
         <hr />
 
-        <p>{m?.embed.code}</p>
+        <Form.Label>{m?.embed.code}</Form.Label>
 
         <Form.Control
           ref={setFormControl}
           as="textarea"
-          value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen allow="${allow.join(
-            ';',
-          )}"></iframe>`}
+          value={
+            invalidWidth || invalidHeight
+              ? ''
+              : `<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen allow="${allow.join(
+                  ';',
+                )}"></iframe>`
+          }
           readOnly
           rows={3}
+          disabled={invalidWidth || invalidHeight}
         />
 
-        <br />
+        {!(invalidWidth || invalidHeight) && (
+          <div className="mt-3">
+            <Form.Label>{m?.embed.example}</Form.Label>
 
-        <p>{m?.embed.example}</p>
-
-        <div style={{ overflowX: 'auto' }}>
-          <iframe
-            title="Freemap.sk"
-            style={{
-              width: `${width}px`,
-              height: `${height}px`,
-              border: '0',
-              display: 'block',
-              margin: '0 auto',
-            }}
-            src={iframeUrl}
-            allowFullScreen
-            allow={allow.join(';')}
-            ref={iframe}
-          />
-        </div>
+            <div style={{ overflowX: 'auto' }}>
+              <iframe
+                title="Freemap.sk"
+                style={{
+                  width: `${width}px`,
+                  height: `${height}px`,
+                  border: '0',
+                  display: 'block',
+                  margin: '0 auto',
+                }}
+                src={iframeUrl}
+                allowFullScreen
+                allow={allow.join(';')}
+                ref={iframe}
+              />
+            </div>
+          </div>
+        )}
       </Modal.Body>
 
       <Modal.Footer>
-        <Button onClick={handleCopyClick}>
+        <Button
+          onClick={handleCopyClick}
+          disabled={invalidWidth || invalidHeight}
+        >
           <FaClipboard /> {m?.general.copyCode}
         </Button>
 

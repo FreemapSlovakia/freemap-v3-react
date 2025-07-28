@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
@@ -35,7 +35,7 @@ import { MapControls } from '../components/MapControls.js';
 import { MapDetailsMenu } from '../components/MapDetailsMenu.js';
 import { SearchMenu } from '../components/SearchMenu.js';
 import { Toasts } from '../components/Toasts.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
@@ -52,13 +52,15 @@ import {
 import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
 import { GalleryModals } from './gallery/GalleryModals.js';
-import { PictureLegend } from './gallery/PictureLegend.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 import { MainMenuButton } from './mainMenu/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapsMenu } from './MapsMenu.js';
 import { Results } from './Results.js';
+import RoutePointSelection from './RoutePointSelection.js';
+import { Toolbar } from './Toolbar.js';
 import { ToolMenu } from './ToolMenu.js';
 import { Tools } from './Tools.js';
 import { TrackingSelection } from './TrackingSelection.js';
@@ -72,6 +74,8 @@ const routePlannerMenuFactory = () => import('./RoutePlannerMenu.js');
 const trackViewerMenuFactory = () => import('./TrackViewerMenu.js');
 
 const changesetsMenuFactory = () => import('./ChangesetsMenu.js');
+
+const drawingMenuFactory = () => import('./DrawingMenu.js');
 
 const drawingLineSelectionFactory = () => import('./DrawingLineSelection.js');
 
@@ -90,6 +94,8 @@ const galleryShowPositionMenuFactory = () =>
 
 const homeLocationPickingMenuFactory = () =>
   import('./HomeLocationPickingMenu.js');
+
+const galleryMenuFactory = () => import('./gallery/GalleryMenu.js');
 
 const adFactory = () => import('./Ad.js');
 
@@ -193,6 +199,10 @@ export function Main(): ReactElement {
 
   const showResults = useAppSelector(
     (state) => !state.map.layers.includes('i'),
+  );
+
+  const showPictures = useAppSelector((state) =>
+    state.map.overlays.includes('I'),
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -407,6 +417,8 @@ export function Main(): ReactElement {
     ),
   );
 
+  const maxZoom = useAppSelector((state) => state.map.maxZoom);
+
   return (
     <>
       {!window.fmHeadless && (
@@ -423,14 +435,14 @@ export function Main(): ReactElement {
 
           <Toasts />
 
-          <div className="header">
+          <div className="fm-header">
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
-            <div className="menus">
+            <div className="fm-menus">
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
-                <Card className="fm-toolbar mt-2">
+                <Toolbar className="mt-2">
                   <Button
                     id="freemap-logo"
                     className={progress ? 'in-progress' : 'idle'}
@@ -445,49 +457,62 @@ export function Main(): ReactElement {
                       preventShortcut={!!activeModal || !!documentKey}
                     />
                   )}
-                </Card>
+                </Toolbar>
               </div>
 
               {window.fmEmbedded && (trackFound || routeFound) && (
-                <Card className="fm-toolbar mx-2 mt-2">
+                <Toolbar className="mx-2 mt-2">
                   <ButtonToolbar>
                     {trackFound && (
-                      <Button
-                        variant="secondary"
-                        active={elevationChartActive}
-                        onClick={() =>
-                          dispatch(trackViewerToggleElevationChart())
-                        }
+                      <LongPressTooltip
+                        breakpoint="sm"
+                        label={m?.general.elevationProfile}
                       >
-                        <FaChartArea />
-
-                        <span className="d-none d-sm-inline">
-                          {' '}
-                          {m?.general.elevationProfile}
-                        </span>
-                      </Button>
+                        {({ label, labelClassName, props }) => (
+                          <Button
+                            variant="secondary"
+                            active={elevationChartActive}
+                            onClick={() =>
+                              dispatch(trackViewerToggleElevationChart())
+                            }
+                            {...props}
+                          >
+                            <FaChartArea />
+                            <span className={labelClassName}> {label}</span>
+                          </Button>
+                        )}
+                      </LongPressTooltip>
                     )}
 
                     {routeFound && (
-                      <Button
-                        className={trackFound ? 'ms-1' : ''}
-                        variant="secondary"
-                        onClick={() =>
-                          dispatch(routePlannerToggleElevationChart())
-                        }
-                        active={elevationChartActive}
-                        title={m?.general.elevationProfile ?? '…'}
+                      <LongPressTooltip
+                        breakpoint="sm"
+                        label={m?.general.elevationProfile}
                       >
-                        <FaChartArea />
-
-                        <span className="d-none d-sm-inline">
-                          {' '}
-                          {m?.general.elevationProfile ?? '…'}
-                        </span>
-                      </Button>
+                        {({ label, labelClassName, props }) => (
+                          <Button
+                            className={trackFound ? 'ms-1' : ''}
+                            variant="secondary"
+                            onClick={() =>
+                              dispatch(routePlannerToggleElevationChart())
+                            }
+                            active={elevationChartActive}
+                            {...props}
+                          >
+                            <FaChartArea />
+                            <span className={labelClassName}> {label}</span>
+                          </Button>
+                        )}
+                      </LongPressTooltip>
                     )}
                   </ButtonToolbar>
-                </Card>
+                </Toolbar>
+              )}
+
+              {showMenu && showMapsMenu && !window.fmEmbedded && <MapsMenu />}
+
+              {showMenu && showPictures && (
+                <AsyncComponent factory={galleryMenuFactory} />
               )}
 
               {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
@@ -501,13 +526,15 @@ export function Main(): ReactElement {
                   <AsyncComponent factory={trackViewerMenuFactory} />
                 ) : tool === 'changesets' ? (
                   <AsyncComponent factory={changesetsMenuFactory} />
+                ) : tool === 'draw-lines' ||
+                  tool === 'draw-points' ||
+                  tool === 'draw-polygons' ? (
+                  <AsyncComponent factory={drawingMenuFactory} />
                 ) : tool === 'map-details' ? (
                   <MapDetailsMenu />
                 ) : (
                   <ToolMenu />
                 ))}
-
-              {showMenu && showMapsMenu && !window.fmEmbedded && <MapsMenu />}
 
               {selectionMenu === 'draw-line-poly' ? (
                 <AsyncComponent factory={drawingLineSelectionFactory} />
@@ -519,6 +546,8 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={objectSelectionFactory} />
               ) : selectionMenu === 'tracking' ? (
                 <TrackingSelection />
+              ) : selectionMenu === 'route-point' ? (
+                <RoutePointSelection />
               ) : null}
 
               {pickingPosition && (
@@ -533,9 +562,7 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
 
-              <PictureLegend />
-
-              {showAds && !askingCookieConsent && (
+              {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />
               )}
 
@@ -593,10 +620,12 @@ export function Main(): ReactElement {
           <MapContainer
             zoomControl={false}
             attributionControl={false}
-            maxZoom={20}
+            maxZoom={maxZoom}
+            key={maxZoom}
             ref={setMap}
             center={{ lat, lng: lon }}
             zoom={zoom}
+            wheelPxPerZoomLevel={100}
           >
             <ScaleControl imperial={false} position="bottomleft" />
 

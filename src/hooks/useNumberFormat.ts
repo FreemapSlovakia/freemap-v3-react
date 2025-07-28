@@ -1,4 +1,4 @@
-import { useAppSelector } from './reduxSelectHook.js';
+import { useAppSelector } from './useAppSelector.js';
 
 export function useNumberFormat(options?: Intl.NumberFormatOptions) {
   const language = useAppSelector((state) => state.l10n.language);

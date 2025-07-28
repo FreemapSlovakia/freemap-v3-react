@@ -103,15 +103,15 @@ export function MapLayersSettings({
                   defaultToolbarLayerLetters.includes(type) ??
                   false
                 }
-                onChange={(e) => {
+                onChange={(e) =>
                   setLayersSettings({
                     ...layersSettings,
                     [type]: {
                       ...(layersSettings[type] ?? {}),
                       showInToolbar: e.currentTarget.checked,
                     },
-                  });
-                }}
+                  })
+                }
               />
             </td>
 
@@ -122,15 +122,15 @@ export function MapLayersSettings({
                   defaultMenuLayerLetters.includes(type) ??
                   false
                 }
-                onChange={(e) => {
+                onChange={(e) =>
                   setLayersSettings({
                     ...layersSettings,
                     [type]: {
                       ...(layersSettings[type] ?? {}),
                       showInMenu: e.currentTarget.checked,
                     },
-                  });
-                }}
+                  })
+                }
               />
             </td>
 

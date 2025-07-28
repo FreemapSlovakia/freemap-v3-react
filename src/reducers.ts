@@ -157,6 +157,7 @@ export function getInitialState() {
       colorizeBy?: GalleryColorizeBy | null;
       recentTags?: string[];
       showDirection?: boolean;
+      showLegend?: boolean;
     }>(persisted.gallery)
   ) {
     initial.gallery = {

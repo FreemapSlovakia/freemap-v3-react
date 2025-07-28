@@ -5,7 +5,6 @@ import { ShowModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { serializeShading } from '../components/parameterizedShading/Shading.js';
 import { basicModals } from '../constants.js';
-import { DocumentKey } from '../documents/index.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
@@ -54,11 +53,10 @@ export const urlProcessor: Processor = {
       map.customLayers,
       map.shading,
       routePlanner,
-      routePlanner.finish,
-      routePlanner.midpoints,
+      routePlanner.points,
+      routePlanner.finishOnly,
       routePlanner.milestones,
       routePlanner.mode,
-      routePlanner.start,
       routePlanner.transportType,
       routePlanner.roundtripParams,
       main.documentKey,
@@ -117,16 +115,13 @@ export const urlProcessor: Processor = {
       ]);
     }
 
-    if (
-      routePlanner.start ||
-      routePlanner.finish ||
-      routePlanner.midpoints.length
-    ) {
+    if (routePlanner.points.length) {
       historyParts.push([
         'points',
-        [routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
-          .map((point) => serializePoint(point))
-          .join(','),
+        (routePlanner.finishOnly ? ',' : '') +
+          routePlanner.points
+            .map((point) => (point.manual ? 'm' : '') + serializePoint(point))
+            .join(','),
       ]);
 
       historyParts.push(['transport', routePlanner.transportType]);
@@ -295,7 +290,7 @@ export const urlProcessor: Processor = {
       queryParts.push(['show', main.activeModal]);
     }
 
-    if (is<DocumentKey>(main.documentKey)) {
+    if (main.documentKey !== null) {
       queryParts.push(['document', main.documentKey]);
     }
 

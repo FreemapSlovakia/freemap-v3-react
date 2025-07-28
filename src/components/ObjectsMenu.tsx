@@ -15,7 +15,7 @@ import {
   setSelectedIcon,
 } from '../actions/objectsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
@@ -218,7 +218,10 @@ export function ObjectsMenu(): ReactElement {
           />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <Dropdown.Menu
+          popperConfig={fixedPopperConfig}
+          className="fm-dropdown-with-scroller"
+        >
           <div className="dropdown-long" ref={sc}>
             <div />
 

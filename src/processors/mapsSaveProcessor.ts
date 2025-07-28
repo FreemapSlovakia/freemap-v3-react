@@ -104,9 +104,8 @@ function getMapDataFromState(state: RootState): MapData {
     },
     routePlanner: {
       transportType: routePlanner.transportType,
-      start: routePlanner.start,
-      midpoints: routePlanner.midpoints,
-      finish: routePlanner.finish,
+      points: routePlanner.points,
+      finishOnly: routePlanner.finishOnly,
       pickMode: routePlanner.pickMode,
       mode: routePlanner.mode,
       milestones: routePlanner.milestones,

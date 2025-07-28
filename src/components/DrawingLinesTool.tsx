@@ -7,7 +7,7 @@ import {
   drawingLineAddPoint,
 } from '../actions/drawingLineActions.js';
 import { drawingMeasure } from '../actions/drawingPointActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { isEventOnMap } from '../mapUtils.js';
 
 export default DrawingLinesTool;

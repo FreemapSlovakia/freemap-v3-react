@@ -55,8 +55,8 @@ export function serializeShading(shading: Shading) {
         sub.push(Color(component.colorStops[0].color).hexa().slice(1));
         break;
       case 'slope-igor':
-        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
         sub.push(component.exaggeration.toFixed(1));
+        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
         break;
       case 'aspect':
       case 'color-relief':

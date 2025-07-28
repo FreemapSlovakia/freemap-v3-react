@@ -1,7 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import { basicModals, tools } from '../constants.js';
-import type { DocumentKey } from '../documents/index.js';
 import type { CustomLayerDef } from '../mapDefinitions.js';
 import type { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
@@ -17,7 +16,7 @@ export const setTool = createAction<Tool | null>('SET_TOOL');
 
 export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
 
-export const documentShow = createAction<DocumentKey | null>('DOCUMENT_SHOW');
+export const documentShow = createAction<string | null>('DOCUMENT_SHOW');
 
 export const startProgress = createAction<string | number>('START_PROGRESS');
 
@@ -29,19 +28,27 @@ export const setLocation = createAction<{
   accuracy: number;
 }>('SET_LOCATION');
 
+export const LAYERS = [
+  'contours',
+  'shading',
+  'hikingTrails',
+  'bicycleTrails',
+  'skiTrails',
+  'horseTrails',
+  'drawing',
+  'plannedRoute',
+  'track',
+] as const;
+
+export type ExportableLayer = (typeof LAYERS)[number];
+
+export type ExportFormat = 'jpeg' | 'png' | 'pdf' | 'svg';
+
 export interface MapExportOptions {
-  contours: boolean;
-  shadedRelief: boolean;
-  hikingTrails: boolean;
-  bicycleTrails: boolean;
-  skiTrails: boolean;
-  horseTrails: boolean;
-  drawing: boolean;
-  plannedRoute: boolean;
-  track: boolean;
+  layers: ExportableLayer[];
   scale: number;
   area: 'visible' | 'selected';
-  format: 'png' | 'jpeg' | 'svg' | 'pdf';
+  format: ExportFormat;
   style: string;
 }
 
@@ -99,6 +106,7 @@ type Settings = {
   customLayers?: CustomLayerDef[];
   drawingColor?: string;
   drawingWidth?: number;
+  maxZoom?: number;
 };
 
 export const saveSettings = createAction<{
@@ -152,12 +160,18 @@ export interface TrackingSelection {
   id: string | number;
 }
 
+export interface RoutePointSelection {
+  type: 'route-point';
+  id: number;
+}
+
 export type Selection =
   | LinePointSelection
   | DrawPointSelection
   | ObjectsSelection
   | DrawLinePolySelection
-  | TrackingSelection;
+  | TrackingSelection
+  | RoutePointSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 

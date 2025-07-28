@@ -21,23 +21,25 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         title={m?.mainMenu.facebook}
       >
         <FaFacebook />
-      </a>{' '}
+      </a>
+
       <a
         onClick={closeMenu}
         href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
         target="_blank"
         rel="noopener noreferrer"
-        className="fm-yt-icon"
+        className="fm-yt-icon ms-1"
         title={m?.mainMenu.youtube}
       >
         <FaYoutube />
-      </a>{' '}
+      </a>
+
       <a
         onClick={closeMenu}
         href="https://github.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"
-        className="fm-gh-icon"
+        className="fm-gh-icon ms-1"
         title={m?.mainMenu.github}
       >
         <FaGithub />

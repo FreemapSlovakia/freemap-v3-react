@@ -1,3 +1,4 @@
+import storage from 'local-storage-fallback';
 import { setActiveModal, setTool } from '../actions/mainActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
@@ -15,6 +16,10 @@ export const setToolProcessor: Processor<typeof setTool> = {
         !getState().trackViewer.trackGeojson
       ) {
         dispatch(setActiveModal('upload-track'));
+      }
+
+      if (tool.startsWith('draw-')) {
+        storage.setItem('drawingTool', tool);
       }
     }
   },

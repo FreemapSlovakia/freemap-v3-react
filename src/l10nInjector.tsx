@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useAppSelector } from './hooks/reduxSelectHook.js';
+import { useAppSelector } from './hooks/useAppSelector.js';
 import { useLazy } from './hooks/useLazy.js';
 import { Messages } from './translations/messagesInterface.js';
 

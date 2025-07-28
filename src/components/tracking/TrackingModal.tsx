@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../../actions/mainActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { AccessTokenForm } from './AccessTokenForm.js';
 import { AccessTokens } from './AccessTokens.js';
 import { DeviceForm } from './DeviceForm.js';

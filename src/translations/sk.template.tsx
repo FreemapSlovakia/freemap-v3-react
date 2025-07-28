@@ -110,6 +110,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Exportovať',
     success: 'Hotovo!',
     expiration: 'Exspirácia',
+    privacyPolicy: 'Zásady ochrany osobných údajov',
+    newOptionText: 'Pridať %value%',
+    deleteButtonText: 'Odobrať %value% zo zoznamu',
   },
 
   selections: {
@@ -124,7 +127,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   tools: {
     none: 'Zavrieť nástroj',
-    tools: 'Nástroje',
     routePlanner: 'Vyhľadávač trás',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
@@ -140,6 +142,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   routePlanner: {
+    manual: 'Manuálne',
+    manualTooltip: 'Prepoj nasledujúci segment priamou čiarou',
     ghParams: {
       tripParameters: 'Parametre výletu',
       seed: 'Random seed',
@@ -154,6 +158,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     finish: 'Cieľ',
     swap: 'Prehodiť štart a cieľ',
     point: {
+      point: 'Bod trasy',
       pick: 'Vybrať na mape',
       current: 'Tvoja poloha',
       home: 'Domov',
@@ -224,7 +229,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
-    help: 'Pomoc',
+    help: 'Info a pomoc',
     back: 'Naspäť',
     mapLegend: 'Legenda mapy',
     contacts: 'Kontakty',
@@ -323,25 +328,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showLayer: 'Zobraziť vrstvu',
     upload: 'Nahrať',
     f: {
-      firstUploaded: 'od prvej nahranej',
-      lastUploaded: 'od poslednej nahranej',
-      firstCaptured: 'od najstaršie odfotenej',
-      lastCaptured: 'od najnovšie odfotenej',
-      leastRated: 'od najnižšieho hodnotenia',
-      mostRated: 'od najvyššieho hodnotenia',
-      lastComment: 'od posledného komentára',
+      '-createdAt': 'od poslednej nahranej',
+      '-takenAt': 'od najnovšie odfotenej',
+      '-rating': 'od najvyššieho hodnotenia',
+      '-lastCommentedAt': 'od posledného komentára',
     },
     colorizeBy: 'Vyfarbiť podľa',
-    showDirection: 'Ukáž smer fotenia',
+    showDirection: 'Zobraziť smer fotenia',
     c: {
-      disable: 'nevyfarbiť',
-      mine: 'odlíšiť moje',
-      author: 'autora',
-      rating: 'hodnotenia',
-      takenAt: 'dátumu odfotenia',
-      createdAt: 'dátumu nahrania',
-      season: 'ročného obdobia',
-      premium: 'prémiové',
+      disable: 'Nevyfarbiť',
+      mine: 'Odlíšiť moje',
+      userId: 'Autor',
+      rating: 'Hodnotenie',
+      takenAt: 'Dátum odfotenia',
+      createdAt: 'Dátum nahrania',
+      season: 'Ročné obdobe',
+      premium: 'Prémiové',
     },
     viewer: {
       title: 'Fotografia',
@@ -394,7 +396,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </ul>
       `,
       success: 'Fotografie boli úspešne nahrané.',
-      showPreview: 'Zobraziť náhľady (náročnejšie na výkon a pamäť)',
+      showPreview:
+        'Automaticky zobraziť náhľady (náročnejšie na výkon a pamäť)',
+      loadPreview: 'Načítať náhľad',
       premium: 'Sprístupniť len používateľom s prémiovým prístupom',
     },
     locationPicking: {
@@ -435,6 +439,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       premium: 'Zaradiť všetky moje fotky do prémiového obsahu',
       free: 'Sprístupniť všetky moje fotky každému',
     },
+    showLegend: 'Zobraziť legendu vyfarbenia',
   },
 
   measurement: {
@@ -516,7 +521,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Vlastnosti',
       color: 'Farba',
-      label: 'Popis:',
+      label: 'Popis',
       width: 'Šírka',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
       type: 'Typ geometrie',
@@ -671,10 +676,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   embed: {
     code: 'Vložte na vašu stránku tento html kód:',
     example: 'Výsledok bude vyzerať nasledovne:',
-    dimensions: 'Veľkosť:',
-    height: 'Výška:',
-    width: 'Šírka:',
-    enableFeatures: 'Povoliť funkcie:',
+    dimensions: 'Veľkosť',
+    height: 'Výška',
+    width: 'Šírka',
+    enableFeatures: 'Povoliť funkcie',
     enableSearch: 'vyhľadávanie',
     enableMapSwitch: 'prepínanie vrstiev mapy',
     enableLocateMe: 'nájdenie vlastnej pozície',
@@ -828,8 +833,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoom: 'Minilálne priblíženie',
     maxNativeZoom: 'Maximálne prirodzené priblíženie',
     extraScales: 'Extra rozlíšenia máp',
-    scaleWithDpi: 'Škáluj s DPI',
+    scaleWithDpi: 'Škálovať s DPI',
     zIndex: 'Z-Index',
+    generalSettings: 'Všeobecné nastavenia',
+    maxZoom: 'Maximálne priblíženie',
   },
 
   elevationChart: {
@@ -1045,13 +1052,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </AlertLink>
       </>
     ),
-    area: 'Exportovať oblasť:',
+    area: 'Exportovať oblasť',
     areas: {
       visible: 'Viditeľnú oblasť mapy',
       pinned: 'Plochu obsahujúcu označený polygón (kreslenie)',
     },
-    format: 'Formát:',
-    layersTitle: 'Voliteľné vrstvy:',
+    format: 'Formát',
+    layersTitle: 'Voliteľné vrstvy',
     layers: {
       contours: 'Vrstevnice',
       shading: 'Tieňovaný reliéf',
@@ -1063,7 +1070,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       plannedRoute: 'Vyhľadanú trasu',
       track: 'GPX trasu',
     },
-    mapScale: 'Rozlíšenie mapy:',
+    mapScale: 'Rozlíšenie mapy',
     alert: () => (
       <>
         Upozornenia:
@@ -1138,6 +1145,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     writers: 'Editori',
+    addWriter: 'Pridať editora',
     conflictError: 'Mapa bola medzičasom modifikovaná.',
   },
 

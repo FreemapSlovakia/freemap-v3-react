@@ -1,13 +1,13 @@
 import { Fragment, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import { documentShow } from '../actions/mainActions.js';
-import type { DocumentKey } from '../documents/index.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
+
+const PREFIX = '?document=';
 
 export function Attribution({ unknown }: Props): ReactElement {
   const layers = useAppSelector((state) => state.map.layers);
@@ -40,15 +40,13 @@ export function Attribution({ unknown }: Props): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  if (a.url?.startsWith('?document=')) {
-                    const docKey = a.url.slice(5);
-
-                    if (is<DocumentKey>(docKey)) {
-                      e.preventDefault();
-
-                      dispatch(documentShow(docKey));
-                    }
+                  if (!a.url?.startsWith(PREFIX)) {
+                    return;
                   }
+
+                  e.preventDefault();
+
+                  dispatch(documentShow(a.url.slice(PREFIX.length)));
                 }}
               >
                 {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}

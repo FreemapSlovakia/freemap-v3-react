@@ -2,7 +2,7 @@ import Color from 'color';
 import { type ReactElement, useEffect } from 'react';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { colors } from '../constants.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { DrawingLineResult } from './DrawingLineResult.js';
 
 function useLinePointColor() {

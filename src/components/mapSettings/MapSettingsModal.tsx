@@ -1,10 +1,17 @@
-import { FormEvent, ReactElement, useCallback, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import { Accordion, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { saveSettings, setActiveModal } from '../../actions/mainActions.js';
-import { useAppSelector } from '../../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
+import { isInvalidInt } from '../../numberValidator.js';
 import { CustomMapsSettings } from './CustomMapsSettings.js';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -31,20 +38,36 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
   const [customLayers, setCustomLayers] = useState(initialCustomLayers);
 
+  const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
+
+  const [maxZoom, setMaxZoom] = useState(initialMaxZoom);
+
+  const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
+
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
+
+      const maxZoomValue = parseInt(maxZoom, 10);
 
       dispatch(
         saveSettings({
           settings: {
             layersSettings,
             customLayers,
+            maxZoom: isNaN(maxZoomValue) ? 20 : maxZoomValue,
           },
         }),
       );
     },
-    [customLayers, dispatch, layersSettings],
+    [customLayers, dispatch, layersSettings, maxZoom],
+  );
+
+  const handleMaxZoomChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setMaxZoom(e.currentTarget.value);
+    },
+    [],
   );
 
   return (
@@ -58,6 +81,27 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
         <Modal.Body>
           <Accordion>
+            <Accordion.Item eventKey="general">
+              <Accordion.Header>
+                {m?.mapLayers.generalSettings}
+              </Accordion.Header>
+
+              <Accordion.Body>
+                <Form.Group controlId="maxZoom">
+                  <Form.Label>{m?.mapLayers.maxZoom}</Form.Label>
+
+                  <Form.Control
+                    type="number"
+                    min={0}
+                    max={99}
+                    value={maxZoom}
+                    isInvalid={invalidMaxZoom}
+                    onChange={handleMaxZoomChange}
+                  />
+                </Form.Group>
+              </Accordion.Body>
+            </Accordion.Item>
+
             <Accordion.Item eventKey="menuAndToolbar">
               <Accordion.Header>{m?.mapLayers.layerSettings}</Accordion.Header>
 
@@ -88,8 +132,10 @@ export function MapSettingsModal({ show }: Props): ReactElement {
             variant="primary"
             type="submit"
             disabled={
-              layersSettings === initLayersSettings &&
-              customLayers === initialCustomLayers
+              (layersSettings === initLayersSettings &&
+                customLayers === initialCustomLayers &&
+                maxZoom === initialMaxZoom) ||
+              invalidMaxZoom
             }
           >
             <FaCheck /> {m?.general.save}

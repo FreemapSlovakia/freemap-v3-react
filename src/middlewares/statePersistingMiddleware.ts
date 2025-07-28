@@ -61,10 +61,12 @@ function persistSelectedState(state: RootState) {
         customLayers: state.map.customLayers,
         legacyMapWarningSuppressions: state.map.legacyMapWarningSuppressions,
         shading: state.map.shading,
+        maxZoom: state.map.maxZoom,
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,
         showDirection: state.gallery.showDirection,
+        showLegend: state.gallery.showLegend,
         recentTags: state.gallery.recentTags,
       },
     } as Partial<RootState>),

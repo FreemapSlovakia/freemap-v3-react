@@ -9,7 +9,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { applySettings, setActiveModal } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { DrawingRecentColors } from './DrawingRecentColors.js';
 
@@ -78,7 +78,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group>
+          <Form.Group controlId="color" className="mb-3">
             <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
             <Form.Control
@@ -90,7 +90,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
             <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group controlId="width">
             <Form.Label>{m?.drawing.edit.width}</Form.Label>
 
             <Form.Control

@@ -3,7 +3,7 @@ import { Geometry } from 'geojson';
 import type { ReactElement } from 'react';
 import { formatDistance } from '../distanceFormatter.js';
 import { smoothElevations } from '../geoutils.js';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';

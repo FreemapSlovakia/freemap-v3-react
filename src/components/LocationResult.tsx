@@ -1,7 +1,7 @@
 import { divIcon } from 'leaflet';
 import type { ReactElement } from 'react';
 import { Circle, Marker } from 'react-leaflet';
-import { useAppSelector } from '../hooks/reduxSelectHook.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 
 const circularIcon = divIcon({
   iconSize: [40, 40],

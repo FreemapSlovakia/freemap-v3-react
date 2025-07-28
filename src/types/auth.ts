@@ -16,6 +16,7 @@ export type PurchaseRecord = {
 export interface UserSettings {
   layersSettings?: Record<string, LayerSettings>;
   customLayers?: CustomLayerDef[];
+  maxZoom?: number;
 }
 
 export interface User {

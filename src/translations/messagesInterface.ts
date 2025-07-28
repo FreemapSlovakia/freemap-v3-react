@@ -1,6 +1,11 @@
+import { ExportableLayer } from 'actions/mainActions.js';
 import { JSX, ReactNode } from 'react';
 import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
+import {
+  GalleryColorizeBy,
+  GalleryListOrder,
+} from '../actions/galleryActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
@@ -69,6 +74,9 @@ export type Messages = {
     export: string;
     success: string;
     expiration: string;
+    privacyPolicy: string;
+    newOptionText: string;
+    deleteButtonText: string;
   };
   selections: {
     objects: string;
@@ -81,7 +89,6 @@ export type Messages = {
   };
   tools: {
     none: string;
-    tools: string;
     routePlanner: string;
     objects: string;
     photos: string;
@@ -96,6 +103,8 @@ export type Messages = {
     maps: string;
   };
   routePlanner: {
+    manual: string;
+    manualTooltip: string;
     ghParams: {
       tripParameters: string;
       seed: string;
@@ -110,6 +119,7 @@ export type Messages = {
     finish: string;
     swap: string;
     point: {
+      point: string;
       pick: string;
       current: string;
       home: string;
@@ -200,27 +210,11 @@ export type Messages = {
     showPhotosFrom: string;
     showLayer: string;
     upload: string;
-    f: {
-      firstUploaded: string;
-      lastUploaded: string;
-      firstCaptured: string;
-      lastCaptured: string;
-      leastRated: string;
-      mostRated: string;
-      lastComment: string;
-    };
+    f: Record<GalleryListOrder, string>;
     colorizeBy: string;
     showDirection: string;
-    c: {
-      disable: string;
-      mine: string;
-      author: string;
-      rating: string;
-      takenAt: string;
-      createdAt: string;
-      season: string;
-      premium: string;
-    };
+    showLegend: string;
+    c: Record<GalleryColorizeBy | 'disable', string>;
     viewer: {
       title: string;
       comments: string;
@@ -262,6 +256,7 @@ export type Messages = {
       rules: string;
       success: string;
       showPreview: string;
+      loadPreview: string;
       premium: string;
     };
     locationPicking: {
@@ -586,6 +581,8 @@ export type Messages = {
     extraScales: string;
     scaleWithDpi: string;
     zIndex: string;
+    generalSettings: string;
+    maxZoom: string;
   };
   elevationChart: {
     distance: string;
@@ -676,17 +673,7 @@ export type Messages = {
     };
     format: string;
     layersTitle: string;
-    layers: {
-      contours: string;
-      shading: string;
-      hikingTrails: string;
-      bicycleTrails: string;
-      skiTrails: string;
-      horseTrails: string;
-      drawing: string;
-      plannedRoute: string;
-      track: string;
-    };
+    layers: Record<ExportableLayer, string>;
     mapScale: string;
     alert: () => JSX.Element;
     advancedSettings: string;
@@ -711,6 +698,7 @@ export type Messages = {
     newMap: string;
     SomeMap: (props: { name: string }) => JSX.Element;
     writers: string;
+    addWriter: string;
     conflictError: string;
   };
   legend: {

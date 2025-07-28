@@ -6,6 +6,7 @@ import { trackingActions } from '../../actions/trackingActions.js';
 import { useDateTimeFormat } from '../../hooks/useDateTimeFormat.js';
 import { useMessages } from '../../l10nInjector.js';
 import { TrackedDevice as TrackedDeviceType } from '../../types/trackingTypes.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 
 type Props = {
   device: TrackedDeviceType;
@@ -59,23 +60,28 @@ export function TrackedDevice({ device }: Props): ReactElement {
       <td>{device.splitDistance}</td>
       <td>{device.splitDuration}</td>
       <td>
-        <Button
-          size="sm"
-          type="button"
-          onClick={handleModify}
-          title={m?.general.modify}
-        >
-          <FaEdit />
-        </Button>{' '}
-        <Button
-          variant="danger"
-          size="sm"
-          type="button"
-          onClick={handleDelete}
-          title={m?.general.delete}
-        >
-          <FaTimes />
-        </Button>
+        <LongPressTooltip label={m?.general.modify}>
+          {({ props }) => (
+            <Button size="sm" type="button" onClick={handleModify} {...props}>
+              <FaEdit />
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <LongPressTooltip label={m?.general.delete}>
+          {({ props }) => (
+            <Button
+              variant="danger"
+              size="sm"
+              type="button"
+              onClick={handleDelete}
+              className="ms-1"
+              {...props}
+            >
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
       </td>
     </tr>
   );
