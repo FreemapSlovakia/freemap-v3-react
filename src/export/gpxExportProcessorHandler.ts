@@ -190,13 +190,8 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     tags,
     rating,
     user,
-    premium,
+    hmac,
   } of pictures) {
-    // premium images won't be accessible so skip them
-    if (premium) {
-      continue;
-    }
-
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
       lon: String(lon),
@@ -246,7 +241,11 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
         '☆'.repeat(4 - Math.floor(rating)),
     ]);
 
-    const imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+    let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+
+    if (hmac) {
+      imageUrl += '&hmac=' + encodeURIComponent(hmac);
+    }
 
     createElement(wptEle, 'desc', {
       cdata:

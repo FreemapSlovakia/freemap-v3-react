@@ -154,11 +154,12 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
     createdAt,
     user,
     tags,
-    premium,
+    hmac,
   } of pictures) {
-    // premium images won't be accessible so skip them
-    if (premium) {
-      continue;
+    let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+
+    if (hmac) {
+      imageUrl += '&hmac=' + encodeURIComponent(hmac);
     }
 
     fc.features.push(
@@ -169,7 +170,7 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
           : undefined,
         name: title,
         description,
-        imageUrl: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
+        imageUrl,
         webUrl: `${process.env['BASE_URL']}?image=${id}`,
         author: user,
         tags,
