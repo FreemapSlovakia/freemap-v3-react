@@ -12,6 +12,8 @@ export interface MapViewState {
   lon: number;
   zoom: number;
   overlays: OverlayLetters[];
+  bounds?: [number, number, number, number];
+  countries?: string[];
 }
 
 export type LayerSettings = {
@@ -42,3 +44,8 @@ export const mapSetEsriAttribution = createAction<string[]>(
 );
 
 export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
+
+export const mapSetBounds =
+  createAction<[number, number, number, number]>('MAP_SET_BOUNDS');
+
+export const mapSetCountries = createAction<string[]>('MAP_SET_COUNTRIES');

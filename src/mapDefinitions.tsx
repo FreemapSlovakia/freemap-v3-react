@@ -171,6 +171,7 @@ export type IsIntegratedLayerDef = {
   premiumFromZoom?: number;
   experimental?: boolean;
   attribution: AttributionDef[];
+  coutries?: string[];
 };
 
 export type HasScaleWithDpi = {
@@ -287,6 +288,7 @@ function legacyFreemap(
     maxNativeZoom: 16,
     key: ['Key' + type, false],
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   };
 }
 
@@ -312,6 +314,35 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyX', false],
     premiumFromZoom: 19,
     creditsPerMTile: 5000,
+    coutries: [
+      'al',
+      'at',
+      'ba',
+      'be', // partial
+      'bg',
+      'ch',
+      'cs',
+      'de', // partial
+      'fr',
+      'gr', // small part
+      'hr',
+      'hu',
+      'it',
+      'lu',
+      'me',
+      'mk',
+      'nl', // small part
+      'pl', // partial
+      'ro',
+      'rs',
+      'si',
+      'sk',
+      'sm',
+      'tr', // small part
+      'ua', // small part
+      'va',
+      'xk',
+    ],
   },
   legacyFreemap('A', <FaCar />),
   legacyFreemap('T', <FaHiking />),
@@ -372,6 +403,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
+    coutries: ['sk', 'cz'],
   },
   {
     layer: 'base',
@@ -392,6 +424,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     key: ['KeyZ', true],
     errorTileUrl: white1x1,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   {
     layer: 'base',
@@ -451,6 +484,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   {
     layer: 'base',
@@ -473,6 +507,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     scaleWithDpi: true,
     premiumFromZoom: 17,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   {
     layer: 'base',
@@ -494,6 +529,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 16,
+    coutries: ['cz'],
   },
   {
     layer: 'base',
@@ -515,6 +551,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   {
     layer: 'base',
@@ -536,6 +573,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   {
     layer: 'base',
@@ -655,6 +693,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     experimental: true,
     premiumFromZoom: 13,
     zIndex: 2,
+    coutries: ['sk'],
   },
   {
     layer: 'overlay',
@@ -676,6 +715,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     experimental: true,
     premiumFromZoom: 13,
     zIndex: 2,
+    coutries: ['cz'],
   },
   {
     layer: 'overlay',
@@ -691,6 +731,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     errorTileUrl: transparent1x1,
     // adminOnly: true,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   ...(
     [
@@ -730,6 +771,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     maxNativeZoom: 16,
     zIndex: 3,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
   {
     layer: 'overlay',
@@ -742,6 +784,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     maxNativeZoom: 16,
     zIndex: 3,
     creditsPerMTile: 1000,
+    coutries: ['sk'],
   },
 ];
 

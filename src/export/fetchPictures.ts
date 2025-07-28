@@ -21,15 +21,13 @@ export type Picture = {
 };
 
 export async function fetchPictures(getState: () => RootState) {
-  const b = (await mapPromise).getBounds();
-
   const res = await httpRequest({
     getState,
     url:
       '/gallery/pictures?' +
       objectToURLSearchParams({
         by: 'bbox',
-        bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+        bbox: (await mapPromise).getBounds().toBBoxString(),
         ...createFilter(getState().gallery.filter),
         fields: [
           'id',
