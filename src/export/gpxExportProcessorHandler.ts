@@ -190,7 +190,13 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     tags,
     rating,
     user,
+    premium,
   } of pictures) {
+    // premium images won't be accessible so skip them
+    if (premium) {
+      continue;
+    }
+
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
       lon: String(lon),

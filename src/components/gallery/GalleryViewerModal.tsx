@@ -339,6 +339,12 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryQuickAddTag(tag));
   };
 
+  let url = `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
+
+  if (activeImageId === image?.id && image.hmac) {
+    url += '?hmac=' + encodeURIComponent(image.hmac);
+  }
+
   return (
     <Modal show={show} onHide={close} size="xl" keyboard={false}>
       <Modal.Header closeButton>
@@ -727,7 +733,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 includePoint
                 pointTitle={title ?? undefined}
                 pointDescription={description ?? undefined}
-                url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
+                url={url}
                 {...props}
               >
                 <FaExternalLinkAlt />

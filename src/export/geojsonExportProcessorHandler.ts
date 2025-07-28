@@ -154,7 +154,13 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
     createdAt,
     user,
     tags,
+    premium,
   } of pictures) {
+    // premium images won't be accessible so skip them
+    if (premium) {
+      continue;
+    }
+
     fc.features.push(
       point([lon, lat], {
         takenAt: takenAt ? new Date(takenAt * 1000).toISOString() : undefined,

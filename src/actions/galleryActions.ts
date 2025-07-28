@@ -64,6 +64,7 @@ export interface Picture extends LatLon {
   pano?: 1;
   premium?: 1;
   azimuth?: number | null;
+  hmac?: string;
 }
 
 export interface GalleryFilter {
