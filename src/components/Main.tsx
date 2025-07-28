@@ -217,49 +217,49 @@ export function Main(): ReactElement {
 
   useMouseCursor(map?.getContainer());
 
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!map) {
+  //     return;
+  //   }
 
-    const m = map;
+  //   const m = map;
 
-    let t: number | undefined;
+  //   let t: number | undefined;
 
-    function handleMapMoveEnd() {
-      if (t) {
-        window.clearTimeout(t);
-      }
+  //   function handleMapMoveEnd() {
+  //     if (t) {
+  //       window.clearTimeout(t);
+  //     }
 
-      t = window.setTimeout(() => {
-        const { lat: newLat, lng: newLon } = m.getCenter();
+  //     t = window.setTimeout(() => {
+  //       const { lat: newLat, lng: newLon } = m.getCenter();
 
-        const newZoom = m.getZoom();
+  //       const newZoom = m.getZoom();
 
-        const delta = 5 / Math.pow(2, zoom);
+  //       const delta = 5 / Math.pow(2, zoom);
 
-        if (
-          zoom !== newZoom ||
-          newLat - delta > lat ||
-          newLat + delta < lat ||
-          newLon - delta > lon ||
-          newLon + delta < lon
-        ) {
-          dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
-        }
-      }, 250);
-    }
+  //       if (
+  //         zoom !== newZoom ||
+  //         newLat - delta > lat ||
+  //         newLat + delta < lat ||
+  //         newLon - delta > lon ||
+  //         newLon + delta < lon
+  //       ) {
+  //         dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+  //       }
+  //     }, 250);
+  //   }
 
-    m.on('moveend', handleMapMoveEnd);
+  //   m.on('moveend', handleMapMoveEnd);
 
-    return () => {
-      m.off('moveend', handleMapMoveEnd);
+  //   return () => {
+  //     m.off('moveend', handleMapMoveEnd);
 
-      if (t) {
-        window.clearTimeout(t);
-      }
-    };
-  }, [dispatch, lat, lon, map, zoom]);
+  //     if (t) {
+  //       window.clearTimeout(t);
+  //     }
+  //   };
+  // }, [dispatch, lat, lon, map, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (window.fmEmbedded) {

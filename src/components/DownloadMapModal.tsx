@@ -18,7 +18,6 @@ import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
-import { useMap } from '../hooks/useMap.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import {
@@ -138,9 +137,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     setMaxZoom(String(mapDef.maxNativeZoom));
   }, [mapDef]);
 
-  const map = useMap();
-
-  const boundingBox = map?.getBounds().toBBoxString();
+  const bounds = useAppSelector((state) => state.map.bounds);
 
   const tileCount = useMemo(() => {
     if (selectedLine?.type === 'polygon' && area === 'selected') {
@@ -171,10 +168,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       return count;
     }
 
-    if (area === 'visible' && boundingBox) {
+    if (area === 'visible' && bounds) {
       let count = 0;
-
-      const bounds = boundingBox.split(',').map(Number);
 
       for (let zoom = Number(minZoom); zoom <= Number(maxZoom); zoom++) {
         const from = pointToTile(bounds[0], bounds[1], zoom);
@@ -191,7 +186,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     selectedLine?.type,
     selectedLine?.points,
     area,
-    boundingBox,
+    bounds,
     minZoom,
     maxZoom,
   ]);
@@ -239,7 +234,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                     [selectedLine.points[0].lon, selectedLine.points[0].lat],
                   ],
                 ])
-              : bboxPolygon(boundingBox!.split(',').map(Number) as BBox),
+              : bboxPolygon(bounds as BBox),
         }),
       );
     },
@@ -255,7 +250,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       selectedLine?.type,
       selectedLine?.points,
       area,
-      boundingBox,
+      bounds,
     ],
   );
 

@@ -47,7 +47,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl():
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl():
-  | MapViewState
+  | Omit<MapViewState, 'countries'>
   | undefined {
   if (
     location.search &&

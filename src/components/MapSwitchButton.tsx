@@ -177,6 +177,8 @@ export function MapSwitchButton(): ReactElement {
     setShow(nextShow);
   }, []);
 
+  const countries = useAppSelector((state) => state.map.countries);
+
   function commonBadges({
     icon,
     experimental,

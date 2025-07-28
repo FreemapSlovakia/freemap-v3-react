@@ -4,6 +4,8 @@ import { gallerySetFilter } from '../actions/galleryActions.js';
 import { applySettings } from '../actions/mainActions.js';
 import {
   mapRefocus,
+  mapSetBounds,
+  mapSetCountries,
   mapSetCustomLayers,
   mapSetEsriAttribution,
   mapSetShading,
@@ -143,6 +145,12 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapSetEsriAttribution, (state, action) => {
       state.esriAttribution = action.payload;
+    })
+    .addCase(mapSetBounds, (state, action) => {
+      state.bounds = action.payload;
+    })
+    .addCase(mapSetCountries, (state, action) => {
+      state.countries = action.payload;
     })
     .addCase(mapSetShading, (state, action) => {
       state.shading = action.payload;

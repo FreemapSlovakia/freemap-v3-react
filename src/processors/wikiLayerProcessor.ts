@@ -261,12 +261,8 @@ export const wikiLayerProcessor: Processor = {
 
     const pointMap = new Map(
       getState()
-        .wiki.points.filter(
-          (point) =>
-            point.lat > bb.getSouth() &&
-            point.lat < bb.getNorth() &&
-            point.lon > bb.getWest() &&
-            point.lon < bb.getEast(),
+        .wiki.points.filter((point) =>
+          bb.contains({ lat: point.lat, lng: point.lon }),
         )
         .map((point) => [point.id, point]),
     );

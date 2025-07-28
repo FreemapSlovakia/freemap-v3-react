@@ -5,7 +5,6 @@ import { assert } from 'typia';
 import { mapSetEsriAttribution } from '../actions/mapActions.js';
 import { toastsAdd, toastsRemove } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
-import { useMap } from '../hooks/useMap.js';
 
 type EsriWorldImageryAttribution = {
   contributors: {
@@ -19,12 +18,15 @@ type EsriWorldImageryAttribution = {
   }[];
 };
 
-function isIntersecting(caBbox: number[], mapBounds: L.LatLngBounds): boolean {
+function isIntersecting(
+  caBbox: number[],
+  mapBounds: [number, number, number, number],
+): boolean {
   return !(
-    caBbox[3] < mapBounds.getWest() ||
-    caBbox[2] < mapBounds.getSouth() ||
-    caBbox[1] > mapBounds.getEast() ||
-    caBbox[0] > mapBounds.getNorth()
+    caBbox[3] < mapBounds[0] ||
+    caBbox[2] < mapBounds[1] ||
+    caBbox[1] > mapBounds[2] ||
+    caBbox[0] > mapBounds[3]
   );
 }
 
@@ -75,30 +77,26 @@ export function useAttributionInfo() {
     };
   }, [dispatch, showingAttribution]);
 
-  const map = useMap();
-
   const [esriAttributions, setEsriAttributions] = useState<
     EsriWorldImageryAttribution | undefined
   >(undefined);
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
 
-  const [movedCount, setMovedCount] = useState(0);
+  const bounds = useAppSelector((state) => state.map.bounds);
+
+  const zoom = useAppSelector((state) =>
+    state.map.zoom + (window.devicePixelRatio || 1) > 1.4 ? 1 : 0,
+  );
 
   useEffect(() => {
-    if (!layers.includes('S') || !esriAttributions || !map) {
+    if (!layers.includes('S') || !esriAttributions || !bounds) {
       if (esriAttribution.length > 0) {
         dispatch(mapSetEsriAttribution([]));
       }
 
       return;
     }
-
-    const bounds = map.getBounds();
-
-    const isHdpi = (window.devicePixelRatio || 1) > 1.4;
-
-    const zoom = map.getZoom() + (isHdpi ? 1 : 0);
 
     const a = esriAttributions.contributors.filter((c) =>
       c.coverageAreas.some(
@@ -114,27 +112,7 @@ export function useAttributionInfo() {
     if (attributions.join('\n') !== esriAttribution.join('\n')) {
       dispatch(mapSetEsriAttribution(attributions));
     }
-  }, [esriAttributions, esriAttribution, movedCount, layers, map, dispatch]);
-
-  useEffect(() => {
-    function handleMoveZoom() {
-      setMovedCount((c) => c + 1);
-    }
-
-    if (map) {
-      map.on('moveend', handleMoveZoom);
-
-      map.on('zoomend', handleMoveZoom);
-    }
-
-    return map
-      ? () => {
-          map.off('moveend', handleMoveZoom);
-
-          map.off('zoomend', handleMoveZoom);
-        }
-      : undefined;
-  }, [map]);
+  }, [esriAttributions, esriAttribution, zoom, bounds, dispatch, layers]);
 
   const ea = useRef(false);
 
