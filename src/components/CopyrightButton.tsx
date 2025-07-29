@@ -45,9 +45,7 @@ export function CopyrightButton(): ReactElement {
           <Dropdown.Item
             key="attribution"
             as="button"
-            onClick={() => {
-              showAttribution();
-            }}
+            onClick={() => showAttribution()}
           >
             <FaRegCopyright /> {m?.main.copyright}
           </Dropdown.Item>

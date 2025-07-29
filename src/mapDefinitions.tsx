@@ -30,6 +30,7 @@ export interface AttributionDef {
     | 'maptiler'
     | 'outdoorShadingAttribution';
   url?: string;
+  country?: string;
 }
 
 const OSM_MAP_ATTR: AttributionDef = {
@@ -46,12 +47,14 @@ const OSM_DATA_ATTR: AttributionDef = {
 
 const FM_ATTR: AttributionDef = {
   type: 'map',
-  nameKey: 'freemap',
+  name: '©\xa0Freemap Slovakia',
+  url: 'https://www.freemap.sk',
 };
 
 const SRTM_ATTR: AttributionDef = {
   type: 'data',
-  nameKey: 'srtm',
+  name: 'SRTM1: USGS EarthExplorer',
+  url: 'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1',
 };
 
 const STRAVA_ATTR: AttributionDef = {
@@ -314,8 +317,51 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       OSM_DATA_ATTR,
       {
         type: 'data',
-        nameKey: 'outdoorShadingAttribution',
-        url: '?document=outdoorShadingAttribution',
+        country: 'at',
+        name: 'ALS DTM: Digitales Geländemodell Österreich (Geoland.at open data)',
+        url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
+      },
+      {
+        type: 'data',
+        country: 'cz',
+        name: 'DMR 5G: ČÚZK Geoportál',
+        url: 'https://geoportal.cuzk.cz/(S(a21rqp1jhcnkz4iqcen2w50l))/Default.aspx?head_tab=sekce-02-gp&lng=EN&menu=302&metadataID=CZ-CUZK-DMR5G-V&mode=TextMeta&side=vyskopis',
+      },
+      {
+        type: 'data',
+        country: 'fr',
+        name: 'RGE ALTI: IGN (Etalab Open Licence)',
+        url: 'https://geoservices.ign.fr/rgealti',
+      },
+      {
+        type: 'data',
+        country: 'it',
+        name: 'Tinitaly DEM: INGV',
+        url: 'https://tinitaly.pi.ingv.it/',
+      },
+      {
+        type: 'data',
+        country: 'pl',
+        name: 'NMT: GUGiK',
+        url: 'https://www.geoportal.gov.pl/',
+      },
+      {
+        type: 'data',
+        country: 'sk',
+        name: 'DMR 5.0: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+      {
+        type: 'data',
+        country: 'si',
+        name: 'DMR: Ministrstvo za okolje in prostor',
+        url: 'https://gis.arso.gov.si/evode/profile.aspx?id=atlas_voda_Lidar@Arso',
+      },
+      {
+        type: 'data',
+        country: 'ch',
+        name: 'swissALTI3D: © swisstopo',
+        url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
       },
     ],
     minZoom: 6,

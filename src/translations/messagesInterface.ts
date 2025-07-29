@@ -1,6 +1,5 @@
 import { ExportableLayer } from 'actions/mainActions.js';
 import { JSX, ReactNode } from 'react';
-import { NonUndefined } from 'utility-types';
 import { Changeset } from '../actions/changesetsActions.js';
 import {
   GalleryColorizeBy,
@@ -10,7 +9,7 @@ import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
-import { AttributionDef, IntegratedLayerLetters } from '../mapDefinitions.js';
+import { IntegratedLayerLetters } from '../mapDefinitions.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
@@ -570,7 +569,7 @@ export type Messages = {
       data: string;
       photos: string;
     };
-    attr: Record<NonUndefined<AttributionDef['nameKey']>, ReactNode>;
+    attr: Record<string, ReactNode>;
     layerSettings: string;
     customMaps: string;
     base: string;

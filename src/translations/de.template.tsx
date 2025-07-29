@@ -805,10 +805,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     attr: {
-      freemap: '© Freemap Slowakei',
       osmData: '© OpenStreetMap-Mitwirkende',
-      srtm: '© SRTM',
-      outdoorShadingAttribution: 'DTM-Anbieter…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorkacheln von"

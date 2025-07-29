@@ -804,10 +804,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photos: 'foto',
     },
     attr: {
-      freemap: '©\xa0Freemap Slovakia',
-      srtm: '©\xa0SRTM',
       osmData: '© contributori di OpenStreetMap',
-      outdoorShadingAttribution: 'fornitori di DTM…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Tasselli vettoriali da"

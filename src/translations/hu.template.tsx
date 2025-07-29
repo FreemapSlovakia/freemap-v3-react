@@ -839,10 +839,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     attr: {
-      freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'DMR szolgáltatók…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorcsempék innen:"

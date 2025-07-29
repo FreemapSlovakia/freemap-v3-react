@@ -814,10 +814,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photos: 'fotografie',
     },
     attr: {
-      freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0prispievatelia OpenStreetMap',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'poskytovatelia DMR…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"

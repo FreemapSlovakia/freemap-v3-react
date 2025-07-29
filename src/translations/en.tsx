@@ -764,10 +764,7 @@ const messages: Messages = {
       photos: 'pictures',
     },
     attr: {
-      freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'DTM providers…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vector tiles from"

@@ -14,10 +14,15 @@ export function Attribution({ unknown }: Props): ReactElement {
 
   const m = useMessages();
 
+  const countries = useAppSelector((state) => state.map.countries);
+
   const categorized = categorize(
     integratedLayerDefs
       .filter(({ type }) => layers.includes(type))
-      .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+      .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[])
+      .filter(
+        (def) => !countries || !def.country || countries.includes(def.country),
+      ),
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
@@ -25,7 +30,7 @@ export function Attribution({ unknown }: Props): ReactElement {
   const dispatch = useDispatch();
 
   return categorized.length === 0 ? (
-    <div>{unknown}</div> // TODO translate
+    <div>{unknown}</div>
   ) : (
     <ul className="m-0 ms-n4 me-n4">
       {categorized.map(({ type, attributions }) => (

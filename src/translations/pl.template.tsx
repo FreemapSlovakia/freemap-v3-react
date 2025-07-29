@@ -779,10 +779,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photos: 'zdjęcia',
     },
     attr: {
-      freemap: '© Freemap Słowacja',
       osmData: '© współtwórcy OpenStreetMap',
-      srtm: '© SRTM',
-      outdoorShadingAttribution: 'dostawcy NMT…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Wektory kafelków od"
