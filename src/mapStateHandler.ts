@@ -36,17 +36,27 @@ export function attachMapStateHandler(store: MyStore) {
 
     map.on('moveend', handleMapMoveEnd);
 
-    function handleViewportChange() {
-      const bounds = map.getBounds();
+    let debounceRef: number | undefined;
 
-      store.dispatch(
-        mapSetBounds([
-          bounds.getWest(),
-          bounds.getSouth(),
-          bounds.getEast(),
-          bounds.getNorth(),
-        ]),
-      );
+    function handleViewportChange() {
+      if (debounceRef) {
+        window.clearTimeout(debounceRef);
+      }
+
+      debounceRef = window.setTimeout(() => {
+        debounceRef = undefined;
+
+        const bounds = map.getBounds();
+
+        store.dispatch(
+          mapSetBounds([
+            bounds.getWest(),
+            bounds.getSouth(),
+            bounds.getEast(),
+            bounds.getNorth(),
+          ]),
+        );
+      });
     }
 
     map.on('moveend', handleViewportChange);
