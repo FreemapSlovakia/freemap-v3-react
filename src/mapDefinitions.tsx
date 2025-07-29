@@ -164,7 +164,7 @@ type HasZIndex = {
 export type IsIntegratedLayerDef = {
   adminOnly?: boolean;
   icon: ReactElement;
-  key?: [code: string, shift: boolean];
+  kbd?: [code: string, shift: boolean];
   premiumFromZoom?: number;
   experimental?: boolean;
   attribution: AttributionDef[];
@@ -216,25 +216,11 @@ export type IsTileLayerDef = HasUrl &
 
 export type IsBaseLayerDef = {
   layer: 'base';
+  type: string;
 };
 
 export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
-};
-
-export type IsIntegratedBaseLayerDef = IsBaseLayerDef & {
-  type: string;
-};
-
-export type IsCustomBaseLayerDef = IsBaseLayerDef & {
-  type: string;
-};
-
-export type IsIntegratedOverlayLayerDef = IsOverlayLayerDef & {
-  type: string;
-};
-
-export type IsCustomOverlayLayerDef = IsOverlayLayerDef & {
   type: string;
 };
 
@@ -249,22 +235,26 @@ export type IsAllTechnologiesLayerDef =
   | IsWikipediaLayerDef;
 
 export type CustomBaseLayerDef = IsTileLayerDef &
-  IsCustomBaseLayerDef &
+  IsBaseLayerDef &
   IsCommonLayerDef;
 
 export type CustomOverlayLayerDef = IsTileLayerDef &
-  IsCustomOverlayLayerDef &
+  IsOverlayLayerDef &
   IsCommonLayerDef;
 
 export type CustomLayerDef = CustomBaseLayerDef | CustomOverlayLayerDef;
 
+export type HasLegacy = {
+  superseededBy?: string;
+};
+
 export type IntegratedBaseLayerDef<
   T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
-> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedBaseLayerDef;
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsBaseLayerDef & HasLegacy;
 
 export type IntegratedOverlayLayerDef<
   T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
-> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedOverlayLayerDef;
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsOverlayLayerDef & HasLegacy;
 
 export type IntegratedLayerDef<
   T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
@@ -304,9 +294,10 @@ function legacyFreemap(
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: ['Key' + type, false],
+    kbd: ['Key' + type, false],
     creditsPerMTile: 1000,
     coutries: ['sk'],
+    superseededBy: type === 'A' ? undefined : 'X',
   };
 }
 
@@ -329,7 +320,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     ],
     minZoom: 6,
     maxNativeZoom: 19,
-    key: ['KeyX', false],
+    kbd: ['KeyX', false],
     premiumFromZoom: 19,
     creditsPerMTile: 5000,
     coutries: [
@@ -375,7 +366,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 19,
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    key: ['KeyO', false],
+    kbd: ['KeyO', false],
   },
   {
     layer: 'base',
@@ -387,7 +378,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 19,
     scaleWithDpi: true,
-    key: ['KeyS', false],
+    kbd: ['KeyS', false],
     attribution: [
       {
         type: 'map',
@@ -417,7 +408,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: 'https://geoportal.cuzk.cz/',
       },
     ],
-    key: ['KeyZ', false],
+    kbd: ['KeyZ', false],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
@@ -439,7 +430,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
       },
     ],
-    key: ['KeyZ', true],
+    kbd: ['KeyZ', true],
     errorTileUrl: white1x1,
     creditsPerMTile: 1000,
     coutries: ['sk'],
@@ -461,7 +452,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['KeyQ', false],
+    kbd: ['KeyQ', false],
   },
   {
     layer: 'base',
@@ -480,7 +471,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: ['KeyQ', false],
+    kbd: ['KeyQ', false],
   },
   {
     layer: 'base',
@@ -498,7 +489,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyD', true],
+    kbd: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
@@ -520,7 +511,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyH', false],
+    kbd: ['KeyH', false],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
@@ -543,7 +534,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: 'https://geoportal.cuzk.cz/',
       },
     ],
-    key: ['KeyL', false],
+    kbd: ['KeyL', false],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 16,
@@ -565,7 +556,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyD', false],
+    kbd: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
@@ -587,7 +578,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyF', false],
+    kbd: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
@@ -598,7 +589,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'VO',
     technology: 'maplibre',
     url: maptiler('openstreetmap'),
-    key: ['KeyV', false],
+    kbd: ['KeyV', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -613,7 +604,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'VS',
     technology: 'maplibre',
     url: maptiler('streets-v2'),
-    key: ['KeyR', false],
+    kbd: ['KeyR', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -628,7 +619,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'VD',
     technology: 'maplibre',
     url: maptiler('dataviz-dark'),
-    key: ['KeyM', false],
+    kbd: ['KeyM', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -643,7 +634,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'VT',
     technology: 'maplibre',
     url: maptiler('outdoor-v2'),
-    key: ['KeyU', false],
+    kbd: ['KeyU', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -658,7 +649,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'i',
     technology: 'interactive',
     icon: <FaPencilAlt />,
-    key: ['KeyI', true],
+    kbd: ['KeyI', true],
     attribution: [],
   },
   {
@@ -667,7 +658,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'gallery',
     icon: <FaCamera />,
     minZoom: 0,
-    key: ['KeyF', true],
+    kbd: ['KeyF', true],
     zIndex: 4,
     attribution: [
       {
@@ -682,7 +673,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'wikipedia',
     icon: <FaWikipediaW />,
     minZoom: 8,
-    key: ['KeyW', true],
+    kbd: ['KeyW', true],
     zIndex: 4,
     attribution: [],
   },
@@ -694,7 +685,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     url: 'https://www.freemap.sk/tiles/parametric-shading/sk/{z}/{x}/{y}',
     // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <GiHills />,
-    key: ['KeyJ', true],
+    kbd: ['KeyJ', true],
     scaleWithDpi: true,
     maxNativeZoom: 19,
     attribution: [
@@ -716,7 +707,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'parametricShading',
     url: 'https://www.freemap.sk/tiles/parametric-shading/cz/{z}/{x}/{y}',
     icon: <GiHills />,
-    key: ['KeyK', true],
+    kbd: ['KeyK', true],
     scaleWithDpi: true,
     maxNativeZoom: 18,
     attribution: [
@@ -741,7 +732,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
-    key: ['KeyN', true],
+    kbd: ['KeyN', true],
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
@@ -767,7 +758,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         attribution: [STRAVA_ATTR],
         minZoom: 0,
         maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
-        key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
+        kbd: (stravaType === 'all' ? ['KeyH', true] : undefined) as
           | [string, boolean]
           | undefined,
         zIndex: 3,

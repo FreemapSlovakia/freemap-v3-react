@@ -20,7 +20,7 @@ import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
+import { mapToggleLayer } from '../actions/mapActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
@@ -112,23 +112,10 @@ export function MapSwitchButton(): ReactElement {
 
         dispatch(setActiveModal('map-settings'));
       } else if (selection.startsWith('layer-')) {
-        const layer = selection.slice(6);
-
-        // if (baseLayerLetters.includes(layer) || layer.startsWith('.')) {
-        // }
-
-        const s = new Set(activeLayers);
-
-        if (s.has(layer)) {
-          s.delete(layer);
-        } else {
-          s.add(layer);
-        }
-
-        dispatch(mapRefocus({ layers: [...s] }));
+        dispatch(mapToggleLayer({ type: selection.slice(6) }));
       }
     },
-    [dispatch, handlePossibleFilterClick, activeLayers],
+    [dispatch, handlePossibleFilterClick],
   );
 
   const handleLayerButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -138,19 +125,9 @@ export function MapSwitchButton(): ReactElement {
 
     const { type } = e.currentTarget.dataset;
 
-    if (!type) {
-      return;
+    if (type) {
+      dispatch(mapToggleLayer({ type }));
     }
-
-    const s = new Set(activeLayers);
-
-    if (s.has(type)) {
-      s.delete(type);
-    } else {
-      s.add(type);
-    }
-
-    dispatch(mapRefocus({ layers: [...s] }));
   };
 
   const isWide = useMediaQuery({ query: '(min-width: 576px)' });
@@ -177,7 +154,7 @@ export function MapSwitchButton(): ReactElement {
     setShow(nextShow);
   }, []);
 
-  const countries = useAppSelector((state) => state.map.countries);
+  // const countries = useAppSelector((state) => state.map.countries);
 
   function commonBadges({
     icon,
@@ -209,7 +186,7 @@ export function MapSwitchButton(): ReactElement {
 
   function menuItemCommons(
     {
-      key,
+      kbd: key,
       icon,
       premiumFromZoom,
       scaleWithDpi,
@@ -217,7 +194,7 @@ export function MapSwitchButton(): ReactElement {
       experimental,
     }: Pick<
       IsIntegratedLayerDef,
-      'icon' | 'key' | 'premiumFromZoom' | 'experimental'
+      'icon' | 'kbd' | 'premiumFromZoom' | 'experimental'
     > &
       HasScaleWithDpi &
       IsCommonLayerDef,

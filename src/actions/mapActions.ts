@@ -26,6 +26,14 @@ export const mapRefocus = createAction<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >('MAP_REFOCUS');
 
+export const mapReplaceLayer = createAction<{ from: string; to: string }>(
+  'MAP_REPLACE_LAYER',
+);
+
+export const mapToggleLayer = createAction<{ type: string; enable?: boolean }>(
+  'MAP_TOGGLE_LAYER',
+);
+
 export const mapSuppressLegacyMapWarning = createAction<{
   type: string;
   forever: boolean;

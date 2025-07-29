@@ -4,6 +4,7 @@ import { gallerySetFilter } from '../actions/galleryActions.js';
 import { applySettings } from '../actions/mainActions.js';
 import {
   mapRefocus,
+  mapReplaceLayer,
   mapSetBounds,
   mapSetCountries,
   mapSetCustomLayers,
@@ -11,9 +12,11 @@ import {
   mapSetShading,
   MapStateBase,
   mapSuppressLegacyMapWarning,
+  mapToggleLayer,
 } from '../actions/mapActions.js';
 import { mapsLoaded } from '../actions/mapsActions.js';
 import { Shading } from '../components/parameterizedShading/Shading.js';
+import { integratedLayerDefs } from '../mapDefinitions.js';
 
 export interface MapState extends MapStateBase {
   removeGalleryOverlayOnGalleryToolQuit: boolean;
@@ -64,17 +67,17 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           : 'tempLegacyMapWarningSuppressions'
       ].push(action.type);
     })
-    .addCase(applySettings, (state, action) => {
-      if (action.payload.layersSettings) {
-        state.layersSettings = action.payload.layersSettings;
+    .addCase(applySettings, (state, { payload }) => {
+      if (payload.layersSettings) {
+        state.layersSettings = payload.layersSettings;
       }
 
-      if (action.payload.customLayers) {
-        state.customLayers = action.payload.customLayers;
+      if (payload.customLayers) {
+        state.customLayers = payload.customLayers;
       }
 
-      if (action.payload.maxZoom !== undefined) {
-        state.maxZoom = action.payload.maxZoom;
+      if (payload.maxZoom !== undefined) {
+        state.maxZoom = payload.maxZoom;
       }
     })
     .addCase(gallerySetFilter, (state) => {
@@ -82,32 +85,73 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         state.layers.push('I');
       }
     })
-    .addCase(mapRefocus, (state, action) => {
-      const { zoom, lat, lon, layers } = action.payload;
+    .addCase(mapReplaceLayer, (state, { payload: { from, to } }) => {
+      const idx = state.layers.indexOf(from);
 
-      if (zoom) {
-        state.zoom = zoom;
-      }
-
-      if (lat !== undefined) {
-        state.lat = lat;
-      }
-
-      if (lon !== undefined) {
-        state.lon = lon;
-      }
-
-      if (layers) {
-        state.layers = layers;
-      }
-
-      if (
-        action.payload.gpsTracked !== undefined ||
-        (lat !== undefined && lon !== undefined)
-      ) {
-        state.gpsTracked = !!action.payload.gpsTracked;
+      if (idx > -1) {
+        state.layers[idx] = to;
       }
     })
+    .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
+      // TODO can cache (use selector?)
+      const baseTypes = new Set(
+        [...integratedLayerDefs, ...state.customLayers]
+          .filter((def) => def.layer === 'base')
+          .map((def) => def.type),
+      );
+
+      const layersSet = new Set(state.layers);
+
+      if (baseTypes.has(type) && enable !== false) {
+        if (layersSet.has(type)) {
+          return;
+        }
+
+        state.layers = [
+          type,
+          ...state.layers.filter((layer) => !baseTypes.has(layer)),
+        ];
+      }
+      // overlay
+      else {
+        if (layersSet.has(type)) {
+          if (enable !== true) {
+            layersSet.delete(type);
+          }
+        } else if (enable !== false) {
+          layersSet.add(type);
+        }
+
+        state.layers = [...layersSet];
+      }
+    })
+    .addCase(
+      mapRefocus,
+      (state, { payload: { zoom, lat, lon, layers, gpsTracked } }) => {
+        if (zoom) {
+          state.zoom = zoom;
+        }
+
+        if (lat !== undefined) {
+          state.lat = lat;
+        }
+
+        if (lon !== undefined) {
+          state.lon = lon;
+        }
+
+        if (layers) {
+          state.layers = layers;
+        }
+
+        if (
+          gpsTracked !== undefined ||
+          (lat !== undefined && lon !== undefined)
+        ) {
+          state.gpsTracked = !!gpsTracked;
+        }
+      },
+    )
     .addCase(authSetUser, (state, action) => {
       const settings = action.payload?.settings;
 
