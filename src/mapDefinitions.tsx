@@ -168,7 +168,7 @@ export type IsIntegratedLayerDef = {
   premiumFromZoom?: number;
   experimental?: boolean;
   attribution: AttributionDef[];
-  coutries?: string[];
+  countries?: string[];
 };
 
 export type HasScaleWithDpi = {
@@ -296,7 +296,7 @@ function legacyFreemap(
     maxNativeZoom: 16,
     kbd: ['Key' + type, false],
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
     superseededBy: type === 'A' ? undefined : 'X',
   };
 }
@@ -323,7 +323,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     kbd: ['KeyX', false],
     premiumFromZoom: 19,
     creditsPerMTile: 5000,
-    coutries: [
+    countries: [
       'al',
       'at',
       'ba',
@@ -412,7 +412,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
-    coutries: ['sk', 'cz'],
+    countries: ['sk', 'cz'],
   },
   {
     layer: 'base',
@@ -433,7 +433,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     kbd: ['KeyZ', true],
     errorTileUrl: white1x1,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -493,7 +493,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -516,7 +516,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     scaleWithDpi: true,
     premiumFromZoom: 17,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -538,7 +538,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 16,
-    coutries: ['cz'],
+    countries: ['cz'],
   },
   {
     layer: 'base',
@@ -560,7 +560,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -582,7 +582,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -699,7 +699,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     experimental: true,
     premiumFromZoom: 13,
     zIndex: 2,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'overlay',
@@ -721,7 +721,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     experimental: true,
     premiumFromZoom: 13,
     zIndex: 2,
-    coutries: ['cz'],
+    countries: ['cz'],
   },
   {
     layer: 'overlay',
@@ -737,7 +737,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: transparent1x1,
     // adminOnly: true,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   ...(
     [
@@ -777,7 +777,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     maxNativeZoom: 16,
     zIndex: 3,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
   {
     layer: 'overlay',
@@ -790,7 +790,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     maxNativeZoom: 16,
     zIndex: 3,
     creditsPerMTile: 1000,
-    coutries: ['sk'],
+    countries: ['sk'],
   },
 ];
 

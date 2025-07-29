@@ -817,19 +817,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
-      '4': 'Világos domborzatárnyékolás (SK)',
-      '5': 'Domborzatárnyékolás (SK)',
-      '6': 'Felszínárnyékolás (SK)',
-      '7': 'Részletes felszínárnyékolás (SK)',
-      '8': 'Részletes felszínárnyékolás (CZ)',
+      '4': 'Világos domborzatárnyékolás',
+      '5': 'Domborzatárnyékolás',
+      '6': 'Felszínárnyékolás',
+      '7': 'Részletes felszínárnyékolás',
+      '8': 'Részletes felszínárnyékolás',
 
       VO: 'OpenStreetMap vektoros',
       VS: 'Utcák vektoros',
       VD: 'Dataviz vektoros',
       VT: 'Outdoor vektoros',
 
-      h: 'Paraméteres árnyékolás (SK)',
-      z: 'Paraméteres árnyékolás (CZ)',
+      h: 'Paraméteres árnyékolás',
+      z: 'Paraméteres árnyékolás',
     },
 
     type: {
