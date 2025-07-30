@@ -29,12 +29,7 @@ import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
-import {
-  defaultMenuLayerLetters,
-  defaultToolbarLayerLetters,
-  integratedLayerDefs,
-  IntegratedLayerLetters,
-} from '../mapDefinitions.js';
+import { integratedLayerDefs } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
 import { countryCodeToFlag, Emoji } from './Emoji.js';
@@ -155,6 +150,8 @@ export function MapSwitchButton(): ReactElement {
       premiumFromZoom: undefined,
       experimental: undefined,
       countries: undefined,
+      defaultInToolbar: false,
+      defaultInMenu: false,
       ...cl,
     })),
   ].map((def) => ({
@@ -224,8 +221,7 @@ export function MapSwitchButton(): ReactElement {
         const { type } = def;
 
         const showInMenu =
-          layersSettings[type]?.showInMenu ??
-          defaultMenuLayerLetters.includes(type);
+          layersSettings[type]?.showInMenu ?? !!def.defaultInMenu;
 
         if (
           show !== 'all' &&
@@ -272,8 +268,7 @@ export function MapSwitchButton(): ReactElement {
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
                   : type.startsWith(':')
                     ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                    : m?.mapLayers.letters[type as IntegratedLayerLetters]) ??
-                  '…'}
+                    : m?.mapLayers.letters[type]) ?? '…'}
 
                 {def.type !== 'X' &&
                   def.countries?.map((country) => (
@@ -312,8 +307,7 @@ export function MapSwitchButton(): ReactElement {
           const { type } = def;
 
           const showInToolbar =
-            layersSettings[def.type]?.showInToolbar ??
-            defaultToolbarLayerLetters.includes(def.type);
+            layersSettings[def.type]?.showInToolbar ?? !!def.defaultInToolbar;
 
           if (
             !activeLayers.includes(def.type) &&
@@ -330,7 +324,7 @@ export function MapSwitchButton(): ReactElement {
                   ? m?.mapLayers.customBase + ' ' + type.slice(1)
                   : type.startsWith(':')
                     ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                    : m?.mapLayers.letters[type as IntegratedLayerLetters]
+                    : m?.mapLayers.letters[type]
               }
             >
               {({ props }) => (

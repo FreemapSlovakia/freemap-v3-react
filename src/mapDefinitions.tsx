@@ -71,87 +71,6 @@ const NLC_ATTR: AttributionDef = {
 
 const LLS_URL = 'https://www.geoportal.sk/sk/udaje/lls-dmr/';
 
-export const defaultMenuLayerLetters = [
-  'T',
-  'C',
-  'S',
-  'Z',
-  'O',
-  'X',
-  'I',
-  'l',
-  's0',
-  's1',
-  's2',
-  's3',
-  's4',
-  'w',
-];
-
-export const defaultToolbarLayerLetters = ['X', 'O', 'Z', 'I'];
-
-export const baseLayerLetters = [
-  'A',
-  'T',
-  'C',
-  'K',
-  'S',
-  'Z',
-  'J',
-  'O',
-  'M',
-  'd',
-  'X',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  'VO',
-  'VS',
-  'VD',
-  'VT',
-  // 'H',
-] as const;
-
-export const overlayLetters = [
-  'i',
-  'I',
-  'l',
-  't',
-  'c',
-  's0',
-  's1',
-  's2',
-  's3',
-  's4',
-  'w',
-  'h',
-  'z',
-] as const;
-
-export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-
-export type CustomBaseLayerLetters = `.${Num1digit}`;
-
-export type CustomOverlayLayerLetters = `:${Num1digit}`;
-
-// export type CustomLayerLetters =
-//   | CustomBaseLayerLetters
-//   | CustomOverlayLayerLetters;
-
-export type IntegratedLayerLetters =
-  | (typeof baseLayerLetters)[number]
-  | (typeof overlayLetters)[number];
-
-// export type BaseLayerLetters =
-//   | IntegratedBaseLayerLetters
-//   | CustomBaseLayerLetters;
-
-// export type OverlayLetters =
-//   | IntegratedOverlayLayerLetters
-//   | CustomOverlayLayerLetters;
-
 export type HasUrl = {
   url: string;
 };
@@ -172,6 +91,8 @@ export type IsIntegratedLayerDef = {
   experimental?: boolean;
   attribution: AttributionDef[];
   countries?: string[];
+  defaultInToolbar?: boolean;
+  defaultInMenu?: boolean;
 };
 
 export type HasScaleWithDpi = {
@@ -287,11 +208,13 @@ export function upgradeCustomLayers(customLayers: unknown[]) {
 function legacyFreemap(
   type: string,
   icon: ReactElement,
+  defaultInMenu?: boolean,
 ): IntegratedBaseLayerDef {
   return {
     technology: 'tile',
     layer: 'base',
     type,
+    defaultInMenu,
     icon,
     url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
@@ -308,6 +231,8 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'X',
+    defaultInMenu: true,
+    defaultInToolbar: true,
     technology: 'tile',
     icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
@@ -400,12 +325,14 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     ],
   },
   legacyFreemap('A', <FaCar />),
-  legacyFreemap('T', <FaHiking />),
-  legacyFreemap('C', <FaBicycle />),
+  legacyFreemap('T', <FaHiking />, true),
+  legacyFreemap('C', <FaBicycle />, true),
   legacyFreemap('K', <FaSkiingNordic />),
   {
     layer: 'base',
     type: 'O',
+    defaultInToolbar: true,
+    defaultInMenu: true,
     technology: 'tile',
     icon: <SiOpenstreetmap />,
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -417,6 +344,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'S',
+    defaultInMenu: true,
     technology: 'tile',
     url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     subdomains: ['server', 'services'],
@@ -436,6 +364,8 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'Z',
+    defaultInToolbar: true,
+    defaultInMenu: true,
     technology: 'tile',
     url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
@@ -486,6 +416,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'd',
+    defaultInMenu: true,
     technology: 'tile',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
@@ -631,6 +562,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'VS',
+    defaultInMenu: true,
     technology: 'maplibre',
     url: maptiler('streets-v2'),
     kbd: ['KeyR', false],
@@ -661,6 +593,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'VT',
+    defaultInMenu: true,
     technology: 'maplibre',
     url: maptiler('outdoor-v2'),
     kbd: ['KeyU', false],
@@ -684,6 +617,8 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'overlay',
     type: 'I',
+    defaultInToolbar: true,
+    defaultInMenu: true,
     technology: 'gallery',
     icon: <FaCamera />,
     minZoom: 0,
@@ -699,6 +634,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'overlay',
     type: 'w',
+    defaultInMenu: true,
     technology: 'wikipedia',
     icon: <FaWikipediaW />,
     minZoom: 8,
@@ -755,6 +691,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'overlay',
     type: 'l',
+    defaultInMenu: true,
     technology: 'tile',
     icon: <FaTractor />,
     url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
@@ -781,6 +718,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       ({
         layer: 'overlay' as const,
         type,
+        defaultInMenu: true,
         technology: 'tile' as const,
         icon: <FaStrava />,
         url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,

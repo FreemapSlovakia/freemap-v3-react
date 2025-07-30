@@ -1,7 +1,6 @@
 import { MapViewState } from './actions/mapActions.js';
-import { baseLayerLetters } from './mapDefinitions.js';
 
-const baseLayerLetterSet = new Set<string>(baseLayerLetters);
+const baseLayerLetterSet = new Set<string>(['A', 'T', 'C', 'K']);
 
 // it's amazing that old freemap is using at least three different url param formats
 

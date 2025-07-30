@@ -23,7 +23,6 @@ import { useMessages } from '../l10nInjector.js';
 import {
   IntegratedLayerDef,
   integratedLayerDefs,
-  IntegratedLayerLetters,
   IsTileLayerDef,
 } from '../mapDefinitions.js';
 import { isInvalidInt } from '../numberValidator.js';
@@ -272,9 +271,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   useEffect(() => {
     setName((name) =>
-      name && nameChanged
-        ? name
-        : (m?.mapLayers.letters[mapType as IntegratedLayerLetters] ?? ''),
+      name && nameChanged ? name : (m?.mapLayers.letters[mapType] ?? ''),
     );
   }, [m, mapType, nameChanged]);
 
@@ -394,7 +391,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             >
               {mapDefs.map((layer) => (
                 <option key={layer.type} value={layer.type}>
-                  {m?.mapLayers.letters[layer.type as IntegratedLayerLetters]}
+                  {m?.mapLayers.letters[layer.type]}
                 </option>
               ))}
             </Form.Select>

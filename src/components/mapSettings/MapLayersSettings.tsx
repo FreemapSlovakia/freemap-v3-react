@@ -4,13 +4,7 @@ import { FaEllipsisH, FaEye, FaRegListAlt } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
-import {
-  CustomLayerDef,
-  defaultMenuLayerLetters,
-  defaultToolbarLayerLetters,
-  integratedLayerDefs,
-  IntegratedLayerLetters,
-} from '../../mapDefinitions.js';
+import { CustomLayerDef, integratedLayerDefs } from '../../mapDefinitions.js';
 import { countryCodeToFlag, Emoji } from '../Emoji.js';
 
 type Props = {
@@ -31,7 +25,7 @@ export function MapLayersSettings({
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
         ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-        : m?.mapLayers.letters[type as IntegratedLayerLetters];
+        : m?.mapLayers.letters[type];
   }
 
   const [activeType, setActiveType] = useState('');
@@ -67,6 +61,8 @@ export function MapLayersSettings({
       adminOnly: false,
       icon: <MdDashboardCustomize />,
       key: ['Digit' + cl.type.slice(1), false] as const,
+      defaultInToolbar: false,
+      defaultInMenu: false,
     })),
   ];
 
@@ -89,84 +85,87 @@ export function MapLayersSettings({
       </thead>
 
       <tbody>
-        {layerDefs.map(({ icon, type, layer, countries }) => (
-          <tr key={type}>
-            <td>{icon}</td>
+        {layerDefs.map(
+          ({
+            icon,
+            type,
+            layer,
+            countries,
+            defaultInToolbar,
+            defaultInMenu,
+          }) => (
+            <tr key={type}>
+              <td>{icon}</td>
 
-            <td>
-              {getName(type)}
+              <td>
+                {getName(type)}
 
-              {type !== 'X' &&
-                countries?.map((country) => (
-                  <Emoji className="ms-1" key="country">
-                    {countryCodeToFlag(country)}
-                  </Emoji>
-                ))}
-            </td>
+                {type !== 'X' &&
+                  countries?.map((country) => (
+                    <Emoji className="ms-1" key="country">
+                      {countryCodeToFlag(country)}
+                    </Emoji>
+                  ))}
+              </td>
 
-            <td>
-              <Form.Check
-                checked={
-                  layersSettings[type]?.showInToolbar ??
-                  defaultToolbarLayerLetters.includes(type) ??
-                  false
-                }
-                onChange={(e) =>
-                  setLayersSettings({
-                    ...layersSettings,
-                    [type]: {
-                      ...(layersSettings[type] ?? {}),
-                      showInToolbar: e.currentTarget.checked,
-                    },
-                  })
-                }
-              />
-            </td>
+              <td>
+                <Form.Check
+                  checked={
+                    layersSettings[type]?.showInToolbar ?? !!defaultInToolbar
+                  }
+                  onChange={(e) =>
+                    setLayersSettings({
+                      ...layersSettings,
+                      [type]: {
+                        ...(layersSettings[type] ?? {}),
+                        showInToolbar: e.currentTarget.checked,
+                      },
+                    })
+                  }
+                />
+              </td>
 
-            <td>
-              <Form.Check
-                checked={
-                  layersSettings[type]?.showInMenu ??
-                  defaultMenuLayerLetters.includes(type) ??
-                  false
-                }
-                onChange={(e) =>
-                  setLayersSettings({
-                    ...layersSettings,
-                    [type]: {
-                      ...(layersSettings[type] ?? {}),
-                      showInMenu: e.currentTarget.checked,
-                    },
-                  })
-                }
-              />
-            </td>
+              <td>
+                <Form.Check
+                  checked={layersSettings[type]?.showInMenu ?? !!defaultInMenu}
+                  onChange={(e) =>
+                    setLayersSettings({
+                      ...layersSettings,
+                      [type]: {
+                        ...(layersSettings[type] ?? {}),
+                        showInMenu: e.currentTarget.checked,
+                      },
+                    })
+                  }
+                />
+              </td>
 
-            <td>
-              {layer === 'overlay' && (
-                <div>
-                  <OverlayTrigger
-                    trigger="click"
-                    placement="left"
-                    overlay={popover}
-                    rootClose
-                  >
-                    <div className="fm-opacity-button">
-                      <button
-                        type="button"
-                        style={{
-                          opacity:
-                            (layersSettings[type]?.opacity ?? 1) * 100 + '%',
-                        }}
-                        onClick={() => setActiveType(type)}
-                      />
-                    </div>
-                  </OverlayTrigger>
-                </div>
-              )}
-            </td>
-          </tr>
-        ))}
+              <td>
+                {layer === 'overlay' && (
+                  <div>
+                    <OverlayTrigger
+                      trigger="click"
+                      placement="left"
+                      overlay={popover}
+                      rootClose
+                    >
+                      <div className="fm-opacity-button">
+                        <button
+                          type="button"
+                          style={{
+                            opacity:
+                              (layersSettings[type]?.opacity ?? 1) * 100 + '%',
+                          }}
+                          onClick={() => setActiveType(type)}
+                        />
+                      </div>
+                    </OverlayTrigger>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ),
+        )}
       </tbody>
     </Table>
   );

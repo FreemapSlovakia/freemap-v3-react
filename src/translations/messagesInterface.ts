@@ -9,7 +9,6 @@ import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
-import { IntegratedLayerLetters } from '../mapDefinitions.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
@@ -561,7 +560,7 @@ export type Messages = {
     photoFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
-    letters: Record<IntegratedLayerLetters, string>;
+    letters: Record<string, string>;
     customBase: string;
     customOverlay: string;
     type: {
