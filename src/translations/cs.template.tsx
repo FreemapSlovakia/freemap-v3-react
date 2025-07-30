@@ -734,10 +734,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Interaktivní vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
-      A: 'Automapa (zastaraná)',
-      T: 'Turistická (zastaraná)',
-      C: 'Cyklomapa (zastaraná)',
-      K: 'Běžkárska (zastaraná)',
+      A: 'Automapa',
+      T: 'Turistická',
+      C: 'Cyklomapa',
+      K: 'Běžkárska',
       S: 'Letecká',
       Z: 'Letecká',
       J: 'Ortofotomozaika SR (2. cyklus)',
@@ -1070,6 +1070,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
+    legacy: 'zastaralá',
     legacyMapWarning:
       'Zobrazená mapa je zastaralá. Přepnout na moderní outdoorovou mapu?',
     noMapFound: 'Žádná mapa nenalezena',

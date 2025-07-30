@@ -774,10 +774,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Pokrýva len tieto krajiny: ${countries.join(', ')}`,
     letters: {
-      A: 'Automapa (zastaraná)',
-      T: 'Turistická (zastaraná)',
-      C: 'Cyklomapa (zastaraná)',
-      K: 'Bežkárska (zastaraná)',
+      A: 'Automapa',
+      T: 'Turistická',
+      C: 'Cyklomapa',
+      K: 'Bežkárska',
       S: 'Letecká',
       Z: 'Letecká',
       J: 'Ortofotomozaika SR (2. cyklus)',
@@ -1113,6 +1113,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
+    legacy: 'zastaralá',
     legacyMapWarning:
       'Zobrazená mapa je zastaralá. Prepnúť na modernú outdoorovú mapu?',
     noMapFound: 'Žiadna mapa nenájdená',

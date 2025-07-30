@@ -739,10 +739,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     letters: {
-      A: 'Auto (starsza wersja)',
-      T: 'Turystyka piesza (starsza wersja)',
-      C: 'Rowerowa (starsza wersja)',
-      K: 'Narciarstwo biegowe (starsza wersja)',
+      A: 'Auto',
+      T: 'Turystyka piesza',
+      C: 'Rowerowa',
+      K: 'Narciarstwo biegowe',
       S: 'Lotnicza',
       Z: 'Lotnicza',
       J: 'Ortofotomozaika SR (2. cykl)',
@@ -1094,6 +1094,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
+    legacy: 'przestarzała',
     legacyMapWarning:
       'Wyświetlana mapa jest przestarzała. Przełączyć na nowoczesną mapę outdoorową?',
     noMapFound: 'Nie znaleziono mapy',

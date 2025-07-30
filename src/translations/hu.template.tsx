@@ -795,10 +795,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
 
     letters: {
-      A: 'Autó (elavult)',
-      T: 'Túrázás (elavult)',
-      C: 'Kerékpározás (elavult)',
-      K: 'Síelés (elavult)',
+      A: 'Autó',
+      T: 'Túrázás',
+      C: 'Kerékpározás',
+      K: 'Síelés',
       S: 'Légifelvétel',
       Z: 'Légifelvétel',
       J: 'Ortofotomozaika SR (2. ciklus)',
@@ -1176,6 +1176,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saveError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép mentésekor', err),
 
+    legacy: 'elavult',
     legacyMapWarning:
       'A megjelenített térkép elavult. Átváltasz a modern outdoor térképre?',
     disconnect: 'Leválasztás',

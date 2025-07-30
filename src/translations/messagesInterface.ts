@@ -679,6 +679,7 @@ export type Messages = {
     styles: string;
   };
   maps: {
+    legacy: string;
     legacyMapWarning: string;
     noMapFound: string;
     save: string;

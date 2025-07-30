@@ -223,7 +223,7 @@ function legacyFreemap(
     kbd: ['Key' + type, false],
     creditsPerMTile: 1000,
     countries: ['sk'],
-    superseededBy: type === 'A' ? undefined : 'X',
+    superseededBy: type === 'A' ? 'O' : 'X',
   };
 }
 

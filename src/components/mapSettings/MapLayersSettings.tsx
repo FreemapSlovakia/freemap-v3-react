@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
-import { FaEllipsisH, FaEye, FaRegListAlt } from 'react-icons/fa';
+import { FaEllipsisH, FaEye, FaHistory, FaRegListAlt } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
@@ -63,6 +63,7 @@ export function MapLayersSettings({
       key: ['Digit' + cl.type.slice(1), false] as const,
       defaultInToolbar: false,
       defaultInMenu: false,
+      superseededBy: undefined,
     })),
   ];
 
@@ -93,12 +94,20 @@ export function MapLayersSettings({
             countries,
             defaultInToolbar,
             defaultInMenu,
+            superseededBy,
           }) => (
             <tr key={type}>
               <td>{icon}</td>
 
               <td>
                 {getName(type)}
+
+                {superseededBy && (
+                  <FaHistory
+                    className="text-warning ms-1"
+                    title={m?.maps.legacy}
+                  />
+                )}
 
                 {type !== 'X' &&
                   countries?.map((country) => (

@@ -14,6 +14,7 @@ import {
   FaEyeSlash,
   FaFilter,
   FaGem,
+  FaHistory,
   FaRegCheckCircle,
   FaRegCircle,
   FaRegMap,
@@ -152,6 +153,7 @@ export function MapSwitchButton(): ReactElement {
       countries: undefined,
       defaultInToolbar: false,
       defaultInMenu: false,
+      superseededBy: undefined,
       ...cl,
     })),
   ].map((def) => ({
@@ -168,28 +170,66 @@ export function MapSwitchButton(): ReactElement {
     setShow(nextShow);
   }, []);
 
-  function commonBadges(def: (typeof layerDefs)[number]) {
+  function commonBadges(
+    def: (typeof layerDefs)[number],
+    place: 'menu' | 'toolbar' | 'tooltip',
+  ) {
     return (
       <>
-        {def.experimental && (
+        {place === 'toolbar' &&
+        !premium &&
+        def.premiumFromZoom !== undefined &&
+        zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
+          <FaGem
+            className="ms-1 text-warning"
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClick={premium ? undefined : becomePremium}
+          />
+        ) : null}
+
+        {place !== 'toolbar' &&
+          def.type !== 'X' &&
+          def.countries?.map((country) => (
+            <Emoji className="ms-1" key="country">
+              {countryCodeToFlag(country)}
+            </Emoji>
+          ))}
+
+        {place !== 'toolbar' && getKbdShortcut(def.kbd)}
+
+        {(place === 'menu' || (place === 'tooltip' && premium)) &&
+        def.premiumFromZoom !== undefined &&
+        zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
+          <FaGem
+            className={'ms-1 ' + (premium ? 'text-success' : 'text-warning')}
+            title={premium ? undefined : m?.premium.premiumOnly}
+            onClickCapture={premium ? undefined : becomePremium}
+          />
+        ) : null}
+
+        {place !== 'toolbar' && def.superseededBy && (
+          <FaHistory className="text-warning ms-1" title={m?.maps.legacy} />
+        )}
+
+        {place !== 'toolbar' && def.experimental && (
           <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
-        {!def.zoomOk && (
+        {place !== 'tooltip' && !def.zoomOk && (
           <FaSearchPlus
             title={m?.mapLayers.minZoomWarning(def.minZoom!)}
             className="text-warning ms-1"
           />
         )}
 
-        {!def.countryOk && (
+        {place !== 'tooltip' && !def.countryOk && (
           <BiWorld
             title={m?.mapLayers.countryWarning(def.countries!)}
             className="text-warning ms-1"
           />
         )}
 
-        {def.type === 'I' && pictureFilterIsActive && (
+        {place !== 'tooltip' && def.type === 'I' && pictureFilterIsActive && (
           <FaFilter
             data-filter="1"
             title={m?.mapLayers.photoFilterWarning}
@@ -197,13 +237,15 @@ export function MapSwitchButton(): ReactElement {
           />
         )}
 
-        {activeLayers.includes('i') && def.type === 'i' && (
-          <FaEyeSlash
-            data-interactive="1"
-            title={m?.mapLayers.interactiveLayerWarning}
-            className="text-warning ms-1"
-          />
-        )}
+        {place !== 'tooltip' &&
+          activeLayers.includes('i') &&
+          def.type === 'i' && (
+            <FaEyeSlash
+              data-interactive="1"
+              title={m?.mapLayers.interactiveLayerWarning}
+              className="text-warning ms-1"
+            />
+          )}
       </>
     );
   }
@@ -269,29 +311,9 @@ export function MapSwitchButton(): ReactElement {
                   : type.startsWith(':')
                     ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
                     : m?.mapLayers.letters[type]) ?? '…'}
-
-                {def.type !== 'X' &&
-                  def.countries?.map((country) => (
-                    <Emoji className="ms-1" key="country">
-                      {countryCodeToFlag(country)}
-                    </Emoji>
-                  ))}
               </span>
 
-              {getKbdShortcut(def.kbd)}
-
-              {def.premiumFromZoom !== undefined &&
-              zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-                <FaGem
-                  className={
-                    'ms-1 ' + (premium ? 'text-success' : 'text-warning')
-                  }
-                  title={premium ? undefined : m?.premium.premiumOnly}
-                  onClickCapture={premium ? undefined : becomePremium}
-                />
-              ) : null}
-
-              {commonBadges(def)}
+              {commonBadges(def, 'menu')}
             </Dropdown.Item>
           </Fragment>
         );
@@ -320,11 +342,15 @@ export function MapSwitchButton(): ReactElement {
             <LongPressTooltip
               key={type}
               label={
-                type.startsWith('.')
-                  ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                  : type.startsWith(':')
-                    ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                    : m?.mapLayers.letters[type]
+                <>
+                  {type.startsWith('.')
+                    ? m?.mapLayers.customBase + ' ' + type.slice(1)
+                    : type.startsWith(':')
+                      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
+                      : m?.mapLayers.letters[type]}
+
+                  {commonBadges(def, 'tooltip')}
+                </>
               }
             >
               {({ props }) => (
@@ -338,17 +364,7 @@ export function MapSwitchButton(): ReactElement {
                 >
                   {def.icon}
 
-                  {!premium &&
-                  def.premiumFromZoom !== undefined &&
-                  zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-                    <FaGem
-                      className="ms-1 text-warning"
-                      title={premium ? undefined : m?.premium.premiumOnly}
-                      onClick={premium ? undefined : becomePremium}
-                    />
-                  ) : null}
-
-                  {commonBadges(def)}
+                  {commonBadges(def, 'toolbar')}
                 </Button>
               )}
             </LongPressTooltip>

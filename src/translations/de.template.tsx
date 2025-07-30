@@ -763,10 +763,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     letters: {
-      A: 'Auto (veraltet)',
-      T: 'Wandern (veraltet)',
-      C: 'Fahrrad (veraltet)',
-      K: 'Skilanglauf (veraltet)',
+      A: 'Auto',
+      T: 'Wandern',
+      C: 'Fahrrad',
+      K: 'Skilanglauf',
       S: 'Luftbild',
       Z: 'Luftbild',
       J: 'Ortofotomozaika SR (2. Zyklus)',
@@ -1122,6 +1122,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
   maps: {
+    legacy: 'veraltet',
     legacyMapWarning:
       'Die angezeigte Karte ist veraltet. Zur modernen Outdoor-Karte wechseln?',
     noMapFound: 'Keine Karte gefunden',

@@ -760,10 +760,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Il livello interattivo è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
-      A: 'Auto (obsoleta)',
-      T: 'Escursione (obsoleta)',
-      C: 'Bici (obsoleta)',
-      K: 'Sci di fondo (obsoleta)',
+      A: 'Auto',
+      T: 'Escursione',
+      C: 'Bici',
+      K: 'Sci di fondo',
       S: 'Aereo',
       Z: 'Aereo',
       J: 'Ortofotomozaika SR (2° ciclo)',
@@ -1098,6 +1098,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
+    legacy: 'legacy',
     legacyMapWarning:
       'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?',
     noMapFound: 'Nessuna mappa trovata',

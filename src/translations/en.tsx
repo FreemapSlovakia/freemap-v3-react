@@ -724,10 +724,10 @@ const messages: Messages = {
     countryWarning: (countries) =>
       `Covers only following countries: ${countries.join(', ')}`,
     letters: {
-      A: 'Car (legacy)',
-      T: 'Hiking (legacy)',
-      C: 'Bicycle (legacy)',
-      K: 'Crosscountry Ski (legacy)',
+      A: 'Car',
+      T: 'Hiking',
+      C: 'Bicycle',
+      K: 'Crosscountry Ski',
       S: 'Aerial',
       Z: 'Aerial',
       J: 'Ortofotomozaika SR (2nd cycle)',
@@ -1060,6 +1060,7 @@ const messages: Messages = {
   },
 
   maps: {
+    legacy: 'legacy',
     legacyMapWarning:
       'Displayed map is a legacy one. Switch to modern outdoor map?',
     noMapFound: 'No map found',
