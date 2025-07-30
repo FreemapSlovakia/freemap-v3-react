@@ -39,6 +39,7 @@ import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { countryCodeToFlag, Emoji } from './Emoji.js';
 
 function getKbdShortcut(kbd?: readonly [string, boolean]) {
   return (
@@ -273,6 +274,13 @@ export function MapSwitchButton(): ReactElement {
                     ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
                     : m?.mapLayers.letters[type as IntegratedLayerLetters]) ??
                   '…'}
+
+                {def.type !== 'X' &&
+                  def.countries?.map((country) => (
+                    <Emoji className="ms-1" key="country">
+                      {countryCodeToFlag(country)}
+                    </Emoji>
+                  ))}
               </span>
 
               {getKbdShortcut(def.kbd)}

@@ -447,11 +447,13 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         type: 'map',
         name: '©\xa0GKÚ, NLC',
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+        country: 'sk',
       },
       {
         type: 'map',
         name: '©\xa0ČÚZK',
         url: 'https://geoportal.cuzk.cz/',
+        country: 'cz',
       },
     ],
     kbd: ['KeyZ', false],
