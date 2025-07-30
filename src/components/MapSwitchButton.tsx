@@ -253,6 +253,8 @@ export function MapSwitchButton(): ReactElement {
   function layersMemuItems(layer: 'base' | 'overlay') {
     let first = true;
 
+    let showsOfm = false;
+
     return layerDefs
       .filter((def) => def.layer === layer)
       .map((def) => {
@@ -268,9 +270,20 @@ export function MapSwitchButton(): ReactElement {
         if (
           show !== 'all' &&
           !activeLayers.includes(type) &&
-          (!showInMenu || !def.countryOk || !def.zoomOk)
+          (!showInMenu ||
+            !def.countryOk ||
+            !def.zoomOk ||
+            (type === 'S' &&
+              showsOfm &&
+              countries?.every(
+                (country) => country === 'sk' || country === 'cz',
+              )))
         ) {
           return null;
+        }
+
+        if (type === 'Z') {
+          showsOfm = true;
         }
 
         const active = (type === 'i') !== activeLayers.includes(type);

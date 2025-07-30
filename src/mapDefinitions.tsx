@@ -343,26 +343,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   },
   {
     layer: 'base',
-    type: 'S',
-    defaultInMenu: true,
-    technology: 'tile',
-    url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    subdomains: ['server', 'services'],
-    icon: <FaPlane />,
-    minZoom: 0,
-    maxNativeZoom: 19,
-    scaleWithDpi: true,
-    kbd: ['KeyS', false],
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
-        url: 'https://www.esri.com/',
-      },
-    ],
-  },
-  {
-    layer: 'base',
     type: 'Z',
     defaultInToolbar: true,
     defaultInMenu: true,
@@ -391,6 +371,27 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
     countries: ['sk', 'cz'],
+  },
+  {
+    layer: 'base',
+    type: 'S',
+    defaultInToolbar: true,
+    defaultInMenu: true,
+    technology: 'tile',
+    url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: ['server', 'services'],
+    icon: <FaPlane />,
+    minZoom: 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
+    kbd: ['KeyS', false],
+    attribution: [
+      {
+        type: 'map',
+        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
+        url: 'https://www.esri.com/',
+      },
+    ],
   },
   {
     layer: 'base',
