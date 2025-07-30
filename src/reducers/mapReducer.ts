@@ -56,6 +56,7 @@ export const mapInitialState: MapState = {
       },
     ],
   },
+  countries: [],
 };
 
 export const mapReducer = createReducer(mapInitialState, (builder) =>

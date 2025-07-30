@@ -34,6 +34,10 @@ export const getCountriesProcessor: Processor = {
         if (!(err instanceof DOMException && err.name === 'AbortError')) {
           console.log(err);
 
+          if (getState().map.countries) {
+            dispatch(mapSetCountries(undefined));
+          }
+
           // TODO toast
         }
       });

@@ -52,4 +52,6 @@ export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
 export const mapSetBounds =
   createAction<[number, number, number, number]>('MAP_SET_BOUNDS');
 
-export const mapSetCountries = createAction<string[]>('MAP_SET_COUNTRIES');
+export const mapSetCountries = createAction<string[] | undefined>(
+  'MAP_SET_COUNTRIES',
+);
