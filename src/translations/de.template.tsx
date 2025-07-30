@@ -111,6 +111,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Exportieren',
     success: 'Fertig!',
     expiration: 'Ablaufdatum',
+    privacyPolicy: 'Datenschutzrichtlinie',
+    newOptionText: '%value% hinzufügen',
+    deleteButtonText: '%value% aus der Liste entfernen',
   },
 
   selections: {
@@ -153,6 +156,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Auf der Karte auswählen',
       current: 'Deine Position',
       home: 'Startposition',
+      point: 'Routenpunkt',
     },
     transportType: {
       car: 'Auto',
@@ -213,6 +217,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Keine Route gefunden. Versuche, die Parameter zu ändern oder die Punkte zu verschieben.',
     fetchingError: ({ err }) =>
       addError(messages, 'Fehler beim Finden der Route', err),
+    manual: 'Manuell',
+    manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
   },
   mainMenu: {
     title: 'Hauptmenü',
@@ -361,6 +367,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       showPreview:
         'Vorschauen automatisch anzeigen (erhöht CPU- und Speicherbedarf)',
       premium: 'Nur für Nutzer mit Premiumzugang verfügbar machen',
+      loadPreview: 'Vorschau laden',
     },
     locationPicking: {
       title: 'Fotoposition wählen',
@@ -419,6 +426,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'An diesem Ort wurden keine Fotos gefunden.',
     linkToWww: 'Foto auf www.freemap.sk',
     linkToImage: 'Bilddatei des Fotos',
+    showLegend: 'Farblegende anzeigen',
   },
   measurement: {
     distance: 'Linie',
@@ -834,6 +842,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Allgemeine Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    showMore: 'Mehr Karten anzeigen',
+    countryWarning: (countries) =>
+      `Deckt nur folgende Länder ab: ${countries.join(', ')}`,
+    layerSettings: 'Kartenebenen',
   },
 
   elevationChart: {
@@ -1159,6 +1171,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Bearbeiter',
     conflictError: 'Die Karte wurde inzwischen geändert.',
+    addWriter: 'Editor hinzufügen',
   },
   mapCtxMenu: {
     centerMap: 'Karte hier zentrieren',

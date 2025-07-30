@@ -64,10 +64,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     loading: 'Töltés…',
     ok: 'OK',
     preventShowingAgain: 'Következő alkalommal ne jelenjék meg',
-
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
-
     back: 'Vissza',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
     processorError: ({ err }) => addError(messages, 'Alkalmazáshiba', err),
@@ -79,10 +77,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
-
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
-
     copyUrl: 'URL másolása',
     copyPageUrl: 'Oldal URL-jének másolása',
     savingError: ({ err }) => addError(messages, 'Mentési hiba', err),
@@ -91,44 +87,31 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
-
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
-
     export: 'Exportálás',
     expiration: 'Lejárat',
     modifiedAt: 'Módosítva',
-
     operationError: ({ err }) => addError(messages, 'Műveleti hiba', err),
-
     copyOk: 'Vágólapra másolva.',
-
     noCookies: 'Ez a funkció a sütik elfogadását igényli.',
-
     name: 'Név',
-
     load: 'Betöltés',
-
     unnamed: 'Névtelen',
-
     componentLoadingError:
       'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
-
     offline: 'Nincs internetkapcsolatod.',
-
     connectionError: 'Hiba a szerverhez való csatlakozáskor.',
-
     experimentalFunction: 'Kísérleti funkció',
-
     attribution: () => (
       <Attribution unknown="A térkép licence nincs megadva." />
     ),
-
     unauthenticatedError: 'A funkció használatához előbb jelentkezz be.',
-
     areYouSure: 'Biztos vagy benne?',
-
     success: 'Kész!',
+    privacyPolicy: 'Adatvédelmi irányelvek',
+    newOptionText: '%value% hozzáadása',
+    deleteButtonText: '%value% eltávolítása a listáról',
   },
 
   selections: {
@@ -177,6 +160,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Kijelölés a térképen',
       current: 'Az Ön pozíciója',
       home: 'Lakhely',
+      point: 'Útpont',
     },
     transportType: {
       car: 'Gépkocsi',
@@ -232,6 +216,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt az útvonaltervezésnél', err),
+    manual: 'Kézi',
+    manualTooltip: 'A következő szakasz összekötése egyenes vonallal',
   },
 
   mainMenu: {
@@ -393,6 +379,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Előnézet automatikus megjelenítése (több processzorteljesítményt és memóriát használ)',
       premium:
         'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
+      loadPreview: 'Előnézet betöltése',
     },
 
     locationPicking: {
@@ -446,6 +433,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'Ezen a helyen nem találhatók fotók.',
     linkToWww: 'fotó a www.freemap.sk oldalon',
     linkToImage: 'fotófájl',
+    showLegend: 'Színezési jelmagyarázat megjelenítése',
   },
 
   measurement: {
@@ -851,7 +839,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Térkép beállítások',
     switch: 'Térképek',
     interactiveLayerWarning: 'Az interaktív réteg rejtve van',
-    layerSettings: 'Mapové vrstvy',
     customBase: 'Egyéni térkép',
     customOverlay: 'Egyéni térképátfedés',
     customMaps: 'Egyéni térképek',
@@ -865,6 +852,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-index',
     generalSettings: 'Általános beállítások',
     maxZoom: 'Maximális nagyítás',
+    showMore: 'További térképek megjelenítése',
+    countryWarning: (countries) =>
+      `Csak a következő országokat fedi le: ${countries.join(', ')}`,
+    layerSettings: 'Térképrétegek',
   },
 
   elevationChart: {
@@ -1197,6 +1188,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Szerkesztők',
     conflictError: 'A térképet időközben módosították.',
+    addWriter: 'Szerkesztő hozzáadása',
   },
 
   mapCtxMenu: {

@@ -116,6 +116,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unauthenticatedError: 'Accedi per utilizzare questa funzione.',
     areYouSure: 'Sei sicuro/a?',
     success: 'Fatto!',
+    privacyPolicy: 'Informativa sulla privacy',
+    newOptionText: 'Aggiungi %value%',
+    deleteButtonText: 'Rimuovi %value% dalla lista',
   },
 
   selections: {
@@ -162,6 +165,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Seleziona sulla mappa',
       current: 'La tua posizione',
       home: 'Posizione casa',
+      point: 'Punto del percorso',
     },
     transportType: {
       car: 'Auto',
@@ -218,6 +222,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error finding the route:', err),
+    manual: 'Manuale',
+    manualTooltip: 'Collega il segmento successivo con una linea retta',
   },
 
   mainMenu: {
@@ -375,6 +381,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       showPreview:
         "Mostra automaticamente l'anteprima (aumenta il consumo di CPU e memoria)",
       premium: 'Disponibile solo per gli utenti con accesso completo',
+      loadPreview: 'Carica anteprima',
     },
 
     locationPicking: {
@@ -418,6 +425,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
     linkToWww: 'foto su www.freemap.sk',
     linkToImage: 'file immagine',
+    showLegend: 'Mostra la legenda della colorazione',
 
     allMyPhotos: {
       premium: 'Includi tutte le mie foto nei contenuti premium',
@@ -812,7 +820,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    layerSettings: 'Mapové vrstvy',
     customMaps: 'Mappe personalizzate',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',
@@ -824,6 +831,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Impostazioni generali',
     maxZoom: 'Zoom massimo',
+    showMore: 'Mostra più mappe',
+    countryWarning: (countries) =>
+      `Copre solo i seguenti paesi: ${countries.join(', ')}`,
+    layerSettings: 'Livelli mappa',
   },
 
   elevationChart: {
@@ -1135,6 +1146,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Editori',
     conflictError: 'La mappa è stata modificata nel frattempo.',
+    addWriter: 'Aggiungi editor',
   },
 
   mapCtxMenu: {

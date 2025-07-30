@@ -109,6 +109,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Eksportuj',
     success: 'Gotowe!',
     expiration: 'Wygasa',
+    privacyPolicy: 'Polityka prywatności',
+    newOptionText: 'Dodaj %value%',
+    deleteButtonText: 'Usuń %value% z listy',
   },
   selections: {
     objects: 'Obiekt (POI)',
@@ -148,6 +151,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Wybierz na mapie',
       current: 'Twoja pozycja',
       home: 'Pozycja domowa',
+      point: 'Punkt trasy',
     },
     transportType: {
       car: 'Samochód',
@@ -207,6 +211,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nie znaleziono trasy. Spróbuj zmienić parametry lub przesunąć punkty.',
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas wyszukiwania trasy', err),
+    manual: 'Ręcznie',
+    manualTooltip: 'Połącz następny odcinek prostą linią',
   },
   mainMenu: {
     title: 'Menu główne',
@@ -353,6 +359,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       showPreview:
         'Automatyczne wyświetlanie podglądu (zwiększone zużycie procesora i pamięci)',
       premium: 'Udostępnij tylko użytkownikom z dostępem premium',
+      loadPreview: 'Wczytaj podgląd',
     },
 
     locationPicking: {
@@ -412,6 +419,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'Nie znaleziono żadnych zdjęć w tym miejscu.',
     linkToWww: 'zdjęcie na www.freemap.sk',
     linkToImage: 'plik obrazu zdjęcia',
+    showLegend: 'Pokaż legendę kolorowania',
   },
   measurement: {
     distance: 'Linia',
@@ -794,7 +802,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
     interactiveLayerWarning: 'Interaktywna warstwa jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
-    layerSettings: 'Mapové vrstvy',
     customBase: 'Własna mapa',
     customOverlay: 'Własna nakładka mapy',
     customMaps: 'Mapy własne',
@@ -808,6 +815,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-indeks',
     generalSettings: 'Ustawienia ogólne',
     maxZoom: 'Maksymalne powiększenie',
+    showMore: 'Pokaż więcej map',
+    countryWarning: (countries) =>
+      `Obejmuje tylko następujące kraje: ${countries.join(', ')}`,
+    layerSettings: 'Warstwy mapy',
   },
 
   elevationChart: {
@@ -1131,6 +1142,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Edytorzy',
     conflictError: 'Mapa została w międzyczasie zmodyfikowana.',
+    addWriter: 'Dodaj edytora',
   },
 
   mapCtxMenu: {

@@ -110,6 +110,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Exportovat',
     success: 'Hotovo!',
     expiration: 'Expirace',
+    privacyPolicy: 'Zásady ochrany osobních údajů',
+    newOptionText: 'Přidat %value%',
+    deleteButtonText: 'Odebrat %value% ze seznamu',
   },
 
   selections: {
@@ -156,6 +159,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Vybrat na mapě',
       current: 'Tvá poloha',
       home: 'Domů',
+      point: 'Bod trasy',
     },
     transportType: {
       car: 'Auto',
@@ -212,6 +216,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při hledání trasy', err),
+    manual: 'Manuálně',
+    manualTooltip: 'Propojit následující segment přímou čarou',
   },
 
   mainMenu: {
@@ -403,6 +409,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       premium: 'Zařadit všechny mé fotky do prémiového obsahu',
       free: 'Zpřístupnit všechny mé fotky každému',
     },
+    showLegend: 'Zobrazit legendu zabarvení',
   },
 
   measurement: {
@@ -796,6 +803,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Obecná nastavení',
     maxZoom: 'Maximální přiblížení',
+    showMore: 'Ukázat více map',
+    countryWarning: (countries) =>
+      `Pokrývá pouze tyto země: ${countries.join(', ')}`,
   },
 
   elevationChart: {
@@ -1107,6 +1117,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Editori',
     conflictError: 'Mapa byla mezitím modifikována.',
+    addWriter: 'Přidat editora',
   },
 
   // check/improve translation
