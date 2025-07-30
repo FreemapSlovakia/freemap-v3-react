@@ -12,8 +12,21 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
+import {
+  FaDownload,
+  FaDrawPolygon,
+  FaEye,
+  FaHistory,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
@@ -27,8 +40,10 @@ import {
 } from '../mapDefinitions.js';
 import { isInvalidInt } from '../numberValidator.js';
 import { CreditsAlert } from './CredistAlert.js';
+import { countryCodeToFlag, Emoji } from './Emoji.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 
 type Props = { show: boolean };
 
@@ -275,6 +290,37 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     );
   }, [m, mapType, nameChanged]);
 
+  function getItem(def: IntegratedLayerDef) {
+    return (
+      <>
+        {def.layer === 'base' ? (
+          <TbLayersSelected className="opacity-50" />
+        ) : (
+          <TbLayersSelectedBottom className="opacity-50" />
+        )}
+
+        <span className="px-2">{def.icon}</span>
+
+        {m?.mapLayers.letters[def.type]}
+
+        {def.type !== 'X' &&
+          def.countries?.map((country) => (
+            <Emoji className="ms-1" key="country">
+              {countryCodeToFlag(country)}
+            </Emoji>
+          ))}
+
+        {def.superseededBy && (
+          <FaHistory className="text-warning ms-1" title={m?.maps.legacy} />
+        )}
+
+        {def.experimental && (
+          <ExperimentalFunction data-interactive="1" className="ms-1" />
+        )}
+      </>
+    );
+  }
+
   return (
     <Modal show={show} onHide={close}>
       <form onSubmit={handleSubmit}>
@@ -384,17 +430,19 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <Form.Group controlId="mapType">
             <Form.Label>{m?.downloadMap.map}</Form.Label>
 
-            <Form.Select
-              className="mb-3"
-              value={mapType}
-              onChange={(e) => setMapType(e.currentTarget.value as 'X')}
-            >
-              {mapDefs.map((layer) => (
-                <option key={layer.type} value={layer.type}>
-                  {m?.mapLayers.letters[layer.type]}
-                </option>
-              ))}
-            </Form.Select>
+            <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
+              <Dropdown.Toggle className="text-start w-100">
+                {mapDef ? getItem(mapDef) : '???'}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {mapDefs.map((def) => (
+                  <Dropdown.Item key={def.type} eventKey={def.type}>
+                    {getItem(def)}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </Form.Group>
 
           <Form.Group controlId="downloadArea">
