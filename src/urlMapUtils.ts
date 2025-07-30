@@ -5,8 +5,7 @@ import {
   getTrasformedParamsIfIsOldFreemapUrl,
 } from './oldFreemapUtils.js';
 
-export function getMapStateFromUrl(): Partial<MapViewState> &
-  Pick<MapViewState, 'layers'> {
+export function getMapStateFromUrl(): Partial<MapViewState> {
   {
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
 
@@ -35,20 +34,23 @@ export function getMapStateFromUrl(): Partial<MapViewState> &
 
   const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
-  let layersStr = query.get('layers') ?? '';
+  let layersStr = query.get('layers');
 
-  const layers: string[] = [];
+  let layers: string[] | undefined;
 
   const re = new RegExp(
     '^(' + integratedLayerDefs.map((def) => def.type).join('|') + '|[.:]\\d)',
   );
 
-  while (layersStr.length > 0) {
+  while (layersStr?.length) {
     const m = re.exec(layersStr);
+
     if (!m) {
       break;
     }
-    layers.push(m[1]);
+
+    (layers ??= []).push(m[1]);
+
     layersStr = layersStr.slice(m[1].length);
   }
 
@@ -60,14 +62,14 @@ function undefineNaN(val: number): number | undefined {
 }
 
 export function getMapStateDiffFromUrl(
-  state1: Partial<MapViewState> & Pick<MapViewState, 'layers'>,
+  state1: Partial<MapViewState>,
   state2: MapViewState,
 ): Partial<MapViewState> | null {
-  const { lat, lon, zoom, layers = [] } = state1;
+  const { lat, lon, zoom, layers } = state1;
 
   const changes: Partial<MapViewState> = {};
 
-  if (layers.join('') !== state2.layers.join('')) {
+  if (layers && layers.join('') !== state2.layers.join('')) {
     changes.layers = layers;
 
     if (state2.layers.includes('i')) {
@@ -75,15 +77,15 @@ export function getMapStateDiffFromUrl(
     }
   }
 
-  if (lat && Math.abs(lat - state2.lat) > 0.00001) {
+  if (lat !== undefined && Math.abs(lat - state2.lat) > 0.00001) {
     changes.lat = lat;
   }
 
-  if (lon && Math.abs(lon - state2.lon) > 0.00001) {
+  if (lon !== undefined && Math.abs(lon - state2.lon) > 0.00001) {
     changes.lon = lon;
   }
 
-  if (zoom && zoom !== state2.zoom) {
+  if (zoom !== undefined && zoom !== state2.zoom) {
     changes.zoom = zoom;
   }
 
