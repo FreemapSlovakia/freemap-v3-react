@@ -158,7 +158,9 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         ? layerDef.type
         : undefined;
 
-    return layerType && mapToggleLayer({ type: layerType });
+    if (layerType) {
+      return mapToggleLayer({ type: layerType });
+    }
   }
 
   if (
