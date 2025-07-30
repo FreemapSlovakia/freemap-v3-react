@@ -680,7 +680,13 @@ export type Messages = {
   };
   maps: {
     legacy: string;
-    legacyMapWarning: string;
+    legacyMapWarning: ({
+      from,
+      to,
+    }: {
+      from: string;
+      to: string;
+    }) => JSX.Element;
     noMapFound: string;
     save: string;
     delete: string;

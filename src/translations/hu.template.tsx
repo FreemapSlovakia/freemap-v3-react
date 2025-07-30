@@ -1177,8 +1177,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Hiba történt a térkép mentésekor', err),
 
     legacy: 'elavult',
-    legacyMapWarning:
-      'A megjelenített térkép elavult. Átváltasz a modern outdoor térképre?',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        A megjelenített térkép <b>{messages.mapLayers.letters[from]}</b>{' '}
+        elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     disconnect: 'Leválasztás',
     loadToEmpty: 'Betöltés üres térképre',
     loadInclMapAndPosition:

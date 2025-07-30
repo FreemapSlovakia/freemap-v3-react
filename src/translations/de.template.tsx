@@ -1123,8 +1123,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   maps: {
     legacy: 'veraltet',
-    legacyMapWarning:
-      'Die angezeigte Karte ist veraltet. Zur modernen Outdoor-Karte wechseln?',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Die angezeigte Karte <b>{messages.mapLayers.letters[from]}</b> ist
+        veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
+      </>
+    ),
     noMapFound: 'Keine Karte gefunden',
     save: 'Speichern',
     delete: 'Löschen',

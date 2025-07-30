@@ -1095,8 +1095,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   maps: {
     legacy: 'przestarzała',
-    legacyMapWarning:
-      'Wyświetlana mapa jest przestarzała. Przełączyć na nowoczesną mapę outdoorową?',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Wyświetlana mapa <b>{messages.mapLayers.letters[from]}</b> jest
+        przestarzała. Przełączyć na nowoczesną{' '}
+        <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'Nie znaleziono mapy',
     save: 'Zapisz',
     delete: 'Usuń',

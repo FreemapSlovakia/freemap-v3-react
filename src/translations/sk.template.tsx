@@ -1114,8 +1114,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   maps: {
     legacy: 'zastaralá',
-    legacyMapWarning:
-      'Zobrazená mapa je zastaralá. Prepnúť na modernú outdoorovú mapu?',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaraná.
+        Prepnúť na modernú <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'Žiadna mapa nenájdená',
     save: 'Uložiť',
     delete: 'Zmazať',

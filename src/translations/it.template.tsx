@@ -1099,8 +1099,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   maps: {
     legacy: 'legacy',
-    legacyMapWarning:
-      'La mappa visualizzata è legacy. Passare alla moderna mappa esterna?',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        La mappa visualizzata <b>{messages.mapLayers.letters[from]}</b> è
+        legacy. Passare alla moderna <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'Nessuna mappa trovata',
     save: 'Salva',
     delete: 'Elimina',

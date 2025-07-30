@@ -1061,8 +1061,12 @@ const messages: Messages = {
 
   maps: {
     legacy: 'legacy',
-    legacyMapWarning:
-      'Displayed map is a legacy one. Switch to modern outdoor map?',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Displayed map <b>{messages.mapLayers.letters[from]}</b> is a legacy one.
+        Switch to modern <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'No map found',
     save: 'Save',
     delete: 'Delete',
