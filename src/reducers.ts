@@ -1,7 +1,7 @@
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import type { GalleryColorizeBy } from './actions/galleryActions.js';
-import { upgradeCustomLayers } from './mapDefinitions.js';
+import { upgradeCustomLayerDefs } from './mapDefinitions.js';
 import {
   authInitialState,
   authReducer,
@@ -99,7 +99,7 @@ export function getInitialState() {
   if (!is<{ customLayers: unknown }>(persisted.map)) {
     // nothing
   } else if (is<{ customLayers: unknown[] }>(persisted.map)) {
-    persisted.map.customLayers = upgradeCustomLayers(
+    persisted.map.customLayers = upgradeCustomLayerDefs(
       persisted.map.customLayers,
     );
   } else {

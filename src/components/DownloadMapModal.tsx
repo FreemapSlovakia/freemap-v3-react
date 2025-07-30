@@ -27,6 +27,7 @@ import {
   FaHistory,
   FaTimes,
 } from 'react-icons/fa';
+import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
@@ -43,7 +44,6 @@ import { CreditsAlert } from './CredistAlert.js';
 import { countryCodeToFlag, Emoji } from './Emoji.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
-import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 
 type Props = { show: boolean };
 

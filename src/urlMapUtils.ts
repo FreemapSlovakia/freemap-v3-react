@@ -1,5 +1,5 @@
 import { MapViewState } from './actions/mapActions.js';
-import { integratedLayerDefs } from './mapDefinitions.js';
+import { integratedLayerDefMap } from './mapDefinitions.js';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getTrasformedParamsIfIsOldFreemapUrl,
@@ -39,7 +39,7 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
   let layers: string[] | undefined;
 
   const re = new RegExp(
-    '^(' + integratedLayerDefs.map((def) => def.type).join('|') + '|[.:]\\d)',
+    '^(' + Object.keys(integratedLayerDefMap).join('|') + '|[.:]\\d)',
   );
 
   while (layersStr?.length) {

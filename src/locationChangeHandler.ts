@@ -63,7 +63,11 @@ import {
   ShadingComponent,
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
-import { type CustomLayerDef, upgradeCustomLayers } from './mapDefinitions.js';
+import {
+  type CustomLayerDef,
+  integratedLayerDefMap,
+  upgradeCustomLayerDefs,
+} from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
@@ -451,11 +455,11 @@ export function handleLocationChange(store: MyStore): void {
 
   handleGallery(getState, dispatch, query);
 
-  const customLayers = query['custom-layers'];
+  const customLayerDefs = query['custom-layers'];
 
   if (
-    typeof customLayers === 'string' &&
-    JSON.stringify(getState().map.customLayers) !== customLayers
+    typeof customLayerDefs === 'string' &&
+    JSON.stringify(getState().map.customLayers) !== customLayerDefs
   ) {
     const existingClsStrings = getState().map.customLayers.map((cl) =>
       JSON.stringify(cl),
@@ -463,7 +467,7 @@ export function handleLocationChange(store: MyStore): void {
 
     try {
       const newCls = assert<CustomLayerDef[]>(
-        upgradeCustomLayers(JSON.parse(customLayers)),
+        upgradeCustomLayerDefs(JSON.parse(customLayerDefs)),
       ).filter((cl) => !existingClsStrings.includes(JSON.stringify(cl)));
 
       if (newCls.length) {
@@ -493,7 +497,10 @@ export function handleLocationChange(store: MyStore): void {
   if (
     shading &&
     !Array.isArray(shading) &&
-    (map.layers.includes('h') || map.layers.includes('z')) &&
+    map.layers.some(
+      (layer) =>
+        integratedLayerDefMap[layer]?.technology === 'parametricShading',
+    ) &&
     shading !== serializeShading(map.shading)
   ) {
     function toColor(color = '00000000') {

@@ -138,7 +138,7 @@ export function MapSwitchButton(): ReactElement {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
   const countries = useAppSelector((state) => state.map.countries);
 
@@ -146,7 +146,7 @@ export function MapSwitchButton(): ReactElement {
 
   const layerDefs = [
     ...integratedLayerDefs,
-    ...customLayers.map((cl) => ({
+    ...customLayerDefs.map((cl) => ({
       icon: <MdDashboardCustomize />,
       kbd: ['Digit' + cl.type.slice(1), false] as [string, boolean],
       adminOnly: false,

@@ -5,6 +5,7 @@ import { ShowModal } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import { serializeShading } from '../components/parameterizedShading/Shading.js';
 import { basicModals } from '../constants.js';
+import { integratedLayerDefMap } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
@@ -86,7 +87,12 @@ export const urlProcessor: Processor = {
       ['layers', map.layers.filter((l) => l !== 'i').join('')],
     ];
 
-    if (map.layers.includes('h') || map.layers.includes('z')) {
+    if (
+      map.layers.some(
+        (layer) =>
+          integratedLayerDefMap[layer]?.technology === 'parametricShading',
+      )
+    ) {
       queryParts.push(['shading', serializeShading(map.shading)]);
     }
 

@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import { JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
 import { getDocuments } from '../../documents/index.js';
@@ -11,7 +11,12 @@ export function HelpSubmenu(): JSX.Element {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const skCz = ['sk', 'cs'].includes(language);
+  const skCs = ['sk', 'cs'].includes(language);
+
+  const legendLayers = useMemo(
+    () => new Set(skCs ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']),
+    [skCs],
+  );
 
   const layers = useAppSelector((state) => state.map.layers);
 
@@ -19,9 +24,7 @@ export function HelpSubmenu(): JSX.Element {
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
-      {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
-        layers[0],
-      ) && (
+      {layers.some((layer) => legendLayers.has(layer)) && (
         <Dropdown.Item href="#show=legend" eventKey="modal-legend">
           <FaRegMap /> {m?.mainMenu.mapLegend}
         </Dropdown.Item>
@@ -35,7 +38,7 @@ export function HelpSubmenu(): JSX.Element {
         <FaBook /> {m?.mainMenu.osmWiki}
       </Dropdown.Item>
 
-      {skCz && (
+      {skCs && (
         <>
           <Dropdown.Item
             href="https://groups.google.com/forum/#!forum/osm_sk"

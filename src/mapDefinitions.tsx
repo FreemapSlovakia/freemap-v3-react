@@ -195,8 +195,8 @@ type OldCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'> & {
   technology?: 'tile';
 };
 
-export function upgradeCustomLayers(customLayers: unknown[]) {
-  return customLayers
+export function upgradeCustomLayerDefs(customLayerDefs: unknown[]) {
+  return customLayerDefs
     .filter((cl) => is<OldCustomLayerDef>(cl))
     .map((cl) => ({
       ...cl,
@@ -786,3 +786,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
 function maptiler(style: string) {
   return `https://api.maptiler.com/maps/${style}/style.json?key=KgKDGG75zYDIyCCTAG6L`;
 }
+
+export const integratedLayerDefMap = Object.fromEntries(
+  integratedLayerDefs.map((def) => [def.type, def]),
+);

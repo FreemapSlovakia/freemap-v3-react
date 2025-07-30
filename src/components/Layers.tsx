@@ -167,7 +167,7 @@ export function Layers(): ReactElement | null {
     return null;
   }
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
   return window.isRobot ? null : (
     <>
@@ -175,7 +175,7 @@ export function Layers(): ReactElement | null {
         .filter(({ type }) => layers.includes(type))
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
         .map((item) => getLayer(item))}
-      {customLayers
+      {customLayerDefs
         .filter(({ type }) => layers.includes(type))
         .map((cm) => getLayer({ ...cm, technology: 'tile' }))}
     </>

@@ -2,7 +2,7 @@ import { get } from 'idb-keyval';
 import { assert, is } from 'typia';
 import { authInit, authSetUser } from '../actions/authActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { upgradeCustomLayers } from '../mapDefinitions.js';
+import { upgradeCustomLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { User, UserSettings } from '../types/auth.js';
 import { StringDates } from '../types/common.js';
@@ -55,7 +55,7 @@ export const authInitProcessor: Processor = {
           let settings: UserSettings | undefined;
 
           if (is<{ customLayers: unknown[] }>(rawUser.settings)) {
-            rawUser.settings.customLayers = upgradeCustomLayers(
+            rawUser.settings.customLayers = upgradeCustomLayerDefs(
               rawUser.settings.customLayers,
             );
           }

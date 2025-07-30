@@ -44,6 +44,7 @@ import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
 import { useMessages } from '../l10nInjector.js';
 import { setMapLeafletElement } from '../leafletElementHolder.js';
+import { integratedLayerDefMap } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import {
   showGalleryPickerSelector,
@@ -522,7 +523,11 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
-              {(layers.includes('h') || layers.includes('z')) && (
+              {layers.some(
+                (layer) =>
+                  integratedLayerDefMap[layer]?.technology ===
+                  'parametricShading',
+              ) && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
                   <AsyncComponent factory={shadingControlFactory} />
                 </div>

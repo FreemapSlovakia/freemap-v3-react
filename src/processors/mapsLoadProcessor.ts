@@ -8,7 +8,7 @@ import {
   mapsLoaded,
 } from '../actions/mapsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import { CustomLayerDef, upgradeCustomLayers } from '../mapDefinitions.js';
+import { CustomLayerDef, upgradeCustomLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { StringDates } from '../types/common.js';
 
@@ -92,7 +92,7 @@ export const mapsLoadProcessor: Processor = {
       delete map.overlays;
 
       if (map.customLayers) {
-        map.customLayers = upgradeCustomLayers(map.customLayers);
+        map.customLayers = upgradeCustomLayerDefs(map.customLayers);
 
         if (!is<CustomLayerDef[]>(map.customLayers)) {
           delete map.customLayers;
