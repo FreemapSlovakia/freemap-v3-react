@@ -714,6 +714,7 @@ const messages: Messages = {
   },
 
   mapLayers: {
+    showMore: 'Show more maps',
     showAll: 'Show all maps',
     settings: 'Map settings',
     layers: 'Maps',

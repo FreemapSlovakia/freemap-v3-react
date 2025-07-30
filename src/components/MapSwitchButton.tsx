@@ -67,7 +67,7 @@ export function MapSwitchButton(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState<boolean | 'all'>(false);
+  const [show, setShow] = useState<boolean | 'more' | 'all'>(false);
 
   const handlePossibleFilterClick = useCallback(
     (e: SyntheticEvent<unknown, unknown>) => {
@@ -102,8 +102,10 @@ export function MapSwitchButton(): ReactElement {
         return;
       }
 
-      if (selection === 'all') {
+      if (selection === 'show-all') {
         setShow('all');
+      } else if (selection === 'show-more') {
+        setShow('more');
       } else if (selection === 'mapSettings') {
         setShow(false);
 
@@ -267,10 +269,13 @@ export function MapSwitchButton(): ReactElement {
         const showInMenu =
           layersSettings[type]?.showInMenu ?? !!def.defaultInMenu;
 
+        const showInToolbar =
+          layersSettings[type]?.showInToolbar ?? !!def.defaultInToolbar;
+
         if (
           show !== 'all' &&
           !activeLayers.includes(type) &&
-          (!showInMenu ||
+          (!(show === true && !isWide ? showInToolbar : showInMenu) ||
             !def.countryOk ||
             !def.zoomOk ||
             (type === 'S' &&
@@ -417,13 +422,19 @@ export function MapSwitchButton(): ReactElement {
 
               {layersMemuItems('overlay')}
 
-              {show !== 'all' && (
+              {(show === true || show === 'more') && (
                 <>
                   <Dropdown.Divider />
 
-                  <Dropdown.Item eventKey="all">
-                    {m?.mapLayers.showAll}
-                  </Dropdown.Item>
+                  {!isWide && show === true ? (
+                    <Dropdown.Item eventKey="show-more">
+                      {m?.mapLayers.showMore}
+                    </Dropdown.Item>
+                  ) : (
+                    <Dropdown.Item eventKey="show-all">
+                      {m?.mapLayers.showAll}
+                    </Dropdown.Item>
+                  )}
                 </>
               )}
             </div>

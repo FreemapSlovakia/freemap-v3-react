@@ -553,6 +553,7 @@ export type Messages = {
     };
   };
   mapLayers: {
+    showMore: string;
     showAll: string;
     settings: string;
     layers: string;

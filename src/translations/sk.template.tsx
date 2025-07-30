@@ -764,6 +764,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    showMore: 'Ukázať viac máp',
     showAll: 'Ukázať všetky mapy',
     settings: 'Nastavenia máp',
     layers: 'Mapy',
