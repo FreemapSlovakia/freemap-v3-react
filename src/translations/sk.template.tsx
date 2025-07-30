@@ -771,6 +771,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filter fotografií je aktívny',
     interactiveLayerWarning: 'Interaktívna vrstva je skrytá',
     minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,
+    countryWarning: (countries) =>
+      `Pokrýva len tieto krajiny: ${countries.join(', ')}`,
     letters: {
       A: 'Automapa (zastaraná)',
       T: 'Turistická (zastaraná)',

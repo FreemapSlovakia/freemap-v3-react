@@ -184,7 +184,7 @@ export function MapSwitchButton(): ReactElement {
 
         {!def.countryOk && (
           <BiWorld
-            // title={m?.mapLayers.countryWarning(rest.countries)} // TODO
+            title={m?.mapLayers.countryWarning(def.countries!)}
             className="text-warning ms-1"
           />
         )}

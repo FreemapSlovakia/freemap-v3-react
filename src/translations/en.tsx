@@ -721,6 +721,8 @@ const messages: Messages = {
     photoFilterWarning: 'Photo filtering is active',
     interactiveLayerWarning: 'Interactive layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
+    countryWarning: (countries) =>
+      `Covers only following countries: ${countries.join(', ')}`,
     letters: {
       A: 'Car (legacy)',
       T: 'Hiking (legacy)',
