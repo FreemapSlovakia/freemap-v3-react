@@ -485,25 +485,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   },
   {
     layer: 'base',
-    type: 'M',
-    technology: 'tile',
-    url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
-    minZoom: 3,
-    maxNativeZoom: 18,
-    icon: <FaBicycle />,
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0Martin Tesař',
-        url: 'mailto:smmtb@gmail.com',
-      },
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ],
-    kbd: ['KeyQ', false],
-  },
-  {
-    layer: 'base',
     type: 'd',
     technology: 'tile',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',

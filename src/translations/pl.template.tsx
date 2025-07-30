@@ -747,7 +747,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       Z: 'Lotnicza',
       J: 'Ortofotomozaika SR (2. cykl)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Transport publiczny (ÖPNV)',
       X: outdoorMap,
       i: 'Interaktywna warstwa',

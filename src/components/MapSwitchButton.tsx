@@ -37,9 +37,9 @@ import {
 } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { Checkbox } from './Checkbox.js';
+import { countryCodeToFlag, Emoji } from './Emoji.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
-import { countryCodeToFlag, Emoji } from './Emoji.js';
 
 function getKbdShortcut(kbd?: readonly [string, boolean]) {
   return (

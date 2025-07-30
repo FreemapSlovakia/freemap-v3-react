@@ -11,6 +11,7 @@ import {
   integratedLayerDefs,
   IntegratedLayerLetters,
 } from '../../mapDefinitions.js';
+import { countryCodeToFlag, Emoji } from '../Emoji.js';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;
@@ -62,6 +63,7 @@ export function MapLayersSettings({
     ...integratedLayerDefs,
     ...customLayers.map((cl) => ({
       ...cl,
+      countries: [],
       adminOnly: false,
       icon: <MdDashboardCustomize />,
       key: ['Digit' + cl.type.slice(1), false] as const,
@@ -87,11 +89,20 @@ export function MapLayersSettings({
       </thead>
 
       <tbody>
-        {layerDefs.map(({ icon, type, layer }) => (
+        {layerDefs.map(({ icon, type, layer, countries }) => (
           <tr key={type}>
             <td>{icon}</td>
 
-            <td>{getName(type)}</td>
+            <td>
+              {getName(type)}
+
+              {type !== 'X' &&
+                countries?.map((country) => (
+                  <Emoji className="ms-1" key="country">
+                    {countryCodeToFlag(country)}
+                  </Emoji>
+                ))}
+            </td>
 
             <td>
               <Form.Check

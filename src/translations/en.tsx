@@ -730,7 +730,6 @@ const messages: Messages = {
       Z: 'Aerial',
       J: 'Ortofotomozaika SR (2nd cycle)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Public transport (ÖPNV)',
       X: outdoorMap,
       i: 'Interactive layer',
