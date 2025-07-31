@@ -195,7 +195,9 @@ type OldCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'> & {
   technology?: 'tile';
 };
 
-export function upgradeCustomLayerDefs(customLayerDefs: unknown[]) {
+export function upgradeCustomLayerDefs(
+  customLayerDefs: unknown[],
+): CustomLayerDef[] {
   return customLayerDefs
     .filter((cl) => is<OldCustomLayerDef>(cl))
     .map((cl) => ({

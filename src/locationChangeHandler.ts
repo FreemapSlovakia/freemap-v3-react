@@ -1,6 +1,6 @@
 import Color from 'color';
 import type { Dispatch } from 'redux';
-import { assert, is } from 'typia';
+import { is } from 'typia';
 import {
   ChangesetParams,
   changesetsSet,
@@ -64,7 +64,6 @@ import {
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import {
-  type CustomLayerDef,
   integratedLayerDefMap,
   upgradeCustomLayerDefs,
 } from './mapDefinitions.js';
@@ -469,9 +468,9 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const newCls = assert<CustomLayerDef[]>(
-        upgradeCustomLayerDefs(JSON.parse(customLayerDefs)),
-      ).filter((cl) => !existingClsStrings.includes(JSON.stringify(cl)));
+      const newCls = upgradeCustomLayerDefs(JSON.parse(customLayerDefs)).filter(
+        (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
+      );
 
       if (newCls.length) {
         for (const cm of newCls) {
