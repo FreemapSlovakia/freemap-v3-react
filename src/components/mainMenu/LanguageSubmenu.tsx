@@ -1,9 +1,10 @@
 import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaLanguage } from 'react-icons/fa';
+import { IoLanguage } from 'react-icons/io5';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Emoji } from '../Emoji.js';
+import { LanguageLabel } from './LanguageLabel.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function LanguageSubmenu(): JSX.Element {
@@ -14,8 +15,8 @@ export function LanguageSubmenu(): JSX.Element {
   return (
     <>
       <SubmenuHeader
-        icon={<FaLanguage />}
-        title="Language / Jazyk / Nyelv / Lingua"
+        icon={<IoLanguage />}
+        title={<LanguageLabel>{(language) => language}</LanguageLabel>}
       />
 
       <Dropdown.Item

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -23,8 +23,7 @@ import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { toolDefinitions } from '../../toolDefinitions.js';
 import { ExperimentalFunction } from '../ExperimentalFunction.js';
-
-const LANGUAGES = ['Language', 'Lingua', 'Jazyk', 'Język', 'Sprache', 'Nyelv'];
+import { LanguageLabel } from './LanguageLabel.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
@@ -39,44 +38,16 @@ export function MainMenu(): ReactElement {
 
   const m = useMessages();
 
-  const [currentIndex, setCurrentIndex] = useState(
-    Math.floor(Math.random() * LANGUAGES.length),
-  );
-  const [fading, setFading] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFading(true);
-
-      setTimeout(() => {
-        setCurrentIndex((i) => (i + 1) % LANGUAGES.length);
-        setFading(false);
-      }, 200);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const prevIndex = (currentIndex + LANGUAGES.length - 1) % LANGUAGES.length;
-
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <span className="position-relative">
-          <span
-            key={prevIndex}
-            className={`position-absolute top-0 start-0 transition-opacity ${fading ? 'opacity-0' : 'opacity-100'} text-nowrap fm-transition`}
-          >
-            <IoLanguage /> {LANGUAGES[prevIndex]} <FaChevronRight />
-          </span>
-          <span
-            key={currentIndex}
-            className={`position-absolute top-0 start-0 transition-opacity ${fading ? 'opacity-100' : 'opacity-0'} text-nowrap fm-transition`}
-          >
-            <IoLanguage /> {LANGUAGES[currentIndex]} <FaChevronRight />
-          </span>
-          &nbsp;
-        </span>
+        <LanguageLabel>
+          {(language) => (
+            <>
+              <IoLanguage /> {language} <FaChevronRight />
+            </>
+          )}
+        </LanguageLabel>
       </Dropdown.Item>
 
       {user ? (

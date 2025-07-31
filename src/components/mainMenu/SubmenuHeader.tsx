@@ -1,11 +1,11 @@
-import { JSX, ReactElement } from 'react';
+import { JSX, ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
 import { useMessages } from '../../l10nInjector.js';
 
 type SubmenuHeaderProps = {
-  icon: ReactElement;
-  title?: string;
+  icon: ReactNode;
+  title?: ReactNode;
 };
 
 export function SubmenuHeader({
