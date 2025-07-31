@@ -111,7 +111,7 @@ export function MapLayersSettings({
 
                 {type !== 'X' &&
                   countries?.map((country) => (
-                    <Emoji className="ms-1" key="country">
+                    <Emoji className="ms-1" key={country}>
                       {countryCodeToFlag(country)}
                     </Emoji>
                   ))}

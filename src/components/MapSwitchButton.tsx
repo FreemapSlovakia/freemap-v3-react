@@ -192,7 +192,7 @@ export function MapSwitchButton(): ReactElement {
         {place !== 'toolbar' &&
           def.type !== 'X' &&
           def.countries?.map((country) => (
-            <Emoji className="ms-1" key="country">
+            <Emoji className="ms-1" key={country}>
               {countryCodeToFlag(country)}
             </Emoji>
           ))}
