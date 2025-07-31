@@ -255,8 +255,6 @@ export function MapSwitchButton(): ReactElement {
   function layersMemuItems(layer: 'base' | 'overlay') {
     let first = true;
 
-    let showsOfm = false;
-
     return layerDefs
       .filter((def) => def.layer === layer)
       .map((def) => {
@@ -277,18 +275,9 @@ export function MapSwitchButton(): ReactElement {
           !activeLayers.includes(type) &&
           (!(show === true && !isWide ? showInToolbar : showInMenu) ||
             !def.countryOk ||
-            !def.zoomOk ||
-            (type === 'S' &&
-              showsOfm &&
-              countries?.every(
-                (country) => country === 'sk' || country === 'cz',
-              )))
+            !def.zoomOk)
         ) {
           return null;
-        }
-
-        if (type === 'Z') {
-          showsOfm = true;
         }
 
         const active = (type === 'i') !== activeLayers.includes(type);
@@ -338,6 +327,8 @@ export function MapSwitchButton(): ReactElement {
       });
   }
 
+  let showsOfm = false;
+
   return (
     <>
       <div className="d-none d-sm-block me-1">{m?.mapLayers.switch}</div>
@@ -351,9 +342,20 @@ export function MapSwitchButton(): ReactElement {
 
           if (
             !activeLayers.includes(def.type) &&
-            (!def.countryOk || !def.zoomOk || !showInToolbar)
+            (!def.countryOk ||
+              !def.zoomOk ||
+              !showInToolbar ||
+              (type === 'S' &&
+                showsOfm &&
+                countries?.every(
+                  (country) => country === 'sk' || country === 'cz',
+                )))
           ) {
             return null;
+          }
+
+          if (type === 'Z') {
+            showsOfm = true;
           }
 
           return (
