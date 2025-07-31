@@ -12,9 +12,26 @@ const PREFIX = '?document=';
 export function Attribution({ unknown }: Props): ReactElement {
   const layers = useAppSelector((state) => state.map.layers);
 
-  const m = useMessages();
-
   const countries = useAppSelector((state) => state.map.countries);
+
+  const attribution = useResolvedAttribution(layers, countries);
+
+  return attribution === null ? (
+    <div>{unknown}</div>
+  ) : (
+    <ul className="m-0 ms-n4 me-n4">
+      {attribution.map(([type, elem]) => (
+        <li key={type}>{elem}</li>
+      ))}
+    </ul>
+  );
+}
+
+export function useResolvedAttribution(
+  layers: string[],
+  countries?: string[],
+): [string, ReactElement][] | null {
+  const m = useMessages();
 
   const categorized = categorize(
     integratedLayerDefs
@@ -29,44 +46,44 @@ export function Attribution({ unknown }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  return categorized.length === 0 ? (
-    <div>{unknown}</div>
-  ) : (
-    <ul className="m-0 ms-n4 me-n4">
-      {categorized.map(({ type, attributions }) => (
-        <li key={type}>
-          {m?.mapLayers.type[type]}{' '}
-          {attributions.map((a, j) => [
-            j > 0 ? ', ' : '',
-            a.url ? (
-              <a
-                key={a.type}
-                href={a.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => {
-                  if (!a.url?.startsWith(PREFIX)) {
-                    return;
-                  }
+  return categorized.length === 0
+    ? null
+    : categorized.map(
+        ({ type, attributions }) =>
+          [
+            type,
+            <>
+              {m?.mapLayers.type[type]}{' '}
+              {attributions.map((a, j) => [
+                j > 0 ? ', ' : '',
+                a.url ? (
+                  <a
+                    key={a.type}
+                    href={a.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      if (!a.url?.startsWith(PREFIX)) {
+                        return;
+                      }
 
-                  e.preventDefault();
+                      e.preventDefault();
 
-                  dispatch(documentShow(a.url.slice(PREFIX.length)));
-                }}
-              >
-                {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-              </a>
-            ) : (
-              <Fragment key={a.type}>
-                {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-              </Fragment>
-            ),
-          ])}
-          {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
-        </li>
-      ))}
-    </ul>
-  );
+                      dispatch(documentShow(a.url.slice(PREFIX.length)));
+                    }}
+                  >
+                    {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
+                  </a>
+                ) : (
+                  <Fragment key={a.type}>
+                    {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
+                  </Fragment>
+                ),
+              ])}
+              {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
+            </>,
+          ] as const,
+      );
 }
 
 function categorize(

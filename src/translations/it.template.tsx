@@ -1065,7 +1065,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'Traccia GPX',
     },
     mapScale: 'Risoluzione mappa',
-    alert: () => (
+    alert: (licence) => (
       <>
         Note:
         <ul>
@@ -1077,32 +1077,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             Prima di condividere la mappa esportata, aggiungi la seguente
             attribuzione:
             <br />
-            <em>
-              map ©{' '}
-              <AlertLink
-                href="https://www.freemap.sk/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Freemap Slovakia
-              </AlertLink>
-              , data{' '}
-              <AlertLink
-                href="https://osm.org/copyright"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                © OpenStreetMap contributors
-              </AlertLink>
-              {', SRTM, '}
-              <AlertLink
-                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LLS: ÚGKK SR
-              </AlertLink>
-            </em>
+            <em>{licence}</em>
           </li>
         </ul>{' '}
       </>

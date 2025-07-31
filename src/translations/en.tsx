@@ -1017,7 +1017,7 @@ const messages: Messages = {
       track: 'GPX track',
     },
     mapScale: 'Map resolution',
-    alert: () => (
+    alert: (licence) => (
       <>
         Notes:
         <ul>
@@ -1029,32 +1029,7 @@ const messages: Messages = {
             Before sharing exported map accompain it with the following
             attribution:
             <br />
-            <em>
-              map ©{' '}
-              <AlertLink
-                href="https://www.freemap.sk/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Freemap Slovakia
-              </AlertLink>
-              , data{' '}
-              <AlertLink
-                href="https://osm.org/copyright"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                © OpenStreetMap contributors
-              </AlertLink>
-              {', SRTM, '}
-              <AlertLink
-                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LLS: ÚGKK SR
-              </AlertLink>
-            </em>
+            <em>{licence}</em>
           </li>
         </ul>{' '}
       </>

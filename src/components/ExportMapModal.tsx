@@ -1,9 +1,12 @@
+import { CRS } from 'leaflet';
 import storage from 'local-storage-fallback';
 import {
   ChangeEvent,
+  Fragment,
   MouseEvent,
   ReactElement,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import {
@@ -24,7 +27,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
+import { assert, is } from 'typia';
 import {
   ExportableLayer,
   ExportFormat,
@@ -32,9 +35,11 @@ import {
   LAYERS,
   setActiveModal,
 } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { isInvalidInt } from '../numberValidator.js';
+import { useResolvedAttribution } from './Attribution.js';
 
 type Props = { show: boolean };
 
@@ -43,6 +48,8 @@ const FORMAT_STORAGE_KEY = 'fm.exportMap.format';
 const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
 
 const SCALE_STORAGE_KEY = 'fm.exportMap.scale';
+
+const MAP_LAYERS = ['X'];
 
 export default ExportMapModal;
 
@@ -224,6 +231,59 @@ export function ExportMapModal({ show }: Props): ReactElement {
     setScale(e.currentTarget.value);
   }, []);
 
+  const countries = useAppSelector((state) => state.map.countries);
+
+  const [polyCountries, setPolyCountries] = useState<string[] | undefined>();
+
+  const poly0 = useAppSelector((state) =>
+    state.main.selection?.type === 'draw-line-poly'
+      ? state.drawingLines.lines[state.main.selection.id]
+      : undefined,
+  );
+
+  const poly = area === 'selected' ? poly0 : undefined;
+
+  useEffect(() => {
+    if (!poly || polyCountries) {
+      return;
+    }
+
+    const coords = [...poly.points, poly.points.at(-1)!]
+      .map((point) => CRS.EPSG3857.project({ lng: point.lon, lat: point.lat }))
+      .map((point) => point.x + ' ' + point.y)
+      .join(',');
+
+    fetch(`${process.env['API_URL']}/geotools/in-count`, {
+      method: 'POST',
+      body: `POLYGON((${coords}))`,
+      headers: { 'content-type': 'text/plain' },
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+
+        throw new Error();
+      })
+      .then((data) => {
+        setPolyCountries(assert<string[]>(data));
+      })
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.loadError',
+            messageParams: { err },
+          }),
+        );
+      });
+  }, [dispatch, poly, polyCountries]);
+
+  const attribution = useResolvedAttribution(
+    MAP_LAYERS,
+    area === 'selected' ? polyCountries : countries,
+  );
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -233,7 +293,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <Alert variant="warning">{m?.mapExport.alert()}</Alert>
+        <Alert variant="warning">
+          {m?.mapExport.alert(
+            attribution?.map(([type, elem]) => (
+              <Fragment key={type}>{elem}, </Fragment>
+            )),
+          )}
+        </Alert>
 
         <Form.Group>
           <Form.Label className="d-block">{m?.mapExport.area}</Form.Label>

@@ -1071,7 +1071,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX trasu',
     },
     mapScale: 'Rozlíšenie mapy',
-    alert: () => (
+    alert: (licence) => (
       <>
         Upozornenia:
         <ul>
@@ -1082,34 +1082,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>
             Pri publikovaní mapy je nutné uviesť jej licenciu:
             <br />
-            <em>
-              mapa ©{' '}
-              <AlertLink
-                href="https://www.freemap.sk/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Freemap Slovakia
-              </AlertLink>
-              , dáta{' '}
-              <AlertLink
-                href="https://osm.org/copyright"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                © prispievatelia OpenStreetMap
-              </AlertLink>
-              {', SRTM, '}
-              <AlertLink
-                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LLS: ÚGKK SR
-              </AlertLink>
-            </em>
+            <em>{licence}</em>
           </li>
-        </ul>{' '}
+        </ul>
       </>
     ),
   },

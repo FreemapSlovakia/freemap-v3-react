@@ -1,5 +1,5 @@
 import { ExportableLayer } from 'actions/mainActions.js';
-import { JSX, ReactNode } from 'react';
+import { JSX, ReactElement, ReactNode } from 'react';
 import { Changeset } from '../actions/changesetsActions.js';
 import {
   GalleryColorizeBy,
@@ -675,7 +675,7 @@ export type Messages = {
     layersTitle: string;
     layers: Record<ExportableLayer, string>;
     mapScale: string;
-    alert: () => JSX.Element;
+    alert: (licence?: ReactElement[]) => JSX.Element;
     advancedSettings: string;
     styles: string;
   };

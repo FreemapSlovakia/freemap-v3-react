@@ -1098,7 +1098,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX-nyomvonal',
     },
     mapScale: 'Térkép felbontása',
-    alert: () => (
+    alert: (licence) => (
       <>
         Megjegyzések:
         <ul>
@@ -1110,32 +1110,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             Megosztás előtt a térképet lássa el a következő szerzői jogi
             közleménnyel:
             <br />
-            <em>
-              térkép ©{' '}
-              <AlertLink
-                href="https://www.freemap.sk/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Freemap Szlovákia
-              </AlertLink>
-              , adatok{' '}
-              <AlertLink
-                href="https://osm.org/copyright"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                © OpenStreetMap közreműködők
-              </AlertLink>
-              {', SRTM, '}
-              <AlertLink
-                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LLS: ÚGKK SR
-              </AlertLink>
-            </em>
+            <em>{licence}</em>
           </li>
         </ul>{' '}
       </>

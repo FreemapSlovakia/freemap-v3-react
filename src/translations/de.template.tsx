@@ -1091,7 +1091,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     mapScale: 'Kartenauflösung',
 
-    alert: () => (
+    alert: (licence) => (
       <>
         Hinweise:
         <ul>
@@ -1103,32 +1103,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             Vor der Veröffentlichung der exportierten Karte geben Sie bitte die
             folgende Lizenz an:
             <br />
-            <em>
-              Karte ©{' '}
-              <AlertLink
-                href="https://www.freemap.sk/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Freemap Slovakia
-              </AlertLink>
-              , Daten{' '}
-              <AlertLink
-                href="https://osm.org/copyright"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                © OpenStreetMap-Mitwirkende
-              </AlertLink>
-              {', SRTM, '}
-              <AlertLink
-                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LLS: ÚGKK SR
-              </AlertLink>
-            </em>
+            <em>{licence}</em>
           </li>
         </ul>{' '}
       </>
