@@ -5,6 +5,10 @@ import {
   getTrasformedParamsIfIsOldFreemapUrl,
 } from './oldFreemapUtils.js';
 
+const LAYERS_RE = new RegExp(
+  '^(' + Object.keys(integratedLayerDefMap).join('|') + ')|[.:]\\d',
+);
+
 export function getMapStateFromUrl(): Partial<MapViewState> {
   {
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
@@ -38,20 +42,22 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
   let layers: string[] | undefined;
 
-  const re = new RegExp(
-    '^(' + Object.keys(integratedLayerDefMap).join('|') + '|[.:]\\d)',
-  );
+  if (layersStr) {
+    layers = [];
 
-  while (layersStr?.length) {
-    const m = re.exec(layersStr);
+    while (layersStr.length) {
+      const m = LAYERS_RE.exec(layersStr);
 
-    if (!m) {
-      break;
+      if (!m) {
+        break;
+      }
+
+      if (m[1]) {
+        layers.push(m[1]);
+      }
+
+      layersStr = layersStr.slice(m[1].length);
     }
-
-    (layers ??= []).push(m[1]);
-
-    layersStr = layersStr.slice(m[1].length);
   }
 
   return { lat, lon, zoom, layers };

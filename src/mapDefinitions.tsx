@@ -158,11 +158,17 @@ export type IsAllTechnologiesLayerDef =
   | IsInteractiveLayerDef
   | IsWikipediaLayerDef;
 
-export type CustomBaseLayerDef = IsTileLayerDef &
+export type IsCustomLayer = {
+  name?: string;
+};
+
+export type CustomBaseLayerDef = IsCustomLayer &
+  IsTileLayerDef &
   IsBaseLayerDef &
   IsCommonLayerDef;
 
-export type CustomOverlayLayerDef = IsTileLayerDef &
+export type CustomOverlayLayerDef = IsCustomLayer &
+  IsTileLayerDef &
   IsOverlayLayerDef &
   IsCommonLayerDef;
 

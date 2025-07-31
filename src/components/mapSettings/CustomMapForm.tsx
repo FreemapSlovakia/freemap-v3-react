@@ -16,6 +16,7 @@ type Props = {
 };
 
 type Model = {
+  name: string;
   url: string;
   minZoom: string;
   maxNativeZoom: string;
@@ -28,6 +29,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   function valueToModel(value?: CustomLayerDef) {
     return {
       url: value?.url ?? '',
+      name: value?.name ?? '',
       minZoom: !value
         ? ''
         : value.minZoom === undefined
@@ -58,6 +60,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     const newModel = valueToModel(value);
 
     setModel((model) =>
+      model.name !== newModel.name ||
       model.url !== newModel.url ||
       model.minZoom !== newModel.minZoom ||
       model.maxNativeZoom !== newModel.maxNativeZoom ||
@@ -106,6 +109,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
               type,
               layer: type.startsWith('.') ? 'base' : 'overlay',
               technology: 'tile',
+              name: model.name,
               url: model.url,
               minZoom,
               maxNativeZoom,
@@ -125,6 +129,15 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       const url = e.currentTarget.value;
 
       update({ ...model, url });
+    },
+    [update, model],
+  );
+
+  const setName = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const name = e.currentTarget.value;
+
+      update({ ...model, name });
     },
     [update, model],
   );
@@ -169,6 +182,12 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   return (
     <Stack gap={3}>
+      <Form.Group controlId="name">
+        <Form.Label>{m?.general.name}</Form.Label>
+
+        <Form.Control type="text" value={model.name} onChange={setName} />
+      </Form.Group>
+
       <Form.Group controlId="url">
         <Form.Label>{m?.mapLayers.urlTemplate}</Form.Label>
 

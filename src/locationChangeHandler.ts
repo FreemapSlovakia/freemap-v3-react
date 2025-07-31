@@ -459,6 +459,8 @@ export function handleLocationChange(store: MyStore): void {
 
   const customLayerDefs = query['custom-layers'];
 
+  const customLayerTypes: string[] = [];
+
   if (
     typeof customLayerDefs === 'string' &&
     JSON.stringify(getState().map.customLayers) !== customLayerDefs
@@ -479,6 +481,10 @@ export function handleLocationChange(store: MyStore): void {
           }
         }
 
+        for (const cl of newCls) {
+          customLayerTypes.push(cl.type);
+        }
+
         dispatch(mapSetCustomLayers(newCls));
       }
     } catch {
@@ -486,7 +492,13 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  const diff = getMapStateDiffFromUrl(getMapStateFromUrl(), getState().map);
+  const mapStateFromUrl = getMapStateFromUrl();
+
+  if (customLayerTypes.length) {
+    (mapStateFromUrl.layers ??= []).push(...customLayerTypes);
+  }
+
+  const diff = getMapStateDiffFromUrl(mapStateFromUrl, getState().map);
 
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));

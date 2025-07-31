@@ -1,11 +1,5 @@
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
-import {
-  ButtonGroup,
-  Col,
-  Container,
-  Row,
-  ToggleButton,
-} from 'react-bootstrap';
+import { Button, ButtonToolbar, Form } from 'react-bootstrap';
 import { useMessages } from '../../l10nInjector.js';
 import { CustomLayerDef } from '../../mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
@@ -16,9 +10,9 @@ type Props = {
 };
 
 export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
-  const [type, setType] = useState('.1');
+  const [type, setType] = useState(value[0]?.type ?? '');
 
-  const handleSetType = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const handleSetType = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
     setType(e.currentTarget.value);
   }, []);
 
@@ -39,70 +33,66 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
 
   return (
     <>
-      <Container fluid className="p-0">
-        <Row className="mb-3">
-          <Col className="align-self-center">{m?.mapLayers.base}</Col>
+      {value.length > 0 && (
+        <Form.Select value={type} onChange={handleSetType} className="mb-2">
+          {value.map((def) => (
+            <option value={def.type} key={def.type}>
+              {def.name || `{${def.type}}`}
+            </option>
+          ))}
+        </Form.Select>
+      )}
 
-          <ButtonGroup as={Col}>
-            {Array(10)
-              .fill(0)
-              .map((_, i) => (
-                <ToggleButton
-                  variant={
-                    value.find((def) => def.type === '.' + i)
-                      ? 'primary'
-                      : 'secondary'
-                  }
-                  type="radio"
-                  name="customLayer"
-                  id={'.' + i}
-                  value={'.' + i}
-                  checked={type === '.' + i}
-                  onChange={handleSetType}
-                  key={i}
-                >
-                  {i}
-                </ToggleButton>
-              ))}
-          </ButtonGroup>
-        </Row>
+      <ButtonToolbar>
+        <Button
+          variant="primary"
+          onClick={() => {
+            const type = Math.random().toString(36).slice(-6);
 
-        <Row className="mb-3">
-          <Col className="align-self-center">{m?.mapLayers.overlay}</Col>
+            onChange([
+              ...value,
+              {
+                type,
+                name: '',
+                url: 'https://',
+                technology: 'tile',
+                layer: 'base',
+              },
+            ]);
 
-          <ButtonGroup as={Col}>
-            {Array(10)
-              .fill(0)
-              .map((_, i) => (
-                <ToggleButton
-                  variant={
-                    value.find((def) => def.type === ':' + i)
-                      ? 'primary'
-                      : 'secondary'
-                  }
-                  type="radio"
-                  name="customLayer"
-                  id={':' + i}
-                  value={':' + i}
-                  checked={type === ':' + i}
-                  onChange={handleSetType}
-                  key={i}
-                >
-                  {i}
-                </ToggleButton>
-              ))}
-          </ButtonGroup>
-        </Row>
-      </Container>
+            setType(type);
+          }}
+        >
+          {m?.general.add}
+        </Button>
 
-      <hr />
+        {value.length > 0 && (
+          <Button
+            variant="danger"
+            className="ms-1"
+            onClick={() => {
+              onChange(value.filter((def) => def.type !== type));
 
-      <CustomMapForm
-        key={type}
-        type={type}
-        value={value.find((def) => def.type === type)}
-        onChange={handleChange}
-      />
+              setType(value[0]?.type ?? []); // TODO set follwing or previous
+            }}
+          >
+            {m?.general.delete}
+          </Button>
+        )}
+      </ButtonToolbar>
+
+      {value.length > 0 && (
+        <>
+          <hr />
+
+          <CustomMapForm
+            key={type}
+            type={type}
+            value={value.find((def) => def.type === type)}
+            onChange={handleChange}
+          />
+        </>
+      )}
     </>
   );
 }

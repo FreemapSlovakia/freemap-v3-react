@@ -575,6 +575,7 @@ export type Messages = {
     customMaps: string;
     base: string;
     overlay: string;
+    name: string;
     urlTemplate: string;
     minZoom: string;
     maxNativeZoom: string;
