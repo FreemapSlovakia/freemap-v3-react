@@ -378,7 +378,7 @@ export function MapSwitchButton(): ReactElement {
                   variant="secondary"
                   key={type}
                   data-type={type}
-                  active={activeLayers.includes(type)}
+                  active={(type === 'i') !== activeLayers.includes(type)}
                   onClick={handleLayerButtonClick}
                   {...props}
                 >
