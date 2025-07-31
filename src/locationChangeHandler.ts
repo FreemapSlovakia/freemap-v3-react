@@ -58,9 +58,9 @@ import {
 import {
   type ColorStop,
   type Color as ColorType,
-  type ShadingComponentType,
   serializeShading,
   ShadingComponent,
+  type ShadingComponentType,
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import {
@@ -73,7 +73,10 @@ import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from './oldFreemapUtils.js';
 import type { MyStore, RootState } from './store.js';
-import type { TransportType } from './transportTypeDefs.js';
+import {
+  migrateTransportType,
+  type TransportType,
+} from './transportTypeDefs.js';
 import type { LatLon } from './types/common.js';
 import type { TrackedDevice } from './types/trackingTypes.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -233,7 +236,7 @@ export function handleLocationChange(store: MyStore): void {
           routePlannerSetParams({
             points: latLons as unknown as RoutePoint[],
             finishOnly: nextFinishOnly,
-            transportType: query['transport'],
+            transportType: migrateTransportType(query['transport']),
             mode:
               routeMode === 'trip' ||
               routeMode === 'roundtrip' ||

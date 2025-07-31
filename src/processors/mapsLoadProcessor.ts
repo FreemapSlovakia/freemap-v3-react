@@ -10,6 +10,7 @@ import {
 import { httpRequest } from '../httpRequest.js';
 import { CustomLayerDef, upgradeCustomLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
+import { migrateTransportType } from '../transportTypeDefs.js';
 import type { StringDates } from '../types/common.js';
 
 interface CompatLine {
@@ -70,18 +71,6 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
-    try {
-      const { routePlanner } = data.data;
-
-      if (routePlanner.transportType === 'bike') {
-        routePlanner.transportType = 'bicycle_touring';
-      } else if (routePlanner.transportType.startsWith('car-')) {
-        routePlanner.transportType = 'car';
-      }
-    } catch {
-      // ignore
-    }
-
     // backward compatibility
     try {
       const { map } = data.data;
@@ -115,6 +104,10 @@ export const mapsLoadProcessor: Processor = {
           .map((pt) => ({ ...pt, manual: pt.manual ?? false }));
 
         routePlanner.finishOnly = !!routePlanner.finish && !routePlanner.start;
+
+        routePlanner.transportType = migrateTransportType(
+          routePlanner.transportType,
+        );
 
         delete routePlanner.start;
         delete routePlanner.midpoints;

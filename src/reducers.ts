@@ -53,7 +53,10 @@ import {
 import { websocketReducer } from './reducers/websocketReducer.js';
 import { wikiReducer } from './reducers/wikiReducer.js';
 import type { RootState } from './store.js';
-import { transportTypeDefs } from './transportTypeDefs.js';
+import {
+  migrateTransportType,
+  transportTypeDefs,
+} from './transportTypeDefs.js';
 import { StringDates } from './types/common.js';
 
 export const reducers = {
@@ -136,6 +139,12 @@ export function getInitialState() {
 
   if (is<Partial<ObjectsState>>(persisted.objects)) {
     initial.objects = { ...objectInitialState, ...persisted.objects };
+  }
+
+  if (is<{ transportType: unknown }>(persisted.routePlanner)) {
+    persisted.routePlanner.transportType = migrateTransportType(
+      persisted.routePlanner.transportType,
+    );
   }
 
   if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {
