@@ -28,7 +28,6 @@ interface Props extends LatLon {
   lat: number;
   lon: number;
   zoom: number;
-  mapType: string;
   includePoint?: boolean;
   url?: string;
   showKbdShortcut?: boolean;
@@ -39,7 +38,6 @@ export function OpenInExternalAppDropdownItems({
   lat,
   lon,
   zoom,
-  mapType,
   includePoint,
   url,
   showKbdShortcut,
@@ -204,7 +202,7 @@ export function OpenInExternalAppDropdownItems({
       </Dropdown.Item>
 
       <Dropdown.Item
-        href={getOmaUrl(lat, lon, zoom, mapType)}
+        href={getOmaUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >

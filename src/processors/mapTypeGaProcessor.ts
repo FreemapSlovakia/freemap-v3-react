@@ -2,29 +2,21 @@ import { enableUpdatingUrl } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
-let prevMapType: string | undefined;
-
-let prevOverlays: string[] = [];
+let prevLayers: string[] = [];
 
 export const mapTypeGaProcessor: Processor = {
   actionCreator: [mapRefocus, enableUpdatingUrl /* any initial action */],
   handle: async ({ getState }) => {
     const {
-      map: { mapType, overlays },
+      map: { layers },
     } = getState();
 
-    if (prevMapType !== mapType) {
-      window._paq.push(['trackEvent', 'Map', 'setMapType', mapType]);
+    const joinedLayers = [...layers].sort().join(',');
 
-      prevMapType = mapType;
-    }
+    if ([...prevLayers].sort().join(',') !== joinedLayers) {
+      window._paq.push(['trackEvent', 'Map', 'setLayers', joinedLayers]);
 
-    const joinedOverlays = [...overlays].sort().join(',');
-
-    if ([...prevOverlays].sort().join(',') !== joinedOverlays) {
-      window._paq.push(['trackEvent', 'Map', 'setOverlays', joinedOverlays]);
-
-      prevOverlays = overlays;
+      prevLayers = layers;
     }
   },
 };

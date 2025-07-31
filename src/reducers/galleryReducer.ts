@@ -113,7 +113,7 @@ export const galleryInitialState: GalleryState = {
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
   builder
     .addCase(mapRefocus, (state, action) => {
-      if (action.payload.overlays && !action.payload.overlays.includes('I')) {
+      if (action.payload.layers && !action.payload.layers.includes('I')) {
         state.filter = galleryInitialState.filter;
       }
     })

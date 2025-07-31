@@ -1,13 +1,13 @@
-import { is } from 'typia';
 import { MapViewState } from './actions/mapActions.js';
-import { BaseLayerLetters } from './mapDefinitions.js';
+
+const baseLayerLetterSet = new Set<string>(['A', 'T', 'C', 'K']);
 
 // it's amazing that old freemap is using at least three different url param formats
 
 // either freemap.sk/#m=T,p=48.21836|17.4166|16|T or freemap.sk/?m=A&p=48.1855|17.4029|14
 export function getTrasformedParamsIfIsOldFreemapUrl():
   | undefined
-  | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>) {
+  | (Partial<MapViewState> & Pick<MapViewState, 'layers'>) {
   const isFromOldFreemapUrlFormat1 =
     location.hash.startsWith('#p=') || location.hash.startsWith('#m='); // #m=T,p=48.21836|17.4166|16|T
 
@@ -28,26 +28,25 @@ export function getTrasformedParamsIfIsOldFreemapUrl():
 
     const mapType = oldFreemapUrlParams['m'] || anotherMapTypeParam || 'X';
 
-    return is<BaseLayerLetters>(mapType)
+    return baseLayerLetterSet.has(mapType)
       ? {
           lat: parseFloat(latFrag),
           lon: parseFloat(lonFrag),
           zoom: parseInt(zoomFrag, 10),
-          mapType,
-          overlays: [],
+          layers: [mapType],
         }
       : undefined;
   }
 
-  return is<BaseLayerLetters>(oldFreemapUrlParams['m'])
-    ? { mapType: oldFreemapUrlParams['m'], overlays: [] }
-    : { mapType: 'X', overlays: [] };
+  return baseLayerLetterSet.has(oldFreemapUrlParams['m'])
+    ? { layers: [oldFreemapUrlParams['m']] }
+    : { layers: ['X'] };
 }
 
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl():
-  | MapViewState
+  | Omit<MapViewState, 'countries'>
   | undefined {
   if (
     location.search &&
@@ -56,13 +55,12 @@ export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl():
   ) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
 
-    if (is<BaseLayerLetters>(oldFreemapUrlParams['layers'])) {
+    if (baseLayerLetterSet.has(oldFreemapUrlParams['layers'])) {
       return {
         lat: parseFloat(oldFreemapUrlParams['lat']),
         lon: parseFloat(oldFreemapUrlParams['lon']),
         zoom: parseInt(oldFreemapUrlParams['zoom'], 10),
-        mapType: oldFreemapUrlParams['layers'],
-        overlays: [],
+        layers: [oldFreemapUrlParams['layers']],
       };
     }
   }

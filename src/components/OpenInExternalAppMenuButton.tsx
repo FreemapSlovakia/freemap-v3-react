@@ -39,8 +39,6 @@ export function OpenInExternalAppMenuButton({
     pointDescription,
   });
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const sc = useScrollClasses('vertical');
@@ -63,12 +61,10 @@ export function OpenInExternalAppMenuButton({
       >
         <div className="fm-menu-scroller" ref={sc}>
           <div />
-
           <OpenInExternalAppDropdownItems
             lat={lat}
             lon={lon}
             zoom={zoom}
-            mapType={mapType}
             includePoint={includePoint}
             url={url}
           />

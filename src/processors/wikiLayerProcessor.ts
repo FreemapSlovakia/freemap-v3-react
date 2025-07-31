@@ -3,7 +3,7 @@ import { bboxPolygon } from '@turf/bbox-polygon';
 import { CRS, Point } from 'leaflet';
 import RBush, { BBox } from 'rbush';
 import { assert } from 'typia';
-import { mapRefocus } from '../actions/mapActions.js';
+import { mapRefocus, mapToggleLayer } from '../actions/mapActions.js';
 import { WikiPoint, wikiSetPoints } from '../actions/wikiActions.js';
 import { cancelRegister } from '../cancelRegister.js';
 import { httpRequest } from '../httpRequest.js';
@@ -36,17 +36,17 @@ export const wikiLayerProcessor: Processor = {
   errorKey: 'general.loadError',
   async handle({ getState, dispatch, prevState }) {
     const {
-      map: { overlays, lat, lon, zoom },
+      map: { layers, lat, lon, zoom },
       wiki: { points },
     } = getState();
 
     const prevMap = prevState.map;
 
-    const ok0 = overlays.includes('w');
+    const ok0 = layers.includes('w');
 
     const ok = ok0 && zoom >= 8;
 
-    const prevOk0 = prevMap.overlays.includes('w');
+    const prevOk0 = prevMap.layers.includes('w');
 
     const prevOk = prevOk0 && prevMap.zoom >= 8;
 
@@ -82,7 +82,7 @@ export const wikiLayerProcessor: Processor = {
         );
 
         const cancelItem = {
-          cancelActions: [mapRefocus],
+          cancelActions: [mapRefocus, mapToggleLayer], // TODO use state
           cancel: () => {
             cancelRegister.delete(cancelItem);
 
@@ -112,7 +112,7 @@ export const wikiLayerProcessor: Processor = {
       // url: `http://localhost:8040?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
       url: `https://backend.freemap.sk/wiki-pois?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
       expectedStatus: 200,
-      cancelActions: [mapRefocus],
+      cancelActions: [mapRefocus, mapToggleLayer],
     });
 
     const wikipedia2item = new Map<string, WikiPoi>();
@@ -154,7 +154,7 @@ export const wikiLayerProcessor: Processor = {
           sitefilter: `${language}wiki|enwiki`,
         }),
       expectedStatus: 200,
-      cancelActions: [mapRefocus],
+      cancelActions: [mapRefocus, mapToggleLayer],
     });
 
     const data1 = assert<WikiResponse>(await res1.json());
@@ -261,12 +261,8 @@ export const wikiLayerProcessor: Processor = {
 
     const pointMap = new Map(
       getState()
-        .wiki.points.filter(
-          (point) =>
-            point.lat > bb.getSouth() &&
-            point.lat < bb.getNorth() &&
-            point.lon > bb.getWest() &&
-            point.lon < bb.getEast(),
+        .wiki.points.filter((point) =>
+          bb.contains({ lat: point.lat, lng: point.lon }),
         )
         .map((point) => [point.id, point]),
     );

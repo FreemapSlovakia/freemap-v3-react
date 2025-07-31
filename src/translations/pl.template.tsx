@@ -109,6 +109,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Eksportuj',
     success: 'Gotowe!',
     expiration: 'Wygasa',
+    privacyPolicy: 'Polityka prywatności',
+    newOptionText: 'Dodaj %value%',
+    deleteButtonText: 'Usuń %value% z listy',
   },
   selections: {
     objects: 'Obiekt (POI)',
@@ -148,6 +151,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Wybierz na mapie',
       current: 'Twoja pozycja',
       home: 'Pozycja domowa',
+      point: 'Punkt trasy',
     },
     transportType: {
       car: 'Samochód',
@@ -207,6 +211,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nie znaleziono trasy. Spróbuj zmienić parametry lub przesunąć punkty.',
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas wyszukiwania trasy', err),
+    manual: 'Ręcznie',
+    manualTooltip: 'Połącz następny odcinek prostą linią',
   },
   mainMenu: {
     title: 'Menu główne',
@@ -353,6 +359,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       showPreview:
         'Automatyczne wyświetlanie podglądu (zwiększone zużycie procesora i pamięci)',
       premium: 'Udostępnij tylko użytkownikom z dostępem premium',
+      loadPreview: 'Wczytaj podgląd',
     },
 
     locationPicking: {
@@ -412,6 +419,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'Nie znaleziono żadnych zdjęć w tym miejscu.',
     linkToWww: 'zdjęcie na www.freemap.sk',
     linkToImage: 'plik obrazu zdjęcia',
+    showLegend: 'Pokaż legendę kolorowania',
   },
   measurement: {
     distance: 'Linia',
@@ -739,20 +747,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     letters: {
-      A: 'Auto (starsza wersja)',
-      T: 'Turystyka piesza (starsza wersja)',
-      C: 'Rowerowa (starsza wersja)',
-      K: 'Narciarstwo biegowe (starsza wersja)',
+      A: 'Auto',
+      T: 'Turystyka piesza',
+      C: 'Rowerowa',
+      K: 'Narciarstwo biegowe',
       S: 'Lotnicza',
-      Z: 'Ortofoto ČR+SR (lotnicza, CZ+SK)',
-      J: 'Stara ortofotomapa SR (lotnicza, SK)',
+      Z: 'Lotnicza',
+      J1: 'Ortofotomozaika SR (1. cykl)',
+      J2: 'Ortofotomozaika SR (2. cykl)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Transport publiczny (ÖPNV)',
       X: outdoorMap,
       i: 'Interaktywna warstwa',
       I: 'Zdjęcia',
-      l: 'Leśne drogi NLC (SK)',
+      l: 'Leśne drogi NLC',
       t: 'Szlaki piesze',
       c: 'Szlaki rowerowe',
       s0: 'Strava (wszystko)',
@@ -761,17 +769,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (sporty wodne)',
       s4: 'Strava (sporty zimowe)',
       w: 'Wikipedia',
-      '4': 'Jasne cieniowanie terenu (SK)',
-      '5': 'Cieniowanie terenu (SK)',
-      '6': 'Cieniowanie powierzchni (SK)',
-      '7': 'Szczegółowe cieniowanie powierzchni (SK)',
-      '8': 'Szczegółowe cieniowanie powierzchni (CZ)',
+      '4': 'Jasne cieniowanie terenu',
+      '5': 'Cieniowanie terenu',
+      '6': 'Cieniowanie powierzchni',
+      '7': 'Szczegółowe cieniowanie powierzchni',
+      '8': 'Szczegółowe cieniowanie powierzchni',
       VO: 'OpenStreetMap Wektorowa',
       VS: 'Ulice Wektorowa',
       VD: 'Dataviz Wektorowa',
       VT: 'Outdoor Wektorowa',
-      h: 'Parametryczne cieniowanie (SK)',
-      z: 'Parametryczne cieniowanie (CZ)',
+      h: 'Parametryczne cieniowanie',
+      z: 'Parametryczne cieniowanie',
     },
     type: {
       map: 'mapa',
@@ -779,10 +787,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photos: 'zdjęcia',
     },
     attr: {
-      freemap: '© Freemap Słowacja',
       osmData: '© współtwórcy OpenStreetMap',
-      srtm: '© SRTM',
-      outdoorShadingAttribution: 'dostawcy NMT…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Wektory kafelków od"
@@ -797,7 +802,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
     interactiveLayerWarning: 'Interaktywna warstwa jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
-    layerSettings: 'Mapové vrstvy',
     customBase: 'Własna mapa',
     customOverlay: 'Własna nakładka mapy',
     customMaps: 'Mapy własne',
@@ -811,6 +815,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-indeks',
     generalSettings: 'Ustawienia ogólne',
     maxZoom: 'Maksymalne powiększenie',
+    showMore: 'Pokaż więcej map',
+    countryWarning: (countries) =>
+      `Obejmuje tylko następujące kraje: ${countries.join(', ')}`,
+    layerSettings: 'Warstwy mapy',
   },
 
   elevationChart: {
@@ -1098,8 +1106,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
-    legacyMapWarning:
-      'Wyświetlana mapa jest przestarzała. Przełączyć na nowoczesną mapę outdoorową?',
+    legacy: 'przestarzała',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Wyświetlana mapa <b>{messages.mapLayers.letters[from]}</b> jest
+        przestarzała. Przełączyć na nowoczesną{' '}
+        <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'Nie znaleziono mapy',
     save: 'Zapisz',
     delete: 'Usuń',
@@ -1128,6 +1142,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Edytorzy',
     conflictError: 'Mapa została w międzyczasie zmodyfikowana.',
+    addWriter: 'Dodaj edytora',
   },
 
   mapCtxMenu: {

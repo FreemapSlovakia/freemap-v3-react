@@ -764,6 +764,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    showMore: 'Ukázať viac máp',
     showAll: 'Ukázať všetky mapy',
     settings: 'Nastavenia máp',
     layers: 'Mapy',
@@ -771,21 +772,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filter fotografií je aktívny',
     interactiveLayerWarning: 'Interaktívna vrstva je skrytá',
     minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,
+    countryWarning: (countries) =>
+      `Pokrýva len tieto krajiny: ${countries.join(', ')}`,
     letters: {
-      A: 'Automapa (zastaraná)',
-      T: 'Turistická (zastaraná)',
-      C: 'Cyklomapa (zastaraná)',
-      K: 'Bežkárska (zastaraná)',
-      S: 'Z lietadla',
-      Z: 'Ortofoto ČR+SR',
-      J: 'Stará Ortofotomozaika SR',
+      A: 'Automapa',
+      T: 'Turistická',
+      C: 'Cyklomapa',
+      K: 'Bežkárska',
+      S: 'Letecká',
+      Z: 'Letecká',
+      J1: 'Ortofotomozaika SR (1. cyklus)',
+      J2: 'Ortofotomozaika SR (2. cyklus)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Verejná doprava (ÖPNV)',
       X: outdoorMap,
       i: 'Interaktívna vrstva',
       I: 'Fotografie',
-      l: 'Lesné cesty NLC (SK)',
+      l: 'Lesné cesty NLC',
       t: 'Turistické trasy',
       c: 'Cyklotrasy',
       s0: 'Strava (Všetko)',
@@ -794,17 +797,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (Vodné aktivity)',
       s4: 'Strava (Zimné aktivity)',
       w: 'Wikipedia',
-      '4': 'Svetlé tieňovanie terénu (SK)',
-      '5': 'Tieňovanie terénu (SK)',
-      '6': 'Tieňovanie povrchu (SK)',
-      '7': 'Detailné tieňovanie povrchu (SK)',
-      '8': 'Detailné tieňovanie povrchu (CZ)',
+      '4': 'Svetlé tieňovanie terénu',
+      '5': 'Tieňovanie terénu',
+      '6': 'Tieňovanie povrchu',
+      '7': 'Detailné tieňovanie povrchu',
+      '8': 'Detailné tieňovanie povrchu',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
-      h: 'Parametrické tieňovanie (SK)',
-      z: 'Parametrické tieňovanie (CZ)',
+      h: 'Parametrické tieňovanie',
+      z: 'Parametrické tieňovanie',
     },
     customBase: 'Vlastná mapa',
     customOverlay: 'Vlastné prekrytie mapy',
@@ -814,10 +817,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photos: 'fotografie',
     },
     attr: {
-      freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0prispievatelia OpenStreetMap',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'poskytovatelia DMR…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
@@ -1115,8 +1115,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
-    legacyMapWarning:
-      'Zobrazená mapa je zastaralá. Prepnúť na modernú outdoorovú mapu?',
+    legacy: 'zastaralá',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaraná.
+        Prepnúť na modernú <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'Žiadna mapa nenájdená',
     save: 'Uložiť',
     delete: 'Zmazať',

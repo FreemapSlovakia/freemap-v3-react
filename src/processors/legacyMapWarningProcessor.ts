@@ -1,6 +1,7 @@
+import { is } from 'typia';
 import { enableUpdatingUrl } from '../actions/mainActions.js';
 import {
-  mapRefocus,
+  mapReplaceLayer,
   mapSuppressLegacyMapWarning,
 } from '../actions/mapActions.js';
 import {
@@ -8,58 +9,95 @@ import {
   toastsAdd,
   toastsRemove,
 } from '../actions/toastsActions.js';
+import { HasLegacy, integratedLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
+const TOAST_PREFIX = 'maps.legacyWarning.';
+
 export const legacyMapWarningProcessor: Processor = {
-  stateChangePredicate: (state) => state.map.mapType,
+  stateChangePredicate: (state) =>
+    integratedLayerDefs
+      .filter(
+        (def) =>
+          state.map.layers.includes(def.type) &&
+          is<HasLegacy>(def) &&
+          def.superseededBy,
+      )
+      .map((def) => def.type)
+      .join(','),
   actionCreator: enableUpdatingUrl,
   predicatesOperation: 'OR',
   async handle({ getState, dispatch }) {
     const {
-      mapType,
+      layers,
       legacyMapWarningSuppressions,
       tempLegacyMapWarningSuppressions,
     } = getState().map;
 
-    if (
-      (mapType === 'T' || mapType === 'C' || mapType === 'K') &&
-      !legacyMapWarningSuppressions.includes(mapType) &&
-      !tempLegacyMapWarningSuppressions.includes(mapType)
-    ) {
+    const justWarned = new Set(
+      getState()
+        .toasts.toasts.filter((toast) => toast.id.startsWith(TOAST_PREFIX))
+        .map((toast) => toast.id.slice(TOAST_PREFIX.length)),
+    );
+
+    for (const def of integratedLayerDefs) {
+      if (
+        !layers.includes(def.type) ||
+        !is<HasLegacy>(def) ||
+        !def.superseededBy ||
+        legacyMapWarningSuppressions.includes(def.type) ||
+        tempLegacyMapWarningSuppressions.includes(def.type)
+      ) {
+        continue;
+      }
+
+      if (justWarned.delete(def.type)) {
+        continue;
+      }
+
       const actions: ToastAction[] = [
         {
           nameKey: 'general.yes',
-          action: mapRefocus({ mapType: 'X' }),
+          action: mapReplaceLayer({
+            from: def.type,
+            to: def.superseededBy!,
+          }),
         },
         {
           nameKey: 'general.no',
-          action: mapSuppressLegacyMapWarning({ forever: false }),
+          action: mapSuppressLegacyMapWarning({
+            type: def.type,
+            forever: false,
+          }),
         },
       ];
 
       if (!window.fmEmbedded) {
         actions.push({
           nameKey: 'general.preventShowingAgain',
-          action: mapSuppressLegacyMapWarning({ forever: true }),
+          action: mapSuppressLegacyMapWarning({
+            type: def.type,
+            forever: true,
+          }),
         });
       }
 
       dispatch(
         toastsAdd({
-          id: 'maps.legacyWarning',
+          id: TOAST_PREFIX + def.type,
           messageKey: 'maps.legacyMapWarning',
+          messageParams: {
+            from: def.type,
+            to: def.superseededBy!,
+          },
           style: 'warning',
           actions,
         }),
       );
-    } else {
-      const toast = getState().toasts.toasts.find(
-        (toast) => toast.id === 'maps.legacyWarning',
-      );
+    }
 
-      if (toast) {
-        dispatch(toastsRemove(toast.id));
-      }
+    for (const layer of justWarned) {
+      dispatch(toastsRemove(TOAST_PREFIX + layer));
     }
   },
 };

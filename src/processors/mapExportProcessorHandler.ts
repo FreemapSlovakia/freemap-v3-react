@@ -5,7 +5,6 @@ import { exportMap, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { colors } from '../constants.js';
 import { httpRequest } from '../httpRequest.js';
-import { mapPromise } from '../leafletElementHolder.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
@@ -32,39 +31,31 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     drawingLines: { lines },
   } = getState();
 
-  let w: number | undefined = undefined;
-
-  let n: number | undefined = undefined;
-
-  let e: number | undefined = undefined;
-
-  let s: number | undefined = undefined;
+  let bbox;
 
   if (area === 'visible') {
-    const bounds = (await mapPromise).getBounds();
-
-    w = bounds.getWest();
-
-    n = bounds.getNorth();
-
-    e = bounds.getEast();
-
-    s = bounds.getSouth();
+    bbox = getState().map.bounds?.join(',');
   } else if (
     selection?.type === 'draw-line-poly' &&
     lines[selection.id]?.type === 'polygon'
   ) {
     // selected polygon
 
-    for (const { lat, lon } of lines[selection.id].points) {
-      w = Math.min(w === undefined ? 1000 : w, lon);
+    bbox = lines[selection.id].points
+      .reduce(
+        (a, c) => [
+          Math.min(a[0], c.lon),
+          Math.min(a[1], c.lat),
+          Math.max(a[2], c.lon),
+          Math.max(a[3], c.lat),
+        ],
+        [Infinity, Infinity, -Infinity, -Infinity],
+      )
+      .join(',');
+  }
 
-      n = Math.max(n === undefined ? -1000 : n, lat);
-
-      e = Math.max(e === undefined ? -1000 : e, lon);
-
-      s = Math.min(s === undefined ? 1000 : s, lat);
-    }
+  if (!bbox) {
+    return;
   }
 
   const features: Feature[] = [];
@@ -184,7 +175,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     method: 'POST',
     url: `${fmMapserverUrl}/export`,
     data: {
-      bbox: [w, s, e, n],
+      bbox,
       zoom: getState().map.zoom,
       format,
       scale,

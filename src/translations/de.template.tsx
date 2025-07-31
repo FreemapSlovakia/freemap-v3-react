@@ -111,6 +111,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Exportieren',
     success: 'Fertig!',
     expiration: 'Ablaufdatum',
+    privacyPolicy: 'Datenschutzrichtlinie',
+    newOptionText: '%value% hinzufügen',
+    deleteButtonText: '%value% aus der Liste entfernen',
   },
 
   selections: {
@@ -153,6 +156,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Auf der Karte auswählen',
       current: 'Deine Position',
       home: 'Startposition',
+      point: 'Routenpunkt',
     },
     transportType: {
       car: 'Auto',
@@ -213,6 +217,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Keine Route gefunden. Versuche, die Parameter zu ändern oder die Punkte zu verschieben.',
     fetchingError: ({ err }) =>
       addError(messages, 'Fehler beim Finden der Route', err),
+    manual: 'Manuell',
+    manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
   },
   mainMenu: {
     title: 'Hauptmenü',
@@ -361,6 +367,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       showPreview:
         'Vorschauen automatisch anzeigen (erhöht CPU- und Speicherbedarf)',
       premium: 'Nur für Nutzer mit Premiumzugang verfügbar machen',
+      loadPreview: 'Vorschau laden',
     },
     locationPicking: {
       title: 'Fotoposition wählen',
@@ -419,6 +426,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'An diesem Ort wurden keine Fotos gefunden.',
     linkToWww: 'Foto auf www.freemap.sk',
     linkToImage: 'Bilddatei des Fotos',
+    showLegend: 'Farblegende anzeigen',
   },
   measurement: {
     distance: 'Linie',
@@ -763,20 +771,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     letters: {
-      A: 'Auto (veraltet)',
-      T: 'Wandern (veraltet)',
-      C: 'Fahrrad (veraltet)',
-      K: 'Skilanglauf (veraltet)',
-      S: 'Luftaufnahme',
-      Z: 'Orthofoto ČR+SR (Luftbild, CZ+SK)',
-      J: 'Altes Orthofoto-Mosaik SR (Luftbild, SK)',
+      A: 'Auto',
+      T: 'Wandern',
+      C: 'Fahrrad',
+      K: 'Skilanglauf',
+      S: 'Luftbild',
+      Z: 'Luftbild',
+      J1: 'Ortofotomozaika SR (1. Zyklus)',
+      J2: 'Ortofotomozaika SR (2. Zyklus)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Öffentlicher Verkehr (ÖPNV)',
       X: outdoorMap,
       i: 'Interaktive Ebene',
       I: 'Fotos',
-      l: 'Forststraßen NLC (SK)',
+      l: 'Forststraßen NLC',
       t: 'Wanderwege',
       c: 'Radwege',
       s0: 'Strava (alle)',
@@ -785,17 +793,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (Wasseraktivitäten)',
       s4: 'Strava (Winteraktivitäten)',
       w: 'Wikipedia',
-      '4': 'Helle Geländeschattierung (SK)',
-      '5': 'Geländeschattierung (SK)',
-      '6': 'Oberflächenschattierung (SK)',
-      '7': 'Detaillierte Oberflächenschattierung (SK)',
-      '8': 'Detaillierte Oberflächenschattierung (CZ)',
+      '4': 'Helle Geländeschattierung',
+      '5': 'Geländeschattierung',
+      '6': 'Oberflächenschattierung',
+      '7': 'Detaillierte Oberflächenschattierung',
+      '8': 'Detaillierte Oberflächenschattierung',
       VO: 'OpenStreetMap Vektor',
       VS: 'Straßen Vektor',
       VD: 'Dataviz Vektor',
       VT: 'Outdoor Vektor',
-      h: 'Parametrische Schattierung (SK)',
-      z: 'Parametrische Schattierung (CZ)',
+      h: 'Parametrische Schattierung',
+      z: 'Parametrische Schattierung',
     },
 
     type: {
@@ -805,10 +813,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     attr: {
-      freemap: '© Freemap Slowakei',
       osmData: '© OpenStreetMap-Mitwirkende',
-      srtm: '© SRTM',
-      outdoorShadingAttribution: 'DTM-Anbieter…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorkacheln von"
@@ -837,6 +842,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Allgemeine Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    showMore: 'Mehr Karten anzeigen',
+    countryWarning: (countries) =>
+      `Deckt nur folgende Länder ab: ${countries.join(', ')}`,
+    layerSettings: 'Kartenebenen',
   },
 
   elevationChart: {
@@ -1126,8 +1135,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
   maps: {
-    legacyMapWarning:
-      'Die angezeigte Karte ist veraltet. Zur modernen Outdoor-Karte wechseln?',
+    legacy: 'veraltet',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Die angezeigte Karte <b>{messages.mapLayers.letters[from]}</b> ist
+        veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
+      </>
+    ),
     noMapFound: 'Keine Karte gefunden',
     save: 'Speichern',
     delete: 'Löschen',
@@ -1157,6 +1171,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Bearbeiter',
     conflictError: 'Die Karte wurde inzwischen geändert.',
+    addWriter: 'Editor hinzufügen',
   },
   mapCtxMenu: {
     centerMap: 'Karte hier zentrieren',

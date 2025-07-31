@@ -112,11 +112,6 @@ export function getIdUrl(lat: number, lon: number, zoom: number): string {
   )}/${lon.toFixed(5)}`;
 }
 
-export function getOmaUrl(
-  lat: number,
-  lon: number,
-  zoom: number,
-  mapType: string,
-): string {
-  return `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`;
+export function getOmaUrl(lat: number, lon: number, zoom: number): string {
+  return `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}`;
 }

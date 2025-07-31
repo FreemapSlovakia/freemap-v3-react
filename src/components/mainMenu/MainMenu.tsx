@@ -30,7 +30,7 @@ export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
 
   const galleryActive = useAppSelector((state) =>
-    state.map.overlays.includes('I'),
+    state.map.layers.includes('I'),
   );
 
   const tool = useAppSelector((state) => state.main.tool);

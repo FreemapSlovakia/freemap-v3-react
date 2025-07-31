@@ -33,9 +33,7 @@ export function useMenuHandler({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const [menuShown, setShow] = useState(false);
 
@@ -143,7 +141,6 @@ export function useMenuHandler({
               lat,
               lon,
               zoom,
-              mapType,
               pointTitle,
               pointDescription,
             }),
@@ -154,9 +151,9 @@ export function useMenuHandler({
       } else if (eventKey.startsWith('gallery')) {
         dispatch(
           mapRefocus({
-            overlays: overlays.includes('I')
-              ? overlays.filter((o) => o !== 'I')
-              : [...overlays, 'I'],
+            layers: layers.includes('I')
+              ? layers.filter((o) => o !== 'I')
+              : [...layers, 'I'],
           }),
         );
 
@@ -179,11 +176,10 @@ export function useMenuHandler({
       dispatch,
       lat,
       lon,
-      mapType,
       pointDescription,
       pointTitle,
       zoom,
-      overlays,
+      layers,
       sendGalleryEmails,
     ],
   );

@@ -1,6 +1,6 @@
 import Color from 'color';
 import type { Dispatch } from 'redux';
-import { assert, is } from 'typia';
+import { is } from 'typia';
 import {
   ChangesetParams,
   changesetsSet,
@@ -58,18 +58,24 @@ import {
 import {
   type ColorStop,
   type Color as ColorType,
-  type ShadingComponentType,
   serializeShading,
   ShadingComponent,
+  type ShadingComponentType,
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
-import type { CustomLayerDef } from './mapDefinitions.js';
+import {
+  integratedLayerDefMap,
+  upgradeCustomLayerDefs,
+} from './mapDefinitions.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from './oldFreemapUtils.js';
 import type { MyStore, RootState } from './store.js';
-import type { TransportType } from './transportTypeDefs.js';
+import {
+  migrateTransportType,
+  type TransportType,
+} from './transportTypeDefs.js';
 import type { LatLon } from './types/common.js';
 import type { TrackedDevice } from './types/trackingTypes.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -229,7 +235,7 @@ export function handleLocationChange(store: MyStore): void {
           routePlannerSetParams({
             points: latLons as unknown as RoutePoint[],
             finishOnly: nextFinishOnly,
-            transportType: query['transport'],
+            transportType: migrateTransportType(query['transport']),
             mode:
               routeMode === 'trip' ||
               routeMode === 'roundtrip' ||
@@ -451,18 +457,18 @@ export function handleLocationChange(store: MyStore): void {
 
   handleGallery(getState, dispatch, query);
 
-  const customLayers = query['custom-layers'];
+  const customLayerDefs = query['custom-layers'];
 
   if (
-    typeof customLayers === 'string' &&
-    JSON.stringify(getState().map.customLayers) !== customLayers
+    typeof customLayerDefs === 'string' &&
+    JSON.stringify(getState().map.customLayers) !== customLayerDefs
   ) {
     const existingClsStrings = getState().map.customLayers.map((cl) =>
       JSON.stringify(cl),
     );
 
     try {
-      const newCls = assert<CustomLayerDef[]>(JSON.parse(customLayers)).filter(
+      const newCls = upgradeCustomLayerDefs(JSON.parse(customLayerDefs)).filter(
         (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
       );
 
@@ -488,12 +494,16 @@ export function handleLocationChange(store: MyStore): void {
 
   const { shading } = query;
 
+  const map = getState().map;
+
   if (
     shading &&
     !Array.isArray(shading) &&
-    (getState().map.overlays.includes('h') ||
-      getState().map.overlays.includes('z')) &&
-    shading !== serializeShading(getState().map.shading)
+    map.layers.some(
+      (layer) =>
+        integratedLayerDefMap[layer]?.technology === 'parametricShading',
+    ) &&
+    shading !== serializeShading(map.shading)
   ) {
     function toColor(color = '00000000') {
       try {

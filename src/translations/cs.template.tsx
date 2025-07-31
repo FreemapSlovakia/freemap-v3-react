@@ -110,6 +110,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Exportovat',
     success: 'Hotovo!',
     expiration: 'Expirace',
+    privacyPolicy: 'Zásady ochrany osobních údajů',
+    newOptionText: 'Přidat %value%',
+    deleteButtonText: 'Odebrat %value% ze seznamu',
   },
 
   selections: {
@@ -156,6 +159,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Vybrat na mapě',
       current: 'Tvá poloha',
       home: 'Domů',
+      point: 'Bod trasy',
     },
     transportType: {
       car: 'Auto',
@@ -212,6 +216,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při hledání trasy', err),
+    manual: 'Manuálně',
+    manualTooltip: 'Propojit následující segment přímou čarou',
   },
 
   mainMenu: {
@@ -403,6 +409,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       premium: 'Zařadit všechny mé fotky do prémiového obsahu',
       free: 'Zpřístupnit všechny mé fotky každému',
     },
+    showLegend: 'Zobrazit legendu zabarvení',
   },
 
   measurement: {
@@ -734,20 +741,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Interaktivní vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
-      A: 'Automapa (zastaraná)',
-      T: 'Turistická (zastaraná)',
-      C: 'Cyklomapa (zastaraná)',
-      K: 'Běžkárska (zastaraná)',
-      S: 'Z letadla',
-      Z: 'Ortofoto ČR+SR (Z letadla, CZ+SK)',
-      J: 'Stará Ortofotomozaika SR (Z letadla, SK)',
+      A: 'Automapa',
+      T: 'Turistická',
+      C: 'Cyklomapa',
+      K: 'Běžkárska',
+      S: 'Letecká',
+      Z: 'Letecká',
+      J1: 'Ortofotomozaika SR (1. cyklus)',
+      J2: 'Ortofotomozaika SR (2. cyklus)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Veřejná doprava (ÖPNV)',
       X: outdoorMap,
       i: 'Interaktivní vrstva',
       I: 'Fotografie',
-      l: 'Lesní cesty NLC (SK)',
+      l: 'Lesní cesty NLC',
       t: 'Turistické trasy',
       c: 'Cyklotrasy',
       s0: 'Strava (Vše)',
@@ -756,17 +763,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (Vodní aktivity)',
       s4: 'Strava (Zimní aktivity)',
       w: 'Wikipedia',
-      '4': 'Světlé stínování terénu (SK)',
-      '5': 'Stínování terénu (SK)',
-      '6': 'Stínování povrchu (SK)',
-      '7': 'Detailní stínování povrchu (SK)',
-      '8': 'Detailní stínování povrchu (CZ)',
+      '4': 'Světlé stínování terénu',
+      '5': 'Stínování terénu',
+      '6': 'Stínování povrchu',
+      '7': 'Detailní stínování povrchu',
+      '8': 'Detailní stínování povrchu',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
-      h: ' Parametrické stínování (SK)',
-      z: ' Parametrické stínování (CZ)',
+      h: ' Parametrické stínování',
+      z: ' Parametrické stínování',
     },
     customBase: 'Vlastní mapa',
     customOverlay: 'Vlastní překrytí mapy',
@@ -776,10 +783,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photos: 'fotografie',
     },
     attr: {
-      freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0přispěvatelé OpenStreetMap',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'poskytovatelé DMR…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
@@ -799,6 +803,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Obecná nastavení',
     maxZoom: 'Maximální přiblížení',
+    showMore: 'Ukázat více map',
+    countryWarning: (countries) =>
+      `Pokrývá pouze tyto země: ${countries.join(', ')}`,
   },
 
   elevationChart: {
@@ -1074,8 +1081,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   maps: {
-    legacyMapWarning:
-      'Zobrazená mapa je zastaralá. Přepnout na moderní outdoorovou mapu?',
+    legacy: 'zastaralá',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaralá.
+        Přepnout na moderní <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'Žádná mapa nenalezena',
     save: 'Uložit',
     delete: 'Smazat',
@@ -1105,6 +1117,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Editori',
     conflictError: 'Mapa byla mezitím modifikována.',
+    addWriter: 'Přidat editora',
   },
 
   // check/improve translation

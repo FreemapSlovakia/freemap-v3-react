@@ -3,13 +3,7 @@ import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import missingTile from '../images/missing-tile-256x256.png';
 import { useMessages } from '../l10nInjector.js';
-import {
-  baseLayers,
-  CustomBaseLayerDef,
-  CustomOverlayLayerDef,
-  LayerDef,
-  overlayLayers,
-} from '../mapDefinitions.js';
+import { integratedLayerDefs, LayerDef } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { AsyncComponent } from './AsyncComponent.js';
 
@@ -22,9 +16,7 @@ const shadingLayerFactory = () =>
 const maplibreLayerFactory = () => import('./MaplibreLayer.js');
 
 export function Layers(): ReactElement | null {
-  const overlays = useAppSelector((state) => state.map.overlays);
-
-  const mapType = useAppSelector((state) => state.map.mapType);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
@@ -167,7 +159,7 @@ export function Layers(): ReactElement | null {
           cors={layerDef.cors ?? true}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
-          className={`fm-${'layer' in layerDef ? layerDef.layer : layerDef.type.startsWith('.') ? 'base' : 'overlay'}-layer`}
+          className={'fm-' + layerDef.layer}
         />
       );
     }
@@ -175,26 +167,17 @@ export function Layers(): ReactElement | null {
     return null;
   }
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
   return window.isRobot ? null : (
     <>
-      {baseLayers
-        .filter(({ type }) => type === mapType)
+      {integratedLayerDefs
+        .filter(({ type }) => layers.includes(type))
         .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
         .map((item) => getLayer(item))}
-      {customLayers
-        .filter((layer): layer is CustomBaseLayerDef => layer.type === mapType)
-        .map((cm) => getLayer({ ...cm, layer: 'base', technology: 'tile' }))}
-      {overlayLayers
-        .filter(({ type }) => overlays.includes(type))
-        .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
-        .map((item) => getLayer(item))}
-      {customLayers
-        .filter((layer): layer is CustomOverlayLayerDef =>
-          overlays.includes(layer.type as (typeof overlays)[number]),
-        )
-        .map((cm) => getLayer({ ...cm, layer: 'overlay', technology: 'tile' }))}
+      {customLayerDefs
+        .filter(({ type }) => layers.includes(type))
+        .map((cm) => getLayer({ ...cm, technology: 'tile' }))}
     </>
   );
 }

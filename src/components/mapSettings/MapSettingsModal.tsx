@@ -34,9 +34,13 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const initialCustomLayers = useAppSelector((state) => state.map.customLayers);
+  const initialCustomLayerDefs = useAppSelector(
+    (state) => state.map.customLayers,
+  );
 
-  const [customLayers, setCustomLayers] = useState(initialCustomLayers);
+  const [customLayerDefs, setCustomLayerDefs] = useState(
+    initialCustomLayerDefs,
+  );
 
   const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
 
@@ -54,13 +58,13 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         saveSettings({
           settings: {
             layersSettings,
-            customLayers,
+            customLayers: customLayerDefs,
             maxZoom: isNaN(maxZoomValue) ? 20 : maxZoomValue,
           },
         }),
       );
     },
-    [customLayers, dispatch, layersSettings, maxZoom],
+    [customLayerDefs, dispatch, layersSettings, maxZoom],
   );
 
   const handleMaxZoomChange = useCallback(
@@ -109,7 +113,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                 <MapLayersSettings
                   layersSettings={layersSettings}
                   setLayersSettings={setLayersSettings}
-                  customLayers={customLayers}
+                  customLayers={customLayerDefs}
                 />
               </Accordion.Body>
             </Accordion.Item>
@@ -119,8 +123,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
 
               <Accordion.Body>
                 <CustomMapsSettings
-                  value={customLayers}
-                  onChange={setCustomLayers}
+                  value={customLayerDefs}
+                  onChange={setCustomLayerDefs}
                 />
               </Accordion.Body>
             </Accordion.Item>
@@ -133,7 +137,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
             type="submit"
             disabled={
               (layersSettings === initLayersSettings &&
-                customLayers === initialCustomLayers &&
+                customLayerDefs === initialCustomLayerDefs &&
                 maxZoom === initialMaxZoom) ||
               invalidMaxZoom
             }

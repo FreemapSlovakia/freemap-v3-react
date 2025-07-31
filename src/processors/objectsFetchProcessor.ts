@@ -81,8 +81,6 @@ export const objectsFetchProcessor: Processor = {
 
     const b = (await mapPromise).getBounds();
 
-    const bb = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
-
     const query =
       '[out:json][timeout:15]; (' +
       ents
@@ -98,7 +96,7 @@ export const objectsFetchProcessor: Processor = {
                     : `["${key}"]`,
               )
               .join('') +
-            bb +
+            `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})` +
             ';',
         )
         .join('') +

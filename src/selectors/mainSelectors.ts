@@ -8,8 +8,8 @@ import { Track } from '../types/trackingTypes.js';
 
 export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 
-export const mapOverlaysSelector = (state: RootState): string[] =>
-  state.map.overlays;
+export const mapLayersSelector = (state: RootState): string[] =>
+  state.map.layers;
 
 export const selectingHomeLocationSelector = (state: RootState): boolean =>
   state.main.selectingHomeLocation !== false;
@@ -30,14 +30,14 @@ export const drawingLineSelector = (state: RootState): boolean =>
 
 export const showGalleryPickerSelector = createSelector(
   toolSelector,
-  mapOverlaysSelector,
+  mapLayersSelector,
   galleryPickingPositionForIdSelector,
   galleryShowPositionSelector,
   selectingHomeLocationSelector,
   drawingLineSelector,
   (
     tool,
-    mapOverlays,
+    layers,
     galleryPickingPositionForId,
     galleryShowPosition,
     selectingHomeLocation,
@@ -45,7 +45,7 @@ export const showGalleryPickerSelector = createSelector(
   ) =>
     (!tool ||
       ['photos', 'track-viewer', 'objects', 'changesets'].includes(tool)) &&
-    mapOverlays.includes('I') &&
+    layers.includes('I') &&
     galleryPickingPositionForId === null &&
     !galleryShowPosition &&
     !selectingHomeLocation &&

@@ -3,30 +3,26 @@ import { useDispatch } from 'react-redux';
 import { documentShow } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
-import {
-  AttributionDef,
-  baseLayers,
-  overlayLayers,
-} from '../mapDefinitions.js';
+import { AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 
 const PREFIX = '?document=';
 
 export function Attribution({ unknown }: Props): ReactElement {
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const overlays = useAppSelector((state) => state.map.overlays);
+  const layers = useAppSelector((state) => state.map.layers);
 
   const m = useMessages();
 
+  const countries = useAppSelector((state) => state.map.countries);
+
   const categorized = categorize(
-    [
-      ...baseLayers.filter(({ type }) => mapType === type),
-      ...overlayLayers.filter(({ type }) =>
-        (overlays as string[]).includes(type),
+    integratedLayerDefs
+      .filter(({ type }) => layers.includes(type))
+      .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[])
+      .filter(
+        (def) => !countries || !def.country || countries.includes(def.country),
       ),
-    ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);

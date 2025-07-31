@@ -12,23 +12,36 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
+import {
+  FaDownload,
+  FaDrawPolygon,
+  FaEye,
+  FaHistory,
+  FaTimes,
+} from 'react-icons/fa';
+import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { authInit } from '../actions/authActions.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
-import { useMap } from '../hooks/useMap.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 import {
-  baseLayers,
   IntegratedLayerDef,
+  integratedLayerDefs,
   IsTileLayerDef,
-  overlayLayers,
 } from '../mapDefinitions.js';
 import { isInvalidInt } from '../numberValidator.js';
 import { CreditsAlert } from './CredistAlert.js';
+import { countryCodeToFlag, Emoji } from './Emoji.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
@@ -46,8 +59,6 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   }, [dispatch]);
 
   const user = useAppSelector((state) => state.auth.user);
-
-  const activeMapType = useAppSelector((state) => state.map.mapType);
 
   const [name, setName] = useState('');
 
@@ -72,24 +83,21 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const mapDefs = useMemo(
     () =>
-      [baseLayers, overlayLayers].flatMap((layers) =>
-        layers
-          .filter(
-            (
-              def,
-            ): def is IntegratedLayerDef<
-              IsTileLayerDef & {
-                creditsPerMTile: number;
-                technology: 'tile';
-              }
-            > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
-          )
-          .map((layer) => ({
-            ...layer,
-            overlay: layers === overlayLayers,
-            url: layer.url.startsWith('//') ? 'http:' + layer.url : layer.url,
-          })),
-      ),
+      integratedLayerDefs
+        .filter(
+          (
+            def,
+          ): def is IntegratedLayerDef<
+            IsTileLayerDef & {
+              creditsPerMTile: number;
+            }
+          > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
+        )
+        .map((layer) => ({
+          ...layer,
+          overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
+          url: layer.url.startsWith('//') ? 'http:' + layer.url : layer.url,
+        })),
     [],
   );
 
@@ -103,6 +111,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   //       minZoom: mapDef.minZoom,
   //       maxNativeZoom: mapDef.maxNativeZoom,
   //       creditsPerMTile: mapDef.creditsPerMTile,
+  //       layer: mapDef.layer,
   //       attribution: mapDef.attribution
   //         .map(
   //           (a) =>
@@ -115,8 +124,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   //   ),
   // );
 
+  const layers = useAppSelector((state) => state.map.layers);
+
   const [mapType, setMapType] = useState(
-    mapDefs.find((mapDef) => mapDef.type === activeMapType)?.type ?? 'X',
+    mapDefs.find(
+      (mapDef) => mapDef.creditsPerMTile && layers.includes(mapDef.type),
+    )?.type ?? 'X',
   );
 
   const [format, setFormat] = useState('mbtiles');
@@ -138,9 +151,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     setMaxZoom(String(mapDef.maxNativeZoom));
   }, [mapDef]);
 
-  const map = useMap();
-
-  const boundingBox = map?.getBounds().toBBoxString();
+  const bounds = useAppSelector((state) => state.map.bounds);
 
   const tileCount = useMemo(() => {
     if (selectedLine?.type === 'polygon' && area === 'selected') {
@@ -171,10 +182,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       return count;
     }
 
-    if (area === 'visible' && boundingBox) {
+    if (area === 'visible' && bounds) {
       let count = 0;
-
-      const bounds = boundingBox.split(',').map(Number);
 
       for (let zoom = Number(minZoom); zoom <= Number(maxZoom); zoom++) {
         const from = pointToTile(bounds[0], bounds[1], zoom);
@@ -191,7 +200,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     selectedLine?.type,
     selectedLine?.points,
     area,
-    boundingBox,
+    bounds,
     minZoom,
     maxZoom,
   ]);
@@ -239,7 +248,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                     [selectedLine.points[0].lon, selectedLine.points[0].lat],
                   ],
                 ])
-              : bboxPolygon(boundingBox!.split(',').map(Number) as BBox),
+              : bboxPolygon(bounds as BBox),
         }),
       );
     },
@@ -255,7 +264,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       selectedLine?.type,
       selectedLine?.points,
       area,
-      boundingBox,
+      bounds,
     ],
   );
 
@@ -280,6 +289,37 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       name && nameChanged ? name : (m?.mapLayers.letters[mapType] ?? ''),
     );
   }, [m, mapType, nameChanged]);
+
+  function getItem(def: IntegratedLayerDef) {
+    return (
+      <>
+        {def.layer === 'base' ? (
+          <TbLayersSelected className="opacity-50" />
+        ) : (
+          <TbLayersSelectedBottom className="opacity-50" />
+        )}
+
+        <span className="px-2">{def.icon}</span>
+
+        {m?.mapLayers.letters[def.type]}
+
+        {def.type !== 'X' &&
+          def.countries?.map((country) => (
+            <Emoji className="ms-1" key="country">
+              {countryCodeToFlag(country)}
+            </Emoji>
+          ))}
+
+        {def.superseededBy && (
+          <FaHistory className="text-warning ms-1" title={m?.maps.legacy} />
+        )}
+
+        {def.experimental && (
+          <ExperimentalFunction data-interactive="1" className="ms-1" />
+        )}
+      </>
+    );
+  }
 
   return (
     <Modal show={show} onHide={close}>
@@ -390,17 +430,19 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <Form.Group controlId="mapType">
             <Form.Label>{m?.downloadMap.map}</Form.Label>
 
-            <Form.Select
-              className="mb-3"
-              value={mapType}
-              onChange={(e) => setMapType(e.currentTarget.value as 'X')}
-            >
-              {mapDefs.map((layer) => (
-                <option key={layer.type} value={layer.type}>
-                  {m?.mapLayers.letters[layer.type]}
-                </option>
-              ))}
-            </Form.Select>
+            <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
+              <Dropdown.Toggle className="text-start w-100">
+                {mapDef ? getItem(mapDef) : '???'}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {mapDefs.map((def) => (
+                  <Dropdown.Item key={def.type} eventKey={def.type}>
+                    {getItem(def)}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </Form.Group>
 
           <Form.Group controlId="downloadArea">

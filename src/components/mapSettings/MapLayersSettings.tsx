@@ -1,19 +1,11 @@
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
-import { FaEllipsisH, FaEye, FaRegListAlt } from 'react-icons/fa';
+import { FaEllipsisH, FaEye, FaHistory, FaRegListAlt } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
-import {
-  BaseLayerLetters,
-  baseLayers,
-  CustomLayerDef,
-  defaultMenuLayerLetters,
-  defaultToolbarLayerLetters,
-  IntegratedLayerLetters,
-  overlayLayers,
-  OverlayLetters,
-} from '../../mapDefinitions.js';
+import { CustomLayerDef, integratedLayerDefs } from '../../mapDefinitions.js';
+import { countryCodeToFlag, Emoji } from '../Emoji.js';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;
@@ -28,12 +20,12 @@ export function MapLayersSettings({
 }: Props): ReactElement {
   const m = useMessages();
 
-  function getName(type: BaseLayerLetters | OverlayLetters) {
+  function getName(type: string) {
     return type.startsWith('.')
       ? m?.mapLayers.customBase + ' ' + type.slice(1)
       : type.startsWith(':')
         ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-        : m?.mapLayers.letters[type as IntegratedLayerLetters];
+        : m?.mapLayers.letters[type];
   }
 
   const [activeType, setActiveType] = useState('');
@@ -61,28 +53,18 @@ export function MapLayersSettings({
     </Popover>
   );
 
-  const bases = [
-    ...baseLayers,
-    ...customLayers
-      .filter((cl) => cl.type.startsWith('.'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), false] as const,
-      })),
-  ];
-
-  const ovls = [
-    ...overlayLayers,
-    ...customLayers
-      .filter((cl) => cl.type.startsWith(':'))
-      .map((cl) => ({
-        ...cl,
-        adminOnly: false,
-        icon: <MdDashboardCustomize />,
-        key: ['Digit' + cl.type.slice(1), true] as const,
-      })),
+  const layerDefs = [
+    ...integratedLayerDefs,
+    ...customLayers.map((cl) => ({
+      ...cl,
+      countries: [],
+      adminOnly: false,
+      icon: <MdDashboardCustomize />,
+      key: ['Digit' + cl.type.slice(1), false] as const,
+      defaultInToolbar: false,
+      defaultInMenu: false,
+      superseededBy: undefined,
+    })),
   ];
 
   return (
@@ -104,75 +86,95 @@ export function MapLayersSettings({
       </thead>
 
       <tbody>
-        {[...bases, ...ovls].map(({ icon, type }, i) => (
-          <tr key={type}>
-            <td>{icon}</td>
+        {layerDefs.map(
+          ({
+            icon,
+            type,
+            layer,
+            countries,
+            defaultInToolbar,
+            defaultInMenu,
+            superseededBy,
+          }) => (
+            <tr key={type}>
+              <td>{icon}</td>
 
-            <td>{getName(type)}</td>
+              <td>
+                {getName(type)}
 
-            <td>
-              <Form.Check
-                checked={
-                  layersSettings[type]?.showInToolbar ??
-                  defaultToolbarLayerLetters.includes(type) ??
-                  false
-                }
-                onChange={(e) =>
-                  setLayersSettings({
-                    ...layersSettings,
-                    [type]: {
-                      ...(layersSettings[type] ?? {}),
-                      showInToolbar: e.currentTarget.checked,
-                    },
-                  })
-                }
-              />
-            </td>
+                {superseededBy && (
+                  <FaHistory
+                    className="text-warning ms-1"
+                    title={m?.maps.legacy}
+                  />
+                )}
 
-            <td>
-              <Form.Check
-                checked={
-                  layersSettings[type]?.showInMenu ??
-                  defaultMenuLayerLetters.includes(type) ??
-                  false
-                }
-                onChange={(e) =>
-                  setLayersSettings({
-                    ...layersSettings,
-                    [type]: {
-                      ...(layersSettings[type] ?? {}),
-                      showInMenu: e.currentTarget.checked,
-                    },
-                  })
-                }
-              />
-            </td>
+                {type !== 'X' &&
+                  countries?.map((country) => (
+                    <Emoji className="ms-1" key="country">
+                      {countryCodeToFlag(country)}
+                    </Emoji>
+                  ))}
+              </td>
 
-            <td>
-              {i >= bases.length && (
-                <div>
-                  <OverlayTrigger
-                    trigger="click"
-                    placement="left"
-                    overlay={popover}
-                    rootClose
-                  >
-                    <div className="fm-opacity-button">
-                      <button
-                        type="button"
-                        style={{
-                          opacity:
-                            (layersSettings[type]?.opacity ?? 1) * 100 + '%',
-                        }}
-                        onClick={() => setActiveType(type)}
-                      />
-                    </div>
-                  </OverlayTrigger>
-                </div>
-              )}
-            </td>
-          </tr>
-        ))}
+              <td>
+                <Form.Check
+                  checked={
+                    layersSettings[type]?.showInToolbar ?? !!defaultInToolbar
+                  }
+                  onChange={(e) =>
+                    setLayersSettings({
+                      ...layersSettings,
+                      [type]: {
+                        ...(layersSettings[type] ?? {}),
+                        showInToolbar: e.currentTarget.checked,
+                      },
+                    })
+                  }
+                />
+              </td>
+
+              <td>
+                <Form.Check
+                  checked={layersSettings[type]?.showInMenu ?? !!defaultInMenu}
+                  onChange={(e) =>
+                    setLayersSettings({
+                      ...layersSettings,
+                      [type]: {
+                        ...(layersSettings[type] ?? {}),
+                        showInMenu: e.currentTarget.checked,
+                      },
+                    })
+                  }
+                />
+              </td>
+
+              <td>
+                {layer === 'overlay' && (
+                  <div>
+                    <OverlayTrigger
+                      trigger="click"
+                      placement="left"
+                      overlay={popover}
+                      rootClose
+                    >
+                      <div className="fm-opacity-button">
+                        <button
+                          type="button"
+                          style={{
+                            opacity:
+                              (layersSettings[type]?.opacity ?? 1) * 100 + '%',
+                          }}
+                          onClick={() => setActiveType(type)}
+                        />
+                      </div>
+                    </OverlayTrigger>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ),
+        )}
       </tbody>
     </Table>
   );

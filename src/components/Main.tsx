@@ -44,6 +44,7 @@ import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
 import { useMessages } from '../l10nInjector.js';
 import { setMapLeafletElement } from '../leafletElementHolder.js';
+import { integratedLayerDefMap } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import {
   showGalleryPickerSelector,
@@ -162,12 +163,7 @@ export function Main(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const mapType = useAppSelector((state) => state.map.mapType);
-
-  const hasParamShading = useAppSelector(
-    (state) =>
-      state.map.overlays.includes('h') || state.map.overlays.includes('z'),
-  );
+  const layers = useAppSelector((state) => state.map.layers);
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
@@ -203,11 +199,11 @@ export function Main(): ReactElement {
   );
 
   const showResults = useAppSelector(
-    (state) => !state.map.overlays.includes('i'),
+    (state) => !state.map.layers.includes('i'),
   );
 
   const showPictures = useAppSelector((state) =>
-    state.map.overlays.includes('I'),
+    state.map.layers.includes('I'),
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -221,50 +217,6 @@ export function Main(): ReactElement {
   }, [dispatch, map]);
 
   useMouseCursor(map?.getContainer());
-
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    const m = map;
-
-    let t: number | undefined;
-
-    function handleMapMoveEnd() {
-      if (t) {
-        window.clearTimeout(t);
-      }
-
-      t = window.setTimeout(() => {
-        const { lat: newLat, lng: newLon } = m.getCenter();
-
-        const newZoom = m.getZoom();
-
-        const delta = 5 / Math.pow(2, zoom);
-
-        if (
-          zoom !== newZoom ||
-          newLat - delta > lat ||
-          newLat + delta < lat ||
-          newLon - delta > lon ||
-          newLon + delta < lon
-        ) {
-          dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
-        }
-      }, 250);
-    }
-
-    m.on('moveend', handleMapMoveEnd);
-
-    return () => {
-      m.off('moveend', handleMapMoveEnd);
-
-      if (t) {
-        window.clearTimeout(t);
-      }
-    };
-  }, [dispatch, lat, lon, map, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (window.fmEmbedded) {
@@ -571,7 +523,11 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
-              {hasParamShading && (
+              {layers.some(
+                (layer) =>
+                  integratedLayerDefMap[layer]?.technology ===
+                  'parametricShading',
+              ) && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
                   <AsyncComponent factory={shadingControlFactory} />
                 </div>
@@ -607,7 +563,7 @@ export function Main(): ReactElement {
 
         <input {...getInputProps()} />
 
-        {mapType[0] === 'V' && (
+        {layers.some((layer) => layer[0] === 'V') && (
           <a
             href="https://www.maptiler.com"
             className="watermark"
@@ -711,7 +667,7 @@ export function Main(): ReactElement {
         factory={supportUsModalFactory}
       />
 
-      {mapType === 'X' ? (
+      {layers.includes('X') ? (
         <AsyncModal
           show={activeModal === 'legend'}
           factory={legendOutdoorModalFactory}

@@ -1,6 +1,7 @@
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import type { GalleryColorizeBy } from './actions/galleryActions.js';
+import { upgradeCustomLayerDefs } from './mapDefinitions.js';
 import {
   authInitialState,
   authReducer,
@@ -52,7 +53,10 @@ import {
 import { websocketReducer } from './reducers/websocketReducer.js';
 import { wikiReducer } from './reducers/wikiReducer.js';
 import type { RootState } from './store.js';
-import { transportTypeDefs } from './transportTypeDefs.js';
+import {
+  migrateTransportType,
+  transportTypeDefs,
+} from './transportTypeDefs.js';
 import { StringDates } from './types/common.js';
 
 export const reducers = {
@@ -88,6 +92,23 @@ export function getInitialState() {
 
   const initial: Partial<RootState> = {};
 
+  if (is<{ mapType: string; overlays: string[] }>(persisted.map)) {
+    (persisted.map as unknown as { layers: string[] }).layers = [
+      persisted.map.mapType,
+      ...persisted.map.overlays,
+    ];
+  }
+
+  if (!is<{ customLayers: unknown }>(persisted.map)) {
+    // nothing
+  } else if (is<{ customLayers: unknown[] }>(persisted.map)) {
+    persisted.map.customLayers = upgradeCustomLayerDefs(
+      persisted.map.customLayers,
+    );
+  } else {
+    delete persisted.map.customLayers;
+  }
+
   if (is<Partial<MapState>>(persisted.map)) {
     initial.map = { ...mapInitialState, ...persisted.map };
   }
@@ -118,6 +139,12 @@ export function getInitialState() {
 
   if (is<Partial<ObjectsState>>(persisted.objects)) {
     initial.objects = { ...objectInitialState, ...persisted.objects };
+  }
+
+  if (is<{ transportType: unknown }>(persisted.routePlanner)) {
+    persisted.routePlanner.transportType = migrateTransportType(
+      persisted.routePlanner.transportType,
+    );
   }
 
   if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {

@@ -18,6 +18,7 @@ import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler.js'
 import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { handleLocationChange } from './locationChangeHandler.js';
+import { attachMapStateHandler } from './mapStateHandler.js';
 import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
 import { createReduxStore } from './store.js';
 import './styles/index.scss';
@@ -67,6 +68,8 @@ handleLocationChange(store);
 attachOsmLoginMessageHandler(store);
 
 attachGarminLoginMessageHandler(store);
+
+attachMapStateHandler(store);
 
 store.dispatch(enableUpdatingUrl());
 

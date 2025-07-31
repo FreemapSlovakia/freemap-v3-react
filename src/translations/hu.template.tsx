@@ -64,10 +64,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     loading: 'Töltés…',
     ok: 'OK',
     preventShowingAgain: 'Következő alkalommal ne jelenjék meg',
-
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
-
     back: 'Vissza',
     internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
     processorError: ({ err }) => addError(messages, 'Alkalmazáshiba', err),
@@ -79,10 +77,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
-
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
-
     copyUrl: 'URL másolása',
     copyPageUrl: 'Oldal URL-jének másolása',
     savingError: ({ err }) => addError(messages, 'Mentési hiba', err),
@@ -91,44 +87,31 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
-
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
-
     export: 'Exportálás',
     expiration: 'Lejárat',
     modifiedAt: 'Módosítva',
-
     operationError: ({ err }) => addError(messages, 'Műveleti hiba', err),
-
     copyOk: 'Vágólapra másolva.',
-
     noCookies: 'Ez a funkció a sütik elfogadását igényli.',
-
     name: 'Név',
-
     load: 'Betöltés',
-
     unnamed: 'Névtelen',
-
     componentLoadingError:
       'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
-
     offline: 'Nincs internetkapcsolatod.',
-
     connectionError: 'Hiba a szerverhez való csatlakozáskor.',
-
     experimentalFunction: 'Kísérleti funkció',
-
     attribution: () => (
       <Attribution unknown="A térkép licence nincs megadva." />
     ),
-
     unauthenticatedError: 'A funkció használatához előbb jelentkezz be.',
-
     areYouSure: 'Biztos vagy benne?',
-
     success: 'Kész!',
+    privacyPolicy: 'Adatvédelmi irányelvek',
+    newOptionText: '%value% hozzáadása',
+    deleteButtonText: '%value% eltávolítása a listáról',
   },
 
   selections: {
@@ -177,6 +160,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pick: 'Kijelölés a térképen',
       current: 'Az Ön pozíciója',
       home: 'Lakhely',
+      point: 'Útpont',
     },
     transportType: {
       car: 'Gépkocsi',
@@ -232,6 +216,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt az útvonaltervezésnél', err),
+    manual: 'Kézi',
+    manualTooltip: 'A következő szakasz összekötése egyenes vonallal',
   },
 
   mainMenu: {
@@ -393,6 +379,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Előnézet automatikus megjelenítése (több processzorteljesítményt és memóriát használ)',
       premium:
         'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
+      loadPreview: 'Előnézet betöltése',
     },
 
     locationPicking: {
@@ -446,6 +433,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noPicturesFound: 'Ezen a helyen nem találhatók fotók.',
     linkToWww: 'fotó a www.freemap.sk oldalon',
     linkToImage: 'fotófájl',
+    showLegend: 'Színezési jelmagyarázat megjelenítése',
   },
 
   measurement: {
@@ -795,20 +783,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
 
     letters: {
-      A: 'Autó (elavult)',
-      T: 'Túrázás (elavult)',
-      C: 'Kerékpározás (elavult)',
-      K: 'Síelés (elavult)',
+      A: 'Autó',
+      T: 'Túrázás',
+      C: 'Kerékpározás',
+      K: 'Síelés',
       S: 'Légifelvétel',
-      Z: 'Ortofotó (Szlovákia)',
-      J: 'Régi Ortofotó (Szlovákia)',
+      Z: 'Légifelvétel',
+      J1: 'Ortofotomozaika SR (1. ciklus)',
+      J2: 'Ortofotomozaika SR (2. ciklus)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Tömegközlekedés',
       X: outdoorMap,
       i: 'Interaktív réteg',
       I: 'Fényképek',
-      l: 'Erdészeti utak (Szlovákia)',
+      l: 'Erdészeti utak',
       t: 'Turistautak',
       c: 'Kerékpáros útvonalak',
       s0: 'Strava (minden)',
@@ -817,19 +805,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
-      '4': 'Világos domborzatárnyékolás (SK)',
-      '5': 'Domborzatárnyékolás (SK)',
-      '6': 'Felszínárnyékolás (SK)',
-      '7': 'Részletes felszínárnyékolás (SK)',
-      '8': 'Részletes felszínárnyékolás (CZ)',
+      '4': 'Világos domborzatárnyékolás',
+      '5': 'Domborzatárnyékolás',
+      '6': 'Felszínárnyékolás',
+      '7': 'Részletes felszínárnyékolás',
+      '8': 'Részletes felszínárnyékolás',
 
       VO: 'OpenStreetMap vektoros',
       VS: 'Utcák vektoros',
       VD: 'Dataviz vektoros',
       VT: 'Outdoor vektoros',
 
-      h: 'Paraméteres árnyékolás (SK)',
-      z: 'Paraméteres árnyékolás (CZ)',
+      h: 'Paraméteres árnyékolás',
+      z: 'Paraméteres árnyékolás',
     },
 
     type: {
@@ -839,10 +827,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     attr: {
-      freemap: '©\xa0Freemap Szlovákia',
       osmData: '©\xa0OpenStreetMap közreműködők',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'DMR szolgáltatók…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorcsempék innen:"
@@ -854,7 +839,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Térkép beállítások',
     switch: 'Térképek',
     interactiveLayerWarning: 'Az interaktív réteg rejtve van',
-    layerSettings: 'Mapové vrstvy',
     customBase: 'Egyéni térkép',
     customOverlay: 'Egyéni térképátfedés',
     customMaps: 'Egyéni térképek',
@@ -868,6 +852,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-index',
     generalSettings: 'Általános beállítások',
     maxZoom: 'Maximális nagyítás',
+    showMore: 'További térképek megjelenítése',
+    countryWarning: (countries) =>
+      `Csak a következő országokat fedi le: ${countries.join(', ')}`,
+    layerSettings: 'Térképrétegek',
   },
 
   elevationChart: {
@@ -1180,8 +1168,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saveError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép mentésekor', err),
 
-    legacyMapWarning:
-      'A megjelenített térkép elavult. Átváltasz a modern outdoor térképre?',
+    legacy: 'elavult',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        A megjelenített térkép <b>{messages.mapLayers.letters[from]}</b>{' '}
+        elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     disconnect: 'Leválasztás',
     loadToEmpty: 'Betöltés üres térképre',
     loadInclMapAndPosition:
@@ -1195,6 +1188,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     writers: 'Szerkesztők',
     conflictError: 'A térképet időközben módosították.',
+    addWriter: 'Szerkesztő hozzáadása',
   },
 
   mapCtxMenu: {

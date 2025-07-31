@@ -1,4 +1,3 @@
-import { CustomLayerDef, CustomLayerLetters } from 'mapDefinitions.js';
 import {
   ChangeEvent,
   ReactElement,
@@ -8,9 +7,10 @@ import {
 } from 'react';
 import { Form, Stack } from 'react-bootstrap';
 import { useMessages } from '../../l10nInjector.js';
+import { CustomLayerDef } from '../../mapDefinitions.js';
 
 type Props = {
-  type: CustomLayerLetters;
+  type: string;
   value?: CustomLayerDef;
   onChange: (value?: CustomLayerDef) => void;
 };
@@ -104,6 +104,8 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           ? undefined
           : {
               type,
+              layer: type.startsWith('.') ? 'base' : 'overlay',
+              technology: 'tile',
               url: model.url,
               minZoom,
               maxNativeZoom,

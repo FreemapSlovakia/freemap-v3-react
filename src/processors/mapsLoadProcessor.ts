@@ -1,4 +1,4 @@
-import { assert } from 'typia';
+import { assert, is } from 'typia';
 import { authLogout, authSetUser } from '../actions/authActions.js';
 import type { Line, Point } from '../actions/drawingLineActions.js';
 import {
@@ -8,7 +8,9 @@ import {
   mapsLoaded,
 } from '../actions/mapsActions.js';
 import { httpRequest } from '../httpRequest.js';
+import { CustomLayerDef, upgradeCustomLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
+import { migrateTransportType } from '../transportTypeDefs.js';
 import type { StringDates } from '../types/common.js';
 
 interface CompatLine {
@@ -69,13 +71,21 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
+    // backward compatibility
     try {
-      const { routePlanner } = data.data;
+      const { map } = data.data;
 
-      if (routePlanner.transportType === 'bike') {
-        routePlanner.transportType = 'bicycle_touring';
-      } else if (routePlanner.transportType.startsWith('car-')) {
-        routePlanner.transportType = 'car';
+      map.layers = [map.mapType, ...map.overlays];
+
+      delete map.mapType;
+      delete map.overlays;
+
+      if (map.customLayers) {
+        map.customLayers = upgradeCustomLayerDefs(map.customLayers);
+
+        if (!is<CustomLayerDef[]>(map.customLayers)) {
+          delete map.customLayers;
+        }
       }
     } catch {
       // ignore
@@ -94,6 +104,10 @@ export const mapsLoadProcessor: Processor = {
           .map((pt) => ({ ...pt, manual: pt.manual ?? false }));
 
         routePlanner.finishOnly = !!routePlanner.finish && !routePlanner.start;
+
+        routePlanner.transportType = migrateTransportType(
+          routePlanner.transportType,
+        );
 
         delete routePlanner.start;
         delete routePlanner.midpoints;
@@ -122,9 +136,7 @@ export const mapsLoadProcessor: Processor = {
       }
 
       if (loadMeta.ignoreLayers) {
-        delete mapData.map.mapType;
-
-        delete mapData.map.overlays;
+        delete mapData.map.layers;
 
         delete mapData.map.shading;
       }

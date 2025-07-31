@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import { GiHills, GiTreasureMap } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
+import { is } from 'typia';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
@@ -29,6 +30,7 @@ export interface AttributionDef {
     | 'maptiler'
     | 'outdoorShadingAttribution';
   url?: string;
+  country?: string;
 }
 
 const OSM_MAP_ATTR: AttributionDef = {
@@ -45,12 +47,14 @@ const OSM_DATA_ATTR: AttributionDef = {
 
 const FM_ATTR: AttributionDef = {
   type: 'map',
-  nameKey: 'freemap',
+  name: '©\xa0Freemap Slovakia',
+  url: 'https://www.freemap.sk',
 };
 
 const SRTM_ATTR: AttributionDef = {
   type: 'data',
-  nameKey: 'srtm',
+  name: 'SRTM1: USGS EarthExplorer',
+  url: 'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1',
 };
 
 const STRAVA_ATTR: AttributionDef = {
@@ -67,91 +71,6 @@ const NLC_ATTR: AttributionDef = {
 
 const LLS_URL = 'https://www.geoportal.sk/sk/udaje/lls-dmr/';
 
-export const defaultMenuLayerLetters = [
-  'T',
-  'C',
-  'S',
-  'Z',
-  'O',
-  'X',
-  'I',
-  'l',
-  's0',
-  's1',
-  's2',
-  's3',
-  's4',
-  'w',
-];
-
-export const defaultToolbarLayerLetters = ['X', 'O', 'Z', 'I'];
-
-export const baseLayerLetters = [
-  'A',
-  'T',
-  'C',
-  'K',
-  'S',
-  'Z',
-  'J',
-  'O',
-  'M',
-  'd',
-  'X',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  'VO',
-  'VS',
-  'VD',
-  'VT',
-  // 'H',
-] as const;
-
-export const overlayLetters = [
-  'i',
-  'I',
-  'l',
-  't',
-  'c',
-  's0',
-  's1',
-  's2',
-  's3',
-  's4',
-  'w',
-  'h',
-  'z',
-] as const;
-
-export type Num1digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-
-export type CustomBaseLayerLetters = `.${Num1digit}`;
-
-export type CustomOverlayLayerLetters = `:${Num1digit}`;
-
-export type CustomLayerLetters =
-  | CustomBaseLayerLetters
-  | CustomOverlayLayerLetters;
-
-export type IntegratedBaseLayerLetters = (typeof baseLayerLetters)[number];
-
-export type IntegratedOverlayLayerLetters = (typeof overlayLetters)[number];
-
-export type IntegratedLayerLetters =
-  | IntegratedBaseLayerLetters
-  | IntegratedOverlayLayerLetters;
-
-export type BaseLayerLetters =
-  | IntegratedBaseLayerLetters
-  | CustomBaseLayerLetters;
-
-export type OverlayLetters =
-  | IntegratedOverlayLayerLetters
-  | CustomOverlayLayerLetters;
-
 export type HasUrl = {
   url: string;
 };
@@ -167,10 +86,13 @@ type HasZIndex = {
 export type IsIntegratedLayerDef = {
   adminOnly?: boolean;
   icon: ReactElement;
-  key?: [code: string, shift: boolean];
+  kbd?: [code: string, shift: boolean];
   premiumFromZoom?: number;
   experimental?: boolean;
   attribution: AttributionDef[];
+  countries?: string[];
+  defaultInToolbar?: boolean;
+  defaultInMenu?: boolean;
 };
 
 export type HasScaleWithDpi = {
@@ -208,6 +130,7 @@ export type IsTileLayerDef = HasUrl &
   HasMaxNativeZoom &
   HasZIndex &
   HasScaleWithDpi & {
+    technology: 'tile';
     subdomains?: string | string[];
     tms?: boolean;
     extraScales?: number[];
@@ -215,28 +138,19 @@ export type IsTileLayerDef = HasUrl &
     cors?: boolean;
   };
 
-export type IsIntegratedBaseLayerDef = {
-  type: IntegratedBaseLayerLetters;
+export type IsBaseLayerDef = {
   layer: 'base';
+  type: string;
 };
 
-export type IsCustomBaseLayerDef = {
-  type: CustomBaseLayerLetters;
-};
-
-export type IsIntegratedOverlayLayerDef = {
-  type: IntegratedOverlayLayerLetters;
+export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
-};
-
-export type IsCustomOverlayLayerDef = {
-  type: CustomOverlayLayerLetters;
+  type: string;
 };
 
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
-      technology: 'tile';
     })
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
@@ -245,22 +159,26 @@ export type IsAllTechnologiesLayerDef =
   | IsWikipediaLayerDef;
 
 export type CustomBaseLayerDef = IsTileLayerDef &
-  IsCustomBaseLayerDef &
+  IsBaseLayerDef &
   IsCommonLayerDef;
 
 export type CustomOverlayLayerDef = IsTileLayerDef &
-  IsCustomOverlayLayerDef &
+  IsOverlayLayerDef &
   IsCommonLayerDef;
 
 export type CustomLayerDef = CustomBaseLayerDef | CustomOverlayLayerDef;
 
+export type HasLegacy = {
+  superseededBy?: string;
+};
+
 export type IntegratedBaseLayerDef<
   T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
-> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedBaseLayerDef;
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsBaseLayerDef & HasLegacy;
 
 export type IntegratedOverlayLayerDef<
   T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
-> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsIntegratedOverlayLayerDef;
+> = T & IsCommonLayerDef & IsIntegratedLayerDef & IsOverlayLayerDef & HasLegacy;
 
 export type IntegratedLayerDef<
   T extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
@@ -272,28 +190,51 @@ export type OverlayLayerDef = IntegratedOverlayLayerDef | CustomOverlayLayerDef;
 
 export type LayerDef = CustomLayerDef | IntegratedLayerDef;
 
+type OldCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'> & {
+  layer?: 'base' | 'overlay';
+  technology?: 'tile';
+};
+
+export function upgradeCustomLayerDefs(
+  customLayerDefs: unknown[],
+): CustomLayerDef[] {
+  return customLayerDefs
+    .filter((cl) => is<OldCustomLayerDef>(cl))
+    .map((cl) => ({
+      ...cl,
+      layer: cl.type.charAt(0) === ':' ? 'overlay' : 'base',
+      technology: 'tile',
+    }));
+}
+
 function legacyFreemap(
-  type: IntegratedBaseLayerLetters,
+  type: string,
   icon: ReactElement,
+  defaultInMenu?: boolean,
 ): IntegratedBaseLayerDef {
   return {
     technology: 'tile',
     layer: 'base',
     type,
+    defaultInMenu,
     icon,
     url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: ['Key' + type, false],
+    kbd: ['Key' + type, false],
     creditsPerMTile: 1000,
+    countries: ['sk'],
+    superseededBy: type === 'A' ? 'O' : 'X',
   };
 }
 
-export const baseLayers: IntegratedBaseLayerDef[] = [
+export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'X',
+    defaultInMenu: true,
+    defaultInToolbar: true,
     technology: 'tile',
     icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
@@ -303,53 +244,110 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       OSM_DATA_ATTR,
       {
         type: 'data',
-        nameKey: 'outdoorShadingAttribution',
-        url: '?document=outdoorShadingAttribution',
+        country: 'at',
+        name: 'ALS DTM: Digitales Geländemodell Österreich (Geoland.at open data)',
+        url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
+      },
+      {
+        type: 'data',
+        country: 'cz',
+        name: 'DMR 5G: ČÚZK Geoportál',
+        url: 'https://geoportal.cuzk.cz/(S(a21rqp1jhcnkz4iqcen2w50l))/Default.aspx?head_tab=sekce-02-gp&lng=EN&menu=302&metadataID=CZ-CUZK-DMR5G-V&mode=TextMeta&side=vyskopis',
+      },
+      {
+        type: 'data',
+        country: 'fr',
+        name: 'RGE ALTI: IGN (Etalab Open Licence)',
+        url: 'https://geoservices.ign.fr/rgealti',
+      },
+      {
+        type: 'data',
+        country: 'it',
+        name: 'Tinitaly DEM: INGV',
+        url: 'https://tinitaly.pi.ingv.it/',
+      },
+      {
+        type: 'data',
+        country: 'pl',
+        name: 'NMT: GUGiK',
+        url: 'https://www.geoportal.gov.pl/',
+      },
+      {
+        type: 'data',
+        country: 'sk',
+        name: 'DMR 5.0: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+      {
+        type: 'data',
+        country: 'si',
+        name: 'DMR: Ministrstvo za okolje in prostor',
+        url: 'https://gis.arso.gov.si/evode/profile.aspx?id=atlas_voda_Lidar@Arso',
+      },
+      {
+        type: 'data',
+        country: 'ch',
+        name: 'swissALTI3D: © swisstopo',
+        url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
       },
     ],
     minZoom: 6,
     maxNativeZoom: 19,
-    key: ['KeyX', false],
+    kbd: ['KeyX', false],
     premiumFromZoom: 19,
     creditsPerMTile: 5000,
+    countries: [
+      'al',
+      'at',
+      'ba',
+      'be', // partial
+      'bg',
+      'ch',
+      'cs',
+      'de', // partial
+      'fr',
+      'gr', // small part
+      'hr',
+      'hu',
+      'it',
+      'lu',
+      'me',
+      'mk',
+      'nl', // small part
+      'pl', // partial
+      'ro',
+      'rs',
+      'si',
+      'sk',
+      'sm',
+      'tr', // small part
+      'ua', // small part
+      'va',
+      'xk',
+    ],
   },
   legacyFreemap('A', <FaCar />),
-  legacyFreemap('T', <FaHiking />),
-  legacyFreemap('C', <FaBicycle />),
+  legacyFreemap('T', <FaHiking />, true),
+  legacyFreemap('C', <FaBicycle />, true),
   legacyFreemap('K', <FaSkiingNordic />),
   {
     layer: 'base',
     type: 'O',
+    defaultInToolbar: true,
+    defaultInMenu: true,
     technology: 'tile',
     icon: <SiOpenstreetmap />,
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 19,
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    key: ['KeyO', false],
-  },
-  {
-    layer: 'base',
-    type: 'S',
-    technology: 'tile',
-    url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    subdomains: ['server', 'services'],
-    icon: <FaPlane />,
-    minZoom: 0,
-    maxNativeZoom: 19,
-    scaleWithDpi: true,
-    key: ['KeyS', false],
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
-        url: 'https://www.esri.com/',
-      },
-    ],
+    kbd: ['KeyO', false],
   },
   {
     layer: 'base',
     type: 'Z',
+    defaultInToolbar: true,
+    defaultInMenu: true,
     technology: 'tile',
     url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
@@ -361,21 +359,45 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         type: 'map',
         name: '©\xa0GKÚ, NLC',
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+        country: 'sk',
       },
       {
         type: 'map',
         name: '©\xa0ČÚZK',
         url: 'https://geoportal.cuzk.cz/',
+        country: 'cz',
       },
     ],
-    key: ['KeyZ', false],
+    kbd: ['KeyZ', false],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
+    countries: ['sk', 'cz'],
   },
   {
     layer: 'base',
-    type: 'J',
+    type: 'S',
+    defaultInToolbar: true,
+    defaultInMenu: true,
+    technology: 'tile',
+    url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: ['server', 'services'],
+    icon: <FaPlane />,
+    minZoom: 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
+    kbd: ['KeyS', false],
+    attribution: [
+      {
+        type: 'map',
+        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
+        url: 'https://www.esri.com/',
+      },
+    ],
+  },
+  {
+    layer: 'base',
+    type: 'J1',
     technology: 'tile',
     url: 'https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
@@ -389,32 +411,36 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
       },
     ],
-    key: ['KeyZ', true],
     errorTileUrl: white1x1,
     creditsPerMTile: 1000,
+    countries: ['sk'],
+    superseededBy: 'Z',
   },
   {
     layer: 'base',
-    type: 'M',
+    type: 'J2',
     technology: 'tile',
-    url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
-    minZoom: 3,
-    maxNativeZoom: 18,
-    icon: <FaBicycle />,
+    url: 'https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minZoom: 0,
+    maxNativeZoom: 19,
+    scaleWithDpi: true,
+    icon: <FaPlane />,
     attribution: [
       {
         type: 'map',
-        name: '©\xa0Martin Tesař',
-        url: 'mailto:smmtb@gmail.com',
+        name: '©\xa0GKÚ, NLC',
+        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
       },
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
     ],
-    key: ['KeyQ', false],
+    errorTileUrl: white1x1,
+    creditsPerMTile: 1000,
+    countries: ['sk'],
+    superseededBy: 'Z',
   },
   {
     layer: 'base',
     type: 'd',
+    defaultInMenu: true,
     technology: 'tile',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
@@ -429,7 +455,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: ['KeyQ', false],
+    kbd: ['KeyQ', false],
   },
   {
     layer: 'base',
@@ -447,10 +473,11 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyD', true],
+    kbd: ['KeyD', true],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -468,11 +495,12 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyH', false],
+    kbd: ['KeyH', false],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -490,10 +518,11 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         url: 'https://geoportal.cuzk.cz/',
       },
     ],
-    key: ['KeyL', false],
+    kbd: ['KeyL', false],
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 16,
+    countries: ['cz'],
   },
   {
     layer: 'base',
@@ -511,10 +540,11 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyD', false],
+    kbd: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
   {
     layer: 'base',
@@ -532,17 +562,18 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    key: ['KeyF', false],
+    kbd: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
   {
     layer: 'base',
     type: 'VO',
     technology: 'maplibre',
     url: maptiler('openstreetmap'),
-    key: ['KeyV', false],
+    kbd: ['KeyV', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -555,9 +586,10 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
   {
     layer: 'base',
     type: 'VS',
+    defaultInMenu: true,
     technology: 'maplibre',
     url: maptiler('streets-v2'),
-    key: ['KeyR', false],
+    kbd: ['KeyR', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -572,7 +604,7 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
     type: 'VD',
     technology: 'maplibre',
     url: maptiler('dataviz-dark'),
-    key: ['KeyM', false],
+    kbd: ['KeyM', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -585,9 +617,10 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
   {
     layer: 'base',
     type: 'VT',
+    defaultInMenu: true,
     technology: 'maplibre',
     url: maptiler('outdoor-v2'),
-    key: ['KeyU', false],
+    kbd: ['KeyU', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -597,24 +630,23 @@ export const baseLayers: IntegratedBaseLayerDef[] = [
       },
     ],
   },
-];
-
-export const overlayLayers: IntegratedOverlayLayerDef[] = [
   {
     layer: 'overlay',
     type: 'i',
     technology: 'interactive',
     icon: <FaPencilAlt />,
-    key: ['KeyI', true],
+    kbd: ['KeyI', true],
     attribution: [],
   },
   {
     layer: 'overlay',
     type: 'I',
+    defaultInToolbar: true,
+    defaultInMenu: true,
     technology: 'gallery',
     icon: <FaCamera />,
     minZoom: 0,
-    key: ['KeyF', true],
+    kbd: ['KeyF', true],
     zIndex: 4,
     attribution: [
       {
@@ -626,10 +658,11 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
   {
     layer: 'overlay',
     type: 'w',
+    defaultInMenu: true,
     technology: 'wikipedia',
     icon: <FaWikipediaW />,
     minZoom: 8,
-    key: ['KeyW', true],
+    kbd: ['KeyW', true],
     zIndex: 4,
     attribution: [],
   },
@@ -641,7 +674,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     url: 'https://www.freemap.sk/tiles/parametric-shading/sk/{z}/{x}/{y}',
     // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <GiHills />,
-    key: ['KeyJ', true],
+    kbd: ['KeyJ', true],
     scaleWithDpi: true,
     maxNativeZoom: 19,
     attribution: [
@@ -655,6 +688,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     experimental: true,
     premiumFromZoom: 13,
     zIndex: 2,
+    countries: ['sk'],
   },
   {
     layer: 'overlay',
@@ -662,7 +696,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     technology: 'parametricShading',
     url: 'https://www.freemap.sk/tiles/parametric-shading/cz/{z}/{x}/{y}',
     icon: <GiHills />,
-    key: ['KeyK', true],
+    kbd: ['KeyK', true],
     scaleWithDpi: true,
     maxNativeZoom: 18,
     attribution: [
@@ -676,21 +710,24 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     experimental: true,
     premiumFromZoom: 13,
     zIndex: 2,
+    countries: ['cz'],
   },
   {
     layer: 'overlay',
     type: 'l',
+    defaultInMenu: true,
     technology: 'tile',
     icon: <FaTractor />,
     url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
-    key: ['KeyN', true],
+    kbd: ['KeyN', true],
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
   ...(
     [
@@ -705,13 +742,14 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
       ({
         layer: 'overlay' as const,
         type,
+        defaultInMenu: true,
         technology: 'tile' as const,
         icon: <FaStrava />,
         url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
         attribution: [STRAVA_ATTR],
         minZoom: 0,
         maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
-        key: (stravaType === 'all' ? ['KeyH', true] : undefined) as
+        kbd: (stravaType === 'all' ? ['KeyH', true] : undefined) as
           | [string, boolean]
           | undefined,
         zIndex: 3,
@@ -730,6 +768,7 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     maxNativeZoom: 16,
     zIndex: 3,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
   {
     layer: 'overlay',
@@ -742,9 +781,14 @@ export const overlayLayers: IntegratedOverlayLayerDef[] = [
     maxNativeZoom: 16,
     zIndex: 3,
     creditsPerMTile: 1000,
+    countries: ['sk'],
   },
 ];
 
 function maptiler(style: string) {
   return `https://api.maptiler.com/maps/${style}/style.json?key=KgKDGG75zYDIyCCTAG6L`;
 }
+
+export const integratedLayerDefMap = Object.fromEntries(
+  integratedLayerDefs.map((def) => [def.type, def]),
+);

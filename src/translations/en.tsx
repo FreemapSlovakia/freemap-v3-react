@@ -714,6 +714,7 @@ const messages: Messages = {
   },
 
   mapLayers: {
+    showMore: 'Show more maps',
     showAll: 'Show all maps',
     settings: 'Map settings',
     layers: 'Maps',
@@ -721,21 +722,23 @@ const messages: Messages = {
     photoFilterWarning: 'Photo filtering is active',
     interactiveLayerWarning: 'Interactive layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
+    countryWarning: (countries) =>
+      `Covers only following countries: ${countries.join(', ')}`,
     letters: {
-      A: 'Car (legacy)',
-      T: 'Hiking (legacy)',
-      C: 'Bicycle (legacy)',
-      K: 'Crosscountry Ski (legacy)',
+      A: 'Car',
+      T: 'Hiking',
+      C: 'Bicycle',
+      K: 'Crosscountry Ski',
       S: 'Aerial',
-      Z: 'Ortofoto ČR+SR (Aerial, CZ+SK)',
-      J: 'Old Ortofotomozaika SR (Aerial, SK)',
+      Z: 'Aerial',
+      J1: 'Ortofotomozaika SR (1st cycle)',
+      J2: 'Ortofotomozaika SR (2nd cycle)',
       O: 'OpenStreetMap',
-      M: 'mtbmap.cz',
       d: 'Public transport (ÖPNV)',
       X: outdoorMap,
       i: 'Interactive layer',
       I: 'Photos',
-      l: 'Forest tracks NLC (SK)',
+      l: 'Forest tracks NLC',
       t: 'Hiking trails',
       c: 'Bicycle trails',
       s0: 'Strava (all)',
@@ -744,17 +747,17 @@ const messages: Messages = {
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
-      '4': 'Light terrain shading (SK)',
-      '5': 'Terrain shading (SK)',
-      '6': 'Surface shading (SK)',
-      '7': 'Detailed surface shading (SK)',
-      '8': 'Detailed surface hillshading (CZ)',
+      '4': 'Light terrain shading',
+      '5': 'Terrain shading',
+      '6': 'Surface shading',
+      '7': 'Detailed surface shading',
+      '8': 'Detailed surface hillshading',
       VO: 'OpenStreetMap Vector',
       VS: 'Streets Vector',
       VD: 'Dataviz Vector',
       VT: 'Outdoor Vector',
-      h: 'Parametric shading (SK)',
-      z: 'Parametric shading (CZ)',
+      h: 'Parametric shading',
+      z: 'Parametric shading',
     },
     customBase: 'Custom map',
     customOverlay: 'Custom map overlay',
@@ -764,10 +767,7 @@ const messages: Messages = {
       photos: 'pictures',
     },
     attr: {
-      freemap: '©\xa0Freemap Slovakia',
       osmData: '©\xa0OpenStreetMap contributors',
-      srtm: '©\xa0SRTM',
-      outdoorShadingAttribution: 'DTM providers…',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vector tiles from"
@@ -1062,8 +1062,13 @@ const messages: Messages = {
   },
 
   maps: {
-    legacyMapWarning:
-      'Displayed map is a legacy one. Switch to modern outdoor map?',
+    legacy: 'legacy',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Displayed map <b>{messages.mapLayers.letters[from]}</b> is a legacy one.
+        Switch to modern <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
     noMapFound: 'No map found',
     save: 'Save',
     delete: 'Delete',

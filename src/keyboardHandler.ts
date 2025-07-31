@@ -21,13 +21,8 @@ import {
   setSelectingHomeLocation,
   setTool,
 } from './actions/mainActions.js';
-import { mapRefocus } from './actions/mapActions.js';
-import {
-  BaseLayerLetters,
-  baseLayers,
-  overlayLayers,
-  OverlayLetters,
-} from './mapDefinitions.js';
+import { mapToggleLayer } from './actions/mapActions.js';
+import { integratedLayerDefs } from './mapDefinitions.js';
 import { showGalleryViewerSelector } from './selectors/mainSelectors.js';
 import { MyStore, RootState } from './store.js';
 import { toolDefinitions } from './toolDefinitions.js';
@@ -152,52 +147,19 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     (!showingModal || suspendedModal) &&
     (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
   ) {
-    const baseLayer = baseLayers.find(
-      (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
+    const layerDef = integratedLayerDefs.find(
+      (def) =>
+        def.kbd && def.kbd[0] === event.code && def.kbd[1] === event.shiftKey,
     );
 
-    const baseLayerType = (
-      event.code.startsWith('Digit') && !event.shiftKey
-        ? '.' + event.code.slice(5)
-        : baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)
-          ? baseLayer.type
-          : null
-    ) as BaseLayerLetters;
+    const layerType = event.code.startsWith('Digit')
+      ? (event.shiftKey ? ':' : '.') + event.code.slice(5)
+      : layerDef && (!layerDef.adminOnly || state.auth.user?.isAdmin)
+        ? layerDef.type
+        : undefined;
 
-    if (
-      baseLayerType &&
-      (baseLayerType.charAt(0) !== '.' ||
-        state.map.customLayers.some(({ type }) => type === baseLayerType))
-    ) {
-      return mapRefocus({ mapType: baseLayerType });
-    }
-
-    const overlayLayer = overlayLayers.find(
-      (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
-    );
-
-    const overlayLayerType = (
-      event.code.startsWith('Digit') && event.shiftKey
-        ? ':' + event.code.slice(5)
-        : overlayLayer && (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
-          ? overlayLayer.type
-          : null
-    ) as OverlayLetters;
-
-    if (
-      overlayLayerType &&
-      (overlayLayerType.charAt(0) !== ':' ||
-        state.map.customLayers.some(({ type }) => type === overlayLayerType))
-    ) {
-      const next = new Set(state.map.overlays);
-
-      if (next.has(overlayLayerType)) {
-        next.delete(overlayLayerType);
-      } else {
-        next.add(overlayLayerType);
-      }
-
-      return mapRefocus({ overlays: [...next] });
+    if (layerType) {
+      return mapToggleLayer({ type: layerType });
     }
   }
 

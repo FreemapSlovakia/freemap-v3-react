@@ -1,17 +1,11 @@
-import { is } from 'typia';
 import { MapViewState } from './actions/mapActions.js';
-import {
-  BaseLayerLetters,
-  OverlayLetters,
-  overlayLetters,
-} from './mapDefinitions.js';
+import { integratedLayerDefMap } from './mapDefinitions.js';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getTrasformedParamsIfIsOldFreemapUrl,
 } from './oldFreemapUtils.js';
 
-export function getMapStateFromUrl(): Partial<MapViewState> &
-  Pick<MapViewState, 'overlays'> {
+export function getMapStateFromUrl(): Partial<MapViewState> {
   {
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
 
@@ -40,27 +34,27 @@ export function getMapStateFromUrl(): Partial<MapViewState> &
 
   const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
-  const layers = query.get('layers') ?? '';
+  let layersStr = query.get('layers');
 
-  let base = layers.charAt(0);
+  let layers: string[] | undefined;
 
-  const isTwoChar = base === '.' || base === 'V';
-
-  if (isTwoChar) {
-    base += layers.charAt(1);
-  }
-
-  const mapType = is<BaseLayerLetters>(base) ? base : undefined;
-
-  const ovl = layers.slice(isTwoChar ? 2 : 1);
-
-  const overlays: OverlayLetters[] = overlayLetters.filter((x) =>
-    ovl.includes(x),
+  const re = new RegExp(
+    '^(' + Object.keys(integratedLayerDefMap).join('|') + '|[.:]\\d)',
   );
 
-  overlays.push(...((ovl.match(/:\d+/g) ?? []) as OverlayLetters[]));
+  while (layersStr?.length) {
+    const m = re.exec(layersStr);
 
-  return { lat, lon, zoom, mapType, overlays };
+    if (!m) {
+      break;
+    }
+
+    (layers ??= []).push(m[1]);
+
+    layersStr = layersStr.slice(m[1].length);
+  }
+
+  return { lat, lon, zoom, layers };
 }
 
 function undefineNaN(val: number): number | undefined {
@@ -68,34 +62,30 @@ function undefineNaN(val: number): number | undefined {
 }
 
 export function getMapStateDiffFromUrl(
-  state1: Partial<MapViewState> & Pick<MapViewState, 'overlays'>,
+  state1: Partial<MapViewState>,
   state2: MapViewState,
 ): Partial<MapViewState> | null {
-  const { lat, lon, zoom, mapType, overlays = [] } = state1;
+  const { lat, lon, zoom, layers } = state1;
 
   const changes: Partial<MapViewState> = {};
 
-  if (mapType && mapType !== state2.mapType) {
-    changes.mapType = mapType;
-  }
+  if (layers && layers.join('') !== state2.layers.join('')) {
+    changes.layers = layers;
 
-  if (mapType && overlays.join('') !== state2.overlays.join('')) {
-    changes.overlays = overlays;
-
-    if (state2.overlays.includes('i')) {
-      changes.overlays.push('i');
+    if (state2.layers.includes('i')) {
+      changes.layers.push('i');
     }
   }
 
-  if (lat && Math.abs(lat - state2.lat) > 0.00001) {
+  if (lat !== undefined && Math.abs(lat - state2.lat) > 0.00001) {
     changes.lat = lat;
   }
 
-  if (lon && Math.abs(lon - state2.lon) > 0.00001) {
+  if (lon !== undefined && Math.abs(lon - state2.lon) > 0.00001) {
     changes.lon = lon;
   }
 
-  if (zoom && zoom !== state2.zoom) {
+  if (zoom !== undefined && zoom !== state2.zoom) {
     changes.zoom = zoom;
   }
 

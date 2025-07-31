@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -14,12 +14,18 @@ export function CopyrightButton(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const showLegendButton = useAppSelector((state) =>
-    (['sk', 'cs'].includes(state.l10n.language)
-      ? ['A', 'K', 'T', 'C', 'X', 'O']
-      : ['X', 'O']
-    ).includes(state.map.mapType),
+  const skCs = useAppSelector((state) =>
+    ['sk', 'cs'].includes(state.l10n.language),
   );
+
+  const layers = useAppSelector((state) => state.map.layers);
+
+  const legendLayers = useMemo(
+    () => new Set(skCs ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']),
+    [skCs],
+  );
+
+  const showLegendButton = layers.some((layer) => legendLayers.has(layer));
 
   const showAttribution = useAttributionInfo();
 
@@ -45,9 +51,7 @@ export function CopyrightButton(): ReactElement {
           <Dropdown.Item
             key="attribution"
             as="button"
-            onClick={() => {
-              showAttribution();
-            }}
+            onClick={() => showAttribution()}
           >
             <FaRegCopyright /> {m?.main.copyright}
           </Dropdown.Item>
