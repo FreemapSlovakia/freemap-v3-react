@@ -471,7 +471,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         ],
       };
 
-      alternatives[0].legs.splice(j, 0, leg);
+      alternatives[0].legs.splice(legIndex, 0, leg);
 
       legIndex += segment.points.length - 1;
     }
