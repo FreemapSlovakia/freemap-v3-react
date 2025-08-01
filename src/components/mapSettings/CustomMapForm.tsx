@@ -204,7 +204,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {/* Name */}
 
       <Form.Label
-        className="mt-3 d-flex align-items-end"
+        className="d-flex align-items-end"
         style={{ gridColumn: '1 / -1' }}
       >
         {m?.general.name}
@@ -296,7 +296,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
       {/* Layer */}
       <Form.Label className="mt-3 d-flex align-items-end">
-        {m?.mapLayers.layer}
+        {m?.mapLayers.layer.layer}
       </Form.Label>
 
       {/* Z-Index */}
@@ -310,8 +310,8 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       </Form.Label>
 
       <Form.Select value={model.layer} onChange={setLayer}>
-        <option value="base">Base</option>
-        <option value="overlay">Overlay</option>
+        <option value="base">{m?.mapLayers.layer.base}</option>
+        <option value="overlay">{m?.mapLayers.layer.overlay}</option>
       </Form.Select>
 
       <Form.Control

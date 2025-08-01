@@ -814,6 +814,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-indeks',
     generalSettings: 'Ustawienia ogólne',
     maxZoom: 'Maksymalne powiększenie',
+    layer: {
+      layer: 'Warstwa',
+      base: 'Podstawowa',
+      overlay: 'Nakładka',
+    },
     showMore: 'Pokaż więcej map',
     countryWarning: (countries) =>
       `Obejmuje tylko następujące kraje: ${countries.join(', ')}`,

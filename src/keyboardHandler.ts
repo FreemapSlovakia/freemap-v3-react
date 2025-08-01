@@ -219,6 +219,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         return setActiveModal('maps');
       }
 
+      if (event.code === 'KeyS') {
+        return setActiveModal('map-settings');
+      }
+
       const toolDefinition = toolDefinitions.find(
         (td) => td.kbd === event.code,
       );

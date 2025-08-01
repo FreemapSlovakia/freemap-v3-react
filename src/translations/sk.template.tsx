@@ -836,6 +836,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Všeobecné nastavenia',
     maxZoom: 'Maximálne priblíženie',
+    layer: {
+      layer: 'Vrstva',
+      base: 'Základná',
+      overlay: 'Prekryvná',
+    },
   },
 
   elevationChart: {

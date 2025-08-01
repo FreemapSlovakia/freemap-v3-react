@@ -59,7 +59,7 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
   return (
     <>
       {value.length > 0 && (
-        <Form.Select value={type} onChange={handleSetType} className="mb-2">
+        <Form.Select value={type} onChange={handleSetType} className="mb-3">
           {value.map((def) => (
             <option value={def.type} key={def.type}>
               {def.name || `{${def.type}}`}

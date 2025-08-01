@@ -418,7 +418,7 @@ export function MapSwitchButton(): ReactElement {
                 as="button"
                 eventKey="mapSettings"
               >
-                <FaCog /> {m?.mapLayers.settings}
+                <FaCog /> {m?.mapLayers.settings} <kbd>g</kbd> <kbd>s</kbd>
               </Dropdown.Item>
 
               {layersMemuItems('base')}

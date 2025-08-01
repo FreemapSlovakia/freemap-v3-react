@@ -783,7 +783,11 @@ const messages: Messages = {
     maxNativeZoom: 'Max Native Zoom',
     extraScales: 'Extra resolutions',
     scaleWithDpi: 'Scale with DPI',
-    layer: 'Layer',
+    layer: {
+      layer: 'Layer',
+      base: 'Base',
+      overlay: 'Overlay',
+    },
     zIndex: 'Z-Index',
     generalSettings: 'General settings',
     maxZoom: 'Max zoom',

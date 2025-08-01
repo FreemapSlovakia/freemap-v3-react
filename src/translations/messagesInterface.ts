@@ -579,7 +579,11 @@ export type Messages = {
     maxNativeZoom: string;
     extraScales: string;
     scaleWithDpi: string;
-    layer: string;
+    layer: {
+      layer: string;
+      base: string;
+      overlay: string;
+    };
     zIndex: string;
     generalSettings: string;
     maxZoom: string;

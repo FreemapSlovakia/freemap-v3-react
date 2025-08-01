@@ -851,6 +851,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-index',
     generalSettings: 'Általános beállítások',
     maxZoom: 'Maximális nagyítás',
+    layer: {
+      layer: 'Réteg',
+      base: 'Alap',
+      overlay: 'Átfedő',
+    },
     showMore: 'További térképek megjelenítése',
     countryWarning: (countries) =>
       `Csak a következő országokat fedi le: ${countries.join(', ')}`,
