@@ -43,7 +43,7 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
         </Form.Select>
       )}
 
-      <ButtonToolbar>
+      <ButtonToolbar className="justify-content-end">
         <Button
           variant="primary"
           onClick={() => {

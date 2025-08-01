@@ -575,12 +575,12 @@ export type Messages = {
     customMaps: string;
     base: string;
     overlay: string;
-    name: string;
     urlTemplate: string;
     minZoom: string;
     maxNativeZoom: string;
     extraScales: string;
     scaleWithDpi: string;
+    layer: string;
     zIndex: string;
     generalSettings: string;
     maxZoom: string;

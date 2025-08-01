@@ -830,7 +830,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
     urlTemplate: 'Šablóna URL',
-    minZoom: 'Minilálne priblíženie',
+    minZoom: 'Minimálne priblíženie',
     maxNativeZoom: 'Maximálne prirodzené priblíženie',
     extraScales: 'Extra rozlíšenia máp',
     scaleWithDpi: 'Škálovať s DPI',
