@@ -152,9 +152,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         def.kbd && def.kbd[0] === event.code && def.kbd[1] === event.shiftKey,
     );
 
-    const layerType = event.code.startsWith('Digit')
-      ? (event.shiftKey ? ':' : '.') + event.code.slice(5)
-      : layerDef && (!layerDef.adminOnly || state.auth.user?.isAdmin)
+    const layerType =
+      layerDef && (!layerDef.adminOnly || state.auth.user?.isAdmin)
         ? layerDef.type
         : undefined;
 
@@ -218,6 +217,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
       if (event.code === 'KeyM') {
         return setActiveModal('maps');
+      }
+
+      if (event.code === 'KeyS') {
+        return setActiveModal('map-settings');
       }
 
       const toolDefinition = toolDefinitions.find(

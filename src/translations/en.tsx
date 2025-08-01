@@ -760,7 +760,6 @@ const messages: Messages = {
       z: 'Parametric shading',
     },
     customBase: 'Custom map',
-    customOverlay: 'Custom map overlay',
     type: {
       map: 'map',
       data: 'data',
@@ -784,6 +783,11 @@ const messages: Messages = {
     maxNativeZoom: 'Max Native Zoom',
     extraScales: 'Extra resolutions',
     scaleWithDpi: 'Scale with DPI',
+    layer: {
+      layer: 'Layer',
+      base: 'Base',
+      overlay: 'Overlay',
+    },
     zIndex: 'Z-Index',
     generalSettings: 'General settings',
     maxZoom: 'Max zoom',

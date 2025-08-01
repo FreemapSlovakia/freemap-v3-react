@@ -20,12 +20,12 @@ export function MapLayersSettings({
 }: Props): ReactElement {
   const m = useMessages();
 
-  function getName(type: string) {
-    return type.startsWith('.')
-      ? m?.mapLayers.customBase + ' ' + type.slice(1)
-      : type.startsWith(':')
-        ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-        : m?.mapLayers.letters[type];
+  function getName(def: { type: string; custom: boolean; name?: string }) {
+    const { type } = def;
+
+    return def.custom
+      ? def.name || m?.mapLayers.customBase + ' ' + type
+      : (m?.mapLayers.letters[type] ?? '…');
   }
 
   const [activeType, setActiveType] = useState('');
@@ -54,16 +54,20 @@ export function MapLayersSettings({
   );
 
   const layerDefs = [
-    ...integratedLayerDefs,
-    ...customLayers.map((cl) => ({
-      ...cl,
+    ...integratedLayerDefs.map((def) => ({
+      ...def,
+      custom: false,
+      name: undefined,
+    })),
+    ...customLayers.map((def) => ({
+      ...def,
       countries: [],
       adminOnly: false,
       icon: <MdDashboardCustomize />,
-      key: ['Digit' + cl.type.slice(1), false] as const,
       defaultInToolbar: false,
       defaultInMenu: false,
       superseededBy: undefined,
+      custom: true,
     })),
   ];
 
@@ -84,25 +88,18 @@ export function MapLayersSettings({
           </th>
         </tr>
       </thead>
-
       <tbody>
-        {layerDefs.map(
-          ({
-            icon,
-            type,
-            layer,
-            countries,
-            defaultInToolbar,
-            defaultInMenu,
-            superseededBy,
-          }) => (
+        {layerDefs.map((def) => {
+          const { type } = def;
+
+          return (
             <tr key={type}>
-              <td>{icon}</td>
+              <td>{def.icon}</td>
 
               <td>
-                {getName(type)}
+                {getName(def)}
 
-                {superseededBy && (
+                {def.superseededBy && (
                   <FaHistory
                     className="text-warning ms-1"
                     title={m?.maps.legacy}
@@ -110,7 +107,7 @@ export function MapLayersSettings({
                 )}
 
                 {type !== 'X' &&
-                  countries?.map((country) => (
+                  def.countries?.map((country) => (
                     <Emoji className="ms-1" key={country}>
                       {countryCodeToFlag(country)}
                     </Emoji>
@@ -120,7 +117,8 @@ export function MapLayersSettings({
               <td>
                 <Form.Check
                   checked={
-                    layersSettings[type]?.showInToolbar ?? !!defaultInToolbar
+                    layersSettings[type]?.showInToolbar ??
+                    !!def.defaultInToolbar
                   }
                   onChange={(e) =>
                     setLayersSettings({
@@ -136,7 +134,9 @@ export function MapLayersSettings({
 
               <td>
                 <Form.Check
-                  checked={layersSettings[type]?.showInMenu ?? !!defaultInMenu}
+                  checked={
+                    layersSettings[type]?.showInMenu ?? !!def.defaultInMenu
+                  }
                   onChange={(e) =>
                     setLayersSettings({
                       ...layersSettings,
@@ -150,7 +150,7 @@ export function MapLayersSettings({
               </td>
 
               <td>
-                {layer === 'overlay' && (
+                {def.layer === 'overlay' && (
                   <div>
                     <OverlayTrigger
                       trigger="click"
@@ -173,8 +173,8 @@ export function MapLayersSettings({
                 )}
               </td>
             </tr>
-          ),
-        )}
+          );
+        })}
       </tbody>
     </Table>
   );

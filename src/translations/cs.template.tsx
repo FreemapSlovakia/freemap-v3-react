@@ -776,7 +776,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       z: ' Parametrické stínování',
     },
     customBase: 'Vlastní mapa',
-    customOverlay: 'Vlastní překrytí mapy',
     type: {
       map: 'mapa',
       data: 'data',
@@ -803,6 +802,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Obecná nastavení',
     maxZoom: 'Maximální přiblížení',
+    layer: {
+      layer: 'Vrstva',
+      base: 'Základní',
+      overlay: 'Překryvná',
+    },
     showMore: 'Ukázat více map',
     countryWarning: (countries) =>
       `Pokrývá pouze tyto země: ${countries.join(', ')}`,

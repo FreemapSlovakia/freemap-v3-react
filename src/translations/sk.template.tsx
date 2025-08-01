@@ -810,7 +810,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       z: 'Parametrické tieňovanie',
     },
     customBase: 'Vlastná mapa',
-    customOverlay: 'Vlastné prekrytie mapy',
     type: {
       map: 'mapa',
       data: 'dáta',
@@ -830,13 +829,18 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
     urlTemplate: 'Šablóna URL',
-    minZoom: 'Minilálne priblíženie',
+    minZoom: 'Minimálne priblíženie',
     maxNativeZoom: 'Maximálne prirodzené priblíženie',
     extraScales: 'Extra rozlíšenia máp',
     scaleWithDpi: 'Škálovať s DPI',
     zIndex: 'Z-Index',
     generalSettings: 'Všeobecné nastavenia',
     maxZoom: 'Maximálne priblíženie',
+    layer: {
+      layer: 'Vrstva',
+      base: 'Základná',
+      overlay: 'Prekryvná',
+    },
   },
 
   elevationChart: {

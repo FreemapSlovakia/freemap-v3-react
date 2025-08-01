@@ -803,7 +803,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Interaktywna warstwa jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     customBase: 'Własna mapa',
-    customOverlay: 'Własna nakładka mapy',
     customMaps: 'Mapy własne',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',
@@ -815,6 +814,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-indeks',
     generalSettings: 'Ustawienia ogólne',
     maxZoom: 'Maksymalne powiększenie',
+    layer: {
+      layer: 'Warstwa',
+      base: 'Podstawowa',
+      overlay: 'Nakładka',
+    },
     showMore: 'Pokaż więcej map',
     countryWarning: (countries) =>
       `Obejmuje tylko następujące kraje: ${countries.join(', ')}`,

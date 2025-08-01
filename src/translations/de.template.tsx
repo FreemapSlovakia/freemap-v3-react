@@ -830,7 +830,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Interaktive Ebene ist ausgeblendet',
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     customBase: 'Benutzerdefinierte Karte',
-    customOverlay: 'Benutzerdefiniertes Kartenoverlay',
     customMaps: 'Benutzerdefinierte Karten',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',
@@ -842,6 +841,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Allgemeine Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    layer: {
+      layer: 'Ebene',
+      base: 'Basis',
+      overlay: 'Overlay',
+    },
     showMore: 'Mehr Karten anzeigen',
     countryWarning: (countries) =>
       `Deckt nur folgende Länder ab: ${countries.join(', ')}`,

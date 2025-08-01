@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Form, Stack } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { useMessages } from '../../l10nInjector.js';
 import { CustomLayerDef } from '../../mapDefinitions.js';
 
@@ -16,9 +16,11 @@ type Props = {
 };
 
 type Model = {
+  name: string;
   url: string;
   minZoom: string;
   maxNativeZoom: string;
+  layer: 'base' | 'overlay';
   zIndex: string;
   scaleWithDpi: boolean;
   extraScales: string[];
@@ -28,6 +30,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   function valueToModel(value?: CustomLayerDef) {
     return {
       url: value?.url ?? '',
+      name: value?.name ?? '',
       minZoom: !value
         ? ''
         : value.minZoom === undefined
@@ -38,6 +41,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         : value.maxNativeZoom === undefined
           ? ''
           : value.maxNativeZoom.toString(),
+      layer: value?.layer ?? 'base',
       zIndex: !value
         ? ''
         : value.zIndex === undefined
@@ -58,12 +62,14 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     const newModel = valueToModel(value);
 
     setModel((model) =>
+      model.name !== newModel.name ||
       model.url !== newModel.url ||
       model.minZoom !== newModel.minZoom ||
       model.maxNativeZoom !== newModel.maxNativeZoom ||
       model.zIndex !== newModel.zIndex ||
       model.scaleWithDpi !== newModel.scaleWithDpi ||
-      model.extraScales.join('|') !== newModel.extraScales.join('|')
+      model.extraScales.join('|') !== newModel.extraScales.join('|') ||
+      model.layer !== newModel.layer
         ? newModel
         : model,
     );
@@ -104,9 +110,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           ? undefined
           : {
               type,
-              layer: type.startsWith('.') ? 'base' : 'overlay',
               technology: 'tile',
+              name: model.name,
               url: model.url,
+              layer: model.layer,
               minZoom,
               maxNativeZoom,
               zIndex,
@@ -129,6 +136,15 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     [update, model],
   );
 
+  const setName = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const name = e.currentTarget.value;
+
+      update({ ...model, name });
+    },
+    [update, model],
+  );
+
   const setMinZoom = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const minZoom = e.currentTarget.value;
@@ -143,6 +159,15 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       const maxNativeZoom = e.currentTarget.value;
 
       update({ ...model, maxNativeZoom });
+    },
+    [update, model],
+  );
+
+  const setLayer = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      const layer = e.currentTarget.value as 'base';
+
+      update({ ...model, layer });
     },
     [update, model],
   );
@@ -168,89 +193,134 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   const m = useMessages();
 
   return (
-    <Stack gap={3}>
-      <Form.Group controlId="url">
-        <Form.Label>{m?.mapLayers.urlTemplate}</Form.Label>
+    <div
+      className="d-grid"
+      style={{
+        columnGap: '1rem',
+        gridTemplateColumns: '1fr 1fr',
+        alignItems: 'stretch',
+      }}
+    >
+      {/* Name */}
 
-        <Form.Control type="text" value={model.url} onChange={setUrl} />
-      </Form.Group>
+      <Form.Label
+        className="d-flex align-items-end"
+        style={{ gridColumn: '1 / -1' }}
+      >
+        {m?.general.name}
+      </Form.Label>
 
-      <Stack direction="horizontal" gap={2}>
-        <Form.Group controlId="minZoom">
-          <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
+      <Form.Control
+        style={{ gridColumn: '1 / -1' }}
+        type="text"
+        value={model.name}
+        onChange={setName}
+      />
 
+      {/* URL */}
+
+      <Form.Label
+        className="mt-3 d-flex align-items-end"
+        style={{ gridColumn: '1 / -1' }}
+      >
+        {m?.mapLayers.urlTemplate}
+      </Form.Label>
+
+      <Form.Control
+        style={{ gridColumn: '1 / -1' }}
+        type="text"
+        value={model.url}
+        onChange={setUrl}
+      />
+
+      {/* Min/Max zoom */}
+
+      <Form.Label className="mt-3 d-flex align-items-end">
+        {m?.mapLayers.minZoom}
+      </Form.Label>
+
+      <Form.Label className="mt-3 d-flex align-items-end">
+        {m?.mapLayers.maxNativeZoom}
+      </Form.Label>
+
+      <Form.Control
+        type="number"
+        min={0}
+        value={model.minZoom}
+        onChange={setMinZoom}
+      />
+
+      <Form.Control
+        type="number"
+        min={0}
+        value={model.maxNativeZoom}
+        onChange={setMaxNativeZoom}
+      />
+
+      {/* Extra scales + checkbox */}
+      <Form.Label className="mt-3 d-flex align-items-end">
+        {m?.mapLayers.extraScales}
+      </Form.Label>
+
+      <Form.Label className="mt-3 d-flex align-items-end">&nbsp;</Form.Label>
+
+      <div className="d-flex gap-2 flex-wrap">
+        {[...model.extraScales, ''].map((a, i) => (
           <Form.Control
+            style={{ width: '4rem' }}
+            key={i}
             type="number"
-            min={0}
-            value={model.minZoom}
-            onChange={setMinZoom}
+            min={1}
+            step={1}
+            value={a}
+            onChange={(e) => {
+              const extraScales = [...model.extraScales];
+              extraScales[i] = e.currentTarget.value;
+              update({
+                ...model,
+                extraScales: extraScales.filter(Boolean),
+              });
+            }}
           />
-        </Form.Group>
+        ))}
+      </div>
 
-        <Form.Group controlId="maxNativeZoom" className="w-50">
-          <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
+      <div className="d-flex align-items-center">
+        <Form.Check
+          id="chk-scale-dpi"
+          label={m?.mapLayers.scaleWithDpi}
+          checked={model.scaleWithDpi}
+          onChange={setScaleWithDpi}
+        />
+      </div>
 
-          <Form.Control
-            type="number"
-            min={0}
-            value={model.maxNativeZoom}
-            onChange={setMaxNativeZoom}
-          />
-        </Form.Group>
-      </Stack>
+      {/* Layer */}
+      <Form.Label className="mt-3 d-flex align-items-end">
+        {m?.mapLayers.layer.layer}
+      </Form.Label>
 
-      <Stack direction="horizontal" gap={2}>
-        <Form.Group controlId="extraScales">
-          <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
+      {/* Z-Index */}
+      <Form.Label
+        className={
+          `mt-3 d-flex align-items-end ` +
+          (model.layer === 'overlay' ? 'visible' : 'invisible')
+        }
+      >
+        {m?.mapLayers.zIndex}
+      </Form.Label>
 
-          <div className="d-flex gap-2 flex-wrap">
-            {[...model.extraScales, ''].map((a, i) => (
-              <Form.Control
-                key={i}
-                style={{ width: '4rem' }}
-                type="number"
-                min={1}
-                step={1}
-                value={a}
-                onChange={(e) => {
-                  const extraScales = [...model.extraScales];
+      <Form.Select value={model.layer} onChange={setLayer}>
+        <option value="base">{m?.mapLayers.layer.base}</option>
+        <option value="overlay">{m?.mapLayers.layer.overlay}</option>
+      </Form.Select>
 
-                  extraScales[i] = e.currentTarget.value;
-
-                  update({
-                    ...model,
-                    extraScales: extraScales.filter(Boolean),
-                  });
-                }}
-              />
-            ))}
-          </div>
-        </Form.Group>
-
-        <Form.Group className="w-50">
-          <Form.Label>&nbsp;</Form.Label>
-
-          <Form.Check
-            id="chk-scale-dpi"
-            label={m?.mapLayers.scaleWithDpi}
-            checked={model.scaleWithDpi}
-            onChange={setScaleWithDpi}
-          />
-        </Form.Group>
-      </Stack>
-
-      {type.startsWith(':') ? (
-        <Form.Group controlId="zIndex">
-          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
-
-          <Form.Control
-            type="number"
-            min={0}
-            value={model.zIndex}
-            onChange={setZIndex}
-          />
-        </Form.Group>
-      ) : undefined}
-    </Stack>
+      <Form.Control
+        className={model.layer === 'overlay' ? 'visible' : 'invisible'}
+        type="number"
+        min={0}
+        value={model.zIndex}
+        onChange={setZIndex}
+      />
+    </div>
   );
 }

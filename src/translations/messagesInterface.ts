@@ -564,7 +564,6 @@ export type Messages = {
     countryWarning: (countries: string[]) => string;
     letters: Record<string, string>;
     customBase: string;
-    customOverlay: string;
     type: {
       map: string;
       data: string;
@@ -580,6 +579,11 @@ export type Messages = {
     maxNativeZoom: string;
     extraScales: string;
     scaleWithDpi: string;
+    layer: {
+      layer: string;
+      base: string;
+      overlay: string;
+    };
     zIndex: string;
     generalSettings: string;
     maxZoom: string;

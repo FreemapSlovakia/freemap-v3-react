@@ -805,7 +805,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       z: 'Ombreggiatura parametrica',
     },
     customBase: 'Mappa personalizzata',
-    customOverlay: 'Sovrapposizione mappa personalizzata',
     type: {
       map: 'mappa',
       data: 'data',
@@ -831,6 +830,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     generalSettings: 'Impostazioni generali',
     maxZoom: 'Zoom massimo',
+    layer: {
+      layer: 'Livello',
+      base: 'Base',
+      overlay: 'Sovrapposto',
+    },
     showMore: 'Mostra più mappe',
     countryWarning: (countries) =>
       `Copre solo i seguenti paesi: ${countries.join(', ')}`,
