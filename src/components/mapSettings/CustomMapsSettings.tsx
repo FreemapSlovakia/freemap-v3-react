@@ -31,6 +31,31 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
 
   const m = useMessages();
 
+  const handleAddClick = useCallback(() => {
+    const type = Math.random().toString(36).slice(-6);
+
+    onChange([
+      ...value,
+      {
+        type,
+        name: '',
+        url: 'https://',
+        technology: 'tile',
+        layer: 'base',
+      },
+    ]);
+
+    setType(type);
+  }, [onChange, value]);
+
+  const handleDeleteClick = useCallback(() => {
+    const newValue = value.filter((def) => def.type !== type);
+
+    onChange(newValue);
+
+    setType(newValue[0]?.type ?? ''); // TODO set following or previous
+  }, [onChange, type, value]);
+
   return (
     <>
       {value.length > 0 && (
@@ -44,37 +69,16 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
       )}
 
       <ButtonToolbar className="justify-content-end">
-        <Button
-          variant="primary"
-          onClick={() => {
-            const type = Math.random().toString(36).slice(-6);
-
-            onChange([
-              ...value,
-              {
-                type,
-                name: '',
-                url: 'https://',
-                technology: 'tile',
-                layer: 'base',
-              },
-            ]);
-
-            setType(type);
-          }}
-        >
+        <Button type="button" variant="primary" onClick={handleAddClick}>
           {m?.general.add}
         </Button>
 
         {value.length > 0 && (
           <Button
+            type="button"
             variant="danger"
             className="ms-1"
-            onClick={() => {
-              onChange(value.filter((def) => def.type !== type));
-
-              setType(value[0]?.type ?? []); // TODO set follwing or previous
-            }}
+            onClick={handleDeleteClick}
           >
             {m?.general.delete}
           </Button>

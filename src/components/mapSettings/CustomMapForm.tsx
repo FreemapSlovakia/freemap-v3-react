@@ -68,7 +68,8 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       model.maxNativeZoom !== newModel.maxNativeZoom ||
       model.zIndex !== newModel.zIndex ||
       model.scaleWithDpi !== newModel.scaleWithDpi ||
-      model.extraScales.join('|') !== newModel.extraScales.join('|')
+      model.extraScales.join('|') !== newModel.extraScales.join('|') ||
+      model.layer !== newModel.layer
         ? newModel
         : model,
     );
@@ -109,10 +110,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           ? undefined
           : {
               type,
-              layer: type.startsWith('.') ? 'base' : 'overlay',
               technology: 'tile',
               name: model.name,
               url: model.url,
+              layer: model.layer,
               minZoom,
               maxNativeZoom,
               zIndex,
