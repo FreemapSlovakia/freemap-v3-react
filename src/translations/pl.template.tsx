@@ -803,7 +803,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Interaktywna warstwa jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     customBase: 'Własna mapa',
-    customOverlay: 'Własna nakładka mapy',
     customMaps: 'Mapy własne',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',

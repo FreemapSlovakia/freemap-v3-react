@@ -564,7 +564,6 @@ export type Messages = {
     countryWarning: (countries: string[]) => string;
     letters: Record<string, string>;
     customBase: string;
-    customOverlay: string;
     type: {
       map: string;
       data: string;

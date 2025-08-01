@@ -830,7 +830,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Interaktive Ebene ist ausgeblendet',
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     customBase: 'Benutzerdefinierte Karte',
-    customOverlay: 'Benutzerdefiniertes Kartenoverlay',
     customMaps: 'Benutzerdefinierte Karten',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',

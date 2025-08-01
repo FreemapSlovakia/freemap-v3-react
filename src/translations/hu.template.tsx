@@ -840,7 +840,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     switch: 'Térképek',
     interactiveLayerWarning: 'Az interaktív réteg rejtve van',
     customBase: 'Egyéni térkép',
-    customOverlay: 'Egyéni térképátfedés',
     customMaps: 'Egyéni térképek',
     base: 'Alaprétegek',
     overlay: 'Fedőrétegek',

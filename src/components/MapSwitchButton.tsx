@@ -145,10 +145,16 @@ export function MapSwitchButton(): ReactElement {
   const countriesSet = countries && new Set(countries);
 
   const layerDefs = [
-    ...integratedLayerDefs,
-    ...customLayerDefs.map((cl) => ({
+    ...integratedLayerDefs.map((def) => ({
+      ...def,
+      custom: false,
+      name: undefined,
+    })),
+    ...customLayerDefs.map((def) => ({
+      ...def,
+      custom: true,
       icon: <MdDashboardCustomize />,
-      kbd: ['Digit' + cl.type.slice(1), false] as [string, boolean],
+      kbd: undefined,
       adminOnly: false,
       premiumFromZoom: undefined,
       experimental: undefined,
@@ -156,7 +162,6 @@ export function MapSwitchButton(): ReactElement {
       defaultInToolbar: false,
       defaultInMenu: false,
       superseededBy: undefined,
-      ...cl,
     })),
   ].map((def) => ({
     scaleWithDpi: false,
@@ -313,11 +318,9 @@ export function MapSwitchButton(): ReactElement {
                     : ''
                 }
               >
-                {(type.startsWith('.')
-                  ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                  : type.startsWith(':')
-                    ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                    : m?.mapLayers.letters[type]) ?? '…'}
+                {def.custom
+                  ? def.name || m?.mapLayers.customBase + ' ' + type
+                  : (m?.mapLayers.letters[type] ?? '…')}
               </span>
 
               {commonBadges(def, 'menu')}
@@ -363,11 +366,9 @@ export function MapSwitchButton(): ReactElement {
               key={type}
               label={
                 <>
-                  {type.startsWith('.')
-                    ? m?.mapLayers.customBase + ' ' + type.slice(1)
-                    : type.startsWith(':')
-                      ? m?.mapLayers.customOverlay + ' ' + type.slice(1)
-                      : m?.mapLayers.letters[type]}
+                  {def.custom
+                    ? def.name || m?.mapLayers.customBase + ' ' + type
+                    : (m?.mapLayers.letters[type] ?? '…')}
 
                   {commonBadges(def, 'tooltip')}
                 </>

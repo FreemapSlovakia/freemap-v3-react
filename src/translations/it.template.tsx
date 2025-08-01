@@ -805,7 +805,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       z: 'Ombreggiatura parametrica',
     },
     customBase: 'Mappa personalizzata',
-    customOverlay: 'Sovrapposizione mappa personalizzata',
     type: {
       map: 'mappa',
       data: 'data',

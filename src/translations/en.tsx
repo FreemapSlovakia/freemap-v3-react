@@ -760,7 +760,6 @@ const messages: Messages = {
       z: 'Parametric shading',
     },
     customBase: 'Custom map',
-    customOverlay: 'Custom map overlay',
     type: {
       map: 'map',
       data: 'data',

@@ -810,7 +810,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       z: 'Parametrické tieňovanie',
     },
     customBase: 'Vlastná mapa',
-    customOverlay: 'Vlastné prekrytie mapy',
     type: {
       map: 'mapa',
       data: 'dáta',

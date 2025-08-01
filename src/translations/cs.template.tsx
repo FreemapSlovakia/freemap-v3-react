@@ -776,7 +776,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       z: ' Parametrické stínování',
     },
     customBase: 'Vlastní mapa',
-    customOverlay: 'Vlastní překrytí mapy',
     type: {
       map: 'mapa',
       data: 'data',
