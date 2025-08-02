@@ -4,7 +4,6 @@ import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
-import { Emoji } from '../components/Emoji.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
@@ -238,20 +237,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   main: {
     infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji>&ensp;Stoimy za Ukrainą.{' '}
-          <AlertLink
-            href="https://bank.gov.ua/en/about/support-the-armed-forces"
-            target="_blank"
-            rel="noopener"
-          >
-            Wesprzyj ukraińską armię ›
-          </AlertLink>
-          &ensp;
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
+      // ua: () => (
+      //   <>
+      //     <Emoji>🇺🇦</Emoji>&ensp;Stoimy za Ukrainą.{' '}
+      //     <AlertLink
+      //       href="https://bank.gov.ua/en/about/support-the-armed-forces"
+      //       target="_blank"
+      //       rel="noopener"
+      //     >
+      //       Wesprzyj ukraińską armię ›
+      //     </AlertLink>
+      //     &ensp;
+      //     <Emoji>🇺🇦</Emoji>
+      //   </>
+      // ),
     },
     title: shared.title,
     description: shared.description,

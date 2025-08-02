@@ -1,10 +1,9 @@
-import { Alert, AlertLink } from 'react-bootstrap';
+import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
-import { Emoji } from '../components/Emoji.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
@@ -268,20 +267,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       />
     ),
     infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji>&ensp;Stojíme za Ukrajinou.{' '}
-          <AlertLink
-            href="https://donio.cz/pomocukrajine"
-            target="_blank"
-            rel="noopener"
-          >
-            Pomozte Ukrajině ›
-          </AlertLink>
-          &ensp;
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
+      // ua: () => (
+      //   <>
+      //     <Emoji>🇺🇦</Emoji>&ensp;Stojíme za Ukrajinou.{' '}
+      //     <AlertLink
+      //       href="https://donio.cz/pomocukrajine"
+      //       target="_blank"
+      //       rel="noopener"
+      //     >
+      //       Pomozte Ukrajině ›
+      //     </AlertLink>
+      //     &ensp;
+      //     <Emoji>🇺🇦</Emoji>
+      //   </>
+      // ),
     },
     ad: (email) => (
       <>
@@ -1017,9 +1016,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     exported: ({ url }) => (
       <>
         Export mapy je dokončen.{' '}
-        <Alert.Link href={url} target="_blank">
+        <AlertLink href={url} target="_blank">
           Otevřít.
-        </Alert.Link>
+        </AlertLink>
       </>
     ),
     area: 'Exportovat oblast',

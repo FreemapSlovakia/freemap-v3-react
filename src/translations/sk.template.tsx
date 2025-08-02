@@ -4,7 +4,6 @@ import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
-import { Emoji } from '../components/Emoji.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
   ObjectDetailBasicProps,
@@ -270,7 +269,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       // dp: () => {
       //   // eslint-disable-next-line react-hooks/rules-of-hooks
       //   const dispatch = useDispatch();
-
       //   return (
       //     <>
       //       <span className="d-sm-none">Podporte nás prosím</span>
@@ -285,7 +283,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       //         href="/#document=dvePercenta"
       //         onClick={(e) => {
       //           e.preventDefault();
-
       //           dispatch(documentShow('dvePercenta'));
       //         }}
       //       >
@@ -295,22 +292,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       //     </>
       //   );
       // },
-      ua: () => {
-        return (
-          <>
-            <Emoji>🇺🇦</Emoji>&ensp;
-            <a
-              href="https://donio.sk/spolocne-pre-ukrajinu"
-              target="_blank"
-              rel="noopener"
-            >
-              Spoločne pre Ukrajinu ›
-            </a>
-            &ensp;
-            <Emoji>🇺🇦</Emoji>
-          </>
-        );
-      },
+      // ua: () => {
+      //   return (
+      //     <>
+      //       <Emoji>🇺🇦</Emoji>&ensp;
+      //       <a
+      //         href="https://donio.sk/spolocne-pre-ukrajinu"
+      //         target="_blank"
+      //         rel="noopener"
+      //       >
+      //         Spoločne pre Ukrajinu ›
+      //       </a>
+      //       &ensp;
+      //       <Emoji>🇺🇦</Emoji>
+      //     </>
+      //   );
+      // },
     },
     ad: (email) => (
       <>
