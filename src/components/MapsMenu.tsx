@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { mapsDisconnect, mapsSave } from '../actions/mapsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
@@ -16,56 +17,62 @@ export function MapsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const sc = useScrollClasses('horizontal');
+
   return (
-    <Toolbar className="mt-2">
-      <ButtonToolbar>
-        <LongPressTooltip breakpoint="xl" label={m?.tools.maps}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="primary"
-              onClick={() => dispatch(setActiveModal('maps'))}
-              {...props}
-            >
-              <FaRegMap />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
+      <div />
 
-        <span className="align-self-center mx-1">
-          {activeMap?.name ?? '???'}
-        </span>
-
-        {activeMap?.canWrite && (
-          <LongPressTooltip breakpoint="xl" label={m?.maps.save}>
+      <Toolbar className="mt-2">
+        <ButtonToolbar>
+          <LongPressTooltip breakpoint="xl" label={m?.tools.maps}>
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={() => dispatch(mapsSave(undefined))}
+                variant="primary"
+                onClick={() => dispatch(setActiveModal('maps'))}
                 {...props}
               >
-                <FaSave />
+                <FaRegMap />
                 <span className={labelClassName}> {label}</span>
               </Button>
             )}
           </LongPressTooltip>
-        )}
 
-        <LongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(mapsDisconnect())}
-              {...props}
-            >
-              <FaUnlink />
-              <span className={labelClassName}> {label}</span>
-            </Button>
+          <span className="align-self-center mx-1">
+            {activeMap?.name ?? '???'}
+          </span>
+
+          {activeMap?.canWrite && (
+            <LongPressTooltip breakpoint="xl" label={m?.maps.save}>
+              {({ label, labelClassName, props }) => (
+                <Button
+                  className="ms-1"
+                  variant="secondary"
+                  onClick={() => dispatch(mapsSave(undefined))}
+                  {...props}
+                >
+                  <FaSave />
+                  <span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
           )}
-        </LongPressTooltip>
-      </ButtonToolbar>
-    </Toolbar>
+
+          <LongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(mapsDisconnect())}
+                {...props}
+              >
+                <FaUnlink />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        </ButtonToolbar>
+      </Toolbar>
+    </div>
   );
 }
