@@ -126,9 +126,9 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
-window.navigator.serviceWorker?.register('/sw.js').catch((e) => {
-  console.warn('Error registering service worker:', e);
-});
+await window.navigator.serviceWorker
+  ?.register('/sw.js')
+  .catch((err) => console.error('Error registering service worker: ' + err));
 
 // share target SW
 window.navigator.serviceWorker

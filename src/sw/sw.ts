@@ -2,10 +2,8 @@
 
 declare const self: ServiceWorkerGlobalScope;
 
-import { get, set } from 'idb-keyval';
-import { CacheMode, SwCacheAction } from '../types/common.js';
-
-const resources = self.__WB_MANIFEST;
+import { get } from 'idb-keyval';
+import { CacheMode } from '../types/common.js';
 
 const FALLBACK_CACHE_NAME = 'offline-html';
 
@@ -141,51 +139,3 @@ self.addEventListener('activate', (event) => {
     })(),
   );
 });
-
-async function cacheLocal() {
-  const cache = await caches.open(OFFLINE_CACHE_NAME);
-
-  await cache.addAll(resources.map((resource) => resource.url));
-}
-
-async function handleCacheAction(action: SwCacheAction) {
-  switch (action.type) {
-    case 'clearCache':
-      await caches.delete(OFFLINE_CACHE_NAME);
-
-      if (await get('cachingActive')) {
-        await cacheLocal();
-      }
-
-      break;
-
-    case 'setCachingActive':
-      if (action.payload) {
-        await cacheLocal();
-
-        // TODO notify clients that static resources has been cached
-      }
-
-      await set('cachingActive', action.payload);
-
-      break;
-
-    case 'setCacheMode':
-      await set('cacheMode', action.payload);
-
-      break;
-
-    default:
-      break;
-  }
-}
-
-self.addEventListener('message', (e) => {
-  if (Array.isArray(e.data)) {
-    e.waitUntil(Promise.all(e.data.map((a) => handleCacheAction(a))));
-  } else if (typeof e.data === 'object' && e.data) {
-    e.waitUntil(handleCacheAction(e.data));
-  }
-});
-
-export default null;

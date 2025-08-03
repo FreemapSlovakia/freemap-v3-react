@@ -108,11 +108,3 @@ export type CacheMode =
   | 'networkFirst'
   | 'cacheFirst'
   | 'cacheOnly';
-
-export type SwCacheAction =
-  | {
-      type: 'setCacheMode';
-      payload: CacheMode;
-    }
-  | { type: 'clearCache' }
-  | { type: 'setCachingActive'; payload: boolean };

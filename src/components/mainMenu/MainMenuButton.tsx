@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
+import { clearCache, setCacheMode, setCachingActive } from '../../cache.js';
 import { fixedPopperConfig } from '../../fixedPopperConfig.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMenuHandler } from '../../hooks/useMenuHandler.js';
@@ -35,9 +36,9 @@ export function MainMenuButton(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  const [cacheMode, setCacheMode] = useState<CacheMode>('networkOnly');
+  const [cacheMode, setCacheModeLocal] = useState<CacheMode>('networkOnly');
 
-  const [cachingActive, setCachingActive] = useState<boolean>(false);
+  const [cachingActive, setCachingActiveLocal] = useState<boolean>(false);
 
   const [cacheExists, setCacheExists] = useState(false);
 
@@ -55,30 +56,18 @@ export function MainMenuButton(): ReactElement {
       if (eventKey.startsWith('cacheMode-')) {
         const cacheMode = eventKey.slice(10) as CacheMode;
 
-        window.navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({
-            type: 'setCacheMode',
-            payload: cacheMode,
-          });
-        });
-
         setCacheMode(cacheMode);
-      } else if (eventKey === 'caching-active-toggle') {
-        window.navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({
-            type: 'setCachingActive',
-            payload: !cachingActive,
-          });
 
-          setCacheExists(true); // TODO use events from sw
+        setCacheModeLocal(cacheMode);
+      } else if (eventKey === 'caching-active-toggle') {
+        setCachingActive(!cachingActive).then(() => {
+          setCacheExists(true);
         });
 
-        setCachingActive((a) => !a);
+        setCachingActiveLocal((a) => !a);
       } else if (eventKey === 'cache-clear') {
-        window.navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({ type: 'clearCache' });
-
-          setCacheExists(false); // TODO use events from sw
+        clearCache().then(() => {
+          setCacheExists(false);
         });
       } else {
         return false;
@@ -91,14 +80,14 @@ export function MainMenuButton(): ReactElement {
 
   useEffect(() => {
     get('cacheMode').then((cacheMode) =>
-      setCacheMode(cacheMode ?? 'networkOnly'),
+      setCacheModeLocal(cacheMode ?? 'networkOnly'),
     );
 
     caches.keys().then((key) => setCacheExists(key.includes('offline')));
   }, []);
 
   useEffect(() => {
-    get('cachingActive').then(setCachingActive);
+    get('cachingActive').then(setCachingActiveLocal);
   }, []);
 
   return (

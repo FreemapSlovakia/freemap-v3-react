@@ -9,9 +9,9 @@ import process from 'process';
 import type SassLoader from 'sass-loader';
 import type { Configuration } from 'webpack';
 import webpack from 'webpack';
-import { InjectManifest } from 'workbox-webpack-plugin';
 import { MarkdownDictPlugin } from './MarkdownDictPlugin.js';
 // import ESLintPlugin from 'eslint-webpack-plugin';
+import { WebpackAssetsManifest } from 'webpack-assets-manifest';
 
 import csMessages from './src/translations/cs-shared.js';
 import deMessages from './src/translations/de-shared.js';
@@ -47,12 +47,14 @@ const config: Configuration = {
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './index.tsx',
+    sw: './sw/sw.ts',
     'upload-sw': './sw/upload-sw.ts',
   },
   output: {
     clean: true,
     filename: (pathData) => {
-      return pathData.chunk?.name === 'upload-sw'
+      return pathData.chunk?.name === 'upload-sw' ||
+        pathData.chunk?.name === 'sw'
         ? '[name].js'
         : '[name].[chunkhash].js';
     },
@@ -171,9 +173,16 @@ const config: Configuration = {
       new ReactRefreshWebpackPlugin({
         overlay: false,
       }),
-    new InjectManifest({
-      swSrc: './sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 100_000_000,
+    new WebpackAssetsManifest({
+      customize(entry) {
+        return entry &&
+          typeof entry.key === 'string' &&
+          (entry.key?.endsWith('.map') ||
+            entry.key?.endsWith('.sw') ||
+            entry.key === '.htaccess')
+          ? false
+          : entry;
+      },
     }),
     new webpack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react

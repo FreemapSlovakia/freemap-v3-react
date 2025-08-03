@@ -83,7 +83,8 @@
     "reselect": "^5.1.1",
     "typia": "^9.6.1",
     "use-debounce": "^10.0.5",
-    "vhtml": "^2.2.0"
+    "vhtml": "^2.2.0",
+    "webpack-assets-manifest": "^6.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
@@ -153,7 +154,6 @@
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2",
     "webpack-sources": "^3.3.3",
-    "webpack-virtual-modules": "^0.6.2",
-    "workbox-webpack-plugin": "^7.3.0"
+    "webpack-virtual-modules": "^0.6.2"
   }
 }
