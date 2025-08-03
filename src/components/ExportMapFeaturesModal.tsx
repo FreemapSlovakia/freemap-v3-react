@@ -1,7 +1,5 @@
 import { Position } from 'geojson';
-import storage from 'local-storage-fallback';
 import {
-  ChangeEvent,
   FormEvent,
   Fragment,
   ReactElement,
@@ -48,6 +46,7 @@ import {
   setActiveModal,
 } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { usePersistentState } from '../hooks/usePersistentState.js';
 import { useMessages } from '../l10nInjector.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 
@@ -68,10 +67,6 @@ const exportableDefinitions: readonly [
 ];
 
 type Props = { show: boolean };
-
-const TYPE_STORAGE_KEY = 'fm.exportFeatures.format';
-
-const TARGET_STORAGE_KEY = 'fm.exportFeatures.target';
 
 export default ExportMapFeaturesModal;
 
@@ -128,17 +123,17 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const [exportables, setExportables] = useState<string>('|');
 
-  const [type, setType] = useState<ExportType>(() => {
-    const fmt = storage.getItem(TYPE_STORAGE_KEY);
+  const [type, , setType] = usePersistentState<ExportType>(
+    'fm.exportFeatures.format',
+    (value) => String(value),
+    (value) => (is<ExportType>(value) ? value : 'gpx'),
+  );
 
-    return is<ExportType>(fmt) ? fmt : 'gpx';
-  });
-
-  const [target, setTarget] = useState<ExportTarget>(() => {
-    const target = storage.getItem(TARGET_STORAGE_KEY);
-
-    return is<ExportTarget>(target) ? target : 'download';
-  });
+  const [target, , setTarget] = usePersistentState<ExportTarget>(
+    'fm.exportFeatures.target',
+    (value) => String(value),
+    (value) => (is<ExportTarget>(value) ? value : 'download'),
+  );
 
   const [name, setName] = useState('');
 
@@ -268,18 +263,6 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const isWide = useMediaQuery({ query: '(min-width: 992px)' });
 
-  const handleTypeChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    storage.setItem(TYPE_STORAGE_KEY, e.currentTarget.value);
-
-    setType(e.currentTarget.value as ExportType);
-  }, []);
-
-  const handleTargetChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    storage.setItem(TARGET_STORAGE_KEY, e.currentTarget.value);
-
-    setTarget(e.currentTarget.value as ExportTarget);
-  }, []);
-
   return (
     <Modal show={show} onHide={close} size="lg">
       <Form onSubmit={runExport}>
@@ -304,7 +287,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                     type="radio"
                     checked={target === exportTarget}
                     value={exportTarget}
-                    onChange={handleTargetChange}
+                    onChange={setTarget}
                     disabled={!initExportables}
                   >
                     {
@@ -418,7 +401,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                       type="radio"
                       value={exportType}
                       checked={type === exportType}
-                      onChange={handleTypeChange}
+                      onChange={setType}
                       disabled={!exportables.length}
                     >
                       {exportType === 'gpx' ? 'GPX' : 'GeoJSON'}

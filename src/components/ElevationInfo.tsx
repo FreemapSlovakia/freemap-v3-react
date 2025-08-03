@@ -1,6 +1,5 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import storage from 'local-storage-fallback';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaCopy } from 'react-icons/fa';
 import { TbDecimal } from 'react-icons/tb';
@@ -8,6 +7,7 @@ import { is } from 'typia';
 import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
+import { usePersistentState } from '../hooks/usePersistentState.js';
 import { useMessages } from '../l10nInjector.js';
 import { integratedLayerDefs, IsTileLayerDef } from '../mapDefinitions.js';
 import type { LatLon } from '../types/common.js';
@@ -24,8 +24,6 @@ export type ElevationInfoProps = ElevationInfoBaseProps & {
 };
 
 const FORMATS = ['D', 'DM', 'DMS'] as const;
-
-const STORAGE_KEY = 'fm.ele.gpsFormat';
 
 export function ElevationInfo({
   lang,
@@ -66,19 +64,11 @@ export function ElevationInfo({
     }))
     .filter(({ url }) => !!url);
 
-  const cookiesEnabled = useAppSelector(
-    (state) => !!state.main.cookieConsentResult,
+  const [format, setFormat] = usePersistentState<number>(
+    'fm.ele.gpsFormat',
+    (value) => String(value),
+    (value) => (value && /^\d+$/.test(value) ? Number(value) : 0),
   );
-
-  const [format, setFormat] = useState(
-    Number(storage.getItem(STORAGE_KEY)) || 0,
-  );
-
-  useEffect(() => {
-    if (cookiesEnabled) {
-      storage.setItem(STORAGE_KEY, format.toString());
-    }
-  }, [cookiesEnabled, format]);
 
   const coordinates = useMemo(
     () =>

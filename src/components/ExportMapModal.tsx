@@ -3,7 +3,6 @@ import storage from 'local-storage-fallback';
 import {
   ChangeEvent,
   Fragment,
-  MouseEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -37,17 +36,14 @@ import {
 } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { usePersistentState } from '../hooks/usePersistentState.js';
 import { useMessages } from '../l10nInjector.js';
 import { isInvalidInt } from '../numberValidator.js';
 import { useResolvedAttribution } from './Attribution.js';
 
 type Props = { show: boolean };
 
-const FORMAT_STORAGE_KEY = 'fm.exportMap.format';
-
 const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
-
-const SCALE_STORAGE_KEY = 'fm.exportMap.scale';
 
 const MAP_LAYERS = ['X'];
 
@@ -66,15 +62,18 @@ export function ExportMapModal({ show }: Props): ReactElement {
     canExportByPolygon ? 'selected' : 'visible',
   );
 
-  const [scale, setScale] = useState(
-    () => storage.getItem(SCALE_STORAGE_KEY) ?? '100',
+  const [scale, setScale] = usePersistentState<string>(
+    'fm.exportMap.scale',
+    (value) => value,
+    (value) => value ?? '100',
   );
 
-  const [format, setFormat] = useState<ExportFormat>(() => {
-    const target = storage.getItem(FORMAT_STORAGE_KEY);
+  const [format, , setFormat] = usePersistentState<ExportFormat>(
+    'fm.exportMap.format',
 
-    return is<ExportFormat>(target) ? target : 'jpeg';
-  });
+    (value) => value,
+    (value) => (is<ExportFormat>(value) ? value : 'jpeg'),
+  );
 
   const [layers, setLayers] = useState(() => {
     const layers = storage.getItem(LAYERS_STORAGE_KEY);
@@ -94,97 +93,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
     return set;
   });
 
-  const [style, setStyle] = useState(`<Style name="custom-polygons">
-  <Rule>
-    <PolygonSymbolizer
-      fill="[color]"
-      fill-opacity="0.2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-
-    <LineSymbolizer
-      stroke="[color]"
-      stroke-width="[width]"
-      stroke-opacity="0.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-
-    <TextSymbolizer
-      fontset-name="regular"
-      fill="[color]"
-      halo-fill="white"
-      halo-radius="1.5"
-      halo-opacity="0.75"
-      size="16"
-      line-spacing="-2"
-      wrap-width="100"
-      wrap-before="true"
-      placement="interior"
-    >
-      [name]
-    </TextSymbolizer>
-  </Rule>
-</Style>
-
-<Style name="custom-polylines">
-  <Rule>
-    <LineSymbolizer
-      stroke="[color]"
-      stroke-width="[width]"
-      stroke-opacity="0.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-
-    <TextSymbolizer
-      fontset-name="regular"
-      fill="[color]"
-      halo-fill="white"
-      halo-radius="1.5"
-      halo-opacity="0.75"
-      size="16"
-      line-spacing="-2"
-      placement="line"
-      spacing="200"
-      dy="8"
-    >
-      [name]
-    </TextSymbolizer>
-  </Rule>
-</Style>
-
-<Style name="custom-points">
-  <Rule>
-    <MarkersSymbolizer
-      fill="[color]"
-      width="24"
-      file="images/marker.svg"
-      allow-overlap="true"
-      ignore-placement="true"
-      stroke-width="1.5"
-      stroke-opacity="0.75"
-      stroke="white"
-    />
-
-    <TextSymbolizer
-      fontset-name="regular"
-      fill="[color]"
-      halo-fill="white"
-      halo-radius="1.5"
-      halo-opacity="0.75"
-      size="16"
-      line-spacing="-2"
-      wrap-width="100"
-      wrap-before="true"
-      dy="-40"
-    >
-      [name]
-    </TextSymbolizer>
-  </Rule>
-</Style>
-`);
+  const [style, setStyle] = useState(defaultStyle);
 
   const handleStyleChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -201,35 +110,39 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
   const invalidScale = isInvalidInt(scale, true, 60, 960);
 
-  const handleFormatChange = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    storage.setItem(FORMAT_STORAGE_KEY, e.currentTarget.value);
+  const cookiesEnabled = useAppSelector(
+    (state) => state.main.cookieConsentResult !== null,
+  );
 
-    setFormat(e.currentTarget.value as ExportFormat);
-  }, []);
+  const handleLayersChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.currentTarget.value as ExportableLayer;
 
-  const handleLayersChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value as ExportableLayer;
+      setLayers((prev) => {
+        const n = new Set(prev);
 
-    setLayers((prev) => {
-      const n = new Set(prev);
+        if (n.has(value)) {
+          n.delete(value);
+        } else {
+          n.add(value);
+        }
 
-      if (n.has(value)) {
-        n.delete(value);
-      } else {
-        n.add(value);
-      }
+        if (cookiesEnabled) {
+          storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
+        }
 
-      storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
+        return n;
+      });
+    },
+    [cookiesEnabled],
+  );
 
-      return n;
-    });
-  }, []);
-
-  const handleScaleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    storage.setItem(SCALE_STORAGE_KEY, e.currentTarget.value);
-
-    setScale(e.currentTarget.value);
-  }, []);
+  const handleScaleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setScale(e.currentTarget.value);
+    },
+    [setScale],
+  );
 
   const countries = useAppSelector((state) => state.map.countries);
 
@@ -337,7 +250,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 variant="secondary"
                 key={fmt}
                 value={fmt}
-                onClick={handleFormatChange}
+                onClick={setFormat}
                 active={format === fmt}
               >
                 {fmt.toUpperCase()}
@@ -445,3 +358,95 @@ export function ExportMapModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
+
+const defaultStyle = `<Style name="custom-polygons">
+  <Rule>
+    <PolygonSymbolizer
+      fill="[color]"
+      fill-opacity="0.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <LineSymbolizer
+      stroke="[color]"
+      stroke-width="[width]"
+      stroke-opacity="0.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <TextSymbolizer
+      fontset-name="regular"
+      fill="[color]"
+      halo-fill="white"
+      halo-radius="1.5"
+      halo-opacity="0.75"
+      size="16"
+      line-spacing="-2"
+      wrap-width="100"
+      wrap-before="true"
+      placement="interior"
+    >
+      [name]
+    </TextSymbolizer>
+  </Rule>
+</Style>
+
+<Style name="custom-polylines">
+  <Rule>
+    <LineSymbolizer
+      stroke="[color]"
+      stroke-width="[width]"
+      stroke-opacity="0.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <TextSymbolizer
+      fontset-name="regular"
+      fill="[color]"
+      halo-fill="white"
+      halo-radius="1.5"
+      halo-opacity="0.75"
+      size="16"
+      line-spacing="-2"
+      placement="line"
+      spacing="200"
+      dy="8"
+    >
+      [name]
+    </TextSymbolizer>
+  </Rule>
+</Style>
+
+<Style name="custom-points">
+  <Rule>
+    <MarkersSymbolizer
+      fill="[color]"
+      width="24"
+      file="images/marker.svg"
+      allow-overlap="true"
+      ignore-placement="true"
+      stroke-width="1.5"
+      stroke-opacity="0.75"
+      stroke="white"
+    />
+
+    <TextSymbolizer
+      fontset-name="regular"
+      fill="[color]"
+      halo-fill="white"
+      halo-radius="1.5"
+      halo-opacity="0.75"
+      size="16"
+      line-spacing="-2"
+      wrap-width="100"
+      wrap-before="true"
+      dy="-40"
+    >
+      [name]
+    </TextSymbolizer>
+  </Rule>
+</Style>
+`;

@@ -59,6 +59,7 @@
     "htm": "^3.1.1",
     "idb-keyval": "^6.2.2",
     "immer": "^10.1.1",
+    "jsdom": "^26.1.0",
     "leaflet": "^1.9.4",
     "lerc": "^4.0.4",
     "local-storage-fallback": "^5.0.0",

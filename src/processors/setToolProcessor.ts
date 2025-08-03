@@ -18,7 +18,10 @@ export const setToolProcessor: Processor<typeof setTool> = {
         dispatch(setActiveModal('upload-track'));
       }
 
-      if (tool.startsWith('draw-')) {
+      if (
+        getState().main.cookieConsentResult !== null &&
+        tool.startsWith('draw-')
+      ) {
         storage.setItem('drawingTool', tool);
       }
     }

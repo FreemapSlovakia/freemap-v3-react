@@ -114,11 +114,9 @@ export function useMenuHandler({
 
         setShow(false);
       } else if (eventKey === 'drawing') {
-        const tool = storage.getItem('drawingTool') ?? 'draw-points';
+        const tool = storage.getItem('drawingTool');
 
-        if (is<Tool>(tool)) {
-          dispatch(setTool(tool));
-        }
+        dispatch(setTool(is<Tool>(tool) ? tool : 'draw-points'));
 
         setShow(false);
       } else if (eventKey === 'clear-map-features') {

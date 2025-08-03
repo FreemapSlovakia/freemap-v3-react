@@ -15,13 +15,11 @@ import { Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
+import { useAppSelector } from '../hooks/useAppSelector.js';
+import { usePersistentState } from '../hooks/usePersistentState.js';
 import { isInvalidInt } from '../numberValidator.js';
 
 type Props = { show: boolean };
-
-const WIDTH_STORAGE_KEY = 'fm.embedMap.width';
-
-const HEIGHT_STORAGE_KEY = 'fm.embedMap.height';
 
 const FEATURES_STORAGE_KEY = 'fm.embedMap.features';
 
@@ -36,12 +34,16 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const [width, setWidth] = useState(
-    () => storage.getItem(WIDTH_STORAGE_KEY) ?? '640',
+  const [width, , setWidth] = usePersistentState<string>(
+    'fm.embedMap.width',
+    (value) => value,
+    (value) => value ?? '640',
   );
 
-  const [height, setHeight] = useState(
-    () => storage.getItem(HEIGHT_STORAGE_KEY) ?? '480',
+  const [height, , setHeight] = usePersistentState<string>(
+    'fm.embedMap.height',
+    (value) => value,
+    (value) => value ?? '480',
   );
 
   const [features, setFeatures] = useState(() => {
@@ -156,6 +158,10 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
   const invalidHeight = isInvalidInt(width, true, 100, 1200);
 
+  const cookiesEnabled = useAppSelector(
+    (state) => state.main.cookieConsentResult !== null,
+  );
+
   const handleFeaturesChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value as Feature;
@@ -169,25 +175,15 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           next.add(value);
         }
 
-        storage.setItem(FEATURES_STORAGE_KEY, [...next].join(','));
+        if (cookiesEnabled) {
+          storage.setItem(FEATURES_STORAGE_KEY, [...next].join(','));
+        }
 
         return next;
       });
     },
-    [],
+    [cookiesEnabled],
   );
-
-  const handleWidthChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setWidth(e.currentTarget.value);
-
-    storage.setItem(WIDTH_STORAGE_KEY, e.currentTarget.value);
-  }, []);
-
-  const handleHeightChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setHeight(e.currentTarget.value);
-
-    storage.setItem(HEIGHT_STORAGE_KEY, e.currentTarget.value);
-  }, []);
 
   return (
     <Modal show={show} onHide={close} className="dynamic">
@@ -216,7 +212,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               step={10}
               isInvalid={invalidWidth}
               required
-              onChange={handleWidthChange}
+              onChange={setWidth}
             />
 
             <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
@@ -229,7 +225,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
               step={10}
               isInvalid={invalidHeight}
               required
-              onChange={handleHeightChange}
+              onChange={setHeight}
             />
           </InputGroup>
         </Form.Group>

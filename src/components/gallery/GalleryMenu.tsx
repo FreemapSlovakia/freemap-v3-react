@@ -3,6 +3,8 @@ import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaCamera,
+  FaCaretLeft,
+  FaCaretRight,
   FaCog,
   FaDove,
   FaEnvelope,
@@ -26,6 +28,7 @@ import {
 import { saveSettings, setActiveModal } from '../../actions/mainActions.js';
 import { fixedPopperConfig } from '../../fixedPopperConfig.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
+import { usePersistentState } from '../../hooks/usePersistentState.js';
 import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import { useMessages } from '../../l10nInjector.js';
 import { Checkbox } from '../Checkbox.js';
@@ -85,6 +88,12 @@ export function GalleryMenu() {
     [dispatch, sendGalleryEmails],
   );
 
+  const [hidden, setHidden] = usePersistentState<boolean>(
+    'fm.galleryMenu.collapsed',
+    (value) => String(value),
+    (value) => value === 'true',
+  );
+
   return (
     <>
       <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
@@ -100,155 +109,174 @@ export function GalleryMenu() {
               )}
             </LongPressTooltip>
 
-            <LongPressTooltip
-              label={m?.gallery.upload}
-              kbd="p u"
-              breakpoint="md"
-            >
-              {({ props, label, labelClassName }) => (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="ms-1"
-                  onClick={() => dispatch(setActiveModal('gallery-upload'))}
-                  {...props}
+            {!hidden && (
+              <>
+                <LongPressTooltip
+                  label={m?.gallery.upload}
+                  kbd="p u"
+                  breakpoint="md"
                 >
-                  <FaUpload /> <span className={labelClassName}>{label}</span>
-                </Button>
-              )}
-            </LongPressTooltip>
+                  {({ props, label, labelClassName }) => (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="ms-1"
+                      onClick={() => dispatch(setActiveModal('gallery-upload'))}
+                      {...props}
+                    >
+                      <FaUpload />{' '}
+                      <span className={labelClassName}>{label}</span>
+                    </Button>
+                  )}
+                </LongPressTooltip>
 
-            <LongPressTooltip
-              label={m?.gallery.filter}
-              kbd="p f"
-              breakpoint="lg"
-            >
-              {({ props, label, labelClassName }) => (
-                <Button
-                  type="button"
-                  className="ms-1"
-                  variant="secondary"
-                  onClick={() => dispatch(setActiveModal('gallery-filter'))}
-                  active={filterIsActive}
-                  {...props}
+                <LongPressTooltip
+                  label={m?.gallery.filter}
+                  kbd="p f"
+                  breakpoint="lg"
                 >
-                  <FaFilter /> <span className={labelClassName}>{label}</span>
-                </Button>
-              )}
-            </LongPressTooltip>
+                  {({ props, label, labelClassName }) => (
+                    <Button
+                      type="button"
+                      className="ms-1"
+                      variant="secondary"
+                      onClick={() => dispatch(setActiveModal('gallery-filter'))}
+                      active={filterIsActive}
+                      {...props}
+                    >
+                      <FaFilter />{' '}
+                      <span className={labelClassName}>{label}</span>
+                    </Button>
+                  )}
+                </LongPressTooltip>
 
-            <Dropdown
-              className="ms-1"
-              onSelect={(colorizeBy) =>
-                dispatch(
-                  galleryColorizeBy(
-                    colorizeBy === 'disable'
-                      ? null
-                      : (colorizeBy as GalleryColorizeBy),
-                  ),
-                )
-              }
-            >
-              <LongPressTooltip
-                label={m?.gallery.c[colorizeBy ?? 'disable']}
-                breakpoint="sm"
-              >
-                {({ props, label, labelClassName }) => (
-                  <Dropdown.Toggle variant="secondary" {...props}>
-                    <FaPalette />{' '}
-                    <span className={labelClassName}>{label}</span>
-                  </Dropdown.Toggle>
-                )}
-              </LongPressTooltip>
-
-              <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                {(
-                  Object.keys(m?.gallery.c ?? {}) as (
-                    | GalleryColorizeBy
-                    | 'disable'
-                  )[]
-                ).map((by) => (
-                  <Dropdown.Item
-                    eventKey={by}
-                    key={by}
-                    title={m?.gallery.c[by]}
-                    active={colorizeBy === by}
+                <Dropdown
+                  className="ms-1"
+                  onSelect={(colorizeBy) =>
+                    dispatch(
+                      galleryColorizeBy(
+                        colorizeBy === 'disable'
+                          ? null
+                          : (colorizeBy as GalleryColorizeBy),
+                      ),
+                    )
+                  }
+                >
+                  <LongPressTooltip
+                    label={m?.gallery.c[colorizeBy ?? 'disable']}
+                    breakpoint="sm"
                   >
-                    {m?.gallery.c[by] ?? '…'}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
+                    {({ props, label, labelClassName }) => (
+                      <Dropdown.Toggle variant="secondary" {...props}>
+                        <FaPalette />{' '}
+                        <span className={labelClassName}>{label}</span>
+                      </Dropdown.Toggle>
+                    )}
+                  </LongPressTooltip>
 
-            <Dropdown
-              className="ms-1"
-              onSelect={(listBy) =>
-                dispatch(galleryList(listBy as GalleryListOrder))
-              }
-            >
-              <LongPressTooltip
-                label={m?.gallery.showPhotosFrom}
-                breakpoint="md"
-              >
-                {({ props, label, labelClassName }) => (
-                  <Dropdown.Toggle variant="secondary" {...props}>
-                    <FaBook /> <span className={labelClassName}>{label}</span>
+                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                    {(
+                      Object.keys(m?.gallery.c ?? {}) as (
+                        | GalleryColorizeBy
+                        | 'disable'
+                      )[]
+                    ).map((by) => (
+                      <Dropdown.Item
+                        eventKey={by}
+                        key={by}
+                        title={m?.gallery.c[by]}
+                        active={colorizeBy === by}
+                      >
+                        {m?.gallery.c[by] ?? '…'}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+                <Dropdown
+                  className="ms-1"
+                  onSelect={(listBy) =>
+                    dispatch(galleryList(listBy as GalleryListOrder))
+                  }
+                >
+                  <LongPressTooltip
+                    label={m?.gallery.showPhotosFrom}
+                    breakpoint="md"
+                  >
+                    {({ props, label, labelClassName }) => (
+                      <Dropdown.Toggle variant="secondary" {...props}>
+                        <FaBook />{' '}
+                        <span className={labelClassName}>{label}</span>
+                      </Dropdown.Toggle>
+                    )}
+                  </LongPressTooltip>
+
+                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                    {(
+                      Object.keys(m?.gallery.f ?? {}) as GalleryListOrder[]
+                    ).map((key) => (
+                      <Dropdown.Item as="button" eventKey={key}>
+                        {m?.gallery.f[key]}{' '}
+                        {key === '-createdAt' && (
+                          <>
+                            <kbd>p</kbd> <kbd>l</kbd>
+                          </>
+                        )}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+                <Dropdown
+                  className="ms-1"
+                  id="more"
+                  onSelect={handleMoreSelect}
+                >
+                  <Dropdown.Toggle variant="secondary">
+                    <FaCog />
                   </Dropdown.Toggle>
-                )}
-              </LongPressTooltip>
 
-              <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                {(Object.keys(m?.gallery.f ?? {}) as GalleryListOrder[]).map(
-                  (key) => (
-                    <Dropdown.Item as="button" eventKey={key}>
-                      {m?.gallery.f[key]}{' '}
-                      {key === '-createdAt' && (
-                        <>
-                          <kbd>p</kbd> <kbd>l</kbd>
-                        </>
-                      )}
-                    </Dropdown.Item>
-                  ),
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
-              <Dropdown.Toggle variant="secondary">
-                <FaCog />
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                <Dropdown.Item as="button" eventKey="legend">
-                  <Checkbox value={showLegend} /> <FaInfo />{' '}
-                  {m?.gallery.showLegend}
-                </Dropdown.Item>
-
-                <Dropdown.Item as="button" eventKey="direction">
-                  <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
-                  {m?.gallery.showDirection}
-                </Dropdown.Item>
-
-                {sendGalleryEmails !== undefined && (
-                  <>
-                    <Dropdown.Item as="button" eventKey="emails">
-                      <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
-                      {m?.settings.account.sendGalleryEmails}
+                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                    <Dropdown.Item as="button" eventKey="legend">
+                      <Checkbox value={showLegend} /> <FaInfo />{' '}
+                      {m?.gallery.showLegend}
                     </Dropdown.Item>
 
-                    <Dropdown.Divider />
-
-                    <Dropdown.Item as="button" eventKey="all-premium">
-                      <FaGem /> {m?.gallery.allMyPhotos.premium}
+                    <Dropdown.Item as="button" eventKey="direction">
+                      <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
+                      {m?.gallery.showDirection}
                     </Dropdown.Item>
 
-                    <Dropdown.Item as="button" eventKey="all-free">
-                      <FaDove /> {m?.gallery.allMyPhotos.free}
-                    </Dropdown.Item>
-                  </>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
+                    {sendGalleryEmails !== undefined && (
+                      <>
+                        <Dropdown.Item as="button" eventKey="emails">
+                          <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
+                          {m?.settings.account.sendGalleryEmails}
+                        </Dropdown.Item>
+
+                        <Dropdown.Divider />
+
+                        <Dropdown.Item as="button" eventKey="all-premium">
+                          <FaGem /> {m?.gallery.allMyPhotos.premium}
+                        </Dropdown.Item>
+
+                        <Dropdown.Item as="button" eventKey="all-free">
+                          <FaDove /> {m?.gallery.allMyPhotos.free}
+                        </Dropdown.Item>
+                      </>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </>
+            )}
+
+            <Button
+              className="ms-1"
+              variant={hidden ? 'primary' : 'dark'}
+              onClick={() => setHidden((hidden) => !hidden)}
+            >
+              {hidden ? <FaCaretRight /> : <FaCaretLeft />}
+            </Button>
           </ButtonToolbar>
         </Toolbar>
       </div>
