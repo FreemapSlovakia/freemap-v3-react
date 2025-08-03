@@ -15,7 +15,7 @@ self.onmessage = async (evt) => {
   try {
     await initPromise;
 
-    const pixelBlock = Lerc.decode(decompress(evt.data.payload).buffer);
+    const pixelBlock = Lerc.decode(decompress(evt.data.payload));
 
     if (pixelBlock.mask) {
       let off = 0;
