@@ -34,24 +34,22 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
   let bbox;
 
   if (area === 'visible') {
-    bbox = getState().map.bounds?.join(',');
+    bbox = getState().map.bounds;
   } else if (
     selection?.type === 'draw-line-poly' &&
     lines[selection.id]?.type === 'polygon'
   ) {
     // selected polygon
 
-    bbox = lines[selection.id].points
-      .reduce(
-        (a, c) => [
-          Math.min(a[0], c.lon),
-          Math.min(a[1], c.lat),
-          Math.max(a[2], c.lon),
-          Math.max(a[3], c.lat),
-        ],
-        [Infinity, Infinity, -Infinity, -Infinity],
-      )
-      .join(',');
+    bbox = lines[selection.id].points.reduce(
+      (a, c) => [
+        Math.min(a[0], c.lon),
+        Math.min(a[1], c.lat),
+        Math.max(a[2], c.lon),
+        Math.max(a[3], c.lat),
+      ],
+      [Infinity, Infinity, -Infinity, -Infinity],
+    );
   }
 
   if (!bbox) {
