@@ -122,6 +122,10 @@ type IsInteractiveLayerDef = {
   technology: 'interactive';
 };
 
+type IsWmsLayerDef = HasUrl & {
+  technology: 'wms';
+};
+
 type IsMapLibreLayerDef = HasUrl & {
   technology: 'maplibre';
 };
@@ -152,6 +156,7 @@ export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
     })
+  | IsWmsLayerDef
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
@@ -236,6 +241,14 @@ function legacyFreemap(
 }
 
 export const integratedLayerDefs: IntegratedLayerDef[] = [
+  {
+    layer: 'base',
+    type: 'P',
+    technology: 'wms',
+    url: 'https://zbgisws.skgeodesy.sk/zbgis_wms_featureinfo/service.svc/get?',
+    icon: <FaBicycle />,
+    attribution: [],
+  },
   {
     layer: 'base',
     type: 'X',

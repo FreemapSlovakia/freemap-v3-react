@@ -68,10 +68,10 @@ export async function wms() {
   type Nod = {
     title: string | null;
     name: string | null;
-    requestable: boolean;
     queryable: boolean;
     transparent: boolean;
-    formats: string[];
+    minScale: number | null;
+    maxScale: number | null;
     children: Nod[];
   };
 
@@ -80,19 +80,24 @@ export async function wms() {
     const title = getText(node, './wms:Title');
     const name = getText(node, './wms:Name') || null;
 
-    const requestable = !!name;
     const queryable = elem.getAttribute('queryable') === '1';
     const transparent = elem.getAttribute('opaque') !== '1';
+
+    const minScale =
+      parseFloat(getText(node, './wms:MinScaleDenominator') || '') || null;
+
+    const maxScale =
+      parseFloat(getText(node, './wms:MaxScaleDenominator') || '') || null;
 
     const children = getChildren(node).map(parseLayer);
 
     return {
       title,
       name,
-      requestable,
       queryable,
       transparent,
-      formats: globalFormats,
+      minScale,
+      maxScale,
       children,
     };
   }
@@ -114,5 +119,5 @@ export async function wms() {
     layersTree.push(parseLayer(node));
   }
 
-  console.log(layersTree);
+  console.log(globalFormats, layersTree);
 }

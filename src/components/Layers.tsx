@@ -1,4 +1,5 @@
 import { type ReactElement } from 'react';
+import { WMSTileLayer } from 'react-leaflet';
 import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import missingTile from '../images/missing-tile-256x256.png';
@@ -45,7 +46,7 @@ export function Layers(): ReactElement | null {
 
     const opacity = layersSettings[type]?.opacity ?? 1;
 
-    if ('technology' in layerDef && layerDef.technology === 'gallery') {
+    if (layerDef.technology === 'gallery') {
       return (
         <AsyncComponent
           factory={galleryLayerFactory}
@@ -62,6 +63,31 @@ export function Layers(): ReactElement | null {
       );
     }
 
+    if (layerDef.technology === 'wms') {
+      return (
+        <WMSTileLayer
+          key={`${layerDef.type}-${opacity}`}
+          url={layerDef.url}
+          layers="7"
+          detectRetina
+          maxNativeZoom={25}
+          maxZoom={25}
+        />
+        // <AsyncComponent
+        //   factory={galleryLayerFactory}
+        //   key={`I-${opacity}`}
+        //   filter={galleryFilter}
+        //   colorizeBy={galleryColorizeBy}
+        //   opacity={opacity}
+        //   zIndex={layerDef.zIndex ?? 1}
+        //   myUserId={user?.id}
+        //   authToken={user?.authToken}
+        //   showDirection={galleryShowDirection}
+        //   dirtySeq={galleryDirtySeq}
+        // />
+      );
+    }
+
     const scaleWithDpi = 'scaleWithDpi' in layerDef && layerDef.scaleWithDpi;
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
@@ -75,10 +101,7 @@ export function Layers(): ReactElement | null {
       effPremiumFromZoom--;
     }
 
-    if (
-      'technology' in layerDef &&
-      layerDef.technology === 'parametricShading'
-    ) {
+    if (layerDef.technology === 'parametricShading') {
       return (
         <AsyncComponent
           key={
@@ -113,7 +136,7 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    if ('technology' in layerDef && layerDef.technology === 'maplibre') {
+    if (layerDef.technology === 'maplibre') {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
@@ -126,7 +149,7 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    if (!('technology' in layerDef) || layerDef.technology === 'tile') {
+    if (layerDef.technology === 'tile') {
       return (
         <ScaledTileLayer
           key={
