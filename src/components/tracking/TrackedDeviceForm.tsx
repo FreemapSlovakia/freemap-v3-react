@@ -198,6 +198,7 @@ export function TrackedDeviceForm(): ReactElement {
               type="number"
               min="0"
               isInvalid={invalidSplitDistance}
+              value={splitDistance}
               onChange={setSplitDistance}
             />
 
