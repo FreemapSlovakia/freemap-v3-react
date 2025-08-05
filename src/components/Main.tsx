@@ -220,7 +220,15 @@ export function Main(): ReactElement {
 
   const handleLogoClick = useCallback(() => {
     if (window.fmEmbedded) {
-      window.open(window.location.href, '_blank');
+      const params = new URLSearchParams(window.location.hash.slice(1));
+
+      params.delete('embed');
+
+      const url = new URL(window.location.href);
+
+      url.hash = params.toString();
+
+      window.open(url.toString(), 'freemap');
     } else {
       dispatch(
         mapRefocus({
