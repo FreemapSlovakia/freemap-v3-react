@@ -64,7 +64,8 @@ export function TrackingResult(): ReactElement {
     maximumFractionDigits: 1,
   });
 
-  const interactive = useAppSelector(selectingModeSelector);
+  const interactive =
+    useAppSelector(selectingModeSelector) || window.fmEmbedded;
 
   return (
     <>

@@ -43,7 +43,7 @@ export function Selection({
 
           {children}
 
-          {deletable && <DeleteButton />}
+          {!window.fmEmbedded && deletable && <DeleteButton />}
 
           <LongPressTooltip label={m?.general.close} kbd="Esc">
             {({ props }) => (

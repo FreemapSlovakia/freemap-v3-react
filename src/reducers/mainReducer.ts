@@ -99,14 +99,16 @@ export const mainInitialState: MainState = {
 export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
     .addCase(setTool, (state, action) => {
-      if (!window.fmEmbedded) {
-        state.selection =
-          action.payload === state.tool || action.payload === null
-            ? state.selection
-            : null;
-
-        state.tool = action.payload;
+      if (window.fmEmbedded) {
+        return;
       }
+
+      state.selection =
+        action.payload === state.tool || action.payload === null
+          ? state.selection
+          : null;
+
+      state.tool = action.payload;
     })
     .addCase(drawingLineStopDrawing, (state) => {
       state.tool = null;
@@ -180,19 +182,25 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       };
     })
     .addCase(selectFeature, (state, action) => {
-      if (!window.fmEmbedded) {
-        state.selection = action.payload;
+      if (
+        window.fmEmbedded &&
+        action.payload &&
+        action.payload.type !== 'tracking'
+      ) {
+        return;
+      }
 
-        if (
-          state.tool !== 'objects' &&
-          state.tool !== 'changesets' &&
-          state.tool !== 'track-viewer' &&
-          (state.tool !== 'route-planner' ||
-            action.payload?.type !== 'route-point') &&
-          action.payload !== null
-        ) {
-          state.tool = null;
-        }
+      state.selection = action.payload;
+
+      if (
+        state.tool !== 'objects' &&
+        state.tool !== 'changesets' &&
+        state.tool !== 'track-viewer' &&
+        (state.tool !== 'route-planner' ||
+          action.payload?.type !== 'route-point') &&
+        action.payload !== null
+      ) {
+        state.tool = null;
       }
     })
     .addCase(convertToDrawing, (state) => {
