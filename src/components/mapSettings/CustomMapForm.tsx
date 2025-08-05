@@ -1,11 +1,7 @@
-import {
-  ChangeEvent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+/* eslint-disable react/jsx-handler-names */
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
+import { useModelChangeHandlers } from '../../hooks/useModelChangeHandlers.js';
 import { useMessages } from '../../l10nInjector.js';
 import { CustomLayerDef } from '../../mapDefinitions.js';
 
@@ -24,6 +20,7 @@ type Model = {
   zIndex: string;
   scaleWithDpi: boolean;
   extraScales: string[];
+  technology: 'tile' | 'maplibre' | 'wms' | 'parametricShading';
 };
 
 export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
@@ -31,28 +28,24 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     return {
       url: value?.url ?? '',
       name: value?.name ?? '',
-      minZoom: !value
-        ? ''
-        : value.minZoom === undefined
-          ? ''
-          : value.minZoom.toString(),
-      maxNativeZoom: !value
-        ? ''
-        : value.maxNativeZoom === undefined
+      minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
+      maxNativeZoom:
+        value?.maxNativeZoom === undefined
           ? ''
           : value.maxNativeZoom.toString(),
       layer: value?.layer ?? 'base',
-      zIndex: !value
-        ? ''
-        : value.zIndex === undefined
-          ? ''
-          : value.zIndex.toString(),
+      zIndex: value?.zIndex === undefined ? '' : value.zIndex.toString(),
       scaleWithDpi: value?.scaleWithDpi ?? false,
       extraScales: (value?.extraScales ?? []).map((a) => a.toString()),
+      technology: value?.technology ?? 'tile',
     };
   }
 
-  const [model, setModel] = useState<Model>(valueToModel(value));
+  const [model, setModel] = useState<Model>(() => valueToModel(value));
+
+  const handlers = useModelChangeHandlers(setModel);
+
+  // const prevType = useRef(type);
 
   useEffect(() => {
     if (!value) {
@@ -69,126 +62,59 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       model.zIndex !== newModel.zIndex ||
       model.scaleWithDpi !== newModel.scaleWithDpi ||
       model.extraScales.join('|') !== newModel.extraScales.join('|') ||
+      model.technology !== newModel.technology ||
       model.layer !== newModel.layer
         ? newModel
         : model,
     );
-  }, [value]);
+  }, [type]);
 
-  const update = useCallback(
-    (model: Model) => {
-      setModel(model);
+  useEffect(() => {
+    const minZoom = model.minZoom ? parseInt(model.minZoom, 10) : undefined;
 
-      const minZoom = model.minZoom ? parseInt(model.minZoom, 10) : undefined;
+    if (minZoom !== undefined && isNaN(minZoom)) {
+      return;
+    }
 
-      if (minZoom !== undefined && isNaN(minZoom)) {
-        return;
-      }
+    const maxNativeZoom = model.maxNativeZoom
+      ? parseInt(model.maxNativeZoom, 10)
+      : undefined;
 
-      const maxNativeZoom = model.maxNativeZoom
-        ? parseInt(model.maxNativeZoom, 10)
-        : undefined;
+    if (maxNativeZoom !== undefined && isNaN(maxNativeZoom)) {
+      return;
+    }
 
-      if (maxNativeZoom !== undefined && isNaN(maxNativeZoom)) {
-        return;
-      }
+    const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
 
-      const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
+    if (zIndex !== undefined && isNaN(zIndex)) {
+      return;
+    }
 
-      if (zIndex !== undefined && isNaN(zIndex)) {
-        return;
-      }
+    if (!model.url) {
+      onChange(undefined);
 
-      if (!model.url) {
-        onChange(undefined);
+      return;
+    }
 
-        return;
-      }
-
-      onChange(
-        !model.url
-          ? undefined
-          : {
-              type,
-              technology: 'tile',
-              name: model.name,
-              url: model.url,
-              layer: model.layer,
-              minZoom,
-              maxNativeZoom,
-              zIndex,
-              scaleWithDpi: model.scaleWithDpi,
-              extraScales: model.extraScales
-                .map((a) => parseInt(a, 10))
-                .filter((a) => !isNaN(a)),
-            },
-      );
-    },
-    [type, onChange],
-  );
-
-  const setUrl = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const url = e.currentTarget.value;
-
-      update({ ...model, url });
-    },
-    [update, model],
-  );
-
-  const setName = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const name = e.currentTarget.value;
-
-      update({ ...model, name });
-    },
-    [update, model],
-  );
-
-  const setMinZoom = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const minZoom = e.currentTarget.value;
-
-      update({ ...model, minZoom });
-    },
-    [update, model],
-  );
-
-  const setMaxNativeZoom = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const maxNativeZoom = e.currentTarget.value;
-
-      update({ ...model, maxNativeZoom });
-    },
-    [update, model],
-  );
-
-  const setLayer = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      const layer = e.currentTarget.value as 'base';
-
-      update({ ...model, layer });
-    },
-    [update, model],
-  );
-
-  const setZIndex = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const zIndex = e.currentTarget.value;
-
-      update({ ...model, zIndex });
-    },
-    [update, model],
-  );
-
-  const setScaleWithDpi = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const scaleWithDpi = e.currentTarget.checked;
-
-      update({ ...model, scaleWithDpi });
-    },
-    [update, model],
-  );
+    onChange(
+      !model.url
+        ? undefined
+        : {
+            type,
+            technology: model.technology as 'tile',
+            name: model.name,
+            url: model.url,
+            layer: model.layer,
+            minZoom,
+            maxNativeZoom,
+            zIndex,
+            scaleWithDpi: model.scaleWithDpi,
+            extraScales: model.extraScales
+              .map((a) => parseInt(a, 10))
+              .filter((a) => !isNaN(a)),
+          },
+    );
+  }, [type, model]);
 
   const m = useMessages();
 
@@ -214,8 +140,28 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         style={{ gridColumn: '1 / -1' }}
         type="text"
         value={model.name}
-        onChange={setName}
+        onChange={handlers.name}
       />
+
+      {/* Technology */}
+
+      <Form.Label
+        className="mt-3 d-flex align-items-end"
+        style={{ gridColumn: '1 / -1' }}
+      >
+        Technology
+      </Form.Label>
+
+      <Form.Select
+        style={{ gridColumn: '1 / -1' }}
+        value={model.technology}
+        onChange={handlers.technology}
+      >
+        <option value="tile">Tile (TMS, XYZ)</option>
+        <option value="maplibre">Vector</option>
+        <option value="wms">WMS</option>
+        <option value="parametricShading">Parametric shading</option>
+      </Form.Select>
 
       {/* URL */}
 
@@ -230,7 +176,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         style={{ gridColumn: '1 / -1' }}
         type="text"
         value={model.url}
-        onChange={setUrl}
+        onChange={handlers.url}
       />
 
       {/* Min/Max zoom */}
@@ -247,14 +193,14 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         type="number"
         min={0}
         value={model.minZoom}
-        onChange={setMinZoom}
+        onChange={handlers.minZoom}
       />
 
       <Form.Control
         type="number"
         min={0}
         value={model.maxNativeZoom}
-        onChange={setMaxNativeZoom}
+        onChange={handlers.maxNativeZoom}
       />
 
       {/* Extra scales + checkbox */}
@@ -276,10 +222,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             onChange={(e) => {
               const extraScales = [...model.extraScales];
               extraScales[i] = e.currentTarget.value;
-              update({
+              setModel((model) => ({
                 ...model,
                 extraScales: extraScales.filter(Boolean),
-              });
+              }));
             }}
           />
         ))}
@@ -290,7 +236,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           id="chk-scale-dpi"
           label={m?.mapLayers.scaleWithDpi}
           checked={model.scaleWithDpi}
-          onChange={setScaleWithDpi}
+          onChange={handlers.scaleWithDpi}
         />
       </div>
 
@@ -309,7 +255,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         {m?.mapLayers.zIndex}
       </Form.Label>
 
-      <Form.Select value={model.layer} onChange={setLayer}>
+      <Form.Select value={model.layer} onChange={handlers.layer}>
         <option value="base">{m?.mapLayers.layer.base}</option>
         <option value="overlay">{m?.mapLayers.layer.overlay}</option>
       </Form.Select>
@@ -319,7 +265,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         type="number"
         min={0}
         value={model.zIndex}
-        onChange={setZIndex}
+        onChange={handlers.zIndex}
       />
     </div>
   );
