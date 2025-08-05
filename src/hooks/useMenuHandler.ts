@@ -15,6 +15,7 @@ import {
   setTool,
 } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
+import { trackingActions } from '../actions/trackingActions.js';
 import { Submenu } from '../components/mainMenu/submenu.js';
 import { useAppSelector } from './useAppSelector.js';
 
@@ -146,6 +147,15 @@ export function useMenuHandler({
         }
 
         setShow(false);
+      } else if (eventKey.startsWith('tracking-visual-')) {
+        const [points, lines] = eventKey
+          .slice(16)
+          .split('')
+          .map((n) => n === '1');
+
+        dispatch(trackingActions.setShowPoints(points));
+
+        dispatch(trackingActions.setShowLine(lines));
       } else if (eventKey.startsWith('gallery')) {
         dispatch(
           mapRefocus({

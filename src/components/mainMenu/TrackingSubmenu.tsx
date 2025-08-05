@@ -8,15 +8,11 @@ import {
   FaRegCircle,
   FaRegEye,
 } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { trackingActions } from '../../actions/trackingActions.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function TrackingSubmenu(): ReactElement {
-  const dispatch = useDispatch();
-
   const m = useMessages();
 
   const trackingDisplay = useAppSelector(
@@ -44,14 +40,7 @@ export function TrackingSubmenu(): ReactElement {
         <FaPaintBrush /> {m?.general.visual}
       </Dropdown.Header>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(trackingActions.setShowPoints(true));
-
-          dispatch(trackingActions.setShowLine(false));
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="tracking-visual-10">
         {trackingDisplay === 'true,false' ? (
           <FaRegCheckCircle />
         ) : (
@@ -60,14 +49,7 @@ export function TrackingSubmenu(): ReactElement {
         {m?.tracking.visual.points}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(trackingActions.setShowPoints(false));
-
-          dispatch(trackingActions.setShowLine(true));
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="tracking-visual-01">
         {trackingDisplay === 'false,true' ? (
           <FaRegCheckCircle />
         ) : (
@@ -76,14 +58,7 @@ export function TrackingSubmenu(): ReactElement {
         {m?.tracking.visual.line}
       </Dropdown.Item>
 
-      <Dropdown.Item
-        as="button"
-        onSelect={() => {
-          dispatch(trackingActions.setShowPoints(true));
-
-          dispatch(trackingActions.setShowLine(true));
-        }}
-      >
+      <Dropdown.Item as="button" eventKey="tracking-visual-11">
         {trackingDisplay === 'true,true' ? (
           <FaRegCheckCircle />
         ) : (
