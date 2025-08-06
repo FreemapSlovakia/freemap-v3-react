@@ -133,8 +133,8 @@ const legendOutdoorModalFactory = () => import('./LegendOutdoorModal.js');
 
 const legendModalFactory = () => import('./LegendModal.js');
 
-const drawingPropertiesModalFactory = () =>
-  import('./DrawingPropertiesModal.js');
+const currentDrawingPropertiesModalFactory = () =>
+  import('./CurrentDrawingPropertiesModal.js');
 
 const trackViewerUploadModalFactory = () =>
   import('./TrackViewerUploadModal.js');
@@ -149,8 +149,8 @@ const premiumActivationModalFactory = () =>
 const galleryFilterModalFactory = () =>
   import('./gallery/GalleryFilterModal.js');
 
-const currentDrawingPropertiesModalFactory = () =>
-  import('./CurrentDrawingPropertiesModal.js');
+const predefinedDrawingPropertiesModalFactory = () =>
+  import('./PredefinedDrawingPropertiesModal.js');
 
 export function Main(): ReactElement {
   const m = useMessages();
@@ -688,8 +688,8 @@ export function Main(): ReactElement {
       )}
 
       <AsyncModal
-        show={activeModal === 'edit-label'}
-        factory={drawingPropertiesModalFactory}
+        show={activeModal === 'current-drawing-properties'}
+        factory={currentDrawingPropertiesModalFactory}
       />
 
       <AsyncModal
@@ -713,7 +713,7 @@ export function Main(): ReactElement {
 
       <AsyncModal
         show={activeModal === 'drawing-properties'}
-        factory={currentDrawingPropertiesModalFactory}
+        factory={predefinedDrawingPropertiesModalFactory}
       />
 
       <GalleryModals />

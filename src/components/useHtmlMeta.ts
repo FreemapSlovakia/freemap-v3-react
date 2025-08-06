@@ -18,7 +18,7 @@ const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   'tracking-watched': 'tracking.trackedDevices.modalTitle',
   'tracking-my': 'tracking.devices.modalTitle',
   maps: 'tools.maps',
-  'edit-label': 'drawing.edit.title',
+  'current-drawing-properties': 'drawing.edit.title',
   login: 'mainMenu.logIn',
   premium: 'premium.title',
   'gallery-filter': 'gallery.filterModal.title',

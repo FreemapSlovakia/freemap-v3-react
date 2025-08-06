@@ -8,7 +8,10 @@ import type { LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];
 
-export type Modal = (typeof basicModals)[number] | 'tips' | 'edit-label';
+export type Modal =
+  | (typeof basicModals)[number]
+  | 'tips'
+  | 'current-drawing-properties';
 
 export type ShowModal = (typeof basicModals)[number];
 
