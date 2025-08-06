@@ -122,9 +122,12 @@ type IsInteractiveLayerDef = {
   technology: 'interactive';
 };
 
-type IsWmsLayerDef = HasUrl & {
-  technology: 'wms';
-};
+type IsWmsLayerDef = HasUrl &
+  HasMaxNativeZoom &
+  HasScaleWithDpi & {
+    technology: 'wms';
+    layers: string[];
+  };
 
 type IsMapLibreLayerDef = HasUrl & {
   technology: 'maplibre';
@@ -167,17 +170,23 @@ export type IsCustomLayer = {
   name?: string;
 };
 
-export type CustomBaseLayerDef = IsCustomLayer &
-  IsTileLayerDef &
-  IsBaseLayerDef &
-  IsCommonLayerDef;
+export type IsCustomLayerTechnologiesDef =
+  | IsTileLayerDef
+  | IsWmsLayerDef
+  | IsMapLibreLayerDef
+  | IsParametricShadingLayerDef;
 
-export type CustomOverlayLayerDef = IsCustomLayer &
-  IsTileLayerDef &
-  IsOverlayLayerDef &
-  IsCommonLayerDef;
+export type CustomBaseLayerDef<
+  T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
+> = IsCustomLayer & T & IsBaseLayerDef & IsCommonLayerDef;
 
-export type CustomLayerDef = CustomBaseLayerDef | CustomOverlayLayerDef;
+export type CustomOverlayLayerDef<
+  T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
+> = IsCustomLayer & T & IsOverlayLayerDef & IsCommonLayerDef;
+
+export type CustomLayerDef<
+  T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
+> = CustomBaseLayerDef<T> | CustomOverlayLayerDef<T>;
 
 export type HasLegacy = {
   superseededBy?: string;
@@ -201,21 +210,24 @@ export type OverlayLayerDef = IntegratedOverlayLayerDef | CustomOverlayLayerDef;
 
 export type LayerDef = CustomLayerDef | IntegratedLayerDef;
 
-type OldCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'> & {
-  layer?: 'base' | 'overlay';
-  technology?: 'tile';
-};
+type OldTileCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'>;
 
 export function upgradeCustomLayerDefs(
   customLayerDefs: unknown[],
 ): CustomLayerDef[] {
   return customLayerDefs
-    .filter((cl) => is<OldCustomLayerDef>(cl))
-    .map((cl) => ({
-      ...cl,
-      layer: cl.type.charAt(0) === ':' ? 'overlay' : 'base',
-      technology: 'tile',
-    }));
+    .map((def) =>
+      is<CustomLayerDef>
+        ? def
+        : is<OldTileCustomLayerDef>(def)
+          ? ({
+              layer: def.type.charAt(0) === ':' ? 'overlay' : 'base',
+              technology: 'tile',
+              ...def,
+            } as CustomLayerDef<IsTileLayerDef>)
+          : undefined,
+    )
+    .filter((a): a is CustomLayerDef => !!a);
 }
 
 function legacyFreemap(
@@ -241,14 +253,6 @@ function legacyFreemap(
 }
 
 export const integratedLayerDefs: IntegratedLayerDef[] = [
-  {
-    layer: 'base',
-    type: 'P',
-    technology: 'wms',
-    url: 'https://zbgisws.skgeodesy.sk/zbgis_wms_featureinfo/service.svc/get?',
-    icon: <FaBicycle />,
-    attribution: [],
-  },
   {
     layer: 'base',
     type: 'X',

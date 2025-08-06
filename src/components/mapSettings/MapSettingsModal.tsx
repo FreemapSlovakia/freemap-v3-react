@@ -42,8 +42,6 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     initialCustomLayerDefs,
   );
 
-  console.log(customLayerDefs);
-
   const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
 
   const [maxZoom, setMaxZoom] = useState(initialMaxZoom);

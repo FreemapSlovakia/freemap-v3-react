@@ -821,7 +821,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Mappe personalizzate',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',
-    urlTemplate: 'Modello URL',
+    url: 'Modello URL',
     minZoom: 'Zoom minimo',
     maxNativeZoom: 'Zoom nativo massimo',
     extraScales: 'Risoluzioni extra',

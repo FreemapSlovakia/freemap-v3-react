@@ -22,7 +22,6 @@ import { attachMapStateHandler } from './mapStateHandler.js';
 import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
 import { createReduxStore } from './store.js';
 import './styles/index.scss';
-import { wms } from './wms.js';
 
 if (
   window.location.search === '?reset-local-storage' ||
@@ -30,8 +29,6 @@ if (
 ) {
   storage.clear();
 }
-
-wms();
 
 // workaround to fix blurring menus on hidpi desktop chrome
 if (

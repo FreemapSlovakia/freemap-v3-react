@@ -68,23 +68,12 @@ export function Layers(): ReactElement | null {
         <WMSTileLayer
           key={`${layerDef.type}-${opacity}`}
           url={layerDef.url}
-          layers="7"
-          detectRetina
-          maxNativeZoom={25}
-          maxZoom={25}
+          layers={layerDef.layers.join(',')}
+          maxNativeZoom={layerDef.maxNativeZoom}
+          maxZoom={maxZoom}
+          minZoom={layerDef.minZoom}
+          detectRetina={layerDef.scaleWithDpi}
         />
-        // <AsyncComponent
-        //   factory={galleryLayerFactory}
-        //   key={`I-${opacity}`}
-        //   filter={galleryFilter}
-        //   colorizeBy={galleryColorizeBy}
-        //   opacity={opacity}
-        //   zIndex={layerDef.zIndex ?? 1}
-        //   myUserId={user?.id}
-        //   authToken={user?.authToken}
-        //   showDirection={galleryShowDirection}
-        //   dirtySeq={galleryDirtySeq}
-        // />
       );
     }
 
@@ -200,7 +189,7 @@ export function Layers(): ReactElement | null {
         .map((item) => getLayer(item))}
       {customLayerDefs
         .filter(({ type }) => layers.includes(type))
-        .map((cm) => getLayer({ ...cm, technology: 'tile' }))}
+        .map((cm) => getLayer(cm))}
     </>
   );
 }

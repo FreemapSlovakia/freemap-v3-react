@@ -1,9 +1,10 @@
 /* eslint-disable react/jsx-handler-names */
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 import { useModelChangeHandlers } from '../../hooks/useModelChangeHandlers.js';
 import { useMessages } from '../../l10nInjector.js';
 import { CustomLayerDef } from '../../mapDefinitions.js';
+import { wms } from '../../wms.js';
 
 type Props = {
   type: string;
@@ -21,6 +22,7 @@ type Model = {
   scaleWithDpi: boolean;
   extraScales: string[];
   technology: 'tile' | 'maplibre' | 'wms' | 'parametricShading';
+  layers: string[];
 };
 
 export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
@@ -30,44 +32,73 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       name: value?.name ?? '',
       minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
       maxNativeZoom:
-        value?.maxNativeZoom === undefined
-          ? ''
-          : value.maxNativeZoom.toString(),
+        value && 'maxNativeZoom' in value && value.maxNativeZoom !== undefined
+          ? value.maxNativeZoom.toString()
+          : '',
       layer: value?.layer ?? 'base',
-      zIndex: value?.zIndex === undefined ? '' : value.zIndex.toString(),
-      scaleWithDpi: value?.scaleWithDpi ?? false,
-      extraScales: (value?.extraScales ?? []).map((a) => a.toString()),
+      zIndex:
+        value && 'zIndex' in value && value.zIndex !== undefined
+          ? value.zIndex.toString()
+          : '',
+      scaleWithDpi:
+        value && 'scaleWithDpi' in value && value.scaleWithDpi
+          ? value.scaleWithDpi
+          : false,
+      extraScales:
+        value && 'extraScales' in value && value.extraScales
+          ? value.extraScales.map((a) => a.toString())
+          : [],
+      layers: value && 'layers' in value && value.layers ? value.layers : [],
       technology: value?.technology ?? 'tile',
     };
   }
 
   const [model, setModel] = useState<Model>(() => valueToModel(value));
 
-  const handlers = useModelChangeHandlers(setModel);
+  const localVersion = useRef(0);
 
-  // const prevType = useRef(type);
+  const externalVersion = useRef(0);
+
+  const incrementVersion = useRef(() => {
+    localVersion.current++;
+  });
+
+  const setModelWithVersion = useCallback((updater: (prev: Model) => Model) => {
+    incrementVersion.current();
+
+    setModel(updater);
+  }, []);
+
+  const handlers = useModelChangeHandlers(setModelWithVersion);
 
   useEffect(() => {
-    if (!value) {
+    if (!value || externalVersion.current < localVersion.current) {
       return;
     }
 
     const newModel = valueToModel(value);
 
-    setModel((model) =>
-      model.name !== newModel.name ||
-      model.url !== newModel.url ||
-      model.minZoom !== newModel.minZoom ||
-      model.maxNativeZoom !== newModel.maxNativeZoom ||
-      model.zIndex !== newModel.zIndex ||
-      model.scaleWithDpi !== newModel.scaleWithDpi ||
-      model.extraScales.join('|') !== newModel.extraScales.join('|') ||
-      model.technology !== newModel.technology ||
-      model.layer !== newModel.layer
-        ? newModel
-        : model,
-    );
-  }, [type]);
+    setModel((model) => {
+      const changed =
+        model.name !== newModel.name ||
+        model.url !== newModel.url ||
+        model.minZoom !== newModel.minZoom ||
+        model.maxNativeZoom !== newModel.maxNativeZoom ||
+        model.zIndex !== newModel.zIndex ||
+        model.scaleWithDpi !== newModel.scaleWithDpi ||
+        model.extraScales.join('|') !== newModel.extraScales.join('|') ||
+        model.technology !== newModel.technology ||
+        model.layer !== newModel.layer;
+
+      if (changed) {
+        externalVersion.current++;
+
+        return newModel;
+      }
+
+      return model;
+    });
+  }, [value]);
 
   useEffect(() => {
     const minZoom = model.minZoom ? parseInt(model.minZoom, 10) : undefined;
@@ -96,27 +127,85 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       return;
     }
 
-    onChange(
-      !model.url
-        ? undefined
-        : {
-            type,
-            technology: model.technology as 'tile',
-            name: model.name,
-            url: model.url,
-            layer: model.layer,
-            minZoom,
-            maxNativeZoom,
-            zIndex,
-            scaleWithDpi: model.scaleWithDpi,
-            extraScales: model.extraScales
-              .map((a) => parseInt(a, 10))
-              .filter((a) => !isNaN(a)),
-          },
-    );
-  }, [type, model]);
+    const common = {
+      type,
+      name: model.name,
+      layer: model.layer,
+      zIndex,
+    };
+
+    switch (model.technology) {
+      case 'tile':
+        onChange({
+          ...common,
+          technology: 'tile',
+          url: model.url,
+          minZoom,
+          maxNativeZoom,
+          scaleWithDpi: model.scaleWithDpi,
+          extraScales: model.extraScales
+            .map((a) => parseInt(a, 10))
+            .filter((a) => !isNaN(a)),
+        });
+
+        break;
+      case 'wms':
+        onChange({
+          ...common,
+          technology: 'wms',
+          url: model.url,
+          minZoom,
+          maxNativeZoom,
+          scaleWithDpi: model.scaleWithDpi,
+          layers: model.layers,
+        });
+
+        break;
+      case 'maplibre':
+        onChange({
+          ...common,
+          technology: 'maplibre',
+          url: model.url,
+          minZoom,
+        });
+
+        break;
+      case 'parametricShading':
+        onChange({
+          ...common,
+          technology: 'parametricShading',
+          url: model.url,
+          minZoom,
+          maxNativeZoom,
+          scaleWithDpi: model.scaleWithDpi,
+        });
+
+        break;
+    }
+  }, [type, model, onChange]);
 
   const m = useMessages();
+
+  const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
+
+  useEffect(() => {
+    setWmsLayersFetchError(undefined);
+  }, [model]);
+
+  const [layersTree, setLayersTree] = useState<unknown[]>();
+
+  const handleLoadLayersClick = useCallback(() => {
+    wms(model.url).then(
+      ({ layersTree }) => {
+        setLayersTree(layersTree);
+      },
+      (err) => setWmsLayersFetchError(String(err)),
+    );
+  }, [model.url]);
+
+  useEffect(() => {
+    setLayersTree(undefined);
+  }, [model.url]);
 
   return (
     <div
@@ -129,15 +218,12 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     >
       {/* Name */}
 
-      <Form.Label
-        className="d-flex align-items-end"
-        style={{ gridColumn: '1 / -1' }}
-      >
+      <Form.Label className="d-flex align-items-end fm-grid-span">
         {m?.general.name}
       </Form.Label>
 
       <Form.Control
-        style={{ gridColumn: '1 / -1' }}
+        className="fm-grid-span"
         type="text"
         value={model.name}
         onChange={handlers.name}
@@ -145,100 +231,134 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
       {/* Technology */}
 
-      <Form.Label
-        className="mt-3 d-flex align-items-end"
-        style={{ gridColumn: '1 / -1' }}
-      >
-        Technology
+      <Form.Label className="mt-3 d-flex align-items-end fm-grid-span">
+        {m?.mapLayers.technology}
       </Form.Label>
 
       <Form.Select
-        style={{ gridColumn: '1 / -1' }}
+        className="fm-grid-span"
         value={model.technology}
         onChange={handlers.technology}
       >
         <option value="tile">Tile (TMS, XYZ)</option>
-        <option value="maplibre">Vector</option>
+        <option value="maplibre">Vector (MapLibre)</option>
         <option value="wms">WMS</option>
         <option value="parametricShading">Parametric shading</option>
       </Form.Select>
 
       {/* URL */}
+      {model.technology !== 'parametricShading' && (
+        <>
+          <Form.Label className="mt-3 d-flex align-items-end fm-grid-span">
+            {m?.mapLayers.url}
+          </Form.Label>
 
-      <Form.Label
-        className="mt-3 d-flex align-items-end"
-        style={{ gridColumn: '1 / -1' }}
-      >
-        {m?.mapLayers.urlTemplate}
-      </Form.Label>
+          <Form.Control
+            className="fm-grid-span"
+            type="text"
+            value={model.url}
+            onChange={handlers.url}
+          />
+        </>
+      )}
 
-      <Form.Control
-        style={{ gridColumn: '1 / -1' }}
-        type="text"
-        value={model.url}
-        onChange={handlers.url}
-      />
+      {model.technology === 'wms' && (
+        <>
+          <Button
+            className="mt-3 fm-grid-span"
+            type="button"
+            onClick={handleLoadLayersClick}
+          >
+            Load layers
+          </Button>
+
+          {wmsLayersFetchError && (
+            <Alert className="mt-3 fm-grid-span" variant="danger">
+              {wmsLayersFetchError}
+            </Alert>
+          )}
+
+          <pre className="mt-3 fm-grid-span">
+            {JSON.stringify(layersTree, null, 2)}
+          </pre>
+        </>
+      )}
 
       {/* Min/Max zoom */}
+      {model.technology !== 'parametricShading' && (
+        <>
+          <Form.Label className="mt-3 d-flex align-items-end">
+            {m?.mapLayers.minZoom}
+          </Form.Label>
 
-      <Form.Label className="mt-3 d-flex align-items-end">
-        {m?.mapLayers.minZoom}
-      </Form.Label>
+          <Form.Label className="mt-3 d-flex align-items-end">
+            {m?.mapLayers.maxNativeZoom}
+          </Form.Label>
 
-      <Form.Label className="mt-3 d-flex align-items-end">
-        {m?.mapLayers.maxNativeZoom}
-      </Form.Label>
-
-      <Form.Control
-        type="number"
-        min={0}
-        value={model.minZoom}
-        onChange={handlers.minZoom}
-      />
-
-      <Form.Control
-        type="number"
-        min={0}
-        value={model.maxNativeZoom}
-        onChange={handlers.maxNativeZoom}
-      />
-
-      {/* Extra scales + checkbox */}
-      <Form.Label className="mt-3 d-flex align-items-end">
-        {m?.mapLayers.extraScales}
-      </Form.Label>
-
-      <Form.Label className="mt-3 d-flex align-items-end">&nbsp;</Form.Label>
-
-      <div className="d-flex gap-2 flex-wrap">
-        {[...model.extraScales, ''].map((a, i) => (
           <Form.Control
-            style={{ width: '4rem' }}
-            key={i}
             type="number"
-            min={1}
-            step={1}
-            value={a}
-            onChange={(e) => {
-              const extraScales = [...model.extraScales];
-              extraScales[i] = e.currentTarget.value;
-              setModel((model) => ({
-                ...model,
-                extraScales: extraScales.filter(Boolean),
-              }));
-            }}
+            min={0}
+            value={model.minZoom}
+            onChange={handlers.minZoom}
           />
-        ))}
-      </div>
 
-      <div className="d-flex align-items-center">
-        <Form.Check
-          id="chk-scale-dpi"
-          label={m?.mapLayers.scaleWithDpi}
-          checked={model.scaleWithDpi}
-          onChange={handlers.scaleWithDpi}
-        />
-      </div>
+          <Form.Control
+            type="number"
+            min={0}
+            value={model.maxNativeZoom}
+            onChange={handlers.maxNativeZoom}
+          />
+
+          {/* Extra scales + checkbox */}
+          {model.technology === 'tile' ? (
+            <>
+              <Form.Label className="mt-3 d-flex align-items-end">
+                {m?.mapLayers.extraScales}
+              </Form.Label>
+
+              <Form.Label className="mt-3 d-flex align-items-end">
+                &nbsp;
+              </Form.Label>
+            </>
+          ) : (
+            <div className="mt-3 fm-grid-span" />
+          )}
+
+          <div className="d-flex gap-2 flex-wrap">
+            {model.technology === 'tile' ? (
+              [...model.extraScales, ''].map((a, i) => (
+                <Form.Control
+                  style={{ width: '4rem' }}
+                  key={i}
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={a}
+                  onChange={(e) => {
+                    const extraScales = [...model.extraScales];
+                    extraScales[i] = e.currentTarget.value;
+                    setModel((model) => ({
+                      ...model,
+                      extraScales: extraScales.filter(Boolean),
+                    }));
+                  }}
+                />
+              ))
+            ) : (
+              <>&nbsp;</>
+            )}
+          </div>
+
+          <div className="d-flex align-items-center">
+            <Form.Check
+              id="chk-scale-dpi"
+              label={m?.mapLayers.scaleWithDpi}
+              checked={model.scaleWithDpi}
+              onChange={handlers.scaleWithDpi}
+            />
+          </div>
+        </>
+      )}
 
       {/* Layer */}
       <Form.Label className="mt-3 d-flex align-items-end">

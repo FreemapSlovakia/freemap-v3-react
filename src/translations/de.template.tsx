@@ -832,7 +832,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Benutzerdefinierte Karten',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',
-    urlTemplate: 'URL-Vorlage',
+    url: 'URL-Vorlage',
     minZoom: 'Min. Zoomstufe',
     maxNativeZoom: 'Max. native Zoomstufe',
     extraScales: 'Zusätzliche Auflösungen',

@@ -1,7 +1,13 @@
-export async function wms() {
-  const res = await fetch(
-    'https://zbgisws.skgeodesy.sk/zbgis_wms_featureinfo/service.svc/get?service=WMS&version=1.3.0&request=GetCapabilities',
-  );
+export async function wms(urlString: string) {
+  const url = new URL(urlString);
+
+  url.searchParams.set('request', 'GetCapabilities');
+
+  const res = await fetch(url.toString());
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
 
   const text = await res.text();
 
@@ -33,11 +39,13 @@ export async function wms() {
     );
 
     const result: string[] = [];
+
     for (let n = iterator.iterateNext(); n; n = iterator.iterateNext()) {
       if (n.textContent) {
         result.push(n.textContent);
       }
     }
+
     return result;
   }
 
@@ -53,6 +61,7 @@ export async function wms() {
     );
 
     const result: Element[] = [];
+
     for (
       let child = iterator.iterateNext();
       child;
@@ -62,6 +71,7 @@ export async function wms() {
         result.push(child);
       }
     }
+
     return result;
   }
 
@@ -119,5 +129,5 @@ export async function wms() {
     layersTree.push(parseLayer(node));
   }
 
-  console.log(globalFormats, layersTree);
+  return { globalFormats, layersTree };
 }

@@ -11,9 +11,10 @@ export function useModelChangeHandlers<T extends object>(
     Partial<Record<keyof T, (e: ControlChangeEvent) => void>>
   >({});
 
-  return useMemo(
-    () =>
-      new Proxy({} as { [K in keyof T]: (e: ControlChangeEvent) => void }, {
+  return useMemo(() => {
+    return new Proxy(
+      {} as { [K in keyof T]: (e: ControlChangeEvent) => void },
+      {
         get: (_, key) => {
           const k = key as keyof T;
 
@@ -27,7 +28,7 @@ export function useModelChangeHandlers<T extends object>(
             }));
           });
         },
-      }),
-    [setModel],
-  );
+      },
+    );
+  }, [setModel]);
 }

@@ -32,7 +32,7 @@ export const getCountriesProcessor: Processor = {
         dispatch(mapSetCountries(assert<string[]>(await res.json())));
       })().catch((err) => {
         if (!(err instanceof DOMException && err.name === 'AbortError')) {
-          console.log(err);
+          console.error(err);
 
           if (getState().map.countries) {
             dispatch(mapSetCountries(undefined));

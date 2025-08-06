@@ -793,7 +793,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Vlastní mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
-    urlTemplate: 'Šablona URL',
+    url: 'Šablona URL',
     minZoom: 'Minimální přiblížení',
     maxNativeZoom: 'Maximální přirozené přiblížení',
     extraScales: 'Další rozlišení',
