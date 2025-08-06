@@ -75,7 +75,9 @@ export function DrawingPointSelection(): ReactElement | null {
             <Button
               className="ms-1"
               variant="secondary"
-              onClick={() => dispatch(setActiveModal('edit-label'))}
+              onClick={() =>
+                dispatch(setActiveModal('current-drawing-properties'))
+              }
               {...props}
             >
               <FaTag />
