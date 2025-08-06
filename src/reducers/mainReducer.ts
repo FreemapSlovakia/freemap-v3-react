@@ -252,7 +252,11 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         newState.drawingWidth = action.payload.drawingWidth;
       }
 
-      return color ? updateRecentDrawingColors(newState, color) : newState;
+      if (color) {
+        updateRecentDrawingColors(newState, color);
+      }
+
+      return newState;
     })
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
       state.selection =
