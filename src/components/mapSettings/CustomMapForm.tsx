@@ -1,10 +1,25 @@
 /* eslint-disable react/jsx-handler-names */
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Button, Form } from 'react-bootstrap';
+import {
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Alert,
+  Button,
+  Form,
+  ListGroup,
+  ListGroupItem,
+  Spinner,
+} from 'react-bootstrap';
+import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
 import { useModelChangeHandlers } from '../../hooks/useModelChangeHandlers.js';
 import { useMessages } from '../../l10nInjector.js';
-import { CustomLayerDef } from '../../mapDefinitions.js';
-import { wms } from '../../wms.js';
+import { type CustomLayerDef } from '../../mapDefinitions.js';
+import { type Layer, wms } from '../../wms.js';
 
 type Props = {
   type: string;
@@ -192,20 +207,115 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     setWmsLayersFetchError(undefined);
   }, [model]);
 
-  const [layersTree, setLayersTree] = useState<unknown[]>();
+  const [layersTree, setLayersTree] = useState<Layer[]>();
+
+  const [loadingLayers, setLoadingLayers] = useState(false);
 
   const handleLoadLayersClick = useCallback(() => {
-    wms(model.url).then(
-      ({ layersTree }) => {
-        setLayersTree(layersTree);
-      },
-      (err) => setWmsLayersFetchError(String(err)),
-    );
+    setLoadingLayers(true);
+
+    wms(model.url)
+      .then(
+        ({ layersTree }) => {
+          setLayersTree(layersTree);
+        },
+        (err) => setWmsLayersFetchError(String(err)),
+      )
+      .finally(() => {
+        setLoadingLayers(false);
+      });
   }, [model.url]);
 
   useEffect(() => {
     setLayersTree(undefined);
   }, [model.url]);
+
+  const handleLayerSelect = useCallback((name: string | null) => {
+    if (name === null) {
+      return;
+    }
+
+    setModel((model) => {
+      let found = false;
+
+      const next = model.layers.filter((n) => {
+        found ||= n === name;
+
+        return n !== name;
+      });
+
+      if (!found) {
+        next.push(name);
+      }
+
+      return { ...model, layers: next };
+    });
+  }, []);
+
+  const [expanded, setExpanded] = useState<string[]>([]);
+
+  function renderLayers(layers: Layer[] | undefined, path: number[] = []) {
+    return layers?.map((layer, i) => {
+      const id = [...path, i].join(',');
+
+      return (
+        <Fragment key={id}>
+          <ListGroupItem
+            eventKey={layer.name ?? undefined}
+            active={layer.name ? model.layers.includes(layer.name) : undefined}
+            action={layer.name !== null}
+            as={layer.children.length > 0 ? 'div' : 'button'}
+          >
+            {path.map((_, i) => (
+              <span key={i} className="ps-4" />
+            ))}
+
+            {layer.children.length > 0 && (
+              <button
+                className="border-0 bg-transparent ms-n2 mx-0"
+                style={{ width: '2rem' }}
+                type="button"
+                data-name={id}
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  setExpanded((prev) => {
+                    let found = false;
+
+                    const next = prev.filter((a) => {
+                      found ||= a === id;
+
+                      return a !== id;
+                    });
+
+                    if (!found) {
+                      next.push(id);
+                    }
+
+                    return next;
+                  });
+                }}
+              >
+                {expanded.includes(id) ? <FaAngleDown /> : <FaAngleRight />}
+              </button>
+            )}
+
+            <span className={layer.children.length === 0 ? 'ms-4' : ''}>
+              {layer.title}
+            </span>
+          </ListGroupItem>
+
+          {layer.children.length > 0 ? (
+            <div
+              className={`fm-list-group-nested ${expanded.includes(id) ? '' : 'd-none'}`}
+            >
+              {renderLayers(layer.children, [...path, i])}
+            </div>
+          ) : null}
+        </Fragment>
+      );
+    });
+  }
 
   return (
     <div
@@ -268,8 +378,16 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             className="mt-3 fm-grid-span"
             type="button"
             onClick={handleLoadLayersClick}
+            disabled={!model.url.match(/^https?:\/\/\w+/) || loadingLayers}
           >
-            Load layers
+            <Spinner className="invisible" size="sm" />
+
+            <span className="mx-2">Load layers</span>
+
+            <Spinner
+              className={loadingLayers ? 'visible' : 'invisible'}
+              size="sm"
+            />
           </Button>
 
           {wmsLayersFetchError && (
@@ -278,9 +396,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             </Alert>
           )}
 
-          <pre className="mt-3 fm-grid-span">
-            {JSON.stringify(layersTree, null, 2)}
-          </pre>
+          <ListGroup
+            className="mt-3 fm-grid-span overflow-auto"
+            style={{ maxHeight: '400px' }}
+            onSelect={handleLayerSelect}
+          >
+            {renderLayers(layersTree)}
+          </ListGroup>
         </>
       )}
 

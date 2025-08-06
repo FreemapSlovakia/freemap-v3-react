@@ -1,7 +1,19 @@
+export type Layer = {
+  title: string | null;
+  name: string | null;
+  queryable: boolean;
+  transparent: boolean;
+  minScale: number | null;
+  maxScale: number | null;
+  children: Layer[];
+};
+
 export async function wms(urlString: string) {
   const url = new URL(urlString);
 
   url.searchParams.set('request', 'GetCapabilities');
+  url.searchParams.set('service', 'WMS');
+  url.searchParams.set('version', '1.3.0');
 
   const res = await fetch(url.toString());
 
@@ -75,17 +87,7 @@ export async function wms(urlString: string) {
     return result;
   }
 
-  type Nod = {
-    title: string | null;
-    name: string | null;
-    queryable: boolean;
-    transparent: boolean;
-    minScale: number | null;
-    maxScale: number | null;
-    children: Nod[];
-  };
-
-  function parseLayer(node: Node): Nod {
+  function parseLayer(node: Node): Layer {
     const elem = node as Element;
     const title = getText(node, './wms:Title');
     const name = getText(node, './wms:Name') || null;
@@ -120,7 +122,7 @@ export async function wms(urlString: string) {
     XPathResult.ORDERED_NODE_ITERATOR_TYPE,
   );
 
-  const layersTree: Nod[] = [];
+  const layersTree: Layer[] = [];
   for (
     let node = rootLayers.iterateNext();
     node;

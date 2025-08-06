@@ -108,5 +108,9 @@ legend {
 
 // this can be enabled directly in bootstrap but i dunno how
 .m-n2 {
-  margin: -0.5rem;
+  margin: -0.5rem !important;
+}
+
+.ms-n2 {
+  margin-left: -0.5rem !important;
 }

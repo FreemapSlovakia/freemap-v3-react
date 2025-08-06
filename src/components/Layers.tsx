@@ -73,6 +73,7 @@ export function Layers(): ReactElement | null {
           maxZoom={maxZoom}
           minZoom={layerDef.minZoom}
           detectRetina={layerDef.scaleWithDpi}
+          version="1.3.0"
         />
       );
     }

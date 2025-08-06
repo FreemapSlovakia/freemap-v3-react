@@ -508,3 +508,13 @@ button#freemap-logo {
 .fm-grid-span {
   grid-column: 1 / -1;
 }
+
+.fm-list-group-nested {
+  .list-group-item:first-child {
+    border-top-width: 0;
+  }
+
+  + .list-group-item {
+    border-top-width: 0;
+  }
+}
