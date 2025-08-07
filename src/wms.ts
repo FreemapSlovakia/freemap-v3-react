@@ -44,7 +44,7 @@ export async function wms(urlString: string) {
   // Get available image formats (global)
   function getGlobalFormats(): string[] {
     const iterator = dom.evaluate(
-      '//wms:Capability/wms:Request/wms:GetMap/wms:Format',
+      '/wms:WMS_Capabilities/wms:Capability/wms:Request/wms:GetMap/wms:Format',
       dom,
       (p) => p && namespaces[p],
       XPathResult.ORDERED_NODE_ITERATOR_TYPE,
@@ -116,13 +116,14 @@ export async function wms(urlString: string) {
 
   // Root-level layers
   const rootLayers = dom.evaluate(
-    '//wms:Capability/wms:Layer/wms:Layer[wms:CRS="EPSG:3857" or wms:CRS="EPSG:4326"]',
+    '/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:CRS="EPSG:3857" or wms:CRS="EPSG:4326"]',
     dom,
     (p) => p && namespaces[p],
     XPathResult.ORDERED_NODE_ITERATOR_TYPE,
   );
 
   const layersTree: Layer[] = [];
+
   for (
     let node = rootLayers.iterateNext();
     node;
@@ -131,5 +132,12 @@ export async function wms(urlString: string) {
     layersTree.push(parseLayer(node));
   }
 
-  return { globalFormats, layersTree };
+  const title = dom.evaluate(
+    '/wms:WMS_Capabilities/wms:Service/wms:Title',
+    dom,
+    (p) => p && namespaces[p],
+    XPathResult.STRING_TYPE,
+  ).stringValue;
+
+  return { title, globalFormats, layersTree };
 }

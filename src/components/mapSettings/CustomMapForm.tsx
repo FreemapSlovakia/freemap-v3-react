@@ -216,15 +216,17 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
     wms(model.url)
       .then(
-        ({ layersTree }) => {
+        ({ layersTree, title }) => {
           setLayersTree(layersTree);
+
+          setModel({ ...model, name: model.name || title });
         },
         (err) => setWmsLayersFetchError(String(err)),
       )
       .finally(() => {
         setLoadingLayers(false);
       });
-  }, [model.url]);
+  }, [model]);
 
   useEffect(() => {
     setLayersTree(undefined);
