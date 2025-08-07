@@ -825,7 +825,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Vlastné mapy',
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
-    urlTemplate: 'Šablóna URL',
+    technology: 'Typ',
+    technologies: {
+      tile: 'Dlaždice obrázkov (TMS, XYZ)',
+      maplibre: 'Vektor (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Parametrické tieňovanie',
+    },
+    url: 'URL',
     minZoom: 'Minimálne priblíženie',
     maxNativeZoom: 'Maximálne prirodzené priblíženie',
     extraScales: 'Extra rozlíšenia máp',
@@ -838,6 +845,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       base: 'Základná',
       overlay: 'Prekryvná',
     },
+    loadWmsLayers: 'Načítať vrstvy',
   },
 
   elevationChart: {

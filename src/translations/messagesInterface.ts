@@ -574,7 +574,14 @@ export type Messages = {
     customMaps: string;
     base: string;
     overlay: string;
-    urlTemplate: string;
+    technology: string;
+    technologies: {
+      tile: string;
+      maplibre: string;
+      wms: string;
+      parametricShading: string;
+    };
+    url: string;
     minZoom: string;
     maxNativeZoom: string;
     extraScales: string;
@@ -587,6 +594,7 @@ export type Messages = {
     zIndex: string;
     generalSettings: string;
     maxZoom: string;
+    loadWmsLayers: string;
   };
   elevationChart: {
     distance: string;

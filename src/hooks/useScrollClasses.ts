@@ -80,7 +80,7 @@ export function useScrollClasses(
 
         resizeObserver.current?.observe(e);
       } else if (e) {
-        console.log('Unscrollable element: ' + e);
+        console.warn('Unscrollable element: ' + e);
       } else {
         resizeObserver.current?.disconnect();
       }

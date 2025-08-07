@@ -470,22 +470,22 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const newCls = upgradeCustomLayerDefs(JSON.parse(customLayerDefs)).filter(
-        (cl) => !existingClsStrings.includes(JSON.stringify(cl)),
-      );
+      const newCustomLayerDefs = upgradeCustomLayerDefs(
+        JSON.parse(customLayerDefs),
+      ).filter((cl) => !existingClsStrings.includes(JSON.stringify(cl)));
 
-      if (newCls.length) {
-        for (const cm of newCls) {
-          if ('tileSize' in cm && cm.tileSize) {
-            cm.scaleWithDpi = true;
-          }
-        }
+      if (newCustomLayerDefs.length) {
+        // for (const cm of newCustomLayerDefs) {
+        //   if ('tileSize' in cm && cm.tileSize) {
+        //     cm.scaleWithDpi = true;
+        //   }
+        // }
 
-        for (const cl of newCls) {
+        for (const cl of newCustomLayerDefs) {
           customLayerTypes.push(cl.type);
         }
 
-        dispatch(mapSetCustomLayers(newCls));
+        dispatch(mapSetCustomLayers(newCustomLayerDefs));
       }
     } catch {
       // ignore

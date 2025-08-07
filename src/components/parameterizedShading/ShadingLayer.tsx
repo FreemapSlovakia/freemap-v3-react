@@ -21,6 +21,7 @@ type ShadingLayerOptions = GridLayerOptions & {
   premiumFromZoom: number | undefined;
   premiumOnlyText: string | undefined;
   gpuMessages?: Messages['gpu'];
+  onPremiumClick?: () => void;
 };
 
 type CanvasWithRender = HTMLCanvasElement & {
@@ -83,6 +84,8 @@ class LShadingLayer extends LGridLayer {
     this._options = options;
 
     this.shading = options.shading;
+
+    this.handlePremiumClick = this.handlePremiumClick.bind(this);
 
     if (!navigator.gpu) {
       this.gpuObjectsPromise = Promise.reject(new GpuError('notSupported'));
@@ -378,6 +381,12 @@ class LShadingLayer extends LGridLayer {
     };
   }
 
+  handlePremiumClick(e: MouseEvent) {
+    e.preventDefault();
+
+    this._options.onPremiumClick?.();
+  }
+
   createTile(coords: Coords, done: DoneCallback) {
     if (this.errorDiv) {
       done(new Error('already errored'));
@@ -395,7 +404,14 @@ class LShadingLayer extends LGridLayer {
       div.className = 'fm-nonpremium-tile';
 
       if (this._options.premiumOnlyText) {
-        div.innerHTML = '<div>' + this._options.premiumOnlyText + '</div>';
+        const a = document.createElement('a');
+
+        a.href = '#show=premium';
+        a.target = '_blank';
+        a.innerText = this._options.premiumOnlyText;
+        a.onclick = this.handlePremiumClick;
+
+        div.appendChild(a);
       }
 
       setTimeout(() => done(undefined, div));

@@ -777,7 +777,14 @@ const messages: Messages = {
     customMaps: 'Custom maps',
     base: 'Base layers',
     overlay: 'Overlay layers',
-    urlTemplate: 'URL Template',
+    technology: 'Type',
+    technologies: {
+      tile: 'Image tiles (TMS, XYZ)',
+      maplibre: 'Vector (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Parametric shading',
+    },
+    url: 'URL',
     minZoom: 'Min Zoom',
     maxNativeZoom: 'Max Native Zoom',
     extraScales: 'Extra resolutions',
@@ -790,6 +797,7 @@ const messages: Messages = {
     zIndex: 'Z-Index',
     generalSettings: 'General settings',
     maxZoom: 'Max zoom',
+    loadWmsLayers: 'Load layers',
   },
 
   elevationChart: {

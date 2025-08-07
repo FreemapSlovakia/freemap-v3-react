@@ -1,4 +1,6 @@
-import { type ReactElement } from 'react';
+import { useCallback, type ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../actions/mainActions.js';
 import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import missingTile from '../images/missing-tile-256x256.png';
@@ -6,6 +8,7 @@ import { useMessages } from '../l10nInjector.js';
 import { integratedLayerDefs, LayerDef } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { AsyncComponent } from './AsyncComponent.js';
+import { WmsTileLayer } from './WmsTileLayer.js';
 
 const galleryLayerFactory = () =>
   import('../components/gallery/GalleryLayer.js');
@@ -40,12 +43,18 @@ export function Layers(): ReactElement | null {
 
   const m = useMessages();
 
+  const dispatch = useDispatch();
+
+  const handlePremiumClick = useCallback(() => {
+    dispatch(setActiveModal('premium'));
+  }, [dispatch]);
+
   function getLayer(layerDef: LayerDef) {
     const { type, minZoom } = layerDef;
 
     const opacity = layersSettings[type]?.opacity ?? 1;
 
-    if ('technology' in layerDef && layerDef.technology === 'gallery') {
+    if (layerDef.technology === 'gallery') {
       return (
         <AsyncComponent
           factory={galleryLayerFactory}
@@ -75,10 +84,45 @@ export function Layers(): ReactElement | null {
       effPremiumFromZoom--;
     }
 
-    if (
-      'technology' in layerDef &&
-      layerDef.technology === 'parametricShading'
-    ) {
+    if (layerDef.technology === 'wms') {
+      const effPremiumFromZoom = isPremium(user)
+        ? undefined
+        : scaleWithDpi
+          ? 14
+          : 15;
+
+      return (
+        <WmsTileLayer
+          key={
+            type +
+            '-' +
+            opacity +
+            '-' +
+            (effPremiumFromZoom ?? 99) +
+            '-' +
+            (effPremiumFromZoom ? m?.premium.premiumOnly : '') +
+            '-' +
+            layerDef.layers.join(',')
+          }
+          url={layerDef.url}
+          layers={layerDef.layers.join(',')}
+          maxNativeZoom={layerDef.maxNativeZoom}
+          maxZoom={maxZoom}
+          minZoom={layerDef.minZoom}
+          detectRetina={layerDef.scaleWithDpi}
+          version="1.3.0"
+          transparent={layerDef.layer === 'overlay'}
+          format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
+          premiumFromZoom={effPremiumFromZoom}
+          premiumOnlyText={m?.premium.premiumOnly}
+          onPremiumClick={
+            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
+          }
+        />
+      );
+    }
+
+    if (layerDef.technology === 'parametricShading') {
       return (
         <AsyncComponent
           key={
@@ -108,12 +152,15 @@ export function Layers(): ReactElement | null {
           shading={shading}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
+          onPremiumClick={
+            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
+          }
           gpuMessages={m?.gpu}
         />
       );
     }
 
-    if ('technology' in layerDef && layerDef.technology === 'maplibre') {
+    if (layerDef.technology === 'maplibre') {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
@@ -126,7 +173,7 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    if (!('technology' in layerDef) || layerDef.technology === 'tile') {
+    if (layerDef.technology === 'tile') {
       return (
         <ScaledTileLayer
           key={
@@ -159,6 +206,9 @@ export function Layers(): ReactElement | null {
           cors={layerDef.cors ?? true}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
+          onPremiumClick={
+            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
+          }
           className={'fm-' + layerDef.layer}
         />
       );
@@ -177,7 +227,7 @@ export function Layers(): ReactElement | null {
         .map((item) => getLayer(item))}
       {customLayerDefs
         .filter(({ type }) => layers.includes(type))
-        .map((cm) => getLayer({ ...cm, technology: 'tile' }))}
+        .map((cm) => getLayer(cm))}
     </>
   );
 }

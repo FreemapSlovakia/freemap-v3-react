@@ -842,7 +842,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Egyéni térképek',
     base: 'Alaprétegek',
     overlay: 'Fedőrétegek',
-    urlTemplate: 'URL sablon',
+    url: 'URL sablon',
     minZoom: 'Minimális nagyítás',
     maxNativeZoom: 'Maximális natív nagyítás',
     extraScales: 'Extra felbontások',

@@ -793,7 +793,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Vlastní mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
-    urlTemplate: 'Šablona URL',
+    url: 'Šablona URL',
     minZoom: 'Minimální přiblížení',
     maxNativeZoom: 'Maximální přirozené přiblížení',
     extraScales: 'Další rozlišení',
@@ -809,6 +809,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'Ukázat více map',
     countryWarning: (countries) =>
       `Pokrývá pouze tyto země: ${countries.join(', ')}`,
+    technology: 'Typ',
+    technologies: {
+      tile: 'Obrázkové dlaždice (TMS, XYZ)',
+      maplibre: 'Vektor (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Parametrické stínování',
+    },
+    loadWmsLayers: 'Načíst vrstvy',
   },
 
   elevationChart: {

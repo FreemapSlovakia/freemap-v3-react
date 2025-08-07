@@ -115,7 +115,13 @@ a.leaflet-control-layers-toggle {
   align-items: center;
   justify-content: center;
 
-  & > div {
+  & > a {
+    pointer-events: all;
+    text-decoration: none;
+    color: #000080;
+  }
+
+  & > * {
     transform: rotate(45deg);
     max-width: 200px;
     text-align: center;

@@ -1,4 +1,11 @@
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type Dispatch,
+  type ReactElement,
+  type SetStateAction,
+  useCallback,
+  useState,
+} from 'react';
 import { Button, ButtonToolbar, Form } from 'react-bootstrap';
 import { useMessages } from '../../l10nInjector.js';
 import { CustomLayerDef } from '../../mapDefinitions.js';
@@ -6,7 +13,7 @@ import { CustomMapForm } from './CustomMapForm.js';
 
 type Props = {
   value: CustomLayerDef[];
-  onChange: (prev: CustomLayerDef[]) => void;
+  onChange: Dispatch<SetStateAction<CustomLayerDef[]>>;
 };
 
 export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
@@ -18,15 +25,17 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
 
   const handleChange = useCallback(
     (def?: CustomLayerDef) => {
-      const newDefs = value?.filter((def) => def.type !== type) ?? [];
+      onChange((value) => {
+        const newDefs = value?.filter((def) => def.type !== type) ?? [];
 
-      if (def) {
-        newDefs.push(def);
-      }
+        if (def) {
+          newDefs.push(def);
+        }
 
-      onChange(newDefs);
+        return newDefs;
+      });
     },
-    [type, value, onChange],
+    [type, onChange],
   );
 
   const m = useMessages();
@@ -34,7 +43,7 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
   const handleAddClick = useCallback(() => {
     const type = Math.random().toString(36).slice(-6);
 
-    onChange([
+    onChange((value) => [
       ...value,
       {
         type,
@@ -46,15 +55,17 @@ export function CustomMapsSettings({ value, onChange }: Props): ReactElement {
     ]);
 
     setType(type);
-  }, [onChange, value]);
+  }, [onChange]);
 
   const handleDeleteClick = useCallback(() => {
-    const newValue = value.filter((def) => def.type !== type);
+    onChange((value) => {
+      const newValue = value.filter((def) => def.type !== type);
 
-    onChange(newValue);
+      setType(newValue[0]?.type ?? ''); // TODO set following or previous
 
-    setType(newValue[0]?.type ?? ''); // TODO set following or previous
-  }, [onChange, type, value]);
+      return newValue;
+    });
+  }, [onChange, type]);
 
   return (
     <>
