@@ -859,6 +859,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Csak a következő országokat fedi le: ${countries.join(', ')}`,
     layerSettings: 'Térképrétegek',
+    technologies: {},
   },
 
   elevationChart: {

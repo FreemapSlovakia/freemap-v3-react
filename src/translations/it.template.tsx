@@ -838,6 +838,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Copre solo i seguenti paesi: ${countries.join(', ')}`,
     layerSettings: 'Livelli mappa',
+    technologies: {},
   },
 
   elevationChart: {
