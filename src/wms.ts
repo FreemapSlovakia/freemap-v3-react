@@ -63,10 +63,10 @@ export async function wms(urlString: string) {
 
   const globalFormats = getGlobalFormats();
 
-  // Collect child layers supporting EPSG:3857
+  // Collect child layers supporting EPSG:3857 or EPSG:4326
   function getChildren(node: Node): Element[] {
     const iterator = dom.evaluate(
-      './wms:Layer[wms:CRS="EPSG:3857" or .//wms:CRS="EPSG:3857"]',
+      './wms:Layer[wms:CRS="EPSG:3857" or .//wms:CRS="EPSG:3857" or wms:CRS="EPSG:4326" or .//wms:CRS="EPSG:4326"]',
       node,
       (p) => p && namespaces[p],
       XPathResult.ORDERED_NODE_ITERATOR_TYPE,
@@ -116,7 +116,7 @@ export async function wms(urlString: string) {
 
   // Root-level layers
   const rootLayers = dom.evaluate(
-    '//wms:Capability/wms:Layer/wms:Layer[wms:CRS="EPSG:3857"]',
+    '//wms:Capability/wms:Layer/wms:Layer[wms:CRS="EPSG:3857" or wms:CRS="EPSG:4326"]',
     dom,
     (p) => p && namespaces[p],
     XPathResult.ORDERED_NODE_ITERATOR_TYPE,
