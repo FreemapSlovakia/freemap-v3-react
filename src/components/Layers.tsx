@@ -1,5 +1,6 @@
-import { type ReactElement } from 'react';
-import { WMSTileLayer } from 'react-leaflet';
+import { useCallback, type ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../actions/mainActions.js';
 import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import missingTile from '../images/missing-tile-256x256.png';
@@ -7,6 +8,7 @@ import { useMessages } from '../l10nInjector.js';
 import { integratedLayerDefs, LayerDef } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
 import { AsyncComponent } from './AsyncComponent.js';
+import { WmsTileLayer } from './WmsTileLayer.js';
 
 const galleryLayerFactory = () =>
   import('../components/gallery/GalleryLayer.js');
@@ -41,6 +43,12 @@ export function Layers(): ReactElement | null {
 
   const m = useMessages();
 
+  const dispatch = useDispatch();
+
+  const handlePremiumClick = useCallback(() => {
+    dispatch(setActiveModal('premium'));
+  }, [dispatch]);
+
   function getLayer(layerDef: LayerDef) {
     const { type, minZoom } = layerDef;
 
@@ -63,21 +71,6 @@ export function Layers(): ReactElement | null {
       );
     }
 
-    if (layerDef.technology === 'wms') {
-      return (
-        <WMSTileLayer
-          key={`${layerDef.type}-${opacity}`}
-          url={layerDef.url}
-          layers={layerDef.layers.join(',')}
-          maxNativeZoom={layerDef.maxNativeZoom}
-          maxZoom={maxZoom}
-          minZoom={layerDef.minZoom}
-          detectRetina={layerDef.scaleWithDpi}
-          version="1.3.0"
-        />
-      );
-    }
-
     const scaleWithDpi = 'scaleWithDpi' in layerDef && layerDef.scaleWithDpi;
 
     const isHdpi = scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
@@ -89,6 +82,42 @@ export function Layers(): ReactElement | null {
 
     if (effPremiumFromZoom && scaleWithDpi) {
       effPremiumFromZoom--;
+    }
+
+    if (layerDef.technology === 'wms') {
+      const effPremiumFromZoom = isPremium(user)
+        ? undefined
+        : scaleWithDpi
+          ? 14
+          : 15;
+
+      return (
+        <WmsTileLayer
+          key={
+            type +
+            '-' +
+            opacity +
+            '-' +
+            (effPremiumFromZoom ?? 99) +
+            '-' +
+            (effPremiumFromZoom ? m?.premium.premiumOnly : '')
+          }
+          url={layerDef.url}
+          layers={layerDef.layers.join(',')}
+          maxNativeZoom={layerDef.maxNativeZoom}
+          maxZoom={maxZoom}
+          minZoom={layerDef.minZoom}
+          detectRetina={layerDef.scaleWithDpi}
+          version="1.3.0"
+          transparent={layerDef.layer === 'overlay'}
+          format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
+          premiumFromZoom={effPremiumFromZoom}
+          premiumOnlyText={m?.premium.premiumOnly}
+          onPremiumClick={
+            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
+          }
+        />
+      );
     }
 
     if (layerDef.technology === 'parametricShading') {
@@ -121,6 +150,9 @@ export function Layers(): ReactElement | null {
           shading={shading}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
+          onPremiumClick={
+            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
+          }
           gpuMessages={m?.gpu}
         />
       );
@@ -172,6 +204,9 @@ export function Layers(): ReactElement | null {
           cors={layerDef.cors ?? true}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={m?.premium.premiumOnly}
+          onPremiumClick={
+            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
+          }
           className={'fm-' + layerDef.layer}
         />
       );

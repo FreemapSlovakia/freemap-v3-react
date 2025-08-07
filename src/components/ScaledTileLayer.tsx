@@ -7,6 +7,7 @@ type Props = TileLayerProps & {
   cors?: boolean;
   premiumFromZoom?: number;
   premiumOnlyText?: string;
+  onPremiumClick?: () => void;
 };
 
 class LScaledTileLayer extends TileLayer {
@@ -14,6 +15,7 @@ class LScaledTileLayer extends TileLayer {
   private cors;
   private premiumFromZoom;
   private premiumOnlyText;
+  private onPremiumClick;
 
   constructor(
     urlTemplate: string,
@@ -21,6 +23,7 @@ class LScaledTileLayer extends TileLayer {
     cors = true,
     premiumFromZoom?: number,
     premiumOnlyText?: string,
+    onPremiumClick?: () => void,
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
@@ -32,6 +35,16 @@ class LScaledTileLayer extends TileLayer {
     this.premiumFromZoom = premiumFromZoom;
 
     this.premiumOnlyText = premiumOnlyText;
+
+    this.onPremiumClick = onPremiumClick;
+
+    this.handlePremiumClick = this.handlePremiumClick.bind(this);
+  }
+
+  handlePremiumClick(e: MouseEvent) {
+    e.preventDefault();
+
+    this.onPremiumClick?.();
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -44,7 +57,14 @@ class LScaledTileLayer extends TileLayer {
       div.className = 'fm-nonpremium-tile';
 
       if (this.premiumOnlyText) {
-        div.innerHTML = '<div>' + this.premiumOnlyText + '</div>';
+        const a = document.createElement('a');
+
+        a.href = '#show=premium';
+        a.target = '_blank';
+        a.innerText = this.premiumOnlyText;
+        a.onclick = this.handlePremiumClick;
+
+        div.appendChild(a);
       }
 
       setTimeout(() => done(undefined, div));
@@ -84,6 +104,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
       cors = true,
       premiumFromZoom,
       premiumOnlyText,
+      onPremiumClick,
       ...rest
     } = props;
 
@@ -94,6 +115,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         cors,
         premiumFromZoom,
         premiumOnlyText,
+        onPremiumClick,
         rest,
       ),
       context,
