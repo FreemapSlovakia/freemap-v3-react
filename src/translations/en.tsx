@@ -792,6 +792,7 @@ const messages: Messages = {
     zIndex: 'Z-Index',
     generalSettings: 'General settings',
     maxZoom: 'Max zoom',
+    loadWmsLayers: 'Load layers',
   },
 
   elevationChart: {

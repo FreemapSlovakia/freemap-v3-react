@@ -264,7 +264,12 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             eventKey={layer.name ?? undefined}
             active={layer.name ? model.layers.includes(layer.name) : undefined}
             action={layer.name !== null}
-            as={layer.children.length > 0 ? 'div' : 'button'}
+            as={
+              layer.children.length > 0
+                ? ('div' as unknown as 'button') // to add type
+                : 'button'
+            }
+            type="button"
           >
             {path.map((_, i) => (
               <span key={i} className="ps-4" />
@@ -382,7 +387,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           >
             <Spinner className="invisible" size="sm" />
 
-            <span className="mx-2">Load layers</span>
+            <span className="mx-2">{m?.mapLayers.loadWmsLayers}</span>
 
             <Spinner
               className={loadingLayers ? 'visible' : 'invisible'}

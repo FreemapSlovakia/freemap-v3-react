@@ -100,7 +100,9 @@ export function Layers(): ReactElement | null {
             '-' +
             (effPremiumFromZoom ?? 99) +
             '-' +
-            (effPremiumFromZoom ? m?.premium.premiumOnly : '')
+            (effPremiumFromZoom ? m?.premium.premiumOnly : '') +
+            '-' +
+            layerDef.layers.join(',')
           }
           url={layerDef.url}
           layers={layerDef.layers.join(',')}

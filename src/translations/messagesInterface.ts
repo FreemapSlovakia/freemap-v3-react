@@ -588,6 +588,7 @@ export type Messages = {
     zIndex: string;
     generalSettings: string;
     maxZoom: string;
+    loadWmsLayers: string;
   };
   elevationChart: {
     distance: string;

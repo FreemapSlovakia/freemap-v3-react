@@ -839,6 +839,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       base: 'Základná',
       overlay: 'Prekryvná',
     },
+    loadWmsLayers: 'Načítať vrstvy',
   },
 
   elevationChart: {
