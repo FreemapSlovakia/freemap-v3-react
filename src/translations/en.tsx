@@ -757,7 +757,6 @@ const messages: Messages = {
       VT: 'Outdoor Vector',
       h: 'Parametric shading',
       z: 'Parametric shading',
-      P: 'WMS',
     },
     customBase: 'Custom map',
     type: {

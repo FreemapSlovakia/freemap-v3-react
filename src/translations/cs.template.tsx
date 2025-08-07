@@ -809,6 +809,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'Ukázat více map',
     countryWarning: (countries) =>
       `Pokrývá pouze tyto země: ${countries.join(', ')}`,
+    technology: 'Typ',
+    loadWmsLayers: 'Načíst vrstvy',
   },
 
   elevationChart: {
