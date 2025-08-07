@@ -358,7 +358,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         <option value="tile">Tile (TMS, XYZ)</option>
         <option value="maplibre">Vector (MapLibre)</option>
         <option value="wms">WMS</option>
-        <option value="parametricShading">Parametric shading</option>
+        {/* <option value="parametricShading">Parametric shading</option> */}
       </Form.Select>
 
       {/* URL */}
