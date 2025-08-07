@@ -810,6 +810,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Pokrývá pouze tyto země: ${countries.join(', ')}`,
     technology: 'Typ',
+    technologies: {
+      tile: 'Obrázkové dlaždice (TMS, XYZ)',
+      maplibre: 'Vektor (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Parametrické stínování',
+    },
     loadWmsLayers: 'Načíst vrstvy',
   },
 

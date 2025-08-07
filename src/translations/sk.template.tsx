@@ -826,6 +826,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
     technology: 'Typ',
+    technologies: {
+      tile: 'Dlaždice obrázkov (TMS, XYZ)',
+      maplibre: 'Vektor (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Parametrické tieňovanie',
+    },
     url: 'URL',
     minZoom: 'Minimálne priblíženie',
     maxNativeZoom: 'Maximálne prirodzené priblíženie',

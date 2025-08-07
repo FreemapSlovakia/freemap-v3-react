@@ -355,10 +355,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         value={model.technology}
         onChange={handlers.technology}
       >
-        <option value="tile">Tile (TMS, XYZ)</option>
-        <option value="maplibre">Vector (MapLibre)</option>
-        <option value="wms">WMS</option>
-        {/* <option value="parametricShading">Parametric shading</option> */}
+        <option value="tile">{m?.mapLayers.technologies.tile}</option>
+        <option value="maplibre">{m?.mapLayers.technologies.maplibre}</option>
+        <option value="wms">{m?.mapLayers.technologies.wms}</option>
+        {/* <option value="parametricShading">{m?.mapLayers.technologies.parametricShading}</option> */}
       </Form.Select>
 
       {/* URL */}

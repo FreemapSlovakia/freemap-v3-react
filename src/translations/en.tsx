@@ -778,6 +778,12 @@ const messages: Messages = {
     base: 'Base layers',
     overlay: 'Overlay layers',
     technology: 'Type',
+    technologies: {
+      tile: 'Image tiles (TMS, XYZ)',
+      maplibre: 'Vector (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Parametric shading',
+    },
     url: 'URL',
     minZoom: 'Min Zoom',
     maxNativeZoom: 'Max Native Zoom',

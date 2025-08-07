@@ -575,6 +575,12 @@ export type Messages = {
     base: string;
     overlay: string;
     technology: string;
+    technologies: {
+      tile: string;
+      maplibre: string;
+      wms: string;
+      parametricShading: string;
+    };
     url: string;
     minZoom: string;
     maxNativeZoom: string;
