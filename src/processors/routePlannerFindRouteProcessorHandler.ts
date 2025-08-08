@@ -300,6 +300,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     throw err;
   }
 
+  // error handled already in the promise
+  if (Array.isArray(datas) && datas.some((data) => data === undefined)) {
+    return;
+  }
+
   let alternativeSets: Alternative[][];
 
   let waypoints: Waypoint[];

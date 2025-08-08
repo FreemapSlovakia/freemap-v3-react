@@ -259,13 +259,10 @@ export const routePlannerReducer = createReducer(
           ...clearResult,
           transportType,
           mode:
-            transportTypeDefs[transportType].api === 'gh'
-              ? state.mode === 'roundtrip'
-                ? 'route'
-                : state.mode
-              : state.mode === 'isochrone'
-                ? 'route'
-                : state.mode,
+            transportTypeDefs[transportType].api ===
+            transportTypeDefs[state.transportType].api
+              ? state.mode
+              : 'route',
         }),
       )
       .addCase(routePlannerSetMode, (state, { payload: mode }) => {

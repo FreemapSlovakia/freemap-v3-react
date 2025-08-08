@@ -6,6 +6,7 @@ import {
   FaMotorcycle,
   FaWalking,
 } from 'react-icons/fa';
+import { is } from 'typia';
 
 export type TransportType =
   | 'bike-osrm'
@@ -20,22 +21,24 @@ export type TransportType =
   | 'racingbike';
 
 export function migrateTransportType(transportType: unknown): TransportType {
-  return typeof transportType === 'string'
-    ? (({
-        'car-toll': 'car',
-        'car-free': 'car',
-        'foot-stroller': 'foot',
-        bikesharing: 'bike-osrm',
-        imhd: 'car',
-        bicycle_touring: 'racingbike',
-        nordic: 'hiking',
-        ski: 'hiking',
-        bike: 'bike-osrm',
-        'car-osm': 'car-osrm',
-        'bike-osm': 'bike-osrm',
-        'foot-osm': 'foot-osrm',
-      }[transportType] ?? 'hiking') as TransportType)
-    : 'hiking';
+  return is<TransportType>(transportType)
+    ? transportType
+    : typeof transportType === 'string'
+      ? (({
+          'car-toll': 'car',
+          'car-free': 'car',
+          'foot-stroller': 'foot',
+          bikesharing: 'bike-osrm',
+          imhd: 'car',
+          bicycle_touring: 'racingbike',
+          nordic: 'hiking',
+          ski: 'hiking',
+          bike: 'bike-osrm',
+          'car-osm': 'car-osrm',
+          'bike-osm': 'bike-osrm',
+          'foot-osm': 'foot-osrm',
+        }[transportType] ?? 'hiking') as TransportType)
+      : 'hiking';
 }
 
 export type TransportTypeMsgKey =
