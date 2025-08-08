@@ -227,7 +227,11 @@ export function ElevationChart(): ReactElement | null {
   }, []);
 
   return (
-    <div className="elevationChart m-2 p-2 rounded" ref={setRef} style={pos}>
+    <div
+      className="fm-elevation-chart m-2 p-2 rounded"
+      ref={setRef}
+      style={pos}
+    >
       <CloseButton onClick={() => dispatch(elevationChartClose())} />
       <svg width={width} height={height}>
         <rect
@@ -238,7 +242,7 @@ export function ElevationChart(): ReactElement | null {
           onMouseMove={handlePointerMove} // for mobiles
           onPointerMove={handlePointerMove}
           onPointerOut={handlePointerOut}
-          fill="white"
+          fill="var(--bs-body-bg)"
         />
 
         <polygon
@@ -249,7 +253,7 @@ export function ElevationChart(): ReactElement | null {
               .join(' ') +
             ` ${width - mr},${height - mb} ${ml},${height - mb}`
           }
-          fill="#cce5ff"
+          fill="var(--bs-primary-bg-subtle)"
         />
 
         <polyline
@@ -268,7 +272,7 @@ export function ElevationChart(): ReactElement | null {
             x2={pointerX}
             y1={mt}
             y2={height - mb}
-            stroke="var(--bs-red)"
+            stroke="var(--bs-danger)"
             strokeWidth={1}
           />
         )}
@@ -284,8 +288,8 @@ export function ElevationChart(): ReactElement | null {
                 y1={mapY(y)}
                 y2={mapY(y)}
                 strokeWidth={1}
-                stroke={limit ? 'var(--bs-red)' : 'black'}
-                opacity={limit ? 0.4 : 0.2}
+                stroke={limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'}
+                opacity={limit ? 0.6 : 0.4}
                 strokeDasharray="2 2"
               />
 
@@ -297,7 +301,7 @@ export function ElevationChart(): ReactElement | null {
                 y1={mapY(y)}
                 y2={mapY(y)}
                 strokeWidth={1}
-                stroke={limit ? 'var(--bs-red)' : 'black'}
+                stroke={limit ? 'var(--bs-danger)' : 'var(--bs-body-color)'}
               />
 
               {(limit ||
@@ -308,7 +312,7 @@ export function ElevationChart(): ReactElement | null {
                   y={mapY(y)}
                   textAnchor="end"
                   dominantBaseline="middle"
-                  fill={limit ? 'var(--bs-red)' : 'black'}
+                  fill={limit ? 'var(--bs-danger)' : 'var(--bs-body-color)'}
                 >
                   {nf0.format(y)}
                 </text>
@@ -328,8 +332,8 @@ export function ElevationChart(): ReactElement | null {
                 y1={mt}
                 y2={height - mb}
                 strokeWidth={1}
-                stroke={limit ? 'var(--bs-red)' : 'black'}
-                opacity={limit ? 0.4 : 0.2}
+                stroke={limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'}
+                opacity={limit ? 0.6 : 0.4}
                 strokeDasharray="2 2"
               />
 
@@ -341,7 +345,7 @@ export function ElevationChart(): ReactElement | null {
                 y1={height - mb}
                 y2={height - mb + 4}
                 strokeWidth={1}
-                stroke={limit ? 'var(--bs-red)' : 'black'}
+                stroke={limit ? 'var(--bs-danger)' : 'var(--bs-body-color)'}
               />
 
               {(limit || Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20) && (
@@ -351,7 +355,7 @@ export function ElevationChart(): ReactElement | null {
                   textAnchor="start"
                   dominantBaseline="middle"
                   transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
-                  fill={limit ? 'var(--bs-red)' : 'black'}
+                  fill={limit ? 'var(--bs-danger)' : 'var(--bs-body-color)'}
                 >
                   {nf1.format(x / 1000)}
                 </text>
@@ -366,7 +370,7 @@ export function ElevationChart(): ReactElement | null {
           x2={ml}
           y1={mt}
           y2={height - mb}
-          stroke="black"
+          stroke="var(--bs-body-color)"
           strokeWidth={1}
         />
 
@@ -376,7 +380,7 @@ export function ElevationChart(): ReactElement | null {
           x2={width - mr}
           y1={height - mb}
           y2={height - mb}
-          stroke="black"
+          stroke="var(--bs-body-color)"
           strokeWidth={1}
         />
 
