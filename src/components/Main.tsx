@@ -680,12 +680,12 @@ export function Main(): ReactElement {
           show={activeModal === 'legend'}
           factory={legendOutdoorModalFactory}
         />
-      ) : (
+      ) : ['A', 'T', 'C', 'K'].some((type) => layers.includes(type)) ? (
         <AsyncModal
           show={activeModal === 'legend'}
           factory={legendModalFactory}
         />
-      )}
+      ) : null}
 
       <AsyncModal
         show={activeModal === 'current-drawing-properties'}
