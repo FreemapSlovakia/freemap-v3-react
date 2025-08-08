@@ -125,6 +125,9 @@ importers:
       marked:
         specifier: ^16.1.2
         version: 16.1.2
+      ohash:
+        specifier: ^2.0.11
+        version: 2.0.11
       pannellum:
         specifier: ^2.5.6
         version: 2.5.6
@@ -3714,6 +3717,9 @@ packages:
 
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
+
+  ohash@2.0.11:
+    resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
   on-finished@2.4.1:
     resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
@@ -8899,6 +8905,8 @@ snapshots:
       es-object-atoms: 1.1.1
 
   obuf@1.1.2: {}
+
+  ohash@2.0.11: {}
 
   on-finished@2.4.1:
     dependencies:

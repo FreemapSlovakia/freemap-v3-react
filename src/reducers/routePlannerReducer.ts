@@ -51,6 +51,7 @@ export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   itineraryIsVisible: boolean;
   roundtripParams: RoundtripParams;
   isochroneParams: IsochroneParams;
+  hash?: string;
 }
 
 const clearResult: RoutePlannerCleanResultState = {
@@ -181,6 +182,7 @@ export const routePlannerReducer = createReducer(
           ...state.isochroneParams,
           ...payload.isochroneParams,
         },
+        hash: payload.hash,
       }))
       .addCase(routePlannerSetStart, (state, { payload }) => ({
         ...state,

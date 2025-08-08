@@ -252,6 +252,7 @@ export function handleLocationChange(store: MyStore): void {
               timeLimit: Number(query['iso-time-limit']) || 600,
               buckets: Number(query['iso-buckets']) || 1,
             },
+            hash: String(query['route-params-hash']),
           }),
         );
       }

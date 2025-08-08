@@ -1,4 +1,5 @@
 import { isAnyOf } from '@reduxjs/toolkit';
+import { hash } from 'ohash';
 import { is } from 'typia';
 import { drawingLineUpdatePoint } from '../actions/drawingLineActions.js';
 import { ShowModal } from '../actions/mainActions.js';
@@ -129,6 +130,18 @@ export const urlProcessor: Processor = {
     }
 
     if (routePlanner.points.length) {
+      // for sharing "premium" route
+      if (routePlanner.points.some((point) => point.manual)) {
+        historyParts.push([
+          'route-params-hash',
+          hash([
+            routePlanner.points,
+            routePlanner.mode,
+            routePlanner.transportType,
+          ]),
+        ]);
+      }
+
       historyParts.push([
         'points',
         (routePlanner.finishOnly ? ',' : '') +

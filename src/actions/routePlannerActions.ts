@@ -167,6 +167,7 @@ export const routePlannerSetParams = createAction<{
   milestones?: 'abs' | 'rel' | false;
   roundtripParams?: Partial<RoundtripParams>;
   isochroneParams?: Partial<IsochroneParams>;
+  hash?: string;
 }>('ROUTE_PLANNER_SET_PARAMS');
 
 export const routePlannerPreventHint = createAction(

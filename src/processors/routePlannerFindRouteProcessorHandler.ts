@@ -1,6 +1,7 @@
 import { isAnyOf } from '@reduxjs/toolkit';
 import distance from '@turf/distance';
 import { Feature, LineString, Polygon } from 'geojson';
+import { hash } from 'ohash';
 import { assert } from 'typia';
 import { clearMapFeatures, setTool } from '../actions/mainActions.js';
 import {
@@ -170,10 +171,20 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
+  console.log(
+    'HHHHHHH',
+    hash([points, mode, transportType]),
+    getState().routePlanner.hash,
+  );
+
   const segments =
-    mode !== 'route' || !isPremium(getState().auth.user)
-      ? [{ manual: false, points }]
-      : segmentize(points);
+    mode === 'route' &&
+    (isPremium(getState().auth.user) ||
+      hash([points, mode, transportType]) === getState().routePlanner.hash)
+      ? segmentize(points)
+      : [{ manual: false, points }];
+
+  const hasManual = segments.some((segment) => segment.manual);
 
   const promise = Promise.all(
     segments
@@ -191,13 +202,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
                 algorithm:
                   mode === 'roundtrip'
                     ? 'round_trip'
-                    : segment.points.length > 2
+                    : hasManual || segment.points.length > 2
                       ? undefined
                       : 'alternative_route',
                 'round_trip.distance': roundtripParams.distance,
                 'round_trip.seed': roundtripParams.seed,
                 'ch.disable': mode === 'roundtrip',
-                'alternative_route.max_paths': 2, // default is 2
+                'alternative_route.max_paths': 2,
                 instructions: true,
                 profile: ttDef.profile,
                 points_encoded: false,
@@ -265,8 +276,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
                   mode === 'route' ? 'route' : 'trip',
                 )}/${allPoints}?` +
                 objectToURLSearchParams({
-                  alternatives:
-                    (mode === 'route' && segments.length === 1) || undefined,
+                  alternatives: (mode === 'route' && !hasManual) || undefined,
                   steps: true,
                   geometries: 'geojson',
                   roundtrip:
