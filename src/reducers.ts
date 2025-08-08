@@ -167,6 +167,7 @@ export function getInitialState() {
       recentTags?: string[];
       showDirection?: boolean;
       showLegend?: boolean;
+      premium?: boolean;
     }>(persisted.gallery)
   ) {
     initial.gallery = {
