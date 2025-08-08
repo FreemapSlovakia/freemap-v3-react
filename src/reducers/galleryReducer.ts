@@ -119,6 +119,9 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(clearMapFeatures, (state) => ({
       ...galleryInitialState,
+      showDirection: state.showDirection,
+      showLegend: state.showLegend,
+      premium: state.premium,
       dirtySeq: state.dirtySeq,
       colorizeBy: state.colorizeBy,
     }))
