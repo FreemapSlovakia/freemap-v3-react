@@ -177,7 +177,7 @@ export function ElevationChart(): ReactElement | null {
     const handleWindowPointerDown = (e: PointerEvent) => {
       if (
         e.target instanceof Element &&
-        e.target.matches('.elevationChart svg, .elevationChart svg *')
+        e.target.matches('.fm-elevation-chart svg, .fm-elevation-chart svg *')
       ) {
         startPosRef.current = [e.clientX, e.clientY];
       }
@@ -233,6 +233,7 @@ export function ElevationChart(): ReactElement | null {
       style={pos}
     >
       <CloseButton onClick={() => dispatch(elevationChartClose())} />
+
       <svg width={width} height={height}>
         <rect
           x={ml}
