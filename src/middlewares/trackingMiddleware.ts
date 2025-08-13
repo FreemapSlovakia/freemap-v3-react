@@ -22,7 +22,7 @@ export function createTrackingMiddleware(): Middleware<
         if (
           payload.method === 'tracking.subscribe' &&
           payload.type === 'error' &&
-          is<{ token: string }>(payload.params)
+          is<{ token: string } | { deviceId: number }>(payload.params)
         ) {
           dispatch(
             toastsAdd({
@@ -32,7 +32,10 @@ export function createTrackingMiddleware(): Middleware<
                   ? 'tracking.subscribeNotFound'
                   : 'tracking.subscribeError',
               messageParams: {
-                id: payload.params.token,
+                id:
+                  'token' in payload.params
+                    ? payload.params.token
+                    : payload.params.deviceId, // TODO use different message key
               },
               style: payload.error.code === 404 ? 'warning' : 'danger',
             }),

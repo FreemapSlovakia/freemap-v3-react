@@ -1,5 +1,6 @@
 import { is } from 'typia';
 import { rpcCall, rpcEvent, rpcResponse } from '../actions/rpcActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
 import { wsReceived, wsSend } from '../actions/websocketActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
@@ -14,7 +15,7 @@ interface JsonRpcRequest {
 
 interface JsonRpcResponseBase {
   jsonrpc: '2.0';
-  id: string | number | null;
+  id?: string | number | null;
 }
 
 interface JsonRpcOkResponse extends JsonRpcResponseBase {
@@ -98,37 +99,57 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
 
     if (is<JsonRpcRequest>(object) && object.id === undefined) {
       dispatch(rpcEvent({ method: object.method, params: object.params }));
+    } else if (is<JsonRpcErrorResponse>(object) && object.id == null) {
+      dispatch(
+        toastsAdd({
+          style: 'danger',
+          messageKey: 'general.operationError',
+          messageParams: { err: object.error.message },
+        }),
+      );
     } else if (
       is<JsonRpcOkResponse | JsonRpcErrorResponse>(object) &&
-      object.id !== null
+      object.id != null
     ) {
       const call = callMap.get(object.id);
 
-      if (call) {
-        callMap.delete(object.id);
-
-        const base = {
-          method: call.method,
-          params: call.params,
-          tag: call.tag,
-        };
-
+      if (!call) {
         dispatch(
-          rpcResponse(
-            is<JsonRpcErrorResponse>(object) && 'error' in object /* for dev */
-              ? {
-                  type: 'error',
-                  ...base,
-                  error: object.error,
-                }
-              : {
-                  type: 'result',
-                  ...base,
-                  result: object.result,
-                },
-          ),
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.operationError',
+            messageParams: { err: 'No such call.' },
+          }),
         );
+
+        return;
       }
+
+      callMap.delete(object.id);
+
+      const base = {
+        method: call.method,
+        params: call.params,
+        tag: call.tag,
+      };
+
+      dispatch(
+        rpcResponse(
+          is<JsonRpcErrorResponse>(object)
+            ? {
+                type: 'error',
+                ...base,
+                error: object.error,
+              }
+            : {
+                type: 'result',
+                ...base,
+                result: object.result,
+              },
+        ),
+      );
+    } else {
+      console.warn('Unexpected:', object);
     }
   },
 };
