@@ -663,7 +663,6 @@ export type Messages = {
       name: string;
       maxAge: string;
       maxCount: string;
-      regenerateToken: string;
       generatedToken: string;
     };
     visual: {

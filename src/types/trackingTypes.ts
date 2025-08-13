@@ -11,7 +11,6 @@ export interface Device extends DeviceBase {
 }
 
 export interface EditedDevice extends DeviceBase {
-  regenerateToken?: boolean;
   token: string | undefined;
 }
 

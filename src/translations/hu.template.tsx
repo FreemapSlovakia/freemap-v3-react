@@ -1050,7 +1050,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       name: 'Név',
       maxAge: 'Legmagasabb kor',
       maxCount: 'Legmagasabb szám',
-      regenerateToken: 'Újragenerálás',
       generatedToken: 'mentéskor fog generálódni',
     },
     visual: {

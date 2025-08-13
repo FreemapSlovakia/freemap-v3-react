@@ -1028,7 +1028,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       name: 'Názov',
       maxAge: 'Najstaršia pozícia',
       maxCount: 'Maximálny počet pozícií',
-      regenerateToken: 'Obnoviť',
       generatedToken: 'bude vygenerovaný po uložení',
     },
     visual: {

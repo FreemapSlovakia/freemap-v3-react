@@ -1018,7 +1018,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       name: 'Nome',
       maxAge: 'Durata massima',
       maxCount: 'Conteggio massimo',
-      regenerateToken: 'Rigenera',
       generatedToken: 'sarà rigenerato al salvataggio',
     },
     visual: {

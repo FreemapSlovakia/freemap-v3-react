@@ -1036,7 +1036,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       name: 'Name',
       maxAge: 'Maximales Alter',
       maxCount: 'Maximale Anzahl',
-      regenerateToken: 'Neu generieren',
       generatedToken: 'wird beim Speichern generiert',
     },
     visual: {

@@ -977,7 +977,6 @@ const messages: Messages = {
       name: 'Name',
       maxAge: 'Max Age',
       maxCount: 'Max Count',
-      regenerateToken: 'Regenerate',
       generatedToken: 'will be generated on save',
     },
     visual: {

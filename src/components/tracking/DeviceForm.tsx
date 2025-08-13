@@ -12,11 +12,11 @@ import {
   InputGroup,
   Modal,
 } from 'react-bootstrap';
-import { FaBullseye, FaSync } from 'react-icons/fa';
+import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { isInvalidInt } from '../../numberValidator.js';
 
-const types: Record<string, string> = {
+const TYPES = {
   url: 'Locus / OsmAnd / …',
   imei: 'TK102B IMEI',
   did: 'TK102B Device ID',
@@ -35,9 +35,11 @@ export function DeviceForm(): ReactElement {
       : null,
   );
 
-  const [type, setType] = useState(
-    device?.token?.includes(':') ? device?.token?.replace(/:.*/, '') : 'url',
-  );
+  const [type, setType] = useState<'url' | 'imei' | 'did'>(() => {
+    const m = device?.token?.match(/^(imei|did):/);
+
+    return m ? (m[1] as 'imei' | 'did') : 'url';
+  });
 
   const [token, setToken] = useTextInputState(
     device?.token?.replace(/[^:]*:/, '') ?? '',
@@ -53,8 +55,6 @@ export function DeviceForm(): ReactElement {
     typeof device?.maxAge === 'number' ? (device?.maxAge / 60).toString() : '',
   );
 
-  const [regenerateToken, setRegenerateToken] = useState(false);
-
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
@@ -64,27 +64,19 @@ export function DeviceForm(): ReactElement {
           name: name.trim(),
           maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
           maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-          regenerateToken:
-            type === 'url' || !device?.id ? undefined : regenerateToken,
-          token: type === 'url' ? undefined : `${type}:${token}`,
+          token: type === 'url' ? token : `${type}:${token}`,
         }),
       );
     },
-    [dispatch, name, maxCount, maxAge, regenerateToken, type, token, device],
+    [dispatch, name, maxCount, maxAge, type, token],
   );
 
   const onSelect = useCallback(
     (type: string | null) => {
-      if (type) {
-        setType(type);
-      }
+      setType(type as keyof typeof TYPES);
     },
     [setType],
   );
-
-  const handleRegenerateTokenClick = useCallback(() => {
-    setRegenerateToken((rt) => !rt);
-  }, [setRegenerateToken]);
 
   const invalidMaxCount = isInvalidInt(maxCount, false, 0);
 
@@ -92,7 +84,10 @@ export function DeviceForm(): ReactElement {
 
   const invalidName = !/.*\w.*/.test(name) || name.length > 255;
 
-  const invalidToken = type === 'url' || !!device?.id ? false : !token.trim();
+  const pattern =
+    type === 'imei' ? '[0-9]{15}' : type === 'did' ? '[0-9]+' : undefined;
+
+  const invalidToken = pattern && !new RegExp(pattern).test(token);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -131,11 +126,10 @@ export function DeviceForm(): ReactElement {
             <DropdownButton
               variant="secondary"
               id="input-dropdown-addon"
-              title={types[type]}
+              title={TYPES[type]}
               onSelect={onSelect}
-              disabled={!!device?.id}
             >
-              {Object.entries(types).map(([key, value]) => (
+              {Object.entries(TYPES).map(([key, value]) => (
                 <Dropdown.Item key={key} eventKey={key} active={type === key}>
                   {value}
                 </Dropdown.Item>
@@ -144,31 +138,14 @@ export function DeviceForm(): ReactElement {
 
             <Form.Control
               type="text"
-              pattern={
-                type === 'imei'
-                  ? '[0-9]{15}'
-                  : type === 'did'
-                    ? '[0-9]*'
-                    : undefined
+              pattern={pattern}
+              placeholder={
+                type === 'url' ? m?.tracking.device.generatedToken : undefined
               }
-              disabled={type === 'url' || !!device?.id}
-              value={
-                (type === 'url' && !device?.id) || regenerateToken
-                  ? m?.tracking.device.generatedToken
-                  : token
-              }
+              value={token}
               isInvalid={invalidToken}
               onChange={setToken}
             />
-
-            {type === 'url' && !!device?.id && (
-              <Button
-                active={regenerateToken}
-                onClick={handleRegenerateTokenClick}
-              >
-                <FaSync /> Regenerate
-              </Button>
-            )}
           </InputGroup>
         </Form.Group>
 
