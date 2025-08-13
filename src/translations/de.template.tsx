@@ -1162,9 +1162,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showPhotos: 'Fotos in der Nähe anzeigen',
   },
   legend: {
-    body: (
+    body: ({ name }) => (
       <>
-        Kartenlegende für <i>{outdoorMap}</i>:
+        Kartenlegende für <i>{name}</i>
       </>
     ),
   },

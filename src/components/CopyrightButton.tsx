@@ -18,14 +18,24 @@ export function CopyrightButton(): ReactElement {
     ['sk', 'cs'].includes(state.l10n.language),
   );
 
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
   const layers = useAppSelector((state) => state.map.layers);
 
   const legendLayers = useMemo(
-    () => new Set(skCs ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']),
-    [skCs],
+    () =>
+      new Set([
+        ...(skCs ? ['A', 'T', 'C', 'K'] : []),
+        'X',
+        ...customLayers
+          .filter((def) => def.technology === 'wms')
+          .map((def) => def.type),
+      ]),
+
+    [customLayers, skCs],
   );
 
-  const showLegendButton = layers.some((layer) => legendLayers.has(layer));
+  const showLegendButton = layers.some((type) => legendLayers.has(type));
 
   const showAttribution = useAttributionInfo();
 

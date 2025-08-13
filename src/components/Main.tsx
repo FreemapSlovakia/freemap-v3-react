@@ -129,8 +129,6 @@ const buyCreditModalFactory = () => import('./BuyCreditsModal.js');
 const supportUsModalFactory = () =>
   import('./supportUsModal/SupportUsModal.js');
 
-const legendOutdoorModalFactory = () => import('./LegendOutdoorModal.js');
-
 const legendModalFactory = () => import('./LegendModal.js');
 
 const currentDrawingPropertiesModalFactory = () =>
@@ -675,17 +673,10 @@ export function Main(): ReactElement {
         factory={supportUsModalFactory}
       />
 
-      {layers.includes('X') ? (
-        <AsyncModal
-          show={activeModal === 'legend'}
-          factory={legendOutdoorModalFactory}
-        />
-      ) : ['A', 'T', 'C', 'K'].some((type) => layers.includes(type)) ? (
-        <AsyncModal
-          show={activeModal === 'legend'}
-          factory={legendModalFactory}
-        />
-      ) : null}
+      <AsyncModal
+        show={activeModal === 'legend'}
+        factory={legendModalFactory}
+      />
 
       <AsyncModal
         show={activeModal === 'current-drawing-properties'}

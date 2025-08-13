@@ -6,6 +6,7 @@ export type Layer = {
   minScale: number | null;
   maxScale: number | null;
   children: Layer[];
+  legendUrl: string | null;
 };
 
 export async function wms(urlString: string) {
@@ -87,30 +88,34 @@ export async function wms(urlString: string) {
     return result;
   }
 
+  function getLegendUrl(node: Node): string | null {
+    const onlineResource = dom.evaluate(
+      './/wms:Style/wms:LegendURL/wms:OnlineResource',
+      node,
+      (p) => p && namespaces[p],
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+    ).singleNodeValue as Element | null;
+
+    return (
+      onlineResource?.getAttributeNS('http://www.w3.org/1999/xlink', 'href') ??
+      null
+    );
+  }
+
   function parseLayer(node: Node): Layer {
     const elem = node as Element;
-    const title = getText(node, './wms:Title');
-    const name = getText(node, './wms:Name') || null;
-
-    const queryable = elem.getAttribute('queryable') === '1';
-    const transparent = elem.getAttribute('opaque') !== '1';
-
-    const minScale =
-      parseFloat(getText(node, './wms:MinScaleDenominator') || '') || null;
-
-    const maxScale =
-      parseFloat(getText(node, './wms:MaxScaleDenominator') || '') || null;
-
-    const children = getChildren(node).map(parseLayer);
 
     return {
-      title,
-      name,
-      queryable,
-      transparent,
-      minScale,
-      maxScale,
-      children,
+      title: getText(node, './wms:Title'),
+      name: getText(node, './wms:Name') || null,
+      queryable: elem.getAttribute('queryable') === '1',
+      transparent: elem.getAttribute('opaque') !== '1',
+      minScale:
+        parseFloat(getText(node, './wms:MinScaleDenominator') || '') || null,
+      maxScale:
+        parseFloat(getText(node, './wms:MaxScaleDenominator') || '') || null,
+      legendUrl: getLegendUrl(node),
+      children: getChildren(node).map(parseLayer),
     };
   }
 

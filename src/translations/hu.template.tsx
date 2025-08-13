@@ -1181,9 +1181,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   legend: {
-    body: (
+    body: ({ name }) => (
       <>
-        Jelmagyarázat: <i>{outdoorMap}</i>:
+        Jelmagyarázat: <i>{name}</i>
       </>
     ),
   },
