@@ -108,3 +108,11 @@ export type CacheMode =
   | 'networkFirst'
   | 'cacheFirst'
   | 'cacheOnly';
+
+export type Shortcut = {
+  code: string; // event.code of main key
+  ctrl?: boolean;
+  shift?: boolean;
+  alt?: boolean;
+  meta?: boolean;
+};

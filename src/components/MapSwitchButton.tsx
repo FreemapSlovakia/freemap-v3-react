@@ -32,20 +32,15 @@ import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { integratedLayerDefs } from '../mapDefinitions.js';
 import { isPremium } from '../premium.js';
+import { Shortcut } from '../types/common.js';
 import { Checkbox } from './Checkbox.js';
 import { countryCodeToFlag, Emoji } from './Emoji.js';
 import { ExperimentalFunction } from './ExperimentalFunction.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { formatShortcut } from './ShortcutRecorder.js';
 
-function getKbdShortcut(kbd?: readonly [string, boolean]) {
-  return (
-    kbd && (
-      <kbd className="ms-1">
-        {kbd[1] ? '⇧' : ''}
-        {kbd[0].replace(/Key|Digit/, '').toLowerCase()}
-      </kbd>
-    )
-  );
+function getKbdShortcut(shortcut?: Shortcut | null) {
+  return shortcut && <kbd className="ms-1">{formatShortcut(shortcut)}</kbd>;
 }
 
 export function MapSwitchButton(): ReactElement {
@@ -202,7 +197,12 @@ export function MapSwitchButton(): ReactElement {
             </Emoji>
           ))}
 
-        {place !== 'toolbar' && getKbdShortcut(def.kbd)}
+        {place !== 'toolbar' &&
+          getKbdShortcut(
+            layersSettings[def.type]?.shortcut === undefined
+              ? def.shortcut
+              : layersSettings[def.type].shortcut,
+          )}
 
         {(place === 'menu' || (place === 'tooltip' && premium)) &&
         def.premiumFromZoom !== undefined &&

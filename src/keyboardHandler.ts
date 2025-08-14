@@ -147,13 +147,30 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     (!showingModal || suspendedModal) &&
     (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
   ) {
-    const layerDef = integratedLayerDefs.find(
-      (def) =>
-        def.kbd && def.kbd[0] === event.code && def.kbd[1] === event.shiftKey,
+    const layerDef = [...state.map.customLayers, ...integratedLayerDefs].find(
+      (def) => {
+        let shortcut = state.map.layersSettings[def.type]?.shortcut;
+
+        if (shortcut === undefined) {
+          shortcut = def.shortcut;
+        }
+
+        return (
+          shortcut &&
+          shortcut.code === event.code &&
+          !!shortcut.shift === event.shiftKey &&
+          !!shortcut.ctrl === event.ctrlKey &&
+          !!shortcut.alt === event.altKey &&
+          !!shortcut.meta === event.metaKey
+        );
+      },
     );
 
     const layerType =
-      layerDef && (!layerDef.adminOnly || state.auth.user?.isAdmin)
+      layerDef &&
+      (!('adminOnly' in layerDef) ||
+        !layerDef.adminOnly ||
+        state.auth.user?.isAdmin)
         ? layerDef.type
         : undefined;
 

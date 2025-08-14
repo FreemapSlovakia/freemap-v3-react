@@ -19,6 +19,7 @@ import { is } from 'typia';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
+import { Shortcut } from './types/common.js';
 
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
@@ -86,7 +87,6 @@ type HasZIndex = {
 export type IsIntegratedLayerDef = {
   adminOnly?: boolean;
   icon: ReactElement;
-  kbd?: [code: string, shift: boolean];
   premiumFromZoom?: number;
   experimental?: boolean;
   attribution: AttributionDef[];
@@ -100,7 +100,9 @@ export type HasScaleWithDpi = {
 };
 
 export type IsCommonLayerDef = {
+  type: string;
   minZoom?: number;
+  shortcut?: Shortcut;
 };
 
 type IsParametricShadingLayerDef = HasUrl &
@@ -147,12 +149,10 @@ export type IsTileLayerDef = HasUrl &
 
 export type IsBaseLayerDef = {
   layer: 'base';
-  type: string;
 };
 
 export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
-  type: string;
 };
 
 export type IsAllTechnologiesLayerDef =
@@ -245,7 +245,7 @@ function legacyFreemap(
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
-    kbd: ['Key' + type, false],
+    shortcut: { code: 'Key' + type },
     creditsPerMTile: 1000,
     countries: ['sk'],
     superseededBy: type === 'A' ? 'O' : 'X',
@@ -316,7 +316,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     ],
     minZoom: 6,
     maxNativeZoom: 19,
-    kbd: ['KeyX', false],
+    shortcut: { code: 'KeyX' },
     premiumFromZoom: 19,
     creditsPerMTile: 5000,
     countries: [
@@ -364,7 +364,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 19,
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    kbd: ['KeyO', false],
+    shortcut: { code: 'KeyO' },
   },
   {
     layer: 'base',
@@ -391,7 +391,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         country: 'cz',
       },
     ],
-    kbd: ['KeyZ', false],
+    shortcut: { code: 'KeyZ' },
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
@@ -409,7 +409,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 19,
     scaleWithDpi: true,
-    kbd: ['KeyS', false],
+    shortcut: { code: 'KeyS' },
     attribution: [
       {
         type: 'map',
@@ -478,29 +478,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    kbd: ['KeyQ', false],
-  },
-  {
-    layer: 'base',
-    type: '4',
-    technology: 'tile',
-    url: 'https://dmr5-light-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 18,
-    icon: <GiHills />,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: LLS_URL,
-      },
-    ],
-    kbd: ['KeyD', true],
-    errorTileUrl: white1x1,
-    scaleWithDpi: true,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
+    shortcut: { code: 'KeyP' },
   },
   {
     layer: 'base',
@@ -518,7 +496,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    kbd: ['KeyH', false],
+    shortcut: { code: 'KeyH' },
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 17,
@@ -541,7 +519,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: 'https://geoportal.cuzk.cz/',
       },
     ],
-    kbd: ['KeyL', false],
+    shortcut: { code: 'KeyJ' },
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 16,
@@ -563,7 +541,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    kbd: ['KeyD', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
@@ -585,7 +562,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: LLS_URL,
       },
     ],
-    kbd: ['KeyF', false],
     errorTileUrl: black1x1,
     scaleWithDpi: true,
     creditsPerMTile: 1000,
@@ -596,7 +572,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'VO',
     technology: 'maplibre',
     url: maptiler('openstreetmap'),
-    kbd: ['KeyV', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -612,7 +587,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     defaultInMenu: true,
     technology: 'maplibre',
     url: maptiler('streets-v2'),
-    kbd: ['KeyR', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -627,7 +601,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'VD',
     technology: 'maplibre',
     url: maptiler('dataviz-dark'),
-    kbd: ['KeyM', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -643,7 +616,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     defaultInMenu: true,
     technology: 'maplibre',
     url: maptiler('outdoor-v2'),
-    kbd: ['KeyU', false],
     icon: <FaMap />,
     attribution: [
       OSM_DATA_ATTR,
@@ -658,7 +630,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'i',
     technology: 'interactive',
     icon: <FaPencilAlt />,
-    kbd: ['KeyI', true],
+    shortcut: { code: 'KeyI', shift: true },
     attribution: [],
   },
   {
@@ -669,7 +641,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'gallery',
     icon: <FaCamera />,
     minZoom: 0,
-    kbd: ['KeyF', true],
+    shortcut: { code: 'KeyF', shift: true },
     zIndex: 4,
     attribution: [
       {
@@ -685,7 +657,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'wikipedia',
     icon: <FaWikipediaW />,
     minZoom: 8,
-    kbd: ['KeyW', true],
+    shortcut: { code: 'KeyW', shift: true },
     zIndex: 4,
     attribution: [],
   },
@@ -697,7 +669,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     url: 'https://www.freemap.sk/tiles/parametric-shading/sk/{z}/{x}/{y}',
     // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
     icon: <GiHills />,
-    kbd: ['KeyJ', true],
+    shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
     maxNativeZoom: 19,
     attribution: [
@@ -719,7 +691,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'parametricShading',
     url: 'https://www.freemap.sk/tiles/parametric-shading/cz/{z}/{x}/{y}',
     icon: <GiHills />,
-    kbd: ['KeyK', true],
+    shortcut: { code: 'KeyJ', shift: true },
     scaleWithDpi: true,
     maxNativeZoom: 18,
     attribution: [
@@ -745,7 +717,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
-    kbd: ['KeyN', true],
+    shortcut: { code: 'KeyN', shift: true },
     zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
@@ -772,9 +744,10 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         attribution: [STRAVA_ATTR],
         minZoom: 0,
         maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x
-        kbd: (stravaType === 'all' ? ['KeyH', true] : undefined) as
-          | [string, boolean]
-          | undefined,
+        shortcut:
+          stravaType === 'all'
+            ? ({ code: 'KeyS', shift: true } as Shortcut)
+            : undefined,
         zIndex: 3,
         errorTileUrl: transparent1x1,
         premiumFromZoom: 13,

@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Shading } from '../components/parameterizedShading/Shading.js';
 import { CustomLayerDef } from '../mapDefinitions.js';
+import { Shortcut } from '../types/common.js';
 
 export interface MapViewState {
   lat: number;
@@ -15,6 +16,7 @@ export type LayerSettings = {
   opacity?: number;
   showInMenu?: boolean;
   showInToolbar?: boolean;
+  shortcut?: Shortcut | null;
 };
 
 export interface MapStateBase extends MapViewState {
