@@ -12,6 +12,7 @@ import { saveSettings, setActiveModal } from '../../actions/mainActions.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
 import { isInvalidInt } from '../../numberValidator.js';
+import { ShortcutRecorder } from '../ShortcutRecorder.js';
 import { CustomMapsSettings } from './CustomMapsSettings.js';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -84,6 +85,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
+          <ShortcutRecorder />
+
           <Accordion>
             <Accordion.Item eventKey="general">
               <Accordion.Header>
