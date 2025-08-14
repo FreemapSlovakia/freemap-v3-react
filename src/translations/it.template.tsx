@@ -789,11 +789,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (sport acquatici)',
       s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
-      '4': 'Ombreggiatura leggera del terreno',
       '5': 'Ombreggiatura del terreno',
       '6': 'Ombreggiatura della superficie',
-      '7': 'Ombreggiatura dettagliata della superficie',
-      '8': 'Ombreggiatura dettagliata della superficie',
+      '7': 'Ombreggiatura dettagliata della terreno',
+      '8': 'Ombreggiatura dettagliata della terreno',
 
       VO: 'OpenStreetMap Vettoriale',
       VS: 'Strade Vettoriale',

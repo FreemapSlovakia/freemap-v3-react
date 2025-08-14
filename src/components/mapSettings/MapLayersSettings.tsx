@@ -1,11 +1,22 @@
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
-import { FaEllipsisH, FaEye, FaHistory, FaRegListAlt } from 'react-icons/fa';
+import {
+  FaEllipsisH,
+  FaEye,
+  FaHistory,
+  FaKeyboard,
+  FaRegListAlt,
+} from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { LayerSettings } from '../../actions/mapActions.js';
 import { useMessages } from '../../l10nInjector.js';
-import { CustomLayerDef, integratedLayerDefs } from '../../mapDefinitions.js';
+import {
+  CustomLayerDef,
+  integratedLayerDefMap,
+  integratedLayerDefs,
+} from '../../mapDefinitions.js';
 import { countryCodeToFlag, Emoji } from '../Emoji.js';
+import { ShortcutRecorder } from '../ShortcutRecorder.js';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;
@@ -76,18 +87,27 @@ export function MapLayersSettings({
       <thead>
         <tr>
           <th />
+
           <th />
+
           <th>
             <FaEllipsisH title={m?.settings.showInToolbar} />
           </th>
+
           <th>
             <FaRegListAlt title={m?.settings.showInMenu} />
           </th>
-          <th>
+
+          <th className="text-center">
             <FaEye title={m?.settings.overlayOpacity} />
+          </th>
+
+          <th className="text-center">
+            <FaKeyboard />
           </th>
         </tr>
       </thead>
+
       <tbody>
         {layerDefs.map((def) => {
           const { type } = def;
@@ -171,6 +191,25 @@ export function MapLayersSettings({
                     </OverlayTrigger>
                   </div>
                 )}
+              </td>
+
+              <td className="text-center fm-map-shortcut-cfg">
+                <ShortcutRecorder
+                  value={
+                    layersSettings[type]?.shortcut === undefined
+                      ? integratedLayerDefMap[type]?.shortcut
+                      : layersSettings[type]?.shortcut
+                  }
+                  onChange={(shortcut) =>
+                    setLayersSettings({
+                      ...layersSettings,
+                      [type]: {
+                        ...(layersSettings[type] ?? {}),
+                        shortcut,
+                      },
+                    })
+                  }
+                />
               </td>
             </tr>
           );

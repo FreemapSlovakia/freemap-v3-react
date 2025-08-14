@@ -1,17 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-
-type Shortcut = {
-  code: string; // event.code of main key
-  ctrl: boolean;
-  shift: boolean;
-  alt: boolean;
-  meta: boolean;
-};
+import { FaBan, FaCircle } from 'react-icons/fa';
+import { Shortcut } from '../types/common.js';
 
 interface ShortcutRecorderProps {
   value?: Shortcut | null;
-  onChange?: (shortcut: Shortcut | null) => void;
+  onChange?: (shortcut: Shortcut | null | undefined) => void;
 }
 
 const modifierOrderMac = ['meta', 'shift', 'alt', 'ctrl'] as const;
@@ -41,10 +35,10 @@ const displayNames: Record<string, string> = {
   Comma: ',',
   Period: '.',
   Slash: '/',
-  // Add more as needed.
+  // TODO add more
 };
 
-function formatShortcut(sc: Shortcut): string {
+export function formatShortcut(sc: Shortcut): string {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 
   const order = isMac ? modifierOrderMac : modifierOrderWin;
@@ -68,7 +62,7 @@ function formatShortcut(sc: Shortcut): string {
   const main =
     displayNames[sc.code] || sc.code.replace(/^Key/, '').replace(/^Digit/, '');
 
-  parts.push(main);
+  parts.push(main.toLowerCase());
 
   return parts.join('');
 }
@@ -78,8 +72,6 @@ export function ShortcutRecorder({
   onChange,
 }: ShortcutRecorderProps) {
   const [recording, setRecording] = useState(false);
-  const [shortcut, setShortcut] = useState<Shortcut | null>(value);
-  const containerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!recording) {
@@ -90,18 +82,18 @@ export function ShortcutRecorder({
       e.preventDefault();
       e.stopPropagation();
 
-      // Cancel/clear
+      // cancel
       if (e.code === 'Escape') {
         setRecording(false);
         return;
       }
+
       if (
         (e.code === 'Backspace' || e.code === 'Delete') &&
-        !(e.ctrlKey || e.shiftKey || e.altKey || e.metaKey)
+        !(e.ctrlKey || e.altKey || e.metaKey)
       ) {
-        setShortcut(null);
         setRecording(false);
-        onChange?.(null);
+        onChange?.(e.shiftKey ? undefined : null);
         return;
       }
 
@@ -122,12 +114,14 @@ export function ShortcutRecorder({
         alt: e.altKey,
         meta: e.metaKey,
       };
-      setShortcut(newSc);
+
       setRecording(false);
+
       onChange?.(newSc);
     };
 
     window.addEventListener('keydown', handler, { capture: true });
+
     return () => {
       window.removeEventListener('keydown', handler, { capture: true });
     };
@@ -137,27 +131,34 @@ export function ShortcutRecorder({
     setRecording(true);
   };
 
+  useEffect(() => {
+    const handlePointerDown = () => {
+      setRecording(false);
+    };
+
+    window.addEventListener('pointerdown', handlePointerDown, true);
+
+    return () => {
+      window.removeEventListener('pointerdown', handlePointerDown, true);
+    };
+  }, []);
+
   return (
-    <div>
-      <Button
-        type="button"
-        ref={containerRef}
-        tabIndex={0}
-        onClick={handleClick}
-        style={{
-          padding: '8px',
-          border: '1px solid #ccc',
-          display: 'inline-block',
-          cursor: 'pointer',
-          userSelect: 'none',
-        }}
-      >
-        {recording
-          ? 'Recording… (Press a key)'
-          : shortcut
-            ? formatShortcut(shortcut)
-            : 'Click to record shortcut'}
-      </Button>
-    </div>
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      tabIndex={0}
+      onClick={handleClick}
+      className="text-nowrap"
+    >
+      {recording ? (
+        <FaCircle className="text-danger" />
+      ) : value ? (
+        formatShortcut(value)
+      ) : (
+        <FaBan className="text-danger" />
+      )}
+    </Button>
   );
 }
