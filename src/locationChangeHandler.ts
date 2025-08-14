@@ -458,22 +458,32 @@ export function handleLocationChange(store: MyStore): void {
 
   handleGallery(getState, dispatch, query);
 
-  const customLayerDefs = query['custom-layers'];
+  const mapStateFromUrl = getMapStateFromUrl();
 
-  const customLayerTypes: string[] = [];
+  const customLayerDefsStr = query['custom-layers'];
+
+  const { customLayers } = getState().map;
 
   if (
-    typeof customLayerDefs === 'string' &&
-    JSON.stringify(getState().map.customLayers) !== customLayerDefs
+    typeof customLayerDefsStr === 'string' &&
+    JSON.stringify(getState().map.customLayers) !== customLayerDefsStr
   ) {
-    const existingClsStrings = getState().map.customLayers.map((cl) =>
-      JSON.stringify(cl),
+    const existingCustomLayersDefStrings = getState().map.customLayers.map(
+      (cl) => JSON.stringify(cl),
     );
 
     try {
-      const newCustomLayerDefs = upgradeCustomLayerDefs(
-        JSON.parse(customLayerDefs),
-      ).filter((cl) => !existingClsStrings.includes(JSON.stringify(cl)));
+      const customLayerDefs = upgradeCustomLayerDefs(
+        JSON.parse(customLayerDefsStr),
+      );
+
+      (mapStateFromUrl.layers ??= []).push(
+        ...customLayerDefs.map((def) => def.type),
+      );
+
+      const newCustomLayerDefs = customLayerDefs.filter(
+        (cl) => !existingCustomLayersDefStrings.includes(JSON.stringify(cl)),
+      );
 
       if (newCustomLayerDefs.length) {
         // for (const cm of newCustomLayerDefs) {
@@ -482,21 +492,11 @@ export function handleLocationChange(store: MyStore): void {
         //   }
         // }
 
-        for (const cl of newCustomLayerDefs) {
-          customLayerTypes.push(cl.type);
-        }
-
-        dispatch(mapSetCustomLayers(newCustomLayerDefs));
+        dispatch(mapSetCustomLayers([...customLayers, ...newCustomLayerDefs]));
       }
     } catch {
       // ignore
     }
-  }
-
-  const mapStateFromUrl = getMapStateFromUrl();
-
-  if (customLayerTypes.length) {
-    (mapStateFromUrl.layers ??= []).push(...customLayerTypes);
   }
 
   const diff = getMapStateDiffFromUrl(mapStateFromUrl, getState().map);

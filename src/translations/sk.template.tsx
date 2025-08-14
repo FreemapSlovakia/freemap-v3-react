@@ -1149,9 +1149,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   legend: {
-    body: (
+    body: ({ name }) => (
       <>
-        Legenda k mape <i>{outdoorMap}</i>:
+        Legenda k mape <i>{name}</i>
       </>
     ),
   },

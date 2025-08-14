@@ -1,6 +1,6 @@
 import { JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaBook, FaRegAddressCard, FaRegMap, FaUsers } from 'react-icons/fa';
+import { FaBook, FaRegAddressCard, FaList, FaUsers } from 'react-icons/fa';
 import { getDocuments } from '../../documents/index.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';
@@ -26,7 +26,7 @@ export function HelpSubmenu(): JSX.Element {
 
       {layers.some((layer) => legendLayers.has(layer)) && (
         <Dropdown.Item href="#show=legend" eventKey="modal-legend">
-          <FaRegMap /> {m?.mainMenu.mapLegend}
+          <FaList /> {m?.mainMenu.mapLegend}
         </Dropdown.Item>
       )}
 

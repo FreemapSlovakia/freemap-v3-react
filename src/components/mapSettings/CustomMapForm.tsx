@@ -326,11 +326,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   return (
     <div
-      className="d-grid"
+      className="d-grid align-items-stretch column-gap-3"
       style={{
-        columnGap: '1rem',
         gridTemplateColumns: '1fr 1fr',
-        alignItems: 'stretch',
       }}
     >
       {/* Name */}

@@ -1,6 +1,6 @@
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
+import { FaLock, FaQuestion, FaRegCopyright, FaList } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
@@ -18,14 +18,25 @@ export function CopyrightButton(): ReactElement {
     ['sk', 'cs'].includes(state.l10n.language),
   );
 
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
   const layers = useAppSelector((state) => state.map.layers);
 
   const legendLayers = useMemo(
-    () => new Set(skCs ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']),
-    [skCs],
+    () =>
+      new Set([
+        ...(skCs ? ['A', 'T', 'C', 'K'] : []),
+        'X',
+        'O',
+        ...customLayers
+          .filter((def) => def.technology === 'wms')
+          .map((def) => def.type),
+      ]),
+
+    [customLayers, skCs],
   );
 
-  const showLegendButton = layers.some((layer) => legendLayers.has(layer));
+  const showLegendButton = layers.some((type) => legendLayers.has(type));
 
   const showAttribution = useAttributionInfo();
 
@@ -66,7 +77,7 @@ export function CopyrightButton(): ReactElement {
                 dispatch(setActiveModal('legend'));
               }}
             >
-              <FaRegMap /> {m?.mainMenu.mapLegend}
+              <FaList /> {m?.mainMenu.mapLegend}
             </Dropdown.Item>
           )}
 

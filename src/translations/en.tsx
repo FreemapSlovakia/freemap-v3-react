@@ -1092,9 +1092,9 @@ const messages: Messages = {
   },
 
   legend: {
-    body: (
+    body: ({ name }) => (
       <>
-        Map legend for <i>{outdoorMap}</i>:
+        Map legend for <i>{name}</i>
       </>
     ),
   },
