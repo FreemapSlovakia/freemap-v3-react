@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { Fragment, type ReactElement, useEffect, useState } from 'react';
 import { Accordion } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
@@ -62,9 +62,14 @@ export function OutdoorMapLegend(): ReactElement {
         <Accordion.Item key={c.name} eventKey={String(i)}>
           <Accordion.Header>{c.name}</Accordion.Header>
 
-          <Accordion.Body>
+          <Accordion.Body
+            className="d-grid align-items-center row-gap-2 column-gap-3"
+            style={{
+              gridTemplateColumns: 'auto 1fr',
+            }}
+          >
             {c.items.map(({ id, name }) => (
-              <div key={id} className="fm-legend-item">
+              <Fragment key={id}>
                 <div>
                   <img
                     src={`${fmMapserverUrl}/legend-image/${id}`}
@@ -80,7 +85,7 @@ export function OutdoorMapLegend(): ReactElement {
                 </div>
 
                 <div>{name}</div>
-              </div>
+              </Fragment>
             ))}
           </Accordion.Body>
         </Accordion.Item>

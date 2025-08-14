@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { Fragment, ReactElement, useEffect, useState } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { CustomLayerDef, IsWmsLayerDef } from '../mapDefinitions.js';
@@ -30,26 +30,40 @@ export function WmsMapLegend({ def }: Props) {
   return error ? (
     <Alert variant="danger">{error}</Alert>
   ) : layers ? (
-    layersLegend(layers)
+    <div
+      className="d-grid align-items-center row-gap-2 column-gap-3"
+      style={{
+        gridTemplateColumns: 'auto 1fr',
+      }}
+    >
+      {layersLegend(layers)}
+    </div>
   ) : (
-    <Spinner />
+    <div className="d-flex justify-content-center">
+      <Spinner />
+    </div>
   );
 
-  function layersLegend(layers: Layer[]): ReactElement[] {
-    return layers.map((layer) => (
-      <>
+  // TODO maybe add support for wrapper/sub layers styling
+  function layersLegend(layers: Layer[], keys: number[] = []): ReactElement[] {
+    return layers.map((layer, i) => (
+      <Fragment key={[...keys, i].join()}>
         {layer.name &&
         layer.legendUrl &&
         def.layers.includes(layer.name) &&
         (layer.maxScale == null || layer.maxScale >= scale) &&
         (layer.minScale == null || layer.minScale <= scale) ? (
-          <div>
-            <img src={layer.legendUrl} /> {layer.title}
-          </div>
+          <>
+            <div>
+              <img className="d-block mx-auto" src={layer.legendUrl} />
+            </div>
+
+            <div>{layer.title}</div>
+          </>
         ) : null}
 
-        {...layersLegend(layer.children)}
-      </>
+        {...layersLegend(layer.children, [...keys, i])}
+      </Fragment>
     ));
   }
 }

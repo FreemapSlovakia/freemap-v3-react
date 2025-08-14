@@ -1,6 +1,6 @@
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
-import { FaRegMap, FaTimes } from 'react-icons/fa';
+import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
@@ -51,43 +51,56 @@ export function LegendModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
+  function getSingleLegend(type: string) {
+    return type === 'X' ? (
+      <OutdoorMapLegend />
+    ) : ['A', 'T', 'C', 'K'].includes(type) ? (
+      <LegacyMapsLegend />
+    ) : (
+      <WmsMapLegend
+        def={wmsCustomLayerDefs.find((def) => def.type === type)!}
+      />
+    );
+  }
+
+  function getHeader(type: string) {
+    return (
+      m?.mapLayers.letters[type] ??
+      customLayers.find((def) => def.type === type)?.name ??
+      '…'
+    );
+  }
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegMap /> {m?.mainMenu.mapLegend}
+          <FaList /> {m?.mainMenu.mapLegend}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <Accordion>
-          {activeLegendLayers.map((type) => (
-            <Accordion.Item key={type} eventKey={type}>
-              <Accordion.Header>
-                <span>
-                  {m?.legend.body({
-                    name:
-                      m?.mapLayers.letters[type] ??
-                      customLayers.find((def) => def.type === type)?.name ??
-                      '…',
-                  })}
-                </span>
-              </Accordion.Header>
+        {activeLegendLayers.length === 1 ? (
+          <>
+            <div className="mb-3">
+              {m?.legend.body({ name: getHeader(activeLegendLayers[0]) })}
+            </div>
 
-              <Accordion.Body>
-                {type === 'X' ? (
-                  <OutdoorMapLegend />
-                ) : ['A', 'T', 'C', 'K'].includes(type) ? (
-                  <LegacyMapsLegend />
-                ) : (
-                  <WmsMapLegend
-                    def={wmsCustomLayerDefs.find((def) => def.type === type)!}
-                  />
-                )}
-              </Accordion.Body>
-            </Accordion.Item>
-          ))}
-        </Accordion>
+            {getSingleLegend(activeLegendLayers[0])}
+          </>
+        ) : (
+          <Accordion>
+            {activeLegendLayers.map((type) => (
+              <Accordion.Item key={type} eventKey={type}>
+                <Accordion.Header>
+                  <span>{getHeader(type)}</span>
+                </Accordion.Header>
+
+                <Accordion.Body>{getSingleLegend(type)}</Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
+        )}
       </Modal.Body>
 
       <Modal.Footer>

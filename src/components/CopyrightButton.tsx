@@ -1,6 +1,6 @@
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaLock, FaQuestion, FaRegCopyright, FaRegMap } from 'react-icons/fa';
+import { FaLock, FaQuestion, FaRegCopyright, FaList } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
@@ -27,6 +27,7 @@ export function CopyrightButton(): ReactElement {
       new Set([
         ...(skCs ? ['A', 'T', 'C', 'K'] : []),
         'X',
+        'O',
         ...customLayers
           .filter((def) => def.technology === 'wms')
           .map((def) => def.type),
@@ -76,7 +77,7 @@ export function CopyrightButton(): ReactElement {
                 dispatch(setActiveModal('legend'));
               }}
             >
-              <FaRegMap /> {m?.mainMenu.mapLegend}
+              <FaList /> {m?.mainMenu.mapLegend}
             </Dropdown.Item>
           )}
 
