@@ -478,7 +478,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    shortcut: { code: 'KeyP' },
+    shortcut: { code: 'KeyQ' },
   },
   {
     layer: 'base',
@@ -519,7 +519,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         url: 'https://geoportal.cuzk.cz/',
       },
     ],
-    shortcut: { code: 'KeyJ' },
+    shortcut: { code: 'KeyK' },
     errorTileUrl: white1x1,
     scaleWithDpi: true,
     premiumFromZoom: 16,
@@ -691,7 +691,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'parametricShading',
     url: 'https://www.freemap.sk/tiles/parametric-shading/cz/{z}/{x}/{y}',
     icon: <GiHills />,
-    shortcut: { code: 'KeyJ', shift: true },
+    shortcut: { code: 'KeyK', shift: true },
     scaleWithDpi: true,
     maxNativeZoom: 18,
     attribution: [
