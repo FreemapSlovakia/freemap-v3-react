@@ -1,9 +1,11 @@
 import { pointToTile } from '@mapbox/tilebelt';
-import { useCallback, useMemo } from 'react';
+import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaCopy } from 'react-icons/fa';
 import { TbDecimal } from 'react-icons/tb';
+import { useDispatch } from 'react-redux';
 import { is } from 'typia';
+import { searchSetQuery } from '../actions/searchActions.js';
 import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
@@ -41,28 +43,49 @@ export function ElevationInfo({
 
   const [x, y] = pointToTile(point.lon, point.lat, zoom);
 
-  function substitute(url?: string) {
-    return url
-      ?.replace('{x}', String(x))
-      .replace('{y}', String(y))
-      .replace('{z}', String(zoom))
-      .replace('{s}', 'a');
+  function substitute({
+    url,
+    maxNativeZoom,
+    extraScales = [],
+  }: IsTileLayerDef) {
+    const [scale] = [1, ...extraScales]
+      .map((scale) => [scale, Math.abs(devicePixelRatio - scale)] as const)
+      .reduce((min, val) => (val[1] < min[1] ? val : min));
+
+    const z =
+      maxNativeZoom === undefined || maxNativeZoom >= zoom
+        ? zoom
+        : maxNativeZoom;
+
+    const [x, y] = pointToTile(point.lon, point.lat, z);
+
+    return (
+      url
+        .replace('{x}', String(x))
+        .replace('{y}', String(y))
+        .replace('{z}', String(z))
+        .replace('{s}', 'a') + (scale !== 1 ? `@${scale}x` : '')
+    );
   }
 
   const m = useMessages();
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const tileLayerTypes = integratedLayerDefs.filter((def) =>
-    is<IsTileLayerDef>(def),
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
+  const tileLayerDefs = [...integratedLayerDefs, ...customLayers].filter(
+    (def) => is<IsTileLayerDef>(def),
   );
 
   const tileUrls = layers
-    .map((type) => ({
-      type,
-      url: substitute(tileLayerTypes.find((def) => def.type === type)?.url)!, // TODO check if zoom exists
-    }))
-    .filter(({ url }) => !!url);
+    .map((type) => tileLayerDefs.find((def) => def.type === type))
+    .filter((def): def is (typeof tileLayerDefs)[0] => !!def)
+    .filter((def) => def.minZoom !== undefined && def.minZoom <= zoom) // TODO consider scale?
+    .map((def) => ({
+      ...def,
+      tileUrl: substitute(def),
+    }));
 
   const [format, setFormat] = usePersistentState<number>(
     'fm.ele.gpsFormat',
@@ -86,9 +109,17 @@ export function ElevationInfo({
     navigator.clipboard.writeText(coordinates);
   }, [coordinates]);
 
+  const dispatch = useDispatch();
+
   return (
     <>
-      <InputGroup size="sm">
+      {elevation != null && (
+        <div>
+          {maslMessage}: <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
+        </div>
+      )}
+
+      <InputGroup size="sm" className="my-2">
         <Form.Control readOnly className="fm-fs-content" value={coordinates} />
 
         <Button type="button" onClick={handleNextFormatClick}>
@@ -102,26 +133,34 @@ export function ElevationInfo({
 
       {!window.fmEmbedded && (
         <div>
-          {tileMessage}: {zoom}/{x}/{y}
+          {tileMessage}:{' '}
+          <Alert.Link
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(searchSetQuery({ query: `${zoom}/${x}/${y}` }));
+            }}
+            href={'#q=' + encodeURIComponent(`${zoom}/${x}/${y}`)}
+            target="_blank"
+          >
+            {zoom}/{x}/{y}
+          </Alert.Link>
           {tileUrls.length > 0 && (
             <>
               {' '}
               (
-              {tileUrls.map((o, i) => (
-                <>
+              {tileUrls.map((def, i) => (
+                <Fragment key={def.type}>
                   {i > 0 ? ', ' : null}
-                  <Alert.Link href={o.url}>{o.type}</Alert.Link>
-                </>
+                  <Alert.Link href={def.tileUrl} target="_blank">
+                    {'name' in def
+                      ? (def.name ?? def.type)
+                      : (m?.mapLayers.letters[def.type] ?? def.type)}
+                  </Alert.Link>
+                </Fragment>
               ))}
               )
             </>
           )}
-        </div>
-      )}
-
-      {elevation != null && (
-        <div>
-          {maslMessage}: {nf01.format(elevation)}&nbsp;{m?.general.masl}
         </div>
       )}
     </>
