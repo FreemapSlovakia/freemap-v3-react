@@ -83,7 +83,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
           </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body className="bg-body-tertiary">
           <Accordion>
             <Accordion.Item eventKey="general">
               <Accordion.Header>
