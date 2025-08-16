@@ -147,7 +147,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
           </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body className="bg-light">
+        <Modal.Body className="bg-body-tertiary">
           <Accordion>
             <Accordion.Item eventKey="payments">
               <Accordion.Header>
