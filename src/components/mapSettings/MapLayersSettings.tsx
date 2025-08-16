@@ -102,7 +102,7 @@ export function MapLayersSettings({
             <FaEye title={m?.settings.overlayOpacity} />
           </th>
 
-          <th className="text-center">
+          <th className="text-center fm-should-have-keyboard">
             <FaKeyboard />
           </th>
         </tr>
@@ -193,7 +193,7 @@ export function MapLayersSettings({
                 )}
               </td>
 
-              <td className="text-center fm-map-shortcut-cfg">
+              <td className="text-center fm-map-shortcut-cfg fm-should-have-keyboard">
                 <ShortcutRecorder
                   value={
                     layersSettings[type]?.shortcut === undefined

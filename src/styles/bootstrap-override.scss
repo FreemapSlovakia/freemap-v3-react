@@ -58,17 +58,21 @@
   }
 }
 
-kbd {
+kbd,
+.fm-should-have-keyboard {
   display: none;
 
   // https://stackoverflow.com/a/47703337/289827
   @media (hover: hover) and (pointer: fine) {
     & {
-      background-color: #bbb;
-      line-height: 0;
-      display: inline;
+      display: revert;
     }
   }
+}
+
+kbd {
+  background-color: #bbb;
+  line-height: 0;
 }
 
 .f-gap-1 {
