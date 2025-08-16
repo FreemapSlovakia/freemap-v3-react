@@ -5,8 +5,8 @@
   "description": "Freemap je voľne dostupná online mapa Slovenska založená na dátach z OpenStreetMap",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0d6efd",
   "dir": "auto",
   "orientation": "portrait",
   "icons": [
