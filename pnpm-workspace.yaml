@@ -1,2 +1,3 @@
 onlyBuiltDependencies:
   - core-js-pure
+  - esbuild
