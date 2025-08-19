@@ -22,7 +22,7 @@ export const setToolProcessor: Processor<typeof setTool> = {
         getState().main.cookieConsentResult !== null &&
         tool.startsWith('draw-')
       ) {
-        storage.setItem('drawingTool', tool);
+        storage.setItem('fm.drawingTool', tool);
       }
     }
   },

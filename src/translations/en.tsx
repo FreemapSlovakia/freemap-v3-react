@@ -108,6 +108,12 @@ const messages: Messages = {
     deleteButtonText: 'Remove %value% from the list',
   },
 
+  theme: {
+    light: 'Light mode',
+    dark: 'Dark mode',
+    auto: 'Automatic mode',
+  },
+
   selections: {
     objects: 'Object (POI)',
     drawPoints: 'Point',

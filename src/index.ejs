@@ -16,7 +16,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
     />
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark" />
     <meta property="fb:pages" content="146029225443232" />
     <meta
       property="article:author"
@@ -38,8 +38,19 @@
     <meta http-equiv="Accept-CH" content="Width" />
 
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#0d6efd" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#212529" media="(prefers-color-scheme: dark)">
+
+    <meta
+      name="theme-color"
+      content="#0d6efd"
+      media="(prefers-color-scheme: light)"
+    />
+
+    <meta
+      name="theme-color"
+      content="#212529"
+      media="(prefers-color-scheme: dark)"
+    />
+
     <meta name="application-name" content="Freemap Slovakia" />
 
     <link
@@ -50,6 +61,7 @@
     />
 
     <link rel="shortcut icon" href="/favicon.ico" />
+
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -136,7 +148,10 @@
     </script>
 
     <% if (process.env['SENTRY_DSN']) { %>
-    <script src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js" crossorigin="anonymous"></script>
+    <script
+      src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
 
     <script>
       Sentry.init({
@@ -148,26 +163,29 @@
 
     <% if (process.env['MATOMO_SITE_ID']) { %>
     <script>
-      var _paq = window._paq = window._paq || [];
+      const _paq = (window._paq = window._paq || []);
       _paq.push(['requireCookieConsent']);
       _paq.push(['setCustomUrl', '/']);
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['enableLinkTracking']);
       _paq.push(['setCustomDimension', 1, fmEmbedded ? 'Embedded' : 'Top']);
-      (function() {
-        var u="//matomo.freemap.sk/";
-        _paq.push(['setTrackerUrl', u+'matomo.php']);
+      (function () {
+        const u = '//matomo.freemap.sk/';
+        _paq.push(['setTrackerUrl', u + 'matomo.php']);
         _paq.push(['setSiteId', '<%= process.env["MATOMO_SITE_ID"] %>']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        const d = document,
+          g = d.createElement('script'),
+          s = d.getElementsByTagName('script')[0];
+        g.async = true;
+        g.src = u + 'matomo.js';
+        s.parentNode.insertBefore(g, s);
       })();
     </script>
     <% } else { %>
-      <script>
-        var _paq = window._paq = window._paq || [];
-      </script>
+    <script>
+      const _paq = (window._paq = window._paq || []);
+    </script>
     <% } %>
-
 
     <% if (process.env['FB_APP_ID']) { %>
 
@@ -198,10 +216,14 @@
 
     <% } %>
 
-    <!-- prettier-ignore -->
-    <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=681854635902254&ev=PageView&noscript=1"
-    /></noscript>
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=681854635902254&ev=PageView&noscript=1"
+      />
+    </noscript>
     <!-- End Facebook Pixel Code -->
 
     <style>
@@ -214,14 +236,6 @@
         top: 0;
       }
     </style>
-
-    <script>
-      var langs = window.navigator.languages || [window.navigator.language];
-
-      var lang = langs
-        .map((lang) => lang.replace(/-.*/, ''))
-        .find((lang) => /^(en|sk|cs|hu|de|pl|it)$/.test(lang));
-    </script>
   </head>
 
   <body>
@@ -275,12 +289,12 @@
     <% } %>
 
     <script>
-      var validate_startup = function (e) {
+      function validate_startup(e) {
         if (e) {
           e.preventDefault();
         }
 
-        var app = document.getElementById('app');
+        const app = document.getElementById('app');
 
         if (
           !app ||
@@ -297,7 +311,7 @@
 
       window.addEventListener('error', validate_startup);
 
-      window.addEventListener('load', function () {
+      window.addEventListener('load', () => {
         console.log('Page loaded.');
 
         window.removeEventListener('error', validate_startup);
@@ -307,8 +321,16 @@
         delete validate_startup;
       });
 
-      function applySystemTheme() {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      function applyTheme(t) {
+        if (t === 'auto') {
+          localStorage.removeItem('fm.theme')
+        } else if (t) {
+          localStorage.setItem('fm.theme', t)
+        }
+        
+        const theme = localStorage.getItem('fm.theme');
+
+        const isDark = theme === 'dark' || theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         document.documentElement.setAttribute(
           'data-bs-theme',
@@ -318,9 +340,9 @@
 
       window
         .matchMedia('(prefers-color-scheme: dark)')
-        .addEventListener('change', applySystemTheme);
+        .addEventListener('change', applyTheme);
 
-      applySystemTheme();
+      applyTheme();
 
       // filter out old browsers
       [].flatMap(() => null);

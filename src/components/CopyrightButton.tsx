@@ -1,6 +1,6 @@
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaLock, FaQuestion, FaRegCopyright, FaList } from 'react-icons/fa';
+import { FaList, FaLock, FaQuestion, FaRegCopyright } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';

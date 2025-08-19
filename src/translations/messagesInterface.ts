@@ -76,6 +76,11 @@ export type Messages = {
     newOptionText: string;
     deleteButtonText: string;
   };
+  theme: {
+    light: string;
+    dark: string;
+    auto: string;
+  };
   selections: {
     objects: string;
     drawPoints: string;

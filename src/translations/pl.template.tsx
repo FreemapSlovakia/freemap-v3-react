@@ -112,6 +112,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Dodaj %value%',
     deleteButtonText: 'Usuń %value% z listy',
   },
+  theme: {},
   selections: {
     objects: 'Obiekt (POI)',
     drawPoints: 'Punkt',

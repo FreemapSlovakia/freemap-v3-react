@@ -1,17 +1,28 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { FaFacebook, FaGithub, FaYoutube } from 'react-icons/fa';
+import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
 import { useMessages } from '../../l10nInjector.js';
+import { LongPressTooltip } from '../LongPressTooltip.js';
 
 type Props = {
-  className?: string;
   closeMenu: () => void;
 };
 
-export function SocialButtons({ className, closeMenu }: Props): ReactElement {
+export function SocialButtons({ closeMenu }: Props): ReactElement {
   const m = useMessages();
 
+  const [currentTheme, setCurrentTheme] = useState(
+    localStorage.getItem('fm.theme') ?? 'auto',
+  );
+
+  function setTheme(theme: 'dark' | 'light' | 'auto') {
+    setCurrentTheme(theme);
+
+    window.applyTheme(theme);
+  }
+
   return (
-    <div style={{ fontSize: '1.2rem' }} className={className}>
+    <div className="mx-3 d-flex gap-2 fs-5">
       <a
         onClick={closeMenu}
         href="https://www.facebook.com/FreemapSlovakia"
@@ -28,7 +39,7 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
         target="_blank"
         rel="noopener noreferrer"
-        className="fm-yt-icon ms-1"
+        className="fm-yt-icon"
         title={m?.mainMenu.youtube}
       >
         <FaYoutube />
@@ -39,11 +50,37 @@ export function SocialButtons({ className, closeMenu }: Props): ReactElement {
         href="https://github.com/FreemapSlovakia"
         target="_blank"
         rel="noopener noreferrer"
-        className="fm-gh-icon ms-1"
+        className="fm-gh-icon flex-grow-1"
         title={m?.mainMenu.github}
       >
         <FaGithub />
       </a>
+
+      <div className="d-flex border rounded px-1">
+        {(['light', 'dark', 'auto'] as const).map((theme) => (
+          <LongPressTooltip key={theme} label={m?.theme[theme]}>
+            {({ props }) => (
+              <button
+                className={
+                  'px-1 m-0 border-0 bg-transparent ' +
+                  (currentTheme === theme ? 'text-primary' : '')
+                }
+                type="button"
+                onClick={() => setTheme(theme)}
+                {...props}
+              >
+                {
+                  {
+                    light: <MdLightMode />,
+                    dark: <MdDarkMode />,
+                    auto: <MdHdrAuto />,
+                  }[theme]
+                }
+              </button>
+            )}
+          </LongPressTooltip>
+        ))}
+      </div>
     </div>
   );
 }

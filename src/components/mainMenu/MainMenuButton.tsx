@@ -146,7 +146,7 @@ export function MainMenuButton(): ReactElement {
             <>
               <Dropdown.Divider />
 
-              <SocialButtons className="mx-3" closeMenu={closeMenu} />
+              <SocialButtons closeMenu={closeMenu} />
             </>
           )}
         </div>

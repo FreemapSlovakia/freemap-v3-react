@@ -18,6 +18,7 @@ declare global {
       searchResultStyle?: PathOptions;
     };
     Sentry?: typeof Sentry;
+    applyTheme: (theme?: 'dark' | 'light' | 'auto') => void;
   }
 
   interface ServiceWorkerGlobalScope {

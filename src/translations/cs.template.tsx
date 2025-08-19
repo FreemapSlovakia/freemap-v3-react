@@ -114,6 +114,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Odebrat %value% ze seznamu',
   },
 
+  theme: {},
+
   selections: {
     objects: 'Objekt (POI)',
     drawPoints: 'Bod',

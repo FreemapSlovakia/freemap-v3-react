@@ -115,6 +115,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: '%value% aus der Liste entfernen',
   },
 
+  theme: {},
+
   selections: {
     objects: 'Objekt (POI)',
     drawPoints: 'Punkt',

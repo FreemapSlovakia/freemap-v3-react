@@ -137,6 +137,7 @@
     "mini-css-extract-plugin": "^2.9.4",
     "patch-package": "^8.0.0",
     "prettier": "^3.6.2",
+    "prettier-plugin-ejs": "^1.0.3",
     "prettier-plugin-organize-imports": "^4.2.0",
     "react-refresh": "^0.17.0",
     "recast": "^0.23.11",
