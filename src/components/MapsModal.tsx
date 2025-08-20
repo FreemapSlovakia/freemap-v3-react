@@ -263,7 +263,7 @@ export function MapsModal({ show }: Props): ReactElement {
             <Accordion.Body>
               <div
                 className="overflow-auto"
-                style={{ maxHeight: '50vh', minHeight: '8rem' }}
+                style={{ maxHeight: '50dvh', minHeight: '8rem' }}
               >
                 <Table responsive hover striped className="mt-2">
                   <thead>

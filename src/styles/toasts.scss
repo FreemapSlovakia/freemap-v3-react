@@ -2,7 +2,7 @@
   position: fixed;
   right: 0px;
   bottom: 52px;
-  max-height: calc(100vh - 52px);
+  max-height: calc(100dvh - 52px);
   z-index: 100000;
 
   overflow: auto;
@@ -13,5 +13,5 @@
 .fm-toast {
   margin: 10px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-  max-width: calc(max(380px, 25vw));
+  max-width: calc(max(380px, 25dvw));
 }

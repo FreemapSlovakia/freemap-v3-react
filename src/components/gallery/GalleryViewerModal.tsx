@@ -389,7 +389,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     id={String(activeImageId)}
                     style={
                       isFullscreen
-                        ? { width: '100vw', height: '100vh' }
+                        ? { width: '100dvw', height: '100dvh' }
                         : {
                             height:
                               Math.max(window.innerHeight - 400, 300) + 'px',

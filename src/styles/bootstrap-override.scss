@@ -4,7 +4,7 @@
 
 .dropdown-long {
   overflow-x: auto;
-  max-height: calc(var(--vh, 100vh) - 150px);
+  max-height: calc(100dvh - 150px);
 }
 
 .accordion > .card > .card-header {

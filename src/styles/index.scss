@@ -183,7 +183,7 @@ button#freemap-logo {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    max-width: 100vw;
+    max-width: 100dvw;
 
     & > div {
       pointer-events: auto;
@@ -229,7 +229,7 @@ button#freemap-logo {
 
 .fm-menu-scroller {
   // hack to prevent popovers go outside view on mobiles
-  max-height: calc(var(--vh, 100vh) - 160px);
+  max-height: calc(100dvh - 160px);
   overflow-y: auto;
 }
 

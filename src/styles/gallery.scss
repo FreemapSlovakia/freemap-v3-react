@@ -22,7 +22,7 @@
 
 .gallery-image {
   max-width: 100%;
-  max-height: calc(var(--vh, 100vh) - 300px);
+  max-height: calc(100dvh - 300px);
   margin: 0 auto;
   display: block;
 
@@ -81,7 +81,7 @@ button.carousel-control-disabled:hover {
   }
 
   .gallery-image {
-    max-height: 100vh;
+    max-height: 100dvh;
   }
 }
 

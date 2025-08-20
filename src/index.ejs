@@ -154,16 +154,18 @@
     ></script>
 
     <script>
-      Sentry.init({
-        dsn: '<%= process.env["SENTRY_DSN"] %>',
-        tracesSampleRate: 0.01,
-      });
+      if (typeof Sentry !== 'undefined') {
+        Sentry.init({
+          dsn: '<%= process.env["SENTRY_DSN"] %>',
+          tracesSampleRate: 0.01,
+        });
+      }
     </script>
     <% } %>
 
     <% if (process.env['MATOMO_SITE_ID']) { %>
     <script>
-      const _paq = (window._paq = window._paq || []);
+      let _paq = (window._paq = window._paq || []);
       _paq.push(['requireCookieConsent']);
       _paq.push(['setCustomUrl', '/']);
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
@@ -246,7 +248,7 @@
           display: flex;
           flex-direction: column;
           justify-content: center;
-          height: 100vh;
+          height: 100dvh;
         "
       >
         <div style="display: flex; flex-direction: column; align-items: center">

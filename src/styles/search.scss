@@ -1,6 +1,6 @@
 @media (max-width: 767px) {
   .fm-search-input {
-    max-width: calc(50vw);
+    max-width: calc(50dvw);
   }
 }
 
@@ -9,20 +9,20 @@
 }
 
 .fm-search-dropdown .dropdown-long {
-  max-height: calc(100vh - 80px);
+  max-height: calc(100dvh - 80px);
 
   @media (min-height: 400px) {
-    max-height: calc(100vh - 130px);
+    max-height: calc(100dvh - 130px);
   }
 }
 
 .fm-search-dropdown {
   @media (min-width: 768px) {
-    max-width: calc(100vw - 160px);
+    max-width: calc(100dvw - 160px);
   }
 
   @media (max-width: 767px) {
-    max-width: calc(100vw - 16px);
+    max-width: calc(100dvw - 16px);
 
     transform: translate3d(8px, 47px, 0px) !important;
   }
