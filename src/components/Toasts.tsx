@@ -52,6 +52,7 @@ export function Toasts(): ReactElement {
             messageKey,
             messageParams,
             noClose,
+            timeout,
           }) => {
             let msg: ReactNode;
 
@@ -75,6 +76,7 @@ export function Toasts(): ReactElement {
               style,
               msg,
               noClose,
+              timeout,
             };
           },
         )
@@ -102,7 +104,7 @@ export function Toasts(): ReactElement {
 
   return (
     <div className="fm-toasts">
-      {items.map(({ id, actions, style, msg, noClose }) => {
+      {items.map(({ id, actions, style, msg, noClose, timeout }) => {
         return (
           <Toast
             key={id}
@@ -115,12 +117,9 @@ export function Toasts(): ReactElement {
               ...action,
               name: tx(m, action),
             }))}
-            onTimeoutStop={() => {
-              dispatch(toastsStopTimeout(id));
-            }}
-            onTimeoutRestart={() => {
-              dispatch(toastsRestartTimeout(id));
-            }}
+            timeout={timeout}
+            onTimeoutStop={() => dispatch(toastsStopTimeout(id))}
+            onTimeoutRestart={() => dispatch(toastsRestartTimeout(id))}
           />
         );
       })}

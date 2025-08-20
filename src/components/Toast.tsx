@@ -1,5 +1,11 @@
-import { type ReactElement, ReactNode, useCallback } from 'react';
-import { Alert, Button, ButtonToolbar } from 'react-bootstrap';
+import {
+  type ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
 import type { RootAction } from '../actions/index.js';
 import { ResolvedToast } from '../actions/toastsActions.js';
 import '../styles/toasts.scss';
@@ -10,6 +16,7 @@ interface Props
   onTimeoutStop: (id: string) => void;
   onTimeoutRestart: (id: string) => void;
   message: ReactNode;
+  timeout?: number;
 }
 
 export function Toast({
@@ -21,12 +28,23 @@ export function Toast({
   onTimeoutStop,
   onTimeoutRestart,
   noClose,
+  timeout,
 }: Props): ReactElement {
-  const handleMouseEnter = useCallback(() => {
+  const [ts, setTs] = useState(Date.now());
+
+  const [elapsed, setElapsed] = useState(0);
+
+  const [stopped, setStopped] = useState(false);
+
+  const handlePointerEnter = useCallback(() => {
+    setStopped(true);
+    setElapsed(0);
+    setTs(Date.now());
     onTimeoutStop(id);
   }, [onTimeoutStop, id]);
 
-  const handleMouseLeave = useCallback(() => {
+  const handlePointerLeave = useCallback(() => {
+    setStopped(false);
     onTimeoutRestart(id);
   }, [onTimeoutRestart, id]);
 
@@ -41,20 +59,32 @@ export function Toast({
 
   const buttonActions = actions.filter(({ name }) => name);
 
+  useEffect(() => {
+    if (timeout === undefined || stopped) {
+      return;
+    }
+
+    const ref = window.setInterval(() => {
+      setElapsed(Date.now() - ts);
+    }, 50);
+
+    return () => window.clearInterval(ref);
+  }, [ts, stopped, timeout]);
+
   return (
     <Alert
       className="fm-toast"
       variant={style ?? 'primary'}
       onClick={clickHandler}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onClose={handleAlertDismiss}
       dismissible={!noClose}
     >
       {typeof message === 'string' && message.startsWith('!HTML!') ? (
-        <div dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
+        <span dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
       ) : (
-        <div>{message}</div>
+        <span>{message}</span>
       )}
       {buttonActions.length > 0 && (
         <>
@@ -73,6 +103,21 @@ export function Toast({
             ))}
           </ButtonToolbar>
         </>
+      )}
+
+      {timeout !== undefined && (
+        <div
+          className="bg-body"
+          style={{ position: 'relative', top: '0.5rem' }}
+        >
+          <div
+            className="bg-primary"
+            style={{
+              width: ((timeout - elapsed) / timeout) * 100 + '%',
+              height: '2px',
+            }}
+          />
+        </div>
       )}
     </Alert>
   );
