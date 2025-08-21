@@ -44,8 +44,8 @@ export function useAttributionInfo() {
 
   const prevNonceRef = useRef(0);
 
-  const showingAttribution = useAppSelector((state) =>
-    state.toasts.toasts.some((toast) => toast.id === 'attribution'),
+  const showingAttribution = useAppSelector(
+    (state) => 'attribution' in state.toasts.toasts,
   );
 
   // hide attribution on mouse down

@@ -14,7 +14,7 @@ export interface Toast {
   messageKey?: MessagePaths;
   messageParams?: Record<string, unknown>; // after upgrading redux Record<string, unknown> doesn't work here
   timeout?: number;
-  style?:
+  style:
     | 'primary'
     | 'secondary'
     | 'success'
@@ -32,6 +32,7 @@ export interface Toast {
 export type ResolvedToast = Toast & {
   actions: ToastAction[];
   id: string;
+  timeoutSince: number | undefined;
 };
 
 export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) => {
@@ -40,6 +41,7 @@ export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) => {
       actions: [] as ToastAction[],
       id: Math.random().toString(36).slice(2),
       ...toast,
+      timeoutSince: toast.timeout === undefined ? undefined : Date.now(),
     } satisfies ResolvedToast,
   };
 });
@@ -48,6 +50,7 @@ export const toastsRemove = createAction<string>('TOASTS_REMOVE');
 
 export const toastsStopTimeout = createAction<string>('TOASTS_STOP_TIMEOUT');
 
-export const toastsRestartTimeout = createAction<string>(
-  'TOASTS_RESTART_TIMEOUT',
-);
+export const toastsRestartTimeout = createAction<{
+  id: string;
+  timeoutSince: number;
+}>('TOASTS_RESTART_TIMEOUT');

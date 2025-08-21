@@ -19,7 +19,7 @@ export function Attribution({ unknown }: Props): ReactElement {
   return attribution === null ? (
     <div>{unknown}</div>
   ) : (
-    <ul className="m-0 ms-n4 me-n4">
+    <ul className="m-0 mx-n4">
       {attribution.map(([type, elem]) => (
         <li key={type}>{elem}</li>
       ))}

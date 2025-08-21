@@ -17,6 +17,7 @@ interface Props
   onTimeoutRestart: (id: string) => void;
   message: ReactNode;
   timeout?: number;
+  timeoutSince?: number;
 }
 
 export function Toast({
@@ -29,24 +30,30 @@ export function Toast({
   onTimeoutRestart,
   noClose,
   timeout,
+  timeoutSince,
 }: Props): ReactElement {
-  const [ts, setTs] = useState(Date.now());
-
   const [elapsed, setElapsed] = useState(0);
 
   const [stopped, setStopped] = useState(false);
 
   const handlePointerEnter = useCallback(() => {
+    if (timeout === undefined) {
+      return;
+    }
+
     setStopped(true);
     setElapsed(0);
-    setTs(Date.now());
     onTimeoutStop(id);
-  }, [onTimeoutStop, id]);
+  }, [onTimeoutStop, id, timeout]);
 
   const handlePointerLeave = useCallback(() => {
+    if (timeout === undefined) {
+      return;
+    }
+
     setStopped(false);
     onTimeoutRestart(id);
-  }, [onTimeoutRestart, id]);
+  }, [onTimeoutRestart, id, timeout]);
 
   const handleAlertDismiss = useCallback(() => {
     onAction(id);
@@ -60,16 +67,16 @@ export function Toast({
   const buttonActions = actions.filter(({ name }) => name);
 
   useEffect(() => {
-    if (timeout === undefined || stopped) {
+    if (timeout === undefined || timeoutSince === undefined || stopped) {
       return;
     }
 
     const ref = window.setInterval(() => {
-      setElapsed(Date.now() - ts);
-    }, 50);
+      setElapsed(Date.now() - timeoutSince);
+    }, 25);
 
     return () => window.clearInterval(ref);
-  }, [ts, stopped, timeout]);
+  }, [timeoutSince, stopped, timeout]);
 
   return (
     <Alert
@@ -78,14 +85,17 @@ export function Toast({
       onClick={clickHandler}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      onClose={handleAlertDismiss}
-      dismissible={!noClose}
     >
+      {noClose ? undefined : (
+        <CloseButton className="float-end" onClick={handleAlertDismiss} />
+      )}
+
       {typeof message === 'string' && message.startsWith('!HTML!') ? (
         <span dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
       ) : (
         <span>{message}</span>
       )}
+
       {buttonActions.length > 0 && (
         <>
           <br />
