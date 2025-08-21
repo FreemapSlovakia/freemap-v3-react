@@ -3,26 +3,35 @@ import {
   ResolvedToast,
   toastsAdd,
   toastsRemove,
+  toastsRestartTimeout,
+  toastsStopTimeout,
 } from '../actions/toastsActions.js';
 
 export interface ToastsState {
-  toasts: ResolvedToast[];
+  toasts: Record<string, ResolvedToast>;
 }
 
 const initialState: ToastsState = {
-  toasts: [],
+  toasts: {},
 };
 
 export const toastsReducer = createReducer(initialState, (builder) =>
   builder
-    .addCase(toastsAdd, (state, action) => {
-      const { id } = action.payload;
+    .addCase(toastsAdd, (state, { payload }) => {
+      const { id } = payload;
 
-      state.toasts = state.toasts.filter((toast) => toast.id !== id);
+      // to reorder existing
+      delete state.toasts[id];
 
-      state.toasts.push(action.payload);
+      state.toasts[id] = payload;
     })
-    .addCase(toastsRemove, (state, action) => {
-      state.toasts = state.toasts.filter(({ id }) => id !== action.payload);
+    .addCase(toastsRemove, (state, { payload }) => {
+      delete state.toasts[payload];
+    })
+    .addCase(toastsStopTimeout, (state, { payload }) => {
+      state.toasts[payload].timeoutSince = undefined;
+    })
+    .addCase(toastsRestartTimeout, (state, { payload }) => {
+      state.toasts[payload.id].timeoutSince = payload.timeoutSince;
     }),
 );

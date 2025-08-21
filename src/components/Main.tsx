@@ -375,7 +375,7 @@ export function Main(): ReactElement {
   );
 
   const askingCookieConsent = useAppSelector((state) =>
-    state.toasts.toasts.some(
+    Object.values(state.toasts.toasts).some(
       (toast) => toast.messageKey === 'main.cookieConsent',
     ),
   );

@@ -21,6 +21,7 @@ export function useOsmNameResolver(
       (err) => {
         dispatch(
           toastsAdd({
+            style: 'danger',
             id: 'tag-lang-load-err',
             messageKey: 'general.loadError',
             messageParams: { err },

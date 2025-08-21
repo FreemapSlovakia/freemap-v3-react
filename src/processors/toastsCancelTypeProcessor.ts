@@ -3,13 +3,13 @@ import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const toastsCancelTypeProcessor: Processor = {
   handle: async ({ dispatch, getState, action }) => {
-    getState()
-      .toasts.toasts.filter(({ cancelType }) =>
-        matches(action.type, cancelType),
-      )
-      .forEach(({ id }) => {
-        dispatch(toastsRemove(id));
-      });
+    const toCancel = Object.values(getState().toasts.toasts).filter(
+      ({ cancelType }) => matches(action.type, cancelType),
+    );
+
+    for (const { id } of toCancel) {
+      dispatch(toastsRemove(id));
+    }
   },
 };
 

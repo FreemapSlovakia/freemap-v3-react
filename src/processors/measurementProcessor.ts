@@ -47,9 +47,9 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       if (action.payload.elevation !== false) {
         dispatch(
           toastsAdd({
+            style: 'info',
             messageKey: 'measurement.elevationInfo',
             messageParams: toastParams,
-            timeout: 500000,
             id: 'measurementInfo',
             cancelType,
           }),
@@ -67,12 +67,12 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       dispatch(
         toastsAdd({
           id: 'measurementInfo',
+          style: 'info',
           messageKey: 'measurement.elevationInfo',
           messageParams: {
             ...toastParams,
             elevation,
           },
-          timeout: 500000,
           cancelType,
         }),
       );
@@ -108,6 +108,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       if (type === 'polygon' && points.length > 2) {
         dispatch(
           toastsAdd({
+            style: 'info',
             messageKey: 'measurement.areaInfo',
             messageParams: {
               area: area(
@@ -122,7 +123,6 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
                 ),
               ),
             },
-            timeout: 500000,
             id: 'measurementInfo',
             cancelType,
           }),
@@ -130,13 +130,13 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       } else if (type === 'line' && points.length > 1) {
         dispatch(
           toastsAdd({
+            style: 'info',
             messageKey: 'measurement.distanceInfo',
             messageParams: {
               length: length(
                 lineString(points.map((point) => [point.lon, point.lat])),
               ),
             },
-            timeout: 500000,
             id: 'measurementInfo',
             cancelType,
           }),

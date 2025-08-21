@@ -18,6 +18,7 @@ export const downloadMapProcessor: Processor<typeof downloadMap> = {
 
     dispatch(
       toastsAdd({
+        style: 'success',
         messageKey: 'downloadMap.success',
       }),
     );

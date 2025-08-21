@@ -42,7 +42,7 @@ export function Toasts(): ReactElement {
 
   const items = useMemo(
     () =>
-      toasts
+      Object.values(toasts)
         .map(
           ({
             id,
@@ -52,6 +52,8 @@ export function Toasts(): ReactElement {
             messageKey,
             messageParams,
             noClose,
+            timeout,
+            timeoutSince,
           }) => {
             let msg: ReactNode;
 
@@ -75,6 +77,8 @@ export function Toasts(): ReactElement {
               style,
               msg,
               noClose,
+              timeout,
+              timeoutSince,
             };
           },
         )
@@ -102,28 +106,30 @@ export function Toasts(): ReactElement {
 
   return (
     <div className="fm-toasts">
-      {items.map(({ id, actions, style, msg, noClose }) => {
-        return (
-          <Toast
-            key={id}
-            id={id}
-            message={msg}
-            style={style}
-            noClose={noClose}
-            onAction={handleAction}
-            actions={actions.map((action) => ({
-              ...action,
-              name: tx(m, action),
-            }))}
-            onTimeoutStop={() => {
-              dispatch(toastsStopTimeout(id));
-            }}
-            onTimeoutRestart={() => {
-              dispatch(toastsRestartTimeout(id));
-            }}
-          />
-        );
-      })}
+      {items.map(
+        ({ id, actions, style, msg, noClose, timeout, timeoutSince }) => {
+          return (
+            <Toast
+              key={id}
+              id={id}
+              message={msg}
+              style={style}
+              noClose={noClose}
+              onAction={handleAction}
+              actions={actions.map((action) => ({
+                ...action,
+                name: tx(m, action),
+              }))}
+              timeout={timeout}
+              timeoutSince={timeoutSince}
+              onTimeoutStop={() => dispatch(toastsStopTimeout(id))}
+              onTimeoutRestart={() =>
+                dispatch(toastsRestartTimeout({ id, timeoutSince: Date.now() }))
+              }
+            />
+          );
+        },
+      )}
     </div>
   );
 }

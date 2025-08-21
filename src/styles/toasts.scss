@@ -14,4 +14,10 @@
   margin: 10px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   max-width: calc(max(380px, 25dvw));
+
+  > .btn-close {
+    position: relative;
+    top: -0.5rem;
+    left: 0.5rem;
+  }
 }

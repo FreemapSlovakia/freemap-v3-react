@@ -35,8 +35,8 @@ export const legacyMapWarningProcessor: Processor = {
     } = getState().map;
 
     const justWarned = new Set(
-      getState()
-        .toasts.toasts.filter((toast) => toast.id.startsWith(TOAST_PREFIX))
+      Object.values(getState().toasts.toasts)
+        .filter((toast) => toast.id.startsWith(TOAST_PREFIX))
         .map((toast) => toast.id.slice(TOAST_PREFIX.length)),
     );
 

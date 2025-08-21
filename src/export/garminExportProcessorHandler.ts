@@ -56,6 +56,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (res.status === 204) {
     dispatch(
       toastsAdd({
+        style: 'success',
         id: 'mapFeaturesExport',
         messageKey: 'general.success',
       }),
