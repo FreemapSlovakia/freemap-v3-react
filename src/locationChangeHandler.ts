@@ -23,6 +23,7 @@ import type { RootAction } from './actions/index.js';
 import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
   documentShow,
+  enableUpdatingUrl,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -100,6 +101,8 @@ function parseQuery(search: string) {
 
 export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
+
+  store.dispatch(enableUpdatingUrl(false));
 
   const search = (document.location.hash || document.location.search).slice(1);
 
@@ -415,9 +418,7 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
 
-  const focus = !/[?&#]map=/.test(
-    window.location.search || window.location.hash,
-  );
+  const focus = !parsedQuery['map'];
 
   const osmNode = query['osm-node'];
 
@@ -798,6 +799,8 @@ export function handleLocationChange(store: MyStore): void {
       dispatch(selectFeature({ type: 'tracking', id: follow }));
     }
   }
+
+  store.dispatch(enableUpdatingUrl(true));
 }
 
 // TODO use some generic deep compare fn

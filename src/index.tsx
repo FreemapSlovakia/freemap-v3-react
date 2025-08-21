@@ -71,7 +71,7 @@ attachGarminLoginMessageHandler(store);
 
 attachMapStateHandler(store);
 
-store.dispatch(enableUpdatingUrl());
+store.dispatch(enableUpdatingUrl(true));
 
 const cookieConsentResult = store.getState().main.cookieConsentResult;
 

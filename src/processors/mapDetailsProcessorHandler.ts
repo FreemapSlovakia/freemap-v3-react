@@ -14,7 +14,7 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
-import type { OverpassElement } from '../types/overpass.js';
+import type { OverpassBounds, OverpassElement } from '../types/overpass.js';
 
 const cancelType = [
   clearMapFeatures.type,
@@ -29,6 +29,7 @@ interface SimpleOverpassElement {
   id: number;
   type: 'node' | 'way' | 'relation';
   tags?: Record<string, string>;
+  bounds?: OverpassBounds;
 }
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
@@ -66,7 +67,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       body: `[out:json];
           is_in(${userSelectedLat},${userSelectedLon})->.a;
           nwr(pivot.a)${kvFilter};
-          out tags;`,
+          out tags bb;`,
       expectedStatus: 200,
     }),
   ]);
@@ -75,26 +76,17 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     elements: OverpassElement[];
   }>(await res0.json());
 
-  oRes.elements.sort((a, b) => {
-    return (
-      distance(
+  oRes.elements = oRes.elements
+    .map((e) => ({
+      e,
+      d: distance(
         [userSelectedLon, userSelectedLat],
-        [
-          a.type === 'node' ? a.lon : a.center.lon,
-          a.type === 'node' ? a.lat : a.center.lat,
-        ],
+        e.type === 'node' ? [e.lon, e.lat] : [e.center.lon, e.center.lat],
         { units: 'meters' },
-      ) -
-      distance(
-        [userSelectedLon, userSelectedLat],
-        [
-          b.type === 'node' ? b.lon : b.center.lon,
-          b.type === 'node' ? b.lat : b.center.lat,
-        ],
-        { units: 'meters' },
-      )
-    );
-  });
+      ),
+    }))
+    .sort((a, b) => a.d - b.d)
+    .map((a) => a.e);
 
   const oRes1 = assert<{ elements: SimpleOverpassElement[] }>(
     await res1.json(),
@@ -102,9 +94,26 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
 
   const res1Set = new Set(oRes1.elements.map((item) => item.id));
 
+  function approxAreaMeters2(b?: OverpassBounds): number {
+    if (!b) {
+      return 0;
+    }
+
+    const midLatRad = (b.minlat + b.maxlat) * 0.5 * (Math.PI / 180);
+    const metersPerDegLon = 111_320 * Math.cos(midLatRad);
+
+    const dx = Math.max(0, b.maxlon - b.minlon) * metersPerDegLon;
+    const dy = Math.max(0, b.maxlat - b.minlat) * 111_132;
+
+    return dx * dy;
+  }
+
   const elements = [
     ...oRes.elements.filter((item) => !res1Set.has(item.id)), // remove dupes
-    ...oRes1.elements.reverse(),
+    ...oRes1.elements
+      .map((e) => ({ e, area: approxAreaMeters2(e.bounds) }))
+      .sort((a, b) => a.area - b.area)
+      .map((a) => a.e),
   ];
 
   const sr: SearchResult[] = [];

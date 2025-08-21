@@ -1,6 +1,6 @@
 import { JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaBook, FaRegAddressCard, FaList, FaUsers } from 'react-icons/fa';
+import { FaBook, FaList, FaRegAddressCard, FaUsers } from 'react-icons/fa';
 import { getDocuments } from '../../documents/index.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useMessages } from '../../l10nInjector.js';

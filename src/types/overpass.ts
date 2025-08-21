@@ -21,3 +21,10 @@ export type OverpassElement =
 export interface OverpassResult {
   elements: OverpassElement[];
 }
+
+export type OverpassBounds = {
+  minlat: number;
+  minlon: number;
+  maxlat: number;
+  maxlon: number;
+};

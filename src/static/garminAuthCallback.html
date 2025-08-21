@@ -1,19 +1,17 @@
 <!doctype html>
 <html>
+  <head>
+    <title>Freemap</title>
+    <meta charset="UTF-8" />
+  </head>
 
-<head>
-  <title>Freemap</title>
-  <meta charset="UTF-8" />
-</head>
-
-<body>
-  <script>
-    opener.postMessage(
-      { freemap: { action: 'garminAuth', payload: window.location.search } },
-      location.origin,
-    );
-    window.close();
-  </script>
-</body>
-
+  <body>
+    <script>
+      opener.postMessage(
+        { freemap: { action: 'garminAuth', payload: window.location.search } },
+        location.origin,
+      );
+      window.close();
+    </script>
+  </body>
 </html>
