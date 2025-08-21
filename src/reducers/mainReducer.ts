@@ -166,8 +166,8 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         state.activeModal = null;
       }
     })
-    .addCase(enableUpdatingUrl, (state) => {
-      state.urlUpdatingEnabled = true;
+    .addCase(enableUpdatingUrl, (state, action) => {
+      state.urlUpdatingEnabled = action.payload;
     })
     .addCase(setErrorTicketId, (state, action) => {
       state.errorTicketId = action.payload;

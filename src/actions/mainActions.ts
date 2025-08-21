@@ -101,7 +101,7 @@ export const setSelectingHomeLocation = createAction<LatLon | boolean>(
 
 export const saveHomeLocation = createAction('SAVE_HOME_LOCATION');
 
-export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
+export const enableUpdatingUrl = createAction<boolean>('ENABLE_UPDATING_URL');
 
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
