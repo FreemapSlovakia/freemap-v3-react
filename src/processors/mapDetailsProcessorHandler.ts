@@ -63,12 +63,12 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       ? httpRequest({
           getState,
           method: 'POST',
-          // url: 'https://overpass.freemap.sk/api/interpreter', // fails with memory error
-          url: 'https://overpass-api.de/api/interpreter',
+          url: 'https://overpass.freemap.sk/api/interpreter', // was: fails with memory error
+          // url: 'https://overpass-api.de/api/interpreter',
           headers: { 'Content-Type': 'text/plain' },
           body: `[out:json];
-          is_in(${lat},${lon})->.a;
-          nwr(pivot.a)${kvFilter};
+          is_in(${lat},${lon});
+          wr(pivot)${kvFilter};
           out tags bb;`,
           expectedStatus: 200,
         }).then((res) => res.json())
@@ -142,6 +142,15 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     };
 
     sr.push({
+      source: 'nominatim-reverse',
+      id:
+        reverseGeocodingElement.osm_type && reverseGeocodingElement.osm_id
+          ? {
+              type: reverseGeocodingElement.osm_type,
+              id: reverseGeocodingElement.osm_id,
+            }
+          : { type: 'other', id: 0 },
+      incomplete: true,
       geojson: feature(
         reverseGeocodingElement.geojson ?? null,
         tags,
@@ -156,26 +165,20 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
             }
           : undefined,
       ),
-      id:
-        reverseGeocodingElement.osm_type && reverseGeocodingElement.osm_id
-          ? {
-              type: reverseGeocodingElement.osm_type,
-              id: reverseGeocodingElement.osm_id,
-            }
-          : { type: 'other', id: 0 },
-      incomplete: true,
     });
   }
 
   const elements = [
-    ...nearbyElements.filter(
-      // remove dupes
-      (e) =>
-        !surroundingElementsSet.has(e.type + e.id) &&
-        (!reverseGeocodingElement ||
-          reverseGeocodingElement.osm_type !== e.type ||
-          reverseGeocodingElement.osm_id !== e.id),
-    ),
+    ...nearbyElements
+      .filter(
+        // remove dupes
+        (e) =>
+          !surroundingElementsSet.has(e.type + e.id) &&
+          (!reverseGeocodingElement ||
+            reverseGeocodingElement.osm_type !== e.type ||
+            reverseGeocodingElement.osm_id !== e.id),
+      )
+      .map((element) => ({ ...element, source: 'overpass-nearby' as const })),
     ...surroundingElements
       .filter(
         (e) =>
@@ -188,13 +191,14 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
         area: e.type === 'node' ? 0 : approxAreaMeters2(e.bounds),
       }))
       .sort((a, b) => a.area - b.area)
-      .map((a) => a.e),
+      .map((a) => ({ ...a.e, source: 'overpass-surrounding' as const })),
   ];
 
   for (const element of elements) {
     switch (element.type) {
       case 'node':
         sr.push({
+          source: element.source,
           id: { type: 'node', id: element.id },
           geojson: point([element.lon, element.lat], element.tags),
           showToast: true,
@@ -205,7 +209,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
 
       case 'way':
         sr.push({
+          source: element.source,
           id: { type: 'way', id: element.id },
+          showToast: true,
+          incomplete: true,
           geojson: point(
             [
               (element.bounds.minlon + element.bounds.maxlon) / 2,
@@ -221,8 +228,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
               ],
             },
           ),
-          showToast: true,
-          incomplete: true,
         });
 
         break;
@@ -230,7 +235,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       case 'relation':
         {
           sr.push({
+            source: element.source,
             id: { type: 'relation', id: element.id },
+            showToast: true,
+            incomplete: true,
             geojson: point(
               [
                 (element.bounds.minlon + element.bounds.maxlon) / 2,
@@ -246,8 +254,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
                 ],
               },
             ),
-            showToast: true,
-            incomplete: true,
           });
         }
 

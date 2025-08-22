@@ -207,6 +207,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
+  let prevSource: SearchResult['source'] | undefined = undefined;
+
   return (
     <>
       <Form
@@ -273,23 +275,35 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               {results.map((result) => {
                 const id = JSON.stringify(result.id);
 
+                const divider =
+                  prevSource && prevSource !== result.source ? (
+                    <Dropdown.Divider key={id + '-'} />
+                  ) : null;
+
+                prevSource = result.source;
+
                 return (
-                  <Dropdown.Item
-                    key={id}
-                    eventKey={id}
-                    active={
-                      !!selectedResult &&
-                      featureIdsEqual(result.id, selectedResult.id)
-                    }
-                  >
-                    <Result value={result} />
-                  </Dropdown.Item>
+                  <>
+                    {divider}
+
+                    <Dropdown.Item
+                      key={id}
+                      eventKey={id}
+                      active={
+                        !!selectedResult &&
+                        featureIdsEqual(result.id, selectedResult.id)
+                      }
+                    >
+                      <Result value={result} />
+                    </Dropdown.Item>
+                  </>
                 );
               })}
             </div>
           </Dropdown.Menu>
         </Dropdown>
       </Form>
+
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
           <ButtonGroup className="ms-1">

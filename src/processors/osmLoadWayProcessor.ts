@@ -34,6 +34,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
         dispatch(
           searchSelectResult({
             result: {
+              source: 'osm',
               id: { type: 'way', id },
               geojson:
                 positionsEqual(coordinates[0], coordinates.at(-1)!) &&

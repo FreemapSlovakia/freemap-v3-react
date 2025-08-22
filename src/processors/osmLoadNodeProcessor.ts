@@ -29,6 +29,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
     dispatch(
       searchSelectResult({
         result: {
+          source: 'osm',
           id: { type: 'node', id },
           geojson: point(nodes[0], elements[0].tags),
         },

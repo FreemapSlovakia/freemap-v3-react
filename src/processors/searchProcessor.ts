@@ -44,7 +44,15 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         throw 1;
       }
 
-      dispatch(searchSetResults([{ id: { type: 'other', id: 0 }, geojson }]));
+      dispatch(
+        searchSetResults([
+          {
+            source: 'synthetic',
+            id: { type: 'other', id: 0 },
+            geojson,
+          },
+        ]),
+      );
 
       return;
     } catch {
@@ -69,6 +77,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       dispatch(
         searchSetResults([
           {
+            source: 'synthetic',
             id: { type: 'other', id: 0 },
             geojson: bboxPolygon(
               parts.some((p) => Math.abs(p) > 180) ? reproj() : (parts as BBox),
@@ -92,6 +101,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         dispatch(
           searchSetResults([
             {
+              source: 'synthetic',
               id: { type: 'other', id: 0 },
               geojson: feature(poly, {
                 name: query.trim(),
@@ -119,6 +129,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       dispatch(
         searchSetResults([
           {
+            source: 'synthetic',
             id: { type: 'other', id: 0 },
             geojson: point([coords.lon, coords.lat], {
               name: query.toUpperCase(),
@@ -156,10 +167,12 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     const results = assert<NominatimResult[]>(await res.json()).map(
       (item): SearchResult => {
         return {
+          source: 'nominatim-forward',
           id:
             item.osm_type !== undefined && item.osm_id !== undefined
               ? { type: item.osm_type, id: item.osm_id }
               : { type: 'other', id: Math.random() },
+          incomplete: true,
           geojson: feature(
             item.geojson ?? null,
             {
@@ -179,7 +192,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
                 }
               : undefined,
           ),
-          incomplete: true,
         };
       },
     );

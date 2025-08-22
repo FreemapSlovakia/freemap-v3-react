@@ -97,6 +97,7 @@ export function ObjectsResult(): ReactElement | null {
                   searchSelectResult({
                     result: {
                       id,
+                      source: 'overpass-objects',
                       geojson: point([coords.lon, coords.lat], tags),
                     },
                     showToast: true,

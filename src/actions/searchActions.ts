@@ -3,6 +3,14 @@ import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 import { FeatureId } from '../types/featureId.js';
 
 export interface SearchResult {
+  source:
+    | 'synthetic'
+    | 'overpass-nearby'
+    | 'overpass-surrounding'
+    | 'overpass-objects'
+    | 'nominatim-forward'
+    | 'nominatim-reverse'
+    | 'osm';
   geojson: Feature | (FeatureCollection & { metadata: GeoJsonProperties });
   id: FeatureId;
   incomplete?: true;
