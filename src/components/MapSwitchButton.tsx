@@ -140,29 +140,14 @@ export function MapSwitchButton(): ReactElement {
   const countriesSet = countries && new Set(countries);
 
   const layerDefs = [
-    ...integratedLayerDefs.map((def) => ({
-      ...def,
-      custom: false,
-      name: undefined,
-    })),
-    ...customLayerDefs.map((def) => ({
-      ...def,
-      custom: true,
-      icon: <MdDashboardCustomize />,
-      kbd: undefined,
-      adminOnly: false,
-      premiumFromZoom: undefined,
-      experimental: undefined,
-      countries: undefined,
-      defaultInToolbar: false,
-      defaultInMenu: false,
-      superseededBy: undefined,
-    })),
+    ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
+    ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
   ].map((def) => ({
     scaleWithDpi: false,
     ...def,
     countryOk:
       !countriesSet ||
+      def.custom ||
       !def.countries ||
       def.countries.some((c) => countriesSet.has(c)),
     zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
@@ -180,6 +165,7 @@ export function MapSwitchButton(): ReactElement {
       <>
         {place === 'toolbar' &&
         !premium &&
+        !def.custom &&
         def.premiumFromZoom !== undefined &&
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
           <FaGem
@@ -191,6 +177,7 @@ export function MapSwitchButton(): ReactElement {
 
         {place !== 'toolbar' &&
           def.type !== 'X' &&
+          !def.custom &&
           def.countries?.map((country) => (
             <Emoji className="ms-1" key={country}>
               {countryCodeToFlag(country)}
@@ -205,6 +192,7 @@ export function MapSwitchButton(): ReactElement {
           )}
 
         {(place === 'menu' || (place === 'tooltip' && premium)) &&
+        !def.custom &&
         def.premiumFromZoom !== undefined &&
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
           <FaGem
@@ -214,11 +202,11 @@ export function MapSwitchButton(): ReactElement {
           />
         ) : null}
 
-        {place !== 'toolbar' && def.superseededBy && (
+        {place !== 'toolbar' && !def.custom && def.superseededBy && (
           <FaHistory className="text-warning ms-1" title={m?.maps.legacy} />
         )}
 
-        {place !== 'toolbar' && def.experimental && (
+        {place !== 'toolbar' && !def.custom && def.experimental && (
           <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
@@ -229,7 +217,7 @@ export function MapSwitchButton(): ReactElement {
           />
         )}
 
-        {place !== 'tooltip' && !def.countryOk && (
+        {place !== 'tooltip' && !def.countryOk && !def.custom && (
           <BiWorld
             title={m?.mapLayers.countryWarning(def.countries!)}
             className="text-warning ms-1"
@@ -263,17 +251,19 @@ export function MapSwitchButton(): ReactElement {
     return layerDefs
       .filter((def) => def.layer === layer)
       .map((def) => {
-        if (!isAdmin && def.adminOnly) {
+        if (!isAdmin && !def.custom && def.adminOnly) {
           return null;
         }
 
         const { type } = def;
 
         const showInMenu =
-          layersSettings[type]?.showInMenu ?? !!def.defaultInMenu;
+          layersSettings[type]?.showInMenu ??
+          (!def.custom && !!def.defaultInMenu);
 
         const showInToolbar =
-          layersSettings[type]?.showInToolbar ?? !!def.defaultInToolbar;
+          layersSettings[type]?.showInToolbar ??
+          (!def.custom && !!def.defaultInToolbar);
 
         if (
           show !== 'all' &&
@@ -309,7 +299,9 @@ export function MapSwitchButton(): ReactElement {
                 <FaRegCircle />
               )}
 
-              <span className="px-2">{def.icon}</span>
+              <span className="px-2">
+                {def.custom ? <MdDashboardCustomize /> : def.icon}
+              </span>
 
               <span
                 className={
@@ -341,7 +333,8 @@ export function MapSwitchButton(): ReactElement {
           const { type } = def;
 
           const showInToolbar =
-            layersSettings[def.type]?.showInToolbar ?? !!def.defaultInToolbar;
+            layersSettings[def.type]?.showInToolbar ??
+            (!def.custom && !!def.defaultInToolbar);
 
           if (
             !activeLayers.includes(def.type) &&
@@ -383,7 +376,7 @@ export function MapSwitchButton(): ReactElement {
                   onClick={handleLayerButtonClick}
                   {...props}
                 >
-                  {def.icon}
+                  {def.custom ? <MdDashboardCustomize /> : def.icon}
 
                   {commonBadges(def, 'toolbar')}
                 </Button>

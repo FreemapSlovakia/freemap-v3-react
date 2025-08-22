@@ -69,8 +69,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       if (object) {
         dispatch(
           drawingPointAdd({
-            lat: object.lat,
-            lon: object.lon,
+            coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
             color: state.main.drawingColor,
             id: getState().drawingPoints.points.length,
@@ -109,8 +108,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             drawingPointAdd({
               label: feature.properties?.['name'],
               color: state.main.drawingColor,
-              lat: geometry.coordinates[1],
-              lon: geometry.coordinates[0],
+              coords: {
+                lat: geometry.coordinates[1],
+                lon: geometry.coordinates[0],
+              },
               id: getState().drawingPoints.points.length,
             }),
           );
@@ -187,8 +188,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             drawingPointAdd({
               label: feature.properties?.['name'],
               color: state.main.drawingColor,
-              lat: geometry.coordinates[1],
-              lon: geometry.coordinates[0],
+              coords: {
+                lat: geometry.coordinates[1],
+                lon: geometry.coordinates[0],
+              },
               id: getState().drawingPoints.points.length,
             }),
           );

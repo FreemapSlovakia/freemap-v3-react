@@ -35,8 +35,10 @@ export function DrawingPointsResult(): ReactElement {
         dispatch(
           drawingPointChangePosition({
             index: activeIndex,
-            lat: e.latlng.lat,
-            lon: e.latlng.lng,
+            coords: {
+              lat: e.latlng.lat,
+              lon: e.latlng.lng,
+            },
           }),
         );
 
@@ -54,8 +56,10 @@ export function DrawingPointsResult(): ReactElement {
         dispatch(
           drawingPointChangePosition({
             index: activeIndex,
-            lat: coords.lat,
-            lon: coords.lng,
+            coords: {
+              lat: coords.lat,
+              lon: coords.lng,
+            },
           }),
         );
 
@@ -83,7 +87,7 @@ export function DrawingPointsResult(): ReactElement {
 
   return (
     <>
-      {points.map(({ lat, lon, label, color }, i) => {
+      {points.map(({ coords, label, color }, i) => {
         const interactive = interactive0 || activeIndex === i;
 
         return (
@@ -95,7 +99,7 @@ export function DrawingPointsResult(): ReactElement {
               move: handleMove,
               click: onSelects[i],
             }}
-            position={{ lat, lng: lon }}
+            position={{ lat: coords.lat, lng: coords.lon }}
             color={
               activeIndex === i
                 ? Color(color || colors.normal)

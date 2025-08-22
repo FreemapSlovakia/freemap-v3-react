@@ -340,15 +340,12 @@ function addDrawingLines(
 }
 
 function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
-  for (const { lat, lon, label, color } of points) {
+  for (const { coords, label, color } of points) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
       undefined,
-      toLatLon({
-        lat,
-        lon,
-      }),
+      toLatLon(coords),
     );
 
     if (label) {
@@ -388,15 +385,12 @@ function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
 }
 
 function addObjects(doc: Document, { objects }: ObjectsState) {
-  for (const { lat, lon, tags } of objects) {
+  for (const { coords, tags } of objects) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
       undefined,
-      toLatLon({
-        lat,
-        lon,
-      }),
+      toLatLon(coords),
     );
 
     if (!Number.isNaN(parseFloat(tags['ele']))) {

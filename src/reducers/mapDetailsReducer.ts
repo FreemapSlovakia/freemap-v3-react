@@ -1,23 +1,35 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { clearMapFeatures } from '../actions/mainActions.js';
-import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import {
+  mapDetailsSetSources,
+  mapDetailsSetUserSelectedPosition,
+  MapDetailsSource,
+} from '../actions/mapDetailsActions.js';
 
 export interface MapDetailsState {
-  userSelectedLat: number | null;
-  userSelectedLon: number | null;
+  coords: {
+    lat: number;
+    lon: number;
+  } | null;
+  sources: MapDetailsSource[];
 }
 
-const initialState: MapDetailsState = {
-  userSelectedLat: null,
-  userSelectedLon: null,
+export const mapDetailsInitialState: MapDetailsState = {
+  coords: null,
+  sources: ['reverse', 'nearby', 'surrounding'],
 };
 
-export const mapDetailsReducer = createReducer(initialState, (builder) =>
-  builder
-    .addCase(clearMapFeatures, () => initialState)
-    .addCase(mapDetailsSetUserSelectedPosition, (state, action) => {
-      state.userSelectedLat = action.payload.lat;
-
-      state.userSelectedLon = action.payload.lon;
-    }),
+export const mapDetailsReducer = createReducer(
+  mapDetailsInitialState,
+  (builder) =>
+    builder
+      .addCase(clearMapFeatures, (state) => {
+        state.coords = null;
+      })
+      .addCase(mapDetailsSetSources, (state, { payload }) => {
+        state.sources = payload;
+      })
+      .addCase(mapDetailsSetUserSelectedPosition, (state, { payload }) => {
+        state.coords = payload;
+      }),
 );

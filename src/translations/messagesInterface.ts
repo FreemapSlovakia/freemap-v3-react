@@ -1,5 +1,6 @@
 import { ExportableLayer } from 'actions/mainActions.js';
 import { JSX, ReactElement, ReactNode } from 'react';
+import { OsmFeatureId } from 'types/featureId.js';
 import { Changeset } from '../actions/changesetsActions.js';
 import {
   GalleryColorizeBy,
@@ -429,11 +430,9 @@ export type Messages = {
     fetchingError: ({ err }: Err) => string;
     detail: ({
       id,
-      type,
       tags,
     }: {
-      id: number;
-      type: 'node' | 'way' | 'relation';
+      id: OsmFeatureId;
       tags: Record<string, string>;
     }) => JSX.Element;
   };

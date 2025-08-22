@@ -1,11 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
+import { LatLon } from '../types/common.js';
+import { OsmFeatureId } from '../types/featureId.js';
 
 export interface ObjectsResult {
-  id: number;
-  lat: number;
-  lon: number;
+  id: OsmFeatureId;
+  coords: LatLon;
   tags: Record<string, string>;
-  type: 'node' | 'way' | 'relation';
 }
 
 export type MarkerType = 'pin' | 'square' | 'ring';

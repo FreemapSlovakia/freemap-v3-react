@@ -1,5 +1,13 @@
 import { Feature } from 'geojson';
-import { LatLng, Layer, marker, Path, Polygon } from 'leaflet';
+import {
+  DomEvent,
+  LatLng,
+  Layer,
+  LeafletEventHandlerFnMap,
+  marker,
+  Path,
+  Polygon,
+} from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -43,7 +51,9 @@ function annotateFeature(
 ) {
   getGenericNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
     (genericName) => {
-      const name = getNameFromOsmElement(feature.properties ?? {}, language);
+      const name =
+        feature.properties?.['display_name'] ||
+        getNameFromOsmElement(feature.properties ?? {}, language);
 
       const isPoi = !(layer instanceof Path || layer instanceof Polygon);
 
@@ -94,13 +104,31 @@ export function SearchResults(): ReactElement | null {
     [language],
   );
 
-  return !selectedResult?.geojson ? null : (
+  if (!selectedResult?.geojson) {
+    return null;
+  }
+
+  const eventHandlers: LeafletEventHandlerFnMap = {
+    click(e) {
+      DomEvent.stopPropagation(e);
+
+      dispatch(
+        searchSelectResult({
+          result: selectedResult,
+          showToast: true,
+          focus: false,
+        }),
+      );
+    },
+  };
+
+  return (
     <Fragment key={language + selectedResultSeq}>
       <GeoJSON
         interactive={false}
         data={selectedResult.geojson}
         style={{ weight: 5 }}
-        filter={(feature) => feature.geometry.type === 'LineString'}
+        filter={(feature) => feature.geometry?.type === 'LineString'}
       />
 
       <GeoJSON
@@ -108,18 +136,8 @@ export function SearchResults(): ReactElement | null {
         data={selectedResult.geojson}
         style={{ weight: 15, opacity: 0, color: '#fff' }}
         onEachFeature={cachedAnnotateFeatureBg}
-        filter={(feature) => feature.geometry.type === 'LineString'}
-        eventHandlers={{
-          click() {
-            dispatch(
-              searchSelectResult({
-                result: selectedResult,
-                showToast: true,
-                focus: false,
-              }),
-            );
-          },
-        }}
+        filter={(feature) => feature.geometry?.type === 'LineString'}
+        eventHandlers={eventHandlers}
       />
 
       <GeoJSON
@@ -128,18 +146,8 @@ export function SearchResults(): ReactElement | null {
         style={window.fmHeadless?.searchResultStyle ?? { weight: 5 }}
         pointToLayer={pointToLayer}
         onEachFeature={cachedAnnotateFeature}
-        filter={(feature) => feature.geometry.type !== 'LineString'}
-        eventHandlers={{
-          click() {
-            dispatch(
-              searchSelectResult({
-                result: selectedResult,
-                showToast: true,
-                focus: false,
-              }),
-            );
-          },
-        }}
+        filter={(feature) => feature.geometry?.type !== 'LineString'}
+        eventHandlers={eventHandlers}
       />
     </Fragment>
   );

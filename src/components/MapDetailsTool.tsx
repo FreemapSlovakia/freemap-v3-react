@@ -3,6 +3,7 @@ import { type ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 import { isEventOnMap } from '../mapUtils.js';
 import type { LatLon } from '../types/common.js';
 
@@ -44,12 +45,16 @@ export function MapDetailsTool(): ReactElement | null {
     }, []),
   );
 
-  return !latLon ? null : (
+  const hasNearby = useAppSelector((state) =>
+    state.mapDetails.sources.includes('nearby'),
+  );
+
+  return latLon && hasNearby ? (
     <Circle
       interactive={false}
       center={[latLon.lat, latLon.lon]}
       radius={33}
       stroke={false}
     />
-  );
+  ) : null;
 }

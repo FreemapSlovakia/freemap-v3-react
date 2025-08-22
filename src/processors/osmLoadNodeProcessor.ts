@@ -22,8 +22,6 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
 
     const { elements } = assert<OsmResult>(await res.json());
 
-    const tags: Record<string, string> = elements[0].tags ?? {};
-
     const nodes = (
       elements.filter((el) => el.type === 'node') as OsmNode[]
     ).map((node) => [node.lon, node.lat]);
@@ -31,11 +29,8 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
     dispatch(
       searchSelectResult({
         result: {
-          osmType: 'node',
-          id,
-          geojson: point(nodes[0], tags),
-          tags,
-          detailed: true,
+          id: { type: 'node', id },
+          geojson: point(nodes[0], elements[0].tags),
         },
         showToast: showToast || window.isRobot,
         focus,

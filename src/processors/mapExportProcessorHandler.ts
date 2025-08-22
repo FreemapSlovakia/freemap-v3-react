@@ -100,7 +100,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
     for (const p of getState().drawingPoints.points) {
       features.push(
-        point([p.lon, p.lat], {
+        point([p.coords.lon, p.coords.lat], {
           name: p.label || '',
           color: p.color ?? colors.normal,
         }),

@@ -191,7 +191,7 @@ export const changesetsProcessor: Processor = {
               mapRefocus.type,
             ],
             timeout: 5000,
-            style: 'info',
+            style: 'warning',
           }),
         );
       }

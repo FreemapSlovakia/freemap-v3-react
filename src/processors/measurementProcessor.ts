@@ -143,7 +143,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         );
       }
     } else if (selection?.type === 'draw-points' || action.payload.position) {
-      await measurePoint(getState().drawingPoints.points[selection.id]);
+      await measurePoint(getState().drawingPoints.points[selection.id].coords);
     }
   },
 };

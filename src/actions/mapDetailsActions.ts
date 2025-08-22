@@ -1,6 +1,16 @@
 import { createAction } from '@reduxjs/toolkit';
 
+export type MapDetailsSource =
+  | 'reverse'
+  | 'nearby'
+  | 'surrounding'
+  | `wms:${string}`;
+
 export const mapDetailsSetUserSelectedPosition = createAction<{
   lat: number;
   lon: number;
-}>('MAP_DETAILS_SET_USER_SELECTED_POSITION');
+}>('mapDetails/setUserSelectedPosition');
+
+export const mapDetailsSetSources = createAction<MapDetailsSource[]>(
+  'mapDetails/setSources',
+);

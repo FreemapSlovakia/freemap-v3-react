@@ -393,7 +393,10 @@ export function handleLocationChange(store: MyStore): void {
     const { lat, lon } = transformed;
 
     dispatch(
-      drawingPointAdd({ lat, lon, id: getState().drawingPoints.points.length }),
+      drawingPointAdd({
+        coords: { lat, lon },
+        id: getState().drawingPoints.points.length,
+      }),
     );
   }
 
@@ -404,8 +407,7 @@ export function handleLocationChange(store: MyStore): void {
 
     dispatch(
       drawingPointAdd({
-        lat,
-        lon,
+        coords: { lat, lon },
         label,
         id: getState().drawingPoints.points.length,
       }),
@@ -1011,8 +1013,10 @@ function handleInfoPoint(
       const m = ipMatch!;
 
       return {
-        lat: parseFloat(m[1]),
-        lon: parseFloat(m[2]),
+        coords: {
+          lat: parseFloat(m[1]),
+          lon: parseFloat(m[2]),
+        },
         ...parseColorAndLabel(m[3] ?? ''),
       };
     });
@@ -1028,15 +1032,15 @@ function handleInfoPoint(
   if (
     ips
       .map(
-        ({ lat, lon, label, color }) =>
-          `${serializePoint({ lat, lon })},${label},${color}`,
+        ({ coords, label, color }) =>
+          `${serializePoint(coords)},${label},${color}`,
       )
       .sort()
       .join('\n') !==
     getState()
       .drawingPoints.points.map(
-        ({ lat, lon, label, color }) =>
-          `${serializePoint({ lat, lon })},${label},${color}`,
+        ({ coords, label, color }) =>
+          `${serializePoint(coords)},${label},${color}`,
       )
       .sort()
       .join('\n')

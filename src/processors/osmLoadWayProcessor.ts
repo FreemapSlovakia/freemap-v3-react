@@ -31,20 +31,15 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       } else if (item.type === 'way') {
         const coordinates = item.nodes.map((ref) => nodes[ref]);
 
-        const tags = item.tags ?? {};
-
         dispatch(
           searchSelectResult({
             result: {
-              osmType: 'way',
-              id,
+              id: { type: 'way', id },
               geojson:
                 positionsEqual(coordinates[0], coordinates.at(-1)!) &&
-                shouldBeArea(tags)
+                shouldBeArea(item.tags)
                   ? polygon([coordinates], item.tags)
                   : lineString(coordinates, item.tags),
-              tags,
-              detailed: true,
             },
             showToast: showToast || window.isRobot,
             focus,

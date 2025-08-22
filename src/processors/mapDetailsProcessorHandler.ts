@@ -1,4 +1,6 @@
 import { distance } from '@turf/distance';
+import { feature, point } from '@turf/helpers';
+import { NominatimResult } from 'types/nominatimResult.js';
 import { assert } from 'typia';
 import {
   clearMapFeatures,
@@ -9,12 +11,15 @@ import {
 import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
 import {
   type SearchResult,
+  searchSelectResult,
   searchSetResults,
 } from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { objectToURLSearchParams } from '../stringUtils.js';
 import type { OverpassBounds, OverpassElement } from '../types/overpass.js';
+import { BBox } from 'geojson';
 
 const cancelType = [
   clearMapFeatures.type,
@@ -25,119 +30,197 @@ const cancelType = [
   mapDetailsSetUserSelectedPosition.type,
 ];
 
-interface SimpleOverpassElement {
-  id: number;
-  type: 'node' | 'way' | 'relation';
-  tags?: Record<string, string>;
-  bounds?: OverpassBounds;
-}
-
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
-  const { userSelectedLat, userSelectedLon } = getState().mapDetails;
+  const { coords, sources } = getState().mapDetails;
 
-  if (userSelectedLat === null || userSelectedLon === null) {
+  if (!coords || sources.length === 0) {
     return;
   }
+
+  const { lat, lon } = coords;
 
   window._paq.push(['trackEvent', 'MapDetails', 'search']);
 
   const kvFilter =
     '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
 
-  const [res0, res1] = await Promise.all([
-    httpRequest({
-      getState,
-      method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
-      // url: 'https://overpass-api.de/api/interpreter',
-      headers: { 'Content-Type': 'text/plain' },
-      body:
-        '[out:json];(' +
-        `nwr(around:33,${userSelectedLat},${userSelectedLon})${kvFilter};` +
-        ');out tags center;',
-      expectedStatus: 200,
-    }),
+  const [resNearby, resSurrounding, resReverse] = await Promise.all([
+    sources.includes('nearby')
+      ? httpRequest({
+          getState,
+          method: 'POST',
+          url: 'https://overpass.freemap.sk/api/interpreter',
+          // url: 'https://overpass-api.de/api/interpreter',
+          headers: { 'Content-Type': 'text/plain' },
+          body:
+            '[out:json];(' +
+            `nwr(around:33,${lat},${lon})${kvFilter};` +
+            ');out tags bb;',
+          expectedStatus: 200,
+        }).then((res) => res.json())
+      : undefined,
 
-    httpRequest({
-      getState,
-      method: 'POST',
-      // url: 'https://overpass.freemap.sk/api/interpreter', // fails with memory error
-      url: 'https://overpass-api.de/api/interpreter',
-      headers: { 'Content-Type': 'text/plain' },
-      body: `[out:json];
-          is_in(${userSelectedLat},${userSelectedLon})->.a;
+    sources.includes('surrounding')
+      ? httpRequest({
+          getState,
+          method: 'POST',
+          // url: 'https://overpass.freemap.sk/api/interpreter', // fails with memory error
+          url: 'https://overpass-api.de/api/interpreter',
+          headers: { 'Content-Type': 'text/plain' },
+          body: `[out:json];
+          is_in(${lat},${lon})->.a;
           nwr(pivot.a)${kvFilter};
           out tags bb;`,
-      expectedStatus: 200,
-    }),
+          expectedStatus: 200,
+        }).then((res) => res.json())
+      : undefined,
+
+    sources.includes('reverse')
+      ? await httpRequest({
+          getState,
+          url:
+            'https://nominatim.openstreetmap.org/reverse?' +
+            objectToURLSearchParams({
+              lat,
+              lon,
+              format: 'json',
+              polygon_geojson: 1,
+              extratags: 1,
+              zoom: getState().map.zoom,
+              namedetails: 0, // TODO maybe use some more details
+              limit: 20,
+              'accept-language': getState().l10n.language,
+              email: 'martin.zdila@freemap.sk',
+            }),
+          expectedStatus: 200,
+        }).then((res) => res.json())
+      : undefined,
   ]);
 
-  const oRes = assert<{
-    elements: OverpassElement[];
-  }>(await res0.json());
-
-  oRes.elements = oRes.elements
+  const nearbyElements = (
+    resNearby
+      ? assert<{
+          elements: OverpassElement[];
+        }>(resNearby).elements
+      : []
+  )
     .map((e) => ({
       e,
       d: distance(
-        [userSelectedLon, userSelectedLat],
-        e.type === 'node' ? [e.lon, e.lat] : [e.center.lon, e.center.lat],
+        [lon, lat],
+        e.type === 'node'
+          ? [e.lon, e.lat]
+          : [
+              (e.bounds.minlon + e.bounds.maxlon) / 2,
+              (e.bounds.minlat + e.bounds.maxlat) / 2,
+            ],
         { units: 'meters' },
       ),
     }))
     .sort((a, b) => a.d - b.d)
     .map((a) => a.e);
 
-  const oRes1 = assert<{ elements: SimpleOverpassElement[] }>(
-    await res1.json(),
+  const surroundingElements = resSurrounding
+    ? assert<{ elements: OverpassElement[] }>(resSurrounding).elements
+    : [];
+
+  const reverseGeocodingElement = assert<NominatimResult | undefined>(
+    resReverse,
   );
 
-  const res1Set = new Set(oRes1.elements.map((item) => item.id));
+  const surroundingElementsSet = new Set(
+    surroundingElements.map((item) => item.type + item.id),
+  );
 
-  function approxAreaMeters2(b?: OverpassBounds): number {
-    if (!b) {
-      return 0;
-    }
+  const sr: SearchResult[] = [];
 
-    const midLatRad = (b.minlat + b.maxlat) * 0.5 * (Math.PI / 180);
-    const metersPerDegLon = 111_320 * Math.cos(midLatRad);
+  if (reverseGeocodingElement) {
+    const tags = {
+      [reverseGeocodingElement.class]: reverseGeocodingElement.type,
+      name: reverseGeocodingElement.name,
+      ...reverseGeocodingElement.extratags,
+      display_name: reverseGeocodingElement.display_name,
+    };
 
-    const dx = Math.max(0, b.maxlon - b.minlon) * metersPerDegLon;
-    const dy = Math.max(0, b.maxlat - b.minlat) * 111_132;
-
-    return dx * dy;
+    sr.push({
+      geojson: feature(
+        reverseGeocodingElement.geojson ?? null,
+        tags,
+        reverseGeocodingElement.boundingbox
+          ? {
+              bbox: reverseGeocodingElement.boundingbox.map((a) =>
+                Number(a),
+              ) as BBox,
+            }
+          : undefined,
+      ),
+      id:
+        reverseGeocodingElement.osm_type && reverseGeocodingElement.osm_id
+          ? {
+              type: reverseGeocodingElement.osm_type,
+              id: reverseGeocodingElement.osm_id,
+            }
+          : { type: 'other', id: 0 },
+      incomplete: true,
+    });
   }
 
   const elements = [
-    ...oRes.elements.filter((item) => !res1Set.has(item.id)), // remove dupes
-    ...oRes1.elements
-      .map((e) => ({ e, area: approxAreaMeters2(e.bounds) }))
+    ...nearbyElements.filter(
+      // remove dupes
+      (e) =>
+        !surroundingElementsSet.has(e.type + e.id) &&
+        (!reverseGeocodingElement ||
+          reverseGeocodingElement.osm_type !== e.type ||
+          reverseGeocodingElement.osm_id !== e.id),
+    ),
+    ...surroundingElements
+      .filter(
+        (e) =>
+          !reverseGeocodingElement ||
+          reverseGeocodingElement.osm_type !== e.type ||
+          reverseGeocodingElement.osm_id !== e.id,
+      )
+      .map((e) => ({
+        e,
+        area: e.type === 'node' ? 0 : approxAreaMeters2(e.bounds),
+      }))
       .sort((a, b) => a.area - b.area)
       .map((a) => a.e),
   ];
 
-  const sr: SearchResult[] = [];
-
   for (const element of elements) {
-    const tags = element.tags ?? {};
-
     switch (element.type) {
       case 'node':
         sr.push({
-          id: element.id,
-          osmType: 'node',
-          tags,
+          id: { type: 'node', id: element.id },
+          geojson: point([element.lon, element.lat], element.tags),
           showToast: true,
+          incomplete: true,
         });
 
         break;
 
       case 'way':
         sr.push({
-          id: element.id,
-          osmType: 'way',
-          tags,
+          id: { type: 'way', id: element.id },
+          geojson: point(
+            [
+              (element.bounds.minlon + element.bounds.maxlon) / 2,
+              (element.bounds.minlat + element.bounds.maxlat) / 2,
+            ],
+            element.tags,
+            {
+              bbox: [
+                element.bounds.minlon,
+                element.bounds.minlat,
+                element.bounds.maxlon,
+                element.bounds.maxlat,
+              ],
+            },
+          ),
           showToast: true,
+          incomplete: true,
         });
 
         break;
@@ -145,10 +228,24 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       case 'relation':
         {
           sr.push({
-            id: element.id,
-            osmType: 'relation',
-            tags,
+            id: { type: 'relation', id: element.id },
+            geojson: point(
+              [
+                (element.bounds.minlon + element.bounds.maxlon) / 2,
+                (element.bounds.minlat + element.bounds.maxlat) / 2,
+              ],
+              element.tags,
+              {
+                bbox: [
+                  element.bounds.minlon,
+                  element.bounds.minlat,
+                  element.bounds.maxlon,
+                  element.bounds.maxlat,
+                ],
+              },
+            ),
             showToast: true,
+            incomplete: true,
           });
         }
 
@@ -156,21 +253,45 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     }
   }
 
-  if (elements.length > 0) {
+  if (sr.length > 0) {
     // dispatch(setTool(null));
 
     dispatch(searchSetResults(sr));
+
+    if (reverseGeocodingElement) {
+      dispatch(
+        searchSelectResult({
+          result: sr[0],
+          showToast: false,
+          focus: false,
+        }),
+      );
+    }
   } else {
     dispatch(
       toastsAdd({
-        id: 'mapDetails.trackInfo.detail',
+        id: 'mapDetails.detail',
         messageKey: 'mapDetails.notFound',
         cancelType,
         timeout: 5000,
-        style: 'info',
+        style: 'warning',
       }),
     );
   }
 };
 
 export default handle;
+
+function approxAreaMeters2(b?: OverpassBounds): number {
+  if (!b) {
+    return 0;
+  }
+
+  const midLatRad = (b.minlat + b.maxlat) * 0.5 * (Math.PI / 180);
+  const metersPerDegLon = 111_320 * Math.cos(midLatRad);
+
+  const dx = Math.max(0, b.maxlon - b.minlon) * metersPerDegLon;
+  const dy = Math.max(0, b.maxlat - b.minlat) * 111_132;
+
+  return dx * dy;
+}

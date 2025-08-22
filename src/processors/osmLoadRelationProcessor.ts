@@ -98,11 +98,11 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
     dispatch(
       searchSelectResult({
         result: {
-          osmType: 'relation',
-          id,
-          geojson: featureCollection([...polyFeatures, ...features]),
-          tags,
-          detailed: true,
+          id: { type: 'relation', id },
+          geojson: {
+            ...featureCollection([...polyFeatures, ...features]),
+            metadata: tags,
+          },
         },
         showToast: showToast || window.isRobot,
         focus,

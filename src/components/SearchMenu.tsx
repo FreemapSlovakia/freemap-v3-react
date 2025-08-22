@@ -18,7 +18,16 @@ import {
   InputGroup,
   type DropdownProps,
 } from 'react-bootstrap';
-import { FaPencilAlt, FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
+import {
+  FaDrawPolygon,
+  FaPencilAlt,
+  FaPlay,
+  FaSearch,
+  FaStop,
+  FaTimes,
+} from 'react-icons/fa';
+import { GoDotFill } from 'react-icons/go';
+import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { convertToDrawing, setTool } from '../actions/mainActions.js';
 import {
@@ -43,6 +52,7 @@ import {
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
 import '../styles/search.scss';
+import { FeatureId, featureIdsEqual } from '../types/featureId.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
 type Props = {
@@ -51,9 +61,10 @@ type Props = {
 };
 
 const typeSymbol = {
-  way: '─',
-  node: '•',
-  relation: '⎔',
+  way: <MdPolyline />,
+  node: <GoDotFill />,
+  relation: <FaDrawPolygon />,
+  other: '',
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
@@ -109,7 +120,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const handleSelect = useCallback(
     (eventKey: string | null) => {
-      const result = results.find((item) => item.id === Number(eventKey));
+      if (!eventKey) {
+        return;
+      }
+
+      const id: FeatureId = JSON.parse(eventKey);
+
+      const result = results.find((item) => featureIdsEqual(item.id, id));
 
       if (result) {
         dispatch(searchSelectResult({ result, showToast: result.showToast }));
@@ -253,20 +270,26 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             <div className="dropdown-long" ref={sc}>
               <div />
 
-              {results.map((result) => (
-                <Dropdown.Item
-                  key={result.id}
-                  eventKey={String(result.id)}
-                  active={!!selectedResult && result.id === selectedResult.id}
-                >
-                  <Result value={result} />
-                </Dropdown.Item>
-              ))}
+              {results.map((result) => {
+                const id = JSON.stringify(result.id);
+
+                return (
+                  <Dropdown.Item
+                    key={id}
+                    eventKey={id}
+                    active={
+                      !!selectedResult &&
+                      featureIdsEqual(result.id, selectedResult.id)
+                    }
+                  >
+                    <Result value={result} />
+                  </Dropdown.Item>
+                );
+              })}
             </div>
           </Dropdown.Menu>
         </Dropdown>
       </Form>
-
       {selectedResult && !window.fmEmbedded && !hidden && (
         <>
           <ButtonGroup className="ms-1">
@@ -365,13 +388,19 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const tags = value.tags ?? {};
+  const tags =
+    (value.geojson.type === 'Feature'
+      ? value.geojson.properties
+      : value.geojson.metadata) ?? {};
 
-  const gn = useOsmNameResolver(value.osmType, tags);
+  const genericName =
+    value.id.type === 'other'
+      ? undefined
+      : useOsmNameResolver(value.id.type, tags);
 
   const language = useEffectiveChosenLanguage();
 
-  const name = getNameFromOsmElement(tags, language);
+  const name = tags['display_name'] || getNameFromOsmElement(tags, language);
 
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
@@ -394,7 +423,7 @@ function Result({ value }: { value: SearchResult }) {
         )}
 
         <div className="flex-grow-1 text-truncate">
-          {gn || m?.general.unnamed}
+          {genericName || m?.general.unnamed}
         </div>
 
         <div
@@ -402,7 +431,7 @@ function Result({ value }: { value: SearchResult }) {
             opacity: 0.25,
           }}
         >
-          {typeSymbol[value.osmType]}
+          {typeSymbol[value.id.type]}
         </div>
       </div>
 

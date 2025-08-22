@@ -83,19 +83,19 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
       state.searchResultSeq = state.searchResultSeq + 1;
 
       if (result) {
-        switch (result.osmType) {
+        switch (result.id.type) {
           case 'node':
-            state.osmNodeId = result.id;
+            state.osmNodeId = result.id.id;
 
             break;
 
           case 'way':
-            state.osmWayId = result.id;
+            state.osmWayId = result.id.id;
 
             break;
 
           case 'relation':
-            state.osmRelationId = result.id;
+            state.osmRelationId = result.id.id;
 
             break;
         }

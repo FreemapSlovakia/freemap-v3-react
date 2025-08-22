@@ -235,7 +235,7 @@ export const urlProcessor: Processor = {
       for (const point of drawingPoints.points) {
         historyParts.push([
           'point',
-          `${serializePoint(point)}${point.color ? `\x1eC${point.color}` : ''}${
+          `${serializePoint(point.coords)}${point.color ? `\x1eC${point.color}` : ''}${
             point.label ? `\x1eL${point.label}` : ''
           }`,
         ]);

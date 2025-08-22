@@ -11,7 +11,8 @@ interface OverpassNodeElement extends OverpassElementBase, LatLon {
 
 interface OverpassWayOrRelationElement extends OverpassElementBase {
   type: 'way' | 'relation';
-  center: LatLon;
+  // center: LatLon; // us we have bounds, we can't have center - compute
+  bounds: OverpassBounds;
 }
 
 export type OverpassElement =

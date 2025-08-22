@@ -180,8 +180,10 @@ export function MapContextMenu(): ReactElement {
         case 'addPoint':
           dispatch(
             drawingPointAdd({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
+              coords: {
+                lat: contextMenu.lat,
+                lon: contextMenu.lon,
+              },
               color,
               id: pointsLength,
             }),
