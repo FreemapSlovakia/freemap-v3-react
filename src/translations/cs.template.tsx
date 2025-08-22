@@ -582,6 +582,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
+    sourceItems: {},
     notFound: 'Nic se zde nenašlo.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při získávání detailů', err),

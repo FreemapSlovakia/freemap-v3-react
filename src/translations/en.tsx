@@ -573,6 +573,12 @@ const messages: Messages = {
   },
 
   mapDetails: {
+    sources: 'Sources',
+    sourceItems: {
+      reverse: 'Reverse geocoding',
+      nearby: 'Nearby features',
+      surrounding: 'Containing features',
+    },
     notFound: 'Nothing found here.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error fetching details', err),

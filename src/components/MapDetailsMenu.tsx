@@ -48,32 +48,22 @@ export function MapDetailsMenu(): ReactElement | null {
         autoClose="outside"
         onToggle={(open) => setSourcesOpen(open)}
       >
-        <Dropdown.Toggle variant="secondary">Sources</Dropdown.Toggle>
+        <Dropdown.Toggle variant="secondary">
+          {m?.mapDetails.sources}
+        </Dropdown.Toggle>
 
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          <Dropdown.Item
-            as="button"
-            eventKey="reverse"
-            active={sources.has('reverse')}
-          >
-            <Checkbox value={sources.has('reverse')} /> Reverse geocoding
-          </Dropdown.Item>
-
-          <Dropdown.Item
-            as="button"
-            eventKey="nearby"
-            active={sources.has('nearby')}
-          >
-            <Checkbox value={sources.has('nearby')} /> Nearby objects
-          </Dropdown.Item>
-
-          <Dropdown.Item
-            as="button"
-            eventKey="surrounding"
-            active={sources.has('surrounding')}
-          >
-            <Checkbox value={sources.has('surrounding')} /> Surrounding objects
-          </Dropdown.Item>
+          {(['reverse', 'nearby', 'surrounding'] as const).map((source) => (
+            <Dropdown.Item
+              as="button"
+              key={source}
+              eventKey={source}
+              active={sources.has(source)}
+            >
+              <Checkbox value={sources.has(source)} />{' '}
+              {m?.mapDetails.sourceItems[source]}
+            </Dropdown.Item>
+          ))}
 
           {activeWmsLayerDefs.map((def) => (
             <Dropdown.Item

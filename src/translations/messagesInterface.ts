@@ -6,6 +6,7 @@ import {
   GalleryColorizeBy,
   GalleryListOrder,
 } from '../actions/galleryActions.js';
+import { MapDetailsSource } from '../actions/mapDetailsActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
@@ -426,6 +427,8 @@ export type Messages = {
     };
   };
   mapDetails: {
+    sources: string;
+    sourceItems: Record<MapDetailsSource, string>;
     notFound: string;
     fetchingError: ({ err }: Err) => string;
     detail: ({
