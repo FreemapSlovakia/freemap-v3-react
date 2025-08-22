@@ -187,7 +187,7 @@ export function getNameFromOsmElement(
   // TODO alt_name, loc_name, ...
 
   const addr = [
-    (tags['addr:place'] ?? tags['addr:street']) +
+    (tags['addr:place'] ?? tags['addr:street'] ?? '') +
       ' ' +
       (tags['addr:housename'] ??
         (tags['addr:streetnumber'] && tags['addr:conscriptionnumber']
@@ -195,7 +195,8 @@ export function getNameFromOsmElement(
           : undefined) ??
         tags['addr:housenumber'] ??
         tags['addr:streetnumber'] ??
-        tags['addr:conscriptionnumber']),
+        tags['addr:conscriptionnumber'] ??
+        ''),
     tags['addr:suburb'],
     tags['addr:postcode'],
     tags['addr:city'],
