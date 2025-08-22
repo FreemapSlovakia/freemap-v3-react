@@ -8,6 +8,8 @@ import { mergeLines } from '../geoutils.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { OsmNode, OsmRelation, OsmResult, OsmWay } from '../types/osm.js';
+import { FeatureId } from '../types/featureId.js';
+import { copyDisplayName } from '../copyDisplayName.js';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
@@ -95,11 +97,15 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
     mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
 
+    const osmId: FeatureId = { type: 'relation', id };
+
+    copyDisplayName(getState().search.selectedResult, osmId, tags);
+
     dispatch(
       searchSelectResult({
         result: {
           source: 'osm',
-          id: { type: 'relation', id },
+          id: osmId,
           geojson: {
             ...featureCollection([...polyFeatures, ...features]),
             metadata: tags,

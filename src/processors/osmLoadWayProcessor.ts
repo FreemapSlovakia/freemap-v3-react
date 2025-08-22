@@ -7,6 +7,8 @@ import { positionsEqual, shouldBeArea } from '../geoutils.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { OsmResult } from '../types/osm.js';
+import { FeatureId } from '../types/featureId.js';
+import { copyDisplayName } from '../copyDisplayName.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
@@ -31,16 +33,22 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       } else if (item.type === 'way') {
         const coordinates = item.nodes.map((ref) => nodes[ref]);
 
+        const osmId: FeatureId = { type: 'way', id };
+
+        const tags = item.tags ?? {};
+
+        copyDisplayName(getState().search.selectedResult, osmId, tags);
+
         dispatch(
           searchSelectResult({
             result: {
               source: 'osm',
-              id: { type: 'way', id },
+              id: osmId,
               geojson:
                 positionsEqual(coordinates[0], coordinates.at(-1)!) &&
-                shouldBeArea(item.tags)
-                  ? polygon([coordinates], item.tags)
-                  : lineString(coordinates, item.tags),
+                shouldBeArea(tags)
+                  ? polygon([coordinates], tags)
+                  : lineString(coordinates, tags),
             },
             showToast: showToast || window.isRobot,
             focus,

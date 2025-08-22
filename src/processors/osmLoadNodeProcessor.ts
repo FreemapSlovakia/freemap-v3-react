@@ -6,6 +6,8 @@ import { searchSelectResult } from '../actions/searchActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import type { OsmNode, OsmResult } from '../types/osm.js';
+import { FeatureId } from '../types/featureId.js';
+import { copyDisplayName } from '../copyDisplayName.js';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,
@@ -26,12 +28,18 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       elements.filter((el) => el.type === 'node') as OsmNode[]
     ).map((node) => [node.lon, node.lat]);
 
+    const osmId: FeatureId = { type: 'node', id };
+
+    const tags = elements[0].tags ?? {};
+
+    copyDisplayName(getState().search.selectedResult, osmId, tags);
+
     dispatch(
       searchSelectResult({
         result: {
           source: 'osm',
-          id: { type: 'node', id },
-          geojson: point(nodes[0], elements[0].tags),
+          id: osmId,
+          geojson: point(nodes[0], tags),
         },
         showToast: showToast || window.isRobot,
         focus,
