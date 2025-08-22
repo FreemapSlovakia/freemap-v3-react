@@ -38,7 +38,7 @@ export function ObjectDetails({
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const name = tags['display_name'] || getNameFromOsmElement(tags, language);
+  const name = getNameFromOsmElement(tags, language);
 
   const handleEditInJosm = () => {
     fetch(

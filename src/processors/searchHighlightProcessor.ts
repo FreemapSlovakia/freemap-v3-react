@@ -1,3 +1,4 @@
+import bbox from '@turf/bbox';
 import { is } from 'typia';
 import {
   clearMapFeatures,
@@ -22,7 +23,6 @@ import {
 } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { featureIdsEqual } from '../types/featureId.js';
-import bbox from '@turf/bbox';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
@@ -103,7 +103,9 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
 
       try {
         bounds = bbox(geojson);
-      } catch {}
+      } catch {
+        // ignore
+      }
 
       if (bounds) {
         const { layers } = getState().map;

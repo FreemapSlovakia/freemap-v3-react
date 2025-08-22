@@ -51,9 +51,7 @@ function annotateFeature(
 ) {
   getGenericNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
     (genericName) => {
-      const name =
-        feature.properties?.['display_name'] ||
-        getNameFromOsmElement(feature.properties ?? {}, language);
+      const name = getNameFromOsmElement(feature.properties ?? {}, language);
 
       const isPoi = !(layer instanceof Path || layer instanceof Polygon);
 

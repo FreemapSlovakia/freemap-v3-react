@@ -173,6 +173,10 @@ export function getNameFromOsmElement(
   tags: Record<string, string>,
   lang: string,
 ): string {
+  if (tags['display_name']) {
+    return tags['display_name'];
+  }
+
   const langName = tags['name:' + lang];
 
   const name = tags['name'];
@@ -182,7 +186,27 @@ export function getNameFromOsmElement(
 
   // TODO alt_name, loc_name, ...
 
-  return effName ?? tags['ref'] ?? tags['operator'];
+  const addr = [
+    (tags['addr:place'] ?? tags['addr:street']) +
+      ' ' +
+      (tags['addr:housename'] ??
+        (tags['addr:streetnumber'] && tags['addr:conscriptionnumber']
+          ? tags['addr:conscriptionnumber'] + '/' + tags['addr:streetnumber']
+          : undefined) ??
+        tags['addr:housenumber'] ??
+        tags['addr:streetnumber'] ??
+        tags['addr:conscriptionnumber']),
+    tags['addr:suburb'],
+    tags['addr:postcode'],
+    tags['addr:city'],
+    tags['addr:province'],
+    tags['addr:country'],
+  ]
+    .map((a) => a?.trim())
+    .filter((a) => a)
+    .join(', ');
+
+  return effName || addr || tags['ref'] || tags['operator'];
 }
 
 function adjustTags(tags: Record<string, string>) {

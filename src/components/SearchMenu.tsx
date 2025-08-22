@@ -407,14 +407,15 @@ function Result({ value }: { value: SearchResult }) {
       ? value.geojson.properties
       : value.geojson.metadata) ?? {};
 
-  const genericName =
-    value.id.type === 'other'
-      ? undefined
-      : useOsmNameResolver(value.id.type, tags);
+  // we can't have hook in condition so we hack arguments
+  const genericName = useOsmNameResolver(
+    value.id.type === 'other' ? 'node' : value.id.type,
+    value.id.type === 'other' ? {} : tags,
+  );
 
   const language = useEffectiveChosenLanguage();
 
-  const name = tags['display_name'] || getNameFromOsmElement(tags, language);
+  const name = getNameFromOsmElement(tags, language);
 
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
