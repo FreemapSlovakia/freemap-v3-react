@@ -19,7 +19,6 @@ import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 import type { OverpassBounds, OverpassElement } from '../types/overpass.js';
-import { BBox } from 'geojson';
 
 const cancelType = [
   clearMapFeatures.type,
@@ -148,9 +147,12 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
         tags,
         reverseGeocodingElement.boundingbox
           ? {
-              bbox: reverseGeocodingElement.boundingbox.map((a) =>
-                Number(a),
-              ) as BBox,
+              bbox: [
+                Number(reverseGeocodingElement.boundingbox[2]),
+                Number(reverseGeocodingElement.boundingbox[1]),
+                Number(reverseGeocodingElement.boundingbox[3]),
+                Number(reverseGeocodingElement.boundingbox[0]),
+              ],
             }
           : undefined,
       ),

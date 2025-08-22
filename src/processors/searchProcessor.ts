@@ -170,7 +170,12 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             },
             item.boundingbox
               ? {
-                  bbox: item.boundingbox.map((a) => Number(a)) as BBox,
+                  bbox: [
+                    Number(item.boundingbox[2]),
+                    Number(item.boundingbox[1]),
+                    Number(item.boundingbox[3]),
+                    Number(item.boundingbox[0]),
+                  ],
                 }
               : undefined,
           ),
