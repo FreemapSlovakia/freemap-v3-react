@@ -99,7 +99,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   const nearbyElements = (
     resNearby
       ? assert<{
-          elements: OverpassElement[];
+          elements: OverpassElement<'bounds'>[];
         }>(resNearby).elements
       : []
   )
@@ -120,7 +120,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     .map((a) => a.e);
 
   const surroundingElements = resSurrounding
-    ? assert<{ elements: OverpassElement[] }>(resSurrounding).elements
+    ? assert<{ elements: OverpassElement<'bounds'>[] }>(resSurrounding).elements
     : [];
 
   const reverseGeocodingElement = assert<NominatimResult | undefined>(

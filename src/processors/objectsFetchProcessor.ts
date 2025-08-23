@@ -118,22 +118,19 @@ export const objectsFetchProcessor: Processor = {
       ],
     });
 
-    const result = assert<OverpassResult>(await res.json())
+    const result = assert<OverpassResult<'center'>>(await res.json())
       .elements.filter((e) => e.tags)
       .map(
         (e) =>
           ({
             id: { type: e.type, id: e.id },
-            coords: {
-              lat:
-                e.type === 'node'
-                  ? e.lat
-                  : (e.bounds.minlat + e.bounds.maxlat) / 2,
-              lon:
-                e.type === 'node'
-                  ? e.lon
-                  : (e.bounds.minlon + e.bounds.maxlon) / 2,
-            },
+            coords:
+              e.type === 'node'
+                ? { lat: e.lat, lon: e.lon }
+                : {
+                    lat: e.center.lat,
+                    lon: e.center.lon,
+                  },
             tags: e.tags ?? {},
           }) satisfies ObjectsResult,
       );
