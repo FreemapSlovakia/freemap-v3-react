@@ -97,22 +97,19 @@ export function Toast({
       )}
 
       {buttonActions.length > 0 && (
-        <>
-          <br />
-
-          <ButtonToolbar>
-            {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
-              <Button
-                className={i > 0 ? 'ms-2' : ''}
-                key={i}
-                variant={buttonStyle}
-                onClick={() => onAction(id, action)}
-              >
-                {name}
-              </Button>
-            ))}
-          </ButtonToolbar>
-        </>
+        <ButtonToolbar className="mt-2">
+          {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
+            <Button
+              size="sm"
+              className={i > 0 ? 'ms-2' : ''}
+              key={i}
+              variant={buttonStyle}
+              onClick={() => onAction(id, action)}
+            >
+              {name}
+            </Button>
+          ))}
+        </ButtonToolbar>
       )}
 
       {timeout !== undefined && (
