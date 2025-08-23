@@ -38,7 +38,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
       compressed_air: 'Kompresor (na pneumatiky)',
       courthouse: 'Súd',
       dentist: 'Zubná ambulancia',
-      device_charging_station: 'Nabíjacia stanica elektrovozidiel',
+      device_charging_station: 'Nabíjacia stanica pre zariadenia',
       doctors: 'Všeobecný lekár',
       dressing_room: 'Šatňa',
       drinking_water: 'Pitná voda',
