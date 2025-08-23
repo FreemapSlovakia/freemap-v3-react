@@ -118,6 +118,7 @@ export function Layers(): ReactElement | null {
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
+          zIndex={layerDef.zIndex}
         />
       );
     }

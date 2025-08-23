@@ -1,3 +1,4 @@
+import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +19,7 @@ import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { OsmMapping } from '../osm/types.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 import type { RootState } from '../store.js';
+import { featureIdsEqual } from '../types/featureId.js';
 import { RichMarker } from './RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {
@@ -58,12 +60,12 @@ export function ObjectsResult(): ReactElement | null {
 
   return !osmMapping ? null : (
     <>
-      {objects.map(({ id, lat, lon, tags, type }) => {
+      {objects.map(({ id, coords, tags }) => {
         const name = getNameFromOsmElement(tags, language);
 
         const gn = getGenericNameFromOsmElementSync(
           tags,
-          type,
+          id.type,
           osmMapping.osmTagToNameMapping,
           osmMapping.colorNames,
         );
@@ -76,12 +78,16 @@ export function ObjectsResult(): ReactElement | null {
 
         return (
           <RichMarker
-            key={`poi-${id}-${interactive ? 'a' : 'b'}`}
+            key={`poi-${id.type}-${id.id}-${interactive ? 'a' : 'b'}`}
             interactive={interactive}
-            position={{ lat, lng: lon }}
+            position={{ lat: coords.lat, lng: coords.lon }}
             image={img[0]}
             imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
-            color={activeId === id ? colors.selected : undefined}
+            color={
+              activeId && featureIdsEqual(activeId, id)
+                ? colors.selected
+                : undefined
+            }
             markerType={markerType}
             eventHandlers={{
               click() {
@@ -89,7 +95,11 @@ export function ObjectsResult(): ReactElement | null {
 
                 dispatch(
                   searchSelectResult({
-                    result: { id, tags, osmType: type, detailed: true },
+                    result: {
+                      id,
+                      source: 'overpass-objects',
+                      geojson: point([coords.lon, coords.lat], tags),
+                    },
                     showToast: true,
                     focus: false,
                     storeResult: false,

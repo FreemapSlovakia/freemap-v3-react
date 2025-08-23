@@ -1,8 +1,8 @@
 import { createAction } from '@reduxjs/toolkit';
+import { LatLon } from 'types/common.js';
 
 export interface DrawingPoint {
-  lat: number;
-  lon: number;
+  coords: LatLon;
   label?: string;
   color?: string;
 }
@@ -13,8 +13,7 @@ export const drawingPointAdd = createAction<DrawingPoint & { id: number }>(
 
 export const drawingPointChangePosition = createAction<{
   index: number;
-  lat: number;
-  lon: number;
+  coords: LatLon;
 }>('DRAWING_POINT_CHANGE_POSITION');
 
 export const drawingPointChangeProperties = createAction<{
@@ -33,7 +32,7 @@ export const drawingPointSetAll = createAction<DrawingPoint[]>(
 
 export const drawingMeasure = createAction<{
   elevation?: boolean;
-  position?: { lat: number; lon: number };
+  position?: LatLon;
 }>('DRAWING_MEASURE');
 
 export const drawingPointDelete = createAction<{

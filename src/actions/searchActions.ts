@@ -1,12 +1,19 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
+import { FeatureId } from '../types/featureId.js';
 
 export interface SearchResult {
-  id: number;
-  geojson?: Feature | FeatureCollection;
-  osmType: 'node' | 'way' | 'relation';
-  tags: GeoJsonProperties;
-  detailed?: true;
+  source:
+    | 'synthetic'
+    | 'overpass-nearby'
+    | 'overpass-surrounding'
+    | 'overpass-objects'
+    | 'nominatim-forward'
+    | 'nominatim-reverse'
+    | 'osm';
+  geojson: Feature | (FeatureCollection & { metadata: GeoJsonProperties });
+  id: FeatureId;
+  incomplete?: true;
   showToast?: true;
   zoom?: number;
 }

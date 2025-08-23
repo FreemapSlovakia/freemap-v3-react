@@ -617,6 +617,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
+    sourceItems: {},
     notFound: 'Nichts hier gefunden.',
 
     fetchingError: ({ err }) =>

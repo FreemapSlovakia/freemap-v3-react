@@ -1,10 +1,10 @@
 import * as toGeoJSON from '@tmcw/togeojson';
 import { FeatureCollection } from 'geojson';
-import { geoJSON } from 'leaflet';
 import { assert } from 'typia';
 import { trackViewerSetData } from '../actions/trackViewerActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
+import bbox from '@turf/bbox';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData
@@ -24,10 +24,19 @@ export const trackViewerSetTrackDataProcessor: Processor<
     const trackGeojson = assert<FeatureCollection>(toGeoJSON.gpx(gpxAsXml));
 
     if (action.payload.focus) {
-      const geojsonBounds = geoJSON(trackGeojson).getBounds();
+      let bounds;
 
-      if (geojsonBounds.isValid()) {
-        mapPromise.then((map) => map.fitBounds(geojsonBounds));
+      try {
+        bounds = bbox(trackGeojson);
+      } catch {}
+
+      if (bounds) {
+        mapPromise.then((map) =>
+          map.fitBounds([
+            [bounds[1], bounds[0]],
+            [bounds[3], bounds[2]],
+          ]),
+        );
       }
     }
 

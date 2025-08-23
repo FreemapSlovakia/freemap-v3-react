@@ -65,14 +65,14 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (set.has('drawingPoints')) {
     for (const p of drawingPoints.points) {
       fc.features.push(
-        point([p.lon, p.lat], { name: p.label, color: p.color }),
+        point([p.coords.lon, p.coords.lat], { name: p.label, color: p.color }),
       );
     }
   }
 
   if (set.has('objects')) {
-    for (const { lat, lon, tags } of objects.objects) {
-      fc.features.push(point([lon, lat], tags));
+    for (const { coords, tags } of objects.objects) {
+      fc.features.push(point([coords.lon, coords.lat], tags));
     }
   }
 

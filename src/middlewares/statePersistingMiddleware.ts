@@ -70,6 +70,9 @@ function persistSelectedState(state: RootState) {
         recentTags: state.gallery.recentTags,
         premium: state.gallery.premium,
       },
+      mapDetails: {
+        sources: state.mapDetails.sources,
+      },
     } as Partial<RootState>),
   );
 }

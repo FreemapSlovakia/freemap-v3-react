@@ -7,7 +7,7 @@ import {
   FaPencilAlt,
   FaRoad,
 } from 'react-icons/fa';
-import { MdTimeline } from 'react-icons/md';
+import { MdPolyline } from 'react-icons/md';
 import { Tool } from './actions/mainActions.js';
 import type { Messages } from './translations/messagesInterface.js';
 
@@ -41,7 +41,7 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     tool: 'draw-lines',
-    icon: <MdTimeline />,
+    icon: <MdPolyline />,
     msgKey: 'drawLines',
     kbd: 'KeyL',
     draw: true,

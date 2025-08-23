@@ -47,9 +47,7 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
     .addCase(drawingPointChangePosition, (state, { payload }) => {
       const point = state.points[payload.index];
 
-      point.lat = payload.lat;
-
-      point.lon = payload.lon;
+      point.coords = payload.coords;
     })
     .addCase(drawingPointSetAll, (state, { payload }) => {
       state.points = payload;

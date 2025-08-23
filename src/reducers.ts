@@ -25,7 +25,10 @@ import {
   mainReducer,
   type MainState,
 } from './reducers/mainReducer.js';
-import { mapDetailsReducer } from './reducers/mapDetailsReducer.js';
+import {
+  mapDetailsInitialState,
+  mapDetailsReducer,
+} from './reducers/mapDetailsReducer.js';
 import {
   mapInitialState,
   mapReducer,
@@ -58,6 +61,7 @@ import {
   transportTypeDefs,
 } from './transportTypeDefs.js';
 import { StringDates } from './types/common.js';
+import { MapDetailsSource } from 'actions/mapDetailsActions.js';
 
 export const reducers = {
   auth: authReducer,
@@ -158,6 +162,13 @@ export function getInitialState() {
     initial.trackViewer = {
       ...trackViewerInitialState,
       ...persisted.trackViewer,
+    };
+  }
+
+  if (is<{ sources: MapDetailsSource[] }>(persisted.mapDetails)) {
+    initial.mapDetails = {
+      ...mapDetailsInitialState,
+      ...persisted.mapDetails,
     };
   }
 

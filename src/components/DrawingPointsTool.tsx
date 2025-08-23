@@ -21,8 +21,10 @@ export function DrawingPointsTool(): null {
       ({ latlng }: LeafletMouseEvent) => {
         dispatch(
           drawingPointAdd({
-            lat: latlng.lat,
-            lon: latlng.lng,
+            coords: {
+              lat: latlng.lat,
+              lon: latlng.lng,
+            },
             color,
             id: length,
           }),

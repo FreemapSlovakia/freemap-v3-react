@@ -125,6 +125,7 @@ type IsInteractiveLayerDef = {
 };
 
 export type IsWmsLayerDef = HasUrl &
+  HasZIndex &
   HasMaxNativeZoom &
   HasScaleWithDpi & {
     technology: 'wms';

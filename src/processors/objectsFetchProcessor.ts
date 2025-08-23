@@ -2,6 +2,7 @@ import { assert } from 'typia';
 import { clearMapFeatures, selectFeature } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
 import {
+  ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
 } from '../actions/objectsActions.js';
@@ -117,15 +118,22 @@ export const objectsFetchProcessor: Processor = {
       ],
     });
 
-    const result = assert<OverpassResult>(await res.json())
+    const result = assert<OverpassResult<'center'>>(await res.json())
       .elements.filter((e) => e.tags)
-      .map((e) => ({
-        id: e.id,
-        lat: e.type === 'node' ? e.lat : e.center.lat,
-        lon: e.type === 'node' ? e.lon : e.center.lon,
-        tags: e.tags ?? {},
-        type: e.type,
-      }));
+      .map(
+        (e) =>
+          ({
+            id: { type: e.type, id: e.id },
+            coords:
+              e.type === 'node'
+                ? { lat: e.lat, lon: e.lon }
+                : {
+                    lat: e.center.lat,
+                    lon: e.center.lon,
+                  },
+            tags: e.tags ?? {},
+          }) satisfies ObjectsResult,
+      );
 
     if (result.length >= limit) {
       dispatch(

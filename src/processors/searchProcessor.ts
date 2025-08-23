@@ -1,7 +1,7 @@
 import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
-import { BBox, Geometry } from 'geojson';
+import { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
 import { assert } from 'typia';
 import { clearMapFeatures } from '../actions/mainActions.js';
@@ -17,18 +17,7 @@ import { mapPromise } from '../leafletElementHolder.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 import type { LatLon } from '../types/common.js';
-
-interface NominatimResult {
-  osm_id?: number;
-  osm_type?: 'node' | 'way' | 'relation';
-  geojson?: Geometry;
-  lat: string;
-  lon: string;
-  display_name: string;
-  class: string;
-  type: string;
-  extratags?: null | Record<string, string>;
-}
+import { NominatimResult } from '../types/nominatimResult.js';
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
   actionCreator: searchSetQuery,
@@ -58,11 +47,9 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       dispatch(
         searchSetResults([
           {
-            id: -1,
+            source: 'synthetic',
+            id: { type: 'other', id: 0 },
             geojson,
-            osmType: 'relation',
-            tags: { name: 'GeoJSON' },
-            detailed: true,
           },
         ]),
       );
@@ -90,16 +77,12 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       dispatch(
         searchSetResults([
           {
-            id: -1,
+            source: 'synthetic',
+            id: { type: 'other', id: 0 },
             geojson: bboxPolygon(
               parts.some((p) => Math.abs(p) > 180) ? reproj() : (parts as BBox),
-              {
-                properties: tags,
-              },
+              { properties: tags },
             ),
-            osmType: 'relation',
-            tags,
-            detailed: true,
           },
         ]),
       );
@@ -115,18 +98,14 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       const poly = tileToGeoJSON([Number(m[2]), Number(m[3]), Number(m[1])]);
 
       if (poly) {
-        const tags = {
-          name: query.trim(),
-        };
-
         dispatch(
           searchSetResults([
             {
-              id: -1,
-              geojson: feature(poly, tags),
-              osmType: 'relation',
-              tags,
-              detailed: true,
+              source: 'synthetic',
+              id: { type: 'other', id: 0 },
+              geojson: feature(poly, {
+                name: query.trim(),
+              }),
               zoom: Number(m[1]),
             },
           ]),
@@ -147,18 +126,14 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     }
 
     if (coords) {
-      const tags = {
-        name: query.toUpperCase(),
-      };
-
       dispatch(
         searchSetResults([
           {
-            id: -1,
-            geojson: point([coords.lon, coords.lat], tags),
-            osmType: 'node',
-            tags,
-            detailed: true,
+            source: 'synthetic',
+            id: { type: 'other', id: 0 },
+            geojson: point([coords.lon, coords.lat], {
+              name: query.toUpperCase(),
+            }),
           },
         ]),
       );
@@ -183,30 +158,43 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
           viewbox: action.payload.fromUrl
             ? undefined
             : (await mapPromise).getBounds().toBBoxString(),
+          email: 'martin.zdila@freemap.sk',
         }),
       expectedStatus: 200,
       cancelActions: [clearMapFeatures, searchSetQuery],
     });
 
-    const results = assert<NominatimResult[]>(await res.json())
-      .filter(
-        (item) =>
-          item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,
-      )
-      .map((item): SearchResult => {
-        const tags = {
-          name: item.display_name,
-          [item.class]: item.type,
-          ...item.extratags,
-        };
-
+    const results = assert<NominatimResult[]>(await res.json()).map(
+      (item): SearchResult => {
         return {
-          id: item.osm_id!,
-          geojson: feature(item.geojson!, tags),
-          osmType: item.osm_type!,
-          tags,
+          source: 'nominatim-forward',
+          id:
+            item.osm_type !== undefined && item.osm_id !== undefined
+              ? { type: item.osm_type, id: item.osm_id }
+              : { type: 'other', id: Math.random() },
+          incomplete: true,
+          geojson: feature(
+            item.geojson ?? null,
+            {
+              [item.class]: item.type,
+              name: item.name,
+              ...item.extratags,
+              display_name: item.display_name,
+            },
+            item.boundingbox
+              ? {
+                  bbox: [
+                    Number(item.boundingbox[2]),
+                    Number(item.boundingbox[1]),
+                    Number(item.boundingbox[3]),
+                    Number(item.boundingbox[0]),
+                  ],
+                }
+              : undefined,
+          ),
         };
-      });
+      },
+    );
 
     dispatch(searchSetResults(results));
 

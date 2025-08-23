@@ -163,7 +163,12 @@ export const mapsLoadProcessor: Processor = {
                   : line.type,
           })),
           points: mapData.points?.map((point) => ({
-            ...point,
+            color: point.color,
+            label: point.label,
+            coords: {
+              lat: point.lat,
+              lon: point.lon,
+            },
           })),
           tracking: mapData.tracking && {
             ...mapData.tracking,

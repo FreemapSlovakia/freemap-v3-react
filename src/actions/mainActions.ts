@@ -4,6 +4,7 @@ import { basicModals, tools } from '../constants.js';
 import type { CustomLayerDef } from '../mapDefinitions.js';
 import type { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
+import { OsmFeatureId } from '../types/featureId.js';
 import type { LayerSettings } from './mapActions.js';
 
 export type Tool = (typeof tools)[number];
@@ -144,7 +145,7 @@ export interface DrawPointSelection {
 
 export interface ObjectsSelection {
   type: 'objects';
-  id: number;
+  id: OsmFeatureId;
 }
 
 export interface DrawLinePolySelection {

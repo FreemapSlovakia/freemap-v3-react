@@ -39,17 +39,21 @@ export function DrawingPointSelection(): ReactElement | null {
         return;
       }
 
+      const { coords } = point;
+
       setProjectPointDialogVisible(false);
 
-      const p = destination([point.lon, point.lat], distance, azimuth, {
+      const p = destination([coords.lon, coords.lat], distance, azimuth, {
         units: 'meters',
       });
 
       dispatch(
         drawingPointAdd({
           id: nextId,
-          lon: p.geometry.coordinates[0],
-          lat: p.geometry.coordinates[1],
+          coords: {
+            lon: p.geometry.coordinates[0],
+            lat: p.geometry.coordinates[1],
+          },
           color,
         }),
       );
@@ -57,7 +61,13 @@ export function DrawingPointSelection(): ReactElement | null {
     [color, dispatch, nextId, point],
   );
 
-  return !point ? null : (
+  if (!point) {
+    return null;
+  }
+
+  const { coords } = point;
+
+  return (
     <>
       <ProjectPointModal
         show={projectPointDialogVisible}
@@ -105,11 +115,11 @@ export function DrawingPointSelection(): ReactElement | null {
 
         <OpenInExternalAppMenuButton
           className="ms-1"
-          lat={point.lat}
-          lon={point.lon}
+          lat={coords.lat}
+          lon={coords.lon}
           includePoint
           pointTitle={point.label}
-          url={`/?point=${point.lat}/${point.lon}`}
+          url={`/?point=${coords.lat}/${coords.lon}`}
         >
           <FaExternalLinkAlt />
           <span className="d-none d-sm-inline">

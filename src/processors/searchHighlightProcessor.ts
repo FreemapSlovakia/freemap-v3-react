@@ -1,4 +1,4 @@
-import { geoJSON } from 'leaflet';
+import bbox from '@turf/bbox';
 import { is } from 'typia';
 import {
   clearMapFeatures,
@@ -22,19 +22,28 @@ import {
   IsBaseLayerDef,
 } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
+import { featureIdsEqual } from '../types/featureId.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
-    if (!action.payload || action.payload.result.detailed) {
+    if (
+      !action.payload ||
+      action.payload.result.geojson.type === 'FeatureCollection' ||
+      action.payload.result.geojson.geometry
+    ) {
       return action;
     }
 
-    const { id, osmType } = action.payload.result;
+    const { id } = action.payload.result;
 
     const sr = getState().search.selectedResult;
 
-    if (!!sr && id === sr.id && osmType === sr.osmType && sr.detailed) {
+    if (
+      sr &&
+      featureIdsEqual(id, sr.id) &&
+      (sr.geojson.type === 'FeatureCollection' || sr.geojson.geometry)
+    ) {
       return;
     }
 
@@ -50,15 +59,15 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       return;
     }
 
-    const { id, osmType, detailed, geojson, tags } = action.payload.result;
+    const { id, geojson, incomplete } = action.payload.result;
 
-    if (!detailed) {
-      switch (osmType) {
+    if (incomplete) {
+      switch (id.type) {
         case 'node':
           dispatch(
             osmLoadNode({
-              id,
-              focus: true,
+              id: id.id,
+              focus: !!action.payload.focus,
               showToast: action.payload.showToast,
             }),
           );
@@ -68,8 +77,8 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
         case 'way':
           dispatch(
             osmLoadWay({
-              id,
-              focus: true,
+              id: id.id,
+              focus: !!action.payload.focus,
               showToast: action.payload.showToast,
             }),
           );
@@ -79,8 +88,8 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
         case 'relation':
           dispatch(
             osmLoadRelation({
-              id,
-              focus: true,
+              id: id.id,
+              focus: !!action.payload.focus,
               showToast: action.payload.showToast,
             }),
           );
@@ -90,27 +99,45 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     }
 
     if (action.payload.focus !== false && geojson) {
-      const { layers } = getState().map;
+      let bounds;
 
-      (await mapPromise).fitBounds(geoJSON(geojson).getBounds(), {
-        maxZoom: Math.min(
-          action.payload.result.zoom ?? 18,
-          integratedLayerDefs
-            .filter((def) => is<IsBaseLayerDef & HasMaxNativeZoom>(def))
-            .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
-        ),
-      });
+      try {
+        bounds = bbox(geojson);
+      } catch {
+        // ignore
+      }
+
+      if (bounds) {
+        const { layers } = getState().map;
+
+        (await mapPromise).fitBounds(
+          [
+            [bounds[1], bounds[0]],
+            [bounds[3], bounds[2]],
+          ],
+          {
+            maxZoom: Math.min(
+              action.payload.result.zoom ?? 18,
+              integratedLayerDefs
+                .filter((def) => is<IsBaseLayerDef & HasMaxNativeZoom>(def))
+                .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
+            ),
+          },
+        );
+      }
     }
 
-    if (detailed && id !== -1 && action.payload.showToast) {
+    if (id.type !== 'other' && action.payload.showToast) {
       dispatch(
         toastsAdd({
           id: 'mapDetails.tags',
           messageKey: 'mapDetails.detail',
           messageParams: {
             id,
-            type: osmType,
-            tags,
+            tags:
+              geojson.type === 'FeatureCollection'
+                ? geojson.metadata
+                : geojson.properties,
           },
           cancelType: [
             clearMapFeatures.type,
