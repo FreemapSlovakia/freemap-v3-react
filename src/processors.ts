@@ -44,7 +44,6 @@ import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor.
 import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor.js';
 import { legendProcessor } from './processors/legendProcessor.js';
 import { locateProcessor } from './processors/locateProcessor.js';
-import { mapDetailsProcessor } from './processors/mapDetailsProcessor.js';
 import { exportMapProcessor } from './processors/mapExportProcessor.js';
 import { mapRefocusProcessor } from './processors/mapRefocusProcessor.js';
 import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor.js';
@@ -113,7 +112,6 @@ export const processors = [
   locateProcessor,
   saveSettingsProcessor,
   measurementProcessor,
-  mapDetailsProcessor,
   changesetsProcessor,
   changesetsTrackProcessor,
   authInitProcessor,

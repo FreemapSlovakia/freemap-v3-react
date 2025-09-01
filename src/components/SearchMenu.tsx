@@ -1,8 +1,6 @@
-import { center } from '@turf/center';
 import {
   ChangeEvent,
   forwardRef,
-  MouseEvent,
   ReactElement,
   ReactNode,
   useCallback,
@@ -18,22 +16,10 @@ import {
   InputGroup,
   type DropdownProps,
 } from 'react-bootstrap';
-import {
-  FaDrawPolygon,
-  FaPencilAlt,
-  FaPlay,
-  FaSearch,
-  FaStop,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaCaretDown, FaDrawPolygon, FaSearch } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { convertToDrawing, setTool } from '../actions/mainActions.js';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from '../actions/routePlannerActions.js';
 import {
   SearchResult,
   searchSelectResult,
@@ -88,9 +74,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  const [value, setValue] = useState('');
+  const query = useAppSelector((state) => state.search.query);
+
+  const [value, setValue] = useState(query);
 
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setValue(query);
+  }, [query]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -182,19 +174,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     };
   }, [hidden, preventShortcut]);
 
-  const handleClearClick = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-
-      dispatch(searchSelectResult(null));
-
-      dispatch(searchSetResults([]));
-
-      setValue('');
-    },
-    [dispatch],
-  );
-
   const handleInputFocus = useCallback(() => {
     setOpen(results.length > 0);
   }, [results]);
@@ -210,46 +189,38 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   let prevSource: SearchResult['source'] | undefined = undefined;
 
   return (
-    <>
-      <Form
-        onSubmit={handleSearch}
-        style={{ display: hidden ? 'none' : '' }}
-        className="ms-1"
+    <Form
+      onSubmit={handleSearch}
+      style={{ display: hidden ? 'none' : '' }}
+      className="ms-1"
+    >
+      <Dropdown
+        as={ButtonGroup}
+        show={open}
+        onSelect={handleSelect}
+        onToggle={handleToggle}
       >
-        <Dropdown
-          as={ButtonGroup}
-          show={open}
-          onSelect={handleSelect}
-          onToggle={handleToggle}
-        >
-          <Dropdown.Toggle as={HideArrow}>
-            <InputGroup className="flex-nowrap">
-              <Form.Control
-                type="search"
-                className="fm-search-input"
-                onChange={handleChange}
-                value={value}
-                placeholder={m?.search.placeholder}
-                ref={inputRef}
-                onFocus={handleInputFocus}
-              />
+        <Dropdown.Toggle as={HideArrow}>
+          <InputGroup className="flex-nowrap">
+            <Form.Control
+              type="search"
+              className="fm-search-input"
+              onChange={handleChange}
+              value={value}
+              placeholder={m?.search.placeholder}
+              ref={inputRef}
+              onFocus={handleInputFocus}
+            />
 
-              {!!selectedResult && (
-                <LongPressTooltip label={m?.general.clear}>
-                  {({ props }) => (
-                    <Button
-                      className="w-auto"
-                      variant="secondary"
-                      type="button"
-                      onClick={handleClearClick}
-                      {...props}
-                    >
-                      <FaTimes />
-                    </Button>
-                  )}
-                </LongPressTooltip>
-              )}
-
+            {results.length ? (
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => inputRef.current?.focus()}
+              >
+                <FaCaretDown />
+              </Button>
+            ) : (
               <LongPressTooltip label={m?.search.buttonTitle}>
                 {({ props }) => (
                   <Button
@@ -262,140 +233,48 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   </Button>
                 )}
               </LongPressTooltip>
-            </InputGroup>
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu
-            className="fm-search-dropdown fm-dropdown-with-scroller"
-            popperConfig={fixedPopperConfig}
-          >
-            <div className="dropdown-long" ref={sc}>
-              <div />
-
-              {results.map((result) => {
-                const id = JSON.stringify(result.id);
-
-                const divider =
-                  prevSource && prevSource !== result.source ? (
-                    <Dropdown.Divider key={id + '-'} />
-                  ) : null;
-
-                prevSource = result.source;
-
-                return (
-                  <>
-                    {divider}
-
-                    <Dropdown.Item
-                      key={id}
-                      eventKey={id}
-                      active={
-                        !!selectedResult &&
-                        featureIdsEqual(result.id, selectedResult.id)
-                      }
-                    >
-                      <Result value={result} />
-                    </Dropdown.Item>
-                  </>
-                );
-              })}
-            </div>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Form>
-
-      {selectedResult && !window.fmEmbedded && !hidden && (
-        <>
-          <ButtonGroup className="ms-1">
-            <LongPressTooltip label={m?.search.routeFrom}>
-              {({ props }) => (
-                <Button
-                  variant="secondary"
-                  {...props}
-                  onClick={() => {
-                    dispatch(setTool('route-planner'));
-
-                    if (selectedResult.geojson) {
-                      const c = center(selectedResult.geojson).geometry
-                        .coordinates;
-
-                      dispatch(
-                        routePlannerSetStart({
-                          lat: c[1],
-                          lon: c[0],
-                        }),
-                      );
-                    }
-                  }}
-                >
-                  <FaPlay color="#32CD32" />
-                </Button>
-              )}
-            </LongPressTooltip>
-
-            <LongPressTooltip label={m?.search.routeTo}>
-              {({ props }) => (
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    dispatch(setTool('route-planner'));
-
-                    if (selectedResult.geojson) {
-                      const c = center(selectedResult.geojson).geometry
-                        .coordinates;
-
-                      dispatch(
-                        routePlannerSetFinish({
-                          lat: c[1],
-                          lon: c[0],
-                        }),
-                      );
-                    }
-                  }}
-                  {...props}
-                >
-                  <FaStop color="#FF6347" />
-                </Button>
-              )}
-            </LongPressTooltip>
-          </ButtonGroup>
-
-          <LongPressTooltip label={m?.general.convertToDrawing}>
-            {({ props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={() => {
-                  const ask =
-                    (selectedResult.geojson?.type === 'FeatureCollection' &&
-                      selectedResult.geojson.features.some(
-                        (feature) => !feature.geometry.type.endsWith('Point'),
-                      )) ||
-                    (selectedResult.geojson?.type === 'Feature' &&
-                      !selectedResult.geojson.geometry.type.endsWith('Point'));
-
-                  const tolerance = ask
-                    ? window.prompt(m?.general.simplifyPrompt, '50')
-                    : '50';
-
-                  if (tolerance !== null) {
-                    dispatch(
-                      convertToDrawing({
-                        type: 'search-result',
-                        tolerance: Number(tolerance || '0') / 100_000,
-                      }),
-                    );
-                  }
-                }}
-                {...props}
-              >
-                <FaPencilAlt />
-              </Button>
             )}
-          </LongPressTooltip>
-        </>
-      )}
-    </>
+          </InputGroup>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu
+          className="fm-search-dropdown fm-dropdown-with-scroller"
+          popperConfig={fixedPopperConfig}
+        >
+          <div className="dropdown-long" ref={sc}>
+            <div />
+
+            {results.map((result) => {
+              const id = JSON.stringify(result.id);
+
+              const divider =
+                prevSource && prevSource !== result.source ? (
+                  <Dropdown.Divider key={id + '-'} />
+                ) : null;
+
+              prevSource = result.source;
+
+              return (
+                <>
+                  {divider}
+
+                  <Dropdown.Item
+                    key={id}
+                    eventKey={id}
+                    active={
+                      !!selectedResult &&
+                      featureIdsEqual(result.id, selectedResult.id)
+                    }
+                  >
+                    <Result value={result} />
+                  </Dropdown.Item>
+                </>
+              );
+            })}
+          </div>
+        </Dropdown.Menu>
+      </Dropdown>
+    </Form>
   );
 }
 

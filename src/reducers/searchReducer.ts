@@ -9,6 +9,7 @@ import {
   searchClear,
   SearchResult,
   searchSelectResult,
+  searchSetQuery,
   searchSetResults,
 } from '../actions/searchActions.js';
 
@@ -17,6 +18,7 @@ export interface SearchState {
   selectedResult: SearchResult | null;
   searchSeq: number;
   searchResultSeq: number;
+  query: string;
 
   // TODO these data are derived - remove
   osmNodeId: number | null;
@@ -37,11 +39,15 @@ export const searchInitialState: SearchState = {
   ...searchInitialState0,
   results: [],
   selectedResult: null,
+  query: '',
 };
 
 export const searchReducer = createReducer(searchInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => searchInitialState)
+    .addCase(searchSetQuery, (state, { payload }) => {
+      state.query = payload.query;
+    })
     .addCase(searchClear, () => searchInitialState)
     .addCase(searchSetResults, (state, action) => {
       state.results = action.payload;

@@ -1,5 +1,6 @@
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
+import { Dispatch } from 'redux';
 import { assert } from 'typia';
 import {
   clearMapFeatures,
@@ -7,15 +8,15 @@ import {
   selectFeature,
   setTool,
 } from '../actions/mainActions.js';
-import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
 import {
   type SearchResult,
   searchSelectResult,
+  searchSetQuery,
   searchSetResults,
 } from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
-import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
+import { RootState } from '../store.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 import { NominatimResult } from '../types/nominatimResult.js';
 import type { OverpassBounds, OverpassElement } from '../types/overpass.js';
@@ -26,17 +27,19 @@ const cancelType = [
   deleteFeature.type,
   setTool.type,
 
-  mapDetailsSetUserSelectedPosition.type,
+  searchSetQuery.type,
 ];
 
-const handle: ProcessorHandler = async ({ dispatch, getState }) => {
-  const { coords, sources } = getState().mapDetails;
+export async function handle(
+  [lat, lon]: [number, number],
+  getState: () => RootState,
+  dispatch: Dispatch,
+) {
+  const { sources } = getState().mapDetails;
 
-  if (!coords || sources.length === 0) {
+  if (sources.length === 0) {
     return;
   }
-
-  const { lat, lon } = coords;
 
   window._paq.push(['trackEvent', 'MapDetails', 'search']);
 
@@ -286,7 +289,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
       }),
     );
   }
-};
+}
 
 export default handle;
 

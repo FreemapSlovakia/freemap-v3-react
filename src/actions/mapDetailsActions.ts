@@ -6,11 +6,6 @@ export type MapDetailsSource =
   | 'surrounding'
   | `wms:${string}`;
 
-export const mapDetailsSetUserSelectedPosition = createAction<{
-  lat: number;
-  lon: number;
-}>('mapDetails/setUserSelectedPosition');
-
 export const mapDetailsSetSources = createAction<MapDetailsSource[]>(
   'mapDetails/setSources',
 );

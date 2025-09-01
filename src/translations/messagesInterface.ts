@@ -478,6 +478,7 @@ export type Messages = {
     fetchingError: ({ err }: Err) => string;
     buttonTitle: string;
     placeholder: string;
+    result: string;
   };
   embed: {
     code: string;

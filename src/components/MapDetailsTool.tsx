@@ -2,7 +2,7 @@ import { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
+import { searchSetQuery } from '../actions/searchActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { isEventOnMap } from '../mapUtils.js';
 import type { LatLon } from '../types/common.js';
@@ -17,9 +17,8 @@ export function MapDetailsTool(): ReactElement | null {
     useCallback(
       ({ latlng }: LeafletMouseEvent) => {
         dispatch(
-          mapDetailsSetUserSelectedPosition({
-            lat: latlng.lat,
-            lon: latlng.lng,
+          searchSetQuery({
+            query: '@' + latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6),
           }),
         );
       },

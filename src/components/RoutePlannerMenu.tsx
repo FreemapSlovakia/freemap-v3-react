@@ -785,7 +785,7 @@ export function RoutePlannerMenu(): ReactElement {
         </Dropdown>
       )}
 
-      {canDelete && <DeleteButton breakpoint="lg" />}
+      {canDelete && <DeleteButton />}
     </ToolMenu>
   );
 }

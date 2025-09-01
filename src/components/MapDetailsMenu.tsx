@@ -11,6 +11,7 @@ import { DeleteButton } from './DeleteButton.js';
 import { ToolMenu } from './ToolMenu.js';
 
 export function MapDetailsMenu(): ReactElement | null {
+  // TODO what is this?
   const canDelete = useAppSelector((state) => !!state.trackViewer.trackGeojson);
 
   const [sourcesOpen, setSourcesOpen] = useState(false);

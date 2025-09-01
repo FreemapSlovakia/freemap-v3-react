@@ -29,11 +29,11 @@ import {
 import { galleryRequestImages } from '../actions/galleryActions.js';
 import { setTool } from '../actions/mainActions.js';
 import { mapRefocus } from '../actions/mapActions.js';
-import { mapDetailsSetUserSelectedPosition } from '../actions/mapDetailsActions.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '../actions/routePlannerActions.js';
+import { searchSetQuery } from '../actions/searchActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';
@@ -155,9 +155,12 @@ export function MapContextMenu(): ReactElement {
 
         case 'details':
           dispatch(
-            mapDetailsSetUserSelectedPosition({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
+            searchSetQuery({
+              query:
+                '@' +
+                contextMenu.lat.toFixed(6) +
+                ',' +
+                contextMenu.lon.toFixed(6),
             }),
           );
 

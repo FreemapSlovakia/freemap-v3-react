@@ -614,6 +614,7 @@ const messages: Messages = {
     fetchingError: ({ err }) => addError(messages, 'Searching error', err),
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
+    result: 'Lookup',
   },
 
   embed: {

@@ -4,24 +4,16 @@ import { FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { deleteFeature } from '../actions/mainActions.js';
 import { useMessages } from '../l10nInjector.js';
-import { Breakpoint, LongPressTooltip } from './LongPressTooltip.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
-type Props = {
-  breakpoint?: Breakpoint;
-};
-
-export function DeleteButton({ breakpoint = 'xl' }: Props): ReactElement {
+export function DeleteButton(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
   return (
-    <LongPressTooltip
-      label={m?.general.delete}
-      breakpoint={breakpoint}
-      kbd="Del"
-    >
-      {({ label, labelClassName, props }) => (
+    <LongPressTooltip label={m?.general.delete} kbd="Del">
+      {({ props }) => (
         <Button
           className="ms-1"
           variant="danger"
@@ -31,7 +23,6 @@ export function DeleteButton({ breakpoint = 'xl' }: Props): ReactElement {
           {...props}
         >
           <FaTrash />
-          <span className={labelClassName}> {label}</span>
         </Button>
       )}
     </LongPressTooltip>

@@ -661,6 +661,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     buttonTitle: 'Hľadať',
     placeholder: 'Hľadať v mape',
+    result: 'Vyhľadanie',
   },
 
   embed: {

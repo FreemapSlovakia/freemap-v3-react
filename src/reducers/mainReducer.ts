@@ -47,6 +47,7 @@ import {
 } from '../actions/mainActions.js';
 import { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
+import { searchSelectResult } from '../actions/searchActions.js';
 
 interface Location extends LatLon {
   accuracy: number;
@@ -179,6 +180,11 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.selection = {
         type: 'draw-line-poly',
         id: action.payload.lineIndex,
+      };
+    })
+    .addCase(searchSelectResult, (state) => {
+      state.selection = {
+        type: 'search',
       };
     })
     .addCase(selectFeature, (state, action) => {

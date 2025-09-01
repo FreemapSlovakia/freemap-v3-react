@@ -169,13 +169,18 @@ export interface RoutePointSelection {
   id: number;
 }
 
+export interface SearchSelection {
+  type: 'search';
+}
+
 export type Selection =
   | LinePointSelection
   | DrawPointSelection
   | ObjectsSelection
   | DrawLinePolySelection
   | TrackingSelection
-  | RoutePointSelection;
+  | RoutePointSelection
+  | SearchSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 

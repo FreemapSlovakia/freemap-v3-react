@@ -8,6 +8,7 @@ import {
   routePlannerDelete,
   routePlannerRemovePoint,
 } from '../actions/routePlannerActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
 import { trackingActions } from '../actions/trackingActions.js';
 import { trackViewerDelete } from '../actions/trackViewerActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
@@ -41,6 +42,14 @@ export const deleteProcessor: Processor = {
       dispatch(selectFeature(null));
 
       dispatch(routePlannerRemovePoint(state.main.selection.id));
+    } else if (state.main.selection?.type === 'search') {
+      dispatch(selectFeature(null));
+
+      dispatch(searchSelectResult(null));
+
+      // dispatch(searchSetResults([]));
+
+      // dispatch(searchSetQuery({ query: '' }));
     } else if (
       state.main.tool === 'track-viewer' ||
       state.main.tool === 'map-details'
