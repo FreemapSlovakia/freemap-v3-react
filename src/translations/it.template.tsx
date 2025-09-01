@@ -117,7 +117,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Rimuovi %value% dalla lista',
   },
 
-  theme: {},
+  theme: {
+    light: 'Modalità chiara',
+    dark: 'Modalità scura',
+    auto: 'Modalità automatica',
+  },
 
   selections: {
     objects: 'Oggetto (POI)',
@@ -593,7 +597,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {},
+    sourceItems: {
+      reverse: 'Geocodifica inversa',
+      nearby: 'Oggetti vicini',
+      surrounding: 'Oggetti contenenti',
+    },
     notFound: 'Niente trovato qui.',
     fetchingError: ({ err }) =>
       addError(messages, 'Errore durante il recupero dei dettagli', err),
@@ -605,6 +613,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         editInJosmText="Modifica su JOSM"
       />
     ),
+    sources: 'Fonti',
   },
 
   objects: {
@@ -648,6 +657,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) => addError(messages, 'Searching error:', err),
     buttonTitle: 'Cerca',
     placeholder: 'Cerca sulla mappa',
+    result: 'Risultato',
   },
 
   embed: {
@@ -823,7 +833,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Copre solo i seguenti paesi: ${countries.join(', ')}`,
     layerSettings: 'Livelli mappa',
-    technologies: {},
+    technologies: {
+      tile: 'Riquadri immagine (TMS, XYZ)',
+      maplibre: 'Vettore (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Ombreggiatura parametrica',
+    },
+    technology: 'Tipo',
+    loadWmsLayers: 'Carica livelli',
   },
 
   elevationChart: {

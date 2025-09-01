@@ -111,7 +111,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Odebrat %value% ze seznamu',
   },
 
-  theme: {},
+  theme: {
+    light: 'Světlý režim',
+    dark: 'Tmavý režim',
+    auto: 'Automatický režim',
+  },
 
   selections: {
     objects: 'Objekt (POI)',
@@ -563,7 +567,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {},
+    sourceItems: {
+      reverse: 'Reverzní geokódování',
+      nearby: 'Blízké objekty',
+      surrounding: 'Obsahující objekty',
+    },
     notFound: 'Nic se zde nenašlo.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při získávání detailů', err),
@@ -575,6 +583,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         editInJosmText="Editovat v JOSM"
       />
     ),
+    sources: 'Zdroje',
   },
 
   objects: {
@@ -623,6 +632,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     buttonTitle: 'Hledat',
     placeholder: 'Hledat v mapě',
+    result: 'Nález',
   },
 
   embed: {

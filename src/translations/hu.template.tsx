@@ -110,7 +110,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: '%value% eltávolítása a listáról',
   },
 
-  theme: {},
+  theme: {
+    light: 'Világos mód',
+    dark: 'Sötét mód',
+    auto: 'Automatikus mód',
+  },
 
   selections: {
     objects: 'Objektum (érdekes pont, POI)',
@@ -596,7 +600,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {},
+    sourceItems: {
+      reverse: 'Fordított geokódolás',
+      nearby: 'Közeli objektumok',
+      surrounding: 'Tartalmazó objektumok',
+    },
     notFound: 'Itt nem találtunk semmit.',
 
     fetchingError: ({ err }) =>
@@ -610,6 +618,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         editInJosmText="Szerkesztés JOSM-ben"
       />
     ),
+
+    sources: 'Források',
   },
 
   objects: {
@@ -662,6 +672,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) => addError(messages, 'Keresési hiba', err),
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
+    result: 'Találat',
   },
 
   embed: {
@@ -842,7 +853,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Csak a következő országokat fedi le: ${countries.join(', ')}`,
     layerSettings: 'Térképrétegek',
-    technologies: {},
+    technologies: {
+      tile: 'Képcsempék (TMS, XYZ)',
+      maplibre: 'Vektor (MapLibre)',
+      wms: 'WMS',
+      parametricShading: 'Paraméteres árnyékolás',
+    },
+    technology: 'Típus',
+    loadWmsLayers: 'Rétegek betöltése',
   },
 
   elevationChart: {

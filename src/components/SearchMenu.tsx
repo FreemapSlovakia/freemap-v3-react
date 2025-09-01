@@ -1,6 +1,7 @@
 import {
   ChangeEvent,
   forwardRef,
+  Fragment,
   ReactElement,
   ReactNode,
   useCallback,
@@ -249,17 +250,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
               const divider =
                 prevSource && prevSource !== result.source ? (
-                  <Dropdown.Divider key={id + '-'}>Foo</Dropdown.Divider>
+                  <Dropdown.Divider />
                 ) : null;
 
               prevSource = result.source;
 
               return (
-                <>
+                <Fragment key={id}>
                   {divider}
 
                   <Dropdown.Item
-                    key={id}
                     eventKey={id}
                     active={
                       !!selectedResult &&
@@ -268,7 +268,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   >
                     <Result value={result} />
                   </Dropdown.Item>
-                </>
+                </Fragment>
               );
             })}
           </div>
