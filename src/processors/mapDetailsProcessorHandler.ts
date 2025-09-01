@@ -10,7 +10,6 @@ import {
 } from '../actions/mainActions.js';
 import {
   type SearchResult,
-  searchSelectResult,
   searchSetQuery,
   searchSetResults,
 } from '../actions/searchActions.js';
@@ -204,7 +203,6 @@ export async function handle(
           source: element.source,
           id: { type: 'node', id: element.id },
           geojson: point([element.lon, element.lat], element.tags),
-          showToast: true,
           incomplete: true,
         });
 
@@ -214,7 +212,6 @@ export async function handle(
         sr.push({
           source: element.source,
           id: { type: 'way', id: element.id },
-          showToast: true,
           incomplete: true,
           geojson: point(
             [
@@ -240,7 +237,6 @@ export async function handle(
           sr.push({
             source: element.source,
             id: { type: 'relation', id: element.id },
-            showToast: true,
             incomplete: true,
             geojson: point(
               [
@@ -268,16 +264,6 @@ export async function handle(
     // dispatch(setTool(null));
 
     dispatch(searchSetResults(sr));
-
-    if (reverseGeocodingElement) {
-      dispatch(
-        searchSelectResult({
-          result: sr[0],
-          showToast: false,
-          focus: false,
-        }),
-      );
-    }
   } else {
     dispatch(
       toastsAdd({

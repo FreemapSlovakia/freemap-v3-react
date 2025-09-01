@@ -249,7 +249,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
               const divider =
                 prevSource && prevSource !== result.source ? (
-                  <Dropdown.Divider key={id + '-'} />
+                  <Dropdown.Divider key={id + '-'}>Foo</Dropdown.Divider>
                 ) : null;
 
               prevSource = result.source;
