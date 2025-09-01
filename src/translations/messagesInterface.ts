@@ -301,9 +301,9 @@ export type Messages = {
     elevation: string;
     area: string;
     elevationFetchError: ({ err }: Err) => string;
-    elevationInfo: (params: ElevationInfoBaseProps) => JSX.Element;
-    areaInfo: ({ area }: { area: number }) => JSX.Element;
-    distanceInfo: ({ length }: { length: number }) => JSX.Element;
+    elevationInfo: (props: ElevationInfoBaseProps) => JSX.Element;
+    areaInfo: (props: { area: number; perimeter: number }) => JSX.Element;
+    distanceInfo: (props: { length: number }) => JSX.Element;
   };
   trackViewer: {
     upload: string;

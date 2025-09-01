@@ -3,48 +3,47 @@ import { is } from 'typia';
 import { useCopyButton } from '../hooks/useCopyButton.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { usePersistentState } from '../hooks/usePersistentState.js';
+import { InnerDistanceInfo } from './DistanceInfo.js';
 
 type Props = {
-  length: number;
-  lengthLabel: string;
+  area: number;
+  areaLabel: string;
+  perimeter: number;
+  perimeterLabel: string;
 };
 
-const lengthUnits = {
-  km: 1,
-  m: 0.001,
-  mi: 1.609344,
-  yd: 0.0009144,
-  ft: 0.0003048,
-  nmi: 1.852, // nautical mile
+const areaUnits = {
+  'm²': 1,
+  'km²': 1e6,
+  a: 100, // are
+  ha: 10000, // hectare
+  'mi²': 2_589_988.11,
+  'yd²': 0.836127,
+  'ft²': 0.092903,
+  ac: 4046.86, // acre
 };
 
-type Units = keyof typeof lengthUnits;
+type Units = keyof typeof areaUnits;
 
-const units = Object.keys(lengthUnits) as Units[];
+const units = Object.keys(areaUnits) as Units[];
 
-export function DistanceInfo(props: Props) {
-  return (
-    <div
-      className="d-inline-grid gap-2 align-items-center"
-      style={{ gridTemplateColumns: 'auto 1fr' }}
-    >
-      <InnerDistanceInfo {...props} />
-    </div>
-  );
-}
-
-export function InnerDistanceInfo({ length, lengthLabel }: Props) {
+export function AreaInfo({
+  area: length,
+  areaLabel,
+  perimeter,
+  perimeterLabel,
+}: Props) {
   const [unit, setUnit] = usePersistentState<Units>(
-    'fm.dist.unit',
+    'fm.area.unit',
     (value) => value,
-    (value) => (is<Units>(value) ? value : 'km'),
+    (value) => (is<Units>(value) ? value : 'km²'),
   );
 
   const handleUnitClick = () => {
     setUnit((prev) => units[(units.indexOf(prev) + 1) % units.length]);
   };
 
-  const num = length / lengthUnits[unit];
+  const num = length / areaUnits[unit];
 
   const fractionDigits = Math.max(
     0,
@@ -61,14 +60,17 @@ export function InnerDistanceInfo({ length, lengthLabel }: Props) {
   const copyButton = useCopyButton(value);
 
   return (
-    <>
-      <label htmlFor="length" className="text-nowrap">
-        {lengthLabel}
+    <div
+      className="d-inline-grid gap-2 align-items-center"
+      style={{ gridTemplateColumns: 'auto 1fr' }}
+    >
+      <label htmlFor="area" className="text-nowrap">
+        {areaLabel}
       </label>
 
-      <InputGroup size="sm" className="flex-nowrap">
+      <InputGroup size="sm">
         <Form.Control
-          id="length"
+          id="area"
           readOnly
           className="fm-fs-content"
           value={value}
@@ -80,6 +82,8 @@ export function InnerDistanceInfo({ length, lengthLabel }: Props) {
 
         {copyButton}
       </InputGroup>
-    </>
+
+      <InnerDistanceInfo length={perimeter} lengthLabel={perimeterLabel} />
+    </div>
   );
 }

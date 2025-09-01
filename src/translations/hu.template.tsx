@@ -1,8 +1,10 @@
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
+import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
@@ -13,11 +15,6 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './hu-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-
-const nf33 = new Intl.NumberFormat('hu', {
-  minimumFractionDigits: 3,
-  maximumFractionDigits: 3,
-});
 
 const nf00 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -451,26 +448,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         maslMessage="Magasság"
       />
     ),
-    areaInfo: ({ area }) => (
-      <>
-        Terület:
-        <div>
-          {nf33.format(area)}&nbsp;m<sup>2</sup>
-        </div>
-        <div>{nf33.format(area / 100)}&nbsp;ár</div>
-        <div>{nf33.format(area / 10000)}&nbsp;ha</div>
-        <div>
-          {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
-        </div>
-      </>
+    areaInfo: (props) => (
+      <AreaInfo {...props} areaLabel="Terület" perimeterLabel="Kerület" />
     ),
-    distanceInfo: ({ length }) => (
-      <>
-        Távolság:
-        <div>{nf33.format(length * 1000)}&nbsp;m</div>
-        <div>{nf33.format(length)}&nbsp;km</div>
-      </>
-    ),
+    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Távolság" />,
   },
 
   trackViewer: {

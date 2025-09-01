@@ -122,6 +122,11 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
                   {},
                 ),
               ),
+              perimeter: length(
+                lineString(
+                  [...points, points[0]].map((point) => [point.lon, point.lat]),
+                ),
+              ),
             },
             id: 'measurementInfo',
             cancelType,

@@ -1,5 +1,6 @@
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
+import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
@@ -14,11 +15,6 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
-
-const nf33 = new Intl.NumberFormat('sk', {
-  minimumFractionDigits: 3,
-  maximumFractionDigits: 3,
-});
 
 const nf00 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -460,22 +456,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         maslMessage="Nadmorská výška"
       />
     ),
-    areaInfo: ({ area }) => (
-      <>
-        Plocha:
-        <div>
-          {nf33.format(area)}&nbsp;m<sup>2</sup>
-        </div>
-        <div>{nf33.format(area / 100)}&nbsp;a</div>
-        <div>{nf33.format(area / 10000)}&nbsp;ha</div>
-        <div>
-          {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
-        </div>
-      </>
+    areaInfo: (props) => (
+      <AreaInfo {...props} areaLabel="Plocha" perimeterLabel="Obvod" />
     ),
-    distanceInfo: ({ length }) => (
-      <DistanceInfo length={length} nf33={nf33} lengthLabel="Dĺžka" />
-    ),
+    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Dĺžka" />,
   },
 
   trackViewer: {

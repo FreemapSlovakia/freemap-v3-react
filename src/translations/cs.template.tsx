@@ -1,8 +1,10 @@
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
+import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
@@ -13,11 +15,6 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './cs-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-
-const nf33 = new Intl.NumberFormat('cs', {
-  minimumFractionDigits: 3,
-  maximumFractionDigits: 3,
-});
 
 const nf00 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 0,
@@ -427,26 +424,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         maslMessage="Nadmořská výška"
       />
     ),
-    areaInfo: ({ area }) => (
-      <>
-        Plocha:
-        <div>
-          {nf33.format(area)}&nbsp;m<sup>2</sup>
-        </div>
-        <div>{nf33.format(area / 100)}&nbsp;a</div>
-        <div>{nf33.format(area / 10000)}&nbsp;ha</div>
-        <div>
-          {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
-        </div>
-      </>
+    areaInfo: (props) => (
+      <AreaInfo {...props} areaLabel="Plocha" perimeterLabel="Obvod" />
     ),
-    distanceInfo: ({ length }) => (
-      <>
-        Délka:
-        <div>{nf33.format(length * 1000)}&nbsp;m</div>
-        <div>{nf33.format(length)}&nbsp;km</div>
-      </>
-    ),
+    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Délka" />,
   },
 
   trackViewer: {
