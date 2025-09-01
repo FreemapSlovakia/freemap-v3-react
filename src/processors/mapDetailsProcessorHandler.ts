@@ -1,6 +1,5 @@
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
-import { NominatimResult } from 'types/nominatimResult.js';
 import { assert } from 'typia';
 import {
   clearMapFeatures,
@@ -18,6 +17,7 @@ import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
+import { NominatimResult } from '../types/nominatimResult.js';
 import type { OverpassBounds, OverpassElement } from '../types/overpass.js';
 
 const cancelType = [

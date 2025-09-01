@@ -1,6 +1,7 @@
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import type { GalleryColorizeBy } from './actions/galleryActions.js';
+import { MapDetailsSource } from './actions/mapDetailsActions.js';
 import { upgradeCustomLayerDefs } from './mapDefinitions.js';
 import {
   authInitialState,
@@ -61,7 +62,6 @@ import {
   transportTypeDefs,
 } from './transportTypeDefs.js';
 import { StringDates } from './types/common.js';
-import { MapDetailsSource } from 'actions/mapDetailsActions.js';
 
 export const reducers = {
   auth: authReducer,

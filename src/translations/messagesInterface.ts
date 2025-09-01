@@ -1,17 +1,17 @@
-import { ExportableLayer } from 'actions/mainActions.js';
 import { JSX, ReactElement, ReactNode } from 'react';
-import { OsmFeatureId } from 'types/featureId.js';
 import { Changeset } from '../actions/changesetsActions.js';
 import {
   GalleryColorizeBy,
   GalleryListOrder,
 } from '../actions/galleryActions.js';
+import { ExportableLayer } from '../actions/mainActions.js';
 import { MapDetailsSource } from '../actions/mapDetailsActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
+import { OsmFeatureId } from '../types/featureId.js';
 
 type Err = { err: string };
 

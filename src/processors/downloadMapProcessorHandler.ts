@@ -1,6 +1,6 @@
-import { toastsAdd } from 'actions/toastsActions.js';
-import { httpRequest } from 'httpRequest.js';
 import { downloadMap, setActiveModal } from '../actions/mainActions.js';
+import { toastsAdd } from '../actions/toastsActions.js';
+import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const handle: ProcessorHandler<typeof downloadMap> = async ({

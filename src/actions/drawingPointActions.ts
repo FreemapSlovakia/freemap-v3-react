@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { LatLon } from 'types/common.js';
+import { LatLon } from '../types/common.js';
 
 export interface DrawingPoint {
   coords: LatLon;

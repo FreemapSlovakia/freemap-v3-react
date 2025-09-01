@@ -1,7 +1,6 @@
 import { Fragment, ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { OsmFeatureId } from 'types/featureId.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import {
@@ -11,6 +10,7 @@ import {
 } from '../osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
+import { OsmFeatureId } from '../types/featureId.js';
 
 export type ObjectDetailBasicProps = {
   id: OsmFeatureId;

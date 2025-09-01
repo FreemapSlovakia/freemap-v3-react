@@ -1,6 +1,6 @@
-import { MyStore } from 'store.js';
 import { mapRefocus, mapSetBounds } from './actions/mapActions.js';
 import { mapPromise } from './leafletElementHolder.js';
+import { MyStore } from './store.js';
 
 export function attachMapStateHandler(store: MyStore) {
   mapPromise.then((map) => {

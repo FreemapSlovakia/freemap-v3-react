@@ -20,7 +20,6 @@ import {
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { Purchase } from 'types/auth.js';
 import {
   authDeleteAccount,
   authFetchPurchases,
@@ -33,6 +32,7 @@ import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';
+import type { Purchase } from '../types/auth.js';
 import { AuthProviders } from './AuthProviders.js';
 import { CreditsAlert } from './CredistAlert.js';
 

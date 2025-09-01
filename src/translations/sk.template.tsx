@@ -3,6 +3,7 @@ import { FaGem, FaKey } from 'react-icons/fa';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
 import {
@@ -473,11 +474,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     distanceInfo: ({ length }) => (
-      <>
-        Dĺžka:
-        <div>{nf33.format(length * 1000)}&nbsp;m</div>
-        <div>{nf33.format(length)}&nbsp;km</div>
-      </>
+      <DistanceInfo length={length} nf33={nf33} lengthLabel="Dĺžka" />
     ),
   },
 

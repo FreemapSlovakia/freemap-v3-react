@@ -1,4 +1,4 @@
-import { SearchResult } from 'actions/searchActions.js';
+import { SearchResult } from './actions/searchActions.js';
 import { FeatureId, featureIdsEqual } from './types/featureId.js';
 
 // keep display_name from nominatim

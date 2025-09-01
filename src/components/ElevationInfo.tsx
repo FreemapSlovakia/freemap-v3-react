@@ -1,13 +1,13 @@
 import { pointToTile } from '@mapbox/tilebelt';
 import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaCopy } from 'react-icons/fa';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { searchSetQuery } from '../actions/searchActions.js';
 import { latLonToString } from '../geoutils.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { useCopyButton } from '../hooks/useCopyButton.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { usePersistentState } from '../hooks/usePersistentState.js';
 import { useMessages } from '../l10nInjector.js';
@@ -105,9 +105,7 @@ export function ElevationInfo({
     setFormat((f) => (f + 1) % FORMATS.length);
   }, [setFormat]);
 
-  const handleCopyClick = useCallback(() => {
-    navigator.clipboard.writeText(coordinates);
-  }, [coordinates]);
+  const copyButton = useCopyButton(coordinates);
 
   const dispatch = useDispatch();
 
@@ -126,9 +124,7 @@ export function ElevationInfo({
           <TbDecimal />
         </Button>
 
-        <Button type="button" onClick={handleCopyClick}>
-          <FaCopy />
-        </Button>
+        {copyButton}
       </InputGroup>
 
       {!window.fmEmbedded && (
