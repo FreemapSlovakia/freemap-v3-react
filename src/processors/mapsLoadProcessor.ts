@@ -1,6 +1,7 @@
 import { assert, is } from 'typia';
 import { authLogout, authSetUser } from '../actions/authActions.js';
 import type { Line, Point } from '../actions/drawingLineActions.js';
+import { DrawingPoint } from '../actions/drawingPointActions.js';
 import {
   type MapData,
   type MapMeta,
@@ -120,7 +121,7 @@ export const mapsLoadProcessor: Processor = {
     const map = assert<
       StringDates<{
         meta: MapMeta;
-        data: MapData<Line | CompatLine, CompatDrawingPoint>;
+        data: MapData<Line | CompatLine, DrawingPoint | CompatDrawingPoint>;
       }>
     >(data);
 
@@ -162,14 +163,18 @@ export const mapsLoadProcessor: Processor = {
                   ? 'line'
                   : line.type,
           })),
-          points: mapData.points?.map((point) => ({
-            color: point.color,
-            label: point.label,
-            coords: {
-              lat: point.lat,
-              lon: point.lon,
-            },
-          })),
+          points: mapData.points?.map((point) =>
+            'coords' in point
+              ? point
+              : {
+                  color: point.color,
+                  label: point.label,
+                  coords: {
+                    lat: point.lat,
+                    lon: point.lon,
+                  },
+                },
+          ),
           tracking: mapData.tracking && {
             ...mapData.tracking,
             trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
