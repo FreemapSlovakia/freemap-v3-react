@@ -228,8 +228,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logOut: 'Odhlásit',
     logIn: 'Přihlášení',
     account: 'Účet',
-    mapFeaturesExport: 'Exportovat mapové prvky',
-    mapExports: 'Mapa pro GPS zařízení',
+    mapFeaturesExport: 'Export mapových dat',
+    mapExports: 'Mapy pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
     supportUs: 'Podpořit Freemap',
     help: 'Pomoc',
@@ -241,7 +241,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHub-u',
     automaticLanguage: 'Automaticky',
-    mapExport: 'Exportovat mapu',
+    mapExport: 'Export mapy do obrázku/dokumentu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
   },
@@ -732,7 +732,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
-    interactiveLayerWarning: 'Interaktivní vrstva je skryta',
+    interactiveLayerWarning: 'Datová vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     letters: {
       A: 'Automapa',
@@ -746,7 +746,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Veřejná doprava (ÖPNV)',
       X: outdoorMap,
-      i: 'Interaktivní vrstva',
+      i: 'Datová vrstva',
       I: 'Fotografie',
       l: 'Lesní cesty NLC',
       t: 'Turistické trasy',
@@ -1011,7 +1011,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   mapExport: {
     advancedSettings: 'Rozšířená nastavení',
-    styles: 'Styly interaktivní vrstvy',
+    styles: 'Styly datové vrstvy',
     exportError: ({ err }) => addError(messages, 'Chyba exportu mapy', err),
     exporting: 'Prosím počkejte, mapa se exportuje…',
     exported: ({ url }) => (
@@ -1210,7 +1210,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         {explainCredits ? (
           <CreditsText
             credits="kreditů"
-            help="Kredity můžete využít ke [stahování map pro offline použití]."
+            help="Kredity můžete využít ke [export offline map]."
           />
         ) : (
           'kreditů'
@@ -1304,10 +1304,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     other: 'Chyba při vykreslování: ',
   },
   downloadMap: {
-    downloadMap: 'Stáhnout mapu',
+    downloadMap: 'Export offline máp',
     format: 'Formát',
     map: 'Mapa',
-    downloadArea: 'Stáhnout',
+    downloadArea: 'Exportovat',
     area: {
       visible: 'Viditelná oblast',
       byPolygon: 'Oblast pokrytá vybraným polygonem',
@@ -1317,7 +1317,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     scale: 'Měřítko',
     email: 'Vaše e-mailová adresa',
     emailInfo: 'Váš e-mail použijeme k zaslání odkazu ke stažení.',
-    download: 'Stáhnout',
     success:
       'Mapa se připravuje. Po dokončení vám bude e-mailem doručen odkaz ke stažení.',
     summaryTiles: 'Dlaždic',

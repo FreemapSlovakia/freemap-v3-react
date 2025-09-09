@@ -631,7 +631,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'i',
     technology: 'interactive',
     icon: <FaPencilAlt />,
-    shortcut: { code: 'KeyI', shift: true },
+    shortcut: { code: 'KeyD', shift: true },
     attribution: [],
   },
   {

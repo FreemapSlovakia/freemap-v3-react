@@ -413,7 +413,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
           )}
 
           <Form.Group controlId="download" className="mb-3">
-            <Form.Label>{m?.exportMapFeatures.download}</Form.Label>
+            <Form.Label>{m?.general.export}</Form.Label>
 
             <div>
               {exportableDefinitions

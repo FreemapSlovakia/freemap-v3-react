@@ -228,8 +228,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logOut: 'Abmelden',
     logIn: 'Anmelden',
     account: 'Konto',
-    mapFeaturesExport: 'Kartenobjekte exportieren',
-    mapExports: 'Karte für GPS-Geräte',
+    mapFeaturesExport: 'Export der Kartendaten',
+    mapExports: 'Karten für GPS-Geräte',
     embedMap: 'Karte einbetten',
     supportUs: 'Freemap unterstützen',
     help: ' Info & Hilfe',
@@ -241,7 +241,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     youtube: 'Freemap auf YouTube',
     github: 'Freemap auf GitHub',
     automaticLanguage: 'Automatisch',
-    mapExport: 'Karte exportieren',
+    mapExport: 'Export der Karte als Bild/Dokument',
     osmWiki: 'OpenStreetMap-Dokumentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/De:Main_Page',
   },
@@ -775,7 +775,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Öffentlicher Verkehr (ÖPNV)',
       X: outdoorMap,
-      i: 'Interaktive Ebene',
+      i: 'Datenschicht',
       I: 'Fotos',
       l: 'Forststraßen NLC',
       t: 'Wanderwege',
@@ -819,7 +819,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Karten',
     switch: 'Karten',
     photoFilterWarning: 'Fotofilter ist aktiv',
-    interactiveLayerWarning: 'Interaktive Ebene ist ausgeblendet',
+    interactiveLayerWarning: 'Datenschicht ist ausgeblendet',
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     customBase: 'Benutzerdefinierte Karte',
     customMaps: 'Benutzerdefinierte Karten',
@@ -1062,7 +1062,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     advancedSettings: 'Erweiterte Optionen',
-    styles: 'Stile der interaktiven Ebene',
+    styles: 'Stile der Datenschicht',
 
     exportError: ({ err }) =>
       addError(messages, 'Fehler beim Kartenexport', err),
@@ -1269,7 +1269,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         {explainCredits ? (
           <CreditsText
             credits="Credits"
-            help="Sie können Credits verwenden, um [Karten für die Offline-Nutzung herunterzuladen]."
+            help="Sie können Credits verwenden, um [Export von Offline-Karten]."
           />
         ) : (
           'Credits'
@@ -1361,10 +1361,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     other: 'Fehler beim Rendern: ',
   },
   downloadMap: {
-    downloadMap: 'Karte herunterladen',
+    downloadMap: 'Export von Offline-Karten',
     format: 'Format',
     map: 'Karte',
-    downloadArea: 'Herunterladen',
+    downloadArea: 'Exportieren',
     area: {
       visible: 'Sichtbarer Bereich',
       byPolygon: 'Bereich mit ausgewähltem Polygon',
@@ -1375,7 +1375,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     email: 'Ihre E-Mail-Adresse',
     emailInfo:
       'Wir verwenden Ihre E-Mail, um Ihnen den Download-Link zu senden.',
-    download: 'Herunterladen',
     success:
       'Die Karte wird vorbereitet. Sobald sie fertig ist, erhalten Sie einen Download-Link per E-Mail.',
     summaryTiles: 'Kacheln',

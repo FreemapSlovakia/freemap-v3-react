@@ -802,7 +802,6 @@ export type Messages = {
     scale: string;
     email: string;
     emailInfo: string;
-    download: string;
     success: string;
     summaryTiles: string;
     summaryPrice: (amount: ReactNode) => JSX.Element;

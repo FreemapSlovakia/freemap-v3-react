@@ -234,8 +234,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logOut: 'Esci',
     logIn: 'Accedi',
     account: 'Account',
-    mapFeaturesExport: 'Esportazione delle caratteristiche della mappa',
-    mapExports: 'Mappa per apparati GPS',
+    mapFeaturesExport: 'Esportazione dei dati della mappa',
+    mapExports: 'Mappe per dispositivi GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
     help: 'Info e aiuto',
@@ -247,7 +247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     youtube: 'Freemap su YouTube',
     github: 'Freemap su GitHub',
     automaticLanguage: 'Automatico',
-    mapExport: 'Esporta la mappa',
+    mapExport: 'Esportazione della mappa in immagine/documento',
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
@@ -761,7 +761,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Livelli mappa',
     switch: 'Livelli mappa',
     photoFilterWarning: 'Il filtro foto è attivo',
-    interactiveLayerWarning: 'Il livello interattivo è nascosto',
+    interactiveLayerWarning: 'Il livello dati è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     letters: {
       A: 'Auto',
@@ -775,7 +775,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Trasporti pubblici (ÖPNV)',
       X: outdoorMap,
-      i: 'Livello interattivo',
+      i: 'Livello dati',
       I: 'Foto',
       l: 'Forest tracks NLC',
       t: 'Percorsi escursionistici',
@@ -1041,7 +1041,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   mapExport: {
     advancedSettings: 'Opzioni avanzate',
-    styles: 'Stili livelli interattivi',
+    styles: 'Stili del livello dati',
     exportError: ({ err }) => addError(messages, 'Error exporting map:', err),
     exporting: 'Attendere prego, esportazione in corso…',
     exported: ({ url }) => (
@@ -1243,7 +1243,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         {explainCredits ? (
           <CreditsText
             credits="crediti"
-            help="Puoi usare i crediti per [scaricare mappe da usare offline]."
+            help="Puoi usare i crediti per [l'esportazione delle mappe offline]."
           />
         ) : (
           'crediti'
@@ -1337,10 +1337,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     other: 'Errore durante il rendering: ',
   },
   downloadMap: {
-    downloadMap: 'Scarica mappa',
+    downloadMap: 'Esportazione delle mappe offline',
     format: 'Formato',
     map: 'Mappa',
-    downloadArea: 'Scarica',
+    downloadArea: 'Esporta',
     area: {
       visible: 'Area visibile',
       byPolygon: 'Area coperta dal poligono selezionato',
@@ -1351,7 +1351,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     email: 'Il tuo indirizzo email',
     emailInfo:
       'Utilizzeremo la tua email per inviarti il link per il download.',
-    download: 'Scarica',
     success:
       'La mappa è in preparazione. Al termine, riceverai via email un link per scaricarla.',
     summaryTiles: 'Riquadri',

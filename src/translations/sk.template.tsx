@@ -228,8 +228,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logOut: 'Odhlásiť',
     logIn: 'Prihlásenie',
     account: 'Účet',
-    mapFeaturesExport: 'Exportovať mapové prvky',
-    mapExports: 'Mapa pre GPS zariadenia',
+    mapFeaturesExport: 'Export mapových dát',
+    mapExports: 'Mapy pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
     help: 'Info a pomoc',
@@ -241,7 +241,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
-    mapExport: 'Exportovať mapu',
+    mapExport: 'Export mapy do obrázka/dokumentu',
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
   },
@@ -762,7 +762,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filter fotografií je aktívny',
-    interactiveLayerWarning: 'Interaktívna vrstva je skrytá',
+    interactiveLayerWarning: 'Dátová vrstva je skrytá',
     minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,
     countryWarning: (countries) =>
       `Pokrýva len tieto krajiny: ${countries.join(', ')}`,
@@ -778,7 +778,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Verejná doprava (ÖPNV)',
       X: outdoorMap,
-      i: 'Interaktívna vrstva',
+      i: 'Dátová vrstva',
       I: 'Fotografie',
       l: 'Lesné cesty NLC',
       t: 'Turistické trasy',
@@ -1042,7 +1042,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   mapExport: {
     advancedSettings: 'Rozšírené nastavenia',
-    styles: 'Štýly interaktívnej vrstvy',
+    styles: 'Štýly dátovej vrstvy',
     exportError: ({ err }) =>
       addError(messages, 'Chyba exportovania mapy', err),
     exporting: 'Prosím počkajte, mapa sa exportuje…',
@@ -1247,7 +1247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         {explainCredits ? (
           <CreditsText
             credits="kreditov"
-            help="Kredity môžete využiť na [sťahovanie máp pre offline použitie]."
+            help="Kredity môžete využiť na [export offline máp]."
           />
         ) : (
           'kreditov'
@@ -1341,10 +1341,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     other: 'Chyba pri vykresľovaní: ',
   },
   downloadMap: {
-    downloadMap: 'Stiahnuť mapu',
+    downloadMap: 'Export offline máp',
     format: 'Formát',
     map: 'Mapa',
-    downloadArea: 'Stiahnuť',
+    downloadArea: 'Exportovať',
     area: {
       visible: 'Viditeľnú oblasť',
       byPolygon: 'Oblasť pokrytú označeným polygónom',
@@ -1354,7 +1354,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     scale: 'Mierka',
     email: 'Vaša e-mailová adresa',
     emailInfo: 'Váš e-mail použijeme na zaslanie odkazu na stiahnutie.',
-    download: 'Stiahnuť',
     success:
       'Mapa sa pripravuje. Po dokončení vám bude emailom doručený odkaz na jej stiahnutie.',
     summaryTiles: 'Dlaždíc',

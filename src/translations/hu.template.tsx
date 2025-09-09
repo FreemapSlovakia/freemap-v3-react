@@ -227,8 +227,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logOut: 'Kijelentkezés',
     logIn: 'Bejelentkezés',
     account: 'Fiók',
-    mapFeaturesExport: 'A térkép jellemzőinek exportálása',
-    mapExports: 'Térkép GPS-készülékekhez',
+    mapFeaturesExport: 'Térképadatok exportja',
+    mapExports: 'Térképek GPS-eszközökhöz',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
     help: 'Információk és segítség',
@@ -240,7 +240,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     youtube: 'Freemap a YouTubeon',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
-    mapExport: 'Térkép exportálása',
+    mapExport: 'Térkép exportja képként/dokumentumként',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
     title: 'Főmenü',
     osmWiki: 'OpenStreetMap dokumentáció',
@@ -789,7 +789,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Tömegközlekedés',
       X: outdoorMap,
-      i: 'Interaktív réteg',
+      i: 'Adatréteg',
       I: 'Fényképek',
       l: 'Erdészeti utak',
       t: 'Turistautak',
@@ -832,7 +832,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Összes térkép megjelenítése',
     settings: 'Térkép beállítások',
     switch: 'Térképek',
-    interactiveLayerWarning: 'Az interaktív réteg rejtve van',
+    interactiveLayerWarning: 'Az adatréteg rejtve van',
     customBase: 'Egyéni térkép',
     customMaps: 'Egyéni térképek',
     base: 'Alaprétegek',
@@ -1121,7 +1121,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     advancedSettings: 'Speciális beállítások',
-    styles: 'Interaktív réteg stílusai',
+    styles: 'Az adatréteg stílusai',
   },
 
   maps: {
@@ -1285,7 +1285,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         {explainCredits ? (
           <CreditsText
             credits="kredited"
-            help="A krediteket felhasználhatod [térképek letöltésére offline használathoz]."
+            help="A krediteket felhasználhatod [offline térképek exportjára]."
           />
         ) : (
           'kredited'
@@ -1378,10 +1378,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     other: 'Hiba a megjelenítés során: ',
   },
   downloadMap: {
-    downloadMap: 'Térkép letöltése',
+    downloadMap: 'Offline térképek exportja',
     format: 'Formátum',
     map: 'Térkép',
-    downloadArea: 'Letöltés',
+    downloadArea: 'Exportálni',
     area: {
       visible: 'Látható terület',
       byPolygon: 'A kijelölt sokszöggel lefedett terület',
@@ -1392,7 +1392,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     email: 'E-mail címed',
     emailInfo:
       'Az e-mail címedet a letöltési hivatkozás elküldésére használjuk.',
-    download: 'Letöltés',
     success:
       'A térkép előkészítése folyamatban van. A letöltési hivatkozást e-mailben kapja meg, miután elkészült.',
     summaryTiles: 'Csempe',

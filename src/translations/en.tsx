@@ -221,8 +221,8 @@ const messages: Messages = {
     logOut: 'Log out',
     logIn: 'Log in',
     account: 'Account',
-    mapFeaturesExport: 'Export map features',
-    mapExports: 'Map for GPS devices',
+    mapFeaturesExport: 'Map data export',
+    mapExports: 'Maps for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
     help: 'Info & help',
@@ -234,7 +234,7 @@ const messages: Messages = {
     youtube: 'Freemap on YouTube',
     github: 'Freemap on GitHub',
     automaticLanguage: 'Automatic',
-    mapExport: 'Export map',
+    mapExport: 'Map export to image/document',
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
   },
@@ -714,7 +714,7 @@ const messages: Messages = {
     layers: 'Maps',
     switch: 'Maps',
     photoFilterWarning: 'Photo filtering is active',
-    interactiveLayerWarning: 'Interactive layer is hidden',
+    interactiveLayerWarning: 'Map items layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     countryWarning: (countries) =>
       `Covers only following countries: ${countries.join(', ')}`,
@@ -730,7 +730,7 @@ const messages: Messages = {
       O: 'OpenStreetMap',
       d: 'Public transport (ÖPNV)',
       X: outdoorMap,
-      i: 'Interactive layer',
+      i: 'Data layer',
       I: 'Photos',
       l: 'Forest tracks NLC',
       t: 'Hiking trails',
@@ -991,7 +991,7 @@ const messages: Messages = {
   },
   mapExport: {
     advancedSettings: 'Advanced options',
-    styles: 'Interactive layer styles',
+    styles: 'Data layer styles',
     exportError: ({ err }) => addError(messages, 'Error exporting map', err),
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
@@ -1185,7 +1185,7 @@ const messages: Messages = {
         {explainCredits ? (
           <CreditsText
             credits="credits"
-            help="You can use credits to [download maps for offline use]."
+            help="You can use credits to [offline maps export]."
           />
         ) : (
           'credits'
@@ -1279,10 +1279,10 @@ const messages: Messages = {
     other: 'Error rendering: ',
   },
   downloadMap: {
-    downloadMap: 'Download map',
+    downloadMap: 'Offline maps export',
     format: 'Format',
     map: 'Map',
-    downloadArea: 'Download',
+    downloadArea: 'Export',
     area: {
       visible: 'Visible area',
       byPolygon: 'Area covered by selected polygon',
@@ -1292,7 +1292,6 @@ const messages: Messages = {
     scale: 'Scale',
     email: 'Your email address',
     emailInfo: 'We will use your email to send you the download link.',
-    download: 'Download',
     success:
       'The map is being prepared. Once ready, a download link will be sent to your email.',
     summaryTiles: 'Tiles',

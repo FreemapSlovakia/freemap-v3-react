@@ -606,7 +606,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               price >= Math.floor(user?.credits ?? 0)
             }
           >
-            <FaDownload /> {m?.downloadMap.download} <kbd>Enter</kbd>
+            <FaDownload /> {m?.general.export} <kbd>Enter</kbd>
           </Button>
 
           <Button variant="dark" onClick={close} type="button">

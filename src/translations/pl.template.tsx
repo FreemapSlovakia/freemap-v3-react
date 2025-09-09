@@ -221,8 +221,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logOut: 'Wyloguj się',
     logIn: 'Zaloguj się',
     account: 'Konto',
-    mapFeaturesExport: 'Eksport elementów mapy',
-    mapExports: 'Mapa do urządzeń GPS',
+    mapFeaturesExport: 'Eksport danych mapy',
+    mapExports: 'Mapy dla urządzeń GPS',
     embedMap: 'Osadź mapę',
     supportUs: 'Wesprzyj Freemap',
     help: 'Informacje i pomoc',
@@ -234,7 +234,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHubie',
     automaticLanguage: 'Automatyczny',
-    mapExport: 'Eksport mapy',
+    mapExport: 'Eksport mapy do obrazu/dokumentu',
     osmWiki: 'Dokumentacja OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Pl:Main_Page',
   },
@@ -751,7 +751,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Transport publiczny (ÖPNV)',
       X: outdoorMap,
-      i: 'Interaktywna warstwa',
+      i: 'Warstwa danych',
       I: 'Zdjęcia',
       l: 'Leśne drogi NLC',
       t: 'Szlaki piesze',
@@ -792,7 +792,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
-    interactiveLayerWarning: 'Interaktywna warstwa jest ukryta',
+    interactiveLayerWarning: 'Warstwa danych jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     customBase: 'Własna mapa',
     customMaps: 'Mapy własne',
@@ -1049,7 +1049,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     advancedSettings: 'Zaawansowane opcje',
-    styles: 'Style warstwy interaktywnej',
+    styles: 'Style warstwy danych',
     exportError: ({ err }) => addError(messages, 'Błąd eksportu mapy', err),
     exporting: 'Proszę czekać, trwa eksport mapy…',
     exported: ({ url }) => (
@@ -1237,7 +1237,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         {explainCredits ? (
           <CreditsText
             credits="kredytów"
-            help="Możesz użyć kredytów do [pobierania map do użytku offline]."
+            help="Możesz użyć kredytów do [eksport map offline]."
           />
         ) : (
           'kredytów'
@@ -1337,16 +1337,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       visible: 'Widoczny obszar',
       byPolygon: 'Obszar pokryty wybranym wielokątem',
     },
-    downloadMap: 'Pobierz mapę',
+    downloadMap: 'Eksport map offline',
     format: 'Format',
     map: 'Mapa',
-    downloadArea: 'Pobierz',
+    downloadArea: 'Eksportuj',
     name: 'Nazwa',
     zoomRange: 'Zakres powiększenia',
     scale: 'Skala',
     email: 'Twój adres e-mail',
     emailInfo: 'Twój e-mail zostanie użyty do przesłania linku do pobrania.',
-    download: 'Pobierz',
     success:
       'Mapa jest przygotowywana. Po zakończeniu otrzymasz link do pobrania na podany e-mail.',
     summaryTiles: 'Płytki',
