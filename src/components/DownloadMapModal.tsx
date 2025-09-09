@@ -423,7 +423,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             </ul>
           </div>
 
-          <CreditsAlert price={price} />
+          <CreditsAlert buy price={price} />
 
           <hr />
 

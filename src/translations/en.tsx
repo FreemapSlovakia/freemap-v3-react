@@ -4,6 +4,7 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
@@ -1178,7 +1179,20 @@ const messages: Messages = {
         <>Your credit has been increased by {nf00.format(amount)}.</>
       ),
     },
-    youHaveCredits: (amount) => <>You have {amount} credits.</>,
+    youHaveCredits: (amount, explainCredits) => (
+      <>
+        You have {amount}{' '}
+        {explainCredits ? (
+          <CreditsText
+            credits="credits"
+            help="You can use credits to [download maps for offline use]."
+          />
+        ) : (
+          'credits'
+        )}
+        .
+      </>
+    ),
   },
 
   offline: {

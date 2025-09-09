@@ -15,6 +15,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './de-shared.js';
 import { Messages, addError } from './messagesInterface.js';
+import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('de', {
   minimumFractionDigits: 0,
@@ -1262,7 +1263,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
 
-    youHaveCredits: (amount) => <>Sie haben {amount} Credits.</>,
+    youHaveCredits: (amount, explainCredits) => (
+      <>
+        Sie haben {amount}{' '}
+        {explainCredits ? (
+          <CreditsText
+            credits="Credits"
+            help="Sie können Credits verwenden, um [Karten für die Offline-Nutzung herunterzuladen]."
+          />
+        ) : (
+          'Credits'
+        )}
+        .
+      </>
+    ),
   },
   offline: {
     offlineMode: 'Offline-Modus',

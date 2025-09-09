@@ -15,6 +15,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './it-shared.js';
 import { Messages, addError } from './messagesInterface.js';
+import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 0,
@@ -1236,7 +1237,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <>Il tuo credito è stato aumentato di {nf00.format(amount)}.</>
       ),
     },
-    youHaveCredits: (amount) => <>Hai {amount} crediti.</>,
+    youHaveCredits: (amount, explainCredits) => (
+      <>
+        Hai {amount}{' '}
+        {explainCredits ? (
+          <CreditsText
+            credits="crediti"
+            help="Puoi usare i crediti per [scaricare mappe da usare offline]."
+          />
+        ) : (
+          'crediti'
+        )}
+        .
+      </>
+    ),
   },
 
   offline: {

@@ -15,6 +15,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './hu-shared.js';
 import { Messages, addError } from './messagesInterface.js';
+import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -1278,7 +1279,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
       ),
     },
-    youHaveCredits: (amount) => <>Önnek {amount} kreditje van.</>,
+    youHaveCredits: (amount, explainCredits) => (
+      <>
+        Van {amount}{' '}
+        {explainCredits ? (
+          <CreditsText
+            credits="kredited"
+            help="A krediteket felhasználhatod [térképek letöltésére offline használathoz]."
+          />
+        ) : (
+          'kredited'
+        )}
+        .
+      </>
+    ),
   },
 
   offline: {

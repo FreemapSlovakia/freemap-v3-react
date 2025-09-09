@@ -184,7 +184,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   </Alert>
                 )}
 
-                <CreditsAlert />
+                <CreditsAlert buy explainCredits />
 
                 <Table>
                   <thead>

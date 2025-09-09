@@ -7,9 +7,13 @@ import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useNumberFormat } from '../hooks/useNumberFormat.js';
 import { useMessages } from '../l10nInjector.js';
 
-type Props = { buy?: boolean; price?: number };
+type Props = { buy?: boolean; price?: number; explainCredits?: boolean };
 
-export function CreditsAlert({ buy, price }: Props): ReactElement | null {
+export function CreditsAlert({
+  buy = false,
+  price,
+  explainCredits = false,
+}: Props): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
@@ -21,23 +25,25 @@ export function CreditsAlert({ buy, price }: Props): ReactElement | null {
   return !user ? null : (
     <Alert
       variant={price !== undefined && price > user.credits ? 'danger' : 'info'}
-      className="d-flex justify-content-between"
     >
-      <span>
-        {m?.credits.youHaveCredits(
-          <b>{nf.format(Math.floor(user.credits))}</b>,
-        )}
-      </span>
+      <div className="d-flex justify-content-between">
+        <span>
+          {m?.credits.youHaveCredits(
+            <b>{nf.format(Math.floor(user.credits))}</b>,
+            explainCredits,
+          )}
+        </span>
 
-      {buy !== false && (
-        <Button
-          type="button"
-          className="m-n2 ms-2"
-          onClick={() => dispatch(setActiveModal('buy-credits'))}
-        >
-          <FaCoins /> {m?.credits.buyCredits}
-        </Button>
-      )}
+        {buy && (
+          <Button
+            type="button"
+            className="m-n2 ms-2"
+            onClick={() => dispatch(setActiveModal('buy-credits'))}
+          >
+            <FaCoins /> {m?.credits.buyCredits}
+          </Button>
+        )}
+      </div>
     </Alert>
   );
 }

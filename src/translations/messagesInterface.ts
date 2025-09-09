@@ -771,7 +771,7 @@ export type Messages = {
     purchase: {
       success: ({ amount }: { amount: number }) => JSX.Element;
     };
-    youHaveCredits: (amount: ReactNode) => JSX.Element;
+    youHaveCredits: (amount: ReactNode, explainCredits: boolean) => JSX.Element;
   };
   offline: {
     offlineMode: string;

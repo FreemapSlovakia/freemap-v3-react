@@ -46,7 +46,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <CreditsAlert buy={false} />
+          <CreditsAlert explainCredits />
 
           <Form.Group controlId="amount">
             <Form.Label className="required">{m?.credits.amount}</Form.Label>

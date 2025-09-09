@@ -15,6 +15,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
+import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -1240,7 +1241,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <>Váš kredit bol navýšený o {nf00.format(amount)}.</>
       ),
     },
-    youHaveCredits: (amount) => <>Máte {amount} kreditov.</>,
+    youHaveCredits: (amount, explainCredits) => (
+      <>
+        Máte {amount}{' '}
+        {explainCredits ? (
+          <CreditsText
+            credits="kreditov"
+            help="Kredity môžete využiť na [sťahovanie máp pre offline použitie]."
+          />
+        ) : (
+          'kreditov'
+        )}
+        .
+      </>
+    ),
   },
 
   offline: {

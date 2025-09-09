@@ -15,6 +15,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './pl-shared.js';
+import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('pl', {
   minimumFractionDigits: 0,
@@ -1230,7 +1231,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     amount: 'Kredyty',
     credits: 'kredytów',
     buy: 'Kup',
-    youHaveCredits: (amount) => <>Masz {amount} kredytów.</>,
+    youHaveCredits: (amount, explainCredits) => (
+      <>
+        Masz {amount}{' '}
+        {explainCredits ? (
+          <CreditsText
+            credits="kredytów"
+            help="Możesz użyć kredytów do [pobierania map do użytku offline]."
+          />
+        ) : (
+          'kredytów'
+        )}
+        .
+      </>
+    ),
   },
 
   offline: {
