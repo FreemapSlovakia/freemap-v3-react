@@ -38,7 +38,7 @@ export function attachMapStateHandler(store: MyStore) {
 
     let debounceRef: number | undefined;
 
-    function handleViewportChange() {
+    function handleViewportChange(delay = 0) {
       if (debounceRef) {
         window.clearTimeout(debounceRef);
       }
@@ -56,14 +56,14 @@ export function attachMapStateHandler(store: MyStore) {
             bounds.getNorth(),
           ]),
         );
-      });
+      }, delay);
     }
 
-    map.on('moveend', handleViewportChange);
+    map.on('moveend', handleViewportChange.bind(null, 0));
 
-    map.on('zoomend', handleViewportChange);
+    map.on('zoomend', handleViewportChange.bind(null, 0));
 
-    map.on('resize', handleViewportChange);
+    map.on('resize', handleViewportChange.bind(null, 500));
 
     handleViewportChange();
   });
