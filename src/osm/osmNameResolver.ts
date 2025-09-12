@@ -164,9 +164,7 @@ export function getGenericNameFromOsmElementSync(
     gn = color + ' ' + gn;
   }
 
-  return (
-    gn ?? (process.env['NODE_ENV'] === 'production' ? '' : JSON.stringify(tags))
-  );
+  return gn ?? '';
 }
 
 export function getNameFromOsmElement(

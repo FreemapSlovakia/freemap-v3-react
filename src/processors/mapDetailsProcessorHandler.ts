@@ -1,7 +1,9 @@
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
+import { FeatureCollection } from 'geojson';
+import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
-import { assert } from 'typia';
+import { assert, is } from 'typia';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -15,6 +17,12 @@ import {
 } from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { httpRequest } from '../httpRequest.js';
+import { mapPromise } from '../leafletElementHolder.js';
+import {
+  integratedLayerDefs,
+  IsWmsLayerDef,
+  LayerDef,
+} from '../mapDefinitions.js';
 import { RootState } from '../store.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
 import { NominatimResult } from '../types/nominatimResult.js';
@@ -45,7 +53,14 @@ export async function handle(
   const kvFilter =
     '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
 
-  const [resNearby, resSurrounding, resReverse] = await Promise.all([
+  const wmsLayerDefs = [
+    ...integratedLayerDefs,
+    ...getState().map.customLayers,
+  ].filter((def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
+    is<IsWmsLayerDef>(def),
+  );
+
+  const [resNearby, resSurrounding, resReverse, ...wms] = await Promise.all([
     sources.includes('nearby')
       ? httpRequest({
           getState,
@@ -77,7 +92,7 @@ export async function handle(
       : undefined,
 
     sources.includes('reverse')
-      ? await httpRequest({
+      ? httpRequest({
           getState,
           url:
             'https://nominatim.openstreetmap.org/reverse?' +
@@ -96,6 +111,51 @@ export async function handle(
           expectedStatus: 200,
         }).then((res) => res.json())
       : undefined,
+
+    ...sources
+      .filter((source) => source.startsWith('wms:'))
+      .map((source) => wmsLayerDefs.find((def) => def.type === source.slice(4)))
+      .filter((def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
+        Boolean(def),
+      )
+      .map((def) =>
+        mapPromise.then(async (map) => {
+          const name =
+            'name' in def
+              ? (def.name ?? def.type)
+              : window.translations?.mapLayers.letters[def.type];
+
+          const bounds = map.getBounds();
+          const size = map.getSize();
+          const point = map.latLngToContainerPoint({ lat, lng: lon });
+
+          const a = CRS.EPSG3857.project(bounds.getSouthWest());
+          const b = CRS.EPSG3857.project(bounds.getNorthEast());
+
+          const url = new URL(def.url);
+
+          url.searchParams.set('request', 'GetFeatureInfo');
+          url.searchParams.set('service', 'WMS');
+          url.searchParams.set('version', '1.3.0');
+          url.searchParams.set('LAYERS', def.layers.join(','));
+          url.searchParams.set('QUERY_LAYERS', def.layers.join(','));
+          url.searchParams.set('INFO_FORMAT', 'application/geo+json'); // TODO
+          url.searchParams.set('CRS', 'EPSG:3857'); // TODO
+          url.searchParams.set('I', point.x.toFixed());
+          url.searchParams.set('J', point.y.toFixed());
+          url.searchParams.set('WIDTH', size.x.toFixed());
+          url.searchParams.set('HEIGHT', size.y.toFixed());
+          url.searchParams.set('BBOX', [a.x, a.y, b.x, b.y].join(','));
+
+          const res = await httpRequest({ getState, url: url.toString() });
+
+          return {
+            type: def.type,
+            name,
+            info: (await res.json()) as FeatureCollection, // TODO validate
+          };
+        }),
+      ),
   ]);
 
   const nearbyElements = (
@@ -134,6 +194,33 @@ export async function handle(
   );
 
   const sr: SearchResult[] = [];
+
+  sr.push(
+    ...wms
+      .flatMap((wms) =>
+        wms.info.features.map((feature) => ({
+          ...wms,
+          info: feature,
+        })),
+      )
+      .map(
+        (wms, i) =>
+          ({
+            geojson: wms.info.geometry
+              ? wms.info
+              : {
+                  ...wms.info,
+                  properties: {
+                    ...wms.info.properties,
+                    display_name: (wms.info as any).layerName, // inspired from ZBGIS
+                  },
+                  geometry: { type: 'Point', coordinates: [lon, lat] },
+                },
+            id: { type: 'other', id: i },
+            source: `wms:${wms.type}`,
+          }) satisfies SearchResult,
+      ),
+  );
 
   if (reverseGeocodingElement) {
     const tags = {

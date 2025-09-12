@@ -10,7 +10,8 @@ export interface SearchResult {
     | 'overpass-objects'
     | 'nominatim-forward'
     | 'nominatim-reverse'
-    | 'osm';
+    | 'osm'
+    | `wms:${string}`;
   geojson: Feature | (FeatureCollection & { metadata: GeoJsonProperties });
   id: FeatureId;
   incomplete?: true;
