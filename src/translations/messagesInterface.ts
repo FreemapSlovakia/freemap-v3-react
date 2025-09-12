@@ -6,7 +6,7 @@ import {
 } from '../actions/galleryActions.js';
 import { ExportableLayer } from '../actions/mainActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
-import { SearchResult } from '../actions/searchActions.js';
+import { SearchResult, SearchSource } from '../actions/searchActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
@@ -427,6 +427,7 @@ export type Messages = {
   };
   mapDetails: {
     sources: string;
+    source: string;
     notFound: string;
     fetchingError: (props: Err) => string;
     detail: (props: { result: SearchResult }) => JSX.Element;
@@ -471,7 +472,7 @@ export type Messages = {
     buttonTitle: string;
     placeholder: string;
     result: string;
-    sources: Record<SearchResult['source'], string>;
+    sources: Record<SearchSource, string>;
   };
   embed: {
     code: string;

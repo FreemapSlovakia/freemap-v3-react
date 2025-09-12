@@ -26,19 +26,19 @@ import {
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
+  SearchSource,
 } from '../actions/searchActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
-import { integratedLayerDefs } from '../mapDefinitions.js';
 import {
   getNameFromOsmElement,
   resolveGenericName,
 } from '../osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
-import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
+import { useGenericNameResolver } from '../osm/useGenericNameResolver.js';
 import '../styles/search.scss';
 import {
   FeatureId,
@@ -47,6 +47,7 @@ import {
   stringifyFeatureId,
 } from '../types/featureId.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { SourceName } from './SourceName.js';
 
 type Props = {
   hidden?: boolean;
@@ -202,14 +203,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
-
-  const activeWmsLayerDefs = [
-    ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
-    ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
-  ].filter((def) => def.technology === 'wms');
-
-  let prevSource: SearchResult['source'] | undefined = undefined;
+  let prevSource: SearchSource | undefined = undefined;
 
   return (
     <Form
@@ -271,29 +265,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               const id = stringifyFeatureId(result.id);
 
               const divider =
-                prevSource !== result.source ? (
+                !(
+                  [
+                    'nominatim-forward',
+                    'bbox',
+                    'coords',
+                    'geojson',
+                  ] as SearchSource[]
+                ).includes(result.source) && prevSource !== result.source ? (
                   <div className="dropdown-caption-divider">
-                    {
-                      m?.search.sources[
-                        result.source.startsWith('wms:')
-                          ? 'wms:'
-                          : result.source
-                      ]
-                    }
-                    {result.source.startsWith('wms:') &&
-                      (() => {
-                        const def = activeWmsLayerDefs.find(
-                          (def) => def.type === result.source.slice(4),
-                        );
-
-                        const name = !def
-                          ? null
-                          : def.custom
-                            ? def.name
-                            : m?.mapLayers.letters[def.type];
-
-                        return name ? ': ' + name : '';
-                      })()}
+                    <SourceName result={result} />
                   </div>
                 ) : null;
 
@@ -327,7 +308,7 @@ function Result({ value }: { value: SearchResult }) {
 
   const tags = value.geojson.properties ?? {};
 
-  const genericName = useOsmNameResolver(value);
+  const genericName = useGenericNameResolver(value);
 
   const language = useEffectiveChosenLanguage();
 

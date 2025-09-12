@@ -553,6 +553,7 @@ const messages: Messages = {
 
   mapDetails: {
     sources: 'Sources',
+    source: 'Source',
     notFound: 'Nothing found here.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error fetching details', err),

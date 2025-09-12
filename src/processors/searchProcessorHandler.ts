@@ -65,8 +65,6 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   const parts = query.split(/\s*,\s*|\s+/).map((n) => parseFloat(n));
 
   if (parts.length === 4 && parts.every((part) => !isNaN(part))) {
-    const tags = { name: 'BBox ' + parts.join(', ') };
-
     const reproj = () => {
       const p1 = CRS.EPSG3857.unproject(new Point(parts[0], parts[1]));
 
@@ -82,8 +80,8 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
           id: { type: 'other' },
           geojson: bboxPolygon(
             parts.some((p) => Math.abs(p) > 180) ? reproj() : (parts as BBox),
-            { properties: tags },
           ),
+          displayName: parts.join(', '),
         },
       ]),
     );
@@ -104,10 +102,9 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
           {
             source: 'tile',
             id: { type: 'other' },
-            geojson: feature(poly, {
-              name: query.trim(),
-            }),
+            geojson: feature(poly),
             zoom: Number(m[1]),
+            displayName: query.trim(),
           },
         ]),
       );
@@ -132,9 +129,8 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
         {
           source: 'coords',
           id: { type: 'other' },
-          geojson: point([coords.lon, coords.lat], {
-            name: query.toUpperCase(),
-          }),
+          geojson: point([coords.lon, coords.lat]),
+          displayName: query.toUpperCase(),
         },
       ]),
     );

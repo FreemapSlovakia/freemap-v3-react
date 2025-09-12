@@ -5,14 +5,16 @@ import { is } from 'typia';
 import { SearchResult } from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { useMessages } from '../l10nInjector.js';
 import {
   categoryKeys,
   getNameFromOsmElement,
   resolveGenericName,
 } from '../osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
-import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
+import { useGenericNameResolver } from '../osm/useGenericNameResolver.js';
 import { OsmFeatureId } from '../types/featureId.js';
+import { SourceName } from './SourceName.js';
 
 type Props = {
   result: SearchResult;
@@ -31,7 +33,7 @@ export function ObjectDetails({
 
   const dispatch = useDispatch();
 
-  const genericName = useOsmNameResolver(result);
+  const genericName = useGenericNameResolver(result);
 
   const imgs = resolveGenericName(
     osmTagToIconMapping,
@@ -98,7 +100,7 @@ export function ObjectDetails({
       <a target="_blank" rel="noreferrer" href={v}>
         {v}
       </a>
-    ) : k === 'wikidata' ? (
+    ) : k === 'wikidata' || k.endsWith(':wikidata') ? (
       <a
         target="_blank"
         rel="noreferrer"
@@ -106,7 +108,7 @@ export function ObjectDetails({
       >
         {v}
       </a>
-    ) : k === 'wikipedia' ? (
+    ) : k === 'wikipedia' || k.endsWith(':wikipedia') ? (
       <a
         target="_blank"
         rel="noreferrer"
@@ -147,6 +149,8 @@ export function ObjectDetails({
     );
   }
 
+  const m = useMessages();
+
   return (
     <>
       <p className="lead">
@@ -167,8 +171,8 @@ export function ObjectDetails({
             href={`https://www.openstreetmap.org/${id.type}/${id.id}`}
           >
             {openText}
-          </a>{' '}
-          (
+          </a>
+          {' ('}
           <a
             target="_blank"
             rel="noreferrer"
@@ -204,6 +208,10 @@ export function ObjectDetails({
           </tbody>
         </Table>
       )}
+
+      <span>
+        {m?.mapDetails.source}: <SourceName result={result} />
+      </span>
     </>
   );
 }
