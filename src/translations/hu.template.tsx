@@ -598,11 +598,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Fordított geokódolás',
-      nearby: 'Közeli objektumok',
-      surrounding: 'Tartalmazó objektumok',
-    },
     notFound: 'Itt nem találtunk semmit.',
 
     fetchingError: ({ err }) =>
@@ -671,6 +666,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
     result: 'Találat',
+    sources: {
+      'nominatim-reverse': 'Fordított geokódolás',
+      'overpass-nearby': 'Közeli objektumok',
+      'overpass-surrounding': 'Tartalmazó objektumok',
+    },
   },
 
   embed: {

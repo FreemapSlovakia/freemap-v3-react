@@ -32,6 +32,7 @@ import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
+import { integratedLayerDefs } from '../mapDefinitions.js';
 import {
   getNameFromOsmElement,
   resolveGenericName,
@@ -201,6 +202,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
+  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+
+  const activeWmsLayerDefs = [
+    ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
+    ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
+  ].filter((def) => def.technology === 'wms');
+
   let prevSource: SearchResult['source'] | undefined = undefined;
 
   return (
@@ -263,8 +271,30 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               const id = stringifyFeatureId(result.id);
 
               const divider =
-                prevSource && prevSource !== result.source ? (
-                  <Dropdown.Divider />
+                prevSource !== result.source ? (
+                  <div className="dropdown-caption-divider">
+                    {
+                      m?.search.sources[
+                        result.source.startsWith('wms:')
+                          ? 'wms:'
+                          : result.source
+                      ]
+                    }
+                    {result.source.startsWith('wms:') &&
+                      (() => {
+                        const def = activeWmsLayerDefs.find(
+                          (def) => def.type === result.source.slice(4),
+                        );
+
+                        const name = !def
+                          ? null
+                          : def.custom
+                            ? def.name
+                            : m?.mapLayers.letters[def.type];
+
+                        return name ? ': ' + name : '';
+                      })()}
+                  </div>
                 ) : null;
 
               prevSource = result.source;
@@ -297,7 +327,6 @@ function Result({ value }: { value: SearchResult }) {
 
   const tags = value.geojson.properties ?? {};
 
-  // we can't have hook in condition so we hack arguments
   const genericName = useOsmNameResolver(value);
 
   const language = useEffectiveChosenLanguage();

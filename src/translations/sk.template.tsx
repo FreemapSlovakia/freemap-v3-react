@@ -594,11 +594,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapDetails: {
     sources: 'Zdroje',
-    sourceItems: {
-      reverse: 'Reverzné geokódovanie',
-      nearby: 'Blízke objekty',
-      surrounding: 'Obsahujúce objekty',
-    },
     notFound: 'Nič sa tu nenašlo.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba pri získavaní detailov', err),
@@ -660,6 +655,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hľadať',
     placeholder: 'Hľadať v mape',
     result: 'Nález',
+    sources: {
+      'nominatim-reverse': 'Reverzné geokódovanie',
+      'overpass-nearby': 'Blízke objekty',
+      'overpass-surrounding': 'Obsahujúce objekty',
+    },
   },
 
   embed: {

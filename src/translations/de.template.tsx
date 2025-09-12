@@ -598,11 +598,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Reverse-Geokodierung',
-      nearby: 'Nahegelegene Objekte',
-      surrounding: 'Enthaltende Objekte',
-    },
     notFound: 'Nichts hier gefunden.',
 
     fetchingError: ({ err }) =>
@@ -667,6 +662,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Suchen',
     placeholder: 'In der Karte suchen',
     result: 'Fund',
+    sources: {
+      'nominatim-reverse': 'Reverse-Geokodierung',
+      'overpass-nearby': 'Nahegelegene Objekte',
+      'overpass-surrounding': 'Enthaltende Objekte',
+    },
   },
 
   embed: {

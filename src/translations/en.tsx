@@ -553,11 +553,6 @@ const messages: Messages = {
 
   mapDetails: {
     sources: 'Sources',
-    sourceItems: {
-      reverse: 'Reverse geocoding',
-      nearby: 'Nearby features',
-      surrounding: 'Containing features',
-    },
     notFound: 'Nothing found here.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error fetching details', err),
@@ -613,6 +608,19 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
     result: 'Lookup',
+    sources: {
+      bbox: 'Bounding Box',
+      geojson: 'GeoJSON',
+      tile: 'Tile',
+      coords: 'Coordinates',
+      'overpass-nearby': 'Nearby ',
+      'overpass-surrounding': 'Containing features',
+      'overpass-objects': 'Nearby features',
+      'nominatim-forward': 'Forward geocoding',
+      'nominatim-reverse': 'Reverse geocoding',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
+    },
   },
 
   embed: {

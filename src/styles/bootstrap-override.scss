@@ -138,3 +138,27 @@ legend {
 .w-10 {
   width: 2.5rem !important;
 }
+
+.dropdown-caption-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-size: var(--bs-dropdown-header-font-size, 0.875rem);
+  padding: var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);
+  color: var(--bs-secondary-color);
+}
+
+.dropdown-caption-divider::before,
+.dropdown-caption-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.dropdown-caption-divider:not(:empty)::before {
+  margin-right: var(--bs-dropdown-item-padding-x);
+}
+
+.dropdown-caption-divider:not(:empty)::after {
+  margin-left: var(--bs-dropdown-item-padding-x);
+}

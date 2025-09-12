@@ -578,11 +578,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Odwrotne geokodowanie',
-      nearby: 'Obiekty w pobliżu',
-      surrounding: 'Obiekty zawierające',
-    },
     notFound: 'Nic tu nie znaleziono.',
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas pobierania szczegółów', err),
@@ -641,6 +636,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Szukaj',
     placeholder: 'Szukaj na mapie',
     result: 'Wynik',
+    sources: {
+      'nominatim-reverse': 'Odwrotne geokodowanie',
+      'overpass-nearby': 'Obiekty w pobliżu',
+      'overpass-surrounding': 'Obiekty zawierające',
+    },
   },
 
   embed: {

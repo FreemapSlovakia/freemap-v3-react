@@ -595,11 +595,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Geocodifica inversa',
-      nearby: 'Oggetti vicini',
-      surrounding: 'Oggetti contenenti',
-    },
     notFound: 'Niente trovato qui.',
     fetchingError: ({ err }) =>
       addError(messages, 'Errore durante il recupero dei dettagli', err),
@@ -656,6 +651,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Cerca',
     placeholder: 'Cerca sulla mappa',
     result: 'Risultato',
+    sources: {
+      'nominatim-reverse': 'Geocodifica inversa',
+      'overpass-nearby': 'Oggetti vicini',
+      'overpass-surrounding': 'Oggetti contenenti',
+    },
   },
 
   embed: {

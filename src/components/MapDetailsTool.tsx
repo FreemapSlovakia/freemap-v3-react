@@ -45,8 +45,8 @@ export function MapDetailsTool(): ReactElement | null {
     }, []),
   );
 
-  const hasNearby = useAppSelector((state) =>
-    state.mapDetails.sources.includes('nearby'),
+  const hasNearby = useAppSelector(
+    (state) => !state.mapDetails.excludeSources.includes('overpass-nearby'),
   );
 
   return latLon && hasNearby ? (

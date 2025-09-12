@@ -43,11 +43,7 @@ export async function handle(
   getState: () => RootState,
   dispatch: Dispatch,
 ) {
-  const { sources } = getState().mapDetails;
-
-  if (sources.length === 0) {
-    return;
-  }
+  const { excludeSources } = getState().mapDetails;
 
   window._paq.push(['trackEvent', 'MapDetails', 'search']);
 
@@ -61,9 +57,12 @@ export async function handle(
     is<IsWmsLayerDef>(def),
   );
 
+  const wmsLayerTypes = wmsLayerDefs.map((def) => def.type);
+
   const [resNearby, resSurrounding, resReverse, ...wms] = await Promise.all([
-    sources.includes('nearby')
-      ? httpRequest({
+    excludeSources.includes('overpass-nearby')
+      ? undefined
+      : httpRequest({
           getState,
           method: 'POST',
           url: 'https://overpass.freemap.sk/api/interpreter',
@@ -74,11 +73,11 @@ export async function handle(
             `nwr(around:33,${lat},${lon})${kvFilter};` +
             ');out tags bb;',
           expectedStatus: 200,
-        }).then((res) => res.json())
-      : undefined,
+        }).then((res) => res.json()),
 
-    sources.includes('surrounding')
-      ? httpRequest({
+    excludeSources.includes('overpass-surrounding')
+      ? undefined
+      : httpRequest({
           getState,
           method: 'POST',
           url: 'https://overpass.freemap.sk/api/interpreter', // was: fails with memory error
@@ -89,11 +88,11 @@ export async function handle(
           wr(pivot)${kvFilter};
           out tags bb;`,
           expectedStatus: 200,
-        }).then((res) => res.json())
-      : undefined,
+        }).then((res) => res.json()),
 
-    sources.includes('reverse')
-      ? httpRequest({
+    excludeSources.includes('nominatim-reverse')
+      ? undefined
+      : httpRequest({
           getState,
           url:
             'https://nominatim.openstreetmap.org/reverse?' +
@@ -110,12 +109,15 @@ export async function handle(
               email: 'martin.zdila@freemap.sk',
             }),
           expectedStatus: 200,
-        }).then((res) => res.json())
-      : undefined,
+        }).then((res) => res.json()),
 
-    ...sources
-      .filter((source) => source.startsWith('wms:'))
-      .map((source) => wmsLayerDefs.find((def) => def.type === source.slice(4)))
+    ...getState()
+      .map.layers.filter(
+        (layer) =>
+          wmsLayerTypes.includes(layer) &&
+          !excludeSources.includes(`wms:${layer}`),
+      )
+      .map((layer) => wmsLayerDefs.find((def) => def.type === layer))
       .filter((def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
         Boolean(def),
       )
@@ -236,8 +238,7 @@ export async function handle(
           },
           genericName: (wms.info as unknown as { layerName: unknown })
             .layerName as string, // ArcGIS only?,
-          source: 'wms',
-          map: wms.type,
+          source: `wms:${wms.type}`,
           showToast: true,
         } satisfies SearchResult;
       }),
