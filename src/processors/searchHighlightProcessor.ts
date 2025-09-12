@@ -22,7 +22,7 @@ import {
   IsBaseLayerDef,
 } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
-import { featureIdsEqual } from '../types/featureId.js';
+import { featureIdsEqual, OsmFeatureId } from '../types/featureId.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
@@ -61,8 +61,8 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
 
     const { id, geojson, incomplete } = action.payload.result;
 
-    if (incomplete) {
-      switch (id.type) {
+    if (incomplete && is<OsmFeatureId>(id)) {
+      switch (id.elementType) {
         case 'node':
           dispatch(
             osmLoadNode({
@@ -127,18 +127,12 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       }
     }
 
-    if (id.type !== 'other' && action.payload.showToast) {
+    if (action.payload.showToast) {
       dispatch(
         toastsAdd({
           id: 'mapDetails.tags',
           messageKey: 'mapDetails.detail',
-          messageParams: {
-            id,
-            tags:
-              geojson.type === 'FeatureCollection'
-                ? geojson.metadata
-                : geojson.properties,
-          },
+          messageParams: { result: action.payload.result },
           cancelType: [
             clearMapFeatures.type,
             searchSetResults.type,

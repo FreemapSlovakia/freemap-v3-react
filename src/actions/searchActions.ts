@@ -2,22 +2,30 @@ import { createAction } from '@reduxjs/toolkit';
 import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 import { FeatureId } from '../types/featureId.js';
 
-export interface SearchResult {
-  source:
-    | 'synthetic'
-    | 'overpass-nearby'
-    | 'overpass-surrounding'
-    | 'overpass-objects'
-    | 'nominatim-forward'
-    | 'nominatim-reverse'
-    | 'osm'
-    | `wms:${string}`;
-  geojson: Feature | (FeatureCollection & { metadata: GeoJsonProperties });
+export type SearchResult = {
+  geojson: Feature | (FeatureCollection & { properties: GeoJsonProperties });
   id: FeatureId;
   incomplete?: true;
   showToast?: true;
   zoom?: number;
-}
+  displayName?: string;
+  genericName?: string;
+} & (
+  | {
+      source:
+        | 'bbox'
+        | 'geojson'
+        | 'tile'
+        | 'coords'
+        | 'overpass-nearby'
+        | 'overpass-surrounding'
+        | 'overpass-objects'
+        | 'nominatim-forward'
+        | 'nominatim-reverse'
+        | 'osm';
+    }
+  | { source: 'wms'; map: string }
+);
 
 export const searchSetQuery = createAction<{
   query: string;

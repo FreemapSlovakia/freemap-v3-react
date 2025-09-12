@@ -7,11 +7,11 @@ import {
 import { ExportableLayer } from '../actions/mainActions.js';
 import { MapDetailsSource } from '../actions/mapDetailsActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
+import { SearchResult } from '../actions/searchActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
-import { OsmFeatureId } from '../types/featureId.js';
 
 type Err = { err: string };
 
@@ -38,7 +38,7 @@ export type Messages = {
     closeWithoutSaving: string;
     back: string;
     internalError: ({ ticketId }: { ticketId?: string }) => string;
-    processorError: ({ err }: Err) => string;
+    processorError: (props: Err) => string;
     seconds: string;
     minutes: string;
     meters: string;
@@ -51,10 +51,10 @@ export type Messages = {
     simplifyPrompt: string;
     copyUrl: string;
     copyPageUrl: string;
-    savingError: ({ err }: Err) => string;
-    loadError: ({ err }: Err) => string;
-    deleteError: ({ err }: Err) => string;
-    operationError: ({ err }: Err) => string;
+    savingError: (props: Err) => string;
+    loadError: (props: Err) => string;
+    deleteError: (props: Err) => string;
+    operationError: (props: Err) => string;
     saved: string;
     deleted: string;
     visual: string;
@@ -168,7 +168,7 @@ export type Messages = {
     showMidpointHint: string;
     gpsError: string;
     routeNotFound: string;
-    fetchingError: ({ err }: Err) => string;
+    fetchingError: (props: Err) => string;
   };
   mainMenu: {
     title: string;
@@ -267,13 +267,13 @@ export type Messages = {
     locationPicking: {
       title: string;
     };
-    deletingError: ({ err }: Err) => string;
-    tagsFetchingError: ({ err }: Err) => string;
-    pictureFetchingError: ({ err }: Err) => string;
-    picturesFetchingError: ({ err }: Err) => string;
-    savingError: ({ err }: Err) => string;
-    commentAddingError: ({ err }: Err) => string;
-    ratingError: ({ err }: Err) => string;
+    deletingError: (props: Err) => string;
+    tagsFetchingError: (props: Err) => string;
+    pictureFetchingError: (props: Err) => string;
+    picturesFetchingError: (props: Err) => string;
+    savingError: (props: Err) => string;
+    commentAddingError: (props: Err) => string;
+    ratingError: (props: Err) => string;
     missingPositionError: string;
     invalidPositionError: string;
     invalidTakenAt: string;
@@ -300,7 +300,7 @@ export type Messages = {
     distance: string;
     elevation: string;
     area: string;
-    elevationFetchError: ({ err }: Err) => string;
+    elevationFetchError: (props: Err) => string;
     elevationInfo: (props: ElevationInfoBaseProps) => JSX.Element;
     areaInfo: (props: { area: number; perimeter: number }) => JSX.Element;
     distanceInfo: (props: { length: number }) => JSX.Element;
@@ -331,8 +331,8 @@ export type Messages = {
       drop: string;
     };
     shareToast: string;
-    fetchingError: ({ err }: Err) => string;
-    savingError: ({ err }: Err) => string;
+    fetchingError: (props: Err) => string;
+    savingError: (props: Err) => string;
     loadingError: string;
     onlyOne: string;
     wrongFormat: string;
@@ -400,7 +400,7 @@ export type Messages = {
     showInMenu: string;
     showInToolbar: string;
     saveSuccess: string;
-    savingError: ({ err }: Err) => string;
+    savingError: (props: Err) => string;
     customLayersDef: string;
     customLayersDefError: string;
   };
@@ -410,7 +410,7 @@ export type Messages = {
     olderThan: ({ days }: { days: number }) => string;
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;
-    fetchError: ({ err }: Err) => string;
+    fetchError: (props: Err) => string;
     detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
     details: {
       author: string;
@@ -430,23 +430,17 @@ export type Messages = {
     sources: string;
     sourceItems: Record<MapDetailsSource, string>;
     notFound: string;
-    fetchingError: ({ err }: Err) => string;
-    detail: ({
-      id,
-      tags,
-    }: {
-      id: OsmFeatureId;
-      tags: Record<string, string>;
-    }) => JSX.Element;
+    fetchingError: (props: Err) => string;
+    detail: (props: { result: SearchResult }) => JSX.Element;
   };
   objects: {
     type: string;
     lowZoomAlert: {
-      message: ({ minZoom }: { minZoom: number }) => string;
+      message: (props: { minZoom: number }) => string;
       zoom: string;
     };
-    tooManyPoints: ({ limit }: { limit: number }) => string;
-    fetchingError: ({ err }: Err) => string;
+    tooManyPoints: (props: { limit: number }) => string;
+    fetchingError: (props: Err) => string;
     // categories: Record<number, string>;
     // subcategories: Record<number, string>;
     icon: {
@@ -475,7 +469,7 @@ export type Messages = {
     prompt: string;
     routeFrom: string;
     routeTo: string;
-    fetchingError: ({ err }: Err) => string;
+    fetchingError: (props: Err) => string;
     buttonTitle: string;
     placeholder: string;
     result: string;
@@ -498,7 +492,7 @@ export type Messages = {
     download: string;
     format: string;
     target: string;
-    exportError: ({ err }: Err) => string;
+    exportError: (props: Err) => string;
     what: {
       plannedRoute: string;
       plannedRouteWithStops: string;
@@ -551,13 +545,13 @@ export type Messages = {
     logIn: {
       with: string;
       success: string;
-      logInError: ({ err }: Err) => string;
+      logInError: (props: Err) => string;
       logInError2: string;
-      verifyError: ({ err }: Err) => string;
+      verifyError: (props: Err) => string;
     };
     logOut: {
       success: string;
-      error: ({ err }: Err) => string;
+      error: (props: Err) => string;
     };
   };
   mapLayers: {
@@ -607,13 +601,13 @@ export type Messages = {
   elevationChart: {
     distance: string;
     ele: string;
-    fetchError: ({ err }: Err) => string;
+    fetchError: (props: Err) => string;
   };
   errorCatcher: {
     html: (ticketId?: string) => string;
   };
   osm: {
-    fetchingError: ({ err }: Err) => string;
+    fetchingError: (props: Err) => string;
   };
   tracking: {
     trackedDevices: {
@@ -636,10 +630,7 @@ export type Messages = {
       modalTitle: (deviceName: string) => JSX.Element;
       desc: (deviceName: string) => JSX.Element;
       createTitle: (deviceName: string) => JSX.Element;
-      modifyTitle: ({
-        token,
-        deviceName,
-      }: {
+      modifyTitle: (props: {
         token: string;
         deviceName: string;
       }) => JSX.Element;
@@ -663,7 +654,7 @@ export type Messages = {
       watchPrivately: string;
       watch: string;
       delete: string;
-      modifyTitle: ({ name }: { name: string }) => JSX.Element;
+      modifyTitle: (props: { name: string }) => JSX.Element;
       desc: () => JSX.Element;
     };
     device: {
@@ -678,11 +669,11 @@ export type Messages = {
       points: string;
       'line+points': string;
     };
-    subscribeNotFound: ({ id }: { id: string | number }) => JSX.Element;
-    subscribeError: ({ id }: { id: string | number }) => JSX.Element;
+    subscribeNotFound: (props: { id: string | number }) => JSX.Element;
+    subscribeError: (props: { id: string | number }) => JSX.Element;
   };
   mapExport: {
-    exportError: ({ err }: Err) => string;
+    exportError: (props: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;
     area: string;
@@ -712,12 +703,12 @@ export type Messages = {
     delete: string;
     disconnect: string;
     deleteConfirm: (name: string) => string;
-    fetchError: ({ err }: Err) => string;
-    fetchListError: ({ err }: Err) => string;
-    deleteError: ({ err }: Err) => string;
-    renameError: ({ err }: Err) => string;
-    createError: ({ err }: Err) => string;
-    saveError: ({ err }: Err) => string;
+    fetchError: (props: Err) => string;
+    fetchListError: (props: Err) => string;
+    deleteError: (props: Err) => string;
+    renameError: (props: Err) => string;
+    createError: (props: Err) => string;
+    saveError: (props: Err) => string;
     loadToEmpty: string;
     loadInclMapAndPosition: string;
     savedMaps: string;

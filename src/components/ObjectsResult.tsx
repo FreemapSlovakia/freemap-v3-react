@@ -2,6 +2,7 @@ import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
+import { is } from 'typia';
 import { selectFeature } from '../actions/mainActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
 import { colors } from '../constants.js';
@@ -19,7 +20,7 @@ import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { OsmMapping } from '../osm/types.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 import type { RootState } from '../store.js';
-import { featureIdsEqual } from '../types/featureId.js';
+import { featureIdsEqual, OsmFeatureId } from '../types/featureId.js';
 import { RichMarker } from './RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {
@@ -63,12 +64,14 @@ export function ObjectsResult(): ReactElement | null {
       {objects.map(({ id, coords, tags }) => {
         const name = getNameFromOsmElement(tags, language);
 
-        const gn = getGenericNameFromOsmElementSync(
-          tags,
-          id.type,
-          osmMapping.osmTagToNameMapping,
-          osmMapping.colorNames,
-        );
+        const gn = !is<OsmFeatureId>(id)
+          ? ''
+          : getGenericNameFromOsmElementSync(
+              tags,
+              id.elementType,
+              osmMapping.osmTagToNameMapping,
+              osmMapping.colorNames,
+            );
 
         const img = resolveGenericName(osmTagToIconMapping, tags);
 

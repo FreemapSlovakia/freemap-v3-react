@@ -1,15 +1,26 @@
+import { createStringify } from 'typia/lib/json.js';
+
 export type OsmFeatureId = {
-  type: 'node' | 'way' | 'relation';
+  type: 'osm';
+  elementType: 'node' | 'way' | 'relation';
   id: number;
 };
 
 export type FeatureId =
   | OsmFeatureId
+  | ({
+      type: 'wms';
+      map: string;
+      // TODO also layer?
+      seq: number;
+    } & ({ property: string; id: number | string } | {}))
   | {
       type: 'other';
-      id: number;
+      id?: unknown;
     };
 
+export const stringifyFeatureId = createStringify<FeatureId>();
+
 export function featureIdsEqual(a: FeatureId, b: FeatureId) {
-  return a.type === b.type && a.id === b.id;
+  return stringifyFeatureId(a) === stringifyFeatureId(b);
 }

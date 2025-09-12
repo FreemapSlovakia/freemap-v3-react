@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { is } from 'typia';
 import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   osmLoadNode,
@@ -12,6 +13,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from '../actions/searchActions.js';
+import { OsmFeatureId } from '../types/featureId.js';
 
 export interface SearchState {
   results: SearchResult[];
@@ -88,8 +90,8 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
 
       state.searchResultSeq = state.searchResultSeq + 1;
 
-      if (result) {
-        switch (result.id.type) {
+      if (is<OsmFeatureId>(result?.id)) {
+        switch (result.id.elementType) {
           case 'node':
             state.osmNodeId = result.id.id;
 

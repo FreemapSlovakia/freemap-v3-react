@@ -171,10 +171,6 @@ export function getNameFromOsmElement(
   tags: Record<string, string>,
   lang: string,
 ): string {
-  if (tags['display_name']) {
-    return tags['display_name'];
-  }
-
   const langName = tags['name:' + lang];
 
   const name = tags['name'];

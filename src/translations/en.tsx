@@ -8,10 +8,7 @@ import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './en-shared.js';
 import { Messages, addError } from './messagesInterface.js';
@@ -564,9 +561,9 @@ const messages: Messages = {
     notFound: 'Nothing found here.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error fetching details', err),
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Open at OpenStreetMap.org"
         historyText="history"
         editInJosmText="Edit in JOSM"
