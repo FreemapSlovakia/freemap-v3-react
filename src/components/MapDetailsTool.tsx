@@ -15,10 +15,11 @@ export function MapDetailsTool(): ReactElement | null {
   useMapEvent(
     'click',
     useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
+      (e: LeafletMouseEvent) => {
         dispatch(
           searchSetQuery({
-            query: '@' + latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6),
+            query:
+              '@' + e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6),
           }),
         );
       },
@@ -44,8 +45,8 @@ export function MapDetailsTool(): ReactElement | null {
     }, []),
   );
 
-  const hasNearby = useAppSelector((state) =>
-    state.mapDetails.sources.includes('nearby'),
+  const hasNearby = useAppSelector(
+    (state) => !state.mapDetails.excludeSources.includes('overpass-nearby'),
   );
 
   return latLon && hasNearby ? (

@@ -209,7 +209,10 @@ export type BaseLayerDef = IntegratedBaseLayerDef | CustomBaseLayerDef;
 
 export type OverlayLayerDef = IntegratedOverlayLayerDef | CustomOverlayLayerDef;
 
-export type LayerDef = CustomLayerDef | IntegratedLayerDef;
+export type LayerDef<
+  U extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
+  V extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
+> = CustomLayerDef<U> | IntegratedLayerDef<V>;
 
 type OldTileCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'>;
 

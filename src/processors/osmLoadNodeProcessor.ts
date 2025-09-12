@@ -3,11 +3,11 @@ import { assert } from 'typia';
 import { clearMapFeatures } from '../actions/mainActions.js';
 import { osmLoadNode } from '../actions/osmActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
+import { copyDisplayName } from '../copyDisplayName.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
-import type { OsmNode, OsmResult } from '../types/osm.js';
 import { FeatureId } from '../types/featureId.js';
-import { copyDisplayName } from '../copyDisplayName.js';
+import type { OsmNode, OsmResult } from '../types/osm.js';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,
@@ -28,7 +28,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       elements.filter((el) => el.type === 'node') as OsmNode[]
     ).map((node) => [node.lon, node.lat]);
 
-    const osmId: FeatureId = { type: 'node', id };
+    const osmId: FeatureId = { type: 'osm', elementType: 'node', id };
 
     const tags = elements[0].tags ?? {};
 

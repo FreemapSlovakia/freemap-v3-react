@@ -3,12 +3,12 @@ import { assert } from 'typia';
 import { clearMapFeatures } from '../actions/mainActions.js';
 import { osmLoadWay } from '../actions/osmActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
+import { copyDisplayName } from '../copyDisplayName.js';
 import { positionsEqual, shouldBeArea } from '../geoutils.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
-import type { OsmResult } from '../types/osm.js';
 import { FeatureId } from '../types/featureId.js';
-import { copyDisplayName } from '../copyDisplayName.js';
+import type { OsmResult } from '../types/osm.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
@@ -33,7 +33,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
       } else if (item.type === 'way') {
         const coordinates = item.nodes.map((ref) => nodes[ref]);
 
-        const osmId: FeatureId = { type: 'way', id };
+        const osmId: FeatureId = { type: 'osm', elementType: 'way', id };
 
         const tags = item.tags ?? {};
 

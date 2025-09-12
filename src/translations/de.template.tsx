@@ -4,18 +4,15 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './de-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('de', {
   minimumFractionDigits: 0,
@@ -601,19 +598,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Reverse-Geokodierung',
-      nearby: 'Nahegelegene Objekte',
-      surrounding: 'Enthaltende Objekte',
-    },
     notFound: 'Nichts hier gefunden.',
 
     fetchingError: ({ err }) =>
       addError(messages, 'Fehler beim Laden der Details', err),
 
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Öffnen auf OpenStreetMap.org"
         historyText="Verlauf"
         editInJosmText="Bearbeiten in JOSM"
@@ -670,6 +662,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Suchen',
     placeholder: 'In der Karte suchen',
     result: 'Fund',
+    sources: {
+      'nominatim-reverse': 'Reverse-Geokodierung',
+      'overpass-nearby': 'Nahegelegene Objekte',
+      'overpass-surrounding': 'Enthaltende Objekte',
+    },
   },
 
   embed: {

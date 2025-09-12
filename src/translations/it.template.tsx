@@ -4,18 +4,15 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './it-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 0,
@@ -598,17 +595,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Geocodifica inversa',
-      nearby: 'Oggetti vicini',
-      surrounding: 'Oggetti contenenti',
-    },
     notFound: 'Niente trovato qui.',
     fetchingError: ({ err }) =>
       addError(messages, 'Errore durante il recupero dei dettagli', err),
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Apri su OpenStreetMap.org"
         historyText="storia"
         editInJosmText="Modifica su JOSM"
@@ -659,6 +651,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Cerca',
     placeholder: 'Cerca sulla mappa',
     result: 'Risultato',
+    sources: {
+      'nominatim-reverse': 'Geocodifica inversa',
+      'overpass-nearby': 'Oggetti vicini',
+      'overpass-surrounding': 'Oggetti contenenti',
+    },
   },
 
   embed: {

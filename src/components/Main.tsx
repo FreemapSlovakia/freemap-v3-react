@@ -61,13 +61,13 @@ import { MapContextMenu } from './MapContextMenu.js';
 import { MapsMenu } from './MapsMenu.js';
 import { Results } from './Results.js';
 import RoutePointSelection from './RoutePointSelection.js';
+import { SearchSelection } from './SearchSelection.js';
 import { Toolbar } from './Toolbar.js';
 import { ToolMenu } from './ToolMenu.js';
 import { Tools } from './Tools.js';
 import { TrackingSelection } from './TrackingSelection.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
 import { WikiLayer } from './WikiLayer.js';
-import { SearchSelection } from './SearchSelection.js';
 
 const objectsMenuFactory = () => import('./ObjectsMenu.js');
 
@@ -500,7 +500,9 @@ export function Main(): ReactElement {
                   <ToolMenu />
                 ))}
 
-              {selectionMenu === 'draw-line-poly' ? (
+              {selectionMenu === 'search' ? (
+                <SearchSelection />
+              ) : selectionMenu === 'draw-line-poly' ? (
                 <AsyncComponent factory={drawingLineSelectionFactory} />
               ) : selectionMenu === 'line-point' ? (
                 <AsyncComponent factory={drawingLinePointSelectionFactory} />
@@ -512,8 +514,6 @@ export function Main(): ReactElement {
                 <TrackingSelection />
               ) : selectionMenu === 'route-point' ? (
                 <RoutePointSelection />
-              ) : selectionMenu === 'search' ? (
-                <SearchSelection />
               ) : null}
 
               {pickingPosition && (

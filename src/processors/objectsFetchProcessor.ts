@@ -123,7 +123,7 @@ export const objectsFetchProcessor: Processor = {
       .map(
         (e) =>
           ({
-            id: { type: e.type, id: e.id },
+            id: { type: 'osm', elementType: e.type, id: e.id },
             coords:
               e.type === 'node'
                 ? { lat: e.lat, lon: e.lon }

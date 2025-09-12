@@ -71,7 +71,7 @@ function persistSelectedState(state: RootState) {
         premium: state.gallery.premium,
       },
       mapDetails: {
-        sources: state.mapDetails.sources,
+        excludeSources: state.mapDetails.excludeSources,
       },
     } as Partial<RootState>),
   );
