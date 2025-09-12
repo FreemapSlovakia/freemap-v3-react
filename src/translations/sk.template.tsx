@@ -594,6 +594,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapDetails: {
     sources: 'Zdroje',
+    source: 'Zdroj',
     notFound: 'Nič sa tu nenašlo.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba pri získavaní detailov', err),
@@ -659,6 +660,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-reverse': 'Reverzné geokódovanie',
       'overpass-nearby': 'Blízke objekty',
       'overpass-surrounding': 'Obsahujúce objekty',
+      bbox: 'Ohraničujúci box',
+      geojson: 'GeoJSON',
+      tile: 'Dlaždica',
+      coords: 'Súradnice',
+      'overpass-objects': 'Blízke prvky',
+      'nominatim-forward': 'Geokódovanie',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
     },
   },
 

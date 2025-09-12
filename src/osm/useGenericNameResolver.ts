@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { SearchResult } from '../actions/searchActions.js';
+import { SearchResult, SearchSource } from '../actions/searchActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
-import { getGenericNameFromOsmElement } from '../osm/osmNameResolver.js';
+import { useMessages } from '../l10nInjector.js';
 import '../styles/search.scss';
 import { OsmFeatureId } from '../types/featureId.js';
+import { getGenericNameFromOsmElement } from './osmNameResolver.js';
 
-export function useOsmNameResolver(result: SearchResult): string | undefined {
+export function useGenericNameResolver(
+  result: SearchResult,
+): string | undefined {
   const [genericName, setGenericName] = useState<string | undefined>();
 
   const language = useEffectiveChosenLanguage();
@@ -36,5 +39,11 @@ export function useOsmNameResolver(result: SearchResult): string | undefined {
     });
   }, [language, result, dispatch]);
 
-  return result.genericName || genericName;
+  const m = useMessages();
+
+  return (['bbox', 'coords', 'tile', 'geojson'] as SearchSource[]).includes(
+    result.source,
+  )
+    ? m?.search.sources[result.source]
+    : result.genericName || genericName;
 }
