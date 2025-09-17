@@ -2,17 +2,15 @@ import { createAction } from '@reduxjs/toolkit';
 import type { MessagePaths } from '../types/common.js';
 import type { RootAction } from './index.js';
 
-export interface ToastAction {
-  name?: string;
-  nameKey?: MessagePaths;
+export type ToastAction = {
   action?: RootAction | RootAction[];
   style?: string;
-}
+} & ({ name: string } | { nameKey: MessagePaths });
 
-export interface Toast {
-  message?: string;
-  messageKey?: MessagePaths;
-  messageParams?: Record<string, unknown>; // after upgrading redux Record<string, unknown> doesn't work here
+export type Toast = (
+  | { message: string }
+  | { messageKey: MessagePaths; messageParams?: Record<string, unknown> }
+) & {
   timeout?: number;
   style:
     | 'primary'
@@ -27,7 +25,7 @@ export interface Toast {
   id?: string;
   cancelType?: string | string[] | RegExp;
   noClose?: boolean;
-}
+};
 
 export type ResolvedToast = Toast & {
   actions: ToastAction[];
@@ -38,7 +36,7 @@ export type ResolvedToast = Toast & {
 export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) => {
   return {
     payload: {
-      actions: [] as ToastAction[],
+      actions: [],
       id: Math.random().toString(36).slice(2),
       ...toast,
       timeoutSince: toast.timeout === undefined ? undefined : Date.now(),
