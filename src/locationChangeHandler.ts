@@ -165,6 +165,10 @@ export function handleLocationChange(store: MyStore): void {
           ) as [boolean, number | null, number | null][])
         : ([] as [boolean, number | null, number | null][]);
 
+    if (qPoints.length === 2 && !qPoints[1]) {
+      qPoints.splice(1);
+    }
+
     const pointsOk =
       qPoints.length > 0 &&
       qPoints.every(
