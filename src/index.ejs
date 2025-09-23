@@ -157,7 +157,8 @@
       if (typeof Sentry !== 'undefined') {
         Sentry.init({
           dsn: '<%= process.env["SENTRY_DSN"] %>',
-          tracesSampleRate: 0.01,
+          integrations: [],
+          tracesSampleRate: 0,
         });
       }
     </script>

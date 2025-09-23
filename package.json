@@ -23,7 +23,9 @@
     "prepare": "ts-patch install",
     "build": "npm run sync-language-files && tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts",
     "sync-language-files": "tsc -p translation-manager/tsconfig.json && node --enable-source-maps translation-manager/sync-language-files.js",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "sentry-login": "sentry-cli --url https://bugsink.freemap.sk login",
+    "sentry-sourcemaps": "sentry-cli sourcemaps inject dist && sentry-cli --url https://bugsink.freemap.sk sourcemaps --org freemap  --project 1 upload dist"
   },
   "dependencies": {
     "@bokuweb/zstd-wasm": "^0.0.27",
@@ -94,6 +96,7 @@
     "@babel/types": "^7.28.4",
     "@eslint/js": "^9.36.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
+    "@sentry/cli": "^2.54.0",
     "@types/color": "^4.2.0",
     "@types/facebook-js-sdk": "^3.3.12",
     "@types/facebook-pixel": "^0.0.31",
