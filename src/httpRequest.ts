@@ -68,8 +68,12 @@ export async function httpRequest({
 
     cancelItem = {
       cancelActions,
-      cancel() {
-        ac?.abort();
+      cancel(reason) {
+        ac?.abort(
+          reason === undefined
+            ? reason
+            : new DOMException(reason, 'AbortError'),
+        );
       },
     };
 

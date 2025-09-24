@@ -6,7 +6,7 @@ export type ActionCreatorMatchable = {
 
 export interface CancelItem {
   cancelActions: ActionCreatorMatchable[];
-  cancel: () => void;
+  cancel: (reason?: string) => void;
 }
 
 export const cancelRegister = new Set<CancelItem>();

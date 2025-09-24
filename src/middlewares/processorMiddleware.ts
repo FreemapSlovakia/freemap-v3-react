@@ -131,7 +131,10 @@ export function createProcessorMiddleware() {
           ) {
             const handleError = (err: unknown) => {
               if (err instanceof DOMException && err.name === 'AbortError') {
-                console.log('Canceled: ' + errorKey);
+                console.log(
+                  'Canceled: ' + errorKey + '; Reason: ',
+                  err.message,
+                );
               } else {
                 console.log('Error key: ' + errorKey);
 
