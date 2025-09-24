@@ -216,7 +216,7 @@ class LShadingLayer extends LGridLayer {
   async createTileAsync(
     coords: Coords,
     canvas: HTMLCanvasElement,
-  ): Promise<void> {
+  ): Promise<boolean | void> {
     const [device, pipeline, sampler] = await this.gpuObjectsPromise;
 
     const context = canvas.getContext('webgpu');
@@ -231,13 +231,17 @@ class LShadingLayer extends LGridLayer {
       alphaMode: 'premultiplied',
     });
 
-    const controller = new AbortController();
-
     const { x, y } = coords;
 
     const zoom = coords.z + (this._options.zoomOffset ?? 0);
 
     const key = `${x}/${y}/${zoom}`;
+
+    const url = Util.template(this._options.url, { x, y, z: zoom });
+
+    canvas.dataset['url'] = url;
+
+    const controller = new AbortController();
 
     this.acm.set(key, controller);
 
@@ -246,16 +250,10 @@ class LShadingLayer extends LGridLayer {
     let res;
 
     try {
-      const url = Util.template(this._options.url, { x, y, z: zoom });
-
-      canvas.dataset['url'] = url;
-
-      res = await fetch(url, {
-        signal,
-      });
+      res = await fetch(url, { signal });
     } catch {
       if (signal.aborted) {
-        return;
+        throw new Error('aborted');
       }
 
       throw new TileNotFoundError();
@@ -379,6 +377,8 @@ class LShadingLayer extends LGridLayer {
 
       // await device.queue.onSubmittedWorkDone();
     };
+
+    return true;
   }
 
   handlePremiumClick(e: MouseEvent) {
