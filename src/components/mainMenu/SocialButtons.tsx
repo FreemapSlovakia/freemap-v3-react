@@ -63,7 +63,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
               <button
                 className={
                   'px-1 m-0 border-0 bg-transparent ' +
-                  (currentTheme === theme ? 'text-primary' : '')
+                  (currentTheme === theme ? 'text-primary' : 'text-body')
                 }
                 type="button"
                 onClick={() => setTheme(theme)}
