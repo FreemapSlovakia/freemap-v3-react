@@ -338,22 +338,22 @@
     <script type="module">
       const dsn = '<%= process.env["SENTRY_DSN"] %>';
 
-      if (dsn) {
-        const s = document.createElement('script');
-        s.src = 'https://browser.sentry-cdn.com/7.60.0/bundle.min.js';
-        s.crossOrigin = 'anonymous';
+      const s = document.createElement('script');
+      s.src = 'https://browser.sentry-cdn.com/7.60.0/bundle.min.js';
+      s.crossOrigin = 'anonymous';
 
-        s.onload = () => {
-          if (typeof Sentry !== 'undefined') {
-            Sentry.init({
-              dsn,
-              integrations: [],
-              tracesSampleRate: 0,
-            });
-          }
-        };
+      const scripts = document.getElementsByTagName('script');
 
-        document.currentScript.after(s);
+      scripts[scripts.length - 1].after(s);
+    </script>
+
+    <script type="module">
+      if (typeof Sentry !== 'undefined') {
+        Sentry.init({
+          dsn,
+          integrations: [],
+          tracesSampleRate: 0,
+        });
       }
     </script>
     <% } %>
