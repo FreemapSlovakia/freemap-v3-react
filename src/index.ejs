@@ -394,12 +394,9 @@
       })();
     </script>
 
-    <script type="module">
-      for (const src of <%=JSON.stringify(htmlWebpackPlugin.files.js)%>) {
-        const script = document.createElement('script');
-        script.src = src;
-        document.head.appendChild(script);
-      }
-    </script>
+    <%= htmlWebpackPlugin.files.js.filter((src) =>
+    src.startsWith('main.')).map((src) => `
+    <script src="${encodeURIComponent(src)}" async></script>
+    `) %>
   </body>
 </html>
