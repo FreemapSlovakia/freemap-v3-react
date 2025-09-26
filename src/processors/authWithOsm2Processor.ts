@@ -7,6 +7,9 @@ export const authWithOsm2Processor: Processor<typeof authWithOsm2> = {
   errorKey: 'auth.logIn.logInError',
   handle: async (...params) =>
     await (
-      await import('./authWithOsm2ProcessorHandler.js')
+      await import(
+        /* webpackChunkName: "auth-with-osm2-processor-handler" */
+        './authWithOsm2ProcessorHandler.js'
+      )
     ).default(...params),
 };

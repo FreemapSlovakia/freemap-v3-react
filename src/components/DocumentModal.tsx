@@ -38,7 +38,10 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
     setLoading(true);
 
-    import(`../documents/${document.key}.${document.lang}.md`)
+    import(
+      /* webpackChunkName: "document-[request]" */
+      `../documents/${document.key}.${document.lang}.md`
+    )
       .then(({ default: content }) => {
         setContent(content);
       })

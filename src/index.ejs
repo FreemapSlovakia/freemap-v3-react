@@ -335,22 +335,18 @@
     </script>
 
     <% if (process.env['SENTRY_DSN']) { %>
-    <script type="module">
-      const dsn = '<%= process.env["SENTRY_DSN"] %>';
-
-      const s = document.createElement('script');
-      s.src = 'https://browser.sentry-cdn.com/7.60.0/bundle.min.js';
-      s.crossOrigin = 'anonymous';
-
-      const scripts = document.getElementsByTagName('script');
-
-      scripts[scripts.length - 1].after(s);
-    </script>
+    <script
+      src="https://browser.sentry-cdn.com/10.15.0/bundle.min.js"
+      crossorigin
+    ></script>
 
     <script type="module">
-      if (typeof Sentry !== 'undefined') {
+      if (
+        typeof Sentry !== 'undefined' &&
+        typeof Object.hasOwn !== 'undefined'
+      ) {
         Sentry.init({
-          dsn,
+          dsn: '<%= process.env["SENTRY_DSN"] %>',
           integrations: [],
           tracesSampleRate: 0,
         });
@@ -396,7 +392,7 @@
 
     <%= htmlWebpackPlugin.files.js.filter((src) =>
     src.startsWith('main.')).map((src) => `
-    <script src="${encodeURIComponent(src)}" async></script>
+    <script src="${src}" defer></script>
     `) %>
   </body>
 </html>

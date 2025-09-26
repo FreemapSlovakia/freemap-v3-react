@@ -17,7 +17,12 @@ export function SupportUsModal({ show }: Props): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
   const lm = useLocalMessages<SupportUsMessages>(
-    () => import(`./translations/${language}.tsx`),
+    () =>
+      import(
+        /* webpackExclude: /\.template\./ */
+        /* webpackChunkName: "support-translation-[request]" */
+        `./translations/${language}.tsx`
+      ),
   );
 
   const m = useMessages();

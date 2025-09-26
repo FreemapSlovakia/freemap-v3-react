@@ -7,6 +7,9 @@ export const authWithGoogleProcessor: Processor<typeof authWithGoogle> = {
   errorKey: 'auth.logIn.logInError',
   handle: async (...params) =>
     await (
-      await import('./authWithGoogleProcessorHandler.js')
+      await import(
+        /* webpackChunkName: "auth-with-google-processor-handler" */
+        './authWithGoogleProcessorHandler.js'
+      )
     ).default(...params),
 };

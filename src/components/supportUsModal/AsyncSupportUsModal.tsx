@@ -3,7 +3,10 @@ import { ShowProps } from '../../hooks/useShow.js';
 import { AsyncModal } from '../AsyncModal.js';
 
 const supportUsModalFactory = () =>
-  import('../../components/supportUsModal/SupportUsModal.js');
+  import(
+    /* webpackChunkName: "support-us-modal" */
+    '../../components/supportUsModal/SupportUsModal.js'
+  );
 
 export function AsyncSupportUsModal({ show }: ShowProps): ReactElement | null {
   return <AsyncModal show={show} factory={supportUsModalFactory} />;

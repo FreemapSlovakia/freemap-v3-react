@@ -7,6 +7,9 @@ export const authDisconnectProcessor: Processor<typeof authDisconnect> = {
   errorKey: 'general.operationError',
   handle: async (...params) =>
     await (
-      await import('./authDisconnectProcessorHandler.js')
+      await import(
+        /* webpackChunkName: "auth-disconnect-processor-handler" */
+        './authDisconnectProcessorHandler.js'
+      )
     ).default(...params),
 };

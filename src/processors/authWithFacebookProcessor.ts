@@ -6,5 +6,10 @@ export const authWithFacebookProcessor: Processor<typeof authWithFacebook> = {
   id: 'lcd',
   errorKey: 'auth.logIn.logInError',
   handle: async (...params) =>
-    (await import('./authWithFacebookProcessorHandler.js')).default(...params),
+    (
+      await import(
+        /* webpackChunkName: "auth-with-facebook-processor-handler" */
+        './authWithFacebookProcessorHandler.js'
+      )
+    ).default(...params),
 };

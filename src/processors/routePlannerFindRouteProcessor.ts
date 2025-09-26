@@ -34,7 +34,10 @@ export const routePlannerFindRouteProcessor: Processor = {
   id: 'routePlanner',
   errorKey: 'routePlanner.fetchingError',
   handle: async (...params) =>
-    (await import('./routePlannerFindRouteProcessorHandler.js')).default(
-      ...params,
-    ),
+    (
+      await import(
+        /* webpackChunkName: "route-planner-find-route-processor-handler" */
+        './routePlannerFindRouteProcessorHandler.js'
+      )
+    ).default(...params),
 };

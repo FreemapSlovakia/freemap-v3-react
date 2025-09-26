@@ -9,7 +9,11 @@ import { DrawingPointsTool } from './DrawingPointsTool.js';
 import { MapDetailsTool } from './MapDetailsTool.js';
 import { SelectionTool } from './SelectionTool.js';
 
-const drawingLinesToolFactory = () => import('./DrawingLinesTool.js');
+const drawingLinesToolFactory = () =>
+  import(
+    /* webpackChunkName: "drawing-lines-tool" */
+    './DrawingLinesTool.js'
+  );
 
 export function Tools(): ReactElement {
   const tool = useAppSelector((state) => state.main.tool);

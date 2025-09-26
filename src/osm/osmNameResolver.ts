@@ -123,10 +123,12 @@ export function resolveGenericName(
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
+  const lc = ['sk', 'cs', 'it', 'hu', 'de', 'pl'].includes(lang) ? lang : 'en';
+
   return import(
-    `./osmTagToNameMapping-${
-      ['sk', 'cs', 'it', 'hu', 'de', 'pl'].includes(lang) ? lang : 'en'
-    }.ts`
+    /* webpackChunkName: "[request]" */
+    /* webpackExclude: /\.template\./ */
+    `./osmTagToNameMapping-${lc}.ts`
   );
 }
 

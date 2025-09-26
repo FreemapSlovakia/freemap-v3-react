@@ -8,10 +8,19 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   handle: async (...params) => {
     return (
       params[0].action.payload.target === 'garmin'
-        ? await import('../export/garminExportProcessorHandler.js')
+        ? await import(
+            /* webpackChunkName: "garmin-export-processor-handler" */
+            '../export/garminExportProcessorHandler.js'
+          )
         : params[0].action.payload.type === 'gpx'
-          ? await import('../export/gpxExportProcessorHandler.js')
-          : await import('../export/geojsonExportProcessorHandler.js')
+          ? await import(
+              /* webpackChunkName: "gpx-export-processor-handler" */
+              '../export/gpxExportProcessorHandler.js'
+            )
+          : await import(
+              /* webpackChunkName: "geojson-export-processor-handler" */
+              '../export/geojsonExportProcessorHandler.js'
+            )
     ).default(...params);
   },
 };

@@ -74,6 +74,7 @@ const config: Configuration = {
   },
   optimization: {
     // moduleIds: 'deterministic',
+    // chunkIds: 'named',
     minimizer: ['...', new CssMinimizerPlugin()],
   },
   // more info: https://webpack.js.org/configuration/devtool/

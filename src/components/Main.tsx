@@ -61,95 +61,223 @@ import { MapContextMenu } from './MapContextMenu.js';
 import { MapsMenu } from './MapsMenu.js';
 import { Results } from './Results.js';
 import RoutePointSelection from './RoutePointSelection.js';
+import { SearchSelection } from './SearchSelection.js';
 import { Toolbar } from './Toolbar.js';
 import { ToolMenu } from './ToolMenu.js';
 import { Tools } from './Tools.js';
 import { TrackingSelection } from './TrackingSelection.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
 import { WikiLayer } from './WikiLayer.js';
-import { SearchSelection } from './SearchSelection.js';
 
-const objectsMenuFactory = () => import('./ObjectsMenu.js');
+const objectsMenuFactory = () =>
+  import(
+    /* webpackChunkName: "objects-menu" */
+    './ObjectsMenu.js'
+  );
 
-const routePlannerMenuFactory = () => import('./RoutePlannerMenu.js');
+const routePlannerMenuFactory = () =>
+  import(
+    /* webpackChunkName: "route-planner-menu" */
+    './RoutePlannerMenu.js'
+  );
 
-const trackViewerMenuFactory = () => import('./TrackViewerMenu.js');
+const trackViewerMenuFactory = () =>
+  import(
+    /* webpackChunkName: "track-viewer-menu" */
+    './TrackViewerMenu.js'
+  );
 
-const changesetsMenuFactory = () => import('./ChangesetsMenu.js');
+const changesetsMenuFactory = () =>
+  import(
+    /* webpackChunkName: "changesets-menu" */
+    './ChangesetsMenu.js'
+  );
 
-const drawingMenuFactory = () => import('./DrawingMenu.js');
+const drawingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "drawing-menu" */
+    './DrawingMenu.js'
+  );
 
-const drawingLineSelectionFactory = () => import('./DrawingLineSelection.js');
+const drawingLineSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "drawing-line-selection" */
+    './DrawingLineSelection.js'
+  );
 
 const drawingLinePointSelectionFactory = () =>
-  import('./DrawingLinePointSelection.js');
+  import(
+    /* webpackChunkName: "drawing-line-point-selection" */
+    './DrawingLinePointSelection.js'
+  );
 
-const drawingPointSelectionFactory = () => import('./DrawingPointSelection.js');
+const drawingPointSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "drawing-point-selection" */
+    './DrawingPointSelection.js'
+  );
 
-const objectSelectionFactory = () => import('./ObjectSelection.js');
+const objectSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "object-selection" */
+    './ObjectSelection.js'
+  );
 
 const galleryPositionPickingMenuFactory = () =>
-  import('./gallery/GalleryPositionPickingMenu.js');
+  import(
+    /* webpackChunkName: "gallery-position-picking-menu" */
+    './gallery/GalleryPositionPickingMenu.js'
+  );
 
 const galleryShowPositionMenuFactory = () =>
-  import('./gallery/GalleryShowPositionMenu.js');
+  import(
+    /* webpackChunkName: "gallery-show-position-menu" */
+    './gallery/GalleryShowPositionMenu.js'
+  );
 
 const homeLocationPickingMenuFactory = () =>
-  import('./HomeLocationPickingMenu.js');
+  import(
+    /* webpackChunkName: "home-location-picking-menu" */
+    './HomeLocationPickingMenu.js'
+  );
 
-const galleryMenuFactory = () => import('./gallery/GalleryMenu.js');
+const galleryMenuFactory = () =>
+  import(
+    /* webpackChunkName: "gallery-menu" */
+    './gallery/GalleryMenu.js'
+  );
 
-const adFactory = () => import('./Ad.js');
+const adFactory = () =>
+  import(
+    /* webpackChunkName: "ad" */
+    './Ad.js'
+  );
 
 const shadingControlFactory = () =>
-  import('./parameterizedShading/ShadingControl.js');
+  import(
+    /* webpackChunkName: "shading-control" */
+    './parameterizedShading/ShadingControl.js'
+  );
 
-const elevationChartFactory = () => import('./ElevationChart.js');
+const elevationChartFactory = () =>
+  import(
+    /* webpackChunkName: "elevation-chart" */
+    './ElevationChart.js'
+  );
 
-const trackingModalFactory = () => import('./tracking/TrackingModal.js');
+const trackingModalFactory = () =>
+  import(
+    /* webpackChunkName: "tracking-modal" */
+    './tracking/TrackingModal.js'
+  );
 
-const accountModalFactory = () => import('./AccountModal.js');
+const accountModalFactory = () =>
+  import(
+    /* webpackChunkName: "account-modal" */
+    './AccountModal.js'
+  );
 
-const downloadMapModalFactory = () => import('./DownloadMapModal.js');
+const downloadMapModalFactory = () =>
+  import(
+    /* webpackChunkName: "download-map-modal" */
+    './DownloadMapModal.js'
+  );
 
 const mapSettingsModalFactory = () =>
-  import('./mapSettings/MapSettingsModal.js');
+  import(
+    /* webpackChunkName: "map-settings-modal" */
+    './mapSettings/MapSettingsModal.js'
+  );
 
-const embedMapModalFactory = () => import('./EmbedMapModal.js');
+const embedMapModalFactory = () =>
+  import(
+    /* webpackChunkName: "embed-map-modal" */
+    './EmbedMapModal.js'
+  );
 
-const exportGpxModalFactory = () => import('./ExportMapFeaturesModal.js');
+const exportGpxModalFactory = () =>
+  import(
+    /* webpackChunkName: "export-map-features-modal" */
+    './ExportMapFeaturesModal.js'
+  );
 
-const exportMapModalFactory = () => import('./ExportMapModal.js');
+const exportMapModalFactory = () =>
+  import(
+    /* webpackChunkName: "export-map-modal" */
+    './ExportMapModal.js'
+  );
 
-const documentModalFactory = () => import('./DocumentModal.js');
+const documentModalFactory = () =>
+  import(
+    /* webpackChunkName: "document-modal" */
+    './DocumentModal.js'
+  );
 
-const aboutModalFactory = () => import('./AboutModal.js');
+const aboutModalFactory = () =>
+  import(
+    /* webpackChunkName: "about-modal" */
+    './AboutModal.js'
+  );
 
-const buyCreditModalFactory = () => import('./BuyCreditsModal.js');
+const buyCreditModalFactory = () =>
+  import(
+    /* webpackChunkName: "buy-credits-modal" */
+    './BuyCreditsModal.js'
+  );
 
 const supportUsModalFactory = () =>
-  import('./supportUsModal/SupportUsModal.js');
+  import(
+    /* webpackChunkName: "support-us-modal" */
+    './supportUsModal/SupportUsModal.js'
+  );
 
-const legendModalFactory = () => import('./LegendModal.js');
+const legendModalFactory = () =>
+  import(
+    /* webpackChunkName: "legend-modal" */
+    './LegendModal.js'
+  );
 
 const currentDrawingPropertiesModalFactory = () =>
-  import('./CurrentDrawingPropertiesModal.js');
+  import(
+    /* webpackChunkName: "current-drawing-properties-modal" */
+    './CurrentDrawingPropertiesModal.js'
+  );
 
 const trackViewerUploadModalFactory = () =>
-  import('./TrackViewerUploadModal.js');
+  import(
+    /* webpackChunkName: "track-viewer-upload-modal" */
+    './TrackViewerUploadModal.js'
+  );
 
-const loginModalFactory = () => import('./LoginModal.js');
+const loginModalFactory = () =>
+  import(
+    /* webpackChunkName: "login-modal" */
+    './LoginModal.js'
+  );
 
-const mapsModalFactory = () => import('./MapsModal.js');
+const mapsModalFactory = () =>
+  import(
+    /* webpackChunkName: "maps-modal" */
+    './MapsModal.js'
+  );
 
 const premiumActivationModalFactory = () =>
-  import('./PremiumActivationModal.js');
+  import(
+    /* webpackChunkName: "premium-activation-modal" */
+    './PremiumActivationModal.js'
+  );
 
 const galleryFilterModalFactory = () =>
-  import('./gallery/GalleryFilterModal.js');
+  import(
+    /* webpackChunkName: "gallery-filter-modal" */
+    './gallery/GalleryFilterModal.js'
+  );
 
 const predefinedDrawingPropertiesModalFactory = () =>
-  import('./PredefinedDrawingPropertiesModal.js');
+  import(
+    /* webpackChunkName: "predefined-drawing-properties-modal" */
+    './PredefinedDrawingPropertiesModal.js'
+  );
 
 export function Main(): ReactElement {
   const m = useMessages();

@@ -16,7 +16,11 @@ export const l10nSetLanguageProcessor: Processor = {
     const language = getEffectiveChosenLanguage(chosenLanguage);
 
     window.translations = (
-      await import(`../translations/${language}.tsx`)
+      await import(
+        /* webpackExclude: /\.template\./ */
+        /* webpackChunkName: "translation-[request]" */
+        `../translations/${language}.tsx`
+      )
     ).default;
 
     dispatch(l10nSetLanguage(language));
