@@ -1,21 +1,21 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  mapDetailsSetSources,
+  mapDetailsExcludeSources,
   MapDetailsSource,
 } from '../actions/mapDetailsActions.js';
 
 export interface MapDetailsState {
-  sources: MapDetailsSource[];
+  excludeSources: MapDetailsSource[];
 }
 
 export const mapDetailsInitialState: MapDetailsState = {
-  sources: ['reverse', 'nearby', 'surrounding'],
+  excludeSources: [],
 };
 
 export const mapDetailsReducer = createReducer(
   mapDetailsInitialState,
   (builder) =>
-    builder.addCase(mapDetailsSetSources, (state, { payload }) => {
-      state.sources = payload;
+    builder.addCase(mapDetailsExcludeSources, (state, { payload }) => {
+      state.excludeSources = payload;
     }),
 );

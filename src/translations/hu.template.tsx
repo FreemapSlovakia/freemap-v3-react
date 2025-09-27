@@ -4,18 +4,15 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './hu-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -601,19 +598,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Fordított geokódolás',
-      nearby: 'Közeli objektumok',
-      surrounding: 'Tartalmazó objektumok',
-    },
     notFound: 'Itt nem találtunk semmit.',
 
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt a részletek lekérésekor', err),
 
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Megnyitás az OpenStreetMap.org oldalon"
         historyText="előzmények"
         editInJosmText="Szerkesztés JOSM-ben"
@@ -674,6 +666,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
     result: 'Találat',
+    sources: {
+      'nominatim-reverse': 'Fordított geokódolás',
+      'overpass-nearby': 'Közeli objektumok',
+      'overpass-surrounding': 'Tartalmazó objektumok',
+    },
   },
 
   embed: {

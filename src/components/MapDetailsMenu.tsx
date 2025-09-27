@@ -1,7 +1,10 @@
 import { useState, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { mapDetailsSetSources } from '../actions/mapDetailsActions.js';
+import {
+  mapDetailsExcludeSources,
+  MapDetailsSource,
+} from '../actions/mapDetailsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
@@ -20,7 +23,9 @@ export function MapDetailsMenu(): ReactElement | null {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const sources = new Set(useAppSelector((state) => state.mapDetails.sources));
+  const excludeSources = new Set(
+    useAppSelector((state) => state.mapDetails.excludeSources),
+  );
 
   const activeWmsLayerDefs = [
     ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
@@ -38,10 +43,10 @@ export function MapDetailsMenu(): ReactElement | null {
         onSelect={(selection, e) => {
           e.preventDefault();
           dispatch(
-            mapDetailsSetSources(
-              sources.has(selection as 'wms:')
-                ? [...sources].filter((source) => source !== selection)
-                : [...sources, selection as 'wms:'],
+            mapDetailsExcludeSources(
+              excludeSources.has(selection as 'wms:')
+                ? [...excludeSources].filter((source) => source !== selection)
+                : [...excludeSources, selection as 'wms:'],
             ),
           );
         }}
@@ -54,15 +59,23 @@ export function MapDetailsMenu(): ReactElement | null {
         </Dropdown.Toggle>
 
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          {(['reverse', 'nearby', 'surrounding'] as const).map((source) => (
+          {(
+            [
+              'nominatim-reverse',
+              'overpass-nearby',
+              'overpass-surrounding',
+            ] as MapDetailsSource[]
+          ).map((source) => (
             <Dropdown.Item
               as="button"
               key={source}
               eventKey={source}
-              active={sources.has(source)}
+              active={!excludeSources.has(source as MapDetailsSource)}
             >
-              <Checkbox value={sources.has(source)} />{' '}
-              {m?.mapDetails.sourceItems[source]}
+              <Checkbox
+                value={!excludeSources.has(source as MapDetailsSource)}
+              />{' '}
+              {m?.search.sources[source]}
             </Dropdown.Item>
           ))}
 
@@ -71,9 +84,9 @@ export function MapDetailsMenu(): ReactElement | null {
               as="button"
               key={def.type}
               eventKey={`wms:${def.type}`}
-              active={sources.has(`wms:${def.type}`)}
+              active={!excludeSources.has(`wms:${def.type}`)}
             >
-              <Checkbox value={sources.has(`wms:${def.type}`)} />{' '}
+              <Checkbox value={!excludeSources.has(`wms:${def.type}`)} />{' '}
               {def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)
             </Dropdown.Item>
           ))}

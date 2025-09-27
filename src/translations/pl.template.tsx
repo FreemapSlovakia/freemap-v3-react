@@ -4,18 +4,15 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './pl-shared.js';
-import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('pl', {
   minimumFractionDigits: 0,
@@ -581,17 +578,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Odwrotne geokodowanie',
-      nearby: 'Obiekty w pobliżu',
-      surrounding: 'Obiekty zawierające',
-    },
     notFound: 'Nic tu nie znaleziono.',
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas pobierania szczegółów', err),
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Otwórz na OpenStreetMap.org"
         historyText="historia"
         editInJosmText="Edytuj w JOSM"
@@ -644,6 +636,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Szukaj',
     placeholder: 'Szukaj na mapie',
     result: 'Wynik',
+    sources: {
+      'nominatim-reverse': 'Odwrotne geokodowanie',
+      'overpass-nearby': 'Obiekty w pobliżu',
+      'overpass-surrounding': 'Obiekty zawierające',
+    },
   },
 
   embed: {

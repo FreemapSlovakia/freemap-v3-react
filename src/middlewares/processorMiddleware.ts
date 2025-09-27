@@ -136,14 +136,14 @@ export function createProcessorMiddleware() {
                   err.message,
                 );
               } else {
-                console.log('Error key: ' + errorKey);
+                console.log('Error key: ', errorKey);
 
                 console.error(err);
 
                 dispatch(
                   toastsAdd({
                     id: id ?? Math.random().toString(36).slice(2),
-                    messageKey: errorKey,
+                    messageKey: errorKey ?? 'general.operationError',
                     messageParams: { err },
                     style: 'danger',
                   }),

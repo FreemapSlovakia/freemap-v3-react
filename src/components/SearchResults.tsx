@@ -11,8 +11,9 @@ import {
 import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { searchSelectResult } from '../actions/searchActions.js';
+import { searchSelectResult, SearchSource } from '../actions/searchActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
+import { useMessages } from '../l10nInjector.js';
 import {
   getGenericNameFromOsmElement,
   getNameFromOsmElement,
@@ -26,43 +27,66 @@ import {
   MarkerLeafletIcon,
 } from './RichMarker.js';
 
-function pointToLayer(feature: Feature, latLng: LatLng) {
-  const img = resolveGenericName(osmTagToIconMapping, feature.properties ?? {});
+export function SearchResults(): ReactElement | null {
+  const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
-  return marker(latLng, {
-    icon: new MarkerLeafletIcon({
-      ...markerIconOptions,
-      icon: (
-        <MarkerIcon
-          color={window.fmHeadless?.searchResultStyle?.color ?? '#3388ff'}
-          imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
-          image={img[0]}
-        />
-      ),
-    }),
-  });
-}
+  const isOsm = selectedResult?.id.type === 'osm';
 
-function annotateFeature(
-  feature: Feature,
-  layer: Layer,
-  language: string,
-  isBg: boolean,
-) {
-  getGenericNameFromOsmElement(feature.properties ?? {}, 'node', language).then(
-    (genericName) => {
-      const name = getNameFromOsmElement(feature.properties ?? {}, language);
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const pointToLayer = useCallback(
+    (feature: Feature, latLng: LatLng) => {
+      const img = isOsm
+        ? resolveGenericName(osmTagToIconMapping, feature.properties ?? {})
+        : [];
+
+      return marker(latLng, {
+        icon: new MarkerLeafletIcon({
+          ...markerIconOptions,
+          icon: (
+            <MarkerIcon
+              color={window.fmHeadless?.searchResultStyle?.color ?? '#3388ff'}
+              imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
+              image={img[0]}
+            />
+          ),
+        }),
+      });
+    },
+    [isOsm],
+  );
+
+  const annotateFeature = useCallback(
+    async (feature: Feature, layer: Layer, isBg: boolean) => {
+      const genericName =
+        feature.properties?.['__fm_genericName'] ||
+        (isOsm &&
+          (await getGenericNameFromOsmElement(
+            feature.properties ?? {},
+            feature.geometry.type === 'Point'
+              ? 'node'
+              : feature.geometry.type === 'LineString'
+                ? 'way'
+                : 'relation',
+            language,
+          )));
+
+      const displayName =
+        feature.properties?.['__fm_displayName'] ||
+        (isOsm && getNameFromOsmElement(feature.properties ?? {}, language));
 
       const isPoi = !(layer instanceof Path || layer instanceof Polygon);
 
-      layer.bindTooltip(
-        escapeHtml(genericName) +
-          (name ? ' <i>' + escapeHtml(name) + '</i>' : ''),
-        {
-          direction: layer instanceof Polygon ? 'center' : 'top',
-          offset: isPoi ? [0, -36] : [0, 0],
-        },
-      );
+      if (displayName || genericName) {
+        layer.bindTooltip(
+          escapeHtml(genericName) +
+            (displayName ? ' <i>' + escapeHtml(displayName) + '</i>' : ''),
+          {
+            direction: layer instanceof Polygon ? 'center' : 'top',
+            offset: isPoi ? [0, -36] : [0, 0],
+          },
+        );
+      }
 
       layer.addEventListener('mouseover', () => {
         if (layer instanceof Path) {
@@ -76,31 +100,26 @@ function annotateFeature(
         }
       });
     },
+    [isOsm, language],
   );
-}
-
-export function SearchResults(): ReactElement | null {
-  const selectedResult = useAppSelector((state) => state.search.selectedResult);
 
   const selectedResultSeq = useAppSelector(
     (state) => state.search.searchResultSeq,
   );
 
-  const language = useAppSelector((state) => state.l10n.language);
-
   const dispatch = useDispatch();
 
   const cachedAnnotateFeatureBg = useCallback(
-    (feature: Feature, layer: Layer) =>
-      annotateFeature(feature, layer, language, true),
-    [language],
+    (feature: Feature, layer: Layer) => annotateFeature(feature, layer, true),
+    [annotateFeature],
   );
 
   const cachedAnnotateFeature = useCallback(
-    (feature: Feature, layer: Layer) =>
-      annotateFeature(feature, layer, language, false),
-    [language],
+    (feature: Feature, layer: Layer) => annotateFeature(feature, layer, false),
+    [annotateFeature],
   );
+
+  const m = useMessages();
 
   if (!selectedResult?.geojson) {
     return null;
@@ -120,18 +139,34 @@ export function SearchResults(): ReactElement | null {
     },
   };
 
+  const geojson =
+    selectedResult.geojson.type === 'Feature'
+      ? {
+          ...selectedResult.geojson,
+          properties: deleteNonstringValues({
+            ...selectedResult.geojson.properties,
+            __fm_genericName: (
+              ['bbox', 'coords', 'tile', 'geojson'] as SearchSource[]
+            ).includes(selectedResult.source)
+              ? m?.search.sources[selectedResult.source]
+              : selectedResult.genericName,
+            __fm_displayName: selectedResult.displayName,
+          }),
+        }
+      : selectedResult.geojson;
+
   return (
     <Fragment key={language + selectedResultSeq}>
       <GeoJSON
         interactive={false}
-        data={selectedResult.geojson}
+        data={geojson}
         style={{ weight: 5 }}
         filter={(feature) => feature.geometry?.type === 'LineString'}
       />
 
       <GeoJSON
         interactive
-        data={selectedResult.geojson}
+        data={geojson}
         style={{ weight: 15, opacity: 0, color: '#fff' }}
         onEachFeature={cachedAnnotateFeatureBg}
         filter={(feature) => feature.geometry?.type === 'LineString'}
@@ -140,7 +175,7 @@ export function SearchResults(): ReactElement | null {
 
       <GeoJSON
         interactive
-        data={selectedResult.geojson}
+        data={geojson}
         style={window.fmHeadless?.searchResultStyle ?? { weight: 5 }}
         pointToLayer={pointToLayer}
         onEachFeature={cachedAnnotateFeature}
@@ -149,4 +184,14 @@ export function SearchResults(): ReactElement | null {
       />
     </Fragment>
   );
+}
+
+function deleteNonstringValues(props: Record<string, unknown>) {
+  for (const key in props) {
+    if (typeof props[key] !== 'string') {
+      delete props[key];
+    }
+  }
+
+  return props;
 }

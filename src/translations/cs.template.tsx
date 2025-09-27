@@ -4,18 +4,15 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './cs-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 0,
@@ -568,17 +565,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapDetails: {
-    sourceItems: {
-      reverse: 'Reverzní geokódování',
-      nearby: 'Blízké objekty',
-      surrounding: 'Obsahující objekty',
-    },
     notFound: 'Nic se zde nenašlo.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při získávání detailů', err),
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Otevřít na OpenStreetMap.org"
         historyText="historie"
         editInJosmText="Editovat v JOSM"
@@ -634,6 +626,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hledat',
     placeholder: 'Hledat v mapě',
     result: 'Nález',
+    sources: {
+      'nominatim-reverse': 'Reverzní geokódování',
+      'overpass-nearby': 'Blízké objekty',
+      'overpass-surrounding': 'Obsahující objekty',
+    },
   },
 
   embed: {

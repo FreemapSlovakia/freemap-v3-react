@@ -8,10 +8,7 @@ import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './en-shared.js';
 import { Messages, addError } from './messagesInterface.js';
@@ -556,17 +553,13 @@ const messages: Messages = {
 
   mapDetails: {
     sources: 'Sources',
-    sourceItems: {
-      reverse: 'Reverse geocoding',
-      nearby: 'Nearby features',
-      surrounding: 'Containing features',
-    },
+    source: 'Source',
     notFound: 'Nothing found here.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error fetching details', err),
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Open at OpenStreetMap.org"
         historyText="history"
         editInJosmText="Edit in JOSM"
@@ -616,6 +609,19 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
     result: 'Lookup',
+    sources: {
+      bbox: 'Bounding Box',
+      geojson: 'GeoJSON',
+      tile: 'Tile',
+      coords: 'Coordinates',
+      'overpass-nearby': 'Nearby ',
+      'overpass-surrounding': 'Containing features',
+      'overpass-objects': 'Nearby features',
+      'nominatim-forward': 'Forward geocoding',
+      'nominatim-reverse': 'Reverse geocoding',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
+    },
   },
 
   embed: {

@@ -13,21 +13,19 @@ import { getMessageByKey, useMessages } from '../l10nInjector.js';
 import '../styles/toasts.scss';
 import { Messages } from '../translations/messagesInterface.js';
 
-function tx(m: Messages | undefined, { name, nameKey }: ToastAction) {
-  if (name !== undefined) {
-    return name;
+function tx(m: Messages | undefined, toastAction: ToastAction) {
+  if ('name' in toastAction) {
+    return toastAction.name;
   }
 
-  if (nameKey) {
-    const v = getMessageByKey(m, nameKey);
+  const v = getMessageByKey(m, toastAction.nameKey);
 
-    if (typeof v === 'string') {
-      return v;
-    }
+  if (typeof v === 'string') {
+    return v;
+  }
 
-    if (v instanceof Function) {
-      return v.call(undefined);
-    }
+  if (v instanceof Function) {
+    return v.call(undefined);
   }
 
   return '…';
@@ -44,28 +42,18 @@ export function Toasts(): ReactElement {
     () =>
       Object.values(toasts)
         .map(
-          ({
-            id,
-            actions,
-            style,
-            message,
-            messageKey,
-            messageParams,
-            noClose,
-            timeout,
-            timeoutSince,
-          }) => {
+          ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
             let msg: ReactNode;
 
-            if (message !== undefined) {
-              msg = message;
-            } else if (messageKey) {
-              const v = getMessageByKey(m, messageKey);
+            if ('message' in rest) {
+              msg = rest.message;
+            } else {
+              const v = getMessageByKey(m, rest.messageKey);
 
               if (typeof v === 'string') {
                 msg = v;
-              } else if (v instanceof Function) {
-                msg = v.call(undefined, messageParams);
+              } else if (typeof v === 'function') {
+                msg = v.call(undefined, rest.messageParams);
               } else {
                 msg = '…';
               }

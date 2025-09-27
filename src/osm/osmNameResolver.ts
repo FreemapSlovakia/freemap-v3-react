@@ -166,19 +166,13 @@ export function getGenericNameFromOsmElementSync(
     gn = color + ' ' + gn;
   }
 
-  return (
-    gn ?? (process.env['NODE_ENV'] === 'production' ? '' : JSON.stringify(tags))
-  );
+  return gn ?? '';
 }
 
 export function getNameFromOsmElement(
   tags: Record<string, string>,
   lang: string,
 ): string {
-  if (tags['display_name']) {
-    return tags['display_name'];
-  }
-
   const langName = tags['name:' + lang];
 
   const name = tags['name'];

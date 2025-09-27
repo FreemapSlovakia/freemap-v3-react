@@ -1,11 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
 
 export type MapDetailsSource =
-  | 'reverse'
-  | 'nearby'
-  | 'surrounding'
+  | 'nominatim-reverse'
+  | 'overpass-nearby'
+  | 'overpass-surrounding'
   | `wms:${string}`;
 
-export const mapDetailsSetSources = createAction<MapDetailsSource[]>(
-  'mapDetails/setSources',
+export const mapDetailsExcludeSources = createAction<MapDetailsSource[]>(
+  'mapDetails/excludeSources',
 );

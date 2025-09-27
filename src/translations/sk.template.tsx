@@ -4,18 +4,15 @@ import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
+import { CreditsText } from '../components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
 import { ElevationInfo } from '../components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import {
-  ObjectDetailBasicProps,
-  ObjectDetails,
-} from '../components/ObjectDetails.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
-import { CreditsText } from '../components/CreditsText.js';
 
 const nf00 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -597,17 +594,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapDetails: {
     sources: 'Zdroje',
-    sourceItems: {
-      reverse: 'Reverzné geokódovanie',
-      nearby: 'Blízke objekty',
-      surrounding: 'Obsahujúce objekty',
-    },
+    source: 'Zdroj',
     notFound: 'Nič sa tu nenašlo.',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba pri získavaní detailov', err),
-    detail: (props: ObjectDetailBasicProps) => (
+    detail: ({ result }) => (
       <ObjectDetails
-        {...props}
+        result={result}
         openText="Otvoriť na OpenStreetMap.org"
         historyText="história"
         editInJosmText="Editovať v JOSM"
@@ -663,6 +656,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hľadať',
     placeholder: 'Hľadať v mape',
     result: 'Nález',
+    sources: {
+      'nominatim-reverse': 'Reverzné geokódovanie',
+      'overpass-nearby': 'Blízke objekty',
+      'overpass-surrounding': 'Obsahujúce objekty',
+      bbox: 'Ohraničujúci box',
+      geojson: 'GeoJSON',
+      tile: 'Dlaždica',
+      coords: 'Súradnice',
+      'overpass-objects': 'Blízke prvky',
+      'nominatim-forward': 'Geokódovanie',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
+    },
   },
 
   embed: {

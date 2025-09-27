@@ -505,7 +505,8 @@ export function Main(): ReactElement {
 
   const askingCookieConsent = useAppSelector((state) =>
     Object.values(state.toasts.toasts).some(
-      (toast) => toast.messageKey === 'main.cookieConsent',
+      (toast) =>
+        'messageKey' in toast && toast.messageKey === 'main.cookieConsent',
     ),
   );
 
@@ -628,7 +629,9 @@ export function Main(): ReactElement {
                   <ToolMenu />
                 ))}
 
-              {selectionMenu === 'draw-line-poly' ? (
+              {selectionMenu === 'search' ? (
+                <SearchSelection />
+              ) : selectionMenu === 'draw-line-poly' ? (
                 <AsyncComponent factory={drawingLineSelectionFactory} />
               ) : selectionMenu === 'line-point' ? (
                 <AsyncComponent factory={drawingLinePointSelectionFactory} />
@@ -640,8 +643,6 @@ export function Main(): ReactElement {
                 <TrackingSelection />
               ) : selectionMenu === 'route-point' ? (
                 <RoutePointSelection />
-              ) : selectionMenu === 'search' ? (
-                <SearchSelection />
               ) : null}
 
               {pickingPosition && (

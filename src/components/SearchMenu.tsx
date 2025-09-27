@@ -26,6 +26,7 @@ import {
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
+  SearchSource,
 } from '../actions/searchActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
@@ -37,21 +38,36 @@ import {
   resolveGenericName,
 } from '../osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
-import { useOsmNameResolver } from '../osm/useOsmNameResolver.js';
+import { useGenericNameResolver } from '../osm/useGenericNameResolver.js';
 import '../styles/search.scss';
-import { FeatureId, featureIdsEqual } from '../types/featureId.js';
+import {
+  FeatureId,
+  featureIdsEqual,
+  OsmFeatureId,
+  stringifyFeatureId,
+} from '../types/featureId.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { SourceName } from './SourceName.js';
 
 type Props = {
   hidden?: boolean;
   preventShortcut?: boolean;
 };
 
-const typeSymbol = {
-  way: <MdPolyline />,
+const typeSymbol: Record<OsmFeatureId['elementType'], ReactNode> = {
   node: <GoDotFill />,
+  way: <MdPolyline />,
   relation: <FaDrawPolygon />,
-  other: '',
+};
+
+const wmsShapeSymbol: Record<string, ReactNode> = {
+  Point: <GoDotFill />,
+  MultiPoint: <GoDotFill />,
+  LineString: <MdPolyline />,
+  MultiLineString: <MdPolyline />,
+  Polyline: <MdPolyline />,
+  Polygon: <FaDrawPolygon />,
+  MultiPolygon: <FaDrawPolygon />,
 };
 
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
@@ -187,7 +203,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  let prevSource: SearchResult['source'] | undefined = undefined;
+  let prevSource: SearchSource | undefined = undefined;
 
   return (
     <Form
@@ -246,11 +262,20 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             <div />
 
             {results.map((result) => {
-              const id = JSON.stringify(result.id);
+              const id = stringifyFeatureId(result.id);
 
               const divider =
-                prevSource && prevSource !== result.source ? (
-                  <Dropdown.Divider />
+                !(
+                  [
+                    'nominatim-forward',
+                    'bbox',
+                    'coords',
+                    'geojson',
+                  ] as SearchSource[]
+                ).includes(result.source) && prevSource !== result.source ? (
+                  <div className="dropdown-caption-divider">
+                    <SourceName result={result} />
+                  </div>
                 ) : null;
 
               prevSource = result.source;
@@ -281,20 +306,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 function Result({ value }: { value: SearchResult }) {
   const m = useMessages();
 
-  const tags =
-    (value.geojson.type === 'Feature'
-      ? value.geojson.properties
-      : value.geojson.metadata) ?? {};
+  const tags = value.geojson.properties ?? {};
 
-  // we can't have hook in condition so we hack arguments
-  const genericName = useOsmNameResolver(
-    value.id.type === 'other' ? 'node' : value.id.type,
-    value.id.type === 'other' ? {} : tags,
-  );
+  const genericName = useGenericNameResolver(value);
 
   const language = useEffectiveChosenLanguage();
 
-  const name = getNameFromOsmElement(tags, language);
+  const name = value.displayName || getNameFromOsmElement(tags, language);
 
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
@@ -320,12 +338,12 @@ function Result({ value }: { value: SearchResult }) {
           {genericName || m?.general.unnamed}
         </div>
 
-        <div
-          style={{
-            opacity: 0.25,
-          }}
-        >
-          {typeSymbol[value.id.type]}
+        <div style={{ opacity: 0.25 }}>
+          {value.id.type === 'osm'
+            ? typeSymbol[value.id.elementType]
+            : value.id.type === 'wms' && tags['Shape']
+              ? (wmsShapeSymbol[tags['Shape'] as string] ?? null)
+              : null}
         </div>
       </div>
 

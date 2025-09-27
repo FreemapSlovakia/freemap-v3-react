@@ -7,11 +7,11 @@ import {
 } from 'react';
 import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
 import type { RootAction } from '../actions/index.js';
-import { ResolvedToast } from '../actions/toastsActions.js';
+import { ResolvedToast, ToastAction } from '../actions/toastsActions.js';
 import '../styles/toasts.scss';
 
-interface Props
-  extends Pick<ResolvedToast, 'id' | 'actions' | 'style' | 'noClose'> {
+interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {
+  actions: (Omit<ToastAction, 'nameKey'> & { name: string })[];
   onAction: (id: string, action?: RootAction | RootAction[]) => void;
   onTimeoutStop: (id: string) => void;
   onTimeoutRestart: (id: string) => void;
