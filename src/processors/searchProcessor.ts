@@ -30,13 +30,21 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         latlng[1] >= -180
       ) {
         await (
-          await import('./mapDetailsProcessorHandler.js')
+          await import(
+            /* webpackChunkName: "map-details-processor-handler" */
+            './mapDetailsProcessorHandler.js'
+          )
         ).default(latlng, props.getState, props.dispatch);
 
         return;
       }
     }
 
-    (await import('./searchProcessorHandler.js')).handle(props);
+    (
+      await import(
+        /* webpackChunkName: "search-processor-handler" */
+        './searchProcessorHandler.js'
+      )
+    ).handle(props);
   },
 };

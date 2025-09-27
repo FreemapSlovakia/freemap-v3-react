@@ -6,5 +6,10 @@ export const authWithOsmProcessor: Processor<typeof authWithOsm> = {
   id: 'lcd',
   errorKey: 'auth.logIn.logInError',
   handle: async (...params) =>
-    await (await import('./authWithOsmProcessorHandler.js')).default(...params),
+    await (
+      await import(
+        /* webpackChunkName: "auth-with-osm-processor-handler" */
+        './authWithOsmProcessorHandler.js'
+      )
+    ).default(...params),
 };

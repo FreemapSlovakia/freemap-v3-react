@@ -7,5 +7,10 @@ export const elevationChartProcessor: Processor<
   actionCreator: elevationChartSetTrackGeojson,
   errorKey: 'elevationChart.fetchError',
   handle: async (...params) =>
-    (await import('./elevationChartProcessorHandler.js')).default(...params),
+    (
+      await import(
+        /* webpackChunkName: "elevation-chart-processor-handler" */
+        './elevationChartProcessorHandler.js'
+      )
+    ).default(...params),
 };

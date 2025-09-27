@@ -7,6 +7,9 @@ export const authWithGarminProcessor: Processor<typeof authWithGarmin> = {
   errorKey: 'auth.logIn.logInError',
   handle: async (...params) =>
     await (
-      await import('./authWithGarminProcessorHandler.js')
+      await import(
+        /* webpackChunkName: "auth-with-garmin-processor-handler" */
+        './authWithGarminProcessorHandler.js'
+      )
     ).handle(...params),
 };

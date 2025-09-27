@@ -8,9 +8,17 @@ import { showGalleryViewerSelector } from '../../selectors/mainSelectors.js';
 import '../../styles/gallery.scss';
 import { AsyncModal } from '../AsyncModal.js';
 
-const galleryViewerModalFactory = () => import('./GalleryViewerModal.js');
+const galleryViewerModalFactory = () =>
+  import(
+    /* webpackChunkName: "gallery-viewer-modal" */
+    './GalleryViewerModal.js'
+  );
 
-const galleryUploadModalFactory = () => import('./GalleryUploadModal.js');
+const galleryUploadModalFactory = () =>
+  import(
+    /* webpackChunkName: "gallery-upload-modal" */
+    './GalleryUploadModal.js'
+  );
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();

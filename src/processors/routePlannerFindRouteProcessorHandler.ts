@@ -171,12 +171,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
-  console.log(
-    'HHHHHHH',
-    hash([points, mode, transportType]),
-    getState().routePlanner.hash,
-  );
-
   const segments =
     mode === 'route' &&
     (isPremium(getState().auth.user) ||

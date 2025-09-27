@@ -11,12 +11,22 @@ import { AsyncComponent } from './AsyncComponent.js';
 import { WmsTileLayer } from './WmsTileLayer.js';
 
 const galleryLayerFactory = () =>
-  import('../components/gallery/GalleryLayer.js');
+  import(
+    /* webpackChunkName: "gallery-layer" */
+    '../components/gallery/GalleryLayer.js'
+  );
 
 const shadingLayerFactory = () =>
-  import('./parameterizedShading/ShadingLayer.js');
+  import(
+    /* webpackChunkName: "shading-layer" */
+    './parameterizedShading/ShadingLayer.js'
+  );
 
-const maplibreLayerFactory = () => import('./MaplibreLayer.js');
+const maplibreLayerFactory = () =>
+  import(
+    /* webpackChunkName: "maplibre-layer" */
+    './MaplibreLayer.js'
+  );
 
 export function Layers(): ReactElement | null {
   const layers = useAppSelector((state) => state.map.layers);

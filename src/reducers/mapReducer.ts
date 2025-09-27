@@ -66,7 +66,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         action.payload.forever
           ? 'legacyMapWarningSuppressions'
           : 'tempLegacyMapWarningSuppressions'
-      ].push(action.type);
+      ].push(action.payload.type);
     })
     .addCase(applySettings, (state, { payload }) => {
       if (payload.layersSettings) {

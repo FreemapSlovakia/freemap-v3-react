@@ -223,7 +223,10 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       return;
     }
 
-    import('../export/garminExport.js').then((x) =>
+    import(
+      /* webpackChunkName: "garmin-export" */
+      '../export/garminExport.js'
+    ).then((x) =>
       setGarminExportables(
         Object.fromEntries(
           Object.entries(x.getExportables()).map(([exportable, tryExport]) => [

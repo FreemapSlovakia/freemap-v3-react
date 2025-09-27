@@ -6,7 +6,7 @@ export const cancelProcessor: Processor = {
     for (const { cancelActions, cancel } of cancelRegister) {
       for (const cancelAction of cancelActions) {
         if (cancelAction.match(action)) {
-          cancel();
+          cancel('Canceled by ' + action.type + ' action');
 
           break;
         }

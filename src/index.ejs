@@ -147,23 +147,8 @@
       );
     </script>
 
-    <% if (process.env['SENTRY_DSN']) { %>
-    <script
-      src="https://browser.sentry-cdn.com/7.60.0/bundle.min.js"
-      crossorigin="anonymous"
-    ></script>
-
-    <script>
-      if (typeof Sentry !== 'undefined') {
-        Sentry.init({
-          dsn: '<%= process.env["SENTRY_DSN"] %>',
-          tracesSampleRate: 0.01,
-        });
-      }
-    </script>
-    <% } %>
-
     <% if (process.env['MATOMO_SITE_ID']) { %>
+    <!-- prettier-ignore -->
     <script>
       var _paq = (window._paq = window._paq || []);
       _paq.push(['requireCookieConsent']);
@@ -228,14 +213,61 @@
     </noscript>
     <!-- End Facebook Pixel Code -->
 
+    <script type="module">
+      function applyTheme(t) {
+        let theme;
+
+        try {
+          if (t === 'auto') {
+            localStorage.removeItem('fm.theme');
+          } else if (t) {
+            localStorage.setItem('fm.theme', t);
+
+            theme = t;
+          } else {
+            theme = localStorage.getItem('fm.theme');
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        const isDark =
+          theme === 'dark' ||
+          (theme !== 'light' &&
+            window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+
+        document.documentElement.setAttribute(
+          'data-bs-theme',
+          isDark ? 'dark' : 'light',
+        );
+      }
+
+      window
+        .matchMedia?.('(prefers-color-scheme: dark)')
+        ?.addEventListener('change', applyTheme);
+
+      applyTheme();
+
+      window.applyTheme = applyTheme;
+    </script>
+
     <style>
-      #app,
-      .init-loader {
+      #app {
         position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
         top: 0;
+      }
+
+      #init-loader {
+        background-color: white;
+        color: #212529;
+      }
+
+      [data-bs-theme='dark'] #init-loader {
+        background-color: #212529;
+        color: #dee2e6;
       }
     </style>
   </head>
@@ -258,6 +290,7 @@
               style="width: 100%; vertical-align: center"
             />
           </div>
+
           <div
             style="
               max-width: 400px;
@@ -287,73 +320,79 @@
     </div>
 
     <% for (const css of htmlWebpackPlugin.files.css) { %>
-    <link itemprop="" rel="stylesheet" href="<%= css %>" />
+    <link rel="stylesheet" href="<%= css %>" />
     <% } %>
 
     <script>
-      function validate_startup(e) {
-        if (e) {
-          e.preventDefault();
-        }
-
-        const app = document.getElementById('app');
-
-        if (
-          !app ||
-          !app.children ||
-          !app.children[0] ||
-          app.children[0].id === 'init-loader'
-        ) {
-          console.error('Startup error.', e);
-
-          (app || document.body).innerHTML =
-            '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
-        }
-      };
-
-      window.addEventListener('error', validate_startup);
-
-      window.addEventListener('load', () => {
-        console.log('Page loaded.');
-
-        window.removeEventListener('error', validate_startup);
-
-        validate_startup();
-
-        delete validate_startup;
-      });
-
-      function applyTheme(t) {
-        if (t === 'auto') {
-          localStorage.removeItem('fm.theme')
-        } else if (t) {
-          localStorage.setItem('fm.theme', t)
-        }
-        
-        const theme = localStorage.getItem('fm.theme');
-
-        const isDark = theme === 'dark' || theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        document.documentElement.setAttribute(
-          'data-bs-theme',
-          isDark ? 'dark' : 'light',
-        );
-      }
-
-      window
-        .matchMedia('(prefers-color-scheme: dark)')
-        .addEventListener('change', applyTheme);
-
-      applyTheme();
-
-      // filter out old browsers
-      [].flatMap(() => null);
-
-      for (const js of <%=JSON.stringify(htmlWebpackPlugin.files.js)%>) {
-        const script = document.createElement('script');
-        script.src = js;
-        document.head.appendChild(script);
+      function _fm_showError() {
+        (document.getElementById('app') || document.body).innerHTML =
+          '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
       }
     </script>
+
+    <script nomodule>
+      _fm_showError();
+    </script>
+
+    <% if (process.env['SENTRY_DSN']) { %>
+    <script
+      src="https://browser.sentry-cdn.com/10.15.0/bundle.min.js"
+      crossorigin
+    ></script>
+
+    <script type="module">
+      if (
+        typeof Sentry !== 'undefined' &&
+        typeof Object.hasOwn !== 'undefined'
+      ) {
+        Sentry.init({
+          dsn: '<%= process.env["SENTRY_DSN"] %>',
+          integrations: [],
+          tracesSampleRate: 0,
+        });
+      }
+    </script>
+    <% } %>
+
+    <script type="module">
+      (() => {
+        function validateStartup(ev) {
+          if (
+            ev instanceof ErrorEvent &&
+            ev.filename &&
+            !ev.filename.startsWith(location.origin)
+          ) {
+            return; // ignore off-origin errors
+          }
+
+          const app = document.getElementById('app');
+
+          const first = app && app.firstElementChild;
+
+          if (!first || first.id === 'init-loader') {
+            console.error('Startup error.', ev);
+
+            _fm_showError();
+          }
+        }
+
+        window.addEventListener('error', validateStartup);
+
+        window.addEventListener('load', () => {
+          console.log('Page loaded.');
+
+          setTimeout(() => {
+            window.removeEventListener('error', validateStartup);
+
+            validateStartup();
+          }, 2000);
+        });
+      })();
+    </script>
+
+    <%= htmlWebpackPlugin.files.js.filter((src) =>
+    src.startsWith('main.')).map((src) => `
+    <script src="${src}" defer></script>
+    `) %>
   </body>
 </html>

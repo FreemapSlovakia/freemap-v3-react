@@ -56,7 +56,12 @@ export function Results(): ReactElement {
 
       {trackGeojson && (
         <AsyncComponent
-          factory={() => import('./TrackViewerResult.js')}
+          factory={() =>
+            import(
+              /* webpackChunkName: "track-viewer-result" */
+              './TrackViewerResult.js'
+            )
+          }
           trackGeojson={trackGeojson}
         />
       )}

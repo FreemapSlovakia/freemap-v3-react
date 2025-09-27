@@ -6,5 +6,10 @@ export const exportMapProcessor: Processor<typeof exportMap> = {
   errorKey: 'mapExport.exportError',
   id: 'mapExport.export',
   handle: async (...params) =>
-    (await import('./mapExportProcessorHandler.js')).default(...params),
+    (
+      await import(
+        /* webpackChunkName: "map-export-processor-handler" */
+        './mapExportProcessorHandler.js'
+      )
+    ).default(...params),
 };

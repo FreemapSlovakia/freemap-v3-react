@@ -31,15 +31,17 @@ export const getCountriesProcessor: Processor = {
 
         dispatch(mapSetCountries(assert<string[]>(await res.json())));
       })().catch((err) => {
-        if (!(err instanceof DOMException && err.name === 'AbortError')) {
-          console.error(err);
-
-          if (getState().map.countries) {
-            dispatch(mapSetCountries(undefined));
-          }
-
-          // TODO toast
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return;
         }
+
+        console.error(err);
+
+        if (getState().map.countries) {
+          dispatch(mapSetCountries(undefined));
+        }
+
+        // TODO toast
       });
     });
   },
