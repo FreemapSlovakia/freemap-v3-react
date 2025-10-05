@@ -1,12 +1,11 @@
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-
-// Import the necessary plugins and parser
 import eslintPluginPrettier from 'eslint-plugin-prettier';
 import eslintPluginReact from 'eslint-plugin-react';
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
+import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
-const cfg = tseslint.config(
+const cfg = defineConfig(
   {
     files: ['src/**/*.ts', 'src/**/*.tsx'],
   },
@@ -28,6 +27,7 @@ const cfg = tseslint.config(
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
     },
+    extends: ['react-hooks/recommended'],
     rules: {
       '@typescript-eslint/no-empty-object-type': 0,
       '@typescript-eslint/method-signature-style': [1, 'property'],
@@ -74,8 +74,6 @@ const cfg = tseslint.config(
       'prefer-arrow-callback': 'warn',
       'prefer-spread': 'warn',
       // 'no-console': 'warn',
-      'react-hooks/exhaustive-deps': 'warn',
-      'react-hooks/rules-of-hooks': 'warn',
       'react/function-component-definition': 'warn',
       'react/jsx-boolean-value': 'warn',
       'react/jsx-curly-brace-presence': 'warn',

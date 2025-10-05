@@ -1,10 +1,10 @@
 import * as toGeoJSON from '@tmcw/togeojson';
+import bbox from '@turf/bbox';
 import { FeatureCollection } from 'geojson';
 import { assert } from 'typia';
 import { trackViewerSetData } from '../actions/trackViewerActions.js';
 import { mapPromise } from '../leafletElementHolder.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
-import bbox from '@turf/bbox';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData

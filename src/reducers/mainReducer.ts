@@ -45,9 +45,9 @@ import {
   toggleLocate,
   Tool,
 } from '../actions/mainActions.js';
+import { searchSelectResult } from '../actions/searchActions.js';
 import { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
-import { searchSelectResult } from '../actions/searchActions.js';
 
 interface Location extends LatLon {
   accuracy: number;
