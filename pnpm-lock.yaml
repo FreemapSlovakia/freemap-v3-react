@@ -83,6 +83,9 @@ importers:
       '@turf/length':
         specifier: ^7.2.0
         version: 7.2.0
+      '@turf/projection':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@turf/simplify':
         specifier: ^7.2.0
         version: 7.2.0

@@ -1,5 +1,6 @@
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
+import { toWgs84 } from '@turf/projection';
 import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
@@ -155,7 +156,13 @@ export async function handle(
           return {
             type: def.type,
             name,
-            info: (await res.json()) as FeatureCollection, // TODO validate
+            info: toWgs84(
+              JSON.parse(
+                (await res.text())
+                  // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
+                  .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
+              ),
+            ) as FeatureCollection, // TODO validate
           };
         }),
       ),
