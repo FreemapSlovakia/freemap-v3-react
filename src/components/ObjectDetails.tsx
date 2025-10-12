@@ -168,7 +168,7 @@ export function ObjectDetails({
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${id.type}/${id.id}`}
+            href={`https://www.openstreetmap.org/${id.elementType}/${id.id}`}
           >
             {openText}
           </a>
@@ -176,7 +176,7 @@ export function ObjectDetails({
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${id.type}/${id.id}/history`}
+            href={`https://www.openstreetmap.org/${id.elementType}/${id.id}/history`}
           >
             {historyText}
           </a>
