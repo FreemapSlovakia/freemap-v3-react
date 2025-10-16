@@ -759,9 +759,10 @@ const messages: Messages = {
       z: 'Parametric shading',
       WDZ: 'Tree Composition',
       WLT: 'Forest Types',
-      WGE: 'Geological Map',
+      WGE: 'Geological',
       WKA: 'Cadastre',
       wka: 'Cadastre',
+      WHC: 'Hydrochemic',
     },
     customBase: 'Custom map',
     type: {

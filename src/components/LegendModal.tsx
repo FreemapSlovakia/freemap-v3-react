@@ -5,7 +5,11 @@ import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
-import { CustomLayerDef, IsWmsLayerDef } from '../mapDefinitions.js';
+import {
+  integratedLayerDefs,
+  IsWmsLayerDef,
+  LayerDef,
+} from '../mapDefinitions.js';
 import LegacyMapsLegend from './LegacyMapsLegend.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';
@@ -25,10 +29,11 @@ export function LegendModal({ show }: Props): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const wmsCustomLayerDefs = useMemo(
+  const wmsLayerDefs = useMemo(
     () =>
-      customLayers.filter(
-        (def): def is CustomLayerDef<IsWmsLayerDef> => def.technology === 'wms',
+      [...customLayers, ...integratedLayerDefs].filter(
+        (def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
+          def.technology === 'wms',
       ),
     [customLayers],
   );
@@ -41,10 +46,10 @@ export function LegendModal({ show }: Props): ReactElement {
         'C',
         'K',
         'X',
-        ...wmsCustomLayerDefs.map((def) => def.type),
+        ...wmsLayerDefs.map((def) => def.type),
       ]),
 
-    [wmsCustomLayerDefs],
+    [wmsLayerDefs],
   );
 
   const activeLegendLayers = layers.filter((layer) => legendLayers.has(layer));
@@ -57,9 +62,7 @@ export function LegendModal({ show }: Props): ReactElement {
     ) : ['A', 'T', 'C', 'K'].includes(type) ? (
       <LegacyMapsLegend />
     ) : (
-      <WmsMapLegend
-        def={wmsCustomLayerDefs.find((def) => def.type === type)!}
-      />
+      <WmsMapLegend def={wmsLayerDefs.find((def) => def.type === type)!} />
     );
   }
 

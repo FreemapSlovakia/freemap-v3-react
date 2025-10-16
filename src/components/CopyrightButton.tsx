@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { documentShow, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
+import { integratedLayerDefs } from '../mapDefinitions.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
@@ -28,7 +29,7 @@ export function CopyrightButton(): ReactElement {
         ...(skCs ? ['A', 'T', 'C', 'K'] : []),
         'X',
         'O',
-        ...customLayers
+        ...[...integratedLayerDefs, ...customLayers]
           .filter((def) => def.technology === 'wms')
           .map((def) => def.type),
       ]),

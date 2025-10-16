@@ -11,6 +11,7 @@ import {
   FaSkiingNordic,
   FaStrava,
   FaTree,
+  FaWater,
   FaWikipediaW,
 } from 'react-icons/fa';
 import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
@@ -77,6 +78,12 @@ const GKU_ATTR: AttributionDef = {
   name: '©\xa0GKÚ',
   url: 'https://www.gku.sk/',
   country: 'sk',
+};
+const GEOLOGY_ATTR: AttributionDef = {
+  type: 'map',
+  name: '© Štátny geologický ústav Dionýza Štúra',
+  country: 'sk',
+  url: 'http://www.geology.sk',
 };
 
 const CUZK_ATTR: AttributionDef = {
@@ -687,14 +694,18 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layers: ['0', '1', '2'],
     icon: <GiStonePile />,
     shortcut: { code: 'KeyL' },
-    attribution: [
-      {
-        type: 'map',
-        name: '© Štátny geologický ústav Dionýza Štúra',
-        country: 'sk',
-        url: 'http://www.geology.sk',
-      },
-    ],
+    attribution: [GEOLOGY_ATTR],
+    countries: ['sk'],
+  },
+  {
+    layer: 'base',
+    type: 'WHC',
+    technology: 'wms',
+    url: 'https://ags.geology.sk/arcgis/services/WebServices/HGCH50/MapServer/WMSServer',
+    layers: ['1', '2', '3', '4'],
+    icon: <FaWater />,
+    shortcut: { code: 'KeyW' },
+    attribution: [GEOLOGY_ATTR],
     countries: ['sk'],
   },
   {

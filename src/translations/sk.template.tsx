@@ -805,6 +805,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VT: 'Outdoor Vektorová',
       h: 'Parametrické tieňovanie',
       z: 'Parametrické tieňovanie',
+      WDZ: 'Drevinové zloženie',
+      WLT: 'Lesné typy',
+      WGE: 'Geologická',
+      WKA: 'Kataster',
+      wka: 'Kataster',
+      WHC: 'Hydrochemická',
     },
     customBase: 'Vlastná mapa',
     type: {
