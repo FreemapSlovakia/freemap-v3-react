@@ -20,7 +20,11 @@ import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { OsmMapping } from '../osm/types.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 import type { RootState } from '../store.js';
-import { featureIdsEqual, OsmFeatureId } from '../types/featureId.js';
+import {
+  featureIdsEqual,
+  OsmFeatureId,
+  stringifyFeatureId,
+} from '../types/featureId.js';
 import { RichMarker } from './RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {
@@ -81,7 +85,7 @@ export function ObjectsResult(): ReactElement | null {
 
         return (
           <RichMarker
-            key={`poi-${id.type}-${id.id}-${interactive ? 'a' : 'b'}`}
+            key={`poi-${stringifyFeatureId(id)}-${interactive ? 'a' : 'b'}`}
             interactive={interactive}
             position={{ lat: coords.lat, lng: coords.lon }}
             image={img[0]}
