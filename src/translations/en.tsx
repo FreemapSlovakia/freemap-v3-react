@@ -757,6 +757,11 @@ const messages: Messages = {
       VT: 'Outdoor Vector',
       h: 'Parametric shading',
       z: 'Parametric shading',
+      WDZ: 'Tree Composition',
+      WLT: 'Forest Types',
+      WGE: 'Geological Map',
+      WKA: 'Cadastre',
+      wka: 'Cadastre',
     },
     customBase: 'Custom map',
     type: {
