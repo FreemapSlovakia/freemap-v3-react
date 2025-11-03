@@ -335,11 +335,11 @@ class LShadingLayer extends LGridLayer {
 
       for (const component of shading.components) {
         dw.u32(SHADING_COMPONENT_TYPES.indexOf(component.type));
-        dw.f32(component.azimuth);
-        dw.f32(component.elevation);
+        dw.f32('azimuth' in component ? component.azimuth : NaN);
+        dw.f32('elevation' in component ? component.elevation : NaN);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
-        dw.f32(component.exaggeration);
+        dw.f32('exaggeration' in component ? component.exaggeration : NaN);
         dw.u32(component.colorStops.length);
         dw.pad32(1);
 

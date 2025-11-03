@@ -81,9 +81,17 @@ export function ShadingComponentControl({
         produce(shadings, (draft) => {
           const shading = draft.find((shading) => shading.id === dragged.id);
 
-          if (shading) {
+          if (
+            shading?.type === 'hillshade-classic' ||
+            shading?.type === 'slope-classic'
+          ) {
             shading.elevation = elevation;
+          }
 
+          if (
+            shading?.type === 'hillshade-classic' ||
+            shading?.type === 'hillshade-igor'
+          ) {
             shading.azimuth = azimuth;
           }
         }),
@@ -114,14 +122,17 @@ export function ShadingComponentControl({
         return;
       }
 
-      const ele = shading.type.endsWith('-classic')
-        ? 1 - shading.elevation / (Math.PI / 2)
-        : 1;
+      const ele =
+        shading.type === 'hillshade-classic' || shading.type === 'slope-classic'
+          ? 1 - shading.elevation / (Math.PI / 2)
+          : 1;
+
+      const azimuth = 'azimuth' in shading ? shading.azimuth : 0;
 
       setDragging({
         id: shading.id,
-        dx: mouse.x - radius * ele * Math.sin(Math.PI - shading.azimuth),
-        dy: mouse.y - radius * ele * Math.cos(Math.PI - shading.azimuth),
+        dx: mouse.x - radius * ele * Math.sin(Math.PI - azimuth),
+        dy: mouse.y - radius * ele * Math.cos(Math.PI - azimuth),
       });
 
       onSelect(shading.id);
@@ -162,14 +173,17 @@ export function ShadingComponentControl({
   }
 
   const items = shadings.map((shading) => {
-    const ele = shading.type.endsWith('-classic')
-      ? 1 - shading.elevation / (Math.PI / 2)
-      : 1;
+    const ele =
+      shading.type === 'hillshade-classic' || shading.type === 'slope-classic'
+        ? 1 - shading.elevation / (Math.PI / 2)
+        : 1;
+
+    const azimuth = 'azimuth' in shading ? shading.azimuth : 0;
 
     return {
       ...shading,
-      cx: radius * ele * Math.sin(Math.PI - shading.azimuth),
-      cy: radius * ele * Math.cos(Math.PI - shading.azimuth),
+      cx: radius * ele * Math.sin(Math.PI - azimuth),
+      cy: radius * ele * Math.cos(Math.PI - azimuth),
     };
   });
 

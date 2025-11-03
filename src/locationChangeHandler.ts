@@ -61,7 +61,6 @@ import {
   type Color as ColorType,
   serializeShading,
   ShadingComponent,
-  type ShadingComponentType,
 } from './components/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import {
@@ -547,34 +546,6 @@ export function handleLocationChange(store: MyStore): void {
       .map((component) => {
         const [type, ...params] = component.split('_');
 
-        let azimuth = 0;
-        let elevation = 0;
-        let exaggeration = 1;
-
-        switch (type) {
-          case 'hillshade-classic':
-            azimuth = Number(params.shift()) * (Math.PI / 180);
-            elevation = Number(params.shift()) * (Math.PI / 180);
-            exaggeration = Number(params.shift());
-            break;
-          case 'hillshade-igor':
-            azimuth = Number(params.shift()) * (Math.PI / 180);
-            exaggeration = Number(params.shift());
-            break;
-          case 'slope-classic':
-            elevation = Number(params.shift()) * (Math.PI / 180);
-            exaggeration = Number(params.shift());
-            break;
-          case 'slope-igor':
-            exaggeration = Number(params.shift());
-            break;
-          case 'aspect':
-          case 'color-relief':
-            break;
-          default:
-            return undefined;
-        }
-
         let colorStops: ColorStop[];
 
         switch (type) {
@@ -605,16 +576,51 @@ export function handleLocationChange(store: MyStore): void {
             return undefined;
         }
 
-        return {
+        const base = {
           id: Math.random(),
-          type: type as ShadingComponentType,
-          azimuth,
-          elevation,
           brightness: 0,
           contrast: 1,
-          exaggeration,
           colorStops,
-        } satisfies ShadingComponent;
+        };
+
+        switch (type) {
+          case 'hillshade-classic':
+            return {
+              ...base,
+              type,
+              azimuth: Number(params.shift()) * (Math.PI / 180),
+              elevation: Number(params.shift()) * (Math.PI / 180),
+              exaggeration: Number(params.shift()),
+            };
+          case 'hillshade-igor':
+            return {
+              ...base,
+              type,
+              azimuth: Number(params.shift()) * (Math.PI / 180),
+              exaggeration: Number(params.shift()),
+            };
+          case 'slope-classic':
+            return {
+              ...base,
+              type,
+              elevation: Number(params.shift()) * (Math.PI / 180),
+              exaggeration: Number(params.shift()),
+            };
+          case 'slope-igor':
+            return {
+              ...base,
+              type,
+              exaggeration: Number(params.shift()),
+            };
+          case 'aspect':
+          case 'color-relief':
+            return {
+              ...base,
+              type,
+            };
+          default:
+            return undefined;
+        }
       })
       .filter((a): a is ShadingComponent => Boolean(a));
 

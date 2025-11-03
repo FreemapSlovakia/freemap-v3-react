@@ -1,6 +1,5 @@
 import ColorPicker from 'react-best-gradient-color-picker';
 // import { Chrome, rgbaToHexa } from '@uiw/react-color';
-import Color from 'color';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -27,6 +26,7 @@ import {
   MANAGEABLE_TYPES,
   ShadingComponentControl,
 } from './ShadingComponentControl.js';
+import Color from 'color';
 
 export function ShadingControl() {
   const shading = useAppSelector((state) => state.map.shading);
@@ -125,8 +125,6 @@ export function ShadingControl() {
                   shadingComponent = {
                     id,
                     type: 'color-relief',
-                    elevation: NaN,
-                    azimuth: NaN,
                     colorStops: [
                       { value: ele - hwidth, color: [0, 0, 0, 0] },
                       { value: ele - hwidth, color: [0, 0, 0, opacity] },
@@ -135,7 +133,6 @@ export function ShadingControl() {
                     ],
                     brightness: 0,
                     contrast: 1,
-                    exaggeration: 1,
                   };
                 } else {
                   function interpolate(
@@ -146,11 +143,15 @@ export function ShadingControl() {
                     return (to - from) * ratio + from;
                   }
 
-                  shadingComponent = {
+                  const type = type0 as ShadingComponentType;
+
+                  const base: Omit<
+                    ShadingComponent,
+                    'elevation' | 'azimuth' | 'type'
+                  > = {
                     id,
-                    type: type0 as ShadingComponentType,
-                    elevation: 45 * (Math.PI / 180),
-                    azimuth: 315 * (Math.PI / 180),
+                    brightness: 0,
+                    contrast: 1,
                     colorStops:
                       type0 === 'color-relief' || type0 === 'aspect'
                         ? [
@@ -184,10 +185,41 @@ export function ShadingControl() {
                             },
                           ]
                         : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
-                    brightness: 0,
-                    contrast: 1,
-                    exaggeration: 1,
                   };
+
+                  shadingComponent =
+                    type === 'hillshade-classic'
+                      ? {
+                          type,
+                          ...base,
+                          elevation: 45 * (Math.PI / 180),
+                          azimuth: 315 * (Math.PI / 180),
+                          exaggeration: 1,
+                        }
+                      : type === 'slope-classic'
+                        ? {
+                            type,
+                            ...base,
+                            elevation: 45 * (Math.PI / 180),
+                            exaggeration: 1,
+                          }
+                        : type === 'hillshade-igor'
+                          ? {
+                              type,
+                              ...base,
+                              azimuth: 315 * (Math.PI / 180),
+                              exaggeration: 1,
+                            }
+                          : type === 'slope-igor'
+                            ? {
+                                type,
+                                ...base,
+                                exaggeration: 1,
+                              }
+                            : {
+                                type,
+                                ...base,
+                              };
                 }
 
                 dispatch(
@@ -267,9 +299,11 @@ export function ShadingControl() {
                   />
                 )}{' '}
                 {component.type.replace(/hillshade/, 'hs')}
-                {component.type.startsWith('hillshade-') &&
+                {(component.type === 'hillshade-classic' ||
+                  component.type === 'hillshade-igor') &&
                   ' ◯ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
-                {component.type.endsWith('-classic') &&
+                {(component.type === 'hillshade-classic' ||
+                  component.type === 'slope-classic') &&
                   ' ↥ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
               </ListGroup.Item>
             ))}
@@ -320,8 +354,7 @@ export function ShadingControl() {
                 </Form.Select>
               </Form.Group> */}
 
-              {(selectedComponent.type.startsWith('hillshade-') ||
-                selectedComponent.type.startsWith('slope-')) && (
+              {'exaggeration' in selectedComponent && (
                 <Form.Group controlId="exaggeration" className="mt-3">
                   <Form.Label>Exaggeration</Form.Label>
 
@@ -336,10 +369,12 @@ export function ShadingControl() {
                       dispatch(
                         mapSetShading(
                           produce(shading, (draft) => {
-                            draft.components.find(
-                              (component) =>
-                                component.id === selectedComponent.id,
-                            )!.exaggeration = exaggeration;
+                            (
+                              draft.components.find(
+                                (component) =>
+                                  component.id === selectedComponent.id,
+                              ) as { exaggeration: number }
+                            ).exaggeration = exaggeration;
                           }),
                         ),
                       );
@@ -348,7 +383,8 @@ export function ShadingControl() {
                 </Form.Group>
               )}
 
-              {selectedComponent.type.startsWith('hillshade-') && (
+              {(selectedComponent.type == 'hillshade-igor' ||
+                selectedComponent.type == 'hillshade-classic') && (
                 <Form.Group controlId="azimuth" className="mt-3">
                   <Form.Label>Azimuth</Form.Label>
 
@@ -368,10 +404,12 @@ export function ShadingControl() {
                       dispatch(
                         mapSetShading(
                           produce(shading, (draft) => {
-                            draft.components.find(
-                              (component) =>
-                                component.id === selectedComponent.id,
-                            )!.azimuth = azimuth;
+                            (
+                              draft.components.find(
+                                (component) =>
+                                  component.id === selectedComponent.id,
+                              ) as { azimuth: number }
+                            ).azimuth = azimuth;
                           }),
                         ),
                       );
@@ -380,7 +418,8 @@ export function ShadingControl() {
                 </Form.Group>
               )}
 
-              {selectedComponent.type.endsWith('-classic') && (
+              {(selectedComponent.type === 'hillshade-classic' ||
+                selectedComponent.type === 'slope-classic') && (
                 <Form.Group controlId="elevation" className="mt-3">
                   <Form.Label>Elevation</Form.Label>
 
@@ -399,10 +438,12 @@ export function ShadingControl() {
                       dispatch(
                         mapSetShading(
                           produce(shading, (draft) => {
-                            draft.components.find(
-                              (component) =>
-                                component.id === selectedComponent.id,
-                            )!.elevation = elevation;
+                            (
+                              draft.components.find(
+                                (component) =>
+                                  component.id === selectedComponent.id,
+                              ) as { elevation: number }
+                            ).elevation = elevation;
                           }),
                         ),
                       );

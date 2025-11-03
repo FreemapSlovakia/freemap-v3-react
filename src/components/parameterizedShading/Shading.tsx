@@ -17,14 +17,34 @@ export type ShadingComponentType = (typeof SHADING_COMPONENT_TYPES)[number];
 
 export type ShadingComponent = {
   id: number;
-  type: ShadingComponentType;
-  elevation: number;
-  azimuth: number;
   contrast: number;
   brightness: number;
-  exaggeration: number;
   colorStops: ColorStop[];
-};
+} & (
+  | {
+      type: 'hillshade-igor';
+      azimuth: number;
+      exaggeration: number;
+    }
+  | {
+      type: 'hillshade-classic';
+      elevation: number;
+      azimuth: number;
+      exaggeration: number;
+    }
+  | {
+      type: 'slope-classic';
+      elevation: number;
+      exaggeration: number;
+    }
+  | {
+      type: 'slope-igor';
+      exaggeration: number;
+    }
+  | {
+      type: 'color-relief' | 'aspect';
+    }
+);
 
 export type Shading = {
   backgroundColor: Color;

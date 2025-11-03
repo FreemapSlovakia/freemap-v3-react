@@ -46,17 +46,19 @@ declare global {
   }
 }
 
-export type StringDates<T> = {
-  [K in keyof T]: T[K] extends Date
-    ? string
-    : T[K] extends Date | null
-      ? string | null
-      : T[K] extends Date | undefined
-        ? string | undefined
-        : T[K] extends Date | null | undefined
-          ? string | null | undefined
-          : StringDates<T[K]>;
-};
+type IsTuple<T extends unknown[]> = number extends T['length'] ? false : true;
+
+export type StringDates<T> = T extends Date
+  ? string
+  : T extends (infer U)[]
+    ? IsTuple<T> extends true
+      ? { [K in keyof T]: StringDates<T[K]> } // tuple: preserve shape
+      : StringDates<U>[] //  array
+    : T extends (infer U)[]
+      ? StringDates<U>[] // mutable array
+      : T extends object
+        ? { [K in keyof T]: StringDates<T[K]> } // plain object
+        : T;
 
 // see https://stackoverflow.com/questions/58434389/typescript-deep-keyof-of-a-nested-object/58436959#58436959
 
@@ -117,3 +119,11 @@ export type Shortcut = {
   alt?: boolean;
   meta?: boolean;
 };
+
+export type DistributiveOmit<T, K extends keyof T> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+export type DistributivePick<T, K extends keyof T> = T extends unknown
+  ? Pick<T, K>
+  : never;
