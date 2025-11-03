@@ -519,3 +519,9 @@ button#freemap-logo {
     min-width: 2rem;
   }
 }
+
+// hack to show NLC vector overlay above TODO fix
+.leaflet-gl-layer.maplibregl-map {
+  position: relative;
+  z-index: 3;
+}
