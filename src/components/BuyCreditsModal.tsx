@@ -34,7 +34,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     maximumFractionDigits: 2,
   });
 
-  const invalidCredits = isInvalidInt(credits, true, undefined, 500);
+  const invalidCredits = isInvalidInt(credits, true, 500);
 
   return (
     <Modal show={show} onHide={close}>
