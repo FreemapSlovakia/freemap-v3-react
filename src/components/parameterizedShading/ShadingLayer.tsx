@@ -339,7 +339,7 @@ class LShadingLayer extends LGridLayer {
         dw.f32('elevation' in component ? component.elevation : NaN);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
-        dw.f32('exaggeration' in component ? component.exaggeration : NaN);
+        dw.f32('exaggeration' in component ? component.exaggeration : 1.0);
         dw.u32(component.colorStops.length);
         dw.pad32(1);
 
