@@ -342,7 +342,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       },
     ],
     minZoom: 6,
-    maxNativeZoom: 19,
+    maxNativeZoom: 20,
     shortcut: { code: 'KeyX' },
     premiumFromZoom: 19,
     creditsPerMTile: 5000,
