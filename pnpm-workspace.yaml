@@ -1,3 +1,5 @@
 onlyBuiltDependencies:
+  - '@sentry/cli'
   - core-js-pure
   - esbuild
+  - exifreader
