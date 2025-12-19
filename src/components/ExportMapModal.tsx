@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import {
-  Accordion,
   Alert,
   Button,
   ButtonGroup,
@@ -22,7 +21,6 @@ import {
   FaDrawPolygon,
   FaEye,
   FaPrint,
-  FaRegQuestionCircle,
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -92,15 +90,6 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
     return set;
   });
-
-  const [style, setStyle] = useState(defaultStyle);
-
-  const handleStyleChange = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      setStyle(e.currentTarget.value);
-    },
-    [],
-  );
 
   const dispatch = useDispatch();
 
@@ -296,41 +285,6 @@ export function ExportMapModal({ show }: Props): ReactElement {
             <InputGroup.Text>DPI</InputGroup.Text>
           </InputGroup>
         </Form.Group>
-
-        <hr />
-
-        <Accordion>
-          <Accordion.Item eventKey="0">
-            <Accordion.Header>{m?.mapExport.advancedSettings}</Accordion.Header>
-
-            <Accordion.Body>
-              <Form.Group controlId="styles" className="mb-3">
-                <Form.Label>
-                  {m?.mapExport.styles}{' '}
-                  <a
-                    href="http://mapnik.org/mapnik-reference/"
-                    target="mapnik_reference"
-                  >
-                    <FaRegQuestionCircle />
-                  </a>
-                </Form.Label>
-
-                <Form.Control
-                  as="textarea"
-                  value={style}
-                  onChange={handleStyleChange}
-                  rows={12}
-                  disabled={
-                    !layers.has('drawing') &&
-                    !layers.has('plannedRoute') &&
-                    !layers.has('track')
-                  }
-                  className="text-monospace"
-                />
-              </Form.Group>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
       </Modal.Body>
 
       <Modal.Footer>
@@ -343,7 +297,6 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 scale: parseInt(scale, 10) / 96,
                 format,
                 layers: [...layers],
-                style,
               }),
             )
           }
@@ -358,95 +311,3 @@ export function ExportMapModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-const defaultStyle = `<Style name="custom-polygons">
-  <Rule>
-    <PolygonSymbolizer
-      fill="[color]"
-      fill-opacity="0.2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-
-    <LineSymbolizer
-      stroke="[color]"
-      stroke-width="[width]"
-      stroke-opacity="0.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-
-    <TextSymbolizer
-      fontset-name="regular"
-      fill="[color]"
-      halo-fill="white"
-      halo-radius="1.5"
-      halo-opacity="0.75"
-      size="16"
-      line-spacing="-2"
-      wrap-width="100"
-      wrap-before="true"
-      placement="interior"
-    >
-      [name]
-    </TextSymbolizer>
-  </Rule>
-</Style>
-
-<Style name="custom-polylines">
-  <Rule>
-    <LineSymbolizer
-      stroke="[color]"
-      stroke-width="[width]"
-      stroke-opacity="0.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-
-    <TextSymbolizer
-      fontset-name="regular"
-      fill="[color]"
-      halo-fill="white"
-      halo-radius="1.5"
-      halo-opacity="0.75"
-      size="16"
-      line-spacing="-2"
-      placement="line"
-      spacing="200"
-      dy="8"
-    >
-      [name]
-    </TextSymbolizer>
-  </Rule>
-</Style>
-
-<Style name="custom-points">
-  <Rule>
-    <MarkersSymbolizer
-      fill="[color]"
-      width="24"
-      file="images/marker.svg"
-      allow-overlap="true"
-      ignore-placement="true"
-      stroke-width="1.5"
-      stroke-opacity="0.75"
-      stroke="white"
-    />
-
-    <TextSymbolizer
-      fontset-name="regular"
-      fill="[color]"
-      halo-fill="white"
-      halo-radius="1.5"
-      halo-opacity="0.75"
-      size="16"
-      line-spacing="-2"
-      wrap-width="100"
-      wrap-before="true"
-      dy="-40"
-    >
-      [name]
-    </TextSymbolizer>
-  </Rule>
-</Style>
-`;

@@ -1,5 +1,5 @@
-import { lineString, point, polygon } from '@turf/helpers';
-import { Feature, FeatureCollection } from 'geojson';
+import { featureCollection, lineString, point, polygon } from '@turf/helpers';
+import { Feature } from 'geojson';
 import { assert } from 'typia';
 import { exportMap, setActiveModal } from '../actions/mainActions.js';
 import { toastsAdd } from '../actions/toastsActions.js';
@@ -9,22 +9,12 @@ import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
-const geometryTypeMapping = {
-  Polygon: 'polygon',
-  MultiPolygon: 'polygon',
-  LineString: 'polyline',
-  MultiLineString: 'polyline',
-  Point: 'point',
-  MultiPoint: 'point',
-  GeometryCollection: 'geometrycollection',
-} as const;
-
 const handle: ProcessorHandler<typeof exportMap> = async ({
   dispatch,
   getState,
   action,
 }) => {
-  const { scale, area, format, layers: exportLayers, style } = action.payload;
+  const { scale, area, format, layers: exportLayers } = action.payload;
 
   const {
     main: { selection },
@@ -134,38 +124,6 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     }
   }
 
-  const f: Record<
-    'polygon' | 'polyline' | 'point' | 'geometrycollection',
-    Feature[]
-  > = {
-    polygon: [],
-    polyline: [],
-    point: [],
-    geometrycollection: [],
-  };
-
-  for (const feature of features) {
-    const type = geometryTypeMapping[feature.geometry.type];
-
-    if (type) {
-      f[type].push(feature);
-    }
-  }
-
-  const layers: { styles: string[]; geojson: FeatureCollection }[] = [];
-
-  for (const type of ['polygon', 'polyline', 'point'] as const) {
-    if (f[type].length) {
-      layers.push({
-        styles: [`custom-${type}s`],
-        geojson: {
-          type: 'FeatureCollection',
-          features: f[type],
-        },
-      });
-    }
-  }
-
   window._paq.push(['trackEvent', 'MapExport', 'export', format]);
 
   const res = await httpRequest({
@@ -184,10 +142,10 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
         bicycleTrails: exportLayers.includes('bicycleTrails'),
         skiTrails: exportLayers.includes('skiTrails'),
         horseTrails: exportLayers.includes('horseTrails'),
+        featureCollection: features.length
+          ? featureCollection(features)
+          : undefined,
       },
-      custom: layers.length
-        ? { layers, styles: [{ Style: { '@name': '_new_' }, style }] } // TODO ugly hacked to support XML styles
-        : undefined,
     },
     expectedStatus: 200,
   });

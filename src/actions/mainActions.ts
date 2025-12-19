@@ -53,7 +53,6 @@ export interface MapExportOptions {
   scale: number;
   area: 'visible' | 'selected';
   format: ExportFormat;
-  style: string;
 }
 
 export type Exportable =
