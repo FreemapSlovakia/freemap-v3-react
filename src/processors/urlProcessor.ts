@@ -85,7 +85,7 @@ export const urlProcessor: Processor = {
 
     const layers = map.layers
       .filter((type) => type !== 'i' && integratedLayerDefMap[type])
-      .join('');
+      .join('~');
 
     const queryParts: [string, string | number | boolean][] = [
       ['map', `${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`],

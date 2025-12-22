@@ -42,7 +42,14 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
   let layers: string[] | undefined;
 
-  if (layersStr) {
+  if (!layersStr) {
+    // nothing
+  } else if (layersStr.includes('~')) {
+    layers = layersStr.split('~');
+  } else if (layersStr in integratedLayerDefMap) {
+    layers = [layersStr];
+  } else {
+    // backward compatibility
     layers = [];
 
     while (layersStr.length) {
@@ -75,7 +82,7 @@ export function getMapStateDiffFromUrl(
 
   const changes: Partial<MapViewState> = {};
 
-  if (layers && layers.join('') !== state2.layers.join('')) {
+  if (layers && layers.join('\n') !== state2.layers.join('\n')) {
     changes.layers = layers;
 
     if (state2.layers.includes('i')) {
