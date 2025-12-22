@@ -218,6 +218,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
           '10': 'Regione catastale',
         },
       },
+      marker: 'Cippo di confine',
       national_park: 'Parco Nazionale',
       protected_area: 'Area Protetta',
     },

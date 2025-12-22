@@ -201,6 +201,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
     },
     boundary: {
       '*': 'Oblasť',
+      marker: 'Hraničný kameň',
       administrative: {
         '*': 'Administratívna oblasť',
         admin_level: {

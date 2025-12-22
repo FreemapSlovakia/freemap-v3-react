@@ -199,6 +199,7 @@ export type OsmTagToNameMapping = {
   };
   boundary: {
     '*': string;
+    marker: string;
     administrative: {
       '*': string;
       admin_level: {

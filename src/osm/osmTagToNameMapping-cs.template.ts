@@ -213,6 +213,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
           '10': 'Katastrální území',
         },
       },
+      marker: 'Hraniční kámen',
       national_park: 'Národní park',
       protected_area: 'Chráněná oblast',
     },

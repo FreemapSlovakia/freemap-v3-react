@@ -213,6 +213,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
         '10': 'Cadastre region',
       },
     },
+    marker: 'Boundary stone',
     national_park: 'National park',
     protected_area: 'Protected area',
   },

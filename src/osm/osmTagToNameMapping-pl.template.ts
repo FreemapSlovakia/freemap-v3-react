@@ -221,6 +221,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
         '*': 'Region administracyjny',
       },
       '*': 'Region',
+      marker: 'Kamień graniczny',
       national_park: 'Park narodowy',
       protected_area: 'Obszar chroniony',
     },

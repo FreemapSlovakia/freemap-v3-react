@@ -217,6 +217,7 @@ export const osmTagToNameMapping: DeepPartialWithRequiredObjects<OsmTagToNameMap
         '*': 'Verwaltungsregion',
       },
       '*': 'Region',
+      marker: 'Grenzstein',
       national_park: 'Nationalpark',
       protected_area: 'Schutzgebiet',
     },
