@@ -171,7 +171,7 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
         name: title,
         description,
         imageUrl,
-        webUrl: `${process.env['BASE_URL']}?image=${id}`,
+        webUrl: `${location.origin}?image=${id}`,
         author: user,
         tags,
       }),

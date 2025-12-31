@@ -25,7 +25,7 @@ export const gallerySubmitCommentProcessor: Processor = {
       url: `/gallery/pictures/${id}/comments`,
       data: {
         comment: getState().gallery.comment,
-        webBaseUrl: process.env['BASE_URL'],
+        webBaseUrl: location.origin,
       },
       expectedStatus: 200,
     });

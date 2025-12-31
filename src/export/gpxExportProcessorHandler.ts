@@ -259,7 +259,7 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     });
 
     const link1 = createElement(wptEle, 'link', undefined, {
-      href: `${process.env['BASE_URL']}?image=${id}`,
+      href: `${location.origin}?image=${id}`,
     });
 
     createElement(link1, 'text', gm?.linkToWww ?? 'photo at www.freemap.sk');
