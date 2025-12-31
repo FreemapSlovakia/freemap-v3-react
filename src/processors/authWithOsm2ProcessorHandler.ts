@@ -18,6 +18,7 @@ const handle: ProcessorHandler<typeof authWithOsm2> = async ({
       code,
       language: getState().l10n.chosenLanguage,
       connect,
+      redirectUri: location.origin + '/authCallback.html',
     },
     expectedStatus: 200,
   });

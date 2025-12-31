@@ -42,7 +42,10 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       method: 'POST',
       expectedStatus: 200,
       cancelActions: [],
-      data: action.payload,
+      data: {
+        callbackUrl: location.origin + '/purchaseCallback.html',
+        ...action.payload,
+      },
     });
 
     const { paymentUrl } = assert<{ paymentUrl: string }>(await res.json());

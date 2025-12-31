@@ -17,6 +17,7 @@ export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
     url: '/auth/login-garmin',
     data: {
       connect,
+      callbackUrl: location.origin + '/garminAuthCallback.html',
       clientData: {
         successAction,
       },
