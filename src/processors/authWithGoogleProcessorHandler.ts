@@ -24,7 +24,7 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
       cancelActions: [],
       expectedStatus: 200,
       data: {
-        connect: action.payload,
+        ...action.payload,
         accessToken: tokenResponse.access_token,
         language: getState().l10n.chosenLanguage,
       },
