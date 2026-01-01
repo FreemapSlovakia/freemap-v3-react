@@ -1,0 +1,490 @@
+# LLMs.txt for [https://www.freemap.sk](https://www.freemap.sk)
+
+Contact: [info@freemap.sk](mailto:info@freemap.sk)
+
+Purpose: To provide structured information about the Freemap.sk web application for AI systems and assistants, so they can explain, describe, and help users interact with the site.
+
+## Overview
+
+- www.freemap.sk is a non-commercial map application based on OpenStreetMap data
+- Developed by NGO Freemap Slovakia, a Slovak Local chapter of OpenStreetMap foundation
+- Features a detailed outdoor map for hiking, cycling, cross-country skiing, and horse riding across Europe and many other map layers
+- The map displays marked trails for hiking, biking, skiing, and riding, and supports high-resolution (retina) displays
+- The map is constantly updated from the OpenStreetMap database and offers various background layers such as:
+  - Strava heatmap
+  - NLC forest roads
+  - aerial imagery
+  - public transportation
+  - Wikipedia
+  - and community photos
+- The platform includes tools:
+  - search (by name or category)
+  - route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.)
+  - map annotation (points, lines, polygons)
+  - measurement (distance, elevation, area, position)
+  - GPX track viewing
+  - personal maps (saved map annotations)
+  - live tracking, and export options (GPX, GeoJSON, PDF, SVG, PNG, JPG)
+- Users can also generate code to embed the Freemap app into their own websites
+- The application is an SPA and reflects its state in the URL
+
+## Functions
+
+The main menu is under a button with a "hamburger" icon at the top left of the page.
+
+### UI Language switcher
+
+- Access: Main menu > Language
+- Available languages: Slovak, Czech, Hungarian, English, Polish, German, Italian
+
+### Account
+
+- Access: Main menu > Account
+- Keyboard shortcut: <kbd>e</kbd> <kbd>a</kbd>
+- URL path: `/#show=account`
+
+Available only to logged-in users.
+
+Account modal contains the following sections:
+
+User can log out or delete their account using the respective modal buttons.
+
+#### Purchases
+
+- History of purchases
+- Users can purchase yearly premium access and/or credits
+- Credits are currently used only for “Offline map export” (see description below)
+- Yearly premium allows:
+  - Removal of the ad banner
+  - Access to premium photos (users can mark uploaded photos as premium-only)
+  - Access to higher map zoom levels for specific map layers (see below)
+
+#### Personal information
+
+- Users can view and change their name and email address
+
+#### Login providers
+
+Users can log in only through supported providers:
+
+- Facebook
+- Google
+- OpenStreetMap
+- Garmin
+
+This section also supports linking multiple provider accounts to a single Freemap account.
+
+### Clear map elements
+
+- Access: Main menu > Account
+- Keyboard shortcut: <kbd>g</kbd> <kbd>c</kbd>
+
+Clears the data layer (all interactive map elements of various tools) from the map.
+
+### Photos
+
+- Access: Main menu > Photos
+- Keyboard shortcut: <kbd>shift</kbd> <kbd>f</kbd>
+- Layers: https://www.freemap.sk/#layers=X~I
+
+Toggles the photos toolbar and photos map layer.
+
+### My maps
+
+- Access: Main menu > My maps
+- Keyboard shortcut: <kbd>g</kbd> <kbd>m</kbd>
+- URL path: `/#show=maps`
+
+Opens the user-saved maps manager in a modal.
+
+Features:
+
+- Save/save-as/load a map including:
+  - active map layers
+  - drawing
+  - planned route
+  - live-tracked devices
+  - GPX track
+- Delete map
+- Search map by name
+
+### Drawing and measurement
+
+- Access: Main menu > Drawing and measurement
+- Keyboard shortcut:
+  - <kbd>g</kbd> <kbd>p</kbd> for drawing points (markers) / measuring coordinates and elevation; URL path: `/#tool=draw-points`
+  - <kbd>g</kbd> <kbd>l</kbd> for drawing lines / measuring distance and azimuth; URL path: `/#tool=draw-lines`
+  - <kbd>g</kbd> <kbd>n</kbd> for drawing polygons / measuring area; URL path: `/#tool=draw-polygons`
+
+Toggles the drawing and measurement toolbar.
+
+Users can change the line thickness, color, and label of their drawing.
+
+It is possible to modify an existing drawing:
+
+- split line
+- join lines
+- add/move/delete node of existing line/polygon
+- delete point/line/polygon
+- change properties (color, name, ...)
+
+### Route finder
+
+- Access: Main menu > Route finder
+- Keyboard shortcut: <kbd>g</kbd> <kbd>r</kbd>
+- URL path: `/#show=route-planner`
+
+Toggles the route finder toolbar.
+
+Routing is based on a Freemap-hosted GraphHopper or third-party OSRM router.
+A route can contain multiple midpoints.
+Some midpoints may be marked as "manual," which activates manual routing as a user-drawn path for that route segment.
+
+Supported vehicles:
+
+- GraphHopper
+  - Car
+  - Car (4WD)
+  - Motorcycle
+  - Racing bike
+  - Mountain bike
+  - Walking
+  - Hiking
+- OSRM
+  - Car
+  - Bicycle
+  - Walking
+
+Routing modes:
+
+- GraphHopper
+  - Ordered
+  - Roundtrip
+  - Isochrones
+- OSRM
+  - Ordered
+  - Visiting places
+  - Visiting places (roundtrip)
+
+### Objects (POIs)
+
+- Access: Main menu > Objects (POIs)
+- Keyboard shortcut: <kbd>g</kbd> <kbd>o</kbd>
+- URL path: `/#show=objects`
+
+Toggles the objects toolbar.
+The toolbar contains a combo box to search for various POIs by type. Multiple types can be activated and will be visible interactively as markers with icons on the map.
+The marker icon can be globally changed (pin/ring/square).
+
+### Track viewer (GPX)
+
+- Access: Main menu > Track viewer (GPX)
+- Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
+- URL path: `/#tool=track-viewer`
+
+Toggles the GPX track viewer toolbar. It contains an Upload button to open the GPS track upload modal (URL path: `/#show=upload-track`).
+
+### Map details
+
+- Access: Main menu > Map details
+- Keyboard shortcut: <kbd>g</kbd> <kbd>i</kbd>
+- URL path: `/#tool=map-details`
+
+Toggles the map details toolbar.
+
+### Map changes
+
+- Access: Main menu > Map changes
+- Keyboard shortcut: <kbd>g</kbd> <kbd>x</kbd>
+- URL path: `/#tool=changesets`
+
+Toggles the OSM changes toolbar.
+The toolbar contains a dropdown to select the number of recent days (3, 7, 14, 30) and an optional OSM username.
+OSM changes matching the selected parameters will be displayed on the map as markers.
+Markers will have the mapper's name and changeset description.
+
+Clicking the marker will open the toast with the following details:
+
+- author
+- changeset description
+- date/time of the changeset
+- changeset links to osm.org and Achavi
+
+### Live tracking
+
+- Access: Main menu > Live tracking
+
+Live tracking can be used to configure your own device for live tracking or to live-track other devices.
+
+Supported apps include OsmAnd, Locus, Traccar...
+
+Users can configure the period of location sharing, time interval, maximum number of locations, and maximum age of a location.
+
+Users can manage multiple independent sharing tokens for a device with these parameters.
+
+Locations can contain various properties:
+
+- altitude
+- speed
+- bearing
+- GSM signal strength
+- GPS precision
+- GPS signal strength
+- battery level
+- custom message
+
+### Offline mode
+
+- Access: Main menu > Offline mode
+
+Offline mode allows the browser to cache the web app and map tiles in the offline browser cache.
+
+Various caching strategies are available:
+
+- Network only
+- Network first
+- Cache first
+- Cache only
+
+### Share / Open in external app
+
+- Access: Main menu > Share / Open in external app
+
+Opens a submenu:
+
+- Copy page URL <kbd>j</kbd> <kbd>c</kbd>
+- Share URL
+- OpenStreetMap <kbd>j</kbd> <kbd>o</kbd>
+- Mapy.com <kbd>j</kbd> <kbd>m</kbd>
+- Google Maps <kbd>j</kbd> <kbd>g</kbd>
+- Geocaching
+- F4Map <kbd>j</kbd> <kbd>4</kbd>
+- Peakfinder <kbd>j</kbd> <kbd>p</kbd>
+- Mapillary <kbd>j</kbd> <kbd>l</kbd>
+- OpenStreetCam
+- Waze
+- OMA (SK)
+- Hiking.sk (SK) <kbd>j</kbd> <kbd>h</kbd>
+- ZBGIS (SK) <kbd>j</kbd> <kbd>z</kbd>
+- Edit in JOSM <kbd>j</kbd> <kbd>j</kbd>
+- Edit in iD <kbd>j</kbd> <kbd>i</kbd>
+
+### Map export to image/document
+
+- Access: Main menu > Map export to image/document
+- Keyboard shortcut: <kbd>e</kbd> <kbd>p</kbd>
+- URL path: `/#show=export-map`
+
+Opens a modal to export the outdoor map to PDF / SVG / JPEG / PNG based on the visible area or a selected polygon. The exported map will contain features from the data (interactive) layer.
+
+### Maps for GPS devices
+
+- Access: Main menu > Maps for GPS devices
+- URL path: `/#document=exports`
+
+Opens a modal with instructions to get various maps for GPS devices:
+
+- Garmin (+BaseCamp)
+- Locus
+- Orux maps
+- BackCountry Navigator
+- BikeComputer
+- XCTrack
+
+### Offline maps export
+
+- Access: Main menu > Offline maps export
+- Keyboard shortcut: <kbd>e</kbd> <kbd>m</kbd>
+- URL path: `/#show=download-map`
+
+Opens a modal to download a map in offline formats (MBTiles or SQLiteDB).
+Selection can be the current visible map area or an area defined by a selected polygon.
+Multiple tile-based maps are supported for download.
+Users can select the desired zoom range.
+Link to the map prepared for download will be emailed to the provided email address.
+
+### Embed map
+
+- Access: Main menu > Embed map
+- Keyboard shortcut: <kbd>e</kbd> <kbd>e</kbd>
+- URL path: `/#show=embed`
+
+Opens a modal to configure the map for embedding into another website.
+
+Users can configure:
+
+- dimensions (w/h)
+- enabled features (search, map layer switch button, "find me" (locate me) button)
+
+Users can then copy and paste the generated iframe markup.
+
+### Info & help
+
+- Access: Info & help
+
+Opens a submenu:
+
+- Map legend
+- Contacts
+- OpenStreetMap documentation
+- About Freemap Association
+- About OpenStreetMap
+- Map License
+- Keyboard Shortcuts
+- Garmin
+- Freemap.sk for Geocaching Extension
+
+Each item opens a modal with the selected topic.
+
+### Support Freemap
+
+- Access: Main menu > Support Freemap
+- URL path: `/#show=support-us`
+
+### Social buttons
+
+At the bottom left of the main menu, there are social buttons to [Facebook](https://www.facebook.com/FreemapSlovakia), [GitHub](https://www.github.com/FreemapSlovakia), and [YouTube](https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ).
+
+### UI theme switcher
+
+At the bottom right of the main menu, there are buttons to switch the app UI theme: Light / Dark / Auto.
+
+## Map Layers
+
+Freemap provides numerous raster, vector, and WMS map layers with different content, coverage, and zoom levels.
+Each layer includes attributes describing its purpose, availability, and data sources.
+The map-layer switching toolbar is available at the middle bottom of the screen.
+Featured or user-configured maps are directly accessible as buttons in this toolbar.
+
+The toolbar also contains the following buttons:
+
+- zoom in
+- zoom out
+- find me (locate me by the browser's geolocation API)
+- toggle fullscreen
+
+There is also a button with three vertical dots that opens a menu with a list of additional maps and a menu item to show a list of all available maps (Show all maps).
+
+The menu also includes a "Map Settings" item.
+
+### Map Settings
+
+- Access: Maps button > Map Settings
+- URL path: `/#show=map-settings`
+- Keyboard shortcut: <kbd>g</kbd> <kbd>s</kbd>
+
+Opens a modal with map settings with the following sections:
+
+- General settings
+  - Max zoom - global maximum zoom level
+- Map layers - List of built-in and custom map layers. For every map layer, users can configure:
+  - whether to display it on the map toolbar
+  - whether to display it in the map menu
+  - opacity (for overlay layers)
+  - keyboard shortcut
+- Custom maps
+  - Users can manage their map layers. For a map, users can enter:
+    - map name
+    - type (technology): TMS/XYZ, WMS, and Vector (MapLibre)
+    - URL (template for TMS, WMS server URL or URL of MapLibre map style)
+    - min/max zoom
+    - map scaling by DPI
+    - layer: base/overlay
+
+### Maps
+
+Pre-defined map layers.
+
+#### Field description
+
+- **name** (human-friendly)
+- **id** (internal code; used in `layers=` URL param)
+- **type** (base | overlay | vector | wms | parametric)
+- **countries** (ISO-like short codes, e.g., `['sk','cz',...]`)
+- **minZ / maxNativeZ** (native tile zoom range)
+- **premiumFromZ** (zoom level from which premium is required, if any)
+- **creditsPerMTile** (offline export price per million tiles; if applicable)
+- **supersededBy** (id of the replacement layer, if legacy)
+- **shortcut** (keyboard shortcut, if any)
+- **attribution / license**
+- **notes** (coverage quirks, partial regions, etc.)
+
+#### Layer registry (normalized)
+
+| name                           | id        | type    | countries | minZ | maxNativeZ | premiumFromZ | creditsPerMTile | supersededBy | shortcut | attribution / license        | notes                      |
+| ------------------------------ | --------- | ------- | --------- | ---: | ---------: | -----------: | --------------: | ------------ | -------- | ---------------------------- | -------------------------- |
+| Outdoor                        | X         | base    | []        |      |            |              |                 |              |          | OSM + Freemap; see site      |                            |
+| Hiking                         | T         | overlay | []        |      |            |              |                 |              |          | OSM + Freemap                | Marked trails              |
+| Bicycle                        | C         | overlay | []        |      |            |              |                 |              |          | OSM + Freemap                | Marked trails              |
+| Cross‑country Ski              | K         | overlay | []        |      |            |              |                 |              |          | OSM + Freemap                | Seasonal data              |
+| Aerial                         | S / Z     | base    | []        |      |            |              |                 |              |          | GKÚ/NLC/ČÚZK/others          | Provider varies by country |
+| Ortofotomozaika SR (1st cycle) | J1        | base    | ['sk']    |      |            |              |                 |              |          | GKÚ/NLC                      | Legacy mosaic              |
+| Ortofotomozaika SR (2nd cycle) | J2        | base    | ['sk']    |      |            |              |                 |              |          | GKÚ/NLC                      | Current mosaic             |
+| OpenStreetMap                  | O         | base    | ['*']     |      |            |              |                 |              |          | © OpenStreetMap contributors |                            |
+| Public transport (ÖPNV)        | d         | base    | []        |      |            |              |                 |              |          | © MeMoMaps, OSM              |                            |
+| Data layer                     | i         | overlay | []        |      |            |              |                 |              |          |                              | interactive                |
+| Photos                         | I         | overlay | []        |      |            |              |                 |              |          | CC BY‑SA (user-provided)     | Premium visibility option  |
+| Forest tracks NLC              | l         | overlay | ['sk']    |      |            |              |                 |              |          | © NLC Zvolen                 |                            |
+| Hiking trails                  | t         | overlay | ['sk']    |      |            |              |                 |              |          | © Freemap, OSM               |                            |
+| Bicycle trails                 | c         | overlay | ['sk']    |      |            |              |                 |              |          | © Freemap, OSM               |                            |
+| Strava (all)                   | s0        | overlay | []        |      |            |              |                 |              |          | Strava heatmap               | Premium zooms              |
+| Strava (rides)                 | s1        | overlay | []        |      |            |              |                 |              |          | Strava heatmap               |                            |
+| Strava (runs)                  | s2        | overlay | []        |      |            |              |                 |              |          | Strava heatmap               |                            |
+| Strava (water activities)      | s3        | overlay | []        |      |            |              |                 |              |          | Strava heatmap               |                            |
+| Strava (winter activities)     | s4        | overlay | []        |      |            |              |                 |              |          | Strava heatmap               |                            |
+| Wikipedia                      | w         | overlay | []        |      |            |              |                 |              |          | Wikipedia                    |                            |
+| Terrain shading                | 5         | base    | []        |      |            |              |                 |              |          | DMR/DMP sources              |                            |
+| Surface shading                | 6         | base    | []        |      |            |              |                 |              |          | DMR/DMP sources              |                            |
+| Detailed terrain shading       | 7         | base    | ['sk']    |      |            |           13 |                 |              |          | ÚGKK SR + Freemap            | High‑res LLS DMR           |
+| Detailed terrain shading       | 8         | base    | ['cz']    |      |            |              |                 |              |          | ČÚZK + Freemap               |                            |
+| OpenStreetMap Vector           | VO        | vector  | []        |      |            |              |                 |              |          | OSM data                     | MapLibre style             |
+| Streets Vector                 | VS        | vector  | []        |      |            |              |                 |              |          | OSM data                     | MapLibre style             |
+| Dataviz Vector                 | VD        | vector  | []        |      |            |              |                 |              |          | OSM data                     | Analytical                 |
+| Outdoor Vector                 | VT        | vector  | []        |      |            |              |                 |              |          | OSM + Freemap                | Outdoor style              |
+| Parametric shading (SK)        | h         | overlay | ['sk']    |      |            |              |                 |              |          | ÚGKK SR + Freemap            | LLS DMR                    |
+| Parametric shading (CZ)        | z         | overlay | ['cz']    |      |            |              |                 |              |          | ČÚZK + Freemap               |                            |
+| Tree Composition               | WDZ       | wms     | ['sk']    |      |            |              |                 |              |          | © NLC Zvolen                 |                            |
+| Forest Types                   | WLT       | wms     | ['sk']    |      |            |              |                 |              |          | © NLC Zvolen                 |                            |
+| Geological                     | WGE       | wms     | ['sk']    |      |            |              |                 |              |          | © ŠGÚDŠ                      |                            |
+| Hydrochemic                    | WHC       | wms     | ['sk']    |      |            |              |                 |              |          | © ŠGÚDŠ                      |                            |
+| Cadastre                       | WKA / wka | wms     | ['sk']    |      |            |              |                 |              |          | © GKÚ                        |                            |
+
+_Placeholders:_ Fill `countries`, zooms, premium and pricing fields from your `mapDefinitions.tsx`. I’ll normalize formats and polish wording after you paste values.
+
+##### Appendix: Internal layer codes
+
+These codes are used in URLs via `layers=` and may help programmatic agents interpret deep links. They are **advisory** and do not grant permission to scrape data. See Restrictions.
+
+- A, T, C, K, S, Z, J1, J2, O, d, X, i, I, l, t, c, s0, s1, s2, s3, s4, w, 5, 6, 7, 8, VO, VS, VD, VT, h, z, WDZ, WLT, WGE, WKA, wka, WHC
+
+---|---|---|---|---|---|---|---|---|---|
+|5|Terrain shading|base|tile|0|18|||sk|DMR 5.0: © ÚGKK SR, © Freemap Slovakia|
+|6|Surface shading|base|tile|0|18|||sk|DMP 1.0: © ÚGKK SR, © Freemap Slovakia|
+|7|Detailed terrain shading|base|tile|0|20|13|KeyH|sk|LLS DMR: © ÚGKK SR, © Freemap Slovakia|
+|8|Detailed terrain shading|base|tile|0|18|||cz|© Freemap Slovakia, © ČÚZK|
+|I|Photos|overlay|gallery|0|||Shift+F||CC BY-SA 4.0|
+|J1|Ortofotomozaika SR (1st cycle)|base|tile|0|19|||sk|© GKÚ, NLC|
+|J2|Ortofotomozaika SR (2nd cycle)|base|tile|0|19|||sk|© GKÚ, NLC|
+|O|OpenStreetMap|base|tile||19| |KeyO||© OpenStreetMap, OSM data|
+|S|Aerial|base|tile||19||KeyS||© Esri|
+|VD|Dataviz Vector|base|maplibre||||||OSM data|
+|VO|OpenStreetMap Vector|base|maplibre||||||OSM data|
+|VS|Streets Vector|base|maplibre||||||OSM data|
+|VT|Outdoor Vector|base|maplibre||||||OSM data|
+|WDZ|Tree Composition|base|wms|13||||© NLC Zvolen|sk|
+|WGE|Geological|base|wms|||KeyL|sk|© Štátny geologický ústav Dionýza Štúra|
+|WHC|Hydrochemic|base|wms|||KeyW|sk|© Štátny geologický ústav Dionýza Štúra|
+|WLT|Forest Types|base|wms|12||||© NLC Zvolen|sk|
+|X|Outdoor|base|tile|6|19||KeyX|sk, cz, hu, hr, si, ro, bg, ba, at, ch, it (north), ua (parts), rs (parts), md (parts), pl (parts), de (parts), xk|FM_ATTR, OSM data, CUZK DMR 5G|
+|Z|Aerial|base|tile|0|20||KeyZ|sk, cz|© GKÚ, NLC, © ČÚZK|
+|c|Bicycle trails|overlay|tile|8|16|||sk|© Freemap Slovakia, OSM data|
+|d|Public transport (ÖPNV)|base|tile|0|18||KeyQ||© MeMoMaps, OSM data|
+|h|Parametric shading|overlay|parametricShading||19|||sk|LLS DMR: © ÚGKK SR, © Freemap Slovakia|
+|i|Data layer|overlay|interactive||||KeyD|||
+|l|Forest tracks NLC|overlay|tile|11|15||KeyN|sk|© NLC Zvolen|
+|t|Hiking trails|overlay|tile|8|16|||sk|© Freemap Slovakia, OSM data|
+|w|Wikipedia|overlay|wikipedia|8|||KeyW|||
+|wka|Cadastre|overlay|wms|||KeyK|sk|© GKÚ|
+|z|Parametric shading|overlay|parametricShading||18|||cz|© Freemap Slovakia, © ČÚZK|
+
+_Note:_ If a value is blank, it is not explicitly specified in the current map definitions file or is derived dynamically. Coverage lists are approximate where the configuration enumerates countries or regions.
