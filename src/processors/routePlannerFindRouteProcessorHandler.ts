@@ -45,6 +45,7 @@ enum GraphhopperSign {
   IGNORE = -2147483648,
   KEEP_RIGHT = 7,
   U_TURN_RIGHT = 8,
+  TAKE_FERRY = 9,
   PT_START_TRIP = 101,
   PT_TRANSFER = 102,
   PT_END_TRIP = 103,
@@ -53,7 +54,7 @@ enum GraphhopperSign {
 type GraphhopperInstruction = {
   distance: number;
   heading?: number;
-  sign: GraphhopperSign;
+  sign: GraphhopperSign | number;
   interval: [number, number];
   text: string;
   time: number;
