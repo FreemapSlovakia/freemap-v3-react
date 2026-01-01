@@ -424,18 +424,22 @@ function addPlannedRoute(
         midpointWptEle,
         'name',
         i === 0 && !finishOnly
-          ? 'Štart'
+          ? window.translations?.routePlanner.start
           : i === points.length - 1
-            ? 'Cieľ' // TODO not for roundtrip?
-            : `Zastávka ${i + 1}`,
-      ); // TODO translate
+            ? window.translations?.routePlanner.finish // TODO not for roundtrip?
+            : window.translations?.routePlanner.stop + ' ' + (i + 1),
+      );
     });
   }
 
   alternatives.forEach(({ legs }, i: number) => {
     const trkEle = createElement(doc.documentElement, 'trk');
 
-    createElement(trkEle, 'name', `Alternatíva ${i + 1}`); // TODO translate
+    createElement(
+      trkEle,
+      'name',
+      window.translations?.routePlanner.alternative + ' ' + (i + 1),
+    );
 
     const trksegEle = createElement(trkEle, 'trkseg');
 

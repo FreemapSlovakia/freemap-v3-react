@@ -150,6 +150,7 @@ const messages: Messages = {
     milestones: 'Milestones',
     start: 'Start',
     finish: 'Finish',
+    stop: 'Stop',
     swap: 'Swap start and finish',
     point: {
       point: 'Route point',

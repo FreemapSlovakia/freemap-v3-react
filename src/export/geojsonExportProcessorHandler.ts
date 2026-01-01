@@ -193,11 +193,11 @@ function addPlannedRoute(
         point([pt.lon, pt.lat], {
           name:
             i === 0 && !finishOnly
-              ? 'Štart'
+              ? window.translations?.routePlanner.start
               : i === points.length - 1
-                ? 'Cieľ' // TODO not for roundtrip?
-                : `Zastávka ${i + 1}`,
-        }), // TODO translate: ;
+                ? window.translations?.routePlanner.finish // TODO not for roundtrip?
+                : window.translations?.routePlanner.stop + ' ' + (i + 1),
+        }),
       );
     });
   }
@@ -208,7 +208,7 @@ function addPlannedRoute(
         legs.flatMap((leg) =>
           leg.steps.map((step) => step.geometry.coordinates),
         ),
-        { name: `Alternatíva ${i + 1}` }, // TODO translate
+        { name: window.translations?.routePlanner.alternative + ' ' + (i + 1) },
       ),
     );
   });

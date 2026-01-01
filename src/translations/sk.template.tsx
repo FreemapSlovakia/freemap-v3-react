@@ -156,6 +156,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     milestones: 'Kilometrovník',
     start: 'Štart',
     finish: 'Cieľ',
+    stop: 'Zasávka',
     swap: 'Prehodiť štart a cieľ',
     point: {
       point: 'Bod trasy',

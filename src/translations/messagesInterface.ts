@@ -120,6 +120,7 @@ export type Messages = {
     };
     milestones: string;
     start: string;
+    stop: string;
     finish: string;
     swap: string;
     point: {
