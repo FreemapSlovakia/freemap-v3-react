@@ -119,11 +119,11 @@ async function resolveElevationProfilePointsViaApi(
 
   let climbDown = 0;
 
-  let prevEle: number | undefined;
+  let prevEle: number | null | undefined;
 
-  assert<number[]>(await res.json()).forEach((ele: number, i: number) => {
+  assert<(number | null)[]>(await res.json()).forEach((ele, i) => {
     if (prevEle !== undefined) {
-      const d = ele - prevEle;
+      const d = (ele ?? 0) - (prevEle ?? 0);
 
       if (d > 0) {
         climbUp += d;
