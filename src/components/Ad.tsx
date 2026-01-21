@@ -1,19 +1,18 @@
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { useAd } from '../hooks/useAd.js';
+import { AdItem, useAd } from '../hooks/useAd.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '../hooks/useLeftMarginAdjuster.js';
 import tShirt from '../images/fm-t-shirt.jpg';
-import rovasAd from '../images/rovas_reklama.svg';
 import { useMessages } from '../l10nInjector.js';
 
 export default Ad;
 
-const ads = {
-  tShirt: 4, // freemap t-shirt
-  rovas: 1, // rovas
-  self: 8, // self promo
-};
+const ads: AdItem[] = [
+  { id: 'tShirt', countries: ['SK'], chance: 4 }, // Freemap T-Shirt
+  { id: 'rovas', chance: 1 }, // Rovas
+  { id: 'self', chance: 8 }, // self promo
+];
 
 export function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
@@ -56,18 +55,12 @@ export function Ad(): ReactElement | null {
             className="border px-3 py-2 rounded bg-body text-body"
             style={{ maxWidth: '420px' }}
           >
-            {m?.main.ad(
+            {m?.ad.self(
               <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>,
             )}
           </div>
         ) : ad === 'rovas' ? (
-          <a href="https://rovas.app" target="_blank" rel="noreferrer">
-            <img
-              className="border rounded w-100"
-              src={rovasAd}
-              style={{ maxWidth: '360px' }}
-            />
-          </a>
+          m?.ad.rovas()
         ) : ad === 'tShirt' ? (
           <a
             href="https://nabezky.sk/freemap_t-shirt"

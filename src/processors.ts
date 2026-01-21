@@ -39,6 +39,7 @@ import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapPr
 import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor.js';
 import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor.js';
 import { galleryUploadModalProcessor } from './processors/galleryUploadModalProcessor.js';
+import { geoipProcessor } from './processors/geoIpProcessor.js';
 import { getCountriesProcessor } from './processors/getCountriesProcessor.js';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor.js';
 import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor.js';
@@ -98,6 +99,7 @@ export const processors = [
   cancelProcessor,
   setToolProcessor,
   deleteProcessor,
+  geoipProcessor,
   convertToDrawingProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,

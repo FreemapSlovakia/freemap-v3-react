@@ -12,6 +12,7 @@ import { ObjectDetails } from '../components/ObjectDetails.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './en-shared.js';
 import { Messages, addError } from './messagesInterface.js';
+import { RovasAd } from '../components/RovasAd.js';
 
 const nf00 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 0,
@@ -276,11 +277,21 @@ const messages: Messages = {
       //   </>
       // ),
     },
-    ad: (email) => (
+  },
+
+  ad: {
+    self: (email) => (
       <>
         Interested in placing your own ad here? Don’t hesitate to contact us at{' '}
         {email}.
       </>
+    ),
+    rovas: () => (
+      <RovasAd rovasDesc="economic program for volunteers">
+        <b>Freemap is created by volunteers.</b>{' '}
+        <span className="text-danger">Reward them for their work</span>, with
+        your own volunteer work or with money.
+      </RovasAd>
     ),
   },
 

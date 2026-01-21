@@ -7,6 +7,7 @@ import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
   applyCookieConsent,
   enableUpdatingUrl,
+  invokeGeoip,
   setEmbedFeatures,
 } from './actions/mainActions.js';
 import { toastsAdd } from './actions/toastsActions.js';
@@ -49,6 +50,8 @@ document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 const store = createReduxStore();
 
 setErrorHandlerStore(store);
+
+store.dispatch(invokeGeoip());
 
 store.dispatch(
   l10nSetChosenLanguage({

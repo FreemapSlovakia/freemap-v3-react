@@ -206,7 +206,10 @@ export type Messages = {
     copyright: string;
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
-    ad: (email: ReactNode) => JSX.Element;
+  };
+  ad: {
+    self: (email: ReactNode) => JSX.Element;
+    rovas: () => JSX.Element;
   };
   gallery: {
     legend: string;

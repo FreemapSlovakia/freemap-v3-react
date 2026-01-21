@@ -29,6 +29,7 @@ import {
   enableUpdatingUrl,
   hideInfoBar,
   Modal,
+  processGeoipResult,
   purchaseOnLogin,
   saveHomeLocation,
   selectFeature,
@@ -73,6 +74,7 @@ export interface MainState {
   drawingColor: string;
   drawingWidth: number;
   drawingRecentColors: string[];
+  countryCode?: string;
 }
 
 export const mainInitialState: MainState = {
@@ -263,6 +265,12 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
 
       return newState;
+    })
+    .addCase(processGeoipResult, (state, action) => {
+      return {
+        ...state,
+        countryCode: action.payload.countryCode,
+      };
     })
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
       state.selection =

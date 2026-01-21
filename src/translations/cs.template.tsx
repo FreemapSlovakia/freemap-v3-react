@@ -13,6 +13,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './cs-shared.js';
 import { Messages, addError } from './messagesInterface.js';
+import { RovasAd } from '../components/RovasAd.js';
 
 const nf00 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 0,
@@ -283,11 +284,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       //   </>
       // ),
     },
-    ad: (email) => (
+  },
+
+  ad: {
+    self: (email) => (
       <>
         Máte zájem o vlastní reklamu na tomto místě? Neváhejte nás kontaktovat
         na {email}.
       </>
+    ),
+    rovas: () => (
+      <RovasAd rovasDesc="ekonomický software pro dobrovolníky">
+        <b>Freemap vytvářejí dobrovolníci.</b>{' '}
+        <span className="text-danger">Odměňte je za jejich práci</span>, svou
+        vlastní dobrovolnickou prací nebo penězi.
+      </RovasAd>
     ),
   },
 

@@ -13,6 +13,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './hu-shared.js';
 import { Messages, addError } from './messagesInterface.js';
+import { RovasAd } from '../components/RovasAd.js';
 
 const nf00 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -280,18 +281,28 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       // ),
     },
 
-    ad: (email) => (
-      <>
-        Szeretnéd, ha itt lenne a saját hirdetésed? Ne habozz kapcsolatba lépni
-        velünk a következő címen: {email}.
-      </>
-    ),
     cookieConsent: () => (
       <CookieConsent
         prompt="Egyes funkciók sütiket igényelhetnek. Elfogadod:"
         local="Helyi beállítások és közösségi hálós bejelentkezés sütijei"
         analytics="Analitikus sütik"
       />
+    ),
+  },
+
+  ad: {
+    self: (email) => (
+      <>
+        Szeretnéd, ha itt lenne a saját hirdetésed? Ne habozz kapcsolatba lépni
+        velünk a következő címen: {email}.
+      </>
+    ),
+    rovas: () => (
+      <RovasAd rovasDesc="economic program for volunteers">
+        <b>Freemap is created by volunteers.</b>{' '}
+        <span className="text-danger">Reward them for their work</span>, with
+        your own volunteer work or with money.
+      </RovasAd>
     ),
   },
 

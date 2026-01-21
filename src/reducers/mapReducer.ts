@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { authSetUser } from '../actions/authActions.js';
 import { gallerySetFilter } from '../actions/galleryActions.js';
-import { applySettings } from '../actions/mainActions.js';
+import { applySettings, processGeoipResult } from '../actions/mainActions.js';
 import {
   mapRefocus,
   mapReplaceLayer,
@@ -28,10 +28,13 @@ export interface MapState extends MapStateBase {
   shading: Shading;
 }
 
+const LAT = 48.70714112;
+const LON = 19.49950112;
+
 export const mapInitialState: MapState = {
   layers: ['X'],
-  lat: 48.70714,
-  lon: 19.4995,
+  lat: LAT,
+  lon: LON,
   zoom: 8,
   layersSettings: {},
   removeGalleryOverlayOnGalleryToolQuit: false,
@@ -177,6 +180,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         },
       ) => ({
         ...state,
+        pristinePosition: false,
         lat: map?.lat ?? state.lat,
         lon: map?.lon ?? state.lon,
         zoom: map?.zoom ?? state.zoom,
@@ -199,5 +203,16 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapSetShading, (state, action) => {
       state.shading = action.payload;
+    })
+    .addCase(processGeoipResult, (state, { payload }) => {
+      if (state.lat !== LAT || state.lon !== LON) {
+        return;
+      }
+
+      if (payload.latitude !== undefined && payload.longitude !== undefined) {
+        state.lat = payload.latitude;
+        state.lon = payload.longitude;
+        state.zoom = 9;
+      }
     }),
 );

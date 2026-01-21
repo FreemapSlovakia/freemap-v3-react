@@ -1,44 +1,62 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAppSelector } from './useAppSelector.js';
 
-export function useAd<T extends Record<string, number>>(
-  ads: T,
-  timeout = 30_000,
-): keyof T | null {
-  type K = keyof T;
+type AdId = 'tShirt' | 'rovas' | 'self';
 
-  const [ad, setAd] = useState<K | null>(null);
+export type AdItem = {
+  id: AdId;
+  chance: number;
+  countries?: string[];
+};
 
-  const lastAdId = useRef<K | null>(null);
+export function useAd(ads: AdItem[], timeout = 30_000): AdId | null {
+  const [adId, setAdId] = useState<AdId | null>(null);
+
+  const lastAdId = useRef<AdId | null>(null);
+
+  const countryCode = useAppSelector((state) => state.main.countryCode);
+
+  const [availableAds, setAvailableAds] = useState<AdItem[]>([]);
 
   useEffect(() => {
-    if (!Object.keys(ads).length) {
+    setAvailableAds(
+      ads.filter(
+        (ad) =>
+          !ad.countries || !countryCode || ad.countries.includes(countryCode),
+      ),
+    );
+
+    setAdId(null);
+
+    lastAdId.current = null;
+  }, [countryCode, ads]);
+
+  useEffect(() => {
+    if (!availableAds.length) {
       return;
     }
 
-    const totalWeight = (Object.values(ads) as number[]).reduce(
-      (sum, priority) => sum + priority,
-      0,
-    );
+    const totalWeight = availableAds.reduce((sum, ad) => sum + ad.chance, 0);
 
     const pickAd = () => {
-      let chosen: K | undefined;
+      let chosenAdId: AdId | undefined;
 
-      while (!chosen || chosen === lastAdId.current) {
+      while (!chosenAdId || chosenAdId === lastAdId.current) {
         let r = Math.random() * totalWeight;
 
-        for (const [key, priority] of Object.entries(ads) as [K, number][]) {
-          if (r < priority) {
-            chosen = key;
+        for (const ad of availableAds) {
+          if (r < ad.chance) {
+            chosenAdId = ad.id;
             break;
           }
 
-          r -= priority;
+          r -= ad.chance;
         }
       }
 
-      lastAdId.current = chosen;
+      lastAdId.current = chosenAdId;
 
-      setAd(chosen);
+      setAdId(chosenAdId);
     };
 
     pickAd(); // initial
@@ -46,7 +64,7 @@ export function useAd<T extends Record<string, number>>(
     const interval = setInterval(pickAd, timeout);
 
     return () => clearInterval(interval);
-  }, [ads, timeout]);
+  }, [availableAds, timeout]);
 
-  return ad;
+  return adId;
 }

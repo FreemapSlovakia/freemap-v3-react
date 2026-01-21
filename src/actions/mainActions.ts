@@ -242,3 +242,17 @@ export const downloadMap = createAction<{
   scale: number;
   boundary: Feature<Polygon | MultiPolygon>;
 }>('DOWNLOAD_MAP');
+
+export const invokeGeoip = createAction('INVOKE_GEOIP');
+
+export type GeoIpResult = {
+  country?: string;
+  countryCode?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+};
+
+export const processGeoipResult = createAction<GeoIpResult>(
+  'PROCESS_GEOIP_RESULT',
+);

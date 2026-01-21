@@ -13,6 +13,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './pl-shared.js';
+import { RovasAd } from '../components/RovasAd.js';
 
 const nf00 = new Intl.NumberFormat('pl', {
   minimumFractionDigits: 0,
@@ -275,11 +276,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analityczne cookies"
       />
     ),
-    ad: (email) => (
+  },
+
+  ad: {
+    self: (email) => (
       <>
         Chcesz umieścić swoją reklamę w tym miejscu? Skontaktuj się z nami pod
         adresem {email}.
       </>
+    ),
+    rovas: () => (
+      <RovasAd rovasDesc="economic program for volunteers">
+        <b>Freemap is created by volunteers.</b>{' '}
+        <span className="text-danger">Reward them for their work</span>, with
+        your own volunteer work or with money.
+      </RovasAd>
     ),
   },
 
