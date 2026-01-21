@@ -1,4 +1,5 @@
 onlyBuiltDependencies:
+  - '@parcel/watcher'
   - '@sentry/cli'
   - core-js-pure
   - esbuild
