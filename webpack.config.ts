@@ -113,12 +113,7 @@ const config: Configuration = {
             loader: 'sass-loader',
             options: {
               sassOptions: {
-                silenceDeprecations: [
-                  'mixed-decls',
-                  'color-functions',
-                  'global-builtin',
-                  'import',
-                ],
+                quietDeps: true,
               },
             } satisfies SassLoader.Options,
           },
