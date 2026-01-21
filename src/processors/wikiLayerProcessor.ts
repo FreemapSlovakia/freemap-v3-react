@@ -110,7 +110,7 @@ export const wikiLayerProcessor: Processor = {
       getState,
       method: 'GET',
       // url: `http://localhost:8040?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
-      url: `https://backend.freemap.sk/wiki-pois?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
+      url: `https://wiki-pois.freemap.sk/?bbox=${bb.getWest()},${bb.getSouth()},${bb.getEast()},${bb.getNorth()}&scale=${scale}`,
       expectedStatus: 200,
       cancelActions: [mapRefocus, mapToggleLayer],
     });
