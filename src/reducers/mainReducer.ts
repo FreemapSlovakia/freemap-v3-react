@@ -94,7 +94,7 @@ export const mainInitialState: MainState = {
   purchaseOnLogin: undefined,
   documentKey: null,
   hiddenInfoBars: {},
-  drawingColor: '#ff00ff',
+  drawingColor: '#0000ff',
   drawingWidth: 4,
   drawingRecentColors: [],
 };
