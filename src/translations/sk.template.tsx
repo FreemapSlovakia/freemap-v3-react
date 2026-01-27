@@ -14,6 +14,8 @@ import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
 import { RovasAd } from '../components/RovasAd.js';
+import { useDispatch } from 'react-redux';
+import { documentShow } from '../actions/mainActions.js';
 
 const nf00 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -269,32 +271,32 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       />
     ),
     infoBars: {
-      // dp: () => {
-      //   // eslint-disable-next-line react-hooks/rules-of-hooks
-      //   const dispatch = useDispatch();
-      //   return (
-      //     <>
-      //       <span className="d-sm-none">Podporte nás prosím</span>
-      //       <span className="d-none d-sm-inline d-xl-none">
-      //         Podporte prosím prevádzku služieb Freemap.sk vašimi
-      //       </span>
-      //       <span className="d-none d-xl-inline">
-      //         Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
-      //         potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
-      //       </span>{' '}
-      //       <AlertLink
-      //         href="/#document=dvePercenta"
-      //         onClick={(e) => {
-      //           e.preventDefault();
-      //           dispatch(documentShow('dvePercenta'));
-      //         }}
-      //       >
-      //         2% z dane
-      //       </AlertLink>
-      //       .
-      //     </>
-      //   );
-      // },
+      dp: () => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const dispatch = useDispatch();
+        return (
+          <>
+            <span className="d-sm-none">Podporte nás prosím</span>
+            <span className="d-none d-sm-inline d-xl-none">
+              Podporte prosím prevádzku služieb Freemap.sk vašimi
+            </span>
+            <span className="d-none d-xl-inline">
+              Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
+              potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
+            </span>{' '}
+            <AlertLink
+              href="/#document=dvePercenta"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(documentShow('dvePercenta'));
+              }}
+            >
+              2% z dane
+            </AlertLink>
+            .
+          </>
+        );
+      },
       // ua: () => {
       //   return (
       //     <>
