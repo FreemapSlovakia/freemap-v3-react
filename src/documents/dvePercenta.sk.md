@@ -8,7 +8,7 @@ order: 1000
 
 Milí priaznivci Freemap Slovakia a OpenStreetMap na Slovensku.
 
-Občianske združenie Freemap Slovakia splnilo zákonné predpoklady pre príjem 2% podielu z dane za rok 2024, preto Vás chceme touto cestou požiadať o Vašu pomoc a podporu.
+Občianske združenie Freemap Slovakia splnilo zákonné predpoklady pre príjem 2% podielu z dane za rok 2025, preto Vás chceme touto cestou požiadať o Vašu pomoc a podporu.
 
 Vaše 2% z dane nám pomôžu udržať v prevádzke hardvér, nami poskytované služby na portáli [Freemap Slovakia](https://www.freemap.sk/) a aktivity súvisiace s rozvojom a podporou mapovania [OpenStreetMap](https://www.openstreetmap.org/) na Slovensku.
 
