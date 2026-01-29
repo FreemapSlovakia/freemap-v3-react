@@ -111,9 +111,9 @@ export function SupportUsModal({ show }: Props): ReactElement {
                   dispatch(documentShow('dvePercenta'));
                 }}
               >
-                2% z dane
+                2 % z dane
               </a>
-              . Násladne vás, podľa výpisu z daňového úradu, odmeníme predĺžením
+              . Následne vás, podľa výpisu z daňového úradu, odmeníme predĺžením
               prémiového prístupu o jeden rok.
             </p>
 

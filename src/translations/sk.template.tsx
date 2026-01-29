@@ -291,7 +291,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
                 dispatch(documentShow('dvePercenta'));
               }}
             >
-              2% z dane
+              2 % z dane
             </AlertLink>
             .
           </>
