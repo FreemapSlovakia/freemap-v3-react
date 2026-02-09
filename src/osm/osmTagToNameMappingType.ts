@@ -2,7 +2,21 @@ export type OsmTagToNameMapping = {
   aeroway: {
     aerodrome: string;
   };
-  aerialway: string;
+  aerialway: {
+    '*': string;
+    cable_car: string;
+    chair_lift: string;
+    goods: string;
+    'j-bar': string;
+    magic_carpet: string;
+    mixed_lift: string;
+    platter: string;
+    pylon: string;
+    rope_tow: string;
+    station: string;
+    't-bar': string;
+    zip_line: string;
+  };
   amenity: {
     '*': string;
     animal_breeding: string;
@@ -267,6 +281,7 @@ export type OsmTagToNameMapping = {
     shed: string;
     shrine: string;
     stable: string;
+    stadium: string;
     static_caravan: string;
     storage_tank: string;
     sty: string;
@@ -279,6 +294,9 @@ export type OsmTagToNameMapping = {
     transportation: string;
     university: string;
     warehouse: string;
+    yes: string;
+  };
+  ford: {
     yes: string;
   };
   highway: {
@@ -344,6 +362,7 @@ export type OsmTagToNameMapping = {
         castle: string;
       };
     };
+    tree_shrine: string;
     tomb: string;
     wayside_cross: string;
     wayside_shrine: string;
@@ -368,19 +387,31 @@ export type OsmTagToNameMapping = {
     meadow: string;
     military: string;
     orchard: string;
+    pedestrian: string;
     plant_nursery: string;
     quarry: string;
+    railway: string;
     recreation_ground: string;
     religions: string;
     reservoir: string;
     residential: string;
     retail: string;
     vineyard: string;
+    village_green: string;
     winter_sports: string;
   };
   leisure: {
     '*': string;
+    adult_gaming_centre: string;
+    amusement_arcade: string;
+    bandstand: string;
+    bathing_place: string;
+    beach_resort: string;
+    bird_hide: string;
     bleachers: string;
+    bowling_alley: string;
+    dance: string;
+    disc_golf_course: string;
     dog_park: string;
     escape_game: string;
     firepit: string;
@@ -389,45 +420,56 @@ export type OsmTagToNameMapping = {
     fitness_station: string;
     garden: string;
     golf_course: string;
-    ice_rink: string;
     hackerspace: string;
+    high_ropes_course: string;
     horse_riding: string;
+    ice_rink: string;
     marina: string;
     miniature_golf: string;
     nature_reserve: string;
+    outdoor_seating: string;
     park: string;
     picnic_table: {
       '*': string;
       covered: {
         yes: string;
+        no: string;
       };
     };
-    pitch: {
-      '*': string;
-      sport: {
-        badminton: string;
-        basketball: string;
-        beachvolleyball: string;
-        hockey: string;
-        ice_hockey: string;
-        multi: string;
-        soccer: string;
-        tennis: string;
-        volleyball: string;
-      };
-    };
+    pitch: string;
     playground: string;
+    resort: string;
+    sauna: {
+      '*': string;
+      sauna: {
+        hot: string;
+        steam: string;
+        smoke: string;
+        dry: string;
+        hanjeungmak: string;
+        aroma: string;
+        infrared: string;
+      };
+    };
+    slipway: string;
     sports_centre: string;
     sports_hall: string;
     stadium: string;
+    summer_camp: string;
+    sunbathing: string;
+    swimming_area: string;
     swimming_pool: string;
+    tanning_salon: string;
     track: string;
+    trampoline_park: string;
     water_park: string;
+    wildlife_hide: string;
   };
   man_made: {
     '*': string;
     adit: string;
     antenna: string;
+    apiary: string;
     beacon: string;
     beehive: string;
     bridge: string;
@@ -457,6 +499,7 @@ export type OsmTagToNameMapping = {
     observatory: string;
     pier: string;
     pipeline: string;
+    pumping_station: string;
     reservoir_covered: string;
     silo: string;
     snow_cannon: string;
@@ -485,6 +528,9 @@ export type OsmTagToNameMapping = {
     watermill: string;
     windmill: string;
     works: string;
+  };
+  mountain_pass: {
+    yes: string;
   };
   natural: {
     '*': string;
@@ -546,7 +592,18 @@ export type OsmTagToNameMapping = {
     tree_row: string;
     valley: string;
     water: string;
-    wetland: string;
+    wetland: {
+      '*': string;
+      wetland: {
+        bog: string;
+        reedbed: string;
+        marsh: string;
+        swamp: string;
+        wet_meadow: string;
+        mangrove: string;
+        fen: string;
+      };
+    };
     wood: string;
   };
   place: {
@@ -569,10 +626,166 @@ export type OsmTagToNameMapping = {
   };
   power: {
     '*': string;
-    generator: string;
+    generator: {
+      '*': string;
+      'generator:source': {
+        nuclear: {
+          '*': string;
+          'generator:method': {
+            fission: string;
+            fusion: string;
+          };
+        };
+        wind: {
+          '*': string;
+        };
+        hydro: {
+          '*': string;
+          'generator:method': {
+            'water-storage': string;
+            'water-pumped-storage': string;
+            'run-of-the-river': string;
+          };
+        };
+        tidal: {
+          '*': string;
+          'generator:method': {
+            barrage: string;
+            stream: string;
+          };
+        };
+        wave: {
+          '*': string;
+        };
+        geothermal: {
+          '*': string;
+        };
+        solar: {
+          '*': string;
+          'generator:method': {
+            thermal: string;
+            photovoltaic: string;
+          };
+        };
+        coal: {
+          '*': string;
+        };
+        gas: {
+          '*': string;
+        };
+        biomass: {
+          '*': string;
+          'generator:method': {
+            combustion: string;
+            gasification: string;
+            anaerobic_digestion: string;
+          };
+        };
+        biofuel: {
+          '*': string;
+        };
+        biogas: {
+          '*': string;
+        };
+        oil: {
+          '*': string;
+        };
+        diesel: {
+          '*': string;
+        };
+        gasoline: {
+          '*': string;
+        };
+        waste: {
+          '*': string;
+          'generator:method': {
+            combustion: string;
+            gasification: string;
+          };
+        };
+      };
+    };
     line: string;
     minor_line: string;
-    plant: string;
+    plant: {
+      '*': string;
+      'plant:source': {
+        nuclear: {
+          '*': string;
+          'plant:method': {
+            fission: string;
+            fusion: string;
+          };
+        };
+        wind: {
+          '*': string;
+        };
+        hydro: {
+          '*': string;
+          'plant:method': {
+            'water-storage': string;
+            'water-pumped-storage': string;
+            'run-of-the-river': string;
+          };
+        };
+        tidal: {
+          '*': string;
+          'plant:method': {
+            barrage: string;
+            stream: string;
+          };
+        };
+        wave: {
+          '*': string;
+        };
+        geothermal: {
+          '*': string;
+        };
+        solar: {
+          '*': string;
+          'plant:method': {
+            thermal: string;
+            photovoltaic: string;
+          };
+        };
+        coal: {
+          '*': string;
+        };
+        gas: {
+          '*': string;
+        };
+        biomass: {
+          '*': string;
+          'plant:method': {
+            combustion: string;
+            gasification: string;
+            anaerobic_digestion: string;
+          };
+        };
+        biofuel: {
+          '*': string;
+        };
+        biogas: {
+          '*': string;
+        };
+        oil: {
+          '*': string;
+        };
+        diesel: {
+          '*': string;
+        };
+        gasoline: {
+          '*': string;
+        };
+        waste: {
+          '*': string;
+          'plant:method': {
+            combustion: string;
+            gasification: string;
+          };
+        };
+      };
+    };
     pole: string;
     substation: string;
     tower: string;
@@ -583,7 +796,41 @@ export type OsmTagToNameMapping = {
     station: string;
     stop_position: string;
   };
-  railway: string;
+  railway: {
+    '*': string;
+    abandoned: string;
+    construction: string;
+    proposed: string;
+    disused: string;
+    funicular: string;
+    light_rail: string;
+    miniature: string;
+    monorail: string;
+    narrow_gauge: string;
+    rail: string;
+    subway: string;
+    tram: string;
+    halt: string;
+    platform: string;
+    station: string;
+    stop: string;
+    subway_entrance: string;
+    tram_stop: string;
+    buffer_stop: string;
+    crossing: string;
+    derail: string;
+    railway_crossing: string;
+    roundhouse: string;
+    signal: string;
+    switch: string;
+    level_crossing: string;
+    traverser: string;
+    turntable: string;
+    ventilation_shaft: string;
+    wash: string;
+    water_crane: string;
+    workshop: string;
+  };
   shop: {
     '*': string;
     alcohol: string;
@@ -714,99 +961,212 @@ export type OsmTagToNameMapping = {
   };
   sport: {
     '*': string;
-    '9pin': string;
     '10pin': string;
+    '8pin': string;
+    '9pin': string;
+    'five-a-side': string;
+    'in-line_hockey': string;
+    'shot-put': string;
+    aerobics: string;
     aikido: string;
     airsoft: string;
     american_football: string;
+    american_handball: string;
     archery: string;
+    association_football: string;
     athletics: string;
     australian_football: string;
+    axe_throwing: string;
     badminton: string;
+    balle_pelote: string;
+    ballooning: string;
+    bandy: string;
+    barre: string;
+    base: string;
     baseball: string;
     basketball: string;
+    batting_cage: string;
+    beach_soccer: string;
+    beach_tennis: string;
+    beachhandball: string;
+    beachtennis: string;
     beachvolleyball: string;
+    biathlon: string;
     bicycle: string;
+    billards: string;
     billiards: string;
     bmx: string;
+    bobsleigh: string;
+    bodybuilding: string;
     boules: string;
     bowling: string;
     bowls: string;
     boxing: string;
+    bullfighting: string;
+    calisthenics: string;
+    canadian_football: string;
+    candlepin: string;
+    canoe_polo: string;
     canoe: string;
     chess: string;
+    chinlone: string;
     cliff_diving: string;
-    climbing: string;
     climbing_adventure: string;
-    cricket: string;
+    climbing: string;
+    cockfighting: string;
     cricket_nets: string;
+    cricket: string;
     croquet: string;
+    crossfit: string;
     curling: string;
+    cycle_ball: string;
+    cycle_polo: string;
     cycling: string;
+    dance: string;
+    dancing: string;
     darts: string;
     disc_golf: string;
+    diving: string;
+    dodgeball: string;
+    dog_agility: string;
     dog_racing: string;
+    dragon_boat: string;
     equestrian: string;
+    fencing: string;
     field_hockey: string;
+    fistball: string;
     fitness: string;
+    fives: string;
     floorball: string;
+    football: string;
+    footballgolf: string;
+    four_square: string;
     free_flying: string;
+    freediving: string;
+    funnel_ball: string;
+    futsal: string;
+    gaelic_football: string;
     gaelic_games: string;
+    gaga: string;
+    gateball: string;
+    gliding: string;
     golf: string;
     gymnastics: string;
     handball: string;
+    hanggliding: string;
+    hapkido: string;
+    high_rope_course: string;
+    hiking: string;
     hockey: string;
+    hopscotch: string;
     horse_racing: string;
+    horse_riding: string;
     horseshoes: string;
     ice_hockey: string;
     ice_skating: string;
+    ice_stock: string;
+    jetsprint: string;
     judo: string;
     karate: string;
     karting: string;
+    kick_scooter: string;
+    kickball: string;
+    kickboxing: string;
+    kitesurfing: string;
     korfball: string;
+    krachtbal: string;
+    krolf: string;
+    lacrosse: string;
     laser_tag: string;
     long_jump: string;
+    martial_arts: string;
+    mind_body_interventions: string;
+    miniature_golf: string;
     model_aerodrome: string;
     motocross: string;
     motor: string;
+    mtb: string;
     multi: string;
     netball: string;
+    nine_mens_morris: string;
+    obstacle_course: string;
     orienteering: string;
     paddle_tennis: string;
+    paddleball: string;
+    paddleboard: string;
+    padel: string;
     paintball: string;
+    parachuting: string;
+    paragliding: string;
+    parkour: string;
+    pedal_car_racing: string;
     pelota: string;
+    pesäpallo: string;
     petanque: string;
+    pickleball: string;
+    pilates: string;
+    pole_dance: string;
+    polo: string;
+    powerlifting: string;
     racquet: string;
     rc_car: string;
+    rodeo: string;
+    roller_hockey: string;
     roller_skating: string;
     rowing: string;
-    rugby: string;
     rugby_league: string;
     rugby_union: string;
+    rugby: string;
     running: string;
+    russian_skittles: string;
+    safety_training: string;
     sailing: string;
     scuba_diving: string;
-    shooting: string;
     shooting_range: string;
-    'shot-put': string;
+    shooting: string;
+    shuffleboard: string;
     skateboard: string;
     skating: string;
     ski_jumping: string;
     skiing: string;
+    snooker: string;
+    snorkeling: string;
     soccer: string;
+    softball: string;
+    speedway: string;
     squash: string;
     streetball: string;
+    summer_toboggan: string;
+    sumo: string;
     surfing: string;
     swimming: string;
     table_soccer: string;
     table_tennis: string;
+    taekwondo: string;
+    tamburello: string;
     team_handball: string;
     tennis: string;
+    teqball: string;
+    tetherball: string;
     toboggan: string;
+    touch_football: string;
+    trampoline: string;
+    trugo: string;
+    tug_of_war: string;
+    ultimate: string;
+    ultralight_aviation: string;
     volleyball: string;
+    wakeboarding: string;
+    walking: string;
+    water_polo: string;
     water_ski: string;
+    water_sports: string;
+    weightlifting: string;
+    windsurfing: string;
     workout: string;
+    wrestling: string;
     yoga: string;
+    zurkhaneh_sport: string;
   };
   tourism: {
     '*': string;

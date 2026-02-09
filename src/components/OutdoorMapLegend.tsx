@@ -4,44 +4,75 @@ import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import { toastsAdd } from '../actions/toastsActions.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
+import {
+  getGenericNameFromOsmElementSync,
+  getOsmMapping,
+} from '../osm/osmNameResolver.js';
+import { OsmMapping } from '../osm/types.js';
 
-type Item = { name: string; items: { name: string; id: number }[] };
+type Item = { name: string; items: { name: string; id: string }[] };
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
-type Res = {
-  categories: { id: string; name: string }[];
-  items: { categoryId: string; name: string }[];
-};
+type Res = { id: string; category: string; tags: Record<string, string> }[];
 
 export default OutdoorMapLegend;
 
 export function OutdoorMapLegend(): ReactElement {
   const [legend, setLegend] = useState<Item[]>([]);
 
-  const language = useEffectiveChosenLanguage();
-
   const dispatch = useDispatch();
 
+  const lang = useEffectiveChosenLanguage();
+
+  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
+
   useEffect(() => {
-    fetch(`${fmMapserverUrl}/legend?language=${language}`)
+    getOsmMapping(lang).then((osmMapping) => setOsmMapping(osmMapping));
+  }, [lang]);
+
+  useEffect(() => {
+    if (!osmMapping) {
+      return;
+    }
+
+    console.log(osmMapping);
+
+    fetch(`${fmMapserverUrl}/legend`)
       .then((response) =>
         response.status === 200 ? response.json() : undefined,
       )
       .then((data) => {
-        const { categories, items } = assert<Res>(data);
+        const items = assert<Res>(data);
 
         const catMap = new Map<string, Item>();
 
-        for (const category of categories) {
-          catMap.set(category.id, { name: category.name, items: [] });
+        for (const item of items) {
+          let i = catMap.get(item.category);
+          if (!i) {
+            i = { name: item.category, items: [] };
+            catMap.set(item.category, i);
+          }
+
+          i.items.push({
+            id: item.id,
+            name:
+              getGenericNameFromOsmElementSync(
+                item.tags,
+                'relation',
+                osmMapping.osmTagToNameMapping,
+                osmMapping.colorNames,
+              ) +
+              ' ' +
+              JSON.stringify(item.tags),
+          });
         }
 
-        for (let i = 0; i < items.length; i++) {
-          catMap
-            .get(items[i].categoryId)
-            ?.items.push({ name: items[i].name, id: i });
-        }
+        // for (let i = 0; i < items.length; i++) {
+        //   catMap
+        //     .get(items[i].categoryId)
+        //     ?.items.push({ name: items[i].name, id: i });
+        // }
 
         setLegend([...catMap.values()]);
       })
@@ -54,7 +85,7 @@ export function OutdoorMapLegend(): ReactElement {
           }),
         );
       });
-  }, [dispatch, language]);
+  }, [dispatch, osmMapping]);
 
   return (
     <Accordion>
@@ -72,11 +103,11 @@ export function OutdoorMapLegend(): ReactElement {
               <Fragment key={id}>
                 <div>
                   <img
-                    src={`${fmMapserverUrl}/legend-image/${id}`}
+                    src={`${fmMapserverUrl}/legend/${id}`}
                     srcSet={[1, 2, 3]
                       .map(
                         (s) =>
-                          `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
+                          `${fmMapserverUrl}/legend/${id}?scale=${s}${
                             s > 1 ? ` ${s}x` : ''
                           }`,
                       )

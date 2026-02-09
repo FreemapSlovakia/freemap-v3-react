@@ -9,3 +9,11 @@ export type DeepPartialWithRequiredObjects<T> = {
   // Non-object keys: optional
   [K in keyof T as IsObject<T[K]> extends false ? K : never]?: T[K];
 };
+
+export type DeepPartial<T> = {
+  // Object keys: optional, recursively partial inside
+  [K in keyof T as IsObject<T[K]> extends true ? K : never]?: DeepPartial<T[K]>;
+} & {
+  // Non-object keys: optional
+  [K in keyof T as IsObject<T[K]> extends false ? K : never]?: T[K];
+};

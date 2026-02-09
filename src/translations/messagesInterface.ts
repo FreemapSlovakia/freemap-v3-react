@@ -8,7 +8,7 @@ import { ExportableLayer } from '../actions/mainActions.js';
 import { RoutingMode } from '../actions/routePlannerActions.js';
 import { SearchResult, SearchSource } from '../actions/searchActions.js';
 import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
-import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
+import { DeepPartial } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
@@ -804,7 +804,7 @@ export type Messages = {
 };
 
 export function addError(
-  dpMessages: DeepPartialWithRequiredObjects<Messages>,
+  dpMessages: DeepPartial<Messages>,
   message: string,
   err: unknown,
 ): string {
