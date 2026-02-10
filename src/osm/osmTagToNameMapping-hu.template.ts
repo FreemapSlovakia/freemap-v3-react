@@ -6,7 +6,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     aerodrome: 'Repülőtér',
   },
 
-  aerialway: 'Felvonó, drótkötélpálya',
+  aerialway: {
+    '*': 'Felvonó, drótkötélpálya',
+  },
 
   amenity: {
     '*': '{}',
@@ -906,7 +908,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     weir: 'Bukógát',
   },
 
-  railway: 'Vasút',
+  railway: {
+    '*': 'Vasút',
+  },
 };
 
 export const colorNames: Record<string, string> = {

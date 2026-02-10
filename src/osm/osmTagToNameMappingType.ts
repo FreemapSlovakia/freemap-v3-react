@@ -348,12 +348,26 @@ export type OsmTagToNameMapping = {
   };
   historic: {
     '*': string;
+    yes: string;
+    aircraft: string;
     archaeological_site: string;
+    boundary_stone: string;
+    building: string;
+    cannon: string;
     castle: string;
+    charcoal_pile: string;
     church: string;
     city_gate: string;
+    citywalls: string;
+    fort: string;
+    heritage: string;
+    house: string;
+    hollow_way: string;
     manor: string;
     memorial: string;
+    milestone: string;
+    mine: string;
+    mine_shaft: string;
     monastery: string;
     monument: string;
     ruins: {
@@ -362,10 +376,13 @@ export type OsmTagToNameMapping = {
         castle: string;
       };
     };
+    shieling: string;
+    stone: string;
     tree_shrine: string;
     tomb: string;
     wayside_cross: string;
     wayside_shrine: string;
+    wreck: string;
   };
   landuse: {
     '*': string;
@@ -528,6 +545,27 @@ export type OsmTagToNameMapping = {
     watermill: string;
     windmill: string;
     works: string;
+  };
+  military: {
+    '*': string;
+    academy: string;
+    airfield: string;
+    ammunition: string;
+    barracks: string;
+    base: string;
+    bunker: string;
+    checkpoint: string;
+    danger_area: string;
+    depot: string;
+    launchpad: string;
+    naval_base: string;
+    nuclear_explosion_site: string;
+    obstacle_course: string;
+    office: string;
+    range: string;
+    school: string;
+    training_area: string;
+    trench: string;
   };
   mountain_pass: {
     yes: string;
@@ -1205,6 +1243,7 @@ export type OsmTagToNameMapping = {
         guidepost: string;
         map: string;
         office: string;
+        route_marker: string;
       };
     };
     motel: string;
@@ -1238,6 +1277,7 @@ export type OsmTagToNameMapping = {
     dam: string;
     ditch: string;
     drain: string;
+    rapids: string;
     river: string;
     stream: string;
     waterfall: string;

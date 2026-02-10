@@ -1,5 +1,5 @@
 import { Fragment, type ReactElement, useEffect, useState } from 'react';
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import { toastsAdd } from '../actions/toastsActions.js';
@@ -9,12 +9,19 @@ import {
   getOsmMapping,
 } from '../osm/osmNameResolver.js';
 import { OsmMapping } from '../osm/types.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
-type Item = { name: string; items: { name: string; id: string }[] };
+type Item = {
+  category: string;
+  items: {
+    id: string;
+    name_w_tags: { name: string; tags: Record<string, string> }[];
+  }[];
+};
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
-type Res = { id: string; category: string; tags: Record<string, string> }[];
+type Res = { id: string; category: string; tags: Record<string, string>[] }[];
 
 export default OutdoorMapLegend;
 
@@ -36,8 +43,6 @@ export function OutdoorMapLegend(): ReactElement {
       return;
     }
 
-    console.log(osmMapping);
-
     fetch(`${fmMapserverUrl}/legend`)
       .then((response) =>
         response.status === 200 ? response.json() : undefined,
@@ -50,29 +55,23 @@ export function OutdoorMapLegend(): ReactElement {
         for (const item of items) {
           let i = catMap.get(item.category);
           if (!i) {
-            i = { name: item.category, items: [] };
+            i = { category: item.category, items: [] };
             catMap.set(item.category, i);
           }
 
           i.items.push({
             id: item.id,
-            name:
-              getGenericNameFromOsmElementSync(
-                item.tags,
+            name_w_tags: item.tags.map((tags) => ({
+              name: getGenericNameFromOsmElementSync(
+                tags,
                 'relation',
                 osmMapping.osmTagToNameMapping,
                 osmMapping.colorNames,
-              ) +
-              ' ' +
-              JSON.stringify(item.tags),
+              ),
+              tags,
+            })),
           });
         }
-
-        // for (let i = 0; i < items.length; i++) {
-        //   catMap
-        //     .get(items[i].categoryId)
-        //     ?.items.push({ name: items[i].name, id: i });
-        // }
 
         setLegend([...catMap.values()]);
       })
@@ -90,8 +89,8 @@ export function OutdoorMapLegend(): ReactElement {
   return (
     <Accordion>
       {[...legend].map((c: Item, i: number) => (
-        <Accordion.Item key={c.name} eventKey={String(i)}>
-          <Accordion.Header>{c.name}</Accordion.Header>
+        <Accordion.Item key={c.category} eventKey={String(i)}>
+          <Accordion.Header>{c.category}</Accordion.Header>
 
           <Accordion.Body
             className="d-grid align-items-center row-gap-2 column-gap-3"
@@ -99,7 +98,7 @@ export function OutdoorMapLegend(): ReactElement {
               gridTemplateColumns: 'auto 1fr',
             }}
           >
-            {c.items.map(({ id, name }) => (
+            {c.items.map(({ id, name_w_tags }) => (
               <Fragment key={id}>
                 <div>
                   <img
@@ -115,7 +114,33 @@ export function OutdoorMapLegend(): ReactElement {
                   />
                 </div>
 
-                <div>{name}</div>
+                <div>
+                  {name_w_tags.map(({ name, tags }, i) => (
+                    <Fragment key={i}>
+                      {i ? '｜' : null}
+                      <LongPressTooltip
+                        label={
+                          <Table className="text-left mb-0" bordered size="sm">
+                            <tbody>
+                              {Object.entries(tags).map(([key, value]) => (
+                                <tr>
+                                  <th>{key}</th>
+                                  <td>{value}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
+                        }
+                      >
+                        {({ props }) => (
+                          <span {...props}>
+                            {name?.replace(/\s*\*\s*/g, '') || '???'}
+                          </span>
+                        )}
+                      </LongPressTooltip>
+                    </Fragment>
+                  ))}
+                </div>
               </Fragment>
             ))}
           </Accordion.Body>

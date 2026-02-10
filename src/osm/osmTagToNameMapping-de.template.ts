@@ -899,8 +899,12 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     weir: 'Wehr',
   },
 
-  aerialway: 'Seilbahn, Aufzug',
-  railway: 'Eisenbahn',
+  aerialway: {
+    '*': 'Seilbahn, Aufzug',
+  },
+  railway: {
+    '*': 'Eisenbahn',
+  },
 };
 
 export const colorNames: Record<string, string> = {

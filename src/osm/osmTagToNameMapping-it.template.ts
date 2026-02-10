@@ -5,7 +5,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   aeroway: {
     aerodrome: 'Aereoporto',
   },
-  aerialway: 'Via aerea, ascensore',
+  aerialway: {
+    '*': 'Via aerea, ascensore',
+  },
   amenity: {
     '*': '{}',
     animal_breeding: 'Allevamento',
@@ -580,7 +582,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     station: 'Stazione',
     stop_position: 'Punto di stop',
   },
-  railway: 'Ferrovia',
+  railway: {
+    '*': 'Ferrovia',
+  },
   shop: {
     '*': 'Negozio {}',
     household_linen: 'Casa biancheria',
