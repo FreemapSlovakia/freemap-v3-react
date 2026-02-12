@@ -318,15 +318,30 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     yes: 'brod',
   },
   bridge: {
-    '*': 'Bridge',
+    '*': {
+      '*': 'Bridge',
+      highway: {
+        '*': 'Road bridge',
+      },
+      railway: {
+        '*': 'Railway bridge',
+      },
+    },
     no: '',
   },
   tunnel: {
-    '*': 'Tunnel',
+    '*': {
+      '*': 'Tunnel',
+      highway: {
+        '*': 'Road tunnel',
+      },
+      railway: {
+        '*': 'Railway tunnel',
+      },
+    },
     culvert: 'Culvert',
     no: '',
   },
-
   oneway: {
     yes: 'One-way',
   },
@@ -380,6 +395,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     platform: 'Platform',
     primary: 'Primary highway',
     primary_link: 'Primary road link',
+    raceway: 'Raceway',
     residential: 'Street',
     road: 'Road of unknown kind',
     secondary: 'Secondary highway',
@@ -952,6 +968,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     tram: 'Tramway',
     halt: 'Railway halt',
     platform: 'Railway platform',
+    preserved: 'Preserved railway',
     station: 'Railway station',
     stop: 'Railway stop',
     subway_entrance: 'Subway entrance',

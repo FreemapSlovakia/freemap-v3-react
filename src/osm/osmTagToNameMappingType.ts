@@ -318,11 +318,27 @@ export type OsmTagToNameMapping = {
     yes: string;
   };
   bridge: {
-    '*': string;
+    '*': {
+      '*': string;
+      highway: {
+        '*': string;
+      };
+      railway: {
+        '*': string;
+      };
+    };
     no: string;
   };
   tunnel: {
-    '*': string;
+    '*': {
+      '*': string;
+      highway: {
+        '*': string;
+      };
+      railway: {
+        '*': string;
+      };
+    };
     culvert: string;
     no: string;
   };
@@ -379,6 +395,7 @@ export type OsmTagToNameMapping = {
     platform: string;
     primary: string;
     primary_link: string;
+    raceway: string;
     residential: string;
     road: string;
     secondary: string;
@@ -950,6 +967,7 @@ export type OsmTagToNameMapping = {
     monorail: string;
     narrow_gauge: string;
     platform: string;
+    preserved: string;
     proposed: string;
     rail: string;
     railway_crossing: string;
