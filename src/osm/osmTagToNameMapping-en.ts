@@ -2,7 +2,24 @@ import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
   aeroway: {
-    aerodrome: 'Airport',
+    aerodrome: 'Aerodrome',
+    airstrip: 'Airstrip',
+    apron: 'Aircraft apron',
+    gate: 'Airport gate',
+    hangar: 'Aircraft hangar',
+    helipad: 'Helipad',
+    holding_position: 'Aircraft holding position',
+    jet_bridge: 'Jet bridge / aerobridge / passenger boarding bridge',
+    navigationaid: 'Air navigation aid',
+    parking_position: 'Aircraft parking position',
+    runway: 'Runway',
+    stopway: 'Runway stopway',
+    taxilane: 'Taxi lane',
+    taxiway: 'Taxiway',
+    terminal: 'Airport terminal',
+    threshold: 'Runway threshold',
+    tower: 'Air traffic control tower',
+    windsock: 'Windsock',
   },
   aerialway: {
     '*': 'Aerialway',
@@ -205,6 +222,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     hedge: 'Hedge',
     kerb: 'Kerb',
     lift_gate: 'Lift gate',
+    retaining_wall: 'Retaining wall',
     rope: 'Rope',
     sliding_gate: 'Sliding gate',
     swing_gate: 'Swing gate',
@@ -301,6 +319,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   highway: {
     '*': 'Road {}',
+    bridleway: 'Bridleway',
     bus_stop: 'Bus stop',
     construction: 'Road under construction',
     crossing: 'Pedestrian crossing',
@@ -311,9 +330,12 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     motorway_link: 'Motorway link',
     path: 'Path',
     pedestrian: 'Pedestrian zone',
+    piste: 'Piste',
+    platform: 'Platform',
     primary: 'Primary highway',
     primary_link: 'Primary road link',
     residential: 'Street',
+    road: 'Road of unknown kind',
     secondary: 'Secondary highway',
     secondaty_link: 'Secondary road link',
     service: {
@@ -333,7 +355,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     tertiary: 'Tertiary highway',
     tertiary_link: 'Tertiary road link',
     track: {
-      '*': 'Forest road',
+      '*': 'Forest road of unknown quality',
       tracktype: {
         grade1: 'Compacted forest road',
         grade2: 'Mostly compacted forest road',
@@ -345,6 +367,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     trunk: 'Trunk road',
     trunk_link: 'Trunk link',
     unclassified: 'Unclassified road',
+    via_ferrata: 'Via ferrata',
   },
   historic: {
     '*': 'Historic structure {}',
@@ -485,7 +508,12 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   man_made: {
     '*': '{}',
-    adit: 'Adit',
+    adit: {
+      '*': 'Adit',
+      disused: {
+        yes: 'Disused adit',
+      },
+    },
     antenna: 'Antenna',
     apiary: 'Apiary',
     beacon: 'Beacon',
@@ -496,7 +524,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     cellar_entrance: 'Cellar entrance',
     chimney: 'Chimney',
     clearcut: 'Forest clearing',
-    communications_tower: 'Communication tower',
+    communications_tower: 'Big telecommunication tower',
     cooling_tower: 'Cooling tower',
     crane: 'Crane',
     cross: 'Cross',
@@ -510,8 +538,23 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     groyne: 'Groyne',
     lighthouse: 'Lighthouse',
     manhole: 'Manhole',
-    mast: 'Mast',
-    mineshaft: 'Mineshaft',
+    mast: {
+      '*': 'Mast',
+      'tower:type': {
+        clock: 'Clock tower mast',
+        communication: 'Communication mast',
+        lighting: 'Lighting mast',
+        monitoring: 'Monitoring mast',
+        radar: 'Radar mast',
+        siren: 'Siren mast',
+      },
+    },
+    mineshaft: {
+      '*': 'Mineshaft',
+      disused: {
+        yes: 'Disused mineshaft',
+      },
+    },
     monitoring_station: 'Monitoring station',
     nesting_site: 'Nesting site',
     observatory: 'Observatory',
@@ -532,9 +575,21 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       '*': 'Tower',
       'tower:type': {
         bell_tower: 'Bell tower',
+        climbing: 'Climbing tower',
+        clock: 'Clock tower',
         communication: 'Communication tower',
         cooling: 'Cooling tower',
+        defensive: 'Defensive tower',
+        diving: 'Diving tower',
+        hose: 'Hose-drying tower',
+        lighting: 'Lighting tower',
+        minaret: 'Minaret',
+        monitoring: 'Monitoring tower',
         observation: 'Observation tower',
+        pagoda: 'Pagoda tower',
+        radar: 'Radar tower',
+        siren: 'Siren tower',
+        watchtower: 'Watchtower',
       },
     },
     utility_pole: 'Utility pole',
@@ -831,7 +886,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     transformer: 'Transformer',
   },
   public_transport: {
-    platform: 'Platform',
+    platform: 'Platform of public transportation',
     station: 'Station',
     stop_position: 'Stop position',
   },
@@ -1283,6 +1338,14 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     stream: 'Creek, stream',
     waterfall: 'Waterfall',
     weir: 'Weir',
+  },
+  trail_visibility: {
+    excellent: 'Excellent trail visibility',
+    good: 'Good trail visibility',
+    intermediate: 'Intermediate trail visibility',
+    bad: 'Bad trail visibility',
+    horrible: 'Horrible trail visibility',
+    no: 'No trail visibility',
   },
 };
 

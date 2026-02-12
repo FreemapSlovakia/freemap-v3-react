@@ -1,6 +1,23 @@
 export type OsmTagToNameMapping = {
   aeroway: {
     aerodrome: string;
+    airstrip: string;
+    apron: string;
+    gate: string;
+    hangar: string;
+    helipad: string;
+    holding_position: string;
+    jet_bridge: string;
+    navigationaid: string;
+    parking_position: string;
+    runway: string;
+    stopway: string;
+    taxilane: string;
+    taxiway: string;
+    terminal: string;
+    threshold: string;
+    tower: string;
+    windsock: string;
   };
   aerialway: {
     '*': string;
@@ -205,6 +222,7 @@ export type OsmTagToNameMapping = {
     hedge: string;
     kerb: string;
     lift_gate: string;
+    retaining_wall: string;
     rope: string;
     sliding_gate: string;
     swing_gate: string;
@@ -301,6 +319,7 @@ export type OsmTagToNameMapping = {
   };
   highway: {
     '*': string;
+    bridleway: string;
     bus_stop: string;
     construction: string;
     crossing: string;
@@ -311,9 +330,12 @@ export type OsmTagToNameMapping = {
     motorway_link: string;
     path: string;
     pedestrian: string;
+    piste: string;
+    platform: string;
     primary: string;
     primary_link: string;
     residential: string;
+    road: string;
     secondary: string;
     secondaty_link: string;
     service: {
@@ -345,6 +367,7 @@ export type OsmTagToNameMapping = {
     trunk: string;
     trunk_link: string;
     unclassified: string;
+    via_ferrata: string;
   };
   historic: {
     '*': string;
@@ -484,7 +507,12 @@ export type OsmTagToNameMapping = {
   };
   man_made: {
     '*': string;
-    adit: string;
+    adit: {
+      '*': string;
+      disused: {
+        yes: string;
+      };
+    };
     antenna: string;
     apiary: string;
     beacon: string;
@@ -509,8 +537,23 @@ export type OsmTagToNameMapping = {
     groyne: string;
     lighthouse: string;
     manhole: string;
-    mast: string;
-    mineshaft: string;
+    mast: {
+      '*': string;
+      'tower:type': {
+        clock: string;
+        communication: string;
+        lighting: string;
+        monitoring: string;
+        radar: string;
+        siren: string;
+      };
+    };
+    mineshaft: {
+      '*': string;
+      disused: {
+        yes: string;
+      };
+    };
     monitoring_station: string;
     nesting_site: string;
     observatory: string;
@@ -531,9 +574,21 @@ export type OsmTagToNameMapping = {
       '*': string;
       'tower:type': {
         bell_tower: string;
+        climbing: string;
+        clock: string;
         communication: string;
         cooling: string;
+        defensive: string;
+        diving: string;
+        hose: string;
+        lighting: string;
+        minaret: string;
+        monitoring: string;
         observation: string;
+        pagoda: string;
+        radar: string;
+        siren: string;
+        watchtower: string;
       };
     };
     utility_pole: string;
@@ -837,31 +892,31 @@ export type OsmTagToNameMapping = {
   railway: {
     '*': string;
     abandoned: string;
+    buffer_stop: string;
     construction: string;
-    proposed: string;
+    crossing: string;
+    derail: string;
     disused: string;
     funicular: string;
+    halt: string;
+    level_crossing: string;
     light_rail: string;
     miniature: string;
     monorail: string;
     narrow_gauge: string;
-    rail: string;
-    subway: string;
-    tram: string;
-    halt: string;
     platform: string;
-    station: string;
-    stop: string;
-    subway_entrance: string;
-    tram_stop: string;
-    buffer_stop: string;
-    crossing: string;
-    derail: string;
+    proposed: string;
+    rail: string;
     railway_crossing: string;
     roundhouse: string;
     signal: string;
+    station: string;
+    stop: string;
+    subway_entrance: string;
+    subway: string;
     switch: string;
-    level_crossing: string;
+    tram_stop: string;
+    tram: string;
     traverser: string;
     turntable: string;
     ventilation_shaft: string;
@@ -1282,5 +1337,13 @@ export type OsmTagToNameMapping = {
     stream: string;
     waterfall: string;
     weir: string;
+  };
+  trail_visibility: {
+    excellent: string;
+    good: string;
+    intermediate: string;
+    bad: string;
+    horrible: string;
+    no: string;
   };
 };

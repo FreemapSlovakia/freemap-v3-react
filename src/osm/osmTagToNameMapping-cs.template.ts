@@ -762,7 +762,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     darts: 'Šipky (sport)',
     disc_golf: 'Disc golf',
     dog_racing: 'Psí závod',
-    equestrian: 'Jízda na koni',
+    equestrian: 'Jezdectví',
     field_hockey: 'Pozemní hokej',
     fitness: 'Posilovna',
     floorball: 'Floorball',

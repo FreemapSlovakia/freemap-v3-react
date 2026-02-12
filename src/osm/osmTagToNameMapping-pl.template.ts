@@ -441,7 +441,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       '*': 'Wieża',
     },
     '*': '{}',
-    adit: 'Sztolnia',
+    adit: {
+      '*': 'Sztolnia',
+    },
     antenna: 'Antena',
     beacon: 'Latarnia',
     beehive: 'Ul',
@@ -465,8 +467,12 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     groyne: 'Falochron',
     lighthouse: 'Latarnia morska',
     manhole: 'Wpust kanalizacyjny',
-    mast: 'Maszt',
-    mineshaft: 'Szyb kopalniany',
+    mast: {
+      '*': 'Maszt',
+    },
+    mineshaft: {
+      '*': 'Szyb kopalniany',
+    },
     monitoring_station: 'Stacja monitoringu',
     nesting_site: 'Miejsce gniazdowania',
     observatory: 'Obserwatorium',
