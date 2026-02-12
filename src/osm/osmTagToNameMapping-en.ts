@@ -317,6 +317,43 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   ford: {
     yes: 'brod',
   },
+  bridge: {
+    '*': 'Bridge',
+    no: '',
+  },
+  tunnel: {
+    '*': 'Tunnel',
+    culvert: 'Culvert',
+    no: '',
+  },
+
+  oneway: {
+    yes: 'One-way',
+  },
+  foot: {
+    no: 'Pedestrian access prohibited',
+    yes: 'Pedestrian access permitted',
+    private: 'Pedestrian access for owners only',
+    designated: 'Designated for pedestrians',
+  },
+  bicycle: {
+    no: 'Bicycle access prohibited',
+    yes: 'Bicycle access permitted',
+    private: 'Bicycle access for owners only',
+    designated: 'Designated for bicycles',
+  },
+  vehicle: {
+    no: 'Vehicle access prohibited',
+    yes: 'Vehicle access permitted',
+    private: 'Vehicle access for owners only',
+    designated: 'Designated for vehicles',
+  },
+  motor_vehicle: {
+    no: 'Motor vehicle access prohibited',
+    yes: 'Motor vehicle access permitted',
+    private: 'Motor vehicle access for owners only',
+    designated: 'Designated for motor vehicles',
+  },
   highway: {
     '*': 'Road {}',
     bridleway: 'Bridleway',
@@ -328,7 +365,16 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     living_street: 'Residential',
     motorway: 'Highway',
     motorway_link: 'Motorway link',
-    path: 'Path',
+    path: {
+      '*': 'Path',
+      foot: {
+        designated: {
+          bicycle: {
+            designated: 'Shared pedestrian and cycle path',
+          },
+        },
+      },
+    },
     pedestrian: 'Pedestrian zone',
     piste: 'Piste',
     platform: 'Platform',
@@ -1317,7 +1363,15 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
         bicycle: 'Bicycle trail',
         bus: 'Bus way',
         foot: 'Pedestrian trail',
-        hiking: 'Hiking trail',
+        hiking: {
+          '*': 'Hiking trail',
+          network: {
+            lwn: 'Local hiking trail',
+            rwn: 'Regional hiking trail',
+            nwn: 'National hiking trail',
+            iwn: 'International hiking trail',
+          },
+        },
         horse: 'Equestrian path',
         mtb: 'Mountain biking trail',
         piste: 'Ski slope or path',

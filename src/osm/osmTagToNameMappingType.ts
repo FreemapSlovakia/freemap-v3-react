@@ -317,6 +317,42 @@ export type OsmTagToNameMapping = {
   ford: {
     yes: string;
   };
+  bridge: {
+    '*': string;
+    no: string;
+  };
+  tunnel: {
+    '*': string;
+    culvert: string;
+    no: string;
+  };
+  oneway: {
+    yes: string;
+  };
+  foot: {
+    no: string;
+    yes: string;
+    private: string;
+    designated: string;
+  };
+  bicycle: {
+    no: string;
+    yes: string;
+    private: string;
+    designated: string;
+  };
+  vehicle: {
+    no: string;
+    yes: string;
+    private: string;
+    designated: string;
+  };
+  motor_vehicle: {
+    no: string;
+    yes: string;
+    private: string;
+    designated: string;
+  };
   highway: {
     '*': string;
     bridleway: string;
@@ -328,7 +364,16 @@ export type OsmTagToNameMapping = {
     living_street: string;
     motorway: string;
     motorway_link: string;
-    path: string;
+    path: {
+      '*': string;
+      foot: {
+        designated: {
+          bicycle: {
+            designated: string;
+          };
+        };
+      };
+    };
     pedestrian: string;
     piste: string;
     platform: string;
@@ -1316,7 +1361,15 @@ export type OsmTagToNameMapping = {
         bicycle: string;
         bus: string;
         foot: string;
-        hiking: string;
+        hiking: {
+          '*': string;
+          network: {
+            lwn: string;
+            rwn: string;
+            nwn: string;
+            iwn: string;
+          };
+        };
         horse: string;
         mtb: string;
         piste: string;

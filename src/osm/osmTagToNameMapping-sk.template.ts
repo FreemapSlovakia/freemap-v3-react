@@ -318,6 +318,42 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   ford: {
     yes: 'Brod',
   },
+  bridge: {
+    '*': 'Most',
+    no: '',
+  },
+  tunnel: {
+    '*': 'Tunel',
+    culvert: 'Priepust',
+    no: '',
+  },
+  oneway: {
+    yes: 'Jednosmerka',
+  },
+  foot: {
+    no: 'Vstup zakázaný',
+    yes: 'Vstup povolený',
+    private: 'Vstup len pre vlastníkov',
+    designated: 'Vstup vyhradený',
+  },
+  bicycle: {
+    no: 'Vjazd na bicykli zakázaný',
+    yes: 'Vjazd na bicykli povolený',
+    private: 'Vjazd na bicykli len pre vlastníkov',
+    designated: 'Vjazd na bicykli vyhradený',
+  },
+  vehicle: {
+    no: 'Vjazd vozidlom zakázaný',
+    yes: 'Vjazd vozidlom povolený',
+    private: 'Vjazd vozidlom len pre vlastníkov',
+    designated: 'Vjazd vozidlom vyhradený',
+  },
+  motor_vehicle: {
+    no: 'Vjazd motorovým vozidlom zakázaný',
+    yes: 'Vjazd motorovým vozidlom povolený',
+    private: 'Vjazd motorovým vozidlom len pre vlastníkov',
+    designated: 'Vjazd motorovým vozidlom vyhradený',
+  },
   highway: {
     '*': 'Cesta {}',
     bridleway: 'Jazdecká cesta',
@@ -329,7 +365,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Obytná zóna',
     motorway: 'Diaľnica',
     motorway_link: 'Napojenie na diaľnicu',
-    path: 'Cestička',
+    path: {
+      '*': 'Cestička',
+      foot: {
+        designated: {
+          bicycle: {
+            designated: 'Spoločná cesta pre chodcov aj cyklistov',
+          },
+        },
+      },
+    },
     pedestrian: 'Pešia zóna',
     piste: 'Lyžiarská trasa',
     platform: 'Nástupište',
@@ -1323,7 +1368,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         bicycle: 'Cyklotrasa',
         bus: 'Trasa autobusu',
         foot: 'Pešia trasa',
-        hiking: 'Turistická trasa',
+        hiking: {
+          '*': 'Turistická trasa',
+          network: {
+            lwn: 'Miestná turistická trasa',
+            rwn: 'Regionálna turistická trasa',
+            nwn: 'Národná turistická trasa',
+            iwn: 'Medzinárodná turistická trasa',
+          },
+        },
         horse: 'Jazdecká trasa',
         mtb: 'Trasa pre horské bicykle',
         piste: 'Bežkárska trasa',
