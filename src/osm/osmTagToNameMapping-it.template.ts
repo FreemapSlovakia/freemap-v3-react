@@ -224,7 +224,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     protected_area: 'Area Protetta',
   },
   building: {
-    '*': 'Edificio {}',
+    '*': {
+      '*': 'Edificio {}',
+    },
     apartments: 'Condominio',
     barn: 'Fienile',
     bungalow: 'Bungalow',
@@ -297,7 +299,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Strada residenziale',
     motorway: 'Autostrada',
     motorway_link: 'Collegamento autostradale',
-    path: 'Sentiero',
+    path: {
+      '*': 'Sentiero',
+    },
     pedestrian: 'Zona pedonale',
     primary: 'Strada primaria',
     primary_link: 'Collegamento strada primaria',
@@ -417,7 +421,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   man_made: {
     '*': '{}',
-    adit: 'Ingresso',
+    adit: {
+      '*': 'Ingresso',
+    },
     antenna: 'Antenna',
     beacon: 'Faro',
     beehive: 'Alveare',
@@ -441,13 +447,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     groyne: 'Pali marini',
     lighthouse: 'Faro',
     manhole: 'Tombino',
-    mast: 'Antenna',
-    mineshaft: 'Miniera',
+    mast: {
+      '*': 'Antenna',
+    },
+    mineshaft: {
+      '*': 'Miniera',
+    },
     monitoring_station: 'Stazione di monitoraggio',
     nesting_site: 'Sito di nidificazione',
     observatory: 'Osservatorio',
     pier: 'Molo',
-    pipeline: 'Tubatura',
+    pipeline: {
+      '*': 'Tubatura',
+    },
     reservoir_covered: 'Serbatoio coperto',
     silo: 'Silo',
     snow_cannon: 'Cannone sparaneve',
@@ -863,7 +875,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         bicycle: 'Percorso ciclistico',
         bus: 'Linea AutoBUS',
         foot: 'Percorso pedonale',
-        hiking: 'Percorso escursionistico',
+        hiking: {
+          '*': 'Percorso escursionistico',
+        },
         horse: 'Percorso equitazione',
         mtb: 'Percorso mountain bike',
         piste: 'Percorso Sci',

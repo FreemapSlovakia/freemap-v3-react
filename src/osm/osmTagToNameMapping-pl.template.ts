@@ -226,7 +226,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
 
   building: {
-    '*': 'Budynek {}',
+    '*': {
+      '*': 'Budynek {}',
+    },
     apartments: 'Apartamenty (blok)',
     barn: 'Stodoła',
     bungalow: 'Bungalow',
@@ -324,7 +326,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Strefa zamieszkania',
     motorway: 'Autostrada',
     motorway_link: 'Zjazd na autostradę',
-    path: 'Ścieżka',
+    path: {
+      '*': 'Ścieżka',
+    },
     pedestrian: 'Strefa piesza',
     primary: 'Droga główna',
     primary_link: 'Zjazd z drogi głównej',
@@ -477,7 +481,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     nesting_site: 'Miejsce gniazdowania',
     observatory: 'Obserwatorium',
     pier: 'Pirs',
-    pipeline: 'Rurociąg',
+    pipeline: {
+      '*': 'Rurociąg',
+    },
     reservoir_covered: 'Zbiornik kryty',
     silo: 'Silos',
     snow_cannon: 'Armatka śnieżna',
@@ -892,7 +898,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         bicycle: 'Szlak rowerowy',
         bus: 'Trasa autobusu',
         foot: 'Szlak pieszy',
-        hiking: 'Szlak turystyczny',
+        hiking: {
+          '*': 'Szlak turystyczny',
+        },
         horse: 'Szlak jeździecki',
         mtb: 'Szlak rowerów górskich',
         piste: 'Stok narciarski lub ścieżka',

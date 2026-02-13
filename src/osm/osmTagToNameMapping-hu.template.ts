@@ -232,7 +232,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
 
   building: {
-    '*': 'Épület {}',
+    '*': {
+      '*': 'Épület {}',
+    },
     apartments: 'Társasház',
     barn: 'Pajta',
     bungalow: 'Bungaló',
@@ -328,7 +330,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Lakó-pihenő övezet',
     motorway: 'Autópálya',
     motorway_link: 'Autópálya fel- vagy lehajtó',
-    path: 'Ösvény',
+    path: {
+      '*': 'Ösvény',
+    },
     pedestrian: 'Sétálóutca',
     primary: 'Főút',
     primary_link: 'Főút fel- vagy lehajtó',
@@ -441,7 +445,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       '*': 'Torony',
     },
     '*': '{}',
-    adit: 'Bányatárna',
+    adit: {
+      '*': 'Bányatárna',
+    },
     antenna: 'Antenna',
     beacon: 'Jelzőfény',
     beehive: 'Kaptár',
@@ -465,13 +471,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     groyne: 'Sarkantyú',
     lighthouse: 'Világítótorony',
     manhole: 'Aknafedél',
-    mast: 'Pózna',
-    mineshaft: 'Bányaakna',
+    mast: {
+      '*': 'Pózna',
+    },
+    mineshaft: {
+      '*': 'Bányaakna',
+    },
     monitoring_station: 'Megfigyelőállomás',
     nesting_site: 'Fészkelőhely',
     observatory: 'Obszervatórium',
     pier: 'Móló',
-    pipeline: 'Csővezeték',
+    pipeline: {
+      '*': 'Csővezeték',
+    },
     reservoir_covered: 'Fedett víztározó',
     silo: 'Siló',
     snow_cannon: 'Hóágyú',
@@ -884,7 +896,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         bicycle: 'Kerékpáros útvonal',
         bus: 'Buszútvonal',
         foot: 'Gyalogos útvonal',
-        hiking: 'Turistaút',
+        hiking: {
+          '*': 'Turistaút',
+        },
         horse: 'Lovas útvonal',
         mtb: 'Mountain bike útvonal',
         piste: 'Sípálya',

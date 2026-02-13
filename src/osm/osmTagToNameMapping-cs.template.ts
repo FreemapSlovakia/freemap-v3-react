@@ -219,7 +219,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     protected_area: 'Chráněná oblast',
   },
   building: {
-    '*': 'Budova {}',
+    '*': {
+      '*': 'Budova {}',
+    },
     apartments: 'Apartmány (blok)',
     barn: 'Stodola',
     bungalow: 'Bungalov',
@@ -292,7 +294,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Rezidenční zóna',
     motorway: 'Dálnice',
     motorway_link: 'Napojení na dálnici',
-    path: 'Pěšina',
+    path: {
+      '*': 'Pěšina',
+    },
     primary: 'Cesta první třídy',
     primary_link: 'Napojení na cestu první třídy',
     residential: 'Ulice',
@@ -413,7 +417,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   man_made: {
     '*': '{}',
     "forester's_lodge": 'Horárna',
-    adit: 'Důlní štola',
+    adit: {
+      '*': 'Důlní štola',
+    },
     antenna: 'Anténa',
     beacon: 'Maják',
     beehive: 'Včelí úl',
@@ -436,13 +442,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     groyne: 'Krátká pobřežní hráz',
     lighthouse: 'Maják',
     manhole: 'Šachta',
-    mast: 'Stožár',
-    mineshaft: 'Důlní šachta',
+    mast: {
+      '*': 'Stožár',
+    },
+    mineshaft: {
+      '*': 'Důlní šachta',
+    },
     monitoring_station: 'Monitorovací stanice',
     nesting_site: 'Hnízdo',
     observatory: 'Observatorium',
     pier: 'Molo',
-    pipeline: 'Potrubí',
+    pipeline: {
+      '*': 'Potrubí',
+    },
     reservoir_covered: 'Krytý rezervoár',
     silo: 'Silo',
     snow_cannon: 'Sněžné dělo',
@@ -860,7 +872,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         bicycle: 'Cyklostezka',
         bus: 'Trasa autobusu',
         foot: 'Stezka pro pěší',
-        hiking: 'Turistická stezka',
+        hiking: {
+          '*': 'Turistická stezka',
+        },
         horse: 'Jezdecká trasa',
         mtb: 'Stezka pro horská kola',
         piste: 'Sjezdovka',

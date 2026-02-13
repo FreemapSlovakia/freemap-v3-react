@@ -222,7 +222,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
 
   building: {
-    '*': 'Gebäude {}',
+    '*': {
+      '*': 'Gebäude {}',
+    },
     apartments: 'Wohnungen (Block)',
     barn: 'Scheune',
     bungalow: 'Bungalow',
@@ -318,7 +320,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Wohnstraße',
     motorway: 'Autobahn',
     motorway_link: 'Autobahnanschluss',
-    path: 'Pfad',
+    path: {
+      '*': 'Pfad',
+    },
     pedestrian: 'Fußgängerzone',
     primary: 'Hauptstraße',
     primary_link: 'Anschluss Hauptstraße',
@@ -431,7 +435,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       '*': 'Turm',
     },
     '*': '{}',
-    adit: 'Stollen',
+    adit: {
+      '*': 'Stollen',
+    },
     antenna: 'Antenne',
     beacon: 'Leuchtturm',
     beehive: 'Bienenstock',
@@ -455,13 +461,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     groyne: 'Wellenbrecher',
     lighthouse: 'Leuchtturm',
     manhole: 'Schacht',
-    mast: 'Mast',
-    mineshaft: 'Bergwerkschacht',
+    mast: {
+      '*': 'Mast',
+    },
+    mineshaft: {
+      '*': 'Bergwerkschacht',
+    },
     monitoring_station: 'Überwachungsstation',
     nesting_site: 'Nistplatz',
     observatory: 'Observatorium',
     pier: 'Pier',
-    pipeline: 'Pipeline',
+    pipeline: {
+      '*': 'Pipeline',
+    },
     reservoir_covered: 'Überdachtes Reservoir',
     silo: 'Silo',
     snow_cannon: 'Schneekanone',
@@ -874,7 +886,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         bicycle: 'Fahrradweg',
         bus: 'Buslinie',
         foot: 'Fußweg',
-        hiking: 'Wanderweg',
+        hiking: {
+          '*': 'Wanderweg',
+        },
         horse: 'Reitweg',
         mtb: 'Mountainbike-Strecke',
         piste: 'Skipiste',
