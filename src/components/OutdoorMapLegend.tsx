@@ -1,4 +1,10 @@
-import { Fragment, type ReactElement, useEffect, useState } from 'react';
+import {
+  Fragment,
+  type ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Accordion, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
@@ -10,6 +16,7 @@ import {
 } from '../osm/osmNameResolver.js';
 import { OsmMapping } from '../osm/types.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { useMessages } from '../l10nInjector.js';
 
 type Item = {
   category: string;
@@ -86,17 +93,44 @@ export function OutdoorMapLegend(): ReactElement {
       });
   }, [dispatch, osmMapping]);
 
+  const m = useMessages();
+
+  const orderedLegend = useMemo(() => {
+    const outdoorMap = m?.legend.outdoorMap as
+      | Record<string, string>
+      | undefined;
+
+    if (!outdoorMap) {
+      return legend;
+    }
+
+    const order = new Map<string, number>();
+
+    let i = 0;
+
+    for (const key of Object.keys(outdoorMap)) {
+      order.set(key, i++);
+    }
+
+    return [...legend].sort(
+      (a, b) =>
+        (order.get(a.category) ?? Number.MAX_SAFE_INTEGER) -
+        (order.get(b.category) ?? Number.MAX_SAFE_INTEGER),
+    );
+  }, [legend, m]);
+
   return (
     <Accordion>
-      {[...legend].map((c: Item, i: number) => (
+      {orderedLegend.map((c: Item, i: number) => (
         <Accordion.Item key={c.category} eventKey={String(i)}>
-          <Accordion.Header>{c.category}</Accordion.Header>
+          <Accordion.Header>
+            {(m?.legend.outdoorMap as Record<string, string>)[c.category] ??
+              c.category}
+          </Accordion.Header>
 
           <Accordion.Body
             className="d-grid align-items-center row-gap-2 column-gap-3"
-            style={{
-              gridTemplateColumns: 'auto 1fr',
-            }}
+            style={{ gridTemplateColumns: 'auto 1fr' }}
           >
             {c.items.map(({ id, name_w_tags }) => (
               <Fragment key={id}>

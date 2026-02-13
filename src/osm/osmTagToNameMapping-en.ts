@@ -1414,6 +1414,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     motel: 'Motel',
     museum: 'Museum',
     picnic_site: 'Picnic site',
+    theme_park: 'Theme park',
     viewpoint: 'Viewpoint',
     wilderness_hut: 'Wilderness hut',
     zoo: 'ZOO',

@@ -1420,6 +1420,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     motel: 'Motel',
     museum: 'Múzeum',
     picnic_site: 'Miesto na piknik',
+    theme_park: 'Tématický park',
     viewpoint: 'Výhľad',
     wilderness_hut: 'Chata v divočine',
     zoo: 'ZOO',

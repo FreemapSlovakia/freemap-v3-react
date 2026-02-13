@@ -1419,6 +1419,7 @@ export type OsmTagToNameMapping = {
     motel: string;
     museum: string;
     picnic_site: string;
+    theme_park: string;
     viewpoint: string;
     wilderness_hut: string;
     zoo: string;
