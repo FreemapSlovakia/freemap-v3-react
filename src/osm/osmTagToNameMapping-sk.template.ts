@@ -328,7 +328,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     shed: 'Kôlňa',
     shrine: 'Svätyňa',
     stable: 'Stajňa',
-    stadium: 'Budova šdadiónu',
+    stadium: 'Budova štadiónu',
     static_caravan: 'Obytný príves, karavan',
     storage_tank: 'Cisterna',
     sty: 'Chlievik',
@@ -1436,7 +1436,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         hiking: {
           '*': 'Turistická trasa',
           network: {
-            lwn: 'Miestná turistická trasa',
+            lwn: 'Miestna turistická trasa',
             rwn: 'Regionálna turistická trasa',
             nwn: 'Národná turistická trasa',
             iwn: 'Medzinárodná turistická trasa',
@@ -1479,6 +1479,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     flowline: 'Prúdová línia',
     pressurised: 'Tlakové vodné potrubie',
     link: 'Vodný spoj',
+    rapids: 'Pereje',
     river: 'Rieka',
     stream: 'Potok',
     tidal_channel: 'Prílivový kanál',
@@ -1491,7 +1492,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intermediate: 'Stredná viditeľnosť trasy',
     bad: 'Zlá viditeľnosť trasy',
     horrible: 'Hrozná viditeľnosť trasy',
-    no: 'Žiadná viditeľnosť trasy',
+    no: 'Žiadna viditeľnosť trasy',
   },
 };
 

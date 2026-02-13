@@ -4,6 +4,23 @@ import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   aeroway: {
     aerodrome: 'Flughafen',
+    airstrip: 'Flugpiste',
+    apron: 'Vorfeld',
+    gate: 'Fluggastbrücke/Gate',
+    hangar: 'Flugzeughangar',
+    helipad: 'Hubschrauberlandeplatz',
+    holding_position: 'Warteposition',
+    jet_bridge: 'Fluggastbrücke',
+    navigationaid: 'Flugnavigationshilfe',
+    parking_position: 'Flugzeugstandplatz',
+    runway: 'Start- und Landebahn',
+    stopway: 'Pistenstopfläche',
+    taxilane: 'Rollspur',
+    taxiway: 'Rollweg',
+    terminal: 'Flughafenterminal',
+    threshold: 'Pistenschwelle',
+    tower: 'Flugkontrollturm',
+    windsock: 'Windsack',
   },
 
   amenity: {
@@ -178,7 +195,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   barrier: {
     '*': 'Barriere {}',
-    block: 'Block',
+    block: 'Blockade',
     bollard: 'Poller',
     border_control: 'Grenzkontrolle',
     cable_barrier: 'Kabelschutzplanke',
@@ -198,6 +215,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     swing_gate: 'Drehtor',
     turnstile: 'Drehkreuz',
     wall: 'Mauer',
+    retaining_wall: 'Stützmauer',
   },
 
   boundary: {
@@ -224,7 +242,20 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   building: {
     '*': {
       '*': 'Gebäude {}',
+
+      abandoned: {
+        yes: 'Aufgegebenes Gebäude',
+      },
+
+      disused: {
+        yes: 'Stillgelegtes Gebäude',
+      },
+
+      ruins: {
+        yes: 'Gebäuderuine',
+      },
     },
+
     apartments: 'Wohnungen (Block)',
     barn: 'Scheune',
     bungalow: 'Bungalow',
@@ -286,6 +317,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     university: 'Universitätsgebäude',
     warehouse: 'Lagerhaus',
     yes: 'Unbestimmtes Gebäude',
+    abandoned: 'Aufgegebenes Gebäude',
+    disused: 'Stillgelegtes Gebäude',
+    stadium: 'Stadiongebäude',
   },
 
   highway: {
@@ -301,6 +335,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       '*': 'Servicezufahrt',
     },
+
     track: {
       tracktype: {
         grade1: 'Verdichteter Waldweg',
@@ -311,6 +346,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       '*': 'Waldweg',
     },
+
     '*': 'Straße {}',
     bus_stop: 'Bushaltestelle',
     construction: 'Straße im Bau',
@@ -320,9 +356,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     living_street: 'Wohnstraße',
     motorway: 'Autobahn',
     motorway_link: 'Autobahnanschluss',
+
     path: {
       '*': 'Pfad',
+
+      foot: {
+        designated: {
+          bicycle: {
+            designated: 'Gemeinsamer Geh- und Radweg',
+          },
+        },
+      },
     },
+
     pedestrian: 'Fußgängerzone',
     primary: 'Hauptstraße',
     primary_link: 'Anschluss Hauptstraße',
@@ -336,6 +382,12 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     trunk: 'Fernstraße',
     trunk_link: 'Fernstraßenanschluss',
     unclassified: 'unklassifizierte Straße',
+    bridleway: 'Reitweg',
+    piste: 'Ski-/Pistenweg',
+    platform: 'Bahnsteig',
+    raceway: 'Rennstrecke',
+    road: 'Straße unbekannter Art',
+    via_ferrata: 'Klettersteig',
   },
 
   historic: {
@@ -345,6 +397,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       '*': 'Ruinen',
     },
+
     '*': 'Historische Struktur',
     archaeological_site: 'Archäologische Fundstätte',
     castle: 'Burg',
@@ -357,6 +410,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     tomb: 'Grab',
     wayside_cross: 'Bildstock',
     wayside_shrine: 'Feldkapelle',
+    yes: 'Historisches Bauwerk',
+    aircraft: 'Historisches Flugzeug',
+    boundary_stone: 'Historischer Grenzstein',
+    building: 'Historisches Gebäude',
+    cannon: 'Historische Kanone',
+    charcoal_pile: 'Kohlenmeilerplatz',
+    citywalls: 'Stadtmauer',
+    fort: 'Fort',
+    heritage: 'Kulturerbestätte',
+    hollow_way: 'Hohlweg',
+    house: 'Historisches Haus',
+    milestone: 'Historischer Meilenstein',
+    mine_shaft: 'Historischer Schacht',
+    mine: 'Historisches Bergwerk',
+    shieling: 'Almhütte (saisonal)',
+    stone: 'Historischer Stein',
+    tree_shrine: 'Baumheiligtum',
+    wreck: 'Schiffswrack',
   },
 
   landuse: {
@@ -388,16 +459,22 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     retail: 'Einzelhandel',
     vineyard: 'Weinberg',
     winter_sports: 'Wintersportgebiet',
+    pedestrian: 'Fußgängerbereich',
+    railway: 'Eisenbahnfläche',
+    village_green: 'Dorfanger',
   },
 
   leisure: {
     '*': '{}',
+
     picnic_table: {
       covered: {
         yes: 'Überdachter Picknicktisch',
+        no: 'Unüberdachter Picknicktisch',
       },
       '*': 'Picknicktisch',
     },
+
     pitch: 'Spielfeld',
     bleachers: 'Tribüne',
     escape_game: 'Escape Room',
@@ -422,6 +499,40 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     swimming_pool: 'Schwimmbad',
     track: 'Bahn',
     water_park: 'Wasserpark',
+    adult_gaming_centre: 'Spielhalle für Erwachsene',
+    amusement_arcade: 'Spielhalle',
+    bandstand: 'Musikpavillon',
+    bathing_place: 'Badestelle',
+    beach_resort: 'Strandbad',
+    bird_hide: 'Vogelbeobachtungshütte',
+    bowling_alley: 'Bowlingbahn',
+    dance: 'Tanzfläche',
+    disc_golf_course: 'Discgolf-Anlage',
+    high_ropes_course: 'Hochseilgarten',
+    outdoor_seating: 'Außensitzbereich',
+    resort: 'Freizeitanlage',
+    slipway: 'Bootsrampe',
+
+    sauna: {
+      '*': 'Sauna',
+
+      sauna: {
+        hot: 'Finnische Sauna',
+        steam: 'Dampfsauna (Türkisches Bad)',
+        smoke: 'Rauchsauna (finnisch)',
+        dry: 'Trockensauna',
+        hanjeungmak: 'Hanjeungmak (koreanische Sauna)',
+        aroma: 'Aromasauna',
+        infrared: 'Infrarotsauna',
+      },
+    },
+
+    summer_camp: 'Sommercamp',
+    sunbathing: 'Sonnenbadbereich',
+    swimming_area: 'Schwimmbereich',
+    tanning_salon: 'Solarium',
+    trampoline_park: 'Trampolinpark',
+    wildlife_hide: 'Wildbeobachtungshütte',
   },
 
   man_made: {
@@ -431,13 +542,32 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         communication: 'Kommunikationsturm',
         cooling: 'Kühlturm',
         observation: 'Aussichtsturm',
+        climbing: 'Kletterturm',
+        clock: 'Uhrturm',
+        defensive: 'Wehrturm',
+        diving: 'Sprungturm',
+        hose: 'Schlauchtrockenturm',
+        lighting: 'Beleuchtungsturm',
+        minaret: 'Minaret',
+        monitoring: 'Überwachungsturm',
+        pagoda: 'Pagodenturm',
+        radar: 'Radarturm',
+        siren: 'Sirenenturm',
+        watchtower: 'Wachturm',
       },
       '*': 'Turm',
     },
+
     '*': '{}',
+
     adit: {
       '*': 'Stollen',
+
+      disused: {
+        yes: 'Stillgelegter Stollen',
+      },
     },
+
     antenna: 'Antenne',
     beacon: 'Leuchtturm',
     beehive: 'Bienenstock',
@@ -461,19 +591,42 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     groyne: 'Wellenbrecher',
     lighthouse: 'Leuchtturm',
     manhole: 'Schacht',
+
     mast: {
       '*': 'Mast',
+
+      'tower:type': {
+        clock: 'Uhrmast',
+        communication: 'Kommunikationsmast',
+        lighting: 'Beleuchtungsmast',
+        monitoring: 'Überwachungsmast',
+        radar: 'Radarmast',
+        siren: 'Sirenenmast',
+      },
     },
+
     mineshaft: {
       '*': 'Bergwerkschacht',
+
+      disused: {
+        yes: 'Stillgelegter Bergwerkschacht',
+      },
     },
+
     monitoring_station: 'Überwachungsstation',
     nesting_site: 'Nistplatz',
     observatory: 'Observatorium',
     pier: 'Pier',
+
     pipeline: {
       '*': 'Pipeline',
+
+      location: {
+        underground: 'Unterirdische Pipeline',
+        underwater: 'Unterwasserpipeline',
+      },
     },
+
     reservoir_covered: 'Überdachtes Reservoir',
     silo: 'Silo',
     snow_cannon: 'Schneekanone',
@@ -493,6 +646,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     watermill: 'Wassermühle',
     windmill: 'Windmühle',
     works: 'Fabrik',
+    apiary: 'Bienenstand',
+    pumping_station: 'Pumpstation',
   },
 
   natural: {
@@ -501,11 +656,25 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         yes: 'Trinkquelle',
         no: 'Nicht trinkbare Quelle',
       },
+
       refitted: {
         yes: 'Ausgebaute Quelle',
         no: 'Unausgebaute Quelle',
       },
+
       '*': 'Quelle',
+
+      intermittent: {
+        yes: 'Zeitweise Quelle',
+      },
+
+      seasonal: {
+        yes: 'Saisonale Quelle',
+      },
+
+      water_characteristic: {
+        '*': 'Mineralquelle',
+      },
     },
     tree: {
       protected: {
@@ -557,7 +726,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water: 'Gewässer',
     wetland: {
       '*': 'Feuchtgebiet',
-      wetland: {},
+      wetland: {
+        bog: 'Hochmoor',
+        reedbed: 'Schilfgebiet',
+        marsh: 'Sumpf',
+        swamp: 'Moor',
+        wet_meadow: 'Feuchtwiese',
+        mangrove: 'Mangrove',
+        fen: 'Niedermoor',
+      },
     },
     wood: 'Wald',
   },
@@ -585,11 +762,207 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': '{}',
     generator: {
       '*': 'Generator',
+
+      'generator:source': {
+        nuclear: {
+          '*': 'Kernenergie-Stromgenerator',
+
+          'generator:method': {
+            fission: 'Kernspaltungs-Stromgenerator',
+            fusion: 'Kernfusions-Stromgenerator',
+          },
+        },
+
+        wind: {
+          '*': 'Windkraft-Stromgenerator',
+        },
+
+        hydro: {
+          '*': 'Wasserkraft-Stromgenerator',
+
+          'generator:method': {
+            'water-storage': 'Speicherwasser-Stromgenerator',
+            'water-pumped-storage': 'Pumpspeicher-Stromgenerator',
+            'run-of-the-river': 'Laufwasser-Stromgenerator',
+          },
+        },
+
+        tidal: {
+          '*': 'Gezeiten-Stromgenerator',
+
+          'generator:method': {
+            barrage: 'Gezeitenkraftwerks-Stromgenerator (Staudamm)',
+            stream: 'Gezeitenströmungs-Stromgenerator',
+          },
+        },
+
+        wave: {
+          '*': 'Wellenenergie-Stromgenerator',
+        },
+
+        geothermal: {
+          '*': 'Geothermie-Stromgenerator',
+        },
+
+        solar: {
+          '*': 'Solarstrom-Generator',
+
+          'generator:method': {
+            thermal: 'Solarthermie-Stromgenerator',
+            photovoltaic: 'Photovoltaik-Stromgenerator',
+          },
+        },
+
+        coal: {
+          '*': 'Kohle-Stromgenerator',
+        },
+
+        gas: {
+          '*': 'Gas-Stromgenerator',
+        },
+
+        biomass: {
+          '*': 'Biomasse-Stromgenerator',
+
+          'generator:method': {
+            combustion: 'Biomasse-Stromgenerator mit Verbrennung',
+            gasification: 'Biomasse-Stromgenerator mit Vergasung',
+            anaerobic_digestion: 'Biomasse-Stromgenerator mit anaerober Vergärung',
+          },
+        },
+
+        biofuel: {
+          '*': 'Biokraftstoff-Stromgenerator',
+        },
+
+        biogas: {
+          '*': 'Biogas-Stromgenerator',
+        },
+
+        oil: {
+          '*': 'Öl-Stromgenerator',
+        },
+
+        diesel: {
+          '*': 'Diesel-Stromgenerator',
+        },
+
+        gasoline: {
+          '*': 'Benzin-Stromgenerator',
+        },
+
+        waste: {
+          '*': 'Abfall-zu-Energie-Stromgenerator',
+
+          'generator:method': {
+            combustion: 'Abfallverbrennungs-Stromgenerator',
+            gasification: 'Abfallvergasungs-Stromgenerator',
+          },
+        },
+      },
     },
     line: 'Stromleitung',
     minor_line: 'Nebenstromleitung',
     plant: {
       '*': 'Kraftwerk',
+
+      'plant:source': {
+        nuclear: {
+          '*': 'Kernkraftwerk',
+
+          'plant:method': {
+            fission: 'Kernspaltungskraftwerk',
+            fusion: 'Kernfusionskraftwerk',
+          },
+        },
+
+        wind: {
+          '*': 'Windkraftwerk',
+        },
+
+        hydro: {
+          '*': 'Wasserkraftwerk',
+
+          'plant:method': {
+            'water-storage': 'Speicherkraftwerk',
+            'water-pumped-storage': 'Pumpspeicherkraftwerk',
+            'run-of-the-river': 'Laufwasserkraftwerk',
+          },
+        },
+
+        tidal: {
+          '*': 'Gezeitenkraftwerk',
+
+          'plant:method': {
+            barrage: 'Gezeitenkraftwerk mit Staudamm',
+            stream: 'Gezeitenströmungskraftwerk',
+          },
+        },
+
+        wave: {
+          '*': 'Wellenkraftwerk',
+        },
+
+        geothermal: {
+          '*': 'Geothermiekraftwerk',
+        },
+
+        solar: {
+          '*': 'Solarkraftwerk',
+
+          'plant:method': {
+            thermal: 'Solarthermie-Kraftwerk',
+            photovoltaic: 'Photovoltaik-Kraftwerk',
+          },
+        },
+
+        coal: {
+          '*': 'Kohlekraftwerk',
+        },
+
+        gas: {
+          '*': 'Gaskraftwerk',
+        },
+
+        biomass: {
+          '*': 'Biomassekraftwerk',
+
+          'plant:method': {
+            combustion: 'Biomassekraftwerk mit Verbrennung',
+            gasification: 'Biomassekraftwerk mit Vergasung',
+            anaerobic_digestion: 'Biomassekraftwerk mit anaerober Vergärung',
+          },
+        },
+
+        biofuel: {
+          '*': 'Biokraftstoff-Kraftwerk',
+        },
+
+        biogas: {
+          '*': 'Biogaskraftwerk',
+        },
+
+        oil: {
+          '*': 'Ölkraftwerk',
+        },
+
+        diesel: {
+          '*': 'Dieselkraftwerk',
+        },
+
+        gasoline: {
+          '*': 'Benzinkraftwerk',
+        },
+
+        waste: {
+          '*': 'Müllheizkraftwerk',
+
+          'plant:method': {
+            combustion: 'Abfallverbrennungskraftwerk',
+            gasification: 'Abfallvergasungskraftwerk',
+          },
+        },
+      },
     },
     pole: 'Strommast',
     substation: 'Umspannwerk',
@@ -827,6 +1200,119 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_ski: 'Wasserski',
     workout: 'Workout',
     yoga: 'Yoga',
+    '8pin': 'Acht-Kegel-Bowling',
+    'five-a-side': 'Fünf-gegen-fünf-Fußball',
+    'in-line_hockey': 'Inlinehockey',
+    aerobics: 'Aerobic',
+    american_handball: 'Amerikanischer Handball',
+    association_football: 'Fußball (Soccer)',
+    axe_throwing: 'Axtwerfen',
+    balle_pelote: 'Balle Pelote',
+    ballooning: 'Heißluftballonfahren',
+    bandy: 'Bandy',
+    barre: 'Barre-Fitness',
+    base: 'BASE-Jumping',
+    batting_cage: 'Schlagkäfig (Baseball/Softball)',
+    beach_soccer: 'Beachsoccer',
+    beach_tennis: 'Beachtennis',
+    beachhandball: 'Beachhandball',
+    beachtennis: 'Beachtennis',
+    biathlon: 'Biathlon',
+    billards: 'Billard',
+    bobsleigh: 'Bobsport',
+    bodybuilding: 'Bodybuilding',
+    bullfighting: 'Stierkampf',
+    calisthenics: 'Calisthenics',
+    canadian_football: 'Kanadischer Football',
+    candlepin: 'Candlepin-Bowling',
+    canoe_polo: 'Kanupolo',
+    chinlone: 'Chinlone',
+    cockfighting: 'Hahnenkampf',
+    crossfit: 'CrossFit',
+    cycle_ball: 'Radball',
+    cycle_polo: 'Radpolo',
+    dance: 'Tanzsport',
+    dancing: 'Tanzsport',
+    diving: 'Wasserspringen',
+    dodgeball: 'Völkerball',
+    dog_agility: 'Hundesport Agility',
+    dragon_boat: 'Drachenbootrennen',
+    fencing: 'Fechten',
+    fistball: 'Faustball',
+    fives: 'Fives',
+    football: 'Football',
+    footballgolf: 'Fußballgolf',
+    four_square: 'Four Square',
+    freediving: 'Apnoetauchen',
+    funnel_ball: 'Funnel Ball',
+    futsal: 'Futsal',
+    gaelic_football: 'Gälischer Fußball',
+    gaga: 'Gaga-Ball',
+    gateball: 'Gateball',
+    gliding: 'Segelflug',
+    hanggliding: 'Drachenfliegen',
+    hapkido: 'Hapkido',
+    high_rope_course: 'Hochseilgarten',
+    hiking: 'Wandern',
+    hopscotch: 'Himmel und Hölle',
+    horse_riding: 'Reiten',
+    ice_stock: 'Eisstockschießen',
+    jetsprint: 'Jetsprint-Bootsrennen',
+    kick_scooter: 'Tretroller-Sport',
+    kickball: 'Kickball',
+    kickboxing: 'Kickboxen',
+    kitesurfing: 'Kitesurfen',
+    krachtbal: 'Krachtbal',
+    krolf: 'Krolf',
+    lacrosse: 'Lacrosse',
+    martial_arts: 'Kampfsport',
+    mind_body_interventions: 'Körper-Geist-Übungen (z. B. Yoga)',
+    miniature_golf: 'Minigolf',
+    mtb: 'Mountainbiken',
+    nine_mens_morris: 'Nine men\'s morris game',
+    obstacle_course: 'Hindernislauf',
+    paddleball: 'Paddleball',
+    paddleboard: 'Stand-up-Paddling',
+    padel: 'Padel-Tennis',
+    parachuting: 'Fallschirmspringen',
+    paragliding: 'Paragliding',
+    parkour: 'Parkour',
+    pedal_car_racing: 'Tretauto-Rennen',
+    'pesäpallo': 'Pesäpallo (finnisches Baseball)',
+    pickleball: 'Pickleball',
+    pilates: 'Pilates',
+    pole_dance: 'Pole Dance',
+    polo: 'Polo',
+    powerlifting: 'Kraftdreikampf',
+    rodeo: 'Rodeo',
+    roller_hockey: 'Rollhockey',
+    russian_skittles: 'Russisches Kegeln',
+    safety_training: 'Sicherheitstraining',
+    shuffleboard: 'Shuffleboard',
+    snooker: 'Snooker',
+    snorkeling: 'Schnorcheln',
+    softball: 'Softball',
+    speedway: 'Speedway',
+    summer_toboggan: 'Sommerrodeln',
+    sumo: 'Sumo',
+    taekwondo: 'Taekwondo',
+    tamburello: 'Tamburello',
+    teqball: 'Teqball',
+    tetherball: 'Tetherball',
+    touch_football: 'Touch Football',
+    trampoline: 'Trampolinspringen',
+    trugo: 'Trugo',
+    tug_of_war: 'Tauziehen',
+    ultimate: 'Ultimate Frisbee',
+    ultralight_aviation: 'Ultraleichtflugsport',
+    wakeboarding: 'Wakeboarding',
+    walking: 'Gehen (Sport)',
+    water_polo: 'Wasserball',
+    water_sports: 'Wassersport',
+    weightlifting: 'Gewichtheben',
+    windsurfing: 'Windsurfen',
+    wrestling: 'Ringen',
+    zurkhaneh_sport: 'Zurkhaneh-Sport',
   },
 
   tourism: {
@@ -854,12 +1340,12 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         guidepost: 'Wegweiser',
         map: 'Karte',
         office: 'Informationsbüro',
+        route_marker: 'Routenmarkierung',
       },
       '*': 'Information',
     },
 
     '*': '{}',
-
     alpine_hut: 'Alpenhütte',
     apartment: 'Apartment',
     aquarium: 'Aquarium',
@@ -877,6 +1363,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     viewpoint: 'Aussichtspunkt',
     wilderness_hut: 'Schutzhütte',
     zoo: 'Zoo',
+    theme_park: 'Themenpark',
   },
 
   type: {
@@ -888,6 +1375,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         foot: 'Fußweg',
         hiking: {
           '*': 'Wanderweg',
+
+          network: {
+            lwn: 'Lokaler Wanderweg',
+            rwn: 'Regionaler Wanderweg',
+            nwn: 'Nationaler Wanderweg',
+            iwn: 'Internationaler Wanderweg',
+          },
         },
         horse: 'Reitweg',
         mtb: 'Mountainbike-Strecke',
@@ -911,13 +1405,220 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stream: 'Bach, Fließ',
     waterfall: 'Wasserfall',
     weir: 'Wehr',
+    canoe_pass: 'Kanuumtrage',
+    fairway: 'Fahrrinne',
+    fish_pass: 'Fischpass',
+    flowline: 'Fließlinie',
+    link: 'Gewässerverbindung',
+    pressurised: 'Druckwasserleitung',
+    rapids: 'Pereje',
+    tidal_channel: 'Gezeitenkanal',
   },
 
   aerialway: {
     '*': 'Seilbahn, Aufzug',
+    cable_car: 'Kabinenbahn',
+    chair_lift: 'Sessellift',
+    goods: 'Materialseilbahn',
+    'j-bar': 'J-Lift',
+    magic_carpet: 'Zauberteppich',
+    mixed_lift: 'Kombilift',
+    platter: 'Schlepplift',
+    pylon: 'Seilbahnstütze',
+    rope_tow: 'Seillift',
+    station: 'Seilbahnstation',
+    't-bar': 'T-Bügellift',
+    zip_line: 'Zipline',
   },
+
   railway: {
     '*': 'Eisenbahn',
+    abandoned: 'Aufgegebene Bahnstrecke',
+    construction: 'Bahnstrecke im Bau',
+    proposed: 'Geplante Bahnstrecke',
+    disused: 'Stillgelegte Bahnstrecke',
+    funicular: 'Standseilbahn',
+    light_rail: 'Stadtbahn',
+    miniature: 'Miniaturbahn',
+    monorail: 'Einschienenbahn',
+    narrow_gauge: 'Schmalspurbahn',
+    rail: 'Bahnstrecke',
+    subway: 'U-Bahn-Linie',
+    tram: 'Straßenbahnlinie',
+    halt: 'Haltepunkt',
+    platform: 'Bahnsteig',
+    preserved: 'Museumsbahn',
+    station: 'Bahnhof',
+    stop: 'Bahnhalt',
+    subway_entrance: 'U-Bahneingang',
+    tram_stop: 'Straßenbahnhaltestelle',
+    buffer_stop: 'Prellbock',
+    crossing: 'Gleisquerung',
+    derail: 'Entgleisungsvorrichtung',
+    railway_crossing: 'Bahnquerung',
+    roundhouse: 'Ringlokschuppen',
+    signal: 'Eisenbahnsignal',
+    switch: 'Weiche',
+    level_crossing: 'Bahnübergang',
+    traverser: 'Verschiebebühne',
+    turntable: 'Drehscheibe',
+    ventilation_shaft: 'Eisenbahnlüftungsschacht',
+    wash: 'Zugwaschanlage',
+    water_crane: 'Wasserkran',
+    workshop: 'Bahnwerkstatt',
+  },
+
+  attraction: {
+    animal: 'Tierattraktion',
+    amusement_ride: 'Fahrgeschäft',
+    big_wheel: 'Riesenrad',
+    carousel: 'Karussell',
+    historic: 'Historische Attraktion',
+    maze: 'Labyrinthattraktion',
+    roller_coaster: 'Achterbahn',
+    summer_toboggan: 'Sommerrodelbahn',
+    train: 'Attraktionszug',
+    water_slide: 'Wasserrutsche',
+  },
+
+  'abandoned:building': {
+    '*': 'Aufgegebenes Gebäude',
+  },
+
+  'disused:building': {
+    '*': 'Stillgelegtes Gebäude',
+  },
+
+  'ruins:building': {
+    '*': 'Ruins of a building',
+  },
+
+  fixme: {
+    '*': 'Fehlerhaft oder unvollständig kartiertes Objekt',
+  },
+
+  ford: {
+    yes: 'Furt',
+  },
+
+  bridge: {
+    '*': {
+      '*': 'Brücke',
+
+      highway: {
+        '*': 'Straßenbrücke',
+      },
+
+      railway: {
+        '*': 'Eisenbahnbrücke',
+      },
+    },
+
+    no: '',
+  },
+
+  tunnel: {
+    '*': {
+      '*': 'Tunnel',
+
+      highway: {
+        '*': 'Straßentunnel',
+      },
+
+      railway: {
+        '*': 'Eisenbahntunnel',
+      },
+    },
+
+    culvert: 'Durchlass',
+    no: '',
+  },
+
+  oneway: {
+    yes: 'Einbahnstraße',
+  },
+
+  foot: {
+    no: 'Zugang für Fußgänger verboten',
+    yes: 'Zugang für Fußgänger erlaubt',
+    private: 'Zugang für Fußgänger nur für Berechtigte',
+    designated: 'Für Fußgänger ausgewiesen',
+  },
+
+  bicycle: {
+    no: 'Fahrradfahren verboten',
+    yes: 'Fahrradfahren erlaubt',
+    private: 'Fahrradfahren nur für Berechtigte',
+    designated: 'Für Fahrräder ausgewiesen',
+  },
+
+  vehicle: {
+    no: 'Fahrzeugverkehr verboten',
+    yes: 'Fahrzeugverkehr erlaubt',
+    private: 'Fahrzeugverkehr nur für Berechtigte',
+    designated: 'Für Fahrzeuge ausgewiesen',
+  },
+
+  motor_vehicle: {
+    no: 'Zugang für Kraftfahrzeuge verboten',
+    yes: 'Zugang für Kraftfahrzeuge erlaubt',
+    private: 'Zugang für Kraftfahrzeuge nur für Berechtigte',
+    designated: 'Für Kraftfahrzeuge ausgewiesen',
+  },
+
+  military: {
+    '*': 'Militäranlage {}',
+    academy: 'Militärakademie',
+    airfield: 'Militärflugplatz',
+    ammunition: 'Munitionsdepot',
+    barracks: 'Kaserne',
+    base: 'Militärbasis',
+    bunker: 'Bunker',
+    checkpoint: 'Militärkontrollpunkt',
+    danger_area: 'Militärisches Gefahrengebiet',
+    depot: 'Militärdepot',
+    launchpad: 'Startplattform',
+    naval_base: 'Marinebasis',
+    nuclear_explosion_site: 'Atomtestgelände',
+    obstacle_course: 'Militärischer Hindernisparcours',
+    office: 'Militärisches Amt',
+    range: 'Schießplatz',
+    school: 'Militärschule',
+    training_area: 'Militärisches Übungsgelände',
+    trench: 'Schützengraben',
+  },
+
+  mountain_pass: {
+    yes: 'Gebirgspass',
+  },
+
+  seasonal: {
+    yes: {
+      waterway: 'Saisonales Gewässer',
+
+      natural: {
+        water: 'Saisonale Wasserfläche',
+      },
+    },
+  },
+
+  intermittent: {
+    yes: {
+      waterway: 'Periodisches Gewässer',
+
+      natural: {
+        water: 'Periodische Wasserfläche',
+      },
+    },
+  },
+
+  trail_visibility: {
+    excellent: 'Ausgezeichnete Wegsichtbarkeit',
+    good: 'Gute Wegsichtbarkeit',
+    intermediate: 'Mittlere Wegsichtbarkeit',
+    bad: 'Schlechte Wegsichtbarkeit',
+    horrible: 'Sehr schlechte Wegsichtbarkeit',
+    no: 'Keine Wegsichtbarkeit',
   },
 };
 
