@@ -206,6 +206,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_point: 'Odber pitnej vody',
     watering_place: 'Napájadlo',
   },
+  attraction: {
+    animal: 'Zvieracia atrakcia',
+    amusement_ride: 'Zábavná jazda',
+    big_wheel: 'Ruské koleso',
+    carousel: 'Kolotoč',
+    historic: 'Historická atrakcia',
+    maze: 'Bludisko',
+    roller_coaster: 'Horská dráha',
+    summer_toboggan: 'Letná bobová dráha',
+    train: 'Vyhliadkový vláčik',
+    water_slide: 'Tobogan',
+  },
   barrier: {
     '*': 'Bariéra {}',
     block: 'Blok',
@@ -314,6 +326,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     university: 'Budova univerzity',
     warehouse: 'Sklad',
     yes: 'Neurčitá budova',
+  },
+  fixme: {
+    '*': 'Nesprávne alebo neúplne zmapovaný prvok',
   },
   ford: {
     yes: 'Brod',
@@ -621,7 +636,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     nesting_site: 'Hniezdo',
     observatory: 'Observatórium',
     pier: 'Mólo',
-    pipeline: 'Potrubie',
+    pipeline: {
+      '*': 'Potrubie',
+      location: {
+        underground: 'Podzemné potrubie',
+        underwater: 'Podvodné potrubie',
+      },
+    },
     pumping_station: 'Prečerpávacia stanica',
     reservoir_covered: 'Krytý rezervoár',
     silo: 'Silo',
@@ -730,6 +751,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         yes: 'Upravený prameň',
         no: 'Neupravený prameň',
       },
+      intermittent: {
+        yes: 'Občasný prameň',
+      },
+      seasonal: {
+        yes: 'Sezónny prameň',
+      },
+      water_characteristic: {
+        '*': 'Minerálny prameň',
+      },
     },
     stone: 'Balvan',
     tree: {
@@ -815,15 +845,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Generátor elektrickej energie z energie morských vĺn',
         },
         geothermal: {
-          '*': 'Generátor elektrickej energie z geotermálnej energie',
+          '*': 'Generátor elektrickej energie z geotermálnej',
         },
         solar: {
-          '*': 'Generátor elektrickej energie zo slnečnej energie',
+          '*': 'Generátor elektrickej energie zo slnečného žiarenia',
           'generator:method': {
             thermal:
-              'Generátor elektrickej energie zo solárnej termálnej energie',
+              'Generátor elektrickej energie zo slnečného žiarenia - termálne',
             photovoltaic:
-              'Generátor elektrickej energie z fotovoltickej energie',
+              'Generátor elektrickej energie zo slnečného žiarenia - fotovolticky',
           },
         },
         coal: {
@@ -1404,14 +1434,37 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
   },
+  seasonal: {
+    yes: {
+      waterway: 'Sezónny vodný tok',
+      natural: {
+        water: 'Sezónny vodná plocha',
+      },
+    },
+  },
+  intermittent: {
+    yes: {
+      waterway: 'Občasný vodný tok',
+      natural: {
+        water: 'Občasná vodná plocha',
+      },
+    },
+  },
   waterway: {
     '*': 'Vodný tok {}',
     canal: 'Kanál',
+    canoe_pass: 'Priechod pre kanoe',
     dam: 'Priehrada',
     ditch: 'Priekopa',
     drain: 'Odtok',
+    fairway: 'Plavebná dráha (fairway)',
+    fish_pass: 'Rybí prechod',
+    flowline: 'Prúdová línia',
+    pressurised: 'Tlakové vodné potrubie',
+    link: 'Vodný spoj',
     river: 'Rieka',
     stream: 'Potok',
+    tidal_channel: 'Prílivový kanál',
     waterfall: 'Vodopád',
     weir: 'Hrádza',
   },

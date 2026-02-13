@@ -133,7 +133,13 @@ export function OutdoorMapLegend(): ReactElement {
                         }
                       >
                         {({ props }) => (
-                          <span {...props}>
+                          <span
+                            style={{
+                              textDecoration: 'underline dotted',
+                              cursor: 'help',
+                            }}
+                            {...props}
+                          >
                             {name?.replace(/\s*\*\s*/g, '') || '???'}
                           </span>
                         )}

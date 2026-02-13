@@ -205,6 +205,18 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     water_point: 'Water point',
     watering_place: 'Watering place',
   },
+  attraction: {
+    animal: 'Animal attraction',
+    amusement_ride: 'Amusement ride',
+    big_wheel: 'Ferris wheel',
+    carousel: 'Carousel',
+    historic: 'Historic attraction',
+    maze: 'Maze attraction',
+    roller_coaster: 'Roller coaster',
+    summer_toboggan: 'Summer toboggan run',
+    train: 'Attraction train',
+    water_slide: 'Water slide',
+  },
   barrier: {
     '*': 'Barrier {}',
     block: 'Block',
@@ -314,8 +326,11 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     warehouse: 'Warehouse',
     yes: 'Indeterminate building',
   },
+  fixme: {
+    '*': 'Incorrectly or partially mapped feature',
+  },
   ford: {
-    yes: 'brod',
+    yes: 'Ford',
   },
   bridge: {
     '*': {
@@ -621,7 +636,13 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     nesting_site: 'Nesting site',
     observatory: 'Observatory',
     pier: 'Pier',
-    pipeline: 'Pipeline',
+    pipeline: {
+      '*': 'Pipeline',
+      location: {
+        underground: 'Underground pipeline',
+        underwater: 'Underwater pipeline',
+      },
+    },
     pumping_station: 'Pumping station',
     reservoir_covered: 'Covered reservoir',
     silo: 'Silo',
@@ -729,6 +750,15 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       refitted: {
         yes: 'Refitted spring',
         no: 'Non-refitted spring',
+      },
+      intermittent: {
+        yes: 'Intermittent spring',
+      },
+      seasonal: {
+        yes: 'Seasonal spring',
+      },
+      water_characteristic: {
+        '*': 'Mineral spring',
       },
     },
     stone: 'Stone',
@@ -1398,15 +1428,38 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       },
     },
   },
+  seasonal: {
+    yes: {
+      waterway: 'Seasonal waterway',
+      natural: {
+        water: 'Seasonal water area',
+      },
+    },
+  },
+  intermittent: {
+    yes: {
+      waterway: 'Intermittent waterway',
+      natural: {
+        water: 'Intermittent water area',
+      },
+    },
+  },
   waterway: {
     '*': 'Waterway {}',
     canal: 'Canal',
+    canoe_pass: 'Canoe pass',
     dam: 'Dam',
     ditch: 'Ditch (waterway)',
     drain: 'Drain',
+    fairway: 'Fairway',
+    fish_pass: 'Fish pass',
+    flowline: 'Flow line',
+    link: 'Waterway link',
+    pressurised: 'Pressurised water conduit',
     rapids: 'Pereje',
     river: 'River',
     stream: 'Creek, stream',
+    tidal_channel: 'Tidal channel',
     waterfall: 'Waterfall',
     weir: 'Weir',
   },

@@ -205,6 +205,18 @@ export type OsmTagToNameMapping = {
     water_point: string;
     watering_place: string;
   };
+  attraction: {
+    animal: string;
+    amusement_ride: string;
+    big_wheel: string;
+    carousel: string;
+    historic: string;
+    maze: string;
+    roller_coaster: string;
+    summer_toboggan: string;
+    train: string;
+    water_slide: string;
+  };
   barrier: {
     '*': string;
     block: string;
@@ -313,6 +325,9 @@ export type OsmTagToNameMapping = {
     university: string;
     warehouse: string;
     yes: string;
+  };
+  fixme: {
+    '*': string;
   };
   ford: {
     yes: string;
@@ -620,7 +635,13 @@ export type OsmTagToNameMapping = {
     nesting_site: string;
     observatory: string;
     pier: string;
-    pipeline: string;
+    pipeline: {
+      '*': string;
+      location: {
+        underground: string;
+        underwater: string;
+      };
+    };
     pumping_station: string;
     reservoir_covered: string;
     silo: string;
@@ -728,6 +749,15 @@ export type OsmTagToNameMapping = {
       refitted: {
         yes: string;
         no: string;
+      };
+      intermittent: {
+        yes: string;
+      };
+      seasonal: {
+        yes: string;
+      };
+      water_characteristic: {
+        '*': string;
       };
     };
     stone: string;
@@ -1397,15 +1427,38 @@ export type OsmTagToNameMapping = {
       };
     };
   };
+  seasonal: {
+    yes: {
+      waterway: string;
+      natural: {
+        water: string;
+      };
+    };
+  };
+  intermittent: {
+    yes: {
+      waterway: string;
+      natural: {
+        water: string;
+      };
+    };
+  };
   waterway: {
     '*': string;
     canal: string;
+    canoe_pass: string;
     dam: string;
     ditch: string;
     drain: string;
+    fairway: string;
+    fish_pass: string;
+    flowline: string;
+    link: string;
+    pressurised: string;
     rapids: string;
     river: string;
     stream: string;
+    tidal_channel: string;
     waterfall: string;
     weir: string;
   };
