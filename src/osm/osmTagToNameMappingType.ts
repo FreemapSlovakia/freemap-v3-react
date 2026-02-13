@@ -261,8 +261,29 @@ export type OsmTagToNameMapping = {
     national_park: string;
     protected_area: string;
   };
-  building: {
+  'abandoned:building': {
     '*': string;
+  };
+  'disused:building': {
+    '*': string;
+  };
+  'ruins:building': {
+    '*': string;
+  };
+  building: {
+    '*': {
+      '*': string;
+      abandoned: {
+        yes: string;
+      };
+      disused: {
+        yes: string;
+      };
+      ruins: {
+        yes: string;
+      };
+    };
+    abandoned: string;
     apartments: string;
     barn: string;
     bungalow: string;
@@ -278,6 +299,7 @@ export type OsmTagToNameMapping = {
     cowshed: string;
     detached: string;
     dormitory: string;
+    disused: string;
     entrance: string;
     farm_auxiliary: string;
     farm: string;

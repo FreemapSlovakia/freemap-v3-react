@@ -261,8 +261,24 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     national_park: 'National park',
     protected_area: 'Protected area',
   },
+  'abandoned:building': { '*': 'Abandoned building' },
+  'disused:building': { '*': 'Disused building' },
+  'ruins:building': { '*': 'Ruins of a building' },
   building: {
-    '*': 'Building {}',
+    '*': {
+      '*': 'Building',
+      abandoned: {
+        yes: 'Abandoned building',
+      },
+      disused: {
+        yes: 'Disused building',
+      },
+      ruins: {
+        yes: 'Ruins of a building',
+      },
+    },
+    abandoned: 'Abandoned building',
+    disused: 'Disused building',
     apartments: 'Apartments (block)',
     barn: 'Barn',
     bungalow: 'Bungalow',

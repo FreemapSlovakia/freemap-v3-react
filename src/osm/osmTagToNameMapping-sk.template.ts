@@ -262,8 +262,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     national_park: 'Národný park',
     protected_area: 'Chránená oblasť',
   },
+  'abandoned:building': { '*': 'Trvalo opustená budova' },
+  'disused:building': { '*': 'Nepoužívaná budova' },
+  'ruins:building': { '*': 'Ruins of a building' },
   building: {
-    '*': 'Budova {}',
+    '*': {
+      '*': 'Budova',
+      abandoned: {
+        yes: 'Trvalo opustená budova',
+      },
+      disused: {
+        yes: 'Nepoužívaná budova',
+      },
+      ruins: {
+        yes: 'Ruina budovy',
+      },
+    },
+    abandoned: 'Trvalo opustená budova',
+    disused: 'Nepoužívaná budova',
     apartments: 'Apartmány (blok)',
     barn: 'Stodola',
     bungalow: 'Bungalov',
@@ -305,7 +321,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     residential: 'Obytný dom',
     retail: 'Budova predajne',
     roof: 'Strecha',
-    ruins: 'Ruiny budovy',
+    ruins: 'Ruina budovy',
     school: 'Budova školy',
     semidetached_house: 'Dvojdom',
     service: 'Servisná budova',
