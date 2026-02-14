@@ -1,6 +1,6 @@
 import { Position } from 'geojson';
 import {
-  FormEvent,
+  SubmitEvent,
   Fragment,
   ReactElement,
   ReactNode,
@@ -142,7 +142,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
   const [activity, setActivity] = useState('');
 
   const runExport = useCallback(
-    (e: FormEvent) => {
+    (e: SubmitEvent) => {
       e.preventDefault();
 
       if (!exportables) {

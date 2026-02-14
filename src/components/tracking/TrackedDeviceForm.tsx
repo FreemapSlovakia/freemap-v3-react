@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useState } from 'react';
+import { SubmitEvent, ReactElement, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
@@ -74,7 +74,7 @@ export function TrackedDeviceForm(): ReactElement {
   const invalidSplitDistance = isInvalidFloat(splitDistance, false, 0);
   const invalidSplitDuration = isInvalidInt(splitDuration, false, 0);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const did = id.trim();

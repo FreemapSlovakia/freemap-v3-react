@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useState } from 'react';
+import { SubmitEvent, ReactElement, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { trackingActions } from '../../actions/trackingActions.js';
 import { DateTime } from '../../components/DateTime.js';
@@ -48,7 +48,7 @@ export function AccessTokenForm(): ReactElement {
   //   accessToken?.listingLabel ?? '',
   // );
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
     dispatch(

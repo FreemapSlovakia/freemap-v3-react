@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useCallback, useState } from 'react';
+import { SubmitEvent, ReactElement, useCallback, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCoins, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -21,7 +21,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
     dispatch(purchase({ type: 'credits', amount: Number(credits) }));

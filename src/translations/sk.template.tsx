@@ -1175,6 +1175,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Legenda k mape <i>{name}</i>
       </>
     ),
+
+    outdoorMap: {
+      accommodation: 'Ubytovanie',
+      'gastro-poi': 'Gastronómia',
+      institution: 'Inštitúcie',
+      sport: 'Šport',
+      'natural-poi': 'Prírodné prvky',
+      poi: 'Ostatné body záujmu',
+      landcover: 'Krajinný pokryv',
+      borders: 'Hranice',
+      'roads-and-paths': 'Cesty a chodníky',
+      railway: 'Železnice',
+      terrain: 'Reliéf',
+      water: 'Voda',
+      other: 'Ostatné',
+    },
   },
 
   contacts: {

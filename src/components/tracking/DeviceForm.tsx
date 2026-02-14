@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useCallback, useState } from 'react';
+import { SubmitEvent, ReactElement, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { trackingActions } from '../../actions/trackingActions.js';
 import { useAppSelector } from '../../hooks/useAppSelector.js';
@@ -56,7 +56,7 @@ export function DeviceForm(): ReactElement {
   );
 
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: SubmitEvent) => {
       e.preventDefault();
 
       dispatch(

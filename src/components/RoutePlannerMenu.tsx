@@ -2,7 +2,7 @@ import {
   ChangeEvent,
   Children,
   CSSProperties,
-  FormEvent,
+  SubmitEvent,
   forwardRef,
   Fragment,
   ReactElement,
@@ -96,7 +96,7 @@ function useParam(
   );
 
   const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       debounceCallback.flush();

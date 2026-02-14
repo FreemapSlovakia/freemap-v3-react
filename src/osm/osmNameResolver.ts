@@ -74,8 +74,23 @@ export function resolveGenericNameWithMeta(
           tags: { ...usedTags, [k]: v },
           case: 'e',
         });
+      } else if (valMapping['*']) {
+        const res = resolveGenericNameWithMeta(valMapping['*'], tags, {
+          ...usedTags,
+          [k]: v,
+        });
 
-        continue;
+        if (res.length) {
+          parts.push(
+            ...res.map((item) => ({
+              text: item.text.replace('{}', v),
+              tags: { ...item.tags, [k]: v },
+              case: item.case + 'f',
+            })),
+          );
+
+          continue;
+        }
       }
     }
   }

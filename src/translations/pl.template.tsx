@@ -1149,6 +1149,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Legenda mapy dla <i>{name}</i>
       </>
     ),
+    outdoorMap: {
+      accommodation: 'Noclegi',
+      'gastro-poi': 'Jedzenie i napoje',
+      institution: 'Instytucje',
+      sport: 'Sport',
+      'natural-poi': 'Obiekty przyrodnicze',
+      poi: 'Inne punkty zainteresowania',
+      landcover: 'Pokrycie terenu',
+      borders: 'Granice',
+      'roads-and-paths': 'Drogi i ścieżki',
+      railway: 'Kolej',
+      terrain: 'Ukształtowanie terenu',
+      water: 'Woda',
+      other: 'Inne',
+    },
   },
 
   contacts: {

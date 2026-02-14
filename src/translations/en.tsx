@@ -1116,6 +1116,22 @@ const messages: Messages = {
         Map legend for <i>{name}</i>
       </>
     ),
+
+    outdoorMap: {
+      accommodation: 'Accommodation',
+      'gastro-poi': 'Food & Drink',
+      institution: 'Institutions',
+      sport: 'Sports',
+      'natural-poi': 'Natural features',
+      poi: 'Other points of interest',
+      landcover: 'Land cover',
+      borders: 'Borders',
+      'roads-and-paths': 'Roads and paths',
+      railway: 'Railways',
+      terrain: 'Terrain',
+      water: 'Water',
+      other: 'Other',
+    },
   },
 
   contacts: {

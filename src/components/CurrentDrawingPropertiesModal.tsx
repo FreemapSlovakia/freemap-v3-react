@@ -1,7 +1,7 @@
 import { polygon } from '@turf/helpers';
 import {
   ChangeEvent,
-  FormEvent,
+  SubmitEvent,
   ReactElement,
   useCallback,
   useState,
@@ -89,7 +89,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    (e: SubmitEvent<HTMLFormElement>) => {
       if (
         selection?.type !== 'draw-line-poly' &&
         selection?.type !== 'draw-points'

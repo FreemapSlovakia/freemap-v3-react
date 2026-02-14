@@ -5,7 +5,7 @@ import { booleanIntersects } from '@turf/boolean-intersects';
 import { polygon } from '@turf/helpers';
 import { BBox } from 'geojson';
 import {
-  FormEvent,
+  SubmitEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -228,7 +228,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   );
 
   const handleSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       dispatch(

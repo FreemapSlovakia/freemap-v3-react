@@ -56,6 +56,7 @@ function findRoot(file: File) {
         (s) =>
           !isImportSpecifier(s) ||
           (isIdentifier(s.imported) &&
+            s.imported.name !== 'DeepPartial' &&
             s.imported.name !== 'DeepPartialWithRequiredObjects'),
       );
 
@@ -112,7 +113,8 @@ function findRoot(file: File) {
     }
 
     const tn =
-      typeName.name === 'DeepPartialWithRequiredObjects' &&
+      (typeName.name === 'DeepPartial' ||
+        typeName.name === 'DeepPartialWithRequiredObjects') &&
       typeParameters?.params.length === 1 &&
       isTSTypeReference(typeParameters?.params[0]) &&
       isIdentifier(typeParameters?.params[0].typeName)

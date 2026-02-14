@@ -1,6 +1,6 @@
 import {
   ChangeEvent,
-  FormEvent,
+  SubmitEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -158,7 +158,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   }, []);
 
   const handleFormSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       dispatch(
