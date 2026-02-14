@@ -1,6 +1,6 @@
 import {
   ChangeEvent,
-  FormEvent,
+  SubmitEvent,
   ReactElement,
   useCallback,
   useState,
@@ -49,7 +49,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: SubmitEvent) => {
       e.preventDefault();
 
       const maxZoomValue = parseInt(maxZoom, 10);

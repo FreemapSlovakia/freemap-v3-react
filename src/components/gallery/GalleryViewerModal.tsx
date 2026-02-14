@@ -2,7 +2,7 @@ import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import {
   ChangeEvent,
-  FormEvent,
+  SubmitEvent,
   Fragment,
   ReactElement,
   useCallback,
@@ -150,7 +150,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   );
 
   const handleCommentFormSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: SubmitEvent) => {
       e.preventDefault();
 
       dispatch(gallerySubmitComment());
@@ -263,7 +263,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   }, [pano]);
 
   const handleSave = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       dispatch(gallerySavePicture());

@@ -1,4 +1,10 @@
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import {
+  type ReactElement,
+  SubmitEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -22,7 +28,7 @@ export function ProjectPointModal({
 
   const [azimuth, setAzimuth] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     onAdd(Number(distance), Number(azimuth));

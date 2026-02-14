@@ -1,6 +1,6 @@
 import {
   ChangeEvent,
-  FormEvent,
+  SubmitEvent,
   ReactElement,
   useCallback,
   useState,
@@ -58,7 +58,7 @@ export function PredefinedDrawingPropertiesModal({
     dispatch(setActiveModal(null));
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
     save(false);
