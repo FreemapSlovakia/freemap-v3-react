@@ -150,12 +150,13 @@ export function ObjectsMenu(): ReactElement {
         ...item,
         key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
       }))
-      .filter((item) => !snapshot || activeSnapshot.includes(item.key))
       .filter(
         (item) =>
-          snapshot ||
-          !normalizedFilter ||
-          removeAccents(item.name.toLowerCase()).includes(normalizedFilter),
+          item.name &&
+          (!snapshot || activeSnapshot.includes(item.key)) &&
+          (snapshot ||
+            !normalizedFilter ||
+            removeAccents(item.name.toLowerCase()).includes(normalizedFilter)),
       )
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(({ key, name, tags }) => {

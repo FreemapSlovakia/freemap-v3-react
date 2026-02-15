@@ -1,4 +1,9 @@
 export type OsmTagToNameMapping = {
+  access: {
+    customers: string;
+    private: string;
+    no: string;
+  };
   aeroway: {
     aerodrome: string;
     airstrip: string;

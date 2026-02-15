@@ -2,6 +2,11 @@ import { DeepPartial } from '../deepPartial.js';
 import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
+  access: {
+    customers: 'Len pre zákazníkov',
+    private: 'Súkromný prístup',
+    no: 'Zákaz vstupu',
+  },
   aeroway: {
     aerodrome: 'Letisko',
     airstrip: 'Vzletová a pristávacia dráha (malé letisko)',

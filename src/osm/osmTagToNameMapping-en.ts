@@ -1,6 +1,11 @@
 import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
+  access: {
+    customers: 'Only for customers',
+    private: 'Private feature',
+    no: 'Feature with access forbidden',
+  },
   aeroway: {
     aerodrome: 'Aerodrome',
     airstrip: 'Airstrip',

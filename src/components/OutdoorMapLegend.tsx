@@ -171,6 +171,7 @@ export function OutdoorMapLegend(): ReactElement {
                             style={{
                               textDecoration: 'underline dotted',
                               cursor: 'help',
+                              userSelect: 'none',
                             }}
                             {...props}
                           >
