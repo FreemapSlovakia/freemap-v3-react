@@ -269,7 +269,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   'abandoned:building': { '*': 'Trvalo opustená budova' },
   'disused:building': { '*': 'Nepoužívaná budova' },
-  'ruins:building': { '*': 'Ruins of a building' },
+  'ruins:building': { '*': 'Ruina budovy' },
   building: {
     '*': {
       '*': 'Budova',
