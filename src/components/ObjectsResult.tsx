@@ -1,7 +1,7 @@
 import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { selectFeature } from '../actions/mainActions.js';
 import { searchSelectResult } from '../actions/searchActions.js';
@@ -19,7 +19,6 @@ import {
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { OsmMapping } from '../osm/types.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
-import type { RootState } from '../store.js';
 import {
   featureIdsEqual,
   OsmFeatureId,
@@ -32,8 +31,8 @@ export function ObjectsResult(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const selectedIconValue = useSelector(
-    (state: RootState) => state.objects.selectedIcon,
+  const selectedIconValue = useAppSelector(
+    (state) => state.objects.selectedIcon,
   );
 
   const interactive = useAppSelector(selectingModeSelector);
@@ -59,9 +58,7 @@ export function ObjectsResult(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  const markerType = useSelector(
-    (state: RootState) => state.objects.selectedIcon,
-  );
+  const markerType = useAppSelector((state) => state.objects.selectedIcon);
 
   return !osmMapping ? null : (
     <>

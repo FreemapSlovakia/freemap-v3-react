@@ -17,6 +17,8 @@ import {
 import { OsmMapping } from '../osm/types.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { useMessages } from '../l10nInjector.js';
+import { objectsSetFilter } from '../actions/objectsActions.js';
+import { useAppSelector } from '../hooks/useAppSelector.js';
 
 type Item = {
   category: string;
@@ -33,6 +35,8 @@ type Res = { id: string; category: string; tags: Record<string, string>[] }[];
 export default OutdoorMapLegend;
 
 export function OutdoorMapLegend(): ReactElement {
+  const activeObjects = useAppSelector((s) => s.objects.active);
+
   const [legend, setLegend] = useState<Item[]>([]);
 
   const dispatch = useDispatch();
@@ -61,6 +65,7 @@ export function OutdoorMapLegend(): ReactElement {
 
         for (const item of items) {
           let i = catMap.get(item.category);
+
           if (!i) {
             i = { category: item.category, items: [] };
             catMap.set(item.category, i);
@@ -148,13 +153,34 @@ export function OutdoorMapLegend(): ReactElement {
                   />
                 </div>
 
-                <div>
-                  {name_w_tags.map(({ name, tags }, i) => (
-                    <Fragment key={i}>
-                      {i ? '｜' : null}
+                <div className="d-flex flex-wrap gap-2">
+                  {name_w_tags.map(({ name, tags }, i) => {
+                    let ts = Object.entries(tags).map(([k, v]) => k + '=' + v);
+
+                    const activeIndex = activeObjects.findIndex((ao) => {
+                      let aos = ao.split(',');
+
+                      return (
+                        aos.every((t) => ts.includes(t)) &&
+                        ts.every((t) => aos.includes(t))
+                      );
+                    });
+
+                    return (
                       <LongPressTooltip
+                        key={i}
                         label={
-                          <Table className="text-left mb-0" bordered size="sm">
+                          <Table
+                            className="text-left mb-0"
+                            bordered
+                            size="sm"
+                            data-bs-theme={
+                              document.documentElement.dataset['bsTheme'] ==
+                              'light'
+                                ? 'dark'
+                                : 'light'
+                            }
+                          >
                             <tbody>
                               {Object.entries(tags).map(([key, value]) => (
                                 <tr>
@@ -166,21 +192,38 @@ export function OutdoorMapLegend(): ReactElement {
                           </Table>
                         }
                       >
-                        {({ props }) => (
-                          <span
-                            style={{
-                              textDecoration: 'underline dotted',
-                              cursor: 'help',
-                              userSelect: 'none',
-                            }}
-                            {...props}
-                          >
-                            {name?.replace(/\s*\*\s*/g, '') || '???'}
-                          </span>
-                        )}
+                        {({ props }) => {
+                          let next =
+                            activeIndex > -1
+                              ? activeObjects.toSpliced(activeIndex, 1)
+                              : [...activeObjects, ts.join(',')];
+
+                          return (
+                            <a
+                              className={
+                                'px-2 rounded ' +
+                                (activeIndex > -1
+                                  ? 'bg-primary text-light'
+                                  : 'bg-body-secondary')
+                              }
+                              href={
+                                '/#objects=' +
+                                encodeURIComponent(next.join(';'))
+                              }
+                              onClick={(e) => {
+                                e.preventDefault();
+
+                                dispatch(objectsSetFilter(next));
+                              }}
+                              {...props}
+                            >
+                              {name?.replace(/\s*\*\s*/g, '') || '???'}
+                            </a>
+                          );
+                        }}
                       </LongPressTooltip>
-                    </Fragment>
-                  ))}
+                    );
+                  })}
                 </div>
               </Fragment>
             ))}

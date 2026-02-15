@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { type DropdownProps, Dropdown, Form } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { type DropdownProps, Button, Dropdown, Form } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import {
   MarkerType,
   objectsSetFilter,
@@ -22,10 +22,11 @@ import { useMessages } from '../l10nInjector.js';
 import { getOsmMapping, resolveGenericName } from '../osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '../osm/osmTagToIconMapping.js';
 import { Node, OsmMapping } from '../osm/types.js';
-import type { RootState } from '../store.js';
 import { removeAccents } from '../stringUtils.js';
 import { HideArrow } from './SearchMenu.js';
 import { ToolMenu } from './ToolMenu.js';
+import { FaCircle, FaMapMarker, FaSquare, FaTrash } from 'react-icons/fa';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 export default ObjectsMenu;
 
@@ -124,6 +125,7 @@ export function ObjectsMenu(): ReactElement {
       justOpenedRef.current = false;
     } else if (!nextShow && metadata.source !== 'select') {
       setDropdownOpened(false);
+      setFilter('');
 
       metadata.originalEvent?.preventDefault();
 
@@ -187,8 +189,8 @@ export function ObjectsMenu(): ReactElement {
 
   const activeItems = makeItems(true);
 
-  const selectedIconValue = useSelector(
-    (state: RootState) => state.objects.selectedIcon,
+  const selectedIconValue = useAppSelector(
+    (state) => state.objects.selectedIcon,
   );
 
   const handleIconChange = (selectedIconValue: MarkerType) => {
@@ -207,6 +209,7 @@ export function ObjectsMenu(): ReactElement {
         <Dropdown.Toggle as={HideArrow}>
           <Form.Control
             type="search"
+            style={{ width: '8em' }}
             placeholder={m?.objects.type}
             onChange={handleFilterSet}
             value={filter}
@@ -226,37 +229,6 @@ export function ObjectsMenu(): ReactElement {
           <div className="dropdown-long" ref={sc}>
             <div />
 
-            {/* {poiTypeGroups.map((pointTypeGroup, i) => {
-              const gid = pointTypeGroup.id;
-
-              const items = poiTypes
-                .filter(({ group }) => group === gid)
-                .filter(({ id }) =>
-                  m?.objects.subcategories[id]
-                    ?.toLowerCase()
-                    .includes(filter.toLowerCase()),
-                )
-                .map(({ group, id, icon }) => (
-                  <Dropdown.Item key={id} eventKey={String(id)}>
-                    <img
-                      src={require(`../images/mapIcons/${icon}.png`)}
-                      alt={`${group}-${icon}`}
-                    />{' '}
-                    {m?.objects.subcategories[id]}
-                  </Dropdown.Item>
-                ));
-
-              return items.length === 0 ? null : (
-                <Fragment key={gid}>
-                  {i > 0 && <Dropdown.Divider />}
-                  <Dropdown.Header>
-                    {m?.objects.categories[gid]}
-                  </Dropdown.Header>
-                  {items}
-                </Fragment>
-              );
-            })} */}
-
             {activeItems}
 
             {activeItems?.length ? <Dropdown.Divider /> : null}
@@ -271,25 +243,47 @@ export function ObjectsMenu(): ReactElement {
         onSelect={(eventKey) => handleIconChange(eventKey as MarkerType)}
       >
         <Dropdown.Toggle variant="secondary">
-          {m?.objects.icon[selectedIconValue]}
+          {selectedIconValue == 'ring' ? (
+            <FaCircle />
+          ) : selectedIconValue == 'square' ? (
+            <FaSquare />
+          ) : (
+            <FaMapMarker />
+          )}
         </Dropdown.Toggle>
-
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
           <Dropdown.Item eventKey="pin" active={selectedIconValue === 'pin'}>
-            {m?.objects.icon.pin}
+            <FaMapMarker /> {m?.objects.icon.pin}
           </Dropdown.Item>
 
           <Dropdown.Item eventKey="ring" active={selectedIconValue === 'ring'}>
-            {m?.objects.icon.ring}
+            <FaCircle /> {m?.objects.icon.ring}
           </Dropdown.Item>
 
           <Dropdown.Item
             eventKey="square"
             active={selectedIconValue === 'square'}
           >
-            {m?.objects.icon.square}
+            <FaSquare /> {m?.objects.icon.square}
           </Dropdown.Item>
         </Dropdown.Menu>
+
+        {active.length > 0 && (
+          <LongPressTooltip label={m?.general.delete} kbd="Del">
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="danger"
+                onClick={() => {
+                  dispatch(objectsSetFilter([]));
+                }}
+                {...props}
+              >
+                {active.length} <FaTrash />
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
       </Dropdown>
     </ToolMenu>
   );

@@ -248,6 +248,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         return setTool(toolDefinition.tool);
       }
 
+      if (event.code === 'KeyD') {
+        return setActiveModal('legend');
+      }
+
       return undefined;
     }
 

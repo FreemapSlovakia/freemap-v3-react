@@ -78,7 +78,7 @@ export function CopyrightButton(): ReactElement {
                 dispatch(setActiveModal('legend'));
               }}
             >
-              <FaList /> {m?.mainMenu.mapLegend}
+              <FaList /> {m?.mainMenu.mapLegend} <kbd>g</kbd> <kbd>d</kbd>
             </Dropdown.Item>
           )}
 
