@@ -1460,7 +1460,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     yes: {
       waterway: 'Sezónny vodný tok',
       natural: {
-        water: 'Sezónny vodná plocha',
+        water: 'Sezónna vodná plocha',
       },
     },
   },
