@@ -10,8 +10,8 @@
       content="OZ Freemap Slovakia, http://www.freemap.sk/"
     />
     <meta name="description" content="<%= description %>" />
-    <meta property="og:description" content="<%= description %>" />
     <meta name="author" content="Freemap Slovakia" />
+    <link rel="me" href="https://en.osm.town/@FreemapSlovakia" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
@@ -24,8 +24,8 @@
     />
 
     <meta property="fb:app_id" content="171410630094006" />
-    <meta property="og:title" content="<%= title %>" />
 
+    <meta property="og:title" content="<%= title %>" />
     <meta
       property="og:image"
       content="<%= process.env['BASE_URL'] + '/' + require('./images/logo.jpg') %>"
@@ -34,6 +34,7 @@
     <meta property="og:image:height" content="600" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= process.env['BASE_URL'] + '/' %>" />
+    <meta property="og:description" content="<%= description %>" />
 
     <meta http-equiv="Accept-CH" content="Width" />
 
