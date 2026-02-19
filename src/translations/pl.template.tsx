@@ -781,6 +781,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VT: 'Outdoor Wektorowa',
       h: 'Parametryczne cieniowanie',
       z: 'Parametryczne cieniowanie',
+      y: 'Parametryczne cieniowanie',
     },
     type: {
       map: 'mapa',

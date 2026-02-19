@@ -93,9 +93,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
     let elev = get_elev(pos2); // TODO make lazy-memo
 
-    if sign(elev) == 0.0 {
-        return vec4(0.0, 0.0, 0.0, 0.0);
-    }
+    let is_nan = !(get_elev(pos2) < 0.0 || get_elev(pos2) > -1.0);
 
     var sum_rgb = vec3<f32>(0.0);
     var sum_alpha = 0.0;
@@ -108,18 +106,20 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
         var intensity = 0.0;
 
-        if component.method != 4u && all(normal == vec3<f32>(0.0)) {
+        if is_nan {
+            normal = vec3(0.0, 0.0, 1.0);
+        } else if component.method != 4u && all(normal == vec3<f32>(0.0)) {
             normal = get_normal(pos2, component.exaggeration);
 
-            if all(normal == vec3(0.0, 0.0, 0.0)) {
-                return vec4(0.0, 0.0, 0.0, 0.0);
+            if !(normal.x > -10.0 || normal.x < 10.0) {
+                normal = vec3(0.0, 0.0, 1.0);
             }
         }
 
         var color: vec4<f32>;
 
+        // hillshade-igor
         if component.method == 0u {
-            // Igor
             var aspect_diff = abs(normalize_angle(atan2(normal.y, normal.x)) - normalize_angle(component.azimuth - HALF_PI));
 
             if aspect_diff > PI {
@@ -133,8 +133,8 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             intensity = slope_angle / HALF_PI * 2.0 * aspect_strength;
 
             color = component.colors[0].color;
+        // hillshade-classic
         } else if component.method == 1u {
-            // Oblique
             let zenith = HALF_PI - component.altitude;
 
             let light = vec3(
@@ -146,30 +146,37 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             intensity = dot(normal, light);
 
             color = component.colors[0].color;
+        // slope-igor
         } else if component.method == 2u {
             intensity = acos(normal.z) / HALF_PI;
 
             color = component.colors[0].color;
+        // slope-classic
         } else if component.method == 3u {
             let zenith = HALF_PI - component.altitude;
 
             intensity = cos(zenith) * normal.z + sin(zenith) * length(normal.xy);
 
             color = component.colors[0].color;
+        // color-relief
         } else if component.method == 4u {
             // Relief
             intensity = 1.0;
 
             color = interpolate_color(component.colors, component.color_count, elev);
+        // aspect
         } else if component.method == 5u {
-            // Aspect
             intensity = 1.0;
 
-            let angle = atan2(normal.x, -normal.y); // TODO maybe lazy-memo; but multiple such layers are barely possible
+            if normal.z > 0.9999     {
+                color = vec4(0.0,0.0,0.0,0.0);
+            } else {
+                let angle = atan2(normal.x, -normal.y); // TODO maybe lazy-memo; but multiple such layers are barely possible
 
-            let angle_0_2pi = select(angle, angle + TAU, angle < 0.0);
+                let angle_0_2pi = select(angle, angle + TAU, angle < 0.0);
 
-            color = interpolate_color(component.colors, component.color_count, angle_0_2pi);
+                color = interpolate_color(component.colors, component.color_count, angle_0_2pi);
+            }
         }
 
         let modulated = component.contrast * (intensity - 0.5) + 0.5 + component.brightness;

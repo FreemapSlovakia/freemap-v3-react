@@ -821,6 +821,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
       h: 'Paraméteres árnyékolás',
       z: 'Paraméteres árnyékolás',
+      y: 'Paraméteres árnyékolás',
     },
 
     type: {

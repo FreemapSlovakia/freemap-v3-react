@@ -805,6 +805,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VT: 'Outdoor Vektor',
       h: 'Parametrische Schattierung',
       z: 'Parametrische Schattierung',
+      y: 'Parametrische Schattierung',
     },
 
     type: {

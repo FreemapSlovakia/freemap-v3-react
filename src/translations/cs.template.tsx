@@ -776,6 +776,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VT: 'Outdoor Vektorová',
       h: ' Parametrické stínování',
       z: ' Parametrické stínování',
+      y: ' Parametrické stínování',
     },
     customBase: 'Vlastní mapa',
     type: {

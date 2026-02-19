@@ -168,6 +168,7 @@ const messages: Messages = {
       mtb: 'Mountain bike',
       racingbike: 'Racing bike',
       motorcycle: 'Motorcycle',
+      manual: 'Manual',
     },
     development: 'in development',
     mode: {
@@ -770,6 +771,7 @@ const messages: Messages = {
       VT: 'Outdoor Vector',
       h: 'Parametric shading',
       z: 'Parametric shading',
+      y: 'Parametric shading',
       WDZ: 'Tree Composition',
       WLT: 'Forest Types',
       WGE: 'Geological',
