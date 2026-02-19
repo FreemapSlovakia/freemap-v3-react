@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react';
-import { FaFacebook, FaGithub, FaYoutube } from 'react-icons/fa';
+import { FaFacebook, FaGithub, FaMastodon, FaYoutube } from 'react-icons/fa';
 import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
 import { useMessages } from '../../l10nInjector.js';
 import { LongPressTooltip } from '../LongPressTooltip.js';
@@ -23,6 +23,17 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
 
   return (
     <div className="mx-3 d-flex gap-2 fs-5">
+      <a
+        onClick={closeMenu}
+        href="https://en.osm.town/@FreemapSlovakia"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fm-mastodonb-icon"
+        title="Mastodon"
+      >
+        <FaMastodon />
+      </a>
+
       <a
         onClick={closeMenu}
         href="https://www.facebook.com/FreemapSlovakia"
