@@ -21,7 +21,7 @@ import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { isPremium } from '../premium.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
-import { transportTypeDefs } from '../transportTypeDefs.js';
+import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
@@ -176,16 +176,18 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     mode === 'route' &&
     (isPremium(getState().auth.user) ||
       hash([points, mode, transportType]) === getState().routePlanner.hash)
-      ? segmentize(points)
-      : [{ manual: false, points }];
+      ? segmentize(points, transportType)
+      : [{ transport: transportType, points }];
 
-  const hasManual = segments.some((segment) => segment.manual);
+  const hasManual = segments.some((segment) => segment.transport === 'manual');
 
   const promise = Promise.all(
     segments
-      .filter((segment) => !segment.manual)
+      .filter((segment) => segment.transport !== 'manual')
       .map((segment) =>
         (async () => {
+          const ttDef = transportTypeDefs[segment.transport];
+
           if (ttDef.api === 'gh') {
             const response = await httpRequest({
               getState,
@@ -417,7 +419,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   // add manual segments
 
-  if (segments.some((segment) => segment.manual)) {
+  if (segments.some((segment) => segment.transport === 'manual')) {
     const tpd = alternatives[0].duration / alternatives[0].distance;
 
     let legIndex = 0;
@@ -425,7 +427,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     for (let j = 0; j < segments.length; j++) {
       const segment = segments[j];
 
-      if (!segment.manual) {
+      if (segment.transport !== 'manual') {
         legIndex += segment.points.length - 1;
 
         continue;
@@ -437,7 +439,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
       {
         const lastPt =
-          segments[j - 1]?.manual === false &&
+          segments[j - 1]?.transport !== 'manual' &&
           alternatives[0].legs[legIndex - 1]?.steps
             .at(-1)
             ?.geometry.coordinates.at(-1);
@@ -449,7 +451,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
       {
         const firstPt =
-          segments[j + 1]?.manual === false &&
+          segments[j + 1]?.transport !== 'manual' &&
           alternatives[0].legs[legIndex]?.steps[0]?.geometry.coordinates[0];
 
         if (firstPt) {
@@ -537,8 +539,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   }
 };
 
-function segmentize(points: RoutePoint[]) {
-  const segments: { manual: boolean; points: RoutePoint[] }[] = [];
+function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
+  const segments: { transport: TransportType; points: RoutePoint[] }[] = [];
 
   let prevPoint: RoutePoint | undefined;
 
@@ -549,10 +551,12 @@ function segmentize(points: RoutePoint[]) {
       continue;
     }
 
-    if (prevPoint?.manual) {
-      segments.push({ manual: true, points: [prevPoint] });
-    } else if (!(segments.at(-1)?.manual === false)) {
-      segments.push({ manual: false, points: [prevPoint] });
+    const prevTransport = prevPoint.transport ?? defaultTransport;
+
+    if (segments.length === 0) {
+      segments.push({ transport: prevTransport, points: [prevPoint] });
+    } else if (prevTransport !== segments.at(-1)?.transport) {
+      segments.push({ transport: prevTransport, points: [prevPoint] });
     }
 
     segments.at(-1)?.points.push(point);

@@ -96,9 +96,11 @@ export function RoutePlannerResult(): ReactElement {
 
   const [dragLon, setDragLon] = useState<number>();
 
-  const [dragSegment, setDragSegment] = useState<number>();
+  const dragSegment = useRef<number | undefined>(undefined);
 
-  const [dragAlt, setDragAlt] = useState<number>();
+  const dragAlt = useRef<number | undefined>(undefined);
+
+  const hoveredSegment = useRef<number | undefined>(undefined);
 
   const pickMode = useAppSelector((state) => state.routePlanner.pickMode);
 
@@ -111,6 +113,12 @@ export function RoutePlannerResult(): ReactElement {
 
   const selectedPoint = useAppSelector((state) =>
     state.main.selection?.type === 'route-point'
+      ? state.main.selection.id
+      : undefined,
+  );
+
+  const selectedSegment = useAppSelector((state) =>
+    state.main.selection?.type === 'route-segment'
       ? state.main.selection.id
       : undefined,
   );
@@ -321,12 +329,6 @@ export function RoutePlannerResult(): ReactElement {
     [alternatives, getPointDetails, points.length, activeAlternativeIndex],
   );
 
-  const bringToFront = useCallback((ele: LPolyline) => {
-    if (ele) {
-      ele.bringToFront();
-    }
-  }, []);
-
   const handlePointClick = useCallback(
     (position: number) => {
       // also prevent default
@@ -363,9 +365,11 @@ export function RoutePlannerResult(): ReactElement {
 
       setDragLon(e.latlng.lng);
 
-      setDragSegment(segment);
+      dragSegment.current = segment;
 
-      setDragAlt(alt);
+      dragAlt.current = alt;
+
+      hoveredSegment.current = segment;
     },
     [routePlannerToolActive],
   );
@@ -426,7 +430,7 @@ export function RoutePlannerResult(): ReactElement {
 
       setDragLon(undefined);
 
-      if (dragSegment === undefined) {
+      if (dragSegment.current === undefined) {
         return;
       }
 
@@ -436,31 +440,35 @@ export function RoutePlannerResult(): ReactElement {
             lat: e.target.getLatLng().lat,
             lon: e.target.getLatLng().lng,
           },
-          position: dragSegment,
+          position: dragSegment.current,
         }),
       );
     },
-    [dispatch, dragSegment],
+    [dispatch],
   );
 
   const changeAlternative = useCallback(
-    (index: number) => {
-      dispatch(routePlannerSetActiveAlternativeIndex(index));
+    (alternative: number) => {
+      dispatch(routePlannerSetActiveAlternativeIndex(alternative));
 
       if (tool !== 'route-planner') {
         dispatch(setTool('route-planner'));
       }
-
-      dispatch(selectFeature(null));
     },
     [dispatch, tool],
   );
 
   const handleFutureClick = useCallback(() => {
-    if (dragAlt !== undefined) {
-      changeAlternative(dragAlt);
+    if (hoveredSegment.current !== undefined) {
+      dispatch(
+        selectFeature({ type: 'route-segment', id: hoveredSegment.current }),
+      );
     }
-  }, [dragAlt, changeAlternative]);
+
+    if (dragAlt.current !== undefined) {
+      changeAlternative(dragAlt.current);
+    }
+  }, [changeAlternative]);
 
   const handleRouteMarkerDragEnd = useCallback(
     (position: number, event: DragEndEvent) => {
@@ -594,24 +602,34 @@ export function RoutePlannerResult(): ReactElement {
         }))
         .sort((a, b) => b.index - a.index)
         .map(({ legs, alt }) => (
-          <Fragment key={`alt-${timestamp}-${alt}`}>
+          <Fragment key={`alt-${timestamp}-${alt}-${selectedSegment}`}>
             {legs
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
               .map((routeSlice, i: number) =>
                 routeSlice.geometry.coordinates.length < 2 ? null : (
+                  // background halo
                   <Polyline
-                    key={`slice-${i}-${interactive ? 'a' : 'b'}`}
+                    key={`slice-${i}-${interactive}`}
                     interactive={interactive}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={10}
-                    color="#fff"
+                    color={
+                      selectedSegment === routeSlice.legIndex ? '#00f' : '#fff'
+                    }
                     bubblingMouseEvents={false}
                     eventHandlers={{
                       click() {
                         changeAlternative(alt);
+
+                        dispatch(
+                          selectFeature({
+                            type: 'route-segment',
+                            id: routeSlice.legIndex,
+                          }),
+                        );
                       },
                       mousemove: onlyStart
                         ? () => undefined
@@ -630,10 +648,9 @@ export function RoutePlannerResult(): ReactElement {
               )
               .map((routeSlice, i: number) =>
                 routeSlice.geometry.coordinates.length < 2 ? null : (
+                  // foreground
                   <Polyline
-                    key={`slice-${timestamp}-${alt}-${i}-${
-                      interactive ? 'a' : 'b'
-                    }`}
+                    key={`slice-${timestamp}-${alt}-${i}-${interactive}`}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={6}
@@ -668,6 +685,7 @@ export function RoutePlannerResult(): ReactElement {
       activeAlternativeIndex,
       timestamp,
       interactive,
+      selectedSegment,
       bringToFront,
       handlePolyMouseOut,
       changeAlternative,
@@ -684,6 +702,7 @@ export function RoutePlannerResult(): ReactElement {
           <Marker
             draggable={!window.fmEmbedded}
             icon={circularIcon}
+            // opacity={dragging ? 1 : 0}
             eventHandlers={{
               dragstart: handleDragStart,
               dragend: handleFutureDragEnd,
@@ -753,4 +772,8 @@ function pctSeq(step: number) {
   }
 
   return arr;
+}
+
+function bringToFront(ele: LPolyline) {
+  ele?.bringToFront();
 }

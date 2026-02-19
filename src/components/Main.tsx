@@ -68,6 +68,7 @@ import { Tools } from './Tools.js';
 import { TrackingSelection } from './TrackingSelection.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
 import { WikiLayer } from './WikiLayer.js';
+import RouteSegmentSelection from './RouteSegmentSelection.js';
 
 const objectsMenuFactory = () =>
   import(
@@ -643,6 +644,8 @@ export function Main(): ReactElement {
                 <TrackingSelection />
               ) : selectionMenu === 'route-point' ? (
                 <RoutePointSelection />
+              ) : selectionMenu === 'route-segment' ? (
+                <RouteSegmentSelection />
               ) : null}
 
               {pickingPosition && (

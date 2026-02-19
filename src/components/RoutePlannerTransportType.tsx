@@ -7,8 +7,6 @@ import { useMessages } from '../l10nInjector.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
-export default RoutePlannerTransportType;
-
 type Props = {
   onChange: (value?: TransportType) => void;
   value?: TransportType;
@@ -34,7 +32,9 @@ export function RoutePlannerTransportType({
     <Dropdown
       className="ms-1"
       id="transport-type"
-      onSelect={(transportType) => onChange(transportType as TransportType)}
+      onSelect={(transportType) =>
+        onChange((transportType || undefined) as TransportType)
+      }
     >
       <LongPressTooltip
         breakpoint="lg"

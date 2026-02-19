@@ -146,7 +146,11 @@ export const urlProcessor: Processor = {
         'points',
         (routePlanner.finishOnly ? ',' : '') +
           routePlanner.points
-            .map((point) => (point.transport ?? '') + serializePoint(point))
+            .map(
+              (point) =>
+                (point.transport ? point.transport + '/' : '') +
+                serializePoint(point),
+            )
             .join(','),
       ]);
 

@@ -61,7 +61,7 @@ import { transportTypeDefs } from '../transportTypeDefs.js';
 import { DeleteButton } from './DeleteButton.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { ToolMenu } from './ToolMenu.js';
-import RoutePlannerTransportType from './RoutePlannerTransportType.js';
+import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
 export default RoutePlannerMenu;
 
