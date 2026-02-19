@@ -478,7 +478,7 @@ export function RoutePlannerResult(): ReactElement {
           point: {
             lat,
             lon,
-            manual: points[position].manual,
+            transport: points[position].transport,
           },
         }),
       );
@@ -505,7 +505,7 @@ export function RoutePlannerResult(): ReactElement {
                 : waypoints[i]?.waypoint_index
           }
           color={
-            mode === 'route' && point.manual
+            mode === 'route' && point.transport === 'manual'
               ? selectedPoint === i
                 ? '#ffb14aff'
                 : '#af6301ff'

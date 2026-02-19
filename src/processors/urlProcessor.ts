@@ -131,7 +131,7 @@ export const urlProcessor: Processor = {
 
     if (routePlanner.points.length) {
       // for sharing "premium" route
-      if (routePlanner.points.some((point) => point.manual)) {
+      if (routePlanner.points.some((point) => point.transport)) {
         historyParts.push([
           'route-params-hash',
           hash([
@@ -146,7 +146,7 @@ export const urlProcessor: Processor = {
         'points',
         (routePlanner.finishOnly ? ',' : '') +
           routePlanner.points
-            .map((point) => (point.manual ? 'm' : '') + serializePoint(point))
+            .map((point) => (point.transport ?? '') + serializePoint(point))
             .join(','),
       ]);
 

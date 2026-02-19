@@ -221,7 +221,7 @@ export function handleLocationChange(store: MyStore): void {
         points.length !== latLons.length ||
         points.some(
           (point, i) =>
-            (point.manual ? 'm' : '') + serializePoint(point) !==
+            (point.transport ?? '') + serializePoint(point) !==
             (latLons[i]?.manual ? 'm' : '') +
               serializePoint(latLons[i] as unknown as RoutePoint),
         ) ||
