@@ -177,6 +177,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       mtb: 'Mountain bike',
       racingbike: 'Bici da corsa',
       motorcycle: 'Moto',
+      manual: 'Linea retta',
     },
     development: 'in sviluppo',
     mode: {
@@ -223,7 +224,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
     fetchingError: ({ err }) =>
       addError(messages, 'Error finding the route:', err),
-    manual: 'Manuale',
     manualTooltip: 'Collega il segmento successivo con una linea retta',
   },
 

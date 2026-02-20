@@ -8,24 +8,24 @@ import { useMessages } from '../l10nInjector.js';
 import { Selection } from './Selection.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
-export default RouteSegmentSelection;
+export default RouteLegSelection;
 
-export function RouteSegmentSelection(): ReactElement | undefined | false {
+export function RouteLegSelection(): ReactElement | undefined | false {
   const id = useAppSelector((state) =>
-    state.main.selection?.type === 'route-segment'
+    state.main.selection?.type === 'route-leg'
       ? state.main.selection.id
       : undefined,
   );
 
   const point = useAppSelector((state) =>
-    state.main.selection?.type === 'route-segment'
+    state.main.selection?.type === 'route-leg'
       ? state.routePlanner.points[state.main.selection.id]
       : undefined,
   );
 
   const canBeManual = useAppSelector(
     (state) =>
-      state.main.selection?.type === 'route-segment' &&
+      state.main.selection?.type === 'route-leg' &&
       state.routePlanner.mode === 'route',
   );
 
@@ -44,7 +44,7 @@ export function RouteSegmentSelection(): ReactElement | undefined | false {
             <FaMapSigns /> <FaMapMarkerAlt />
           </>
         }
-        label={m?.routePlanner.point.point}
+        label={m?.routePlanner.leg}
       >
         {canBeManual && (
           <RoutePlannerTransportType

@@ -145,7 +145,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   routePlanner: {
-    manual: 'Manuálne',
+    default: 'Predvolený',
+    leg: 'Úsek trasy',
     manualTooltip: 'Prepoj nasledujúci segment priamou čiarou',
     ghParams: {
       tripParameters: 'Parametre výletu',
@@ -176,6 +177,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       mtb: 'Horský bicykel',
       racingbike: 'Cestný bicykel',
       motorcycle: 'Motocykel',
+      manual: 'Priama čiara',
     },
     development: 'vo vývoji',
     mode: {

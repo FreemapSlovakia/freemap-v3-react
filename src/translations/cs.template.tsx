@@ -171,6 +171,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       mtb: 'Horské kolo',
       racingbike: 'Silniční kolo',
       motorcycle: 'Motocykl',
+      manual: 'Přímá čára',
     },
     development: 've vývoji',
     mode: {
@@ -217,7 +218,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při hledání trasy', err),
-    manual: 'Manuálně',
     manualTooltip: 'Propojit následující segment přímou čarou',
   },
 

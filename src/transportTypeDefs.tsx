@@ -83,6 +83,11 @@ type TransportTypeDef = {
 );
 
 export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
+  manual: {
+    msgKey: 'manual',
+    api: 'manual',
+    icon: <FaPen />,
+  },
   'car-osrm': {
     msgKey: 'car',
     api: 'osrm',
@@ -142,10 +147,5 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaHiking />,
     profile: 'hike',
-  },
-  manual: {
-    msgKey: 'manual',
-    api: 'manual',
-    icon: <FaPen />,
   },
 };

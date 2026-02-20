@@ -169,7 +169,7 @@ export interface RoutePointSelection {
 }
 
 export interface RouteSegmentSelection {
-  type: 'route-segment';
+  type: 'route-leg';
   id: number;
 }
 

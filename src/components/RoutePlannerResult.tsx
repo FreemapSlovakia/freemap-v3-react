@@ -35,6 +35,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetPoint,
   routePlannerSetStart,
+  StepMode,
 } from '../actions/routePlannerActions.js';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { RichMarker } from '../components/RichMarker.js';
@@ -118,7 +119,7 @@ export function RoutePlannerResult(): ReactElement {
   );
 
   const selectedSegment = useAppSelector((state) =>
-    state.main.selection?.type === 'route-segment'
+    state.main.selection?.type === 'route-leg'
       ? state.main.selection.id
       : undefined,
   );
@@ -461,7 +462,7 @@ export function RoutePlannerResult(): ReactElement {
   const handleFutureClick = useCallback(() => {
     if (hoveredSegment.current !== undefined) {
       dispatch(
-        selectFeature({ type: 'route-segment', id: hoveredSegment.current }),
+        selectFeature({ type: 'route-leg', id: hoveredSegment.current }),
       );
     }
 
@@ -513,21 +514,17 @@ export function RoutePlannerResult(): ReactElement {
                 : waypoints[i]?.waypoint_index
           }
           color={
-            mode === 'route' && point.transport === 'manual'
+            i === 0 && !finishOnly
               ? selectedPoint === i
-                ? '#ffb14aff'
-                : '#af6301ff'
-              : i === 0 && !finishOnly
+                ? '#a2daa2'
+                : '#409a40'
+              : mode !== 'roundtrip' && i === points.length - 1
                 ? selectedPoint === i
-                  ? '#a2daa2'
-                  : '#409a40'
-                : mode !== 'roundtrip' && i === points.length - 1
-                  ? selectedPoint === i
-                    ? '#feaca9'
-                    : '#d9534f'
-                  : selectedPoint === i
-                    ? '#9fb7ff'
-                    : '#3e64d5'
+                  ? '#feaca9'
+                  : '#d9534f'
+                : selectedPoint === i
+                  ? '#9fb7ff'
+                  : '#3e64d5'
           }
           faIcon={
             i === 0 && !finishOnly ? (
@@ -617,7 +614,9 @@ export function RoutePlannerResult(): ReactElement {
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={10}
                     color={
-                      selectedSegment === routeSlice.legIndex ? '#00f' : '#fff'
+                      selectedSegment === routeSlice.legIndex
+                        ? 'rgb(170, 170, 249)'
+                        : '#fff'
                     }
                     bubblingMouseEvents={false}
                     eventHandlers={{
@@ -626,7 +625,7 @@ export function RoutePlannerResult(): ReactElement {
 
                         dispatch(
                           selectFeature({
-                            type: 'route-segment',
+                            type: 'route-leg',
                             id: routeSlice.legIndex,
                           }),
                         );
@@ -658,11 +657,18 @@ export function RoutePlannerResult(): ReactElement {
                       color:
                         alt !== activeAlternativeIndex
                           ? '#868e96'
-                          : routeSlice.mode === 'manual'
-                            ? '#af6301ff'
-                            : routeSlice.legIndex % 2
-                              ? 'hsl(211, 100%, 66%)'
-                              : 'hsl(211, 100%, 50%)',
+                          : (
+                              {
+                                manual: '#888',
+                                cycling: '#00d000',
+                                driving: '#8080ff',
+                                walking: '#ff8000',
+                                'pushing bike': '#008000',
+                                ferry: '#0000ff',
+                                foot: '#af8000',
+                                train: '#000',
+                              } satisfies Record<StepMode, string>
+                            )[routeSlice.mode],
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={

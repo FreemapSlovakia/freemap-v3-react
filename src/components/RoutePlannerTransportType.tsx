@@ -1,6 +1,6 @@
 import { Fragment, ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaMoneyBill } from 'react-icons/fa';
+import { FaEquals, FaMoneyBill } from 'react-icons/fa';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
@@ -24,7 +24,7 @@ export function RoutePlannerTransportType({
 
   const ttLabel = activeTTDef
     ? m?.routePlanner.transportType[activeTTDef.msgKey]
-    : 'Default'; // TODO translate
+    : m?.routePlanner.default;
 
   const sc = useScrollClasses('vertical');
 
@@ -41,10 +41,16 @@ export function RoutePlannerTransportType({
         label={
           activeTTDef ? (
             <>
-              {ttLabel ?? '…'}{' '}
-              <small className="text-dark">
-                {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
-              </small>
+              {ttLabel ?? '…'}
+
+              {activeTTDef.api !== 'manual' && (
+                <>
+                  {' '}
+                  <small className="text-dark">
+                    {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
+                  </small>
+                </>
+              )}
             </>
           ) : (
             (ttLabel ?? '…')
@@ -53,7 +59,7 @@ export function RoutePlannerTransportType({
       >
         {({ label, labelClassName, props }) => (
           <Dropdown.Toggle variant="secondary" {...props}>
-            {activeTTDef?.icon ?? ''}{' '}
+            {!value ? <FaEquals /> : (activeTTDef?.icon ?? '')}{' '}
             {value && ['car', 'car-toll', 'bikesharing'].includes(value) && (
               <FaMoneyBill />
             )}
@@ -71,15 +77,17 @@ export function RoutePlannerTransportType({
 
           {withDefault && (
             <Dropdown.Item as="button" eventKey="" active={!value}>
-              Default
+              <FaEquals /> {m?.routePlanner.default}
             </Dropdown.Item>
           )}
 
-          {(['gh', 'osrm'] as const).map((api) => (
+          {(['manual', 'gh', 'osrm'] as const).map((api) => (
             <Fragment key={api}>
-              <Dropdown.Header>
-                {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
-              </Dropdown.Header>
+              {api !== 'manual' && (
+                <Dropdown.Header>
+                  {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
+                </Dropdown.Header>
+              )}
 
               {Object.entries(transportTypeDefs)
                 .filter(([, def]) => !def.hidden && def.api === api)

@@ -208,7 +208,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         state.tool !== 'track-viewer' &&
         (state.tool !== 'route-planner' ||
           (action.payload?.type !== 'route-point' &&
-            action.payload?.type !== 'route-segment')) &&
+            action.payload?.type !== 'route-leg')) &&
         action.payload !== null
       ) {
         state.tool = null;
