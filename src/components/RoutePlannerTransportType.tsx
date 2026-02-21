@@ -101,21 +101,29 @@ export function RoutePlannerTransportType({
                     key={type}
                     title={m?.routePlanner.transportType[key]}
                     active={value === type}
-                    disabled
+                    disabled={withDefault && !!becomePremium}
                   >
                     {icon}{' '}
                     {['car', 'car-toll', 'bikesharing'].includes(type) && (
                       <FaMoneyBill />
                     )}{' '}
-                    {m?.routePlanner.transportType[key] ?? '…'}{' '}
-                    <FaGem
-                      style={{ pointerEvents: 'initial' }}
-                      className={
-                        'ms-1 text-' + (becomePremium ? 'warning' : 'success')
-                      }
-                      title={becomePremium ? m?.premium.premiumOnly : undefined}
-                      onClick={becomePremium}
-                    />
+                    {m?.routePlanner.transportType[key] ?? '…'}
+                    {withDefault && (
+                      <>
+                        {' '}
+                        <FaGem
+                          style={{ pointerEvents: 'initial' }}
+                          className={
+                            'ms-1 text-' +
+                            (becomePremium ? 'warning' : 'success')
+                          }
+                          title={
+                            becomePremium ? m?.premium.premiumOnly : undefined
+                          }
+                          onClick={becomePremium}
+                        />
+                      </>
+                    )}
                   </Dropdown.Item>
                 ))}
             </Fragment>
