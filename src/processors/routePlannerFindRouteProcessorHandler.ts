@@ -281,29 +281,31 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         }
       }
 
-      const dist = distance(coordinates[0], coordinates[1], {
-        units: 'meters',
-      });
+      for (let i = 0; i < coordinates.length - 1; i++) {
+        const dist = distance(coordinates[i], coordinates[i + 1], {
+          units: 'meters',
+        });
 
-      const duration = tpd * dist;
+        const duration = tpd * dist;
 
-      legs.push({
-        distance: dist,
-        duration,
+        legs.push({
+          distance: dist,
+          duration,
 
-        steps: [
-          {
-            distance: dist,
-            duration,
-            maneuver: { type: 'continue', modifier: 'straight' },
-            mode: errored[i] ? 'error' : 'manual',
-            name: '',
-            geometry: {
-              coordinates,
+          steps: [
+            {
+              distance: dist,
+              duration,
+              maneuver: { type: 'continue', modifier: 'straight' },
+              mode: errored[i] ? 'error' : 'manual',
+              name: '',
+              geometry: {
+                coordinates: coordinates.slice(i, i + 2),
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
+      }
     }
 
     alternatives = [
@@ -493,10 +495,7 @@ function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
 
     if (segments.length === 0) {
       segments.push({ transport: prevTransport, points: [prevPoint] });
-    } else if (
-      prevTransport === 'manual' ||
-      prevTransport !== segments.at(-1)?.transport
-    ) {
+    } else if (prevTransport !== segments.at(-1)?.transport) {
       segments.push({ transport: prevTransport, points: [prevPoint] });
     }
 
