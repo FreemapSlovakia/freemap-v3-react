@@ -192,23 +192,36 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     throw err;
   }
 
-  let alternativeSets: Alternative[][] = [];
+  const alternativeSets: Alternative[][] = [];
+
+  const errored: boolean[] = [];
 
   let waypoints: Waypoint[] = [];
 
   for (const data of datas) {
     if (data.status == 'rejected') {
-      // TODO toast
+      dispatch(
+        toastsAdd({
+          id: 'routePlanner',
+          messageKey: 'routePlanner.fetchingError',
+          messageParams: { err: data.reason },
+          style: 'danger',
+          timeout: 5000,
+        }),
+      );
 
       alternativeSets.push([]);
+
+      errored.push(true);
 
       continue;
     }
 
     const value = data.value;
 
-    if (!value) {
+    if (typeof value == 'boolean') {
       alternativeSets.push([]);
+      errored.push(!value);
     } else if ('code' in value) {
       // OSRM
       if (value.waypoints) {
@@ -216,9 +229,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }
 
       alternativeSets.push(value.routes ?? value.trips ?? []);
+      errored.push(false);
     } else {
       // GH
       alternativeSets.push(gh(value));
+      errored.push(false);
     }
   }
 
@@ -281,7 +296,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             distance: dist,
             duration,
             maneuver: { type: 'continue', modifier: 'straight' },
-            mode: 'manual', // TODO or 'error'
+            mode: errored[i] ? 'error' : 'manual',
             name: '',
             geometry: {
               coordinates,
@@ -406,13 +421,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           );
         }
 
-        return;
+        return false;
       }
 
       return assert<GraphhopperResult>(data);
     } else if (ttDef.api === 'osrm') {
       if (segment.points.length < 2) {
-        return;
+        throw new Error('too few points');
       }
 
       const allPoints = segment.points
@@ -447,10 +462,12 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         dispatch(clearResultAction);
         dispatch(rnfToastAction);
 
-        return;
+        return false;
       }
 
       return result;
+    } else {
+      return true;
     }
   }
 };

@@ -19,7 +19,8 @@ export type StepMode =
   | 'ferry'
   | 'train'
   | 'pushing bike'
-  | 'manual';
+  | 'manual'
+  | 'error';
 
 export type ManeuerModifier =
   | 'uturn'

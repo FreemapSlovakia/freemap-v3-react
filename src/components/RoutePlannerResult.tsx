@@ -667,14 +667,19 @@ export function RoutePlannerResult(): ReactElement {
                                 ferry: '#0000ff',
                                 foot: '#af8000',
                                 train: '#000',
+                                error: '#f00',
                               } satisfies Record<StepMode, string>
                             )[routeSlice.mode],
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={
-                      ['manual', 'foot', 'pushing bike', 'ferry'].includes(
-                        routeSlice.mode,
-                      )
+                      [
+                        'manual',
+                        'foot',
+                        'pushing bike',
+                        'ferry',
+                        'error',
+                      ].includes(routeSlice.mode)
                         ? '0, 10'
                         : undefined
                     }
