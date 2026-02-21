@@ -3,7 +3,6 @@ import { FaMapMarkerAlt, FaMapSigns } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { routePlannerSetPoint } from '../actions/routePlannerActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
-import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useMessages } from '../l10nInjector.js';
 import { Selection } from './Selection.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
@@ -31,8 +30,6 @@ export function RouteLegSelection(): ReactElement | undefined | false {
 
   const m = useMessages();
 
-  const becomePremium = useBecomePremium();
-
   const dispatch = useDispatch();
 
   return (
@@ -59,34 +56,6 @@ export function RouteLegSelection(): ReactElement | undefined | false {
               );
             }}
           />
-
-          // <Form.Check
-          //   className="ms-2 align-self-center"
-          //   checked={point.manual}
-          //   label={
-          //     <>
-          //       <span title={m?.routePlanner.manualTooltip}>
-          //         {m?.routePlanner.manual}
-          //       </span>
-
-          //       <FaGem
-          //         className="ms-1 text-warning"
-          //         title={becomePremium ? m?.premium.premiumOnly : undefined}
-          //         onClick={becomePremium}
-          //       />
-          //     </>
-          //   }
-          //   id="manual"
-          //   disabled={!!becomePremium}
-          //   onChange={(e) =>
-          //     dispatch(
-          //       routePlannerSetPoint({
-          //         point: { ...point, manual: e.currentTarget.checked },
-          //         position: id,
-          //       }),
-          //     )
-          //   }
-          // />
         )}
       </Selection>
     )

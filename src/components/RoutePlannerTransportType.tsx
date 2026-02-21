@@ -1,11 +1,12 @@
 import { Fragment, ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaEquals, FaMoneyBill } from 'react-icons/fa';
+import { FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { useBecomePremium } from '../hooks/useBecomePremium.js';
 
 type Props = {
   onChange: (value?: TransportType) => void;
@@ -25,6 +26,8 @@ export function RoutePlannerTransportType({
   const ttLabel = activeTTDef
     ? m?.routePlanner.transportType[activeTTDef.msgKey]
     : m?.routePlanner.default;
+
+  const becomePremium = useBecomePremium();
 
   const sc = useScrollClasses('vertical');
 
@@ -98,12 +101,21 @@ export function RoutePlannerTransportType({
                     key={type}
                     title={m?.routePlanner.transportType[key]}
                     active={value === type}
+                    disabled
                   >
                     {icon}{' '}
                     {['car', 'car-toll', 'bikesharing'].includes(type) && (
                       <FaMoneyBill />
                     )}{' '}
-                    {m?.routePlanner.transportType[key] ?? '…'}
+                    {m?.routePlanner.transportType[key] ?? '…'}{' '}
+                    <FaGem
+                      style={{ pointerEvents: 'initial' }}
+                      className={
+                        'ms-1 text-' + (becomePremium ? 'warning' : 'success')
+                      }
+                      title={becomePremium ? m?.premium.premiumOnly : undefined}
+                      onClick={becomePremium}
+                    />
                   </Dropdown.Item>
                 ))}
             </Fragment>
