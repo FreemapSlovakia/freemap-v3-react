@@ -284,8 +284,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         }
       }
 
-      for (let i = 0; i < coordinates.length - 1; i++) {
-        const dist = distance(coordinates[i], coordinates[i + 1], {
+      for (let j = 0; j < coordinates.length - 1; j++) {
+        const dist = distance(coordinates[j], coordinates[j + 1], {
           units: 'meters',
         });
 
@@ -303,7 +303,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
               mode: errored[i] ? 'error' : 'manual',
               name: '',
               geometry: {
-                coordinates: coordinates.slice(i, i + 2),
+                coordinates: coordinates.slice(j, j + 2),
               },
             },
           ],

@@ -26,7 +26,7 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { selectFeature, setTool } from '../actions/mainActions.js';
+import { selectFeature } from '../actions/mainActions.js';
 import {
   routePlannerAddPoint,
   routePlannerSetActiveAlternativeIndex,
@@ -93,11 +93,6 @@ export function RoutePlannerResult(): ReactElement {
 
   const tool = useAppSelector((state) => state.main.tool);
 
-  const routePlannerToolActive = tool === 'route-planner';
-
-  const interactive =
-    useAppSelector(selectingModeSelector) || routePlannerToolActive;
-
   const selectedPoint = useAppSelector((state) =>
     state.main.selection?.type === 'route-point'
       ? state.main.selection.id
@@ -109,6 +104,14 @@ export function RoutePlannerResult(): ReactElement {
       ? state.main.selection.id
       : undefined,
   );
+
+  const routePlannerToolActive =
+    tool === 'route-planner' ||
+    selectedPoint !== undefined ||
+    selectedSegment !== undefined;
+
+  const interactive =
+    useAppSelector(selectingModeSelector) || routePlannerToolActive;
 
   const onlyStart =
     transportTypeDefs[transportType]?.api === 'gh' && mode !== 'route';
@@ -135,8 +138,6 @@ export function RoutePlannerResult(): ReactElement {
               lon: latlng.lng,
             }),
           );
-        } else {
-          dispatch(setTool(null));
         }
       },
       [pickMode, dispatch, tool, dragging, onlyStart],
@@ -332,12 +333,8 @@ export function RoutePlannerResult(): ReactElement {
   const changeAlternative = useCallback(
     (alternative: number) => {
       dispatch(routePlannerSetActiveAlternativeIndex(alternative));
-
-      if (tool !== 'route-planner') {
-        dispatch(setTool('route-planner'));
-      }
     },
-    [dispatch, tool],
+    [dispatch],
   );
 
   const handleRouteMarkerDragEnd = useCallback(
@@ -400,7 +397,7 @@ export function RoutePlannerResult(): ReactElement {
 
       dragSegment.current = undefined;
 
-      if (!moved || !segment) {
+      if (!moved || segment === undefined) {
         return;
       }
 
@@ -424,7 +421,10 @@ export function RoutePlannerResult(): ReactElement {
     map.addEventListener('mouseup', handleMouseUp);
 
     const handleMouseMove = (e: LeafletMouseEvent) => {
-      if (!dragSegment.current || !routePlannerToolActiveRef.current) {
+      if (
+        dragSegment.current === undefined ||
+        !routePlannerToolActiveRef.current
+      ) {
         return;
       }
 
@@ -450,7 +450,7 @@ export function RoutePlannerResult(): ReactElement {
         <RichMarker
           key={`pt-${i}-${routePlannerToolActive}-${interactive}`}
           position={{ lat: point.lat, lng: point.lon }}
-          interactive={interactive || selectedPoint === i}
+          interactive={window.fmEmbedded || interactive || selectedPoint === i}
           draggable={
             (routePlannerToolActive || selectedPoint === i) &&
             !window.fmEmbedded
@@ -548,7 +548,9 @@ export function RoutePlannerResult(): ReactElement {
         }))
         .sort((a, b) => b.index - a.index)
         .map(({ legs, alt }) => (
-          <Fragment key={`alt-${timestamp}-${alt}-${selectedSegment}`}>
+          <Fragment
+            key={`alt-${timestamp}--${activeAlternativeIndex}-${alt}-${selectedSegment}`}
+          >
             {legs
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
@@ -563,7 +565,8 @@ export function RoutePlannerResult(): ReactElement {
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={10}
                     color={
-                      selectedSegment === routeSlice.legIndex
+                      selectedSegment === routeSlice.legIndex &&
+                      alt === activeAlternativeIndex
                         ? '#156efd'
                         : '#fff'
                     }
@@ -581,7 +584,7 @@ export function RoutePlannerResult(): ReactElement {
                       },
 
                       mousedown() {
-                        if (onlyStart || !routePlannerToolActive) {
+                        if (onlyStart || !routePlannerToolActiveRef.current) {
                           return;
                         }
 
@@ -647,6 +650,7 @@ export function RoutePlannerResult(): ReactElement {
       selectedSegment,
       bringToFront,
       changeAlternative,
+      map,
     ],
   );
 
