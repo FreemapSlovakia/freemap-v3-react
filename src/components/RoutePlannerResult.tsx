@@ -3,9 +3,8 @@ import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
 import { Feature, Point } from 'geojson';
 import {
-  divIcon,
   DragEndEvent,
-  LeafletEvent,
+  LatLng,
   LeafletMouseEvent,
   Polyline as LPolyline,
 } from 'leaflet';
@@ -22,7 +21,6 @@ import { FaPlay, FaStop } from 'react-icons/fa';
 import {
   CircleMarker,
   GeoJSON,
-  Marker,
   Polyline,
   Tooltip,
   useMapEvent,
@@ -39,18 +37,12 @@ import {
 } from '../actions/routePlannerActions.js';
 import { ElevationChartActivePoint } from '../components/ElevationChartActivePoint.js';
 import { RichMarker } from '../components/RichMarker.js';
-import { colors } from '../constants.js';
 import { formatDistance } from '../distanceFormatter.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { selectingModeSelector } from '../selectors/mainSelectors.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
-
-const circularIcon = divIcon({
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
-});
+import { useMap } from '../hooks/useMap.js';
 
 export function RoutePlannerResult(): ReactElement {
   const m = useMessages();
@@ -89,19 +81,13 @@ export function RoutePlannerResult(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const tRef = useRef<number>(undefined);
+  const [dragging, setDragging] = useState(false);
 
-  const draggingRef = useRef<boolean>(undefined);
+  const draggingRef = useRef(false);
 
-  const [dragLat, setDragLat] = useState<number>();
-
-  const [dragLon, setDragLon] = useState<number>();
+  const [dragLatLng, setDragLatLng] = useState<LatLng>();
 
   const dragSegment = useRef<number | undefined>(undefined);
-
-  const dragAlt = useRef<number | undefined>(undefined);
-
-  const hoveredSegment = useRef<number | undefined>(undefined);
 
   const pickMode = useAppSelector((state) => state.routePlanner.pickMode);
 
@@ -123,8 +109,6 @@ export function RoutePlannerResult(): ReactElement {
       ? state.main.selection.id
       : undefined,
   );
-
-  const [dragging, setDragging] = useState(false);
 
   const onlyStart =
     transportTypeDefs[transportType]?.api === 'gh' && mode !== 'route';
@@ -157,17 +141,6 @@ export function RoutePlannerResult(): ReactElement {
       },
       [pickMode, dispatch, tool, dragging, onlyStart],
     ),
-  );
-
-  useEffect(
-    () => () => {
-      const tim = tRef.current;
-
-      if (typeof tim === 'number') {
-        clearTimeout(tim);
-      }
-    },
-    [],
   );
 
   const getPointDetails2 = useCallback(
@@ -350,103 +323,11 @@ export function RoutePlannerResult(): ReactElement {
     setPointHovering(-1);
   }, []);
 
-  const handlePolyMouseMove = useCallback(
-    (e: LeafletMouseEvent, segment: number, alt: number) => {
-      if (!routePlannerToolActive || draggingRef.current) {
-        return;
-      }
-
-      if (tRef.current) {
-        clearTimeout(tRef.current);
-
-        tRef.current = undefined;
-      }
-
-      setDragLat(e.latlng.lat);
-
-      setDragLon(e.latlng.lng);
-
-      dragSegment.current = segment;
-
-      dragAlt.current = alt;
-
-      hoveredSegment.current = segment;
-    },
-    [routePlannerToolActive],
-  );
-
-  const resetOnTimeout = useCallback(() => {
-    if (tRef.current) {
-      clearTimeout(tRef.current);
-    }
-
-    tRef.current = window.setTimeout(() => {
-      setDragLat(undefined);
-
-      setDragLon(undefined);
-    }, 200);
-  }, []);
-
-  const handlePolyMouseOut = useCallback(() => {
-    if (!draggingRef.current) {
-      resetOnTimeout();
-    }
-  }, [resetOnTimeout]);
-
-  const handleFutureMouseOver = useCallback(() => {
-    if (!draggingRef.current && tRef.current) {
-      clearTimeout(tRef.current);
-
-      tRef.current = undefined;
-    }
-  }, []);
-
-  const handleFutureMouseOut = useCallback(() => {
-    if (!draggingRef.current) {
-      resetOnTimeout();
-    }
-  }, [resetOnTimeout]);
-
   const handleDragStart = useCallback(() => {
-    if (tRef.current) {
-      clearTimeout(tRef.current);
-
-      tRef.current = undefined;
-    }
-
     draggingRef.current = true;
 
     setDragging(true);
   }, []);
-
-  const handleFutureDragEnd = useCallback(
-    (e: LeafletEvent) => {
-      draggingRef.current = false;
-
-      setTimeout(() => {
-        setDragging(false);
-      });
-
-      setDragLat(undefined);
-
-      setDragLon(undefined);
-
-      if (dragSegment.current === undefined) {
-        return;
-      }
-
-      dispatch(
-        routePlannerAddPoint({
-          point: {
-            lat: e.target.getLatLng().lat,
-            lon: e.target.getLatLng().lng,
-          },
-          position: dragSegment.current,
-        }),
-      );
-    },
-    [dispatch],
-  );
 
   const changeAlternative = useCallback(
     (alternative: number) => {
@@ -458,18 +339,6 @@ export function RoutePlannerResult(): ReactElement {
     },
     [dispatch, tool],
   );
-
-  const handleFutureClick = useCallback(() => {
-    if (hoveredSegment.current !== undefined) {
-      dispatch(
-        selectFeature({ type: 'route-leg', id: hoveredSegment.current }),
-      );
-    }
-
-    if (dragAlt.current !== undefined) {
-      changeAlternative(dragAlt.current);
-    }
-  }, [changeAlternative]);
 
   const handleRouteMarkerDragEnd = useCallback(
     (position: number, event: DragEndEvent) => {
@@ -494,6 +363,86 @@ export function RoutePlannerResult(): ReactElement {
     },
     [dispatch, points],
   );
+
+  const map = useMap();
+
+  const routePlannerToolActiveRef = useRef(routePlannerToolActive);
+
+  useEffect(() => {
+    routePlannerToolActiveRef.current = routePlannerToolActive;
+  }, [routePlannerToolActive]);
+
+  const mouseUpTsRef = useRef(0);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    let moved = false;
+
+    // this is to prevent map-click on drag-end
+    const mapContainerClickHandler = (ev: PointerEvent): void => {
+      if (Date.now() < mouseUpTsRef.current + 100) {
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+      }
+    };
+
+    map
+      .getContainer()
+      .addEventListener('click', mapContainerClickHandler, true);
+
+    const handleMouseUp = (e: LeafletMouseEvent) => {
+      map.dragging.enable();
+
+      let segment = dragSegment.current;
+
+      dragSegment.current = undefined;
+
+      if (!moved || !segment) {
+        return;
+      }
+
+      mouseUpTsRef.current = Date.now();
+
+      dispatch(
+        routePlannerAddPoint({
+          point: {
+            lat: e.latlng.lat,
+            lon: e.latlng.lng,
+          },
+          position: segment,
+        }),
+      );
+
+      setDragLatLng(undefined);
+
+      moved = false;
+    };
+
+    map.addEventListener('mouseup', handleMouseUp);
+
+    const handleMouseMove = (e: LeafletMouseEvent) => {
+      if (!dragSegment.current || !routePlannerToolActiveRef.current) {
+        return;
+      }
+
+      moved = true;
+
+      setDragLatLng(e.latlng);
+    };
+
+    map.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      map.removeEventListener('mouseup', handleMouseUp);
+      map.removeEventListener('mousemove', handleMouseMove);
+      map
+        .getContainer()
+        .removeEventListener('click', mapContainerClickHandler, true);
+    };
+  }, [map]);
 
   const pointElements = useMemo(
     () =>
@@ -615,7 +564,7 @@ export function RoutePlannerResult(): ReactElement {
                     weight={10}
                     color={
                       selectedSegment === routeSlice.legIndex
-                        ? 'rgb(170, 170, 249)'
+                        ? '#156efd'
                         : '#fff'
                     }
                     bubblingMouseEvents={false}
@@ -630,12 +579,15 @@ export function RoutePlannerResult(): ReactElement {
                           }),
                         );
                       },
-                      mousemove: onlyStart
-                        ? () => undefined
-                        : (e: LeafletMouseEvent) =>
-                            handlePolyMouseMove(e, routeSlice.legIndex, alt),
 
-                      mouseout: handlePolyMouseOut,
+                      mousedown() {
+                        if (onlyStart || !routePlannerToolActive) {
+                          return;
+                        }
+
+                        map?.dragging.disable();
+                        dragSegment.current = routeSlice.legIndex;
+                      },
                     }}
                   />
                 ),
@@ -659,13 +611,13 @@ export function RoutePlannerResult(): ReactElement {
                           ? '#868e96'
                           : (
                               {
-                                manual: '#888',
-                                cycling: '#00d000',
-                                driving: '#8080ff',
-                                walking: '#ff8000',
-                                'pushing bike': '#008000',
-                                ferry: '#0000ff',
-                                foot: '#af8000',
+                                manual: '#868e96',
+                                cycling: '#968dfd',
+                                driving: '#25a6fd',
+                                walking: '#1db2c0',
+                                'pushing bike': '#1db2c0',
+                                foot: '#1db2c0',
+                                ferry: '#3060ff',
                                 train: '#000',
                                 error: '#f00',
                               } satisfies Record<StepMode, string>
@@ -673,13 +625,9 @@ export function RoutePlannerResult(): ReactElement {
                     }}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={
-                      [
-                        'manual',
-                        'foot',
-                        'pushing bike',
-                        'ferry',
-                        'error',
-                      ].includes(routeSlice.mode)
+                      ['manual', 'pushing bike', 'ferry', 'error'].includes(
+                        routeSlice.mode,
+                      )
                         ? '0, 10'
                         : undefined
                     }
@@ -698,32 +646,20 @@ export function RoutePlannerResult(): ReactElement {
       interactive,
       selectedSegment,
       bringToFront,
-      handlePolyMouseOut,
       changeAlternative,
-      handlePolyMouseMove,
     ],
   );
 
   return (
     <>
-      {!window.fmEmbedded &&
-        routePlannerToolActive &&
-        dragLat !== undefined &&
-        dragLon !== undefined && (
-          <Marker
-            draggable={!window.fmEmbedded}
-            icon={circularIcon}
-            // opacity={dragging ? 1 : 0}
-            eventHandlers={{
-              dragstart: handleDragStart,
-              dragend: handleFutureDragEnd,
-              mouseover: handleFutureMouseOver,
-              mouseout: handleFutureMouseOut,
-              click: handleFutureClick,
-            }}
-            position={{ lat: dragLat, lng: dragLon }}
-          />
-        )}
+      {!window.fmEmbedded && routePlannerToolActive && dragLatLng && (
+        <RichMarker
+          interactive={false}
+          color="#156efd"
+          opacity={0.5}
+          position={dragLatLng}
+        />
+      )}
 
       {pointElements}
 

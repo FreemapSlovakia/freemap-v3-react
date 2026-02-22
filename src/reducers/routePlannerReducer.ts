@@ -240,7 +240,7 @@ export const routePlannerReducer = createReducer(
           state.points[i - 1].transport = state.points[i].transport;
         }
 
-        delete state.points[state.points.length - 1].transport;
+        delete state.points.at(-1)?.transport;
       })
       .addCase(
         routePlannerAddPoint,

@@ -3,7 +3,7 @@ import distance from '@turf/distance';
 import { Feature, LineString, Polygon } from 'geojson';
 import { hash } from 'ohash';
 import { assert } from 'typia';
-import { clearMapFeatures, setTool } from '../actions/mainActions.js';
+import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   Alternative,
   Leg,
@@ -14,6 +14,7 @@ import {
   routePlannerSetStart,
   RoutePoint,
   Step,
+  StepMode,
   Waypoint,
 } from '../actions/routePlannerActions.js';
 import { ToastAction, toastsAdd } from '../actions/toastsActions.js';
@@ -24,7 +25,7 @@ import { objectToURLSearchParams } from '../stringUtils.js';
 import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';
 
-const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
+const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -198,7 +199,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   let waypoints: Waypoint[] = [];
 
-  for (const data of datas) {
+  for (let i = 0; i < datas.length; i++) {
+    const data = datas[i];
+
     if (data.status == 'rejected') {
       dispatch(
         toastsAdd({
@@ -232,7 +235,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       errored.push(false);
     } else {
       // GH
-      alternativeSets.push(gh(value));
+      alternativeSets.push(fromGraphhopper(value, segments[i].transport));
       errored.push(false);
     }
   }
@@ -509,7 +512,10 @@ function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
 
 export default handle;
 
-function gh(result: GraphhopperResult) {
+function fromGraphhopper(
+  result: GraphhopperResult,
+  transportType: TransportType,
+) {
   return result.paths.map((path) => {
     let dist = 0;
 
@@ -535,13 +541,24 @@ function gh(result: GraphhopperResult) {
           type: 'continue',
         },
         name: instruction.text,
-        mode: gob.some(
-          (seg) =>
-            instruction.interval[0] >= seg[0] &&
-            instruction.interval[1] <= seg[1],
-        )
-          ? 'foot'
-          : 'cycling', // TODO for non-cycling...; TODO can it happen that not whole interval has the same GOB value?
+        mode:
+          transportType === 'mtb' || transportType === 'racingbike'
+            ? gob.some(
+                (seg) =>
+                  instruction.interval[0] >= seg[0] &&
+                  instruction.interval[1] <= seg[1],
+              )
+              ? 'pushing bike' // TODO can it happen that not whole interval has the same GOB value?
+              : 'cycling'
+            : ((
+                {
+                  foot: 'foot',
+                  hiking: 'foot',
+                  car: 'driving',
+                  motorcycle: 'driving',
+                  car4wd: 'driving',
+                } as Partial<Record<TransportType, StepMode>>
+              )[transportType] ?? 'error'),
         geometry: {
           coordinates: path.points.coordinates.slice(
             instruction.interval[0],
