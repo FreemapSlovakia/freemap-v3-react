@@ -287,10 +287,12 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       };
     })
     .addCase(routePlannerSetPoint, (state, action) => {
-      return {
-        ...state,
-        selection: { type: 'route-point', id: action.payload.position },
-      };
+      return action.payload.preventSelect
+        ? state
+        : {
+            ...state,
+            selection: { type: 'route-point', id: action.payload.position },
+          };
     })
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
       state.selection =

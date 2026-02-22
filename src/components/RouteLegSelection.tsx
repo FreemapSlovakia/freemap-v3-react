@@ -52,6 +52,7 @@ export function RouteLegSelection(): ReactElement | undefined | false {
                 routePlannerSetPoint({
                   point: { ...point, transport },
                   position: id,
+                  preventSelect: true,
                 }),
               );
             }}

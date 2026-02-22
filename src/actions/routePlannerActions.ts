@@ -122,6 +122,7 @@ export const routePlannerAddPoint = createAction<{
 export const routePlannerSetPoint = createAction<{
   point: RoutePoint;
   position: number;
+  preventSelect?: boolean;
 }>('ROUTE_PLANNER_SET_POINT');
 
 export const routePlannerRemovePoint = createAction<number>(
