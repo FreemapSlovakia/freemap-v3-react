@@ -49,6 +49,10 @@ import {
 import { searchSelectResult } from '../actions/searchActions.js';
 import { Purchase } from '../types/auth.js';
 import type { LatLon } from '../types/common.js';
+import {
+  routePlannerAddPoint,
+  routePlannerSetPoint,
+} from '../actions/routePlannerActions.js';
 
 interface Location extends LatLon {
   accuracy: number;
@@ -202,16 +206,18 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
 
       if (action.payload?.type === 'objects' && state.tool !== 'objects') {
         state.tool = 'objects';
-      } else if (
-        state.tool !== 'objects' &&
-        state.tool !== 'changesets' &&
-        state.tool !== 'track-viewer' &&
-        (state.tool !== 'route-planner' ||
-          action.payload?.type !== 'route-point') &&
-        action.payload !== null
-      ) {
-        state.tool = null;
       }
+      // else if (
+      //   state.tool !== 'objects' &&
+      //   state.tool !== 'changesets' &&
+      //   state.tool !== 'track-viewer' &&
+      //   (state.tool !== 'route-planner' ||
+      //     (action.payload?.type !== 'route-point' &&
+      //       action.payload?.type !== 'route-leg')) &&
+      //   action.payload !== null
+      // ) {
+      //   state.tool = null;
+      // }
     })
     .addCase(convertToDrawing, (state) => {
       state.tool = null;
@@ -273,6 +279,20 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         ...state,
         countryCode: action.payload.countryCode,
       };
+    })
+    .addCase(routePlannerAddPoint, (state, action) => {
+      return {
+        ...state,
+        selection: { type: 'route-point', id: action.payload.position + 1 },
+      };
+    })
+    .addCase(routePlannerSetPoint, (state, action) => {
+      return action.payload.preventSelect
+        ? state
+        : {
+            ...state,
+            selection: { type: 'route-point', id: action.payload.position },
+          };
     })
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
       state.selection =

@@ -3,7 +3,7 @@ import distance from '@turf/distance';
 import { Feature, LineString, Polygon } from 'geojson';
 import { hash } from 'ohash';
 import { assert } from 'typia';
-import { clearMapFeatures, setTool } from '../actions/mainActions.js';
+import { clearMapFeatures } from '../actions/mainActions.js';
 import {
   Alternative,
   Leg,
@@ -14,6 +14,7 @@ import {
   routePlannerSetStart,
   RoutePoint,
   Step,
+  StepMode,
   Waypoint,
 } from '../actions/routePlannerActions.js';
 import { ToastAction, toastsAdd } from '../actions/toastsActions.js';
@@ -21,10 +22,10 @@ import { httpRequest } from '../httpRequest.js';
 import type { ProcessorHandler } from '../middlewares/processorMiddleware.js';
 import { isPremium } from '../premium.js';
 import { objectToURLSearchParams } from '../stringUtils.js';
-import { transportTypeDefs } from '../transportTypeDefs.js';
+import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
 import { updateRouteTypes } from './routePlannerFindRouteProcessor.js';
 
-const cancelTypes = [...updateRouteTypes, clearMapFeatures, setTool];
+const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -96,6 +97,13 @@ type OsrmResult = {
   waypoints?: Waypoint[];
 };
 
+const rnfToastAction = toastsAdd({
+  id: 'routePlanner',
+  messageKey: 'routePlanner.routeNotFound',
+  style: 'warning',
+  timeout: 5000,
+});
+
 const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   const {
     points,
@@ -138,13 +146,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     new URLSearchParams({ transportType, mode }).toString(),
   ]);
 
-  const rnfToastAction = toastsAdd({
-    id: 'routePlanner',
-    messageKey: 'routePlanner.routeNotFound',
-    style: 'warning',
-    timeout: 5000,
-  });
-
   if (ttDef.api === 'gh' && mode === 'isochrone') {
     const response = await httpRequest({
       getState,
@@ -176,258 +177,85 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     mode === 'route' &&
     (isPremium(getState().auth.user) ||
       hash([points, mode, transportType]) === getState().routePlanner.hash)
-      ? segmentize(points)
-      : [{ manual: false, points }];
+      ? segmentize(points, transportType)
+      : [{ transport: transportType, points }];
 
-  const hasManual = segments.some((segment) => segment.manual);
-
-  const promise = Promise.all(
-    segments
-      .filter((segment) => !segment.manual)
-      .map((segment) =>
-        (async () => {
-          if (ttDef.api === 'gh') {
-            const response = await httpRequest({
-              getState,
-              method: 'POST',
-              url: process.env['GRAPHHOPPER_URL'] + '/route',
-              data: {
-                snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
-                // elevation: true, // if to return also elevations
-                algorithm:
-                  mode === 'roundtrip'
-                    ? 'round_trip'
-                    : hasManual || segment.points.length > 2
-                      ? undefined
-                      : 'alternative_route',
-                'round_trip.distance': roundtripParams.distance,
-                'round_trip.seed': roundtripParams.seed,
-                'ch.disable': mode === 'roundtrip',
-                'alternative_route.max_paths': 2,
-                instructions: true,
-                profile: ttDef.profile,
-                points_encoded: false,
-                locale: getState().l10n.language,
-                points: segment.points.map((point) => [point.lon, point.lat]),
-              },
-              expectedStatus: [200, 400],
-              cancelActions: cancelTypes,
-            });
-
-            const data = await response.json();
-
-            if (response.status === 400) {
-              dispatch(clearResultAction);
-
-              let err: string | undefined;
-
-              if (data && typeof data === 'object' && 'message' in data) {
-                const msg = String(data['message']);
-
-                if (
-                  msg.startsWith('Cannot find point ') ||
-                  msg.startsWith('Connection between locations not found')
-                ) {
-                  dispatch(rnfToastAction);
-                } else {
-                  err = msg;
-                }
-              } else {
-                err = '?';
-              }
-
-              if (err) {
-                dispatch(
-                  toastsAdd({
-                    id: 'routePlanner',
-                    messageKey: 'general.operationError',
-                    messageParams: { err },
-                    style: 'danger',
-                    timeout: 5000,
-                  }),
-                );
-              }
-
-              return;
-            }
-
-            return data;
-          }
-
-          if (ttDef.api === 'osrm') {
-            if (segment.points.length < 2) {
-              return;
-            }
-
-            const allPoints = segment.points
-              .map((point) => [point.lon, point.lat].join(','))
-              .join(';');
-
-            const response = await httpRequest({
-              getState,
-              url:
-                `${ttDef.url.replace(
-                  '$MODE',
-                  mode === 'route' ? 'route' : 'trip',
-                )}/${allPoints}?` +
-                objectToURLSearchParams({
-                  alternatives: (mode === 'route' && !hasManual) || undefined,
-                  steps: true,
-                  geometries: 'geojson',
-                  roundtrip:
-                    mode === 'roundtrip'
-                      ? true
-                      : mode === 'trip'
-                        ? false
-                        : undefined,
-                  source: mode === 'route' ? undefined : 'first',
-                  destination: mode === 'trip' ? 'last' : undefined,
-                  // continue_straight: true,
-                  exclude: ttDef.exclude,
-                }),
-              expectedStatus: [200, 400],
-              cancelActions: cancelTypes,
-            });
-
-            return await response.json();
-          }
-        })(),
-      ),
-  );
+  const multiModal =
+    new Set(segments.map((segment) => segment.transport)).size > 1;
 
   let datas;
 
   try {
-    datas = await promise;
+    datas = await Promise.allSettled(segments.map(fetchService));
   } catch (err) {
     dispatch(clearResultAction);
 
     throw err;
   }
 
-  // error handled already in the promise
-  if (Array.isArray(datas) && datas.some((data) => data === undefined)) {
-    return;
-  }
+  const alternativeSets: Alternative[][] = [];
 
-  let alternativeSets: Alternative[][];
+  const errored: boolean[] = [];
 
-  let waypoints: Waypoint[];
+  let waypoints: Waypoint[] = [];
 
-  if (ttDef.api === 'gh') {
-    const results = assert<GraphhopperResult[]>(datas);
+  for (let i = 0; i < datas.length; i++) {
+    const data = datas[i];
 
-    alternativeSets = results.map((result) =>
-      result.paths.map((path) => {
-        let dist = 0;
+    if (data.status == 'rejected') {
+      dispatch(
+        toastsAdd({
+          id: 'routePlanner',
+          messageKey: 'routePlanner.fetchingError',
+          messageParams: { err: data.reason },
+          style: 'danger',
+          timeout: 5000,
+        }),
+      );
 
-        let time = 0;
+      alternativeSets.push([]);
 
-        const legs: Leg[] = [];
+      errored.push(true);
 
-        let steps: Step[] = [];
-
-        const gob = (path.details['get_off_bike'] ?? []).filter((q) => q[2]);
-
-        for (const instruction of path.instructions) {
-          dist += instruction.distance;
-
-          time += instruction.time;
-
-          steps.push({
-            duration: instruction.time / 1000,
-            distance: instruction.distance,
-            // TODO
-            maneuver: {
-              // location: [0, 0],
-              type: 'continue',
-            },
-            name: instruction.text,
-            mode: gob.some(
-              (seg) =>
-                instruction.interval[0] >= seg[0] &&
-                instruction.interval[1] <= seg[1],
-            )
-              ? 'foot'
-              : 'cycling', // TODO for non-cycling...; TODO can it happen that not whole interval has the same GOB value?
-            geometry: {
-              coordinates: path.points.coordinates.slice(
-                instruction.interval[0],
-                instruction.interval[1] + 1,
-              ) as [number, number][],
-            },
-          });
-
-          if (
-            instruction.sign === GraphhopperSign.FINISH ||
-            instruction.sign === GraphhopperSign.REACHED_VIA
-          ) {
-            legs.push({
-              distance: dist,
-              duration: time / 1000,
-              steps,
-            });
-
-            dist = 0;
-
-            time = 0;
-
-            steps = [];
-          }
-        }
-
-        return {
-          duration: path.time / 1000,
-          distance: path.distance,
-          legs,
-        };
-      }),
-    );
-
-    waypoints = [];
-  } else {
-    // OSRM
-    const osrmResults = assert<OsrmResult[]>(datas);
-
-    if (osrmResults.some((result) => result.code !== 'Ok')) {
-      dispatch(clearResultAction);
-
-      dispatch(rnfToastAction);
-
-      return;
+      continue;
     }
 
-    waypoints = osrmResults[0]?.waypoints ?? [];
+    const value = data.value;
 
-    alternativeSets = osrmResults.map(
-      (osrmResult) => osrmResult.routes ?? osrmResult.trips ?? [],
-    );
+    if (typeof value == 'boolean') {
+      alternativeSets.push([]);
+      errored.push(!value);
+    } else if ('code' in value) {
+      // OSRM
+      if (value.waypoints) {
+        waypoints = value.waypoints;
+      }
+
+      alternativeSets.push(value.routes ?? value.trips ?? []);
+      errored.push(false);
+    } else {
+      // GH
+      alternativeSets.push(fromGraphhopper(value, segments[i].transport));
+      errored.push(false);
+    }
   }
 
-  const alternatives =
-    alternativeSets.length === 1
-      ? alternativeSets[0]
-      : [
-          {
-            distance: alternativeSets.reduce((a, c) => a + c[0].distance, 0),
-            duration: alternativeSets.reduce((a, c) => a + c[0].duration, 0),
-            legs: alternativeSets.flatMap((set) => set[0].legs),
-          },
-        ];
+  let alternatives: Alternative[];
 
-  // add manual segments
+  if (alternativeSets.length == 1 && alternativeSets[0].length > 1) {
+    alternatives = alternativeSets[0];
+  } else {
+    const tpd =
+      alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
+      alternativeSets.reduce((a, c) => a + (c[0]?.distance ?? 0), 0);
 
-  if (segments.some((segment) => segment.manual)) {
-    const tpd = alternatives[0].duration / alternatives[0].distance;
+    const legs: Leg[] = [];
 
-    let legIndex = 0;
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
 
-    for (let j = 0; j < segments.length; j++) {
-      const segment = segments[j];
-
-      if (!segment.manual) {
-        legIndex += segment.points.length - 1;
-
+      if (alternativeSets[i][0]?.legs.length > 0) {
+        legs.push(...alternativeSets[i][0].legs);
         continue;
       }
 
@@ -436,11 +264,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       );
 
       {
-        const lastPt =
-          segments[j - 1]?.manual === false &&
-          alternatives[0].legs[legIndex - 1]?.steps
-            .at(-1)
-            ?.geometry.coordinates.at(-1);
+        const lastPt = alternativeSets[i - 1]?.[0]?.legs
+          .at(-1)
+          ?.steps.at(-1)
+          ?.geometry.coordinates.at(-1);
 
         if (lastPt) {
           coordinates[0] = lastPt;
@@ -449,52 +276,48 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
       {
         const firstPt =
-          segments[j + 1]?.manual === false &&
-          alternatives[0].legs[legIndex]?.steps[0]?.geometry.coordinates[0];
+          alternativeSets[i + 1]?.[0]?.legs[0]?.steps[0]?.geometry
+            .coordinates[0];
 
         if (firstPt) {
           coordinates[coordinates.length - 1] = firstPt;
         }
       }
 
-      const dist = distance(coordinates[0], coordinates[1], {
-        units: 'meters',
-      });
+      for (let j = 0; j < coordinates.length - 1; j++) {
+        const dist = distance(coordinates[j], coordinates[j + 1], {
+          units: 'meters',
+        });
 
-      const duration = tpd * dist;
+        const duration = tpd * dist;
 
-      const leg: Leg = {
-        distance: dist,
-        duration,
+        legs.push({
+          distance: dist,
+          duration,
 
-        steps: [
-          {
-            distance: dist,
-            duration,
-            maneuver: { type: 'continue', modifier: 'straight' },
-            mode: 'manual',
-            name: '',
-            geometry: {
-              coordinates,
+          steps: [
+            {
+              distance: dist,
+              duration,
+              maneuver: { type: 'continue', modifier: 'straight' },
+              mode: errored[i] ? 'error' : 'manual',
+              name: '',
+              geometry: {
+                coordinates: coordinates.slice(j, j + 2),
+              },
             },
-          },
-        ],
-      };
-
-      alternatives[0].legs.splice(legIndex, 0, leg);
-
-      legIndex += segment.points.length - 1;
+          ],
+        });
+      }
     }
 
-    alternatives[0].distance = alternatives[0].legs.reduce(
-      (a, c) => a + c.distance,
-      0,
-    );
-
-    alternatives[0].duration = alternatives[0].legs.reduce(
-      (a, c) => a + c.duration,
-      0,
-    );
+    alternatives = [
+      {
+        distance: legs.reduce((a, c) => a + c.distance, 0),
+        duration: legs.reduce((a, c) => a + c.duration, 0),
+        legs,
+      },
+    ];
   }
 
   dispatch(
@@ -535,10 +358,132 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }),
     );
   }
+
+  /// functions /////////////////////////////////////////
+
+  async function fetchService(segment: Segment) {
+    const ttDef = transportTypeDefs[segment.transport];
+
+    if (ttDef.api === 'gh') {
+      const response = await httpRequest({
+        getState,
+        method: 'POST',
+        url: process.env['GRAPHHOPPER_URL'] + '/route',
+        data: {
+          snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
+          // elevation: true, // if to return also elevations
+          algorithm:
+            mode === 'roundtrip'
+              ? 'round_trip'
+              : multiModal || segment.points.length > 2
+                ? undefined
+                : 'alternative_route',
+          'round_trip.distance': roundtripParams.distance,
+          'round_trip.seed': roundtripParams.seed,
+          'ch.disable': mode === 'roundtrip',
+          'alternative_route.max_paths': 2,
+          instructions: true,
+          profile: ttDef.profile,
+          points_encoded: false,
+          locale: getState().l10n.language,
+          points: segment.points.map((point) => [point.lon, point.lat]),
+        },
+        expectedStatus: [200, 400],
+        cancelActions: cancelTypes,
+      });
+
+      const data = await response.json();
+
+      if (response.status === 400) {
+        dispatch(clearResultAction);
+
+        let err: string | undefined;
+
+        if (data && typeof data === 'object' && 'message' in data) {
+          const msg = String(data['message']);
+
+          if (
+            msg.startsWith('Cannot find point ') ||
+            msg.startsWith('Connection between locations not found')
+          ) {
+            dispatch(rnfToastAction);
+          } else {
+            err = msg;
+          }
+        } else {
+          err = '?';
+        }
+
+        if (err) {
+          dispatch(
+            toastsAdd({
+              id: 'routePlanner',
+              messageKey: 'general.operationError',
+              messageParams: { err },
+              style: 'danger',
+              timeout: 5000,
+            }),
+          );
+        }
+
+        return false;
+      }
+
+      return assert<GraphhopperResult>(data);
+    } else if (ttDef.api === 'osrm') {
+      if (segment.points.length < 2) {
+        throw new Error('too few points');
+      }
+
+      const allPoints = segment.points
+        .map((point) => [point.lon, point.lat].join(','))
+        .join(';');
+
+      const response = await httpRequest({
+        getState,
+        url:
+          `${ttDef.url.replace(
+            '$MODE',
+            mode === 'route' ? 'route' : 'trip',
+          )}/${allPoints}?` +
+          objectToURLSearchParams({
+            alternatives: (mode === 'route' && !multiModal) || undefined,
+            steps: true,
+            geometries: 'geojson',
+            roundtrip:
+              mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
+            source: mode === 'route' ? undefined : 'first',
+            destination: mode === 'trip' ? 'last' : undefined,
+            // continue_straight: true,
+            exclude: ttDef.exclude,
+          }),
+        expectedStatus: [200, 400],
+        cancelActions: cancelTypes,
+      });
+
+      const result = assert<OsrmResult>(await response.json());
+
+      if (result.code !== 'Ok') {
+        dispatch(clearResultAction);
+        dispatch(rnfToastAction);
+
+        return false;
+      }
+
+      return result;
+    } else {
+      return true;
+    }
+  }
 };
 
-function segmentize(points: RoutePoint[]) {
-  const segments: { manual: boolean; points: RoutePoint[] }[] = [];
+type Segment = {
+  transport: TransportType;
+  points: RoutePoint[];
+};
+
+function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
+  const segments: Segment[] = [];
 
   let prevPoint: RoutePoint | undefined;
 
@@ -549,10 +494,12 @@ function segmentize(points: RoutePoint[]) {
       continue;
     }
 
-    if (prevPoint?.manual) {
-      segments.push({ manual: true, points: [prevPoint] });
-    } else if (!(segments.at(-1)?.manual === false)) {
-      segments.push({ manual: false, points: [prevPoint] });
+    const prevTransport = prevPoint.transport ?? defaultTransport;
+
+    if (segments.length === 0) {
+      segments.push({ transport: prevTransport, points: [prevPoint] });
+    } else if (prevTransport !== segments.at(-1)?.transport) {
+      segments.push({ transport: prevTransport, points: [prevPoint] });
     }
 
     segments.at(-1)?.points.push(point);
@@ -564,3 +511,84 @@ function segmentize(points: RoutePoint[]) {
 }
 
 export default handle;
+
+function fromGraphhopper(
+  result: GraphhopperResult,
+  transportType: TransportType,
+) {
+  return result.paths.map((path) => {
+    let dist = 0;
+
+    let time = 0;
+
+    const legs: Leg[] = [];
+
+    let steps: Step[] = [];
+
+    const gob = (path.details['get_off_bike'] ?? []).filter((q) => q[2]);
+
+    for (const instruction of path.instructions) {
+      dist += instruction.distance;
+
+      time += instruction.time;
+
+      steps.push({
+        duration: instruction.time / 1000,
+        distance: instruction.distance,
+        // TODO
+        maneuver: {
+          // location: [0, 0],
+          type: 'continue',
+        },
+        name: instruction.text,
+        mode:
+          transportType === 'mtb' || transportType === 'racingbike'
+            ? gob.some(
+                (seg) =>
+                  instruction.interval[0] >= seg[0] &&
+                  instruction.interval[1] <= seg[1],
+              )
+              ? 'pushing bike' // TODO can it happen that not whole interval has the same GOB value?
+              : 'cycling'
+            : ((
+                {
+                  foot: 'foot',
+                  hiking: 'foot',
+                  car: 'driving',
+                  motorcycle: 'driving',
+                  car4wd: 'driving',
+                } as Partial<Record<TransportType, StepMode>>
+              )[transportType] ?? 'error'),
+        geometry: {
+          coordinates: path.points.coordinates.slice(
+            instruction.interval[0],
+            instruction.interval[1] + 1,
+          ) as [number, number][],
+        },
+      });
+
+      if (
+        instruction.sign === GraphhopperSign.FINISH ||
+        instruction.sign === GraphhopperSign.REACHED_VIA
+      ) {
+        legs.push({
+          distance: dist,
+          duration: time / 1000,
+          steps,
+        });
+
+        dist = 0;
+
+        time = 0;
+
+        steps = [];
+      }
+    }
+
+    return {
+      duration: path.time / 1000,
+      distance: path.distance,
+      legs,
+    };
+  });
+}

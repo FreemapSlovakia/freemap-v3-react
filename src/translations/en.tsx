@@ -137,7 +137,8 @@ const messages: Messages = {
   },
 
   routePlanner: {
-    manual: 'Manual',
+    default: 'Route default',
+    leg: 'Route leg',
     manualTooltip: 'Connect following segment with direct line',
     ghParams: {
       tripParameters: 'Trip parameters',
@@ -168,7 +169,7 @@ const messages: Messages = {
       mtb: 'Mountain bike',
       racingbike: 'Racing bike',
       motorcycle: 'Motorcycle',
-      manual: 'Manual',
+      manual: 'Straight line',
     },
     development: 'in development',
     mode: {

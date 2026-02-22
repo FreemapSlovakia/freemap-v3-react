@@ -162,6 +162,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       mtb: 'Rower górski',
       racingbike: 'Rower szosowy',
       motorcycle: 'Motocykl',
+      manual: 'Linia prosta',
     },
     mode: {
       route: 'W ustalonej kolejności',
@@ -211,7 +212,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nie znaleziono trasy. Spróbuj zmienić parametry lub przesunąć punkty.',
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas wyszukiwania trasy', err),
-    manual: 'Ręcznie',
     manualTooltip: 'Połącz następny odcinek prostą linią',
   },
   mainMenu: {

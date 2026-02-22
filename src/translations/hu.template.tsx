@@ -172,6 +172,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       mtb: 'Hegyikerékpár',
       racingbike: 'Versenykerékpár',
       motorcycle: 'Motorkerékpár',
+      manual: 'Egyenes vonal',
     },
     development: 'fejlesztés alatt',
     mode: {
@@ -217,7 +218,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt az útvonaltervezésnél', err),
-    manual: 'Kézi',
     manualTooltip: 'A következő szakasz összekötése egyenes vonallal',
   },
 

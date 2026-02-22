@@ -3,9 +3,9 @@ import { Feature, Polygon } from 'geojson';
 import { TransportType } from '../transportTypeDefs.js';
 import type { LatLon } from '../types/common.js';
 
-export type RoutePoint = LatLon & { manual: boolean };
+export type RoutePoint = LatLon & { transport?: TransportType };
 
-export type NewRoutePoint = LatLon & { manual?: boolean };
+export type NewRoutePoint = LatLon & { transport?: TransportType };
 
 export type PickMode = 'start' | 'finish';
 
@@ -19,7 +19,8 @@ export type StepMode =
   | 'ferry'
   | 'train'
   | 'pushing bike'
-  | 'manual';
+  | 'manual'
+  | 'error';
 
 export type ManeuerModifier =
   | 'uturn'
@@ -121,6 +122,7 @@ export const routePlannerAddPoint = createAction<{
 export const routePlannerSetPoint = createAction<{
   point: RoutePoint;
   position: number;
+  preventSelect?: boolean;
 }>('ROUTE_PLANNER_SET_POINT');
 
 export const routePlannerRemovePoint = createAction<number>(

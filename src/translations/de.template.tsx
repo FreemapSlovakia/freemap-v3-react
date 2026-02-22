@@ -168,6 +168,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       mtb: 'Mountainbike',
       racingbike: 'Rennrad',
       motorcycle: 'Motorrad',
+      manual: 'Luftlinie',
     },
     mode: {
       route: 'In Reihenfolge',
@@ -218,7 +219,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Keine Route gefunden. Versuche, die Parameter zu ändern oder die Punkte zu verschieben.',
     fetchingError: ({ err }) =>
       addError(messages, 'Fehler beim Finden der Route', err),
-    manual: 'Manuell',
     manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
   },
   mainMenu: {

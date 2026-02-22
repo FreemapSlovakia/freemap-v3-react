@@ -3,6 +3,7 @@ import {
   FaBicycle,
   FaCar,
   FaHiking,
+  FaPen,
   FaMotorcycle,
   FaWalking,
 } from 'react-icons/fa';
@@ -18,7 +19,8 @@ export type TransportType =
   | 'hiking'
   | 'motorcycle'
   | 'mtb'
-  | 'racingbike';
+  | 'racingbike'
+  | 'manual';
 
 export function migrateTransportType(transportType: unknown): TransportType {
   return is<TransportType>(transportType)
@@ -49,7 +51,8 @@ export type TransportTypeMsgKey =
   | 'hiking'
   | 'motorcycle'
   | 'mtb'
-  | 'racingbike';
+  | 'racingbike'
+  | 'manual';
 
 type TransportTypeDef = {
   msgKey: TransportTypeMsgKey;
@@ -74,9 +77,17 @@ type TransportTypeDef = {
         | 'mtb'
         | 'racingbike';
     }
+  | {
+      api: 'manual';
+    }
 );
 
 export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
+  manual: {
+    msgKey: 'manual',
+    api: 'manual',
+    icon: <FaPen />,
+  },
   'car-osrm': {
     msgKey: 'car',
     api: 'osrm',

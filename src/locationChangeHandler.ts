@@ -151,18 +151,26 @@ export function handleLocationChange(store: MyStore): void {
   {
     const qPoints =
       typeof query['points'] === 'string'
-        ? (query['points'].split(',').map((point) =>
-            point
-              ? [
-                  point[0] === 'm',
-                  ...point
-                    .slice(point[0] === 'm' ? 1 : 0)
-                    .split('/', 2)
-                    .map((coord) => parseFloat(coord)),
-                ]
-              : null,
-          ) as [boolean, number | null, number | null][])
-        : ([] as [boolean, number | null, number | null][]);
+        ? query['points'].split(',').map((point) => {
+            if (!point) {
+              return null;
+            }
+
+            // backward compatibility
+            if (point[0] === 'm' && point[0][1] >= '0' && point[0][1] <= '9') {
+              point = 'manual/' + point.slice(1);
+            }
+
+            let parts = point.split('/');
+
+            let transport = parts.length === 3 ? parts.shift() : undefined;
+
+            return [
+              transport,
+              ...parts.map((part) => parseFloat(part)),
+            ] as unknown as [TransportType, number, number];
+          })
+        : [];
 
     if (qPoints.length === 2 && !qPoints[1]) {
       qPoints.splice(1);
@@ -175,6 +183,7 @@ export function handleLocationChange(store: MyStore): void {
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
             (point.length === 3 &&
+              is<TransportType | undefined>(point[0]) &&
               !Number.isNaN(point[1]) &&
               !Number.isNaN(point[2]))),
       );
@@ -199,14 +208,13 @@ export function handleLocationChange(store: MyStore): void {
         isochroneParams,
       } = getState().routePlanner;
 
-      const latLons = qPoints.map((point) =>
-        point
-          ? {
-              manual: point[0],
-              lat: point[1],
-              lon: point[2],
-            }
-          : null,
+      const latLons = qPoints.map(
+        (point) =>
+          point && {
+            transport: point[0],
+            lat: point[1],
+            lon: point[2],
+          },
       );
 
       const nextFinishOnly = latLons.length > 0 && !latLons[0];
@@ -221,8 +229,8 @@ export function handleLocationChange(store: MyStore): void {
         points.length !== latLons.length ||
         points.some(
           (point, i) =>
-            (point.manual ? 'm' : '') + serializePoint(point) !==
-            (latLons[i]?.manual ? 'm' : '') +
+            (point.transport ?? '') + serializePoint(point) !==
+            latLons[i]?.transport +
               serializePoint(latLons[i] as unknown as RoutePoint),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||

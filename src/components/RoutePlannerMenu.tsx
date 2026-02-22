@@ -26,7 +26,6 @@ import {
   FaEllipsisV,
   FaHome,
   FaMapMarkerAlt,
-  FaMoneyBill,
   FaPencilAlt,
   FaPlay,
   FaRegCheckSquare,
@@ -35,7 +34,6 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   convertToDrawing,
@@ -58,12 +56,12 @@ import {
 import { toastsAdd } from '../actions/toastsActions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
-import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
-import { TransportType, transportTypeDefs } from '../transportTypeDefs.js';
+import { transportTypeDefs } from '../transportTypeDefs.js';
 import { DeleteButton } from './DeleteButton.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { ToolMenu } from './ToolMenu.js';
+import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
 export default RoutePlannerMenu;
 
@@ -460,84 +458,17 @@ export function RoutePlannerMenu(): ReactElement {
 
   const activeTTDef = transportTypeDefs[activeTransportType];
 
-  const sc = useScrollClasses('vertical');
-
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
     useState(false);
 
-  const ttLabel = m?.routePlanner.transportType[activeTTDef.msgKey].replace(
-    /\s*,.*/,
-    '',
-  );
-
   return (
     <ToolMenu>
-      <Dropdown
-        className="ms-1"
-        id="transport-type"
-        onSelect={(transportType) =>
-          dispatch(
-            routePlannerSetTransportType(assert<TransportType>(transportType)),
-          )
+      <RoutePlannerTransportType
+        onChange={(transportType) =>
+          dispatch(routePlannerSetTransportType(transportType!))
         }
-      >
-        <LongPressTooltip
-          breakpoint="lg"
-          label={
-            <>
-              {ttLabel ?? '…'}{' '}
-              <small className="text-dark">
-                {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
-              </small>
-            </>
-          }
-        >
-          {({ label, labelClassName, props }) => (
-            <Dropdown.Toggle variant="secondary" {...props}>
-              {activeTTDef.icon}{' '}
-              {['car', 'car-toll', 'bikesharing'].includes(
-                activeTransportType,
-              ) && <FaMoneyBill />}
-              <span className={labelClassName}> {label}</span>
-            </Dropdown.Toggle>
-          )}
-        </LongPressTooltip>
-
-        <Dropdown.Menu
-          popperConfig={fixedPopperConfig}
-          className="fm-dropdown-with-scroller"
-        >
-          <div className="dropdown-long" ref={sc}>
-            <div />
-
-            {(['gh', 'osrm'] as const).map((api) => (
-              <Fragment key={api}>
-                <Dropdown.Header>
-                  {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
-                </Dropdown.Header>
-
-                {Object.entries(transportTypeDefs)
-                  .filter(([, def]) => !def.hidden && def.api === api)
-                  .map(([type, { icon, msgKey: key }]) => (
-                    <Dropdown.Item
-                      as="button"
-                      eventKey={type}
-                      key={type}
-                      title={m?.routePlanner.transportType[key]}
-                      active={activeTransportType === type}
-                    >
-                      {icon}{' '}
-                      {['car', 'car-toll', 'bikesharing'].includes(type) && (
-                        <FaMoneyBill />
-                      )}{' '}
-                      {m?.routePlanner.transportType[key] ?? '…'}
-                    </Dropdown.Item>
-                  ))}
-              </Fragment>
-            ))}
-          </div>
-        </Dropdown.Menu>
-      </Dropdown>
+        value={activeTransportType}
+      />
 
       {activeTTDef?.api === 'gh' && (
         <Dropdown

@@ -107,7 +107,8 @@ export type Messages = {
     maps: string;
   };
   routePlanner: {
-    manual: string;
+    default: string;
+    leg: string;
     manualTooltip: string;
     ghParams: {
       tripParameters: string;

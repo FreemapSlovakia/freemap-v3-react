@@ -48,7 +48,7 @@ function persistSelectedState(state: RootState) {
         user: state.auth.user && {
           ...state.auth.user,
           premiumExpiration: state.auth.user.premiumExpiration
-            ? state.auth.user.premiumExpiration.toISOString()
+            ? (state.auth.user.premiumExpiration?.toISOString() ?? null)
             : null,
         },
       },

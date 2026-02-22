@@ -1,4 +1,5 @@
 import { Map } from 'leaflet';
+import './touchMouseCompat.js';
 
 let resolve: (map: Map) => void;
 

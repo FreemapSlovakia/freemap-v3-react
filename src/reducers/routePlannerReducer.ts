@@ -194,11 +194,14 @@ export const routePlannerReducer = createReducer(
             getStart(state)) ||
           state.finishOnly
             ? [
-                { manual: state.points[0]?.manual ?? false, ...payload },
+                {
+                  transport: state.points[0]?.transport,
+                  ...payload,
+                },
                 ...state.points,
               ]
             : [
-                { manual: state.points[0]?.manual ?? false, ...payload },
+                { manual: state.points[0]?.transport, ...payload },
                 ...state.points.slice(1),
               ],
         finishOnly: false,
@@ -221,11 +224,11 @@ export const routePlannerReducer = createReducer(
                       ...state.points.slice(0, -1),
                       {
                         ...state.points.at(-1)!,
-                        manual: state.points.at(-2)!.manual,
+                        transport: state.points.at(-2)!.transport,
                       },
-                      { manual: false, ...payload },
+                      { ...payload },
                     ]
-                  : [...state.points, { manual: false, ...payload }],
+                  : [...state.points, { ...payload }],
               pickMode: getStart(state) ? 'finish' : 'start',
               finishOnly: state.points.length === 0,
             },
@@ -234,17 +237,17 @@ export const routePlannerReducer = createReducer(
         state.points.reverse();
 
         for (let i = 1; i < state.points.length; i++) {
-          state.points[i - 1].manual = state.points[i].manual;
+          state.points[i - 1].transport = state.points[i].transport;
         }
 
-        state.points[state.points.length - 1].manual = false;
+        delete state.points.at(-1)?.transport;
       })
       .addCase(
         routePlannerAddPoint,
         (state, { payload: { position, point: midpoint } }) => {
           state.points.splice(position + 1, 0, {
             ...midpoint,
-            manual: midpoint.manual ?? state.points[position]?.manual ?? false,
+            transport: midpoint.transport ?? state.points[position]?.transport,
           });
         },
       )
