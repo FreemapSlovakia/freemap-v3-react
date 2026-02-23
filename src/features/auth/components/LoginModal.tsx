@@ -19,10 +19,10 @@ export function LoginModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   const cookieConsentResult = useAppSelector(
-    (state) => state.main.cookieConsentResult,
+    (state) => state.cookieConsent.cookieConsentResult,
   );
 
-  const purchaseOnLogin = useAppSelector((state) => state.main.purchaseOnLogin);
+  const purchaseOnLogin = useAppSelector((state) => state.auth.purchaseOnLogin);
 
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (

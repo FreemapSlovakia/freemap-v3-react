@@ -2,7 +2,16 @@ import { createAction } from '@reduxjs/toolkit';
 import { basicModals, tools } from '../constants.js';
 import type { CustomLayerDef } from '../mapDefinitions.js';
 import type { Purchase } from '../features/auth/model/types.js';
-import type { LatLon } from '../types/common.js';
+import { purchaseOnLogin } from '../features/auth/model/purchaseActions.js';
+import {
+  applyCookieConsent,
+  setAnalyticCookiesAllowed,
+} from '../features/cookieConsent/model/actions.js';
+import {
+  saveHomeLocation,
+  setSelectingHomeLocation,
+} from '../features/homeLocation/model/actions.js';
+import { setLocation, toggleLocate } from '../features/location/model/actions.js';
 import { OsmFeatureId } from '../types/featureId.js';
 import type { LayerSettings } from '../features/map/model/actions.js';
 
@@ -21,25 +30,11 @@ export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
 
 export const documentShow = createAction<string | null>('DOCUMENT_SHOW');
 
-export const startProgress = createAction<string | number>('START_PROGRESS');
-
-export const stopProgress = createAction<string | number>('STOP_PROGRESS');
-
-export const setLocation = createAction<{
-  lat: number;
-  lon: number;
-  accuracy: number;
-}>('SET_LOCATION');
+export { setLocation };
 
 export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 
-export const toggleLocate = createAction<boolean | undefined>('LOCATE');
-
-export const setSelectingHomeLocation = createAction<LatLon | boolean>(
-  'SET_SELECTING_HOME_LOCATION',
-);
-
-export const saveHomeLocation = createAction('SAVE_HOME_LOCATION');
+export { toggleLocate, setSelectingHomeLocation, saveHomeLocation };
 
 export const enableUpdatingUrl = createAction<boolean>('ENABLE_UPDATING_URL');
 
@@ -71,7 +66,7 @@ export const setErrorTicketId = createAction<string | undefined>(
 
 export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
 
-export const purchaseOnLogin = createAction<Purchase>('PURCHASE_ON_LOGIN');
+export { purchaseOnLogin };
 
 export const purchase = createAction<Purchase>('PURCHASE');
 
@@ -167,11 +162,7 @@ export const openInExternalApp = createAction<{
   url?: string;
 }>('OPEN_IN_EXTERNAL');
 
-export const applyCookieConsent = createAction('APPLY_COOKIE_CONSENT');
-
-export const setAnalyticCookiesAllowed = createAction<boolean>(
-  'SET_ANALYTICS_COOKIES_ALLOWED',
-);
+export { applyCookieConsent, setAnalyticCookiesAllowed };
 
 export const hideInfoBar = createAction<{
   key: string;

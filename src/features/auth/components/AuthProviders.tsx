@@ -26,7 +26,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
   );
 
   const cookieConsentResult = useAppSelector(
-    (state) => state.main.cookieConsentResult,
+    (state) => state.cookieConsent.cookieConsentResult,
   );
 
   const loginWithFacebook = useCallback(() => {

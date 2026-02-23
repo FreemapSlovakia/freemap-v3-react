@@ -17,7 +17,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
   const selectingHomeLocation = useAppSelector(
-    (state) => state.main.selectingHomeLocation,
+    (state) => state.homeLocation.selectingHomeLocation,
   );
 
   const m = useMessages();

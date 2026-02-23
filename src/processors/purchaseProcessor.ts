@@ -1,10 +1,7 @@
 import { assert, is } from 'typia';
+import { purchase, setActiveModal } from '../actions/mainActions.js';
 import { authInit } from '../features/auth/model/actions.js';
-import {
-  purchase,
-  purchaseOnLogin,
-  setActiveModal,
-} from '../actions/mainActions.js';
+import { purchaseOnLogin } from '../features/auth/model/purchaseActions.js';
 import { toastsAdd } from '../features/toasts/model/actions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';

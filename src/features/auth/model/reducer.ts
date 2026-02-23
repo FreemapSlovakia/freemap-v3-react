@@ -1,22 +1,26 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { setActiveModal } from '../../../actions/mainActions.js';
 import {
   authFetchPurchases,
   authLogout,
   authSetPurchases,
   authSetUser,
 } from './actions.js';
-import type { PurchaseRecord, User } from './types.js';
+import { purchaseOnLogin } from './purchaseActions.js';
+import type { Purchase, PurchaseRecord, User } from './types.js';
 
 export interface AuthState {
   validated: boolean;
   user: User | null;
   purchases: PurchaseRecord[] | null;
+  purchaseOnLogin: Purchase | undefined;
 }
 
 export const authInitialState: AuthState = {
   validated: false,
   user: null,
   purchases: null,
+  purchaseOnLogin: undefined,
 };
 
 export const authReducer = createReducer(authInitialState, (builder) =>
@@ -43,5 +47,13 @@ export const authReducer = createReducer(authInitialState, (builder) =>
     })
     .addCase(authSetPurchases, (state, action) => {
       state.purchases = action.payload;
+    })
+    .addCase(purchaseOnLogin, (state, action) => {
+      state.purchaseOnLogin = action.payload;
+    })
+    .addCase(setActiveModal, (state, action) => {
+      if (!action.payload) {
+        state.purchaseOnLogin = undefined;
+      }
     }),
 );

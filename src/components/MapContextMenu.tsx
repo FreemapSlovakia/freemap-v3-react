@@ -112,9 +112,9 @@ export function MapContextMenu(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  const color = useAppSelector((state) => state.main.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
-  const width = useAppSelector((state) => state.main.drawingWidth);
+  const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
   const linesLength = useAppSelector(
     (state) => state.drawingLines.lines.length,

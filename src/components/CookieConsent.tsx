@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { setAnalyticCookiesAllowed } from '../actions/mainActions.js';
+import { setAnalyticCookiesAllowed } from '../features/cookieConsent/model/actions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 
 type Props = { prompt: string; local: string; analytics: string };
@@ -14,7 +14,7 @@ export function CookieConsent({
   const dispatch = useDispatch();
 
   const analyticCookiesAllowed = useAppSelector(
-    (state) => state.main.analyticCookiesAllowed,
+    (state) => state.cookieConsent.analyticCookiesAllowed,
   );
 
   return (

@@ -159,7 +159,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
   const invalidHeight = isInvalidInt(width, true, 100, 1200);
 
   const cookiesEnabled = useAppSelector(
-    (state) => state.main.cookieConsentResult !== null,
+    (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
   const handleFeaturesChange = useCallback(

@@ -10,7 +10,7 @@ export const statePersistingMiddleware: Middleware<{}, RootState> =
 
     const state = getState();
 
-    if (state.main.cookieConsentResult !== null) {
+    if (state.cookieConsent.cookieConsentResult !== null) {
       persistSelectedState(state);
     }
 
@@ -29,12 +29,19 @@ function persistSelectedState(state: RootState) {
         chosenLanguage: state.l10n.chosenLanguage,
       },
       main: {
-        cookieConsentResult: state.main.cookieConsentResult,
-        homeLocation: state.main.homeLocation,
         hiddenInfoBars: state.main.hiddenInfoBars,
-        drawingColor: state.main.drawingColor,
-        drawingWidth: state.main.drawingWidth,
-        drawingRecentColors: state.main.drawingRecentColors,
+      },
+      homeLocation: {
+        homeLocation: state.homeLocation.homeLocation,
+      },
+      cookieConsent: {
+        cookieConsentResult: state.cookieConsent.cookieConsentResult,
+        analyticCookiesAllowed: state.cookieConsent.analyticCookiesAllowed,
+      },
+      drawingSettings: {
+        drawingColor: state.drawingSettings.drawingColor,
+        drawingWidth: state.drawingSettings.drawingWidth,
+        drawingRecentColors: state.drawingSettings.drawingRecentColors,
       },
       objects: {
         selectedIcon: state.objects.selectedIcon,

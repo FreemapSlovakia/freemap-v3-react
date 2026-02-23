@@ -9,7 +9,7 @@ import {
 import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 export function DrawingPointsTool(): null {
-  const color = useAppSelector((state) => state.main.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
   const length = useAppSelector((state) => state.drawingPoints.points.length);
 

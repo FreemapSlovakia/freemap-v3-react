@@ -9,18 +9,41 @@ import {
   type AuthState,
 } from './features/auth/model/reducer.js';
 import { changesetReducer } from './features/changesets/model/reducer.js';
+import {
+  cookieConsentInitialState,
+  cookieConsentReducer,
+  type CookieConsentState,
+} from './features/cookieConsent/model/reducer.js';
+import {
+  drawingSettingsInitialState,
+  drawingSettingsReducer,
+  type DrawingSettingsState,
+} from './features/drawing/model/reducers/drawingSettingsReducer.js';
 import { drawingLinesReducer } from './features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from './features/drawing/model/reducers/drawingPointsReducer.js';
 import { elevationChartReducer } from './features/elevationChart/model/reducer.js';
+import {
+  geoIpReducer,
+} from './features/geoip/model/reducer.js';
 import {
   galleryInitialState,
   galleryReducer,
 } from './features/gallery/model/reducer.js';
 import {
+  homeLocationInitialState,
+  homeLocationReducer,
+  type HomeLocationState,
+} from './features/homeLocation/model/reducer.js';
+import {
   l10nInitialState,
   l10nReducer,
   type L10nState,
 } from './reducers/l10nReducer.js';
+import {
+  locationInitialState,
+  locationReducer,
+  type LocationState,
+} from './features/location/model/reducer.js';
 import {
   mainInitialState,
   mainReducer,
@@ -46,6 +69,7 @@ import {
   routePlannerReducer,
   type RoutePlannerState,
 } from './features/routePlanner/model/reducer.js';
+import { progressReducer } from './features/progress/model/reducer.js';
 import { searchReducer } from './features/search/model/reducer.js';
 import { toastsReducer } from './features/toasts/model/reducer.js';
 import { trackingReducer } from './features/tracking/model/reducer.js';
@@ -66,15 +90,21 @@ import { StringDates } from './types/common.js';
 export const reducers = {
   auth: authReducer,
   changesets: changesetReducer,
+  cookieConsent: cookieConsentReducer,
+  drawingSettings: drawingSettingsReducer,
   drawingLines: drawingLinesReducer,
   drawingPoints: drawingPointsReducer,
   elevationChart: elevationChartReducer,
+  geoip: geoIpReducer,
   gallery: galleryReducer,
+  homeLocation: homeLocationReducer,
   l10n: l10nReducer,
+  location: locationReducer,
   main: mainReducer,
   mapDetails: mapDetailsReducer,
   map: mapReducer,
   objects: objectsReducer,
+  progress: progressReducer,
   routePlanner: routePlannerReducer,
   search: searchReducer,
   toasts: toastsReducer,
@@ -135,6 +165,101 @@ export function getInitialState() {
                 : null,
             },
     };
+  }
+
+  if (is<Partial<CookieConsentState>>(persisted.cookieConsent)) {
+    initial.cookieConsent = {
+      ...cookieConsentInitialState,
+      ...persisted.cookieConsent,
+    };
+  } else if (
+    is<{
+      cookieConsentResult?: boolean | null;
+      analyticCookiesAllowed?: boolean;
+    }>(persisted.main)
+  ) {
+    initial.cookieConsent = {
+      ...cookieConsentInitialState,
+      ...persisted.main,
+    };
+  }
+
+  if (is<Partial<DrawingSettingsState>>(persisted.drawingSettings)) {
+    initial.drawingSettings = {
+      ...drawingSettingsInitialState,
+      ...persisted.drawingSettings,
+    };
+  } else if (
+    is<{
+      drawingColor?: string;
+      drawingWidth?: number;
+      drawingRecentColors?: string[];
+    }>(persisted.main)
+  ) {
+    initial.drawingSettings = {
+      ...drawingSettingsInitialState,
+      ...persisted.main,
+    };
+  }
+
+  if (is<Partial<HomeLocationState>>(persisted.homeLocation)) {
+    initial.homeLocation = {
+      ...homeLocationInitialState,
+      ...persisted.homeLocation,
+    };
+  } else if (
+    is<{
+      homeLocation?: HomeLocationState['homeLocation'];
+      selectingHomeLocation?: HomeLocationState['selectingHomeLocation'];
+    }>(persisted.main)
+  ) {
+    initial.homeLocation = {
+      ...homeLocationInitialState,
+      ...persisted.main,
+    };
+  }
+
+  if (is<Partial<LocationState>>(persisted.location)) {
+    initial.location = {
+      ...locationInitialState,
+      ...persisted.location,
+    };
+  } else if (
+    is<{
+      locate?: boolean;
+      location?: LocationState['location'];
+    }>(persisted.main)
+  ) {
+    initial.location = {
+      ...locationInitialState,
+      ...persisted.main,
+    };
+  }
+
+  if (
+    is<{
+      cookieConsentResult?: unknown;
+      analyticCookiesAllowed?: unknown;
+      drawingColor?: unknown;
+      drawingWidth?: unknown;
+      drawingRecentColors?: unknown;
+      homeLocation?: unknown;
+      selectingHomeLocation?: unknown;
+      locate?: unknown;
+      location?: unknown;
+      purchaseOnLogin?: unknown;
+    }>(persisted.main)
+  ) {
+    delete persisted.main.cookieConsentResult;
+    delete persisted.main.analyticCookiesAllowed;
+    delete persisted.main.drawingColor;
+    delete persisted.main.drawingWidth;
+    delete persisted.main.drawingRecentColors;
+    delete persisted.main.homeLocation;
+    delete persisted.main.selectingHomeLocation;
+    delete persisted.main.locate;
+    delete persisted.main.location;
+    delete persisted.main.purchaseOnLogin;
   }
 
   if (is<Partial<MainState>>(persisted.main)) {

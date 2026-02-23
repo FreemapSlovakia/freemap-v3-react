@@ -1,7 +1,7 @@
 import { point } from '@turf/helpers';
 import { assert } from 'typia';
 import { clearMapFeatures } from '../../../../actions/mainActions.js';
-import { osmLoadNode } from '../../../../actions/osmActions.js';
+import { osmLoadNode } from '../osmActions.js';
 import { searchSelectResult } from '../../../search/model/actions.js';
 import { copyDisplayName } from '../../../../copyDisplayName.js';
 import { httpRequest } from '../../../../httpRequest.js';

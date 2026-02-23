@@ -10,7 +10,7 @@ import * as map from '../features/map/model/actions.js';
 import * as mapDetails from '../features/mapDetails/model/actions.js';
 import * as maps from '../features/myMaps/model/actions.js';
 import * as objects from '../features/objects/model/actions.js';
-import * as osm from './osmActions.js';
+import * as osm from '../features/osm/model/osmActions.js';
 import * as routePlanner from '../features/routePlanner/model/actions.js';
 import * as rpc from './rpcActions.js';
 import * as search from '../features/search/model/actions.js';

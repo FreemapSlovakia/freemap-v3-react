@@ -102,7 +102,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
   const invalidScale = isInvalidInt(scale, true, 60, 960);
 
   const cookiesEnabled = useAppSelector(
-    (state) => state.main.cookieConsentResult !== null,
+    (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
   const handleLayersChange = useCallback(

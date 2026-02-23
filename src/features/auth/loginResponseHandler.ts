@@ -58,7 +58,7 @@ export async function handleLoginResponse(
 
   dispatch(authSetUser({ ...user, settings }));
 
-  const { purchaseOnLogin } = getState().main;
+  const { purchaseOnLogin } = getState().auth;
 
   if (purchaseOnLogin) {
     if (isPremium(user) && purchaseOnLogin.type === 'premium') {

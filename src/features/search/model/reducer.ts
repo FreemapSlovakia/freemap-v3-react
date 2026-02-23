@@ -5,7 +5,7 @@ import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from '../../../actions/osmActions.js';
+} from '../../osm/model/osmActions.js';
 import {
   searchClear,
   SearchResult,

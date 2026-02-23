@@ -22,9 +22,9 @@ export function PredefinedDrawingPropertiesModal({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const color = useAppSelector((state) => state.main.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
-  const width = useAppSelector((state) => state.main.drawingWidth);
+  const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
   const [editedColor, setEditedColor] = useState(color);
 

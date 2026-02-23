@@ -46,7 +46,7 @@ import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from './actions/osmActions.js';
+} from './features/osm/model/osmActions.js';
 import {
   routePlannerSetParams,
   RoutePoint,

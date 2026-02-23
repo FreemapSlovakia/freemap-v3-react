@@ -345,7 +345,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   ) {
     const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
 
-    if (getState().main.cookieConsentResult !== null) {
+    if (getState().cookieConsent.cookieConsentResult !== null) {
       actions.push({
         nameKey: 'general.preventShowingAgain',
         action: routePlannerPreventHint(),

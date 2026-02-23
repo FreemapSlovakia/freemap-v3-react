@@ -19,7 +19,7 @@ export const setToolProcessor: Processor<typeof setTool> = {
       }
 
       if (
-        getState().main.cookieConsentResult !== null &&
+        getState().cookieConsent.cookieConsentResult !== null &&
         tool.startsWith('draw-')
       ) {
         storage.setItem('fm.drawingTool', tool);

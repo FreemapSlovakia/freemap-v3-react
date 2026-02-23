@@ -9,7 +9,7 @@ import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from '../../../../actions/osmActions.js';
+} from '../../../osm/model/osmActions.js';
 import { searchSelectResult, searchSetResults } from '../actions.js';
 import { toastsAdd } from '../../../toasts/model/actions.js';
 import { mapPromise } from '../../../../leafletElementHolder.js';

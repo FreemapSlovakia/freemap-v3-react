@@ -1,7 +1,7 @@
 import { lineString, polygon } from '@turf/helpers';
 import { assert } from 'typia';
 import { clearMapFeatures } from '../../../../actions/mainActions.js';
-import { osmLoadWay } from '../../../../actions/osmActions.js';
+import { osmLoadWay } from '../osmActions.js';
 import { searchSelectResult } from '../../../search/model/actions.js';
 import { copyDisplayName } from '../../../../copyDisplayName.js';
 import { positionsEqual, shouldBeArea } from '../../../../geoutils.js';

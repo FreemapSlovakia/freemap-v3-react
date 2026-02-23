@@ -5,12 +5,11 @@ import { Provider } from 'react-redux';
 import { authInit } from './features/auth/model/actions.js';
 import { invokeGeoip } from './features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from './actions/l10nActions.js';
+import { enableUpdatingUrl, setEmbedFeatures } from './actions/mainActions.js';
+import { applyCookieConsent } from './features/cookieConsent/model/actions.js';
 import {
-  applyCookieConsent,
-  enableUpdatingUrl,
-  setEmbedFeatures,
-} from './actions/mainActions.js';
-import { toastsAdd } from './features/toasts/model/actions.js';
+  toastsAdd,
+} from './features/toasts/model/actions.js';
 import { ErrorCatcher } from './components/ErrorCatcher.js';
 import { Main } from './components/Main.js';
 import { MessagesProvider } from './components/TranslationProvider.js';
@@ -76,7 +75,7 @@ attachMapStateHandler(store);
 
 store.dispatch(enableUpdatingUrl(true));
 
-const cookieConsentResult = store.getState().main.cookieConsentResult;
+const cookieConsentResult = store.getState().cookieConsent.cookieConsentResult;
 
 if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
   store.dispatch(

@@ -13,7 +13,7 @@ export function usePersistentState<
   const [value, setValue] = useState(deserialize(storage.getItem(key)));
 
   const cookiesEnabled = useAppSelector(
-    (state) => state.main.cookieConsentResult !== null,
+    (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
   const setState = useCallback(

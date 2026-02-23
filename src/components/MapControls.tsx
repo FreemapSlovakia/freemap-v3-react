@@ -21,7 +21,7 @@ export function MapControls(): ReactElement | null {
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
-  const locate = useAppSelector((state) => state.main.locate);
+  const locate = useAppSelector((state) => state.location.locate);
 
   const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
 

@@ -14,7 +14,7 @@ export function useAd(ads: AdItem[], timeout = 30_000): AdId | null {
 
   const lastAdId = useRef<AdId | null>(null);
 
-  const countryCode = useAppSelector((state) => state.main.countryCode);
+  const countryCode = useAppSelector((state) => state.geoip.countryCode);
 
   const [availableAds, setAvailableAds] = useState<AdItem[]>([]);
 

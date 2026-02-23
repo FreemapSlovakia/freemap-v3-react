@@ -7,7 +7,7 @@ type Props = {
 
 export function DrawingRecentColors({ onColor }: Props) {
   const recentColors = useAppSelector(
-    (state) => state.main.drawingRecentColors,
+    (state) => state.drawingSettings.drawingRecentColors,
   );
 
   return (

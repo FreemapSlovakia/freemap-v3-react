@@ -1,9 +1,9 @@
-import { applyCookieConsent } from '../actions/mainActions.js';
+import { applyCookieConsent } from '../features/cookieConsent/model/actions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const cookieConsentProcessor: Processor = {
   actionCreator: applyCookieConsent,
-  statePredicate: (state) => !!state.main.cookieConsentResult,
+  statePredicate: (state) => !!state.cookieConsent.cookieConsentResult,
   async handle() {
     window._paq.push(['setCookieConsentGiven']);
 

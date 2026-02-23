@@ -12,7 +12,7 @@ export const mapLayersSelector = (state: RootState): string[] =>
   state.map.layers;
 
 export const selectingHomeLocationSelector = (state: RootState): boolean =>
-  state.main.selectingHomeLocation !== false;
+  state.homeLocation.selectingHomeLocation !== false;
 
 export const routePlannerPickModeSelector = (
   state: RootState,

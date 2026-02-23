@@ -2,7 +2,7 @@ import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
 import { assert } from 'typia';
 import { clearMapFeatures } from '../../../../actions/mainActions.js';
-import { osmLoadRelation } from '../../../../actions/osmActions.js';
+import { osmLoadRelation } from '../osmActions.js';
 import { searchSelectResult } from '../../../search/model/actions.js';
 import { copyDisplayName } from '../../../../copyDisplayName.js';
 import { mergeLines } from '../../../../geoutils.js';

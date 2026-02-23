@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { FeatureCollection } from 'geojson';
 import { clearMapFeatures } from '../../../actions/mainActions.js';
 import { mapsLoaded } from '../../myMaps/model/actions.js';
-import { osmClear } from '../../../actions/osmActions.js';
+import { osmClear } from '../../osm/model/osmActions.js';
 import {
   trackViewerColorizeTrackBy,
   trackViewerDelete,

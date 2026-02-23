@@ -10,7 +10,7 @@ let watch: number | undefined;
 export const locateProcessor: Processor = {
   actionCreator: toggleLocate,
   handle: async ({ getState, dispatch }) => {
-    if (getState().main.locate) {
+    if (getState().location.locate) {
       dispatch(mapRefocus({ gpsTracked: true }));
 
       const map = await mapPromise;

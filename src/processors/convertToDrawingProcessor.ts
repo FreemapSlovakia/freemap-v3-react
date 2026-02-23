@@ -46,8 +46,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       dispatch(
         drawingLineAdd({
           type: 'line',
-          color: state.main.drawingColor,
-          width: state.main.drawingWidth,
+          color: state.drawingSettings.drawingColor,
+          width: state.drawingSettings.drawingWidth,
           points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
@@ -74,7 +74,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           drawingPointAdd({
             coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
-            color: state.main.drawingColor,
+            color: state.drawingSettings.drawingColor,
             id: getState().drawingPoints.points.length,
           }),
         );
@@ -110,7 +110,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           dispatch(
             drawingPointAdd({
               label: feature.properties?.['name'],
-              color: state.main.drawingColor,
+              color: state.drawingSettings.drawingColor,
               coords: {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
@@ -137,8 +137,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             drawingLineAdd({
               type: 'line',
               label: feature.properties?.['name'],
-              color: state.main.drawingColor,
-              width: state.main.drawingWidth,
+              color: state.drawingSettings.drawingColor,
+              width: state.drawingSettings.drawingWidth,
               points,
             }),
           );
@@ -190,7 +190,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           dispatch(
             drawingPointAdd({
               label: feature.properties?.['name'],
-              color: state.main.drawingColor,
+              color: state.drawingSettings.drawingColor,
               coords: {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
@@ -225,8 +225,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
                 geometry?.type === 'Polygon'
                   ? feature.properties?.['name']
                   : undefined, // ignore street names
-              color: state.main.drawingColor,
-              width: state.main.drawingWidth,
+              color: state.drawingSettings.drawingColor,
+              width: state.drawingSettings.drawingWidth,
               points,
             }),
           );

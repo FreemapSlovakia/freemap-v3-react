@@ -28,7 +28,7 @@ export function DrawingPointSelection(): ReactElement | null {
 
   const nextId = useAppSelector((state) => state.drawingPoints.points.length);
 
-  const color = useAppSelector((state) => state.main.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
   const [projectPointDialogVisible, setProjectPointDialogVisible] =
     useState(false);

@@ -7,7 +7,7 @@ export const saveHomeLocationProcessor: Processor<typeof saveHomeLocation> = {
   errorKey: 'settings.savingError',
   statePredicate: (state) => !!state.auth.user,
   async handle({ getState }) {
-    const { homeLocation } = getState().main;
+    const { homeLocation } = getState().homeLocation;
 
     await httpRequest({
       getState,

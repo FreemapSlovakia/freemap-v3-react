@@ -19,7 +19,7 @@ const circularIcon = divIcon({
 });
 
 export function LocationResult(): ReactElement | null {
-  const gpsLocation = useAppSelector((state) => state.main.location);
+  const gpsLocation = useAppSelector((state) => state.location.location);
 
   return !gpsLocation ? null : (
     <>

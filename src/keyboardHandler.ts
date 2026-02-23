@@ -36,7 +36,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 
   const suspendedModal =
-    state.main.selectingHomeLocation !== false ||
+    state.homeLocation.selectingHomeLocation !== false ||
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition;
 
@@ -45,7 +45,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     !!state.gallery.activeImageId ||
     !!state.main.documentKey;
   //  ||
-  // state.main.selectingHomeLocation ||
+  // state.homeLocation.selectingHomeLocation ||
   // state.gallery.pickingPositionForId ||
   // state.gallery.showPosition;
 
@@ -74,7 +74,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return drawingLineStopDrawing();
     }
 
-    if (state.main.selectingHomeLocation !== false) {
+    if (state.homeLocation.selectingHomeLocation !== false) {
       return setSelectingHomeLocation(false);
     }
 

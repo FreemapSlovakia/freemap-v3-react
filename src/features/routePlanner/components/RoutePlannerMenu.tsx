@@ -364,7 +364,7 @@ export function RoutePlannerMenu(): ReactElement {
 
   const milestones = useAppSelector((state) => state.routePlanner.milestones);
 
-  const homeLocation = useAppSelector((state) => state.main.homeLocation);
+  const homeLocation = useAppSelector((state) => state.homeLocation.homeLocation);
 
   const activeTransportType = useAppSelector(
     (state) => state.routePlanner.transportType,

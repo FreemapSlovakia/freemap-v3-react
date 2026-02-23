@@ -23,7 +23,7 @@ export function HomeLocationPickingResult(): ReactElement | null {
   );
 
   const selectingHomeLocation = useAppSelector(
-    (state) => state.main.selectingHomeLocation,
+    (state) => state.homeLocation.selectingHomeLocation,
   );
 
   return !selectingHomeLocation ? null : (

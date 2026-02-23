@@ -301,7 +301,7 @@ export function Main(): ReactElement {
 
   const activeModal = useAppSelector((state) => state.main.activeModal);
 
-  const progress = useAppSelector((state) => !!state.main.progress.length);
+  const progress = useAppSelector((state) => !!state.progress.length);
 
   const authenticated = useAppSelector((state) => !!state.auth.user);
 
@@ -321,7 +321,7 @@ export function Main(): ReactElement {
 
   const showMenu = useAppSelector(
     (state) =>
-      state.main.selectingHomeLocation === false &&
+      state.homeLocation.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition,
   );
@@ -493,7 +493,7 @@ export function Main(): ReactElement {
   };
 
   const selectingHomeLocation = useAppSelector(
-    (state) => state.main.selectingHomeLocation,
+    (state) => state.homeLocation.selectingHomeLocation,
   );
 
   const documentKey = useAppSelector((state) => state.main.documentKey);
