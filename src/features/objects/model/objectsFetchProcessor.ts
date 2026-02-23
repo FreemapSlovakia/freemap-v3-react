@@ -1,19 +1,16 @@
+import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { mapRefocus } from '@features/map/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { assert } from 'typia';
-import {
-  clearMapFeatures,
-  selectFeature,
-} from '../../../actions/mainActions.js';
-import { mapRefocus } from '../../map/model/actions.js';
+import { httpRequest } from '../../../app/httpRequest.js';
+import type { OverpassResult } from '../../../types/overpass.js';
 import {
   ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
 } from './actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { httpRequest } from '../../../httpRequest.js';
-import { mapPromise } from '../../../leafletElementHolder.js';
-import type { Processor } from '../../../middlewares/processorMiddleware.js';
-import type { OverpassResult } from '../../../types/overpass.js';
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;

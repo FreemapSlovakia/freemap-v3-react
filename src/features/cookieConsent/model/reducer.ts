@@ -1,8 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  applyCookieConsent,
-  setAnalyticCookiesAllowed,
-} from './actions.js';
+import { applyCookieConsent, setAnalyticCookiesAllowed } from './actions.js';
 
 export interface CookieConsentState {
   cookieConsentResult: boolean | null;

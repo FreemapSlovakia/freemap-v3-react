@@ -1,5 +1,5 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '../actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 import { removeTimeout, setupTimeout } from './toasts.js';
 
 export const toastsAddProcessor: Processor<typeof toastsAdd> = {

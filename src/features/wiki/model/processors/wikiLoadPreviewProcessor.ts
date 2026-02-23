@@ -1,9 +1,9 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { assert } from 'typia';
-import { setActiveModal } from '../../../../actions/mainActions.js';
+import { httpRequest } from '@app/httpRequest.js';
 import { wikiLoadPreview, WikiPreview, wikiSetPreview } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
-import { objectToURLSearchParams } from '../../../../stringUtils.js';
 
 interface WikiResponse1 {
   query: {

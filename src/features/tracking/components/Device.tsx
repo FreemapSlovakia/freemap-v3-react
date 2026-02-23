@@ -1,3 +1,8 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {
@@ -8,14 +13,9 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { trackingActions } from '../model/actions.js';
 import { copyToClipboard } from '../../../clipboardUtils.js';
-import { useDateTimeFormat } from '../../../hooks/useDateTimeFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
 
 type Props = {
   device: DeviceType;

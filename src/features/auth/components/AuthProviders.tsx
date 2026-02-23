@@ -1,3 +1,5 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaFacebook, FaGoogle } from 'react-icons/fa';
@@ -10,8 +12,6 @@ import {
   authWithGoogle,
   authWithOsm,
 } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 import type { AuthProvider } from '../model/types.js';
 
 type Props = { mode: 'login' | 'connect' | 'disconnect' };

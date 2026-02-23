@@ -1,6 +1,6 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapPromise } from '../../hooks/leafletElementHolder.js';
 import { mapRefocus } from '../actions.js';
-import { mapPromise } from '../../../../leafletElementHolder.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const mapRefocusProcessor: Processor = {
   handle: async ({ dispatch, getState, prevState }) => {

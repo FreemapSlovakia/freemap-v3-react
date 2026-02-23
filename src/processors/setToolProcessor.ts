@@ -1,6 +1,6 @@
+import { setActiveModal, setTool } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import storage from 'local-storage-fallback';
-import { setActiveModal, setTool } from '../actions/mainActions.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const setToolProcessor: Processor<typeof setTool> = {
   actionCreator: setTool,

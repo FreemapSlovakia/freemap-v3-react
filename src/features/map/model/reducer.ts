@@ -1,8 +1,11 @@
+import { applySettings } from '@app/store/actions.js';
+import { authSetUser } from '@features/auth/model/actions.js';
+import { gallerySetFilter } from '@features/gallery/model/actions.js';
+import { processGeoipResult } from '@features/geoip/model/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { authSetUser } from '../../auth/model/actions.js';
-import { gallerySetFilter } from '../../gallery/model/actions.js';
-import { applySettings } from '../../../actions/mainActions.js';
-import { processGeoipResult } from '../../geoip/model/actions.js';
+import { integratedLayerDefs } from '../../../mapDefinitions.js';
 import {
   mapRefocus,
   mapReplaceLayer,
@@ -15,9 +18,6 @@ import {
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
-import { mapsLoaded } from '../../myMaps/model/actions.js';
-import { Shading } from '../../parameterizedShading/Shading.js';
-import { integratedLayerDefs } from '../../../mapDefinitions.js';
 
 export interface MapState extends MapStateBase {
   removeGalleryOverlayOnGalleryToolQuit: boolean;

@@ -1,25 +1,25 @@
-import { assert, is } from 'typia';
-import { authLogout, authSetUser } from '../../../auth/model/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import type {
   Line,
   Point,
-} from '../../../drawing/model/actions/drawingLineActions.js';
-import { DrawingPoint } from '../../../drawing/model/actions/drawingPointActions.js';
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
+import { assert, is } from 'typia';
+import { httpRequest } from '@app/httpRequest.js';
+import {
+  CustomLayerDef,
+  upgradeCustomLayerDefs,
+} from '../../../../mapDefinitions.js';
+import { migrateTransportType } from '../../../../transportTypeDefs.js';
+import type { StringDates } from '../../../../types/common.js';
 import {
   type MapData,
   type MapMeta,
   mapsLoad,
   mapsLoaded,
 } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import {
-  CustomLayerDef,
-  upgradeCustomLayerDefs,
-} from '../../../../mapDefinitions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
-import { migrateTransportType } from '../../../../transportTypeDefs.js';
-import type { StringDates } from '../../../../types/common.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
 
 interface CompatLine {
   type: 'polygon' | 'line' | 'area' | 'distance';

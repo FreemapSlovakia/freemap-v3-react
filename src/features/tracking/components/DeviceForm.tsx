@@ -1,9 +1,9 @@
-import { SubmitEvent, ReactElement, useCallback, useState } from 'react';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { trackingActions } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 import { useTextInputState } from '../../../hooks/useTextInputState.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { trackingActions } from '../model/actions.js';
 
 import {
   Button,

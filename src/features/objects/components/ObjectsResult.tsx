@@ -1,30 +1,30 @@
-import { point } from '@turf/helpers';
-import { type ReactElement, useEffect, useState } from 'react';
-import { Tooltip } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { selectFeature } from '../../../actions/mainActions.js';
-import { searchSelectResult } from '../../search/model/actions.js';
-import { colors } from '../../../constants.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useEffectiveChosenLanguage } from '../../../hooks/useEffectiveChosenLanguage.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { selectFeature } from '@app/store/actions.js';
+import { selectingModeSelector } from '@app/store/selectors.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { searchSelectResult } from '@features/search/model/actions.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
   getOsmMapping,
   resolveGenericName,
-} from '../../../osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '../../../osm/osmTagToIconMapping.js';
-import { OsmMapping } from '../../../osm/types.js';
-import { selectingModeSelector } from '../../../selectors/mainSelectors.js';
+} from '@osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { OsmMapping } from '@osm/types.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { point } from '@turf/helpers';
+import { type ReactElement, useEffect, useState } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useDispatch } from 'react-redux';
+import { is } from 'typia';
+import { colors } from '../../../constants.js';
 import {
   featureIdsEqual,
   OsmFeatureId,
   stringifyFeatureId,
 } from '../../../types/featureId.js';
-import { RichMarker } from '../../../components/RichMarker.js';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();

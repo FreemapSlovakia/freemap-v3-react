@@ -1,5 +1,5 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authWithOsm2 } from '../actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const authWithOsm2Processor: Processor<typeof authWithOsm2> = {
   actionCreator: authWithOsm2,

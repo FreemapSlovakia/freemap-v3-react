@@ -1,3 +1,12 @@
+import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Checkbox } from '@shared/components/Checkbox.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Toolbar } from '@shared/components/Toolbar.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useCallback } from 'react';
 import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
@@ -25,15 +34,6 @@ import {
   galleryToggleDirection,
   galleryToggleLegend,
 } from '../model/actions.js';
-import { saveSettings, setActiveModal } from '../../../actions/mainActions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { usePersistentState } from '../../../hooks/usePersistentState.js';
-import { useScrollClasses } from '../../../hooks/useScrollClasses.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { Checkbox } from '../../../components/Checkbox.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { Toolbar } from '../../../components/Toolbar.js';
 import { PictureLegend } from './PictureLegend.js';
 
 export default GalleryMenu;

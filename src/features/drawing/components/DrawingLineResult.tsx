@@ -1,3 +1,11 @@
+import { selectFeature } from '@app/store/actions.js';
+import {
+  drawingLinePolys,
+  selectingModeSelector,
+} from '@app/store/selectors.js';
+import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { bearing } from '@turf/bearing';
 import { distance } from '@turf/distance';
 import { bearingToAzimuth } from '@turf/helpers';
@@ -26,6 +34,10 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { colors } from '../../../constants.js';
+import { isEventOnMap } from '../../../mapUtils.js';
+import { formatDistance } from '../../../shared/distanceFormatter.js';
+import type { LatLon } from '../../../types/common.js';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
@@ -33,18 +45,6 @@ import {
   Point,
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
-import { selectFeature } from '../../../actions/mainActions.js';
-import { ElevationChartActivePoint } from '../../elevationChart/components/ElevationChartActivePoint.js';
-import { colors } from '../../../constants.js';
-import { formatDistance } from '../../../distanceFormatter.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { isEventOnMap } from '../../../mapUtils.js';
-import {
-  drawingLinePolys,
-  selectingModeSelector,
-} from '../../../selectors/mainSelectors.js';
-import type { LatLon } from '../../../types/common.js';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],

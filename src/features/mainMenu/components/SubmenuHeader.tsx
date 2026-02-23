@@ -1,7 +1,7 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { JSX, ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
-import { useMessages } from '../../../l10nInjector.js';
 
 type SubmenuHeaderProps = {
   icon: ReactNode;

@@ -1,3 +1,17 @@
+import {
+  clearMapFeatures,
+  deleteFeature,
+  selectFeature,
+  setTool,
+} from '@app/store/actions.js';
+import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import {
+  type SearchResult,
+  searchSetQuery,
+  searchSetResults,
+} from '@features/search/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
@@ -5,27 +19,13 @@ import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
-import {
-  clearMapFeatures,
-  deleteFeature,
-  selectFeature,
-  setTool,
-} from '../../../actions/mainActions.js';
-import {
-  type SearchResult,
-  searchSetQuery,
-  searchSetResults,
-} from '../../search/model/actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { httpRequest } from '../../../httpRequest.js';
-import { mapPromise } from '../../../leafletElementHolder.js';
+import { RootState } from '../../../app/store/store.js';
+import { httpRequest } from '../../../app/httpRequest.js';
 import {
   integratedLayerDefs,
   IsWmsLayerDef,
   LayerDef,
 } from '../../../mapDefinitions.js';
-import { RootState } from '../../../store.js';
-import { objectToURLSearchParams } from '../../../stringUtils.js';
 import { FeatureId } from '../../../types/featureId.js';
 import { NominatimResult } from '../../../types/nominatimResult.js';
 import type {

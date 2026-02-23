@@ -1,10 +1,10 @@
-import { assert } from 'typia';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   trackViewerDownloadTrack,
   trackViewerSetData,
-} from '../../../trackViewer/model/actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
+} from '@features/trackViewer/model/actions.js';
+import { assert } from 'typia';
+import { httpRequest } from '@app/httpRequest.js';
 
 export const trackViewerDownloadTrackProcessor: Processor = {
   actionCreator: trackViewerDownloadTrack,

@@ -1,7 +1,10 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   ChangeEvent,
-  SubmitEvent,
   ReactElement,
+  SubmitEvent,
   useCallback,
   useEffect,
   useState,
@@ -9,11 +12,8 @@ import {
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { gallerySetFilter } from '../model/actions.js';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { isInvalidInt } from '../../../numberValidator.js';
+import { gallerySetFilter } from '../model/actions.js';
 
 type Props = { show: boolean };
 

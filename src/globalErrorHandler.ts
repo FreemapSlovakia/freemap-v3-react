@@ -1,5 +1,5 @@
-import { setErrorTicketId } from './actions/mainActions.js';
-import type { MyStore } from './store.js';
+import { setErrorTicketId } from '@app/store/actions.js';
+import type { MyStore } from './app/store/store.js';
 
 let store: MyStore;
 

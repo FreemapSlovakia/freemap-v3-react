@@ -1,5 +1,5 @@
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffect, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 type AdId = 'tShirt' | 'rovas' | 'self';
 

@@ -1,9 +1,9 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   trackViewerGpxLoad,
   trackViewerSetData,
-} from '../../../trackViewer/model/actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
+} from '@features/trackViewer/model/actions.js';
+import { httpRequest } from '@app/httpRequest.js';
 
 export const trackViewerGpxLoadProcessor: Processor = {
   actionCreator: trackViewerGpxLoad,

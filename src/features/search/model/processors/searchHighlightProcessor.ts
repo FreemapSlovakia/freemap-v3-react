@@ -1,25 +1,25 @@
-import bbox from '@turf/bbox';
-import { is } from 'typia';
 import {
   clearMapFeatures,
   convertToDrawing,
   selectFeature,
-} from '../../../../actions/mainActions.js';
+} from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from '../../../osm/model/osmActions.js';
-import { searchSelectResult, searchSetResults } from '../actions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { mapPromise } from '../../../../leafletElementHolder.js';
+} from '@features/osm/model/osmActions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import bbox from '@turf/bbox';
+import { is } from 'typia';
 import {
   HasMaxNativeZoom,
   integratedLayerDefs,
   IsBaseLayerDef,
 } from '../../../../mapDefinitions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 import { featureIdsEqual, OsmFeatureId } from '../../../../types/featureId.js';
+import { searchSelectResult, searchSetResults } from '../actions.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,

@@ -1,14 +1,14 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { parseCoordinates } from '../../../../coordinatesParser.js';
+import { httpRequest } from '@app/httpRequest.js';
 import {
   galleryRemoveItem,
   gallerySetItemError,
   gallerySetLayerDirty,
   galleryUpload,
 } from '../actions.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { parseCoordinates } from '../../../../coordinatesParser.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { ProcessorHandler } from '../../../../middlewares/processorMiddleware.js';
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
   const { items, uploadingId } = getState().gallery;

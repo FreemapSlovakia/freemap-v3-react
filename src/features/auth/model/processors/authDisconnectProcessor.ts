@@ -1,5 +1,5 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authDisconnect } from '../actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const authDisconnectProcessor: Processor<typeof authDisconnect> = {
   actionCreator: authDisconnect,

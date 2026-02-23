@@ -1,20 +1,20 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCopyButton } from '@shared/hooks/useCopyButton.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { searchSetQuery } from '../../search/model/actions.js';
-import { latLonToString } from '../../../geoutils.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useCopyButton } from '../../../hooks/useCopyButton.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { usePersistentState } from '../../../hooks/usePersistentState.js';
-import { useMessages } from '../../../l10nInjector.js';
 import {
   integratedLayerDefs,
   IsTileLayerDef,
 } from '../../../mapDefinitions.js';
+import { latLonToString } from '../../../shared/geoutils.js';
 import type { LatLon } from '../../../types/common.js';
 
 export type ElevationInfoBaseProps = {

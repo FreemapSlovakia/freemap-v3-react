@@ -1,9 +1,9 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { assert } from 'typia';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { trackingActions } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import type { StringDates } from '../../../../types/common.js';
+import { trackingActions } from '../actions.js';
 import type { AccessToken } from '../types.js';
 
 export const saveAccessTokenProcessor: Processor<

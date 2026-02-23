@@ -1,7 +1,7 @@
 import color from 'color';
 import { LatLng } from 'leaflet';
-import { GalleryColorizeBy } from '../model/actions.js';
 import type { LatLon } from '../../../types/common.js';
+import { GalleryColorizeBy } from '../model/actions.js';
 
 type Marble = LatLon & {
   rating: number;

@@ -1,3 +1,10 @@
+import {
+  applySettings,
+  clearMapFeatures,
+  selectFeature,
+  setTool,
+} from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import {
   drawingLineAdd,
@@ -16,13 +23,6 @@ import {
   Line,
   Point,
 } from '../actions/drawingLineActions.js';
-import {
-  applySettings,
-  clearMapFeatures,
-  selectFeature,
-  setTool,
-} from '../../../../actions/mainActions.js';
-import { mapsLoaded } from '../../../myMaps/model/actions.js';
 
 export interface DrawingLinesState {
   drawing: boolean;

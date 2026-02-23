@@ -1,11 +1,11 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
 import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken } from './AccessToken.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();

@@ -1,4 +1,10 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { handleTrackUpload } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
 import { assert } from 'typia';
+import type { RootState } from '@app/store/store.js';
+import { httpRequest } from '@app/httpRequest.js';
+import type { StringDates } from '../../../../types/common.js';
 import {
   type MapData,
   type MapMeta,
@@ -6,12 +12,6 @@ import {
   mapsSave,
   mapsSetMeta,
 } from '../actions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
-import type { RootState } from '../../../../store.js';
-import type { StringDates } from '../../../../types/common.js';
-import { handleTrackUpload } from '../../../tracking/model/processors/trackViewerUploadTrackProcessor.js';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,

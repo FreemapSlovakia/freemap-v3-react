@@ -1,3 +1,6 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Toolbar } from '@shared/components/Toolbar.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
@@ -6,9 +9,6 @@ import {
   galleryConfirmPickedPosition,
   gallerySetItemForPositionPicking,
 } from '../model/actions.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { Toolbar } from '../../../components/Toolbar.js';
 
 export default GalleryPositionPickingMenu;
 

@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-handler-names */
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   Fragment,
   ReactElement,
@@ -17,7 +18,6 @@ import {
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
 import { useModelChangeHandlers } from '../../../hooks/useModelChangeHandlers.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { type CustomLayerDef } from '../../../mapDefinitions.js';
 import { type Layer, wms } from '../../../wms.js';
 

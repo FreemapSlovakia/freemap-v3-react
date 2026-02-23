@@ -1,11 +1,7 @@
+import { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { assert } from 'typia';
-import {
-  GeoIpResult,
-  invokeGeoip,
-  processGeoipResult,
-} from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import { Processor } from '../../../../middlewares/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
+import { GeoIpResult, invokeGeoip, processGeoipResult } from '../actions.js';
 
 export const geoipProcessor: Processor = {
   actionCreator: invokeGeoip,

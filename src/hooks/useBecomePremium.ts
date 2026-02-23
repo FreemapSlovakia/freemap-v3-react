@@ -1,10 +1,10 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { showGalleryViewerSelector } from '@app/store/selectors.js';
+import { galleryClear } from '@features/gallery/model/actions.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { MouseEvent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { galleryClear } from '../features/gallery/model/actions.js';
-import { setActiveModal } from '../actions/mainActions.js';
 import { isPremium } from '../premium.js';
-import { showGalleryViewerSelector } from '../selectors/mainSelectors.js';
-import { useAppSelector } from './useAppSelector.js';
 
 export function useBecomePremium() {
   const dispatch = useDispatch();

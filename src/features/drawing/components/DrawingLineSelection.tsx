@@ -1,3 +1,8 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Selection } from '@shared/components/Selection.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { lineString } from '@turf/helpers';
 import { type ReactElement, useCallback, useState } from 'react';
@@ -11,19 +16,14 @@ import {
 import { TbAngle, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
+  elevationChartClose,
+  elevationChartSetTrackGeojson,
+} from '../../elevationChart/model/actions.js';
+import {
   drawingLineAddPoint,
   drawingLineStopDrawing,
 } from '../model/actions/drawingLineActions.js';
-import {
-  elevationChartClose,
-  elevationChartSetTrackGeojson,
-} from '../../../actions/elevationChartActions.js';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
 import ProjectPointModal from './ProjectPointModal.js';
-import { Selection } from '../../../components/Selection.js';
 
 export default DrawingLineSelection;
 

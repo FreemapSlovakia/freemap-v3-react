@@ -1,12 +1,12 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { parseCoordinates } from '../../../../coordinatesParser.js';
+import { httpRequest } from '@app/httpRequest.js';
 import {
   galleryRequestImage,
   gallerySavePicture,
   gallerySetLayerDirty,
 } from '../actions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { parseCoordinates } from '../../../../coordinatesParser.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,

@@ -1,10 +1,10 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { AdItem, useAd } from '../hooks/useAd.js';
 import { useBecomePremium } from '../../../hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '../../../hooks/useLeftMarginAdjuster.js';
 import tShirt from '../../../images/fm-t-shirt.jpg';
-import { useMessages } from '../../../l10nInjector.js';
+import { AdItem, useAd } from '../hooks/useAd.js';
 
 export default Ad;
 

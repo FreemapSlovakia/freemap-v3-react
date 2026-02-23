@@ -1,11 +1,11 @@
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../model/actions.js';
-import { RichMarker } from '../../../components/RichMarker.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import '../../../styles/gallery.scss';
+import './gallery.scss';
 
 export function GalleryResult(): ReactElement {
   const dispatch = useDispatch();

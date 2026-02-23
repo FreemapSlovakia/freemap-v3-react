@@ -1,3 +1,5 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -5,8 +7,6 @@ import {
   gallerySetImageIds,
   gallerySetLayerDirty,
 } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const galleryDeletePictureProcessor: Processor = {
   actionCreator: galleryDeletePicture,

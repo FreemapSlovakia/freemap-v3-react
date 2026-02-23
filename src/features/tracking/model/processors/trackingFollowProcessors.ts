@@ -1,7 +1,7 @@
-import { selectFeature } from '../../../../actions/mainActions.js';
-import { mapRefocus } from '../../../map/model/actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
-import { trackingTrackSelector } from '../../../../selectors/mainSelectors.js';
+import { selectFeature } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackingTrackSelector } from '@app/store/selectors.js';
+import { mapRefocus } from '@features/map/model/actions.js';
 
 export const trackingFollowProcessor: Processor = {
   async handle({ dispatch, getState, action, prevState }) {

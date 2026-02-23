@@ -1,6 +1,9 @@
+import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import type { RootAction } from '../../../actions/index.js';
+import type { RootAction } from '../../../app/store/rootAction.js';
+import { Messages } from '../../../translations/messagesInterface.js';
 import {
   ToastAction,
   toastsRemove,
@@ -8,10 +11,7 @@ import {
   toastsStopTimeout,
 } from '../model/actions.js';
 import { Toast } from './Toast.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { getMessageByKey, useMessages } from '../../../l10nInjector.js';
-import '../../../styles/toasts.scss';
-import { Messages } from '../../../translations/messagesInterface.js';
+import './toasts.scss';
 
 function tx(m: Messages | undefined, toastAction: ToastAction) {
   if ('name' in toastAction) {

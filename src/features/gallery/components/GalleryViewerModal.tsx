@@ -1,10 +1,16 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OpenInExternalAppMenuButton } from '@shared/components/OpenInExternalAppMenuButton.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import {
   ChangeEvent,
-  SubmitEvent,
   Fragment,
   ReactElement,
+  SubmitEvent,
   useCallback,
   useEffect,
   useRef,
@@ -24,6 +30,8 @@ import {
 import { RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
+import { useBecomePremium } from '../../../hooks/useBecomePremium.js';
+import { isPremium } from '../../../premium.js';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -39,19 +47,10 @@ import {
   gallerySubmitComment,
   gallerySubmitStars,
 } from '../model/actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useBecomePremium } from '../../../hooks/useBecomePremium.js';
-import { useDateTimeFormat } from '../../../hooks/useDateTimeFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { isPremium } from '../../../premium.js';
-import { OpenInExternalAppMenuButton } from '../../../components/OpenInExternalAppMenuButton.js';
 import { Azimuth } from './Azimuth.js';
+import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
-
-import '../../../styles/gallery.scss';
+import './gallery.scss';
 
 type Props = { show: boolean };
 

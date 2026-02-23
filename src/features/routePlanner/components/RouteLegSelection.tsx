@@ -1,10 +1,10 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Selection } from '@shared/components/Selection.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
 import { FaMapMarkerAlt, FaMapSigns } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { routePlannerSetPoint } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { Selection } from '../../../components/Selection.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
 export default RouteLegSelection;

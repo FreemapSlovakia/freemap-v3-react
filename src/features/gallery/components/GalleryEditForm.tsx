@@ -1,3 +1,5 @@
+import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
+import { DateTime } from '@shared/components/DateTime.js';
 import {
   ChangeEvent,
   ReactElement,
@@ -9,10 +11,8 @@ import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
-import { galleryAddTag, GalleryTag } from '../model/actions.js';
-import { getMessageByKey, useMessages } from '../../../l10nInjector.js';
 import '../../../styles/react-tags.scss';
-import { DateTime } from '../../../components/DateTime.js';
+import { galleryAddTag, GalleryTag } from '../model/actions.js';
 import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 

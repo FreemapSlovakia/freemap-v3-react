@@ -1,8 +1,8 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Toolbar } from '@shared/components/Toolbar.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { FaCamera, FaPalette } from 'react-icons/fa';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { Toolbar } from '../../../components/Toolbar.js';
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(

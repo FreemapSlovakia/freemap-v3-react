@@ -1,10 +1,10 @@
+import { purchase, setActiveModal } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { authInit } from '@features/auth/model/actions.js';
+import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { assert, is } from 'typia';
-import { purchase, setActiveModal } from '../actions/mainActions.js';
-import { authInit } from '../features/auth/model/actions.js';
-import { purchaseOnLogin } from '../features/auth/model/purchaseActions.js';
-import { toastsAdd } from '../features/toasts/model/actions.js';
-import { httpRequest } from '../httpRequest.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+import { httpRequest } from '../app/httpRequest.js';
 
 type CallbackData = {
   freemap: {

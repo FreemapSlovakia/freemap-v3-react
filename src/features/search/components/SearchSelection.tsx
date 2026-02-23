@@ -1,18 +1,18 @@
+import { convertToDrawing, setTool } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetStart,
+} from '@features/routePlanner/model/actions.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Selection } from '@shared/components/Selection.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { center } from '@turf/center';
 import { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { convertToDrawing, setTool } from '../../../actions/mainActions.js';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from '../../routePlanner/model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import '../../../styles/search.scss';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { Selection } from '../../../components/Selection.js';
+import './SearchMenu.scss';
 
 type Props = {
   hidden?: boolean;

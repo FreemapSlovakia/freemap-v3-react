@@ -1,5 +1,5 @@
+import { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
-import { Selection } from '../../../../actions/mainActions.js';
 
 export interface Point {
   lat: number;

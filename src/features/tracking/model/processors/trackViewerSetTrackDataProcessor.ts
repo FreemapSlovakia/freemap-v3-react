@@ -1,10 +1,10 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { trackViewerSetData } from '@features/trackViewer/model/actions.js';
 import * as toGeoJSON from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import { FeatureCollection } from 'geojson';
 import { assert } from 'typia';
-import { trackViewerSetData } from '../../../trackViewer/model/actions.js';
-import { mapPromise } from '../../../../leafletElementHolder.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData

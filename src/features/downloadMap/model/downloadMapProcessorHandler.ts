@@ -1,8 +1,8 @@
-import { setActiveModal } from '../../../actions/mainActions.js';
+import { setActiveModal } from '@app/store/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { httpRequest } from '../../../app/httpRequest.js';
 import { downloadMap } from './actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { httpRequest } from '../../../httpRequest.js';
-import type { ProcessorHandler } from '../../../middlewares/processorMiddleware.js';
 
 const handle: ProcessorHandler<typeof downloadMap> = async ({
   dispatch,

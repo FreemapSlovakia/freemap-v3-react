@@ -1,5 +1,9 @@
 import ColorPicker from 'react-best-gradient-color-picker';
 // import { Chrome, rgbaToHexa } from '@uiw/react-color';
+import { mapSetShading } from '@features/map/model/actions.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import Color from 'color';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -12,9 +16,6 @@ import {
   ListGroup,
 } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { mapSetShading } from '../map/model/actions.js';
-import { useAppSelector } from '../../hooks/useAppSelector.js';
-import { useScrollClasses } from '../../hooks/useScrollClasses.js';
 import {
   ColorStop,
   SHADING_COMPONENT_TYPES,
@@ -26,7 +27,6 @@ import {
   MANAGEABLE_TYPES,
   ShadingComponentControl,
 } from './ShadingComponentControl.js';
-import Color from 'color';
 
 export function ShadingControl() {
   const shading = useAppSelector((state) => state.map.shading);

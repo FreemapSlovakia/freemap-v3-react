@@ -1,26 +1,24 @@
+import { ErrorCatcher } from '@app/components/ErrorCatcher.js';
+import { Main } from '@app/components/Main.js';
+import { MessagesProvider } from '@app/components/TranslationProvider.js';
+import { enableUpdatingUrl, setEmbedFeatures } from '@app/store/actions.js';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
-import { authInit } from './features/auth/model/actions.js';
-import { invokeGeoip } from './features/geoip/model/actions.js';
-import { l10nSetChosenLanguage } from './actions/l10nActions.js';
-import { enableUpdatingUrl, setEmbedFeatures } from './actions/mainActions.js';
-import { applyCookieConsent } from './features/cookieConsent/model/actions.js';
-import {
-  toastsAdd,
-} from './features/toasts/model/actions.js';
-import { ErrorCatcher } from './components/ErrorCatcher.js';
-import { Main } from './components/Main.js';
-import { MessagesProvider } from './components/TranslationProvider.js';
+import { createReduxStore } from './app/store/store.js';
 import './fbLoader.js';
 import { attachGarminLoginMessageHandler } from './features/auth/garminLoginMessageHandler.js';
+import { authInit } from './features/auth/model/actions.js';
+import { attachOsmLoginMessageHandler } from './features/auth/osmLoginMessageHandler.js';
+import { applyCookieConsent } from './features/cookieConsent/model/actions.js';
+import { invokeGeoip } from './features/geoip/model/actions.js';
+import { l10nSetChosenLanguage } from './features/l10n/model/actions.js';
+import { toastsAdd } from './features/toasts/model/actions.js';
 import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { handleLocationChange } from './locationChangeHandler.js';
-import { attachMapStateHandler } from './mapStateHandler.js';
-import { attachOsmLoginMessageHandler } from './features/auth/osmLoginMessageHandler.js';
-import { createReduxStore } from './store.js';
+import { attachMapStateHandler } from './features/map/mapStateHandler.js';
 import './styles/index.scss';
 
 if (

@@ -1,3 +1,5 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -8,8 +10,6 @@ import {
   FaRegCircle,
   FaRegEye,
 } from 'react-icons/fa';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function TrackingSubmenu(): ReactElement {

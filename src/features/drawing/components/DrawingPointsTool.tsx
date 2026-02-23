@@ -1,3 +1,4 @@
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
@@ -6,7 +7,6 @@ import {
   drawingMeasure,
   drawingPointAdd,
 } from '../model/actions/drawingPointActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 export function DrawingPointsTool(): null {
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);

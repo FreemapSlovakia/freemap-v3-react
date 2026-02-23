@@ -1,3 +1,15 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { HideArrow } from '@features/search/components/SearchMenu.js';
+import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { Node, OsmMapping } from '@osm/types.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { removeAccents } from '@shared/stringUtils.js';
 import {
   ChangeEvent,
   ReactElement,
@@ -8,28 +20,13 @@ import {
   useState,
 } from 'react';
 import { type DropdownProps, Button, Dropdown, Form } from 'react-bootstrap';
+import { FaCircle, FaMapMarker, FaSquare, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   MarkerType,
   objectsSetFilter,
   setSelectedIcon,
 } from '../model/actions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useEffectiveChosenLanguage } from '../../../hooks/useEffectiveChosenLanguage.js';
-import { useScrollClasses } from '../../../hooks/useScrollClasses.js';
-import { useMessages } from '../../../l10nInjector.js';
-import {
-  getOsmMapping,
-  resolveGenericName,
-} from '../../../osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '../../../osm/osmTagToIconMapping.js';
-import { Node, OsmMapping } from '../../../osm/types.js';
-import { removeAccents } from '../../../stringUtils.js';
-import { HideArrow } from '../../search/components/SearchMenu.js';
-import { ToolMenu } from '../../../components/ToolMenu.js';
-import { FaCircle, FaMapMarker, FaSquare, FaTrash } from 'react-icons/fa';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
 
 export default ObjectsMenu;
 

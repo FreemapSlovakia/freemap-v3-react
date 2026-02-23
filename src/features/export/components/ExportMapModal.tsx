@@ -1,3 +1,9 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useResolvedAttribution } from '@shared/components/Attribution.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { CRS } from 'leaflet';
 import storage from 'local-storage-fallback';
 import {
@@ -25,21 +31,13 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert, is } from 'typia';
+import { isInvalidInt } from '../../../numberValidator.js';
 import {
   ExportableLayer,
   ExportFormat,
   exportMap,
   LAYERS,
 } from '../model/actions.js';
-import {
-  setActiveModal,
-} from '../../../actions/mainActions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { usePersistentState } from '../../../hooks/usePersistentState.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { isInvalidInt } from '../../../numberValidator.js';
-import { useResolvedAttribution } from '../../../components/Attribution.js';
 
 type Props = { show: boolean };
 

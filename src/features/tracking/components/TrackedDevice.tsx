@@ -1,12 +1,12 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-import { useDateTimeFormat } from '../../../hooks/useDateTimeFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { TrackedDevice as TrackedDeviceType } from '../model/types.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
 
 type Props = {
   device: TrackedDeviceType;

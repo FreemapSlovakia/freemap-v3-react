@@ -1,8 +1,6 @@
+import { applySettings } from '@app/store/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { applySettings } from '../../../../actions/mainActions.js';
-import {
-  drawingLineChangeProperties,
-} from '../actions/drawingLineActions.js';
+import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
 
 export interface DrawingSettingsState {

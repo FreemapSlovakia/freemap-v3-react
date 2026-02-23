@@ -1,9 +1,15 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { authWithGarmin } from '@features/auth/model/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { Position } from 'geojson';
 import {
-  SubmitEvent,
   Fragment,
   ReactElement,
   ReactNode,
+  SubmitEvent,
   useCallback,
   useEffect,
   useState,
@@ -35,7 +41,6 @@ import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
-import { authWithGarmin } from '../../auth/model/actions.js';
 import {
   ExportTarget,
   ExportType,
@@ -44,13 +49,6 @@ import {
   exportTargets,
   exportTypes,
 } from '../model/actions.js';
-import {
-  setActiveModal,
-} from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { usePersistentState } from '../../../hooks/usePersistentState.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { ExperimentalFunction } from '../../../components/ExperimentalFunction.js';
 
 const exportableDefinitions: readonly [
   type: Exportable,

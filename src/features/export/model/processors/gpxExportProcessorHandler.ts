@@ -1,17 +1,14 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
+import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
+import { ObjectsState } from '@features/objects/model/reducer.js';
+import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import { TrackingState } from '@features/tracking/model/reducer.js';
+import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
+import { escapeHtml } from '@shared/stringUtils.js';
 import { Feature, FeatureCollection } from 'geojson';
-import {
-  exportMapFeatures,
-} from '../actions.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
 import { colors } from '../../../../constants.js';
-import type { ProcessorHandler } from '../../../../middlewares/processorMiddleware.js';
-import { DrawingLinesState } from '../../../drawing/model/reducers/drawingLinesReducer.js';
-import { DrawingPointsState } from '../../../drawing/model/reducers/drawingPointsReducer.js';
-import { ObjectsState } from '../../../objects/model/reducer.js';
-import { RoutePlannerState } from '../../../routePlanner/model/reducer.js';
-import { TrackingState } from '../../../tracking/model/reducer.js';
-import { TrackViewerState } from '../../../trackViewer/model/reducer.js';
-import { escapeHtml } from '../../../../stringUtils.js';
 import type { LatLon } from '../../../../types/common.js';
 import { fetchPictures, Picture } from '../../fetchPictures.js';
 import {
@@ -23,6 +20,7 @@ import {
   LOCUS_NS,
 } from '../../gpxExporter.js';
 import { upload } from '../../upload.js';
+import { exportMapFeatures } from '../actions.js';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 

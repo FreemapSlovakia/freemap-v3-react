@@ -1,5 +1,5 @@
+import { authLogout } from '@features/auth/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { authLogout } from '../../auth/model/actions.js';
 import {
   MapLoadMeta,
   MapMeta,

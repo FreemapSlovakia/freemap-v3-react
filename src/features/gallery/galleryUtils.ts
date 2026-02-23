@@ -1,5 +1,5 @@
-import type { GalleryFilter } from './model/actions.js';
 import type { StringDates } from '../../types/common.js';
+import type { GalleryFilter } from './model/actions.js';
 
 export function createFilter({
   tag,

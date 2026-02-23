@@ -1,11 +1,12 @@
-import { createReducer } from '@reduxjs/toolkit';
-import { is } from 'typia';
-import { clearMapFeatures } from '../../../actions/mainActions.js';
+import { clearMapFeatures } from '@app/store/actions.js';
 import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from '../../osm/model/osmActions.js';
+} from '@features/osm/model/osmActions.js';
+import { createReducer } from '@reduxjs/toolkit';
+import { is } from 'typia';
+import { OsmFeatureId } from '../../../types/featureId.js';
 import {
   searchClear,
   SearchResult,
@@ -13,7 +14,6 @@ import {
   searchSetQuery,
   searchSetResults,
 } from './actions.js';
-import { OsmFeatureId } from '../../../types/featureId.js';
 
 export interface SearchState {
   results: SearchResult[];

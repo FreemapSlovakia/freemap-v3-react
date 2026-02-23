@@ -1,3 +1,9 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OpenInExternalAppDropdownItems } from '@shared/components/OpenInExternalAppMenuItems.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { get } from 'idb-keyval';
 import {
   Fragment,
@@ -9,14 +15,8 @@ import {
 import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { clearCache, setCacheMode, setCachingActive } from '../../../cache.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 import { useMenuHandler } from '../../../hooks/useMenuHandler.js';
-import { useScrollClasses } from '../../../hooks/useScrollClasses.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { CacheMode } from '../../../types/common.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { OpenInExternalAppDropdownItems } from '../../../components/OpenInExternalAppMenuItems.js';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
 import { MainMenu } from './MainMenu.js';

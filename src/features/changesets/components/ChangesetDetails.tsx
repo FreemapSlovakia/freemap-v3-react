@@ -1,8 +1,8 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import type { CSSProperties, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
-import { useDateTimeFormat } from '../../../hooks/useDateTimeFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
 
 type Props = { changeset: Changeset };
 

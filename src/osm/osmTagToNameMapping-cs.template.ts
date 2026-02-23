@@ -797,7 +797,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Generátor elektrické energie z biomasy',
 
           'generator:method': {
-            anaerobic_digestion: 'Generátor elektrické energie z anaerobního rozkladu biomasy',
+            anaerobic_digestion:
+              'Generátor elektrické energie z anaerobního rozkladu biomasy',
             combustion: 'Generátor elektrické energie ze spalování biomasy',
             gasification: 'Generátor elektrické energie ze zplyňování biomasy',
           },
@@ -827,9 +828,12 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Generátor elektrické energie z vodní energie',
 
           'generator:method': {
-            'run-of-the-river': 'Generátor elektrické energie z průtokové vodní energie',
-            'water-pumped-storage': 'Generátor elektrické energie z přečerpávané vodní energie',
-            'water-storage': 'Generátor elektrické energie z akumulované vodní energie',
+            'run-of-the-river':
+              'Generátor elektrické energie z průtokové vodní energie',
+            'water-pumped-storage':
+              'Generátor elektrické energie z přečerpávané vodní energie',
+            'water-storage':
+              'Generátor elektrické energie z akumulované vodní energie',
           },
         },
 
@@ -850,8 +854,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Generátor elektrické energie ze slunečního záření',
 
           'generator:method': {
-            photovoltaic: 'Generátor elektrické energie ze slunečního záření - fotovoltaický',
-            thermal: 'Generátor elektrické energie ze slunečního záření - termální',
+            photovoltaic:
+              'Generátor elektrické energie ze slunečního záření - fotovoltaický',
+            thermal:
+              'Generátor elektrické energie ze slunečního záření - termální',
           },
         },
 
@@ -1336,7 +1342,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     paragliding: 'Paragliding',
     parkour: 'Parkour',
     pedal_car_racing: 'Závody šlapacích aut',
-    'pesäpallo': 'Pesäpallo (finský baseball)',
+    pesäpallo: 'Pesäpallo (finský baseball)',
     pickleball: 'Pickleball',
     pilates: 'Pilates',
     pole_dance: 'Pole dance (sport)',

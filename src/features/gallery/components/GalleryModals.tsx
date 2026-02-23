@@ -1,12 +1,12 @@
+import { AsyncModal } from '@shared/components/AsyncModal.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { showGalleryViewerSelector } from '../../../app/store/selectors.js';
+import { useMap } from '../../map/hooks/useMap.js';
 import { gallerySetPickingPosition } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMap } from '../../../hooks/useMap.js';
-import { showGalleryViewerSelector } from '../../../selectors/mainSelectors.js';
-import '../../../styles/gallery.scss';
-import { AsyncModal } from '../../../components/AsyncModal.js';
+import './gallery.scss';
 
 const galleryViewerModalFactory = () =>
   import(

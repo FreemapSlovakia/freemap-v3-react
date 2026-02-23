@@ -1,8 +1,8 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { mapRefocus } from '@features/map/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LatLng } from 'leaflet';
-import { mapRefocus } from '../../map/model/actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { mapPromise } from '../../../leafletElementHolder.js';
-import type { Processor } from '../../../middlewares/processorMiddleware.js';
 import { setLocation, toggleLocate } from './actions.js';
 
 let watch: number | undefined;

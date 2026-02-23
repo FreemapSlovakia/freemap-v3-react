@@ -1,3 +1,5 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
@@ -11,8 +13,6 @@ import {
   WikiPreview,
   wikiSetPreview,
 } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 
 class WikiIcon extends Icon {
   static template: ChildNode | undefined;

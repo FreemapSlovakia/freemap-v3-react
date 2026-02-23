@@ -1,3 +1,9 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OpenInExternalAppMenuButton } from '@shared/components/OpenInExternalAppMenuButton.js';
+import { Selection } from '@shared/components/Selection.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Button } from 'react-bootstrap';
@@ -5,13 +11,7 @@ import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
 import { TbAngle } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { drawingPointAdd } from '../model/actions/drawingPointActions.js';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { OpenInExternalAppMenuButton } from '../../../components/OpenInExternalAppMenuButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
-import { Selection } from '../../../components/Selection.js';
 
 export default DrawingPointSelection;
 

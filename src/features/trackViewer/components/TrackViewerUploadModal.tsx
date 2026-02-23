@@ -1,18 +1,17 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { elevationChartClose } from '../../../actions/elevationChartActions.js';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
+import { elevationChartClose } from '../../elevationChart/model/actions.js';
+import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from '../model/actions.js';
-import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
-import { useMessages } from '../../../l10nInjector.js';
-import '../../../styles/trackViewer.scss';
 
 type Props = { show: boolean };
 

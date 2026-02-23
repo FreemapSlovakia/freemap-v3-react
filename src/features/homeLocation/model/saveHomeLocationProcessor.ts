@@ -1,5 +1,5 @@
-import { httpRequest } from '../../../httpRequest.js';
-import type { Processor } from '../../../middlewares/processorMiddleware.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { httpRequest } from '../../../app/httpRequest.js';
 import { saveHomeLocation } from './actions.js';
 
 export const saveHomeLocationProcessor: Processor<typeof saveHomeLocation> = {

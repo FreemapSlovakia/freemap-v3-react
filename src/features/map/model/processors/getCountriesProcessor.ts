@@ -1,8 +1,8 @@
+import { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { CRS } from 'leaflet';
 import { assert } from 'typia';
+import { httpRequest } from '@app/httpRequest.js';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const getCountriesProcessor: Processor = {
   // stateChangePredicate: (state) => state.map.bounds, // we use actionCreator because it also cancels

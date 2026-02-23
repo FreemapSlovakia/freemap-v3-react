@@ -1,3 +1,7 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import { TrackingState } from '@features/tracking/model/reducer.js';
 import {
   featureCollection,
   lineString,
@@ -6,15 +10,9 @@ import {
   polygon,
 } from '@turf/helpers';
 import { FeatureCollection } from 'geojson';
-import {
-  exportMapFeatures,
-} from '../actions.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
-import type { ProcessorHandler } from '../../../../middlewares/processorMiddleware.js';
-import { RoutePlannerState } from '../../../routePlanner/model/reducer.js';
-import { TrackingState } from '../../../tracking/model/reducer.js';
 import { fetchPictures, Picture } from '../../fetchPictures.js';
 import { licenseNotice, upload } from '../../upload.js';
+import { exportMapFeatures } from '../actions.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,

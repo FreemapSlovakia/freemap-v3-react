@@ -1,3 +1,4 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   type ChangeEvent,
   type Dispatch,
@@ -7,7 +8,6 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonToolbar, Form } from 'react-bootstrap';
-import { useMessages } from '../../../l10nInjector.js';
 import { CustomLayerDef } from '../../../mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
 

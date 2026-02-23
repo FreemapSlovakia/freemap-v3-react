@@ -1,12 +1,21 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { authInit } from '@features/auth/model/actions.js';
+import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { pointToTile, tileToGeoJSON } from '@mapbox/tilebelt';
+import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import bbox from '@turf/bbox';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { booleanIntersects } from '@turf/boolean-intersects';
 import { polygon } from '@turf/helpers';
 import { BBox } from 'geojson';
 import {
-  SubmitEvent,
   ReactElement,
+  SubmitEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -29,22 +38,13 @@ import {
 } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { authInit } from '../../auth/model/actions.js';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { downloadMap } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
 import {
   IntegratedLayerDef,
   integratedLayerDefs,
   IsTileLayerDef,
 } from '../../../mapDefinitions.js';
 import { isInvalidInt } from '../../../numberValidator.js';
-import { CreditsAlert } from '../../credits/components/CredistAlert.js';
-import { countryCodeToFlag, Emoji } from '../../../components/Emoji.js';
-import { ExperimentalFunction } from '../../../components/ExperimentalFunction.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
+import { downloadMap } from '../model/actions.js';
 
 type Props = { show: boolean };
 

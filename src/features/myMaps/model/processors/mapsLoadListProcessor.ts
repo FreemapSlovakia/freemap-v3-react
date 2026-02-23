@@ -1,10 +1,10 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { assert } from 'typia';
-import { authLogout, authSetUser } from '../../../auth/model/actions.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
-import { type MapMeta, mapsLoadList, mapsSetList } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import type { StringDates } from '../../../../types/common.js';
+import { type MapMeta, mapsLoadList, mapsSetList } from '../actions.js';
 
 export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],

@@ -1,3 +1,17 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  getGenericNameFromOsmElement,
+  getNameFromOsmElement,
+  resolveGenericName,
+} from '@osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import {
+  MarkerIcon,
+  markerIconOptions,
+  MarkerLeafletIcon,
+} from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { escapeHtml } from '@shared/stringUtils.js';
 import { Feature } from 'geojson';
 import {
   DomEvent,
@@ -12,20 +26,6 @@ import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { searchSelectResult, SearchSource } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import {
-  getGenericNameFromOsmElement,
-  getNameFromOsmElement,
-  resolveGenericName,
-} from '../../../osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '../../../osm/osmTagToIconMapping.js';
-import { escapeHtml } from '../../../stringUtils.js';
-import {
-  MarkerIcon,
-  markerIconOptions,
-  MarkerLeafletIcon,
-} from '../../../components/RichMarker.js';
 
 export function SearchResults(): ReactElement | null {
   const selectedResult = useAppSelector((state) => state.search.selectedResult);

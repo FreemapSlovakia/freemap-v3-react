@@ -1,13 +1,13 @@
+import { clearMapFeatures } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { searchSelectResult } from '@features/search/model/actions.js';
+import { positionsEqual, shouldBeArea } from '@shared/geoutils.js';
 import { lineString, polygon } from '@turf/helpers';
 import { assert } from 'typia';
-import { clearMapFeatures } from '../../../../actions/mainActions.js';
-import { osmLoadWay } from '../osmActions.js';
-import { searchSelectResult } from '../../../search/model/actions.js';
 import { copyDisplayName } from '../../../../copyDisplayName.js';
-import { positionsEqual, shouldBeArea } from '../../../../geoutils.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import { FeatureId } from '../../../../types/featureId.js';
+import { osmLoadWay } from '../osmActions.js';
 import type { OsmResult } from '../types.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {

@@ -1,16 +1,16 @@
+import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   ChangeEvent,
-  SubmitEvent,
   ReactElement,
+  SubmitEvent,
   useCallback,
   useState,
 } from 'react';
 import { Accordion, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { saveSettings, setActiveModal } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { isInvalidInt } from '../../../numberValidator.js';
 import { CustomMapsSettings } from './CustomMapsSettings.js';
 import { MapLayersSettings } from './MapLayersSettings.js';

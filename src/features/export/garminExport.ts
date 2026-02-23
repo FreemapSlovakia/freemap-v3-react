@@ -1,7 +1,7 @@
+import { mergeLines } from '@shared/geoutils.js';
 import { LineString, Position } from 'geojson';
+import type { RootState } from '../../app/store/store.js';
 import { Exportable } from './model/actions.js';
-import { mergeLines } from '../../geoutils.js';
-import type { RootState } from '../../store.js';
 
 export type GarminCourse = {
   distance?: number;

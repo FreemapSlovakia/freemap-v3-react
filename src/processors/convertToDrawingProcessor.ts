@@ -1,17 +1,17 @@
-import { flatten as turfFlatten } from '@turf/flatten';
-import { lineString } from '@turf/helpers';
-import { simplify } from '@turf/simplify';
+import { convertToDrawing, selectFeature } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   drawingLineAdd,
   Point,
-} from '../features/drawing/model/actions/drawingLineActions.js';
-import { drawingPointAdd } from '../features/drawing/model/actions/drawingPointActions.js';
-import { convertToDrawing, selectFeature } from '../actions/mainActions.js';
-import { routePlannerDelete } from '../features/routePlanner/model/actions.js';
-import { searchClear } from '../features/search/model/actions.js';
-import { trackViewerDelete } from '../features/trackViewer/model/actions.js';
-import { mergeLines } from '../geoutils.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
+import { searchClear } from '@features/search/model/actions.js';
+import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
+import { mergeLines } from '@shared/geoutils.js';
+import { flatten as turfFlatten } from '@turf/flatten';
+import { lineString } from '@turf/helpers';
+import { simplify } from '@turf/simplify';
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,

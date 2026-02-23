@@ -1,3 +1,4 @@
+import { Tool } from '@app/store/actions.js';
 import type { ReactElement } from 'react';
 import {
   FaDrawPolygon,
@@ -8,7 +9,6 @@ import {
   FaRoad,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
-import { Tool } from './actions/mainActions.js';
 import type { Messages } from './translations/messagesInterface.js';
 
 export interface ToolDefinition {

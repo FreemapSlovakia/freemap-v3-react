@@ -1,20 +1,17 @@
+import { selectFeature } from '@app/store/actions.js';
+import { selectingModeSelector } from '@app/store/selectors.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { distance } from '@turf/distance';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { selectFeature } from '../../../actions/mainActions.js';
-import { RichMarker } from '../../../components/RichMarker.js';
-import {
-  tooltipText,
-  TrackingPoint,
-} from './TrackingPoint.js';
-import { toLatLng, toLatLngArr } from '../../../geoutils.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useDateTimeFormat } from '../../../hooks/useDateTimeFormat.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { selectingModeSelector } from '../../../selectors/mainSelectors.js';
 import { TrackPoint } from '../model/types.js';
+import { tooltipText, TrackingPoint } from './TrackingPoint.js';
 
 // TODO functional component with hooks was causing massive re-rendering
 export function TrackingResult(): ReactElement {

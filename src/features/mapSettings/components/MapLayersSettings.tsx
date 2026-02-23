@@ -1,3 +1,7 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LayerSettings } from '@features/map/model/actions.js';
+import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import {
@@ -8,15 +12,11 @@ import {
   FaRegListAlt,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { LayerSettings } from '../../map/model/actions.js';
-import { useMessages } from '../../../l10nInjector.js';
 import {
   CustomLayerDef,
   integratedLayerDefMap,
   integratedLayerDefs,
 } from '../../../mapDefinitions.js';
-import { countryCodeToFlag, Emoji } from '../../../components/Emoji.js';
-import { ShortcutRecorder } from '../../../components/ShortcutRecorder.js';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;

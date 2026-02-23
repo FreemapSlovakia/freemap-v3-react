@@ -1,11 +1,11 @@
+import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { FaHome } from 'react-icons/fa';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { setSelectingHomeLocation } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { RichMarker } from '../../../components/RichMarker.js';
 
 export function HomeLocationPickingResult(): ReactElement | null {
   const dispatch = useDispatch();

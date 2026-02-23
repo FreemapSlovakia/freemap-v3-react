@@ -1,10 +1,10 @@
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { Dispatch } from 'redux';
-import { ExportTarget } from './model/actions.js';
-import { toastsAdd } from '../toasts/model/actions.js';
+import type { RootState } from '../../app/store/store.js';
 import { loadGapi, startGoogleAuth } from '../../gapiLoader.js';
-import { httpRequest } from '../../httpRequest.js';
-import type { RootState } from '../../store.js';
+import { httpRequest } from '../../app/httpRequest.js';
 import { hasProperty } from '../../typeUtils.js';
+import { ExportTarget } from './model/actions.js';
 
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';

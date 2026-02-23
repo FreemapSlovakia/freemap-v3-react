@@ -1,6 +1,6 @@
+import { clearMapFeatures } from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { clearMapFeatures } from '../../../actions/mainActions.js';
-import { mapsLoaded } from '../../myMaps/model/actions.js';
 import {
   MarkerType,
   ObjectsResult,

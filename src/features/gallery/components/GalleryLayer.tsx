@@ -6,12 +6,12 @@ import {
   type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
+import { createWorkerPool, WorkerPool } from '../../../workerPool.js';
+import { createFilter } from '../galleryUtils.js';
 import {
   type GalleryColorizeBy,
   type GalleryFilter,
 } from '../model/actions.js';
-import { createFilter } from '../galleryUtils.js';
-import { createWorkerPool, WorkerPool } from '../../../workerPool.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
 
 type GalleryLayerOptions = GridLayerOptions & {

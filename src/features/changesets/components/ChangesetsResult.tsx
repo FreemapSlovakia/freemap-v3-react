@@ -1,14 +1,14 @@
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Point } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { Changeset, changesetsSetParams } from '../model/actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { RichMarker } from '../../../components/RichMarker.js';
 import { colors } from '../../../constants.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import '../../../styles/changesets.scss';
+import { Changeset, changesetsSetParams } from '../model/actions.js';
+import './ChangesetsResult.scss';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 

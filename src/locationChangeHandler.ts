@@ -1,6 +1,19 @@
+import {
+  documentShow,
+  enableUpdatingUrl,
+  selectFeature,
+  setActiveModal,
+  setEmbedFeatures,
+  setTool,
+  ShowModal,
+  Tool,
+} from '@app/store/actions.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import { is } from 'typia';
+import type { RootAction } from './app/store/rootAction.js';
+import type { MyStore, RootState } from './app/store/store.js';
+import { tools } from './constants.js';
 import {
   ChangesetParams,
   changesetsSet,
@@ -22,18 +35,7 @@ import {
   galleryRequestImage,
   gallerySetFilter,
 } from './features/gallery/model/actions.js';
-import type { RootAction } from './actions/index.js';
-import { l10nSetChosenLanguage } from './actions/l10nActions.js';
-import {
-  documentShow,
-  enableUpdatingUrl,
-  selectFeature,
-  setActiveModal,
-  setEmbedFeatures,
-  setTool,
-  ShowModal,
-  Tool,
-} from './actions/mainActions.js';
+import { l10nSetChosenLanguage } from './features/l10n/model/actions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
@@ -48,24 +50,24 @@ import {
   osmLoadWay,
 } from './features/osm/model/osmActions.js';
 import {
+  type ColorStop,
+  type Color as ColorType,
+  serializeShading,
+  ShadingComponent,
+} from './features/parameterizedShading/Shading.js';
+import {
   routePlannerSetParams,
   RoutePoint,
 } from './features/routePlanner/model/actions.js';
 import { searchSetQuery } from './features/search/model/actions.js';
 import { trackingActions } from './features/tracking/model/actions.js';
+import type { TrackedDevice } from './features/tracking/model/types.js';
 import {
   type ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
 } from './features/trackViewer/model/actions.js';
-import {
-  type ColorStop,
-  type Color as ColorType,
-  serializeShading,
-  ShadingComponent,
-} from './features/parameterizedShading/Shading.js';
-import { tools } from './constants.js';
 import {
   integratedLayerDefMap,
   upgradeCustomLayerDefs,
@@ -74,13 +76,11 @@ import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from './oldFreemapUtils.js';
-import type { MyStore, RootState } from './store.js';
 import {
   migrateTransportType,
   type TransportType,
 } from './transportTypeDefs.js';
 import type { LatLon } from './types/common.js';
-import type { TrackedDevice } from './features/tracking/model/types.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {

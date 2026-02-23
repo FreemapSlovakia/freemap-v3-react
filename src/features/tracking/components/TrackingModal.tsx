@@ -1,8 +1,8 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 import { AccessTokenForm } from './AccessTokenForm.js';
 import { AccessTokens } from './AccessTokens.js';
 import { DeviceForm } from './DeviceForm.js';

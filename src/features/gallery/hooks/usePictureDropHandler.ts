@@ -1,9 +1,9 @@
+import { latLonToString } from '@shared/geoutils.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import ExifReader, { Tags } from 'exifreader';
 import { useCallback } from 'react';
+import { loadPreview } from '../imagePreview.js';
 import { GalleryItem } from '../model/actions.js';
-import { latLonToString } from '../../../geoutils.js';
-import { loadPreview } from '../../../imagePreview.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 let nextId = 1;
 

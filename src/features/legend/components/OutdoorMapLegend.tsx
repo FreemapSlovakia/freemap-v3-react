@@ -1,3 +1,14 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  getGenericNameFromOsmElementSync,
+  getOsmMapping,
+} from '@osm/osmNameResolver.js';
+import { OsmMapping } from '@osm/types.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import {
   Fragment,
   type ReactElement,
@@ -8,17 +19,6 @@ import {
 import { Accordion, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { useEffectiveChosenLanguage } from '../../../hooks/useEffectiveChosenLanguage.js';
-import {
-  getGenericNameFromOsmElementSync,
-  getOsmMapping,
-} from '../../../osm/osmNameResolver.js';
-import { OsmMapping } from '../../../osm/types.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { objectsSetFilter } from '../../objects/model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 type Item = {
   category: string;

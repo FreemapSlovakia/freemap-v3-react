@@ -1,12 +1,12 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { Point } from 'leaflet';
 import type { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
-import { RichMarker } from '../../../components/RichMarker.js';
-import { formatDistance } from '../../../distanceFormatter.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { formatDistance } from '../../../shared/distanceFormatter.js';
 
 export function ElevationChartActivePoint(): ReactElement | null {
   const m = useMessages();

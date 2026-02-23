@@ -1,18 +1,15 @@
+import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Toolbar } from '@shared/components/Toolbar.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { ReactElement } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import { FaEraser, FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  clearMapFeatures,
-  setActiveModal,
-} from '../../../actions/mainActions.js';
 import { mapsDisconnect, mapsSave } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useScrollClasses } from '../../../hooks/useScrollClasses.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { Toolbar } from '../../../components/Toolbar.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();

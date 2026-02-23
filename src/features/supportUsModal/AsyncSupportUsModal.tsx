@@ -1,6 +1,6 @@
+import { AsyncModal } from '@shared/components/AsyncModal.js';
 import type { ReactElement } from 'react';
 import { ShowProps } from '../../hooks/useShow.js';
-import { AsyncModal } from '../../components/AsyncModal.js';
 
 const supportUsModalFactory = () =>
   import(

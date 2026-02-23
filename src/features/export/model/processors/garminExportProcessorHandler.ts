@@ -1,14 +1,12 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { authWithGarmin } from '@features/auth/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
-import { authWithGarmin } from '../../../auth/model/actions.js';
-import {
-  exportMapFeatures,
-} from '../actions.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { HttpError, httpRequest } from '../../../../httpRequest.js';
-import type { ProcessorHandler } from '../../../../middlewares/processorMiddleware.js';
+import { HttpError, httpRequest } from '@app/httpRequest.js';
 import { getExportables } from '../../garminExport.js';
+import { exportMapFeatures } from '../actions.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,

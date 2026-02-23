@@ -1,3 +1,5 @@
+import { applySettings, clearMapFeatures } from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   DrawingPoint,
@@ -7,11 +9,6 @@ import {
   drawingPointDelete,
   drawingPointSetAll,
 } from '../actions/drawingPointActions.js';
-import {
-  applySettings,
-  clearMapFeatures,
-} from '../../../../actions/mainActions.js';
-import { mapsLoaded } from '../../../myMaps/model/actions.js';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];

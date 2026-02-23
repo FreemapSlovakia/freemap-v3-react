@@ -1,10 +1,10 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackViewerToggleElevationChart } from '@features/trackViewer/model/actions.js';
 import { Feature, LineString } from 'geojson';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
-} from '../../../../actions/elevationChartActions.js';
-import { trackViewerToggleElevationChart } from '../../../trackViewer/model/actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
+} from '../../../elevationChart/model/actions.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,

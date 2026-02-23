@@ -1,6 +1,6 @@
-import { setErrorTicketId } from '../actions/mainActions.js';
-import { toastsAdd } from '../features/toasts/model/actions.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+import { setErrorTicketId } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 
 export const errorProcessor: Processor<typeof setErrorTicketId> = {
   actionCreator: setErrorTicketId,

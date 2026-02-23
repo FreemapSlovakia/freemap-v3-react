@@ -1,5 +1,5 @@
+import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { authLogout, authSetUser } from '../../auth/model/actions.js';
 import type { LatLon } from '../../../types/common.js';
 import { saveHomeLocation, setSelectingHomeLocation } from './actions.js';
 

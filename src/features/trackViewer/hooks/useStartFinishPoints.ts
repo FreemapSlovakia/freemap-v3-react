@@ -1,8 +1,8 @@
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { length as turfLength } from '@turf/length';
 import { useMemo } from 'react';
 import { assert } from 'typia';
 import { TrackPoint } from '../model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
   const trackGeojson = useAppSelector(

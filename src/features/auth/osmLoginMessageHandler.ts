@@ -1,5 +1,5 @@
+import { MyStore } from '../../app/store/store.js';
 import { authWithOsm2 } from './model/actions.js';
-import { MyStore } from '../../store.js';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
   const bc = new BroadcastChannel('freemap-osm-auth');

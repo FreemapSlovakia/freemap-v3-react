@@ -1,6 +1,6 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapRefocus } from '@features/map/model/actions.js';
 import { galleryShowOnTheMap } from '../actions.js';
-import { mapRefocus } from '../../../map/model/actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const galleryShowOnTheMapProcessor: Processor = {
   actionCreator: galleryShowOnTheMap,

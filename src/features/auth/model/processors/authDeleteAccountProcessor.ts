@@ -1,8 +1,8 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { gallerySetLayerDirty } from '@features/gallery/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { httpRequest } from '@app/httpRequest.js';
 import { authDeleteAccount, authLogout } from '../actions.js';
-import { gallerySetLayerDirty } from '../../../gallery/model/actions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const authDeleteAccountProcessor: Processor<typeof authDeleteAccount> = {
   actionCreator: authDeleteAccount,

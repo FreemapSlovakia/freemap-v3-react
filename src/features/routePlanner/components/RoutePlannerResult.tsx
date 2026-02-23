@@ -1,3 +1,9 @@
+import { selectFeature } from '@app/store/actions.js';
+import { selectingModeSelector } from '@app/store/selectors.js';
+import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
@@ -26,7 +32,9 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { selectFeature } from '../../../actions/mainActions.js';
+import { formatDistance } from '../../../shared/distanceFormatter.js';
+import { transportTypeDefs } from '../../../transportTypeDefs.js';
+import { useMap } from '../../map/hooks/useMap.js';
 import {
   routePlannerAddPoint,
   routePlannerSetActiveAlternativeIndex,
@@ -35,14 +43,6 @@ import {
   routePlannerSetStart,
   StepMode,
 } from '../model/actions.js';
-import { ElevationChartActivePoint } from '../../elevationChart/components/ElevationChartActivePoint.js';
-import { RichMarker } from '../../../components/RichMarker.js';
-import { formatDistance } from '../../../distanceFormatter.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { selectingModeSelector } from '../../../selectors/mainSelectors.js';
-import { transportTypeDefs } from '../../../transportTypeDefs.js';
-import { useMap } from '../../../hooks/useMap.js';
 
 export function RoutePlannerResult(): ReactElement {
   const m = useMessages();

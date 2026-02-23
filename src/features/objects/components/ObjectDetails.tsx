@@ -1,18 +1,18 @@
-import { Fragment, ReactElement } from 'react';
-import { Button, Table } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { SearchResult } from '../../search/model/actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { SearchResult } from '@features/search/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   categoryKeys,
   getNameFromOsmElement,
   resolveGenericName,
-} from '../../../osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '../../../osm/osmTagToIconMapping.js';
-import { useGenericNameResolver } from '../../../osm/useGenericNameResolver.js';
+} from '@osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { Fragment, ReactElement } from 'react';
+import { Button, Table } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { is } from 'typia';
 import { OsmFeatureId } from '../../../types/featureId.js';
 import { SourceName } from './SourceName.js';
 

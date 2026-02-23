@@ -1,11 +1,11 @@
-import { SubmitEvent, ReactElement, useState } from 'react';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { DateTime } from '@shared/components/DateTime.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { ReactElement, SubmitEvent, useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { trackingActions } from '../model/actions.js';
-import { DateTime } from '../../../components/DateTime.js';
-import { toDatetimeLocal } from '../../../dateUtils.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 import { useTextInputState } from '../../../hooks/useTextInputState.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { toDatetimeLocal } from '../../../shared/dateUtils.js';
+import { trackingActions } from '../model/actions.js';
 
 import { Button, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';

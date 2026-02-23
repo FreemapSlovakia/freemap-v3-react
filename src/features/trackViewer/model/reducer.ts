@@ -1,8 +1,8 @@
+import { clearMapFeatures } from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { FeatureCollection } from 'geojson';
-import { clearMapFeatures } from '../../../actions/mainActions.js';
-import { mapsLoaded } from '../../myMaps/model/actions.js';
-import { osmClear } from '../../osm/model/osmActions.js';
 import {
   trackViewerColorizeTrackBy,
   trackViewerDelete,

@@ -1,3 +1,16 @@
+import {
+  clearMapFeatures,
+  convertToDrawing,
+  setActiveModal,
+} from '@app/store/actions.js';
+import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
@@ -11,26 +24,12 @@ import {
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import {
-  clearMapFeatures,
-  convertToDrawing,
-  setActiveModal,
-} from '../../../actions/mainActions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerSetData,
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { trackGeojsonIsSuitableForElevationChart } from '../../../selectors/mainSelectors.js';
-import '../../../styles/trackViewer.scss';
-import { DeleteButton } from '../../../components/DeleteButton.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { ToolMenu } from '../../../components/ToolMenu.js';
 
 export default TrackViewerMenu;
 

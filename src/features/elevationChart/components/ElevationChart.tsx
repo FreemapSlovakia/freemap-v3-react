@@ -1,3 +1,6 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
   Fragment,
   ReactElement,
@@ -12,11 +15,8 @@ import { useDispatch } from 'react-redux';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
-} from '../../../actions/elevationChartActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
-import '../../../styles/elevationChart.scss';
+} from '../model/actions.js';
+import './ElevationChart.scss';
 
 const ml = 50,
   mr = 30,

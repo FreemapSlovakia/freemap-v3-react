@@ -6,9 +6,9 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
-import type { RootAction } from '../../../actions/index.js';
+import type { RootAction } from '../../../app/store/rootAction.js';
 import { ResolvedToast, ToastAction } from '../model/actions.js';
-import '../../../styles/toasts.scss';
+import './toasts.scss';
 
 interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {
   actions: (Omit<ToastAction, 'nameKey'> & { name: string })[];

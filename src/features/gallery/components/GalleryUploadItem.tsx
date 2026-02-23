@@ -1,11 +1,11 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
-import { GalleryTag } from '../model/actions.js';
-import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
-import { getPreview, loadPreview } from '../../../imagePreview.js';
 import spinnerbar from '../../../images/spinnerbar.gif';
 import { Messages } from '../../../translations/messagesInterface.js';
+import { getPreview, loadPreview } from '../imagePreview.js';
+import { GalleryTag } from '../model/actions.js';
+import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
 
 interface Props {
   id: number;

@@ -1,12 +1,12 @@
+import { convertToDrawing } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Selection } from '@shared/components/Selection.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { convertToDrawing } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { Selection } from '../../../components/Selection.js';
 
 export default ObjectSelection;
 

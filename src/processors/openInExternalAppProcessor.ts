@@ -1,8 +1,10 @@
+import { openInExternalApp } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { bbox } from '@turf/bbox';
 import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
-import { openInExternalApp } from '../actions/mainActions.js';
-import { toastsAdd } from '../features/toasts/model/actions.js';
 import { copyToClipboard } from '../clipboardUtils.js';
 import {
   getF4mapUrl,
@@ -18,8 +20,6 @@ import {
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
-import { mapPromise } from '../leafletElementHolder.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   actionCreator: openInExternalApp,

@@ -1,3 +1,16 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { SourceName } from '@features/objects/components/SourceName.js';
+import {
+  getNameFromOsmElement,
+  resolveGenericName,
+} from '@osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
   ChangeEvent,
   forwardRef,
@@ -22,32 +35,19 @@ import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
+  FeatureId,
+  featureIdsEqual,
+  OsmFeatureId,
+  stringifyFeatureId,
+} from '../../../types/featureId.js';
+import {
   SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
   SearchSource,
 } from '../model/actions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useEffectiveChosenLanguage } from '../../../hooks/useEffectiveChosenLanguage.js';
-import { useScrollClasses } from '../../../hooks/useScrollClasses.js';
-import { useMessages } from '../../../l10nInjector.js';
-import {
-  getNameFromOsmElement,
-  resolveGenericName,
-} from '../../../osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '../../../osm/osmTagToIconMapping.js';
-import { useGenericNameResolver } from '../../../osm/useGenericNameResolver.js';
-import '../../../styles/search.scss';
-import {
-  FeatureId,
-  featureIdsEqual,
-  OsmFeatureId,
-  stringifyFeatureId,
-} from '../../../types/featureId.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { SourceName } from '../../objects/components/SourceName.js';
+import './SearchMenu.scss';
 
 type Props = {
   hidden?: boolean;

@@ -1,5 +1,5 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { setActiveModal } from '../../../actions/mainActions.js';
 import {
   authFetchPurchases,
   authLogout,

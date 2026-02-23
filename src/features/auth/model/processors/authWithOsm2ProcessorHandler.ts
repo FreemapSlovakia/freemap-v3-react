@@ -1,7 +1,7 @@
-import { authWithOsm2 } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { ProcessorHandler } from '../../../../middlewares/processorMiddleware.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import { handleLoginResponse } from '../../loginResponseHandler.js';
+import { authWithOsm2 } from '../actions.js';
 
 const handle: ProcessorHandler<typeof authWithOsm2> = async ({
   getState,

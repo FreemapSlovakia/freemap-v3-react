@@ -1,7 +1,7 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 
 export interface PictureModel {
   title: string;

@@ -1,15 +1,15 @@
+import { setActiveModal, setTool, Tool } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
-import { setActiveModal, setTool, Tool } from '../../../actions/mainActions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { toolDefinitions } from '../../../toolDefinitions.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { ToolMenu } from '../../../components/ToolMenu.js';
 
 export default DrawingMenu;
 

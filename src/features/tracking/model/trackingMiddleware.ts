@@ -1,9 +1,9 @@
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { Dispatch, Middleware } from 'redux';
 import { is } from 'typia';
-import { rpcCall, rpcResponse } from '../../../actions/rpcActions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { wsClose, wsOpen } from '../../../actions/websocketActions.js';
-import type { RootState } from '../../../store.js';
+import type { RootState } from '../../../app/store/store.js';
+import { rpcCall, rpcResponse } from '../../rpc/model/actions.js';
+import { wsClose, wsOpen } from '../../websocket/model/actions.js';
 import { TrackedDevice } from './types.js';
 
 export function createTrackingMiddleware(): Middleware<

@@ -1,13 +1,13 @@
-import { Dispatch } from 'redux';
-import { assert } from 'typia';
-import { toastsAdd } from '../../../toasts/model/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   trackViewerSetTrackUID,
   trackViewerUploadTrack,
-} from '../../../trackViewer/model/actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
-import type { RootState } from '../../../../store.js';
+} from '@features/trackViewer/model/actions.js';
+import { Dispatch } from 'redux';
+import { assert } from 'typia';
+import type { RootState } from '@app/store/store.js';
+import { httpRequest } from '@app/httpRequest.js';
 
 export async function handleTrackUpload({
   dispatch,

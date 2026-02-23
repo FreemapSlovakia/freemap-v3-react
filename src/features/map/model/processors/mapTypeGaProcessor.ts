@@ -1,6 +1,6 @@
-import { enableUpdatingUrl } from '../../../../actions/mainActions.js';
+import { enableUpdatingUrl } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapRefocus } from '../actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 let prevLayers: string[] = [];
 

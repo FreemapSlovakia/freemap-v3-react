@@ -1,5 +1,5 @@
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Button } from 'react-bootstrap';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
 
 type Props = {
   onColor: (color: string) => void;

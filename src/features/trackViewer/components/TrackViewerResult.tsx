@@ -1,3 +1,10 @@
+import { setTool } from '@app/store/actions.js';
+import { selectingModeSelector } from '@app/store/selectors.js';
+import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { RichMarker } from '@shared/components/RichMarker.js';
+import { smoothElevations } from '@shared/geoutils.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { distance } from '@turf/distance';
 import { flatten } from '@turf/flatten';
 import { getCoords } from '@turf/invariant';
@@ -8,16 +15,9 @@ import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
-import { setTool } from '../../../actions/mainActions.js';
-import { ElevationChartActivePoint } from '../../elevationChart/components/ElevationChartActivePoint.js';
-import { RichMarker } from '../../../components/RichMarker.js';
 import { colors } from '../../../constants.js';
-import { formatDistance } from '../../../distanceFormatter.js';
-import { smoothElevations } from '../../../geoutils.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useDateTimeFormat } from '../../../hooks/useDateTimeFormat.js';
+import { formatDistance } from '../../../shared/distanceFormatter.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
-import { selectingModeSelector } from '../../../selectors/mainSelectors.js';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString>[];

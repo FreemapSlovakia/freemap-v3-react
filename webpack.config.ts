@@ -63,6 +63,13 @@ const config: Configuration = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@app': path.resolve(__dirname, 'src/app'),
+      '@shared': path.resolve(__dirname, 'src/shared'),
+      '@features': path.resolve(__dirname, 'src/features'),
+      '@osm': path.resolve(__dirname, 'src/osm'),
+    },
     extensionAlias: {
       '.js': ['.js', '.ts', '.tsx'],
     },

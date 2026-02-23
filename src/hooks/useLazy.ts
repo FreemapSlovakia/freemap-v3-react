@@ -1,7 +1,10 @@
+import {
+  startProgress,
+  stopProgress,
+} from '@features/progress/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { startProgress, stopProgress } from '../features/progress/model/actions.js';
-import { toastsAdd } from '../features/toasts/model/actions.js';
 
 export function useLazy<T>(
   factory: () => Promise<{ default: T }>,

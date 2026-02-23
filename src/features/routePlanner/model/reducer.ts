@@ -1,11 +1,15 @@
-import { createReducer } from '@reduxjs/toolkit';
-import { Feature, Polygon } from 'geojson';
 import {
   clearMapFeatures,
   selectFeature,
   setTool,
-} from '../../../actions/mainActions.js';
-import { mapsLoaded } from '../../myMaps/model/actions.js';
+} from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { createReducer } from '@reduxjs/toolkit';
+import { Feature, Polygon } from 'geojson';
+import {
+  TransportType,
+  transportTypeDefs,
+} from '../../../transportTypeDefs.js';
 import {
   Alternative,
   IsochroneParams,
@@ -34,10 +38,6 @@ import {
   RoutingMode,
   Waypoint,
 } from './actions.js';
-import {
-  TransportType,
-  transportTypeDefs,
-} from '../../../transportTypeDefs.js';
 
 export interface RoutePlannerCleanResultState {
   alternatives: Alternative[];

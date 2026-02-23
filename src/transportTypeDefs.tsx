@@ -3,8 +3,8 @@ import {
   FaBicycle,
   FaCar,
   FaHiking,
-  FaPen,
   FaMotorcycle,
+  FaPen,
   FaWalking,
 } from 'react-icons/fa';
 import { is } from 'typia';

@@ -1,6 +1,6 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import { galleryRequestImage, gallerySubmitStars } from '../actions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
   {

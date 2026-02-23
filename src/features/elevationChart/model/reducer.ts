@@ -1,18 +1,18 @@
-import { createReducer } from '@reduxjs/toolkit';
+import { selectFeature, setTool } from '@app/store/actions.js';
 import {
   drawingLineAddPoint,
   drawingLineRemovePoint,
   drawingLineUpdatePoint,
-} from '../../drawing/model/actions/drawingLineActions.js';
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import { routePlannerSetResult } from '@features/routePlanner/model/actions.js';
+import { createReducer } from '@reduxjs/toolkit';
+import type { LatLon } from '../../../types/common.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
-} from '../../../actions/elevationChartActions.js';
-import { selectFeature, setTool } from '../../../actions/mainActions.js';
-import { routePlannerSetResult } from '../../routePlanner/model/actions.js';
-import type { LatLon } from '../../../types/common.js';
+} from './actions.js';
 
 export interface ElevationProfilePoint extends LatLon {
   climbUp?: number;

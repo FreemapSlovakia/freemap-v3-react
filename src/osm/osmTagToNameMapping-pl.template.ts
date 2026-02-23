@@ -778,7 +778,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Generator energii elektrycznej na biomasę',
 
           'generator:method': {
-            anaerobic_digestion: 'Generator energii z beztlenowej fermentacji biomasy',
+            anaerobic_digestion:
+              'Generator energii z beztlenowej fermentacji biomasy',
             combustion: 'Generator energii ze spalania biomasy',
             gasification: 'Generator energii ze zgazowania biomasy',
           },
@@ -809,7 +810,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
           'generator:method': {
             'run-of-the-river': 'Przepływowy generator hydroelektryczny',
-            'water-pumped-storage': 'Generator hydroelektryczny szczytowo-pompowy',
+            'water-pumped-storage':
+              'Generator hydroelektryczny szczytowo-pompowy',
             'water-storage': 'Zbiornikowy generator hydroelektryczny',
           },
         },
@@ -880,7 +882,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Elektrownia na biomasę',
 
           'plant:method': {
-            anaerobic_digestion: 'Elektrownia na biomasę z fermentacją beztlenową',
+            anaerobic_digestion:
+              'Elektrownia na biomasę z fermentacją beztlenową',
             combustion: 'Elektrownia na biomasę ze spalaniem',
             gasification: 'Elektrownia na biomasę ze zgazowaniem',
           },
@@ -1279,7 +1282,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     paragliding: 'Paralotniarstwo',
     parkour: 'Parkour',
     pedal_car_racing: 'Wyścigi samochodów na pedały',
-    'pesäpallo': 'Pesäpallo (fiński baseball)',
+    pesäpallo: 'Pesäpallo (fiński baseball)',
     pickleball: 'Pickleball',
     pilates: 'Pilates',
     pole_dance: 'Pole dance',

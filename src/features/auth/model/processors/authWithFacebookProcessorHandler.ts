@@ -1,9 +1,9 @@
-import { authWithFacebook } from '../actions.js';
-import { toastsAdd } from '../../../toasts/model/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadFb } from '../../../../fbLoader.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { ProcessorHandler } from '../../../../middlewares/processorMiddleware.js';
+import { httpRequest } from '@app/httpRequest.js';
 import { handleLoginResponse } from '../../loginResponseHandler.js';
+import { authWithFacebook } from '../actions.js';
 
 const handle: ProcessorHandler<typeof authWithFacebook> = async ({
   action,

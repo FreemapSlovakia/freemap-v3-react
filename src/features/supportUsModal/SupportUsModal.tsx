@@ -1,11 +1,11 @@
+import { documentShow, setActiveModal } from '@app/store/actions.js';
+import { useLocalMessages, useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { documentShow, setActiveModal } from '../../actions/mainActions.js';
-import { useAppSelector } from '../../hooks/useAppSelector.js';
 import { useBecomePremium } from '../../hooks/useBecomePremium.js';
-import { useLocalMessages, useMessages } from '../../l10nInjector.js';
 import { navigate } from '../../navigationUtils.js';
 import { SupportUsMessages } from './translations/SupportUsMessages.js';
 

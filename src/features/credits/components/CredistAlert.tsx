@@ -1,11 +1,11 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { FaCoins } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../../../actions/mainActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useNumberFormat } from '../../../hooks/useNumberFormat.js';
-import { useMessages } from '../../../l10nInjector.js';
 
 type Props = { buy?: boolean; price?: number; explainCredits?: boolean };
 

@@ -1,6 +1,6 @@
+import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { Changeset, changesetsSet, changesetsSetParams } from './actions.js';
-import { clearMapFeatures, setTool } from '../../../actions/mainActions.js';
 
 export interface ChangesetsState {
   changesets: Changeset[];

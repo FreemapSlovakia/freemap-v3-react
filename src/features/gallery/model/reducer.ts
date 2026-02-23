@@ -1,4 +1,13 @@
+import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
+import { mapRefocus } from '@features/map/model/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { latLonToString } from '@shared/geoutils.js';
+import { parseCoordinates } from '../../../coordinatesParser.js';
+import { toDatetimeLocal } from '../../../shared/dateUtils.js';
+import type { LatLon } from '../../../types/common.js';
+import { l10nSetLanguage } from '../../l10n/model/actions.js';
+import type { PictureModel } from '../components/GalleryEditForm.js';
 import {
   galleryAddItem,
   galleryAddTag,
@@ -36,18 +45,6 @@ import {
   type GalleryUser,
   type Picture,
 } from './actions.js';
-import { l10nSetLanguage } from '../../../actions/l10nActions.js';
-import {
-  clearMapFeatures,
-  setActiveModal,
-} from '../../../actions/mainActions.js';
-import { mapRefocus } from '../../map/model/actions.js';
-import { mapsLoaded } from '../../myMaps/model/actions.js';
-import type { PictureModel } from '../components/GalleryEditForm.js';
-import { parseCoordinates } from '../../../coordinatesParser.js';
-import { toDatetimeLocal } from '../../../dateUtils.js';
-import { latLonToString } from '../../../geoutils.js';
-import type { LatLon } from '../../../types/common.js';
 
 export interface GalleryState {
   imageIds: number[] | null;

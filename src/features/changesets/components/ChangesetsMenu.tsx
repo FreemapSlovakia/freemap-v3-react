@@ -1,12 +1,12 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
 import { FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsSetParams } from '../model/actions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { ToolMenu } from '../../../components/ToolMenu.js';
 
 export default ChangesetsMenu;
 

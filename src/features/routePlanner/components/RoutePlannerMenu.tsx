@@ -1,12 +1,23 @@
 import {
+  convertToDrawing,
+  setSelectingHomeLocation,
+} from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
   ChangeEvent,
   Children,
   CSSProperties,
-  SubmitEvent,
   forwardRef,
   Fragment,
   ReactElement,
   ReactNode,
+  SubmitEvent,
   SyntheticEvent,
   useCallback,
   useState,
@@ -35,10 +46,7 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
-import {
-  convertToDrawing,
-  setSelectingHomeLocation,
-} from '../../../actions/mainActions.js';
+import { transportTypeDefs } from '../../../transportTypeDefs.js';
 import {
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
@@ -53,14 +61,6 @@ import {
   routePlannerToggleMilestones,
   RoutingMode,
 } from '../model/actions.js';
-import { toastsAdd } from '../../toasts/model/actions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { transportTypeDefs } from '../../../transportTypeDefs.js';
-import { DeleteButton } from '../../../components/DeleteButton.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { ToolMenu } from '../../../components/ToolMenu.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
 export default RoutePlannerMenu;
@@ -364,7 +364,9 @@ export function RoutePlannerMenu(): ReactElement {
 
   const milestones = useAppSelector((state) => state.routePlanner.milestones);
 
-  const homeLocation = useAppSelector((state) => state.homeLocation.homeLocation);
+  const homeLocation = useAppSelector(
+    (state) => state.homeLocation.homeLocation,
+  );
 
   const activeTransportType = useAppSelector(
     (state) => state.routePlanner.transportType,

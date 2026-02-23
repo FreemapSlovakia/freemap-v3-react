@@ -1,9 +1,9 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaCamera, FaRegCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function GalleryColorizeBySubmenu(): JSX.Element {

@@ -1,8 +1,3 @@
-import storage from 'local-storage-fallback';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { is } from 'typia';
-import { l10nSetChosenLanguage } from '../actions/l10nActions.js';
 import {
   ExternalTargets,
   Modal,
@@ -13,11 +8,16 @@ import {
   saveSettings,
   setActiveModal,
   setTool,
-} from '../actions/mainActions.js';
-import { mapRefocus } from '../features/map/model/actions.js';
-import { trackingActions } from '../features/tracking/model/actions.js';
-import { Submenu } from '../features/mainMenu/components/submenu.js';
-import { useAppSelector } from './useAppSelector.js';
+} from '@app/store/actions.js';
+import { Submenu } from '@features/mainMenu/components/submenu.js';
+import { mapRefocus } from '@features/map/model/actions.js';
+import { trackingActions } from '@features/tracking/model/actions.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import storage from 'local-storage-fallback';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { is } from 'typia';
+import { l10nSetChosenLanguage } from '../features/l10n/model/actions.js';
 
 export function useMenuHandler({
   pointTitle,

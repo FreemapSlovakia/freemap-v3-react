@@ -1,17 +1,17 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Checkbox } from '@shared/components/Checkbox.js';
+import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useState, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { integratedLayerDefs } from '../../../mapDefinitions.js';
 import {
   mapDetailsExcludeSources,
   MapDetailsSource,
 } from '../model/actions.js';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
-import { integratedLayerDefs } from '../../../mapDefinitions.js';
-import { Checkbox } from '../../../components/Checkbox.js';
-import { DeleteButton } from '../../../components/DeleteButton.js';
-import { ToolMenu } from '../../../components/ToolMenu.js';
 
 export function MapDetailsMenu(): ReactElement | null {
   // TODO what is this?

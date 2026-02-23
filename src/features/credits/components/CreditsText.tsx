@@ -1,6 +1,6 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../../../actions/mainActions.js';
 
 type Props = { help: string; credits: string };
 

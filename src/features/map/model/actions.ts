@@ -1,5 +1,5 @@
+import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
-import { Shading } from '../../parameterizedShading/Shading.js';
 import { CustomLayerDef } from '../../../mapDefinitions.js';
 import { Shortcut } from '../../../types/common.js';
 

@@ -1,5 +1,5 @@
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSetQuery } from '../actions.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
   actionCreator: searchSetQuery,
@@ -32,7 +32,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         await (
           await import(
             /* webpackChunkName: "map-details-processor-handler" */
-            '../../../mapDetails/model/mapDetailsProcessorHandler.js'
+            '@features/mapDetails/model/mapDetailsProcessorHandler.js'
           )
         ).default(latlng, props.getState, props.dispatch);
 

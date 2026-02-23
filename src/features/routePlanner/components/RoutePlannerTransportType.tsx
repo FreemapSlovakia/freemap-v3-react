@@ -1,15 +1,15 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { Fragment, ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
-import { fixedPopperConfig } from '../../../fixedPopperConfig.js';
-import { useScrollClasses } from '../../../hooks/useScrollClasses.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { useBecomePremium } from '../../../hooks/useBecomePremium.js';
 import {
   TransportType,
   transportTypeDefs,
 } from '../../../transportTypeDefs.js';
-import { LongPressTooltip } from '../../../components/LongPressTooltip.js';
-import { useBecomePremium } from '../../../hooks/useBecomePremium.js';
 
 type Props = {
   onChange: (value?: TransportType) => void;

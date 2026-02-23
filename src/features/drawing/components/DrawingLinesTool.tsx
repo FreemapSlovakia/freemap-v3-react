@@ -1,14 +1,14 @@
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { isEventOnMap } from '../../../mapUtils.js';
 import {
   type Point,
   drawingLineAddPoint,
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { isEventOnMap } from '../../../mapUtils.js';
 
 export default DrawingLinesTool;
 

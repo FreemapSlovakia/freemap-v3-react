@@ -1,6 +1,6 @@
-import { SearchResult } from '../../search/model/actions.js';
-import { useAppSelector } from '../../../hooks/useAppSelector.js';
-import { useMessages } from '../../../l10nInjector.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { SearchResult } from '@features/search/model/actions.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '../../../mapDefinitions.js';
 
 type Props = {

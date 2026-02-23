@@ -1,8 +1,8 @@
+import { setActiveModal } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { assert } from 'typia';
+import { httpRequest } from '@app/httpRequest.js';
 import { galleryEditPicture, gallerySetTags, GalleryTag } from '../actions.js';
-import { setActiveModal } from '../../../../actions/mainActions.js';
-import { httpRequest } from '../../../../httpRequest.js';
-import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],
