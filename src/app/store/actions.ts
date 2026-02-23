@@ -1,6 +1,5 @@
 import { basicModals, tools } from '@/constants.js';
 import type { CustomLayerDef } from '@/mapDefinitions.js';
-import { OsmFeatureId } from '@/types/featureId.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import type { Purchase } from '@features/auth/model/types.js';
 import {
@@ -14,6 +13,7 @@ import {
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
+import { OsmFeatureId } from '@shared/types/featureId.js';
 
 export type Tool = (typeof tools)[number];
 

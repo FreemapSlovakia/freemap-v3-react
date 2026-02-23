@@ -5,8 +5,8 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { featureCollection, lineString, point, polygon } from '@turf/helpers';
 import { Feature } from 'geojson';
 import { assert } from 'typia';
-import { colors } from '../../../constants.js';
 import { httpRequest } from '../../../app/httpRequest.js';
+import { colors } from '../../../constants.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 

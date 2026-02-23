@@ -3,7 +3,6 @@ import {
   migrateTransportType,
   transportTypeDefs,
 } from '@/transportTypeDefs.js';
-import { StringDates } from '@/types/common.js';
 import type { RootState } from '@app/store/store.js';
 import {
   authInitialState,
@@ -77,6 +76,7 @@ import {
 } from '@features/trackViewer/model/reducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
+import { StringDates } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import { mainInitialState, mainReducer, type MainState } from './reducer.js';

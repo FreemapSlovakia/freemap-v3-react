@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { LatLon } from '@shared/types/common.js';
 import { Feature, Polygon } from 'geojson';
 import { TransportType } from '../../../transportTypeDefs.js';
-import type { LatLon } from '../../../types/common.js';
 
 export type RoutePoint = LatLon & { transport?: TransportType };
 

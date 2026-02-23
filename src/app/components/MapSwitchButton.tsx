@@ -1,7 +1,6 @@
 import { useBecomePremium } from '@/hooks/useBecomePremium.js';
 import { integratedLayerDefs } from '@/mapDefinitions.js';
 import { isPremium } from '@/premium.js';
-import { Shortcut } from '@/types/common.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
@@ -13,6 +12,7 @@ import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { Shortcut } from '@shared/types/common.js';
 import {
   Fragment,
   MouseEvent,

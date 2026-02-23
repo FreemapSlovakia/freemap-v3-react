@@ -1,4 +1,4 @@
-import type { MyStore } from '../../app/store/store.js';
+import type { MyStore } from '@app/store/store.js';
 import { authWithGarmin2 } from './model/actions.js';
 
 export function attachGarminLoginMessageHandler(store: MyStore): void {

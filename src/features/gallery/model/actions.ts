@@ -1,6 +1,6 @@
 import type { User } from '@features/auth/model/types.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { LatLon } from '../../../types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 
 export interface GalleryItem {

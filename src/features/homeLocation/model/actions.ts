@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import type { LatLon } from '../../../types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 
 export const setSelectingHomeLocation = createAction<LatLon | boolean>(
   'SET_SELECTING_HOME_LOCATION',

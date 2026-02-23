@@ -1,5 +1,5 @@
+import { CacheMode } from '@shared/types/common.js';
 import { get, set } from 'idb-keyval';
-import { CacheMode } from './types/common.js';
 
 export async function initCaching() {
   // const [cacheMode, cachingActive] = await Promise.all([

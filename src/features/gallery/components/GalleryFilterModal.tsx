@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   ChangeEvent,
   ReactElement,
@@ -12,7 +13,6 @@ import {
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { isInvalidInt } from '../../../numberValidator.js';
 import { gallerySetFilter } from '../model/actions.js';
 
 type Props = { show: boolean };

@@ -4,12 +4,12 @@ import { drawingLineUpdatePoint } from '@features/drawing/model/actions/drawingL
 import { mapRefocus } from '@features/map/model/actions.js';
 import { serializeShading } from '@features/parameterizedShading/Shading.js';
 import { isAnyOf } from '@reduxjs/toolkit';
+import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
 import { is } from 'typia';
 import { basicModals } from '../constants.js';
 import { integratedLayerDefMap } from '../mapDefinitions.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
-import type { LatLon } from '../types/common.js';
 
 let lastActionType: string | undefined;
 

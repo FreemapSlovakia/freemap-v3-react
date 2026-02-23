@@ -11,9 +11,9 @@ import {
 } from 'react';
 import { Form } from 'react-bootstrap';
 
-import { isInvalidInt } from '@/numberValidator.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { isInvalidInt } from '@shared/numberValidator.js';
 import { Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

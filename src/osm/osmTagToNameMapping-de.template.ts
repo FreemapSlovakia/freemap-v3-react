@@ -1,4 +1,4 @@
-import { DeepPartial } from '../deepPartial.js';
+import { DeepPartial } from '@shared/types/deepPartial.js';
 import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {

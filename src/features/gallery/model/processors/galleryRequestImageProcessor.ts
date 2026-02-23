@@ -1,7 +1,7 @@
-import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { assert } from 'typia';
 import { httpRequest } from '@app/httpRequest.js';
-import type { StringDates } from '../../../../types/common.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { StringDates } from '@shared/types/common.js';
+import { assert } from 'typia';
 import {
   galleryRequestImage,
   gallerySetImage,

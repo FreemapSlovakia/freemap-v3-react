@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useResolvedAttribution } from '@shared/components/Attribution.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { isInvalidInt } from '@shared/numberValidator.js';
 import { CRS } from 'leaflet';
 import storage from 'local-storage-fallback';
 import {
@@ -31,7 +32,6 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert, is } from 'typia';
-import { isInvalidInt } from '../../../numberValidator.js';
 import {
   ExportableLayer,
   ExportFormat,

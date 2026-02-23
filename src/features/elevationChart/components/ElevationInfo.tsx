@@ -1,10 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
+import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
@@ -14,8 +16,6 @@ import {
   integratedLayerDefs,
   IsTileLayerDef,
 } from '../../../mapDefinitions.js';
-import { latLonToString } from '../../../shared/geoutils.js';
-import type { LatLon } from '../../../types/common.js';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;

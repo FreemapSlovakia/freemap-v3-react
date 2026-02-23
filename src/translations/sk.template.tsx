@@ -10,10 +10,10 @@ import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
+import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
 

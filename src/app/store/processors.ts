@@ -37,6 +37,7 @@ import { gallerySubmitStarsProcessor } from '@features/gallery/model/processors/
 import { galleryUploadModalProcessor } from '@features/gallery/model/processors/galleryUploadModalProcessor.js';
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
 import { saveHomeLocationProcessor } from '@features/homeLocation/model/saveHomeLocationProcessor.js';
+import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
@@ -79,14 +80,13 @@ import { trackViewerToggleElevationChartProcessor } from '@features/tracking/mod
 import { trackViewerUploadTrackProcessor } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
-import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
+import { openInExternalAppProcessor } from '../../features/openInExternalApp/openInExternalAppProcessor.js';
 import { cancelProcessor } from '../../processors/cancelProcessor.js';
 import { convertToDrawingProcessor } from '../../processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '../../processors/deleteProcessor.js';
 import { errorProcessor } from '../../processors/errorProcessor.js';
 import { fetchPurchasesProcessor } from '../../processors/fetchPurchasesProcessor.js';
 import { legacyMapWarningProcessor } from '../../processors/legacyMapWarningProcessor.js';
-import { openInExternalAppProcessor } from '../../processors/openInExternalAppProcessor.js';
 import { purchaseProcessor } from '../../processors/purchaseProcessor.js';
 import { saveSettingsProcessor } from '../../processors/saveSettingsProcessor.js';
 import { setActiveModalTransformer } from '../../processors/setActiveModalProcessor.js';

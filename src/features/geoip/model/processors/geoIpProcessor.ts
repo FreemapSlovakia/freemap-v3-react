@@ -1,6 +1,6 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { assert } from 'typia';
-import { httpRequest } from '@app/httpRequest.js';
 import { GeoIpResult, invokeGeoip, processGeoipResult } from '../actions.js';
 
 export const geoipProcessor: Processor = {

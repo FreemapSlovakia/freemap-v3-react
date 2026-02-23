@@ -1,5 +1,5 @@
-import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { httpRequest } from '@app/httpRequest.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { galleryRequestImage, gallerySubmitComment } from '../actions.js';
 
 export const gallerySubmitCommentProcessor: Processor = {

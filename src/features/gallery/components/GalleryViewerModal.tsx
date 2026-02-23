@@ -1,7 +1,7 @@
+import { OpenInExternalAppMenuButton } from '@/features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { OpenInExternalAppMenuButton } from '@shared/components/OpenInExternalAppMenuButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import 'pannellum';

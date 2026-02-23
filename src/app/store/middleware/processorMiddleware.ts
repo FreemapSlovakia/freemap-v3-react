@@ -1,4 +1,3 @@
-import type { MessagePaths } from '@/types/common.js';
 import type { RootState } from '@app/store/store.js';
 import {
   startProgress,
@@ -6,6 +5,7 @@ import {
 } from '@features/progress/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import type { MessagePaths } from '@shared/types/common.js';
 import type { Action, Dispatch, Middleware } from 'redux';
 import { sendError } from '../../../globalErrorHandler.js';
 

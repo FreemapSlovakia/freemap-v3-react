@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaBan, FaCircle } from 'react-icons/fa';
-import { Shortcut } from '../../types/common.js';
+import { Shortcut } from '../types/common.js';
 
 interface ShortcutRecorderProps {
   value?: Shortcut | null;

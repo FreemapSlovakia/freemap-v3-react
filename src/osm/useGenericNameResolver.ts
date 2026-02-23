@@ -3,10 +3,10 @@ import '@features/search/components/SearchMenu.scss';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { OsmFeatureId } from '@shared/types/featureId.js';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { OsmFeatureId } from '../types/featureId.js';
 import { getGenericNameFromOsmElement } from './osmNameResolver.js';
 
 export function useGenericNameResolver(

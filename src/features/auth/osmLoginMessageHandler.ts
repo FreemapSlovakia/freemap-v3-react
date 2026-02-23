@@ -1,4 +1,4 @@
-import { MyStore } from '../../app/store/store.js';
+import { MyStore } from '@app/store/store.js';
 import { authWithOsm2 } from './model/actions.js';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {

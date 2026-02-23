@@ -1,10 +1,10 @@
+import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { handleTrackUpload } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
+import type { StringDates } from '@shared/types/common.js';
 import { assert } from 'typia';
-import type { RootState } from '@app/store/store.js';
-import { httpRequest } from '@app/httpRequest.js';
-import type { StringDates } from '../../../../types/common.js';
 import {
   type MapData,
   type MapMeta,

@@ -12,6 +12,12 @@ import {
 } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { FeatureId } from '@shared/types/featureId.js';
+import { NominatimResult } from '@shared/types/nominatimResult.js';
+import type {
+  OverpassBounds,
+  OverpassElement,
+} from '@shared/types/overpass.js';
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
@@ -19,19 +25,13 @@ import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
-import { RootState } from '../../../app/store/store.js';
 import { httpRequest } from '../../../app/httpRequest.js';
+import { RootState } from '../../../app/store/store.js';
 import {
   integratedLayerDefs,
   IsWmsLayerDef,
   LayerDef,
 } from '../../../mapDefinitions.js';
-import { FeatureId } from '../../../types/featureId.js';
-import { NominatimResult } from '../../../types/nominatimResult.js';
-import type {
-  OverpassBounds,
-  OverpassElement,
-} from '../../../types/overpass.js';
 
 const cancelType = [
   clearMapFeatures.type,

@@ -1,13 +1,13 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
+import { FeatureId } from '@shared/types/featureId.js';
 import { point } from '@turf/helpers';
 import { assert } from 'typia';
-import { copyDisplayName } from '../../../../copyDisplayName.js';
-import { httpRequest } from '@app/httpRequest.js';
-import { FeatureId } from '../../../../types/featureId.js';
 import { osmLoadNode } from '../osmActions.js';
 import type { OsmNode, OsmResult } from '../types.js';
+import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,

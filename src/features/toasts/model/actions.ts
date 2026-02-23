@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { MessagePaths } from '@shared/types/common.js';
 import type { RootAction } from '../../../app/store/rootAction.js';
-import type { MessagePaths } from '../../../types/common.js';
 
 export type ToastAction = {
   action?: RootAction | RootAction[];

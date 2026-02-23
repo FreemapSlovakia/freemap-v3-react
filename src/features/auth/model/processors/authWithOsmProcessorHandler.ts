@@ -1,6 +1,6 @@
+import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { httpRequest } from '@app/httpRequest.js';
 import { authWithOsm } from '../actions.js';
 
 const handle: ProcessorHandler<typeof authWithOsm> = async ({

@@ -1,7 +1,7 @@
+import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { assert } from 'typia';
-import { httpRequest } from '@app/httpRequest.js';
 import { trackingActions } from '../actions.js';
 import { Device } from '../types.js';
 

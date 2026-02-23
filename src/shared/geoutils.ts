@@ -1,4 +1,4 @@
-import type { LatLon } from '@/types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 import { booleanContains } from '@turf/boolean-contains';
 import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 import type { LatLngLiteral } from 'leaflet';

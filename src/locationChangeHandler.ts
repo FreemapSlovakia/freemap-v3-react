@@ -8,6 +8,7 @@ import {
   ShowModal,
   Tool,
 } from '@app/store/actions.js';
+import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import { is } from 'typia';
@@ -80,7 +81,6 @@ import {
   migrateTransportType,
   type TransportType,
 } from './transportTypeDefs.js';
-import type { LatLon } from './types/common.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {

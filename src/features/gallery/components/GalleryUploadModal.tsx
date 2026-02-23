@@ -1,13 +1,13 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { toDatetimeLocal } from '../../../shared/dateUtils.js';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
 import {
   galleryAddItem,

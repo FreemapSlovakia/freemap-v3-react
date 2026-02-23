@@ -8,12 +8,12 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import type { LatLon } from '@shared/types/common.js';
 import { area } from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import { length } from '@turf/length';
 import { assert } from 'typia';
 import { httpRequest } from '../../../app/httpRequest.js';
-import type { LatLon } from '../../../types/common.js';
 import { drawingMeasure } from './actions/drawingPointActions.js';
 
 const cancelType = [

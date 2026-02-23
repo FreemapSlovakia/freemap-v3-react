@@ -1,7 +1,7 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { CRS } from 'leaflet';
 import { assert } from 'typia';
-import { httpRequest } from '@app/httpRequest.js';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
 
 export const getCountriesProcessor: Processor = {

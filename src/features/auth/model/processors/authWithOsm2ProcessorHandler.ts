@@ -1,5 +1,5 @@
-import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { httpRequest } from '@app/httpRequest.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { handleLoginResponse } from '../../loginResponseHandler.js';
 import { authWithOsm2 } from '../actions.js';
 

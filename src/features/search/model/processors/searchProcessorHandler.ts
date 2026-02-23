@@ -1,17 +1,17 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import type { LatLon } from '@shared/types/common.js';
+import { NominatimResult } from '@shared/types/nominatimResult.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
 import { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
 import { assert } from 'typia';
 import { parseCoordinates } from '../../../../coordinatesParser.js';
-import { httpRequest } from '@app/httpRequest.js';
-import type { LatLon } from '../../../../types/common.js';
-import { NominatimResult } from '../../../../types/nominatimResult.js';
 import {
   SearchResult,
   searchSelectResult,

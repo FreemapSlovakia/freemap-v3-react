@@ -1,14 +1,14 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { useTextInputState } from '../../../hooks/useTextInputState.js';
-import { isInvalidFloat, isInvalidInt } from '../../../numberValidator.js';
-import { toDatetimeLocal } from '../../../shared/dateUtils.js';
 import { trackingActions } from '../model/actions.js';
 import { TrackedDevice } from '../model/types.js';
 

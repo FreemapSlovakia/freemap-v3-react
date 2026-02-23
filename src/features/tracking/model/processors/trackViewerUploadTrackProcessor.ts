@@ -1,4 +1,6 @@
+import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   trackViewerSetTrackUID,
@@ -6,8 +8,6 @@ import {
 } from '@features/trackViewer/model/actions.js';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
-import type { RootState } from '@app/store/store.js';
-import { httpRequest } from '@app/httpRequest.js';
 
 export async function handleTrackUpload({
   dispatch,

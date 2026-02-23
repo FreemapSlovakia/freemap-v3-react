@@ -1,4 +1,4 @@
-import { DeepPartialWithRequiredObjects } from '../../../deepPartial.js';
+import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { SupportUsMessages } from './SupportUsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<SupportUsMessages> = {

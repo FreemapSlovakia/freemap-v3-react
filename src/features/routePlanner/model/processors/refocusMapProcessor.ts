@@ -1,7 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
-import type { LatLon } from '../../../../types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 import { routePlannerSetFinish, routePlannerSetStart } from '../actions.js';
 
 export const routePlannerRefocusMapProcessor: Processor<

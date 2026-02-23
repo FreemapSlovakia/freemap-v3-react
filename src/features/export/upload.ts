@@ -1,9 +1,9 @@
+import { httpRequest } from '@app/httpRequest.js';
+import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
+import { hasProperty } from '@shared/types/typeUtils.js';
 import { Dispatch } from 'redux';
-import type { RootState } from '../../app/store/store.js';
-import { loadGapi, startGoogleAuth } from '../../gapiLoader.js';
-import { httpRequest } from '../../app/httpRequest.js';
-import { hasProperty } from '../../typeUtils.js';
 import { ExportTarget } from './model/actions.js';
 
 export const licenseNotice =

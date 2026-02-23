@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -21,8 +22,7 @@ import {
   getPeakfinderUrl,
   getWazeUrl,
   getZbgisUrl,
-} from '../../externalUrlUtils.js';
-import type { LatLon } from '../../types/common.js';
+} from '../externalUrlUtils.js';
 
 interface Props extends LatLon {
   lat: number;

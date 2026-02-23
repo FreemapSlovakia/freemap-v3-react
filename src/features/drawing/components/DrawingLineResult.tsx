@@ -4,8 +4,10 @@ import {
   selectingModeSelector,
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import type { LatLon } from '@shared/types/common.js';
 import { bearing } from '@turf/bearing';
 import { distance } from '@turf/distance';
 import { bearingToAzimuth } from '@turf/helpers';
@@ -36,8 +38,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { colors } from '../../../constants.js';
 import { isEventOnMap } from '../../../mapUtils.js';
-import { formatDistance } from '../../../shared/distanceFormatter.js';
-import type { LatLon } from '../../../types/common.js';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,

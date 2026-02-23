@@ -1,9 +1,9 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
+import type { StringDates } from '@shared/types/common.js';
 import { assert } from 'typia';
-import { httpRequest } from '@app/httpRequest.js';
-import type { StringDates } from '../../../../types/common.js';
 import { type MapMeta, mapsLoadList, mapsSetList } from '../actions.js';
 
 export const mapsLoadListProcessor: Processor = {

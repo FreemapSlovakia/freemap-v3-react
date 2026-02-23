@@ -17,7 +17,6 @@ import {
 import { HomeLocationPickingResult } from '@features/homeLocation/components/HomeLocationPickingResult.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MainMenuButton } from '@features/mainMenu/components/MainMenuButton.js';
-import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
@@ -48,8 +47,8 @@ import { MouseEvent, ReactElement, useCallback } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
-import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { Map } from '../../features/map/components/Map.js';
 import {
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
@@ -279,12 +278,6 @@ export function Main(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const lat = useAppSelector((state) => state.map.lat);
-
-  const lon = useAppSelector((state) => state.map.lon);
-
-  const zoom = useAppSelector((state) => state.map.zoom);
-
   const layers = useAppSelector((state) => state.map.layers);
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
@@ -501,8 +494,6 @@ export function Main(): ReactElement {
     ),
   );
 
-  const maxZoom = useAppSelector((state) => state.map.maxZoom);
-
   return (
     <>
       {!window.fmHeadless && (
@@ -709,18 +700,7 @@ export function Main(): ReactElement {
         )}
 
         <div onClickCapture={handleMapWrapperClick}>
-          <MapContainer
-            zoomControl={false}
-            attributionControl={false}
-            maxZoom={maxZoom}
-            key={maxZoom}
-            ref={setMapLeafletElement}
-            center={{ lat, lng: lon }}
-            zoom={zoom}
-            wheelPxPerZoomLevel={100}
-          >
-            <ScaleControl imperial={false} position="bottomleft" />
-
+          <Map>
             <Layers />
 
             <Tools />
@@ -736,7 +716,7 @@ export function Main(): ReactElement {
             {/* TODO should not be extra just because for position picking */}
 
             <GalleryResult />
-          </MapContainer>
+          </Map>
         </div>
       </div>
 

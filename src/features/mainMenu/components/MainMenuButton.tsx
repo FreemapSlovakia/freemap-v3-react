@@ -1,9 +1,10 @@
+import { OpenInExternalAppDropdownItems } from '@/features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { OpenInExternalAppDropdownItems } from '@shared/components/OpenInExternalAppMenuItems.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { CacheMode } from '@shared/types/common.js';
 import { get } from 'idb-keyval';
 import {
   Fragment,
@@ -16,7 +17,6 @@ import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { clearCache, setCacheMode, setCachingActive } from '../../../cache.js';
 import { useMenuHandler } from '../../../hooks/useMenuHandler.js';
-import { CacheMode } from '../../../types/common.js';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
 import { MainMenu } from './MainMenu.js';

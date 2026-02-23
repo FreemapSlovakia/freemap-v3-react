@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { toastsAdd } from './features/toasts/model/actions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 
 export function copyToClipboard(
   dispatch: Dispatch,

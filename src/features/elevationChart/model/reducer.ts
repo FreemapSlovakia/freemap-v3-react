@@ -6,7 +6,7 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { routePlannerSetResult } from '@features/routePlanner/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type { LatLon } from '../../../types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,

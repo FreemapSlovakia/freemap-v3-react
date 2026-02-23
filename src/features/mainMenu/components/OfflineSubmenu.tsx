@@ -1,10 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
+import { CacheMode } from '@shared/types/common.js';
 import { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaEraser, FaRegCheckCircle, FaRegCircle } from 'react-icons/fa';
-import { CacheMode } from '../../../types/common.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 type Props = {

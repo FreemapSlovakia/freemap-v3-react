@@ -1,4 +1,4 @@
-import type { LatLon } from '../../../types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 
 interface OsmElement {
   id: number;

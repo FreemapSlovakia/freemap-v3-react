@@ -7,8 +7,8 @@ import {
 } from '@features/gallery/model/actions.js';
 import { RoutingMode } from '@features/routePlanner/model/actions.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
+import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactElement, ReactNode } from 'react';
-import { DeepPartial } from '../deepPartial.js';
 import { HttpError } from '../app/httpRequest.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 

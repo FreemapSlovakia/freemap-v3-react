@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
-import { LatLon } from '../../../types/common.js';
-import { OsmFeatureId } from '../../../types/featureId.js';
+import { LatLon } from '@shared/types/common.js';
+import { OsmFeatureId } from '@shared/types/featureId.js';
 
 export interface ObjectsResult {
   id: OsmFeatureId;

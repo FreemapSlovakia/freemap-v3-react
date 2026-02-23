@@ -7,9 +7,9 @@ import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import { escapeHtml } from '@shared/stringUtils.js';
+import type { LatLon } from '@shared/types/common.js';
 import { Feature, FeatureCollection } from 'geojson';
 import { colors } from '../../../../constants.js';
-import type { LatLon } from '../../../../types/common.js';
 import { fetchPictures, Picture } from '../../fetchPictures.js';
 import {
   addAttribute,

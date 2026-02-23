@@ -8,6 +8,7 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { isInvalidInt } from '@shared/numberValidator.js';
 import bbox from '@turf/bbox';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { booleanIntersects } from '@turf/boolean-intersects';
@@ -43,7 +44,6 @@ import {
   integratedLayerDefs,
   IsTileLayerDef,
 } from '../../../mapDefinitions.js';
-import { isInvalidInt } from '../../../numberValidator.js';
 import { downloadMap } from '../model/actions.js';
 
 type Props = { show: boolean };

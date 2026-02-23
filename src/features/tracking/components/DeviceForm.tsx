@@ -5,6 +5,7 @@ import { Form } from 'react-bootstrap';
 import { useTextInputState } from '../../../hooks/useTextInputState.js';
 import { trackingActions } from '../model/actions.js';
 
+import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   Button,
   Dropdown,
@@ -14,7 +15,6 @@ import {
 } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { isInvalidInt } from '../../../numberValidator.js';
 
 const TYPES = {
   url: 'Locus / OsmAnd / …',

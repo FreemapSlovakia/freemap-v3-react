@@ -1,7 +1,7 @@
-import type { MessagePaths } from '@/types/common.js';
 import type { Modal } from '@app/store/actions.js';
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { MessagePaths } from '@shared/types/common.js';
 import { useEffect } from 'react';
 
 // TODO Partiel because of missing documents (formerly tips)

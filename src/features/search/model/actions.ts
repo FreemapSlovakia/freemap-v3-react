@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
+import { FeatureId } from '@shared/types/featureId.js';
 import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
-import { FeatureId } from '../../../types/featureId.js';
 
 export type SearchSource =
   | 'bbox'

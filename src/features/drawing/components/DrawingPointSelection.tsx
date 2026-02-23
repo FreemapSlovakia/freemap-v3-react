@@ -1,7 +1,7 @@
+import { OpenInExternalAppMenuButton } from '@/features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { OpenInExternalAppMenuButton } from '@shared/components/OpenInExternalAppMenuButton.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';

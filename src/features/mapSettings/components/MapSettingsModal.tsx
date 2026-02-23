@@ -1,6 +1,7 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   ChangeEvent,
   ReactElement,
@@ -11,7 +12,6 @@ import {
 import { Accordion, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { isInvalidInt } from '../../../numberValidator.js';
 import { CustomMapsSettings } from './CustomMapsSettings.js';
 import { MapLayersSettings } from './MapLayersSettings.js';
 

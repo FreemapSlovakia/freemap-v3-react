@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
@@ -6,14 +7,13 @@ import type {
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
+import type { StringDates } from '@shared/types/common.js';
 import { assert, is } from 'typia';
-import { httpRequest } from '@app/httpRequest.js';
 import {
   CustomLayerDef,
   upgradeCustomLayerDefs,
 } from '../../../../mapDefinitions.js';
 import { migrateTransportType } from '../../../../transportTypeDefs.js';
-import type { StringDates } from '../../../../types/common.js';
 import {
   type MapData,
   type MapMeta,

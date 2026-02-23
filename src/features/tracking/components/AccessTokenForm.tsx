@@ -1,10 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { useTextInputState } from '../../../hooks/useTextInputState.js';
-import { toDatetimeLocal } from '../../../shared/dateUtils.js';
 import { trackingActions } from '../model/actions.js';
 
 import { Button, Modal } from 'react-bootstrap';

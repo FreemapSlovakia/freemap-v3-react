@@ -7,18 +7,18 @@ import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { createReduxStore } from './app/store/store.js';
-import './fbLoader.js';
 import { attachGarminLoginMessageHandler } from './features/auth/garminLoginMessageHandler.js';
 import { authInit } from './features/auth/model/actions.js';
+import './features/auth/model/processors/fbLoader.js';
 import { attachOsmLoginMessageHandler } from './features/auth/osmLoginMessageHandler.js';
 import { applyCookieConsent } from './features/cookieConsent/model/actions.js';
 import { invokeGeoip } from './features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from './features/l10n/model/actions.js';
+import { attachMapStateHandler } from './features/map/mapStateHandler.js';
 import { toastsAdd } from './features/toasts/model/actions.js';
 import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { handleLocationChange } from './locationChangeHandler.js';
-import { attachMapStateHandler } from './features/map/mapStateHandler.js';
 import './styles/index.scss';
 
 if (

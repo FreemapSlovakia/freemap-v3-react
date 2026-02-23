@@ -12,6 +12,12 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
+  FeatureId,
+  featureIdsEqual,
+  OsmFeatureId,
+  stringifyFeatureId,
+} from '@shared/types/featureId.js';
+import {
   ChangeEvent,
   forwardRef,
   Fragment,
@@ -34,12 +40,6 @@ import { FaCaretDown, FaDrawPolygon, FaSearch } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import {
-  FeatureId,
-  featureIdsEqual,
-  OsmFeatureId,
-  stringifyFeatureId,
-} from '../../../types/featureId.js';
 import {
   SearchResult,
   searchSelectResult,

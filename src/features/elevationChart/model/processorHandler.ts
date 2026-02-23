@@ -16,9 +16,9 @@ import {
 } from 'geojson';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
+import { httpRequest } from '../../../app/httpRequest.js';
 import type { RootAction } from '../../../app/store/rootAction.js';
 import type { RootState } from '../../../app/store/store.js';
-import { httpRequest } from '../../../app/httpRequest.js';
 import {
   elevationChartClose,
   elevationChartSetElevationProfile,

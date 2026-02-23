@@ -1,14 +1,14 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { positionsEqual, shouldBeArea } from '@shared/geoutils.js';
+import { FeatureId } from '@shared/types/featureId.js';
 import { lineString, polygon } from '@turf/helpers';
 import { assert } from 'typia';
-import { copyDisplayName } from '../../../../copyDisplayName.js';
-import { httpRequest } from '@app/httpRequest.js';
-import { FeatureId } from '../../../../types/featureId.js';
 import { osmLoadWay } from '../osmActions.js';
 import type { OsmResult } from '../types.js';
+import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,

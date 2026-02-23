@@ -1,7 +1,7 @@
+import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { gallerySetLayerDirty } from '@features/gallery/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { httpRequest } from '@app/httpRequest.js';
 import { authDeleteAccount, authLogout } from '../actions.js';
 
 export const authDeleteAccountProcessor: Processor<typeof authDeleteAccount> = {

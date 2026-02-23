@@ -1,5 +1,4 @@
 import { colors } from '@/constants.js';
-import { isInvalidFloat } from '@/numberValidator.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
@@ -7,6 +6,7 @@ import { drawingPointChangeProperties } from '@features/drawing/model/actions/dr
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
 import {
   ChangeEvent,

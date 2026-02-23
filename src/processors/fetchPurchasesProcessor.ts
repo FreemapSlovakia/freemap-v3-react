@@ -1,9 +1,9 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetPurchases } from '@features/auth/model/actions.js';
 import { PurchaseRecord } from '@features/auth/model/types.js';
+import { StringDates } from '@shared/types/common.js';
 import { assert } from 'typia';
 import { httpRequest } from '../app/httpRequest.js';
-import { StringDates } from '../types/common.js';
 
 export const fetchPurchasesProcessor: Processor = {
   stateChangePredicate: (state) => state.main.activeModal,

@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
@@ -8,7 +9,6 @@ import { CRS, Point } from 'leaflet';
 import RBush, { BBox } from 'rbush';
 import { assert } from 'typia';
 import { cancelRegister } from '../../../../cancelRegister.js';
-import { httpRequest } from '@app/httpRequest.js';
 import { WikiPoint, wikiSetPoints } from '../actions.js';
 
 interface WikiResponse {

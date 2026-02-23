@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
@@ -7,7 +8,6 @@ import distance from '@turf/distance';
 import { Feature, LineString, Polygon } from 'geojson';
 import { hash } from 'ohash';
 import { assert } from 'typia';
-import { httpRequest } from '@app/httpRequest.js';
 import { isPremium } from '../../../../premium.js';
 import {
   TransportType,

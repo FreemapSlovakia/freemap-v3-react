@@ -1,3 +1,4 @@
+import { Shortcut } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
   FaBicycle,
@@ -22,7 +23,6 @@ import { is } from 'typia';
 import black1x1 from './images/1x1-black.png';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
-import { Shortcut } from './types/common.js';
 
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';

@@ -1,5 +1,5 @@
-import { Dispatch } from 'redux';
 import type { RootAction } from '@app/store/rootAction.js';
+import { Dispatch } from 'redux';
 import { toastsRemove } from '../actions.js';
 
 export const timeoutMap = new Map<

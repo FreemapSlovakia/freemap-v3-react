@@ -1,3 +1,4 @@
+import { OpenInExternalAppDropdownItems } from '@/features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useMenuHandler } from '@/hooks/useMenuHandler.js';
 import { setTool } from '@app/store/actions.js';
 import { drawingLineAddPoint } from '@features/drawing/model/actions/drawingLineActions.js';
@@ -14,7 +15,6 @@ import {
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
-import { OpenInExternalAppDropdownItems } from '@shared/components/OpenInExternalAppMenuItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { LeafletMouseEvent } from 'leaflet';

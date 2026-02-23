@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import type { LatLon } from '../../../types/common.js';
+import type { LatLon } from '@shared/types/common.js';
 import { setLocation, toggleLocate } from './actions.js';
 
 interface GpsLocation extends LatLon {

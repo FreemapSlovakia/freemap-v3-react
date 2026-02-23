@@ -5,8 +5,8 @@ import {
   osmLoadWay,
 } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { OsmFeatureId } from '@shared/types/featureId.js';
 import { is } from 'typia';
-import { OsmFeatureId } from '../../../types/featureId.js';
 import {
   searchClear,
   SearchResult,

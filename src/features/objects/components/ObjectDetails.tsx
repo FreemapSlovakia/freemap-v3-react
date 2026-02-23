@@ -9,11 +9,11 @@ import {
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { OsmFeatureId } from '@shared/types/featureId.js';
 import { Fragment, ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { OsmFeatureId } from '../../../types/featureId.js';
 import { SourceName } from './SourceName.js';
 
 type Props = {

@@ -2,8 +2,8 @@
 
 declare const self: ServiceWorkerGlobalScope;
 
+import { CacheMode } from '@shared/types/common.js';
 import { get } from 'idb-keyval';
-import { CacheMode } from '../types/common.js';
 
 const FALLBACK_CACHE_NAME = 'offline-html';
 

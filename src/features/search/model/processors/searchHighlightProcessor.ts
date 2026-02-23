@@ -11,6 +11,7 @@ import {
   osmLoadWay,
 } from '@features/osm/model/osmActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { featureIdsEqual, OsmFeatureId } from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
 import { is } from 'typia';
 import {
@@ -18,7 +19,6 @@ import {
   integratedLayerDefs,
   IsBaseLayerDef,
 } from '../../../../mapDefinitions.js';
-import { featureIdsEqual, OsmFeatureId } from '../../../../types/featureId.js';
 import { searchSelectResult, searchSetResults } from '../actions.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {

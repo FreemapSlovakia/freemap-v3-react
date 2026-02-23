@@ -1,13 +1,13 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { copyToClipboard } from '../../../clipboardUtils.js';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken as AccessTokenType } from '../model/types.js';
 

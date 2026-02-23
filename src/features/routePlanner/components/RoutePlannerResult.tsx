@@ -3,6 +3,7 @@ import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
@@ -32,7 +33,6 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { formatDistance } from '../../../shared/distanceFormatter.js';
 import { transportTypeDefs } from '../../../transportTypeDefs.js';
 import { useMap } from '../../map/hooks/useMap.js';
 import {
