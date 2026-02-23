@@ -1133,6 +1133,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     save: 'Uložiť',
     delete: 'Zmazať',
     disconnect: 'Odpojiť',
+    disconnectAndClear: 'Odpojiť a vyčistiť',
     deleteConfirm: (name) => `Naozaj si prajete vymazať mapu ${name}?`,
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba pri načítavaní mapy', err),

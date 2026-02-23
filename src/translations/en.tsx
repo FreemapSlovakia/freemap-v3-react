@@ -1080,6 +1080,7 @@ const messages: Messages = {
     save: 'Save',
     delete: 'Delete',
     disconnect: 'Disconnect',
+    disconnectAndClear: 'Disconnect and clear',
     deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
     fetchError: ({ err }) => addError(messages, 'Error loading map', err),
     fetchListError: ({ err }) => addError(messages, 'Error loading maps', err),

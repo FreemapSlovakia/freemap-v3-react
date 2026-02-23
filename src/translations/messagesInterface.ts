@@ -707,6 +707,7 @@ export type Messages = {
     save: string;
     delete: string;
     disconnect: string;
+    disconnectAndClear: string;
     deleteConfirm: (name: string) => string;
     fetchError: (props: Err) => string;
     fetchListError: (props: Err) => string;

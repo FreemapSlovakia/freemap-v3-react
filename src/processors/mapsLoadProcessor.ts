@@ -13,6 +13,7 @@ import { CustomLayerDef, upgradeCustomLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 import { migrateTransportType } from '../transportTypeDefs.js';
 import type { StringDates } from '../types/common.js';
+import { setActiveModal } from '../actions/mainActions.js';
 
 interface CompatLine {
   type: 'polygon' | 'line' | 'area' | 'distance';
@@ -205,5 +206,7 @@ export const mapsLoadProcessor: Processor = {
         },
       }),
     );
+
+    dispatch(setActiveModal(null));
   },
 };

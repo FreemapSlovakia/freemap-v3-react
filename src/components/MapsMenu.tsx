@@ -1,14 +1,15 @@
 import type { ReactElement } from 'react';
-import { Button, ButtonToolbar } from 'react-bootstrap';
-import { FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
+import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import { FaEraser, FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../actions/mainActions.js';
+import { clearMapFeatures, setActiveModal } from '../actions/mainActions.js';
 import { mapsDisconnect, mapsSave } from '../actions/mapsActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useMessages } from '../l10nInjector.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
+import { fixedPopperConfig } from '../fixedPopperConfig.js';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -60,15 +61,33 @@ export function MapsMenu(): ReactElement {
 
           <LongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
             {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={() => dispatch(mapsDisconnect())}
-                {...props}
-              >
-                <FaUnlink />
-                <span className={labelClassName}> {label}</span>
-              </Button>
+              <Dropdown as={ButtonGroup} align="end" {...props}>
+                <Button
+                  className="ms-1"
+                  variant="secondary"
+                  onClick={() => dispatch(mapsDisconnect())}
+                >
+                  <FaUnlink />
+                  <span className={labelClassName}> {label}</span>
+                </Button>
+
+                <Dropdown.Toggle
+                  split
+                  variant="secondary"
+                  id="dropdown-split-basic"
+                />
+
+                <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <Dropdown.Item
+                    onClick={() => {
+                      dispatch(mapsDisconnect());
+                      dispatch(clearMapFeatures());
+                    }}
+                  >
+                    <FaEraser /> {m?.maps.disconnectAndClear}
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             )}
           </LongPressTooltip>
         </ButtonToolbar>
