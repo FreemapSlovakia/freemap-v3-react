@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Action, Dispatch, Middleware } from 'redux';
 import { startProgress, stopProgress } from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { sendError } from '../globalErrorHandler.js';
 import type { RootState } from '../store.js';
 import type { MessagePaths } from '../types/common.js';

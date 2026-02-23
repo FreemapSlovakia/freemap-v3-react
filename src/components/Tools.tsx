@@ -5,14 +5,14 @@ import {
   selectingModeSelector,
 } from '../selectors/mainSelectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
-import { DrawingPointsTool } from './DrawingPointsTool.js';
-import { MapDetailsTool } from './MapDetailsTool.js';
+import { DrawingPointsTool } from '../features/drawing/components/DrawingPointsTool.js';
+import { MapDetailsTool } from '../features/mapDetails/components/MapDetailsTool.js';
 import { SelectionTool } from './SelectionTool.js';
 
 const drawingLinesToolFactory = () =>
   import(
     /* webpackChunkName: "drawing-lines-tool" */
-    './DrawingLinesTool.js'
+    '../features/drawing/components/DrawingLinesTool.js'
   );
 
 export function Tools(): ReactElement {

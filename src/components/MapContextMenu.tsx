@@ -21,19 +21,19 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { drawingLineAddPoint } from '../actions/drawingLineActions.js';
+import { drawingLineAddPoint } from '../features/drawing/model/actions/drawingLineActions.js';
 import {
   drawingMeasure,
   drawingPointAdd,
-} from '../actions/drawingPointActions.js';
-import { galleryRequestImages } from '../actions/galleryActions.js';
+} from '../features/drawing/model/actions/drawingPointActions.js';
+import { galleryRequestImages } from '../features/gallery/model/actions.js';
 import { setTool } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
+import { mapRefocus } from '../features/map/model/actions.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
-} from '../actions/routePlannerActions.js';
-import { searchSetQuery } from '../actions/searchActions.js';
+} from '../features/routePlanner/model/actions.js';
+import { searchSetQuery } from '../features/search/model/actions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMenuHandler } from '../hooks/useMenuHandler.js';

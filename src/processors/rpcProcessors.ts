@@ -1,6 +1,6 @@
 import { is } from 'typia';
 import { rpcCall, rpcEvent, rpcResponse } from '../actions/rpcActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { wsReceived, wsSend } from '../actions/websocketActions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 

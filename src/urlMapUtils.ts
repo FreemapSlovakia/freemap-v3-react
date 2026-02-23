@@ -1,4 +1,4 @@
-import { MapViewState } from './actions/mapActions.js';
+import { MapViewState } from './features/map/model/actions.js';
 import { integratedLayerDefMap } from './mapDefinitions.js';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,

@@ -2,18 +2,18 @@ import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { AreaInfo } from '../components/AreaInfo.js';
 import { Attribution } from '../components/Attribution.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { ChangesetDetails } from '../features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '../components/CookieConsent.js';
-import { CreditsText } from '../components/CreditsText.js';
+import { CreditsText } from '../features/credits/components/CreditsText.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
-import { ElevationInfo } from '../components/ElevationInfo.js';
+import { ElevationInfo } from '../features/elevationChart/components/ElevationInfo.js';
 import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
-import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+import { ObjectDetails } from '../features/objects/components/ObjectDetails.js';
+import { TrackViewerDetails } from '../features/trackViewer/components/TrackViewerDetails.js';
 import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './it-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-import { RovasAd } from '../components/RovasAd.js';
+import { RovasAd } from '../features/ad/components/RovasAd.js';
 
 const nf00 = new Intl.NumberFormat('it', {
   minimumFractionDigits: 0,

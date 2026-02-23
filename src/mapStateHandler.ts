@@ -1,4 +1,4 @@
-import { mapRefocus, mapSetBounds } from './actions/mapActions.js';
+import { mapRefocus, mapSetBounds } from './features/map/model/actions.js';
 import { mapPromise } from './leafletElementHolder.js';
 import { MyStore } from './store.js';
 

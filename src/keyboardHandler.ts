@@ -1,7 +1,7 @@
 import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
-} from './actions/drawingLineActions.js';
+} from './features/drawing/model/actions/drawingLineActions.js';
 import { elevationChartClose } from './actions/elevationChartActions.js';
 import {
   galleryCancelShowOnTheMap,
@@ -11,7 +11,7 @@ import {
   galleryRequestImage,
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
-} from './actions/galleryActions.js';
+} from './features/gallery/model/actions.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -21,7 +21,7 @@ import {
   setSelectingHomeLocation,
   setTool,
 } from './actions/mainActions.js';
-import { mapToggleLayer } from './actions/mapActions.js';
+import { mapToggleLayer } from './features/map/model/actions.js';
 import { integratedLayerDefs } from './mapDefinitions.js';
 import { showGalleryViewerSelector } from './selectors/mainSelectors.js';
 import { MyStore, RootState } from './store.js';

@@ -1,4 +1,4 @@
-import { User } from './types/auth.js';
+import { User } from './features/auth/model/types.js';
 
 export function isPremium(
   user: Pick<User, 'premiumExpiration'> | null,

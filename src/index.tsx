@@ -2,25 +2,25 @@ import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
-import { authInit } from './actions/authActions.js';
+import { authInit } from './features/auth/model/actions.js';
+import { invokeGeoip } from './features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
   applyCookieConsent,
   enableUpdatingUrl,
-  invokeGeoip,
   setEmbedFeatures,
 } from './actions/mainActions.js';
-import { toastsAdd } from './actions/toastsActions.js';
+import { toastsAdd } from './features/toasts/model/actions.js';
 import { ErrorCatcher } from './components/ErrorCatcher.js';
 import { Main } from './components/Main.js';
 import { MessagesProvider } from './components/TranslationProvider.js';
 import './fbLoader.js';
-import { attachGarminLoginMessageHandler } from './garminLoginMessageHandler.js';
+import { attachGarminLoginMessageHandler } from './features/auth/garminLoginMessageHandler.js';
 import { setStore as setErrorHandlerStore } from './globalErrorHandler.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { handleLocationChange } from './locationChangeHandler.js';
 import { attachMapStateHandler } from './mapStateHandler.js';
-import { attachOsmLoginMessageHandler } from './osmLoginMessageHandler.js';
+import { attachOsmLoginMessageHandler } from './features/auth/osmLoginMessageHandler.js';
 import { createReduxStore } from './store.js';
 import './styles/index.scss';
 

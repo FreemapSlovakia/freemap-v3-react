@@ -1,10 +1,10 @@
 import { isAnyOf } from '@reduxjs/toolkit';
 import { hash } from 'ohash';
 import { is } from 'typia';
-import { drawingLineUpdatePoint } from '../actions/drawingLineActions.js';
+import { drawingLineUpdatePoint } from '../features/drawing/model/actions/drawingLineActions.js';
 import { ShowModal } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
-import { serializeShading } from '../components/parameterizedShading/Shading.js';
+import { mapRefocus } from '../features/map/model/actions.js';
+import { serializeShading } from '../features/parameterizedShading/Shading.js';
 import { basicModals } from '../constants.js';
 import { integratedLayerDefMap } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';

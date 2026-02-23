@@ -25,16 +25,16 @@ import {
   authFetchPurchases,
   authInit,
   authStartLogout,
-} from '../actions/authActions.js';
+} from '../features/auth/model/actions.js';
 import { saveSettings, setActiveModal } from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '../hooks/useDateTimeFormat.js';
 import { useMessages } from '../l10nInjector.js';
-import type { Purchase } from '../types/auth.js';
-import { AuthProviders } from './AuthProviders.js';
-import { CreditsAlert } from './CredistAlert.js';
+import type { Purchase } from '../features/auth/model/types.js';
+import { AuthProviders } from '../features/auth/components/AuthProviders.js';
+import { CreditsAlert } from '../features/credits/components/CredistAlert.js';
 
 type Props = { show: boolean };
 

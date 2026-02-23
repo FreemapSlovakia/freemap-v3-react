@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { SearchResult, SearchSource } from '../actions/searchActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import {
+  SearchResult,
+  SearchSource,
+} from '../features/search/model/actions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { useEffectiveChosenLanguage } from '../hooks/useEffectiveChosenLanguage.js';
 import { useMessages } from '../l10nInjector.js';
 import '../styles/search.scss';

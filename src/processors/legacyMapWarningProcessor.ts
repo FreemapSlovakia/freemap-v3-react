@@ -3,12 +3,12 @@ import { enableUpdatingUrl } from '../actions/mainActions.js';
 import {
   mapReplaceLayer,
   mapSuppressLegacyMapWarning,
-} from '../actions/mapActions.js';
+} from '../features/map/model/actions.js';
 import {
   ToastAction,
   toastsAdd,
   toastsRemove,
-} from '../actions/toastsActions.js';
+} from '../features/toasts/model/actions.js';
 import { HasLegacy, integratedLayerDefs } from '../mapDefinitions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 

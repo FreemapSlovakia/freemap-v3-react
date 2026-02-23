@@ -2,8 +2,8 @@ import { BBox } from 'geojson';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
-import { mapSetEsriAttribution } from '../actions/mapActions.js';
-import { toastsAdd, toastsRemove } from '../actions/toastsActions.js';
+import { mapSetEsriAttribution } from '../features/map/model/actions.js';
+import { toastsAdd, toastsRemove } from '../features/toasts/model/actions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 
 type EsriWorldImageryAttribution = {

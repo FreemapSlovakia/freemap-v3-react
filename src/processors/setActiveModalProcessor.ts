@@ -1,6 +1,6 @@
-import { authSetUser } from '../actions/authActions.js';
+import { authSetUser } from '../features/auth/model/actions.js';
 import { setActiveModal } from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const setActiveModalTransformer: Processor<typeof setActiveModal> = {

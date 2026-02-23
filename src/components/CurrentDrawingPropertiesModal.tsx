@@ -9,15 +9,15 @@ import {
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
-import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
+import { drawingLineChangeProperties } from '../features/drawing/model/actions/drawingLineActions.js';
+import { drawingPointChangeProperties } from '../features/drawing/model/actions/drawingPointActions.js';
 import { setActiveModal } from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { colors } from '../constants.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
 import { isInvalidFloat } from '../numberValidator.js';
-import { DrawingRecentColors } from './DrawingRecentColors.js';
+import { DrawingRecentColors } from '../features/drawing/components/DrawingRecentColors.js';
 
 type Props = { show: boolean };
 

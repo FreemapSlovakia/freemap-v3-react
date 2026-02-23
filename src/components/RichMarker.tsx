@@ -3,7 +3,7 @@ import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { assertGuard } from 'typia';
-import { MarkerType } from '../actions/objectsActions.js';
+import { MarkerType } from '../features/objects/model/actions.js';
 import { colors } from '../constants.js';
 
 const textStyle: CSSProperties = {

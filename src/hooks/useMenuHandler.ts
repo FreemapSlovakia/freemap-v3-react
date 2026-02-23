@@ -14,9 +14,9 @@ import {
   setActiveModal,
   setTool,
 } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
-import { trackingActions } from '../actions/trackingActions.js';
-import { Submenu } from '../components/mainMenu/submenu.js';
+import { mapRefocus } from '../features/map/model/actions.js';
+import { trackingActions } from '../features/tracking/model/actions.js';
+import { Submenu } from '../features/mainMenu/components/submenu.js';
 import { useAppSelector } from './useAppSelector.js';
 
 export function useMenuHandler({

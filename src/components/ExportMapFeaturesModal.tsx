@@ -35,7 +35,7 @@ import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
-import { authWithGarmin } from '../actions/authActions.js';
+import { authWithGarmin } from '../features/auth/model/actions.js';
 import {
   ExportTarget,
   ExportType,
@@ -43,6 +43,8 @@ import {
   exportMapFeatures,
   exportTargets,
   exportTypes,
+} from '../features/export/model/actions.js';
+import {
   setActiveModal,
 } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
@@ -225,7 +227,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
     import(
       /* webpackChunkName: "garmin-export" */
-      '../export/garminExport.js'
+      '../features/export/garminExport.js'
     ).then((x) =>
       setGarminExportables(
         Object.fromEntries(

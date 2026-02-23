@@ -1,13 +1,16 @@
 import { JSX, ReactElement, ReactNode } from 'react';
-import { Changeset } from '../actions/changesetsActions.js';
+import { Changeset } from '../features/changesets/model/actions.js';
 import {
   GalleryColorizeBy,
   GalleryListOrder,
-} from '../actions/galleryActions.js';
-import { ExportableLayer } from '../actions/mainActions.js';
-import { RoutingMode } from '../actions/routePlannerActions.js';
-import { SearchResult, SearchSource } from '../actions/searchActions.js';
-import { ElevationInfoBaseProps } from '../components/ElevationInfo.js';
+} from '../features/gallery/model/actions.js';
+import { ExportableLayer } from '../features/export/model/actions.js';
+import { RoutingMode } from '../features/routePlanner/model/actions.js';
+import {
+  SearchResult,
+  SearchSource,
+} from '../features/search/model/actions.js';
+import { ElevationInfoBaseProps } from '../features/elevationChart/components/ElevationInfo.js';
 import { DeepPartial } from '../deepPartial.js';
 import { HttpError } from '../httpRequest.js';
 import type { TransportTypeMsgKey } from '../transportTypeDefs.js';

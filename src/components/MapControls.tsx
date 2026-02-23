@@ -4,7 +4,7 @@ import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { toggleLocate } from '../actions/mainActions.js';
-import { mapRefocus, MapViewState } from '../actions/mapActions.js';
+import { mapRefocus, MapViewState } from '../features/map/model/actions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMap } from '../hooks/useMap.js';
 import { useMessages } from '../l10nInjector.js';

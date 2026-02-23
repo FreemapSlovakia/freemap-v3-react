@@ -1,4 +1,4 @@
-import { authSetUser } from '../actions/authActions.js';
+import { authSetUser } from '../features/auth/model/actions.js';
 import {
   l10nSetChosenLanguage,
   l10nSetLanguage,

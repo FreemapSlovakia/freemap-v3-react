@@ -4,7 +4,7 @@ import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware.js';
 import { createProcessorMiddleware } from './middlewares/processorMiddleware.js';
 import { statePersistingMiddleware } from './middlewares/statePersistingMiddleware.js';
-import { createTrackingMiddleware } from './middlewares/trackingMiddleware.js';
+import { createTrackingMiddleware } from './features/tracking/model/trackingMiddleware.js';
 import { createWebsocketMiddleware } from './middlewares/webSocketMiddleware.js';
 import { processors } from './processors.js';
 import { getInitialState, reducers } from './reducers.js';
@@ -41,7 +41,7 @@ export function createReduxStore() {
   if (process.env['NODE_ENV'] !== 'production' && module.hot) {
     module.hot.accept('./reducers', () => store.replaceReducer(rootReducer));
 
-    module.hot.accept('./processors.ts', () => {
+    module.hot.accept('./processors.js', () => {
       processorMiddleware.processors.length = 0;
 
       processorMiddleware.processors.push(...processors);

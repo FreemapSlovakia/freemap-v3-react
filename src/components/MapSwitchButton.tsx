@@ -24,7 +24,7 @@ import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../actions/mainActions.js';
-import { mapToggleLayer } from '../actions/mapActions.js';
+import { mapToggleLayer } from '../features/map/model/actions.js';
 import { fixedPopperConfig } from '../fixedPopperConfig.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useBecomePremium } from '../hooks/useBecomePremium.js';

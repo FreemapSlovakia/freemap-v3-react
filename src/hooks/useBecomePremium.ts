@@ -1,6 +1,6 @@
 import { MouseEvent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { galleryClear } from '../actions/galleryActions.js';
+import { galleryClear } from '../features/gallery/model/actions.js';
 import { setActiveModal } from '../actions/mainActions.js';
 import { isPremium } from '../premium.js';
 import { showGalleryViewerSelector } from '../selectors/mainSelectors.js';

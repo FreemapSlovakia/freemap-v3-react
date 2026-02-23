@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 import { applySettings, setActiveModal } from '../actions/mainActions.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import { useMessages } from '../l10nInjector.js';
-import { DrawingRecentColors } from './DrawingRecentColors.js';
+import { DrawingRecentColors } from '../features/drawing/components/DrawingRecentColors.js';
 
 type Props = { show: boolean };
 

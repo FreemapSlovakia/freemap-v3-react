@@ -1,11 +1,10 @@
 import { createAction } from '@reduxjs/toolkit';
-import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import { basicModals, tools } from '../constants.js';
 import type { CustomLayerDef } from '../mapDefinitions.js';
-import type { Purchase } from '../types/auth.js';
+import type { Purchase } from '../features/auth/model/types.js';
 import type { LatLon } from '../types/common.js';
 import { OsmFeatureId } from '../types/featureId.js';
-import type { LayerSettings } from './mapActions.js';
+import type { LayerSettings } from '../features/map/model/actions.js';
 
 export type Tool = (typeof tools)[number];
 
@@ -31,65 +30,6 @@ export const setLocation = createAction<{
   lon: number;
   accuracy: number;
 }>('SET_LOCATION');
-
-export const LAYERS = [
-  'contours',
-  'shading',
-  'hikingTrails',
-  'bicycleTrails',
-  'skiTrails',
-  'horseTrails',
-  'drawing',
-  'plannedRoute',
-  'track',
-] as const;
-
-export type ExportableLayer = (typeof LAYERS)[number];
-
-export type ExportFormat = 'jpeg' | 'png' | 'pdf' | 'svg';
-
-export interface MapExportOptions {
-  layers: ExportableLayer[];
-  scale: number;
-  area: 'visible' | 'selected';
-  format: ExportFormat;
-}
-
-export type Exportable =
-  | 'plannedRoute'
-  | 'plannedRouteWithStops'
-  | 'objects'
-  | 'pictures'
-  | 'drawingLines'
-  | 'drawingAreas'
-  | 'drawingPoints'
-  | 'tracking'
-  | 'gpx'
-  | 'search';
-
-export const exportTargets = [
-  'download',
-  'gdrive',
-  'dropbox',
-  'garmin',
-] as const;
-
-export type ExportTarget = (typeof exportTargets)[number];
-
-export const exportTypes = ['gpx', 'geojson'] as const;
-
-export type ExportType = (typeof exportTypes)[number];
-
-export const exportMapFeatures = createAction<{
-  exportables: Exportable[];
-  type: ExportType;
-  target: ExportTarget;
-  name?: string;
-  description?: string;
-  activity?: string;
-}>('EXPORT_MAP_FEATURES');
-
-export const exportMap = createAction<MapExportOptions>('EXPORT_MAP');
 
 export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 
@@ -237,28 +177,3 @@ export const hideInfoBar = createAction<{
   key: string;
   ts: number;
 }>('HIDE_INFO_BAR');
-
-export const downloadMap = createAction<{
-  name: string;
-  email: string;
-  map: string;
-  format: string;
-  maxZoom: number;
-  minZoom: number;
-  scale: number;
-  boundary: Feature<Polygon | MultiPolygon>;
-}>('DOWNLOAD_MAP');
-
-export const invokeGeoip = createAction('INVOKE_GEOIP');
-
-export type GeoIpResult = {
-  country?: string;
-  countryCode?: string;
-  city?: string;
-  latitude?: number;
-  longitude?: number;
-};
-
-export const processGeoipResult = createAction<GeoIpResult>(
-  'PROCESS_GEOIP_RESULT',
-);

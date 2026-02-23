@@ -2,7 +2,7 @@ import { bbox } from '@turf/bbox';
 import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
 import { openInExternalApp } from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { copyToClipboard } from '../clipboardUtils.js';
 import {
   getF4mapUrl,

@@ -1,7 +1,7 @@
 import { useCallback, type ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../actions/mainActions.js';
-import { ScaledTileLayer } from '../components/ScaledTileLayer.js';
+import { ScaledTileLayer } from './ScaledTileLayer.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
 import missingTile from '../images/missing-tile-256x256.png';
 import { useMessages } from '../l10nInjector.js';
@@ -13,13 +13,13 @@ import { WmsTileLayer } from './WmsTileLayer.js';
 const galleryLayerFactory = () =>
   import(
     /* webpackChunkName: "gallery-layer" */
-    '../components/gallery/GalleryLayer.js'
+    '../features/gallery/components/GalleryLayer.js'
   );
 
 const shadingLayerFactory = () =>
   import(
     /* webpackChunkName: "shading-layer" */
-    './parameterizedShading/ShadingLayer.js'
+    '../features/parameterizedShading/ShadingLayer.js'
   );
 
 const maplibreLayerFactory = () =>

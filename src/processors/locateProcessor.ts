@@ -1,7 +1,7 @@
 import { LatLng } from 'leaflet';
 import { setLocation, toggleLocate } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { mapRefocus } from '../features/map/model/actions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import { mapPromise } from '../leafletElementHolder.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 

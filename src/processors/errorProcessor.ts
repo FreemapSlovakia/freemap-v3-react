@@ -1,5 +1,5 @@
 import { setErrorTicketId } from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const errorProcessor: Processor<typeof setErrorTicketId> = {

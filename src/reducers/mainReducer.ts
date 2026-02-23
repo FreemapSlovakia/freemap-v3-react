@@ -6,7 +6,7 @@ import {
   authWithGarmin,
   authWithGoogle,
   authWithOsm,
-} from '../actions/authActions.js';
+} from '../features/auth/model/actions.js';
 import {
   drawingLineAddPoint,
   drawingLineChangeProperties,
@@ -14,11 +14,11 @@ import {
   drawingLineJoinFinish,
   drawingLineSetLines,
   drawingLineStopDrawing,
-} from '../actions/drawingLineActions.js';
+} from '../features/drawing/model/actions/drawingLineActions.js';
 import {
   drawingPointAdd,
   drawingPointChangeProperties,
-} from '../actions/drawingPointActions.js';
+} from '../features/drawing/model/actions/drawingPointActions.js';
 import {
   applyCookieConsent,
   applySettings,
@@ -29,7 +29,6 @@ import {
   enableUpdatingUrl,
   hideInfoBar,
   Modal,
-  processGeoipResult,
   purchaseOnLogin,
   saveHomeLocation,
   selectFeature,
@@ -46,13 +45,14 @@ import {
   toggleLocate,
   Tool,
 } from '../actions/mainActions.js';
-import { searchSelectResult } from '../actions/searchActions.js';
-import { Purchase } from '../types/auth.js';
+import { processGeoipResult } from '../features/geoip/model/actions.js';
+import { searchSelectResult } from '../features/search/model/actions.js';
+import { Purchase } from '../features/auth/model/types.js';
 import type { LatLon } from '../types/common.js';
 import {
   routePlannerAddPoint,
   routePlannerSetPoint,
-} from '../actions/routePlannerActions.js';
+} from '../features/routePlanner/model/actions.js';
 
 interface Location extends LatLon {
   accuracy: number;

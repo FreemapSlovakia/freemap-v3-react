@@ -1,4 +1,4 @@
-import { MapViewState } from './actions/mapActions.js';
+import { MapViewState } from './features/map/model/actions.js';
 
 const baseLayerLetterSet = new Set<string>(['A', 'T', 'C', 'K']);
 

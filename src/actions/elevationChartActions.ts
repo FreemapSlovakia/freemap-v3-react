@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Feature, LineString } from 'geojson';
-import { ElevationProfilePoint } from '../reducers/elevationChartReducer.js';
+import { ElevationProfilePoint } from '../features/elevationChart/model/reducer.js';
 
 export const elevationChartSetTrackGeojson = createAction<Feature<LineString>>(
   'ELEVATION_CHART_SET_TRACK_GEOJSON',

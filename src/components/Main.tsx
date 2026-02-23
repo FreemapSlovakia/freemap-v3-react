@@ -17,28 +17,28 @@ import {
   galleryAddItem,
   GalleryItem,
   galleryMergeItem,
-} from '../actions/galleryActions.js';
+} from '../features/gallery/model/actions.js';
 import { setActiveModal } from '../actions/mainActions.js';
-import { mapRefocus } from '../actions/mapActions.js';
-import { routePlannerToggleElevationChart } from '../actions/routePlannerActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
+import { mapRefocus } from '../features/map/model/actions.js';
+import { routePlannerToggleElevationChart } from '../features/routePlanner/model/actions.js';
+import { toastsAdd } from '../features/toasts/model/actions.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
-} from '../actions/trackViewerActions.js';
-import { CopyrightButton } from '../components/CopyrightButton.js';
-import { GalleryPicker } from '../components/gallery/GalleryPicker.js';
-import { GalleryResult } from '../components/gallery/GalleryResult.js';
-import { Layers } from '../components/Layers.js';
-import { MapControls } from '../components/MapControls.js';
-import { MapDetailsMenu } from '../components/MapDetailsMenu.js';
-import { SearchMenu } from '../components/SearchMenu.js';
-import { Toasts } from '../components/Toasts.js';
+} from '../features/trackViewer/model/actions.js';
+import { CopyrightButton } from './CopyrightButton.js';
+import { GalleryPicker } from '../features/gallery/components/GalleryPicker.js';
+import { GalleryResult } from '../features/gallery/components/GalleryResult.js';
+import { Layers } from './Layers.js';
+import { MapControls } from './MapControls.js';
+import { MapDetailsMenu } from '../features/mapDetails/components/MapDetailsMenu.js';
+import { SearchMenu } from '../features/search/components/SearchMenu.js';
+import { Toasts } from '../features/toasts/components/Toasts.js';
 import { useAppSelector } from '../hooks/useAppSelector.js';
-import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
+import { useGpxDropHandler } from '../features/trackViewer/hooks/useGpxDropHandler.js';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
-import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
+import { usePictureDropHandler } from '../features/gallery/hooks/usePictureDropHandler.js';
 import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { useShareFile } from '../hooks/useShareFile.js';
 import fmLogo from '../images/freemap-logo-print.png';
@@ -52,88 +52,88 @@ import {
 } from '../selectors/mainSelectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
-import { GalleryModals } from './gallery/GalleryModals.js';
+import { GalleryModals } from '../features/gallery/components/GalleryModals.js';
 import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
-import { MainMenuButton } from './mainMenu/MainMenuButton.js';
+import { MainMenuButton } from '../features/mainMenu/components/MainMenuButton.js';
 import { MapContextMenu } from './MapContextMenu.js';
-import { MapsMenu } from './MapsMenu.js';
+import { MapsMenu } from '../features/myMaps/components/MapsMenu.js';
 import { Results } from './Results.js';
-import RoutePointSelection from './RoutePointSelection.js';
-import { SearchSelection } from './SearchSelection.js';
+import RoutePointSelection from '../features/routePlanner/components/RoutePointSelection.js';
+import { SearchSelection } from '../features/search/components/SearchSelection.js';
 import { Toolbar } from './Toolbar.js';
 import { ToolMenu } from './ToolMenu.js';
 import { Tools } from './Tools.js';
-import { TrackingSelection } from './TrackingSelection.js';
+import { TrackingSelection } from '../features/tracking/components/TrackingSelection.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
-import { WikiLayer } from './WikiLayer.js';
-import RouteLegSelection from './RouteLegSelection.js';
+import { WikiLayer } from '../features/wiki/components/WikiLayer.js';
+import RouteLegSelection from '../features/routePlanner/components/RouteLegSelection.js';
 
 const objectsMenuFactory = () =>
   import(
     /* webpackChunkName: "objects-menu" */
-    './ObjectsMenu.js'
+    '../features/objects/components/ObjectsMenu.js'
   );
 
 const routePlannerMenuFactory = () =>
   import(
     /* webpackChunkName: "route-planner-menu" */
-    './RoutePlannerMenu.js'
+    '../features/routePlanner/components/RoutePlannerMenu.js'
   );
 
 const trackViewerMenuFactory = () =>
   import(
     /* webpackChunkName: "track-viewer-menu" */
-    './TrackViewerMenu.js'
+    '../features/trackViewer/components/TrackViewerMenu.js'
   );
 
 const changesetsMenuFactory = () =>
   import(
     /* webpackChunkName: "changesets-menu" */
-    './ChangesetsMenu.js'
+    '../features/changesets/components/ChangesetsMenu.js'
   );
 
 const drawingMenuFactory = () =>
   import(
     /* webpackChunkName: "drawing-menu" */
-    './DrawingMenu.js'
+    '../features/drawing/components/DrawingMenu.js'
   );
 
 const drawingLineSelectionFactory = () =>
   import(
     /* webpackChunkName: "drawing-line-selection" */
-    './DrawingLineSelection.js'
+    '../features/drawing/components/DrawingLineSelection.js'
   );
 
 const drawingLinePointSelectionFactory = () =>
   import(
     /* webpackChunkName: "drawing-line-point-selection" */
-    './DrawingLinePointSelection.js'
+    '../features/drawing/components/DrawingLinePointSelection.js'
   );
 
 const drawingPointSelectionFactory = () =>
   import(
     /* webpackChunkName: "drawing-point-selection" */
-    './DrawingPointSelection.js'
+    '../features/drawing/components/DrawingPointSelection.js'
   );
 
 const objectSelectionFactory = () =>
   import(
     /* webpackChunkName: "object-selection" */
-    './ObjectSelection.js'
+    '../features/objects/components/ObjectSelection.js'
   );
 
 const galleryPositionPickingMenuFactory = () =>
   import(
     /* webpackChunkName: "gallery-position-picking-menu" */
-    './gallery/GalleryPositionPickingMenu.js'
+    '../features/gallery/components/GalleryPositionPickingMenu.js'
   );
 
 const galleryShowPositionMenuFactory = () =>
   import(
     /* webpackChunkName: "gallery-show-position-menu" */
-    './gallery/GalleryShowPositionMenu.js'
+    '../features/gallery/components/GalleryShowPositionMenu.js'
   );
 
 const homeLocationPickingMenuFactory = () =>
@@ -145,31 +145,31 @@ const homeLocationPickingMenuFactory = () =>
 const galleryMenuFactory = () =>
   import(
     /* webpackChunkName: "gallery-menu" */
-    './gallery/GalleryMenu.js'
+    '../features/gallery/components/GalleryMenu.js'
   );
 
 const adFactory = () =>
   import(
     /* webpackChunkName: "ad" */
-    './Ad.js'
+    '../features/ad/components/Ad.js'
   );
 
 const shadingControlFactory = () =>
   import(
     /* webpackChunkName: "shading-control" */
-    './parameterizedShading/ShadingControl.js'
+    '../features/parameterizedShading/ShadingControl.js'
   );
 
 const elevationChartFactory = () =>
   import(
     /* webpackChunkName: "elevation-chart" */
-    './ElevationChart.js'
+    '../features/elevationChart/components/ElevationChart.js'
   );
 
 const trackingModalFactory = () =>
   import(
     /* webpackChunkName: "tracking-modal" */
-    './tracking/TrackingModal.js'
+    '../features/tracking/components/TrackingModal.js'
   );
 
 const accountModalFactory = () =>
@@ -181,13 +181,13 @@ const accountModalFactory = () =>
 const downloadMapModalFactory = () =>
   import(
     /* webpackChunkName: "download-map-modal" */
-    './DownloadMapModal.js'
+    '../features/downloadMap/components/DownloadMapModal.js'
   );
 
 const mapSettingsModalFactory = () =>
   import(
     /* webpackChunkName: "map-settings-modal" */
-    './mapSettings/MapSettingsModal.js'
+    '../features/mapSettings/components/MapSettingsModal.js'
   );
 
 const embedMapModalFactory = () =>
@@ -199,13 +199,13 @@ const embedMapModalFactory = () =>
 const exportGpxModalFactory = () =>
   import(
     /* webpackChunkName: "export-map-features-modal" */
-    './ExportMapFeaturesModal.js'
+    '../features/export/components/ExportMapFeaturesModal.js'
   );
 
 const exportMapModalFactory = () =>
   import(
     /* webpackChunkName: "export-map-modal" */
-    './ExportMapModal.js'
+    '../features/export/components/ExportMapModal.js'
   );
 
 const documentModalFactory = () =>
@@ -223,19 +223,19 @@ const aboutModalFactory = () =>
 const buyCreditModalFactory = () =>
   import(
     /* webpackChunkName: "buy-credits-modal" */
-    './BuyCreditsModal.js'
+    '../features/credits/components/BuyCreditsModal.js'
   );
 
 const supportUsModalFactory = () =>
   import(
     /* webpackChunkName: "support-us-modal" */
-    './supportUsModal/SupportUsModal.js'
+    '../features/supportUsModal/SupportUsModal.js'
   );
 
 const legendModalFactory = () =>
   import(
     /* webpackChunkName: "legend-modal" */
-    './LegendModal.js'
+    '../features/legend/components/LegendModal.js'
   );
 
 const currentDrawingPropertiesModalFactory = () =>
@@ -247,19 +247,19 @@ const currentDrawingPropertiesModalFactory = () =>
 const trackViewerUploadModalFactory = () =>
   import(
     /* webpackChunkName: "track-viewer-upload-modal" */
-    './TrackViewerUploadModal.js'
+    '../features/trackViewer/components/TrackViewerUploadModal.js'
   );
 
 const loginModalFactory = () =>
   import(
     /* webpackChunkName: "login-modal" */
-    './LoginModal.js'
+    '../features/auth/components/LoginModal.js'
   );
 
 const mapsModalFactory = () =>
   import(
     /* webpackChunkName: "maps-modal" */
-    './MapsModal.js'
+    '../features/myMaps/components/MapsModal.js'
   );
 
 const premiumActivationModalFactory = () =>
@@ -271,7 +271,7 @@ const premiumActivationModalFactory = () =>
 const galleryFilterModalFactory = () =>
   import(
     /* webpackChunkName: "gallery-filter-modal" */
-    './gallery/GalleryFilterModal.js'
+    '../features/gallery/components/GalleryFilterModal.js'
   );
 
 const predefinedDrawingPropertiesModalFactory = () =>

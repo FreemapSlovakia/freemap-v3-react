@@ -1,8 +1,8 @@
 import { assert } from 'typia';
-import { authSetPurchases } from '../actions/authActions.js';
+import { authSetPurchases } from '../features/auth/model/actions.js';
 import { httpRequest } from '../httpRequest.js';
 import type { Processor } from '../middlewares/processorMiddleware.js';
-import { PurchaseRecord } from '../types/auth.js';
+import { PurchaseRecord } from '../features/auth/model/types.js';
 import { StringDates } from '../types/common.js';
 
 export const fetchPurchasesProcessor: Processor = {

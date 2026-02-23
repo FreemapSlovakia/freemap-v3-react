@@ -5,12 +5,15 @@ import {
   ChangesetParams,
   changesetsSet,
   changesetsSetParams,
-} from './actions/changesetsActions.js';
-import { drawingLineSetLines, Line } from './actions/drawingLineActions.js';
+} from './features/changesets/model/actions.js';
+import {
+  drawingLineSetLines,
+  Line,
+} from './features/drawing/model/actions/drawingLineActions.js';
 import {
   drawingPointAdd,
   drawingPointSetAll,
-} from './actions/drawingPointActions.js';
+} from './features/drawing/model/actions/drawingPointActions.js';
 import {
   galleryClear,
   galleryColorizeBy,
@@ -18,7 +21,7 @@ import {
   GalleryFilter,
   galleryRequestImage,
   gallerySetFilter,
-} from './actions/galleryActions.js';
+} from './features/gallery/model/actions.js';
 import type { RootAction } from './actions/index.js';
 import { l10nSetChosenLanguage } from './actions/l10nActions.js';
 import {
@@ -35,9 +38,9 @@ import {
   mapRefocus,
   mapSetCustomLayers,
   mapSetShading,
-} from './actions/mapActions.js';
-import { mapsLoad } from './actions/mapsActions.js';
-import { objectsSetFilter } from './actions/objectsActions.js';
+} from './features/map/model/actions.js';
+import { mapsLoad } from './features/myMaps/model/actions.js';
+import { objectsSetFilter } from './features/objects/model/actions.js';
 import {
   osmClear,
   osmLoadNode,
@@ -47,21 +50,21 @@ import {
 import {
   routePlannerSetParams,
   RoutePoint,
-} from './actions/routePlannerActions.js';
-import { searchSetQuery } from './actions/searchActions.js';
-import { trackingActions } from './actions/trackingActions.js';
+} from './features/routePlanner/model/actions.js';
+import { searchSetQuery } from './features/search/model/actions.js';
+import { trackingActions } from './features/tracking/model/actions.js';
 import {
   type ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
-} from './actions/trackViewerActions.js';
+} from './features/trackViewer/model/actions.js';
 import {
   type ColorStop,
   type Color as ColorType,
   serializeShading,
   ShadingComponent,
-} from './components/parameterizedShading/Shading.js';
+} from './features/parameterizedShading/Shading.js';
 import { tools } from './constants.js';
 import {
   integratedLayerDefMap,
@@ -77,7 +80,7 @@ import {
   type TransportType,
 } from './transportTypeDefs.js';
 import type { LatLon } from './types/common.js';
-import type { TrackedDevice } from './types/trackingTypes.js';
+import type { TrackedDevice } from './features/tracking/model/types.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {

@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect';
 import { Tool } from '../actions/mainActions.js';
-import { PickMode } from '../actions/routePlannerActions.js';
+import { PickMode } from '../features/routePlanner/model/actions.js';
 import marker from '../images/cursors/marker.svg';
 import pencil from '../images/cursors/pencil.svg';
 import type { RootState } from '../store.js';
-import { Track } from '../types/trackingTypes.js';
+import { Track } from '../features/tracking/model/types.js';
 
 export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 
