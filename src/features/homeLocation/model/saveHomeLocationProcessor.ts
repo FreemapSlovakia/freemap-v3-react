@@ -1,6 +1,6 @@
-import { saveHomeLocation } from '../actions/mainActions.js';
-import { httpRequest } from '../httpRequest.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+import { httpRequest } from '../../../httpRequest.js';
+import type { Processor } from '../../../middlewares/processorMiddleware.js';
+import { saveHomeLocation } from './actions.js';
 
 export const saveHomeLocationProcessor: Processor<typeof saveHomeLocation> = {
   actionCreator: saveHomeLocation,

@@ -1,5 +1,5 @@
-import { applyCookieConsent } from '../features/cookieConsent/model/actions.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+import { applyCookieConsent } from './actions.js';
+import type { Processor } from '../../../middlewares/processorMiddleware.js';
 
 export const cookieConsentProcessor: Processor = {
   actionCreator: applyCookieConsent,

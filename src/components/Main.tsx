@@ -53,7 +53,6 @@ import {
 import { AsyncComponent } from './AsyncComponent.js';
 import { AsyncModal } from './AsyncModal.js';
 import { GalleryModals } from '../features/gallery/components/GalleryModals.js';
-import { HomeLocationPickingResult } from './HomeLocationPickingResult.js';
 import { InfoBar } from './InfoBar.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { MainMenuButton } from '../features/mainMenu/components/MainMenuButton.js';
@@ -69,6 +68,7 @@ import { TrackingSelection } from '../features/tracking/components/TrackingSelec
 import { useHtmlMeta } from './useHtmlMeta.js';
 import { WikiLayer } from '../features/wiki/components/WikiLayer.js';
 import RouteLegSelection from '../features/routePlanner/components/RouteLegSelection.js';
+import { HomeLocationPickingResult } from '../features/homeLocation/components/HomeLocationPickingResult.js';
 
 const objectsMenuFactory = () =>
   import(
@@ -139,7 +139,7 @@ const galleryShowPositionMenuFactory = () =>
 const homeLocationPickingMenuFactory = () =>
   import(
     /* webpackChunkName: "home-location-picking-menu" */
-    './HomeLocationPickingMenu.js'
+    '../features/homeLocation/components/HomeLocationPickingMenu.js'
   );
 
 const galleryMenuFactory = () =>

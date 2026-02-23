@@ -17,11 +17,11 @@ import {
   changesetsTrackProcessor,
 } from './features/changesets/model/changesetsProcessor.js';
 import { convertToDrawingProcessor } from './processors/convertToDrawingProcessor.js';
-import { cookieConsentProcessor } from './processors/cookieConsentProcessor.js';
+import { cookieConsentProcessor } from './features/cookieConsent/model/cookieConsentProcessor.js';
 import { deleteProcessor } from './processors/deleteProcessor.js';
 import { downloadMapProcessor } from './features/downloadMap/model/downloadMapProcessor.js';
 import { elevationChartProcessor } from './features/elevationChart/model/elevationChartProcessor.js';
-import { exportMapFeaturesProcessor } from './processors/exportMapFeaturesProcessor.js';
+import { exportMapFeaturesProcessor } from './features/export/model/processors/exportMapFeaturesProcessor.js';
 import { errorProcessor } from './processors/errorProcessor.js';
 import { fetchPurchasesProcessor } from './processors/fetchPurchasesProcessor.js';
 import { galleryDeletePictureProcessor } from './features/gallery/model/processors/galleryDeletePictureProcessor.js';
@@ -44,7 +44,7 @@ import { getCountriesProcessor } from './features/map/model/processors/getCountr
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor.js';
 import { legacyMapWarningProcessor } from './processors/legacyMapWarningProcessor.js';
 import { legendProcessor } from './features/legend/model/legendProcessor.js';
-import { locateProcessor } from './processors/locateProcessor.js';
+import { locateProcessor } from './features/location/model/locateProcessor.js';
 import { exportMapProcessor } from './features/mapExport/model/mapExportProcessor.js';
 import { mapRefocusProcessor } from './features/map/model/processors/mapRefocusProcessor.js';
 import { mapsDeleteProcessor } from './features/myMaps/model/processors/mapsDeleteProcessor.js';
@@ -67,7 +67,7 @@ import { routePlannerRefocusMapProcessor } from './features/routePlanner/model/p
 import { routePlannerSetFromCurrentPositionProcessor } from './features/routePlanner/model/processors/routePlannerSetFromCurrentPositionProcessor.js';
 import { routePlannerToggleElevationChartProcessor } from './features/routePlanner/model/processors/routePlannerToggleElevationChartProcessor.js';
 import * as rpcProcessors from './processors/rpcProcessors.js';
-import { saveHomeLocationProcessor } from './processors/saveHomeLocationProcessor.js';
+import { saveHomeLocationProcessor } from './features/homeLocation/model/saveHomeLocationProcessor.js';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor.js';
 import {
   searchHighlightProcessor,

@@ -1,5 +1,5 @@
-import { exportMapFeatures } from '../features/export/model/actions.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+import { exportMapFeatures } from '../actions.js';
+import type { Processor } from '../../../../middlewares/processorMiddleware.js';
 
 export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,
@@ -10,16 +10,16 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
       params[0].action.payload.target === 'garmin'
         ? await import(
             /* webpackChunkName: "garmin-export-processor-handler" */
-            '../features/export/model/processors/garminExportProcessorHandler.js'
+            './garminExportProcessorHandler.js'
           )
         : params[0].action.payload.type === 'gpx'
           ? await import(
               /* webpackChunkName: "gpx-export-processor-handler" */
-              '../features/export/model/processors/gpxExportProcessorHandler.js'
+              './gpxExportProcessorHandler.js'
             )
           : await import(
               /* webpackChunkName: "geojson-export-processor-handler" */
-              '../features/export/model/processors/geojsonExportProcessorHandler.js'
+              './geojsonExportProcessorHandler.js'
             )
     ).default(...params);
   },

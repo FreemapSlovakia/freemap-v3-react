@@ -3,9 +3,9 @@ import { type ReactElement, useCallback } from 'react';
 import { FaHome } from 'react-icons/fa';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { setSelectingHomeLocation } from '../actions/mainActions.js';
-import { useAppSelector } from '../hooks/useAppSelector.js';
-import { RichMarker } from './RichMarker.js';
+import { setSelectingHomeLocation } from '../model/actions.js';
+import { useAppSelector } from '../../../hooks/useAppSelector.js';
+import { RichMarker } from '../../../components/RichMarker.js';
 
 export function HomeLocationPickingResult(): ReactElement | null {
   const dispatch = useDispatch();
