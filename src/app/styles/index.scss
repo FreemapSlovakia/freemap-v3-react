@@ -83,7 +83,7 @@ button#freemap-logo {
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
-  background-image: url(../images/freemap-logo.png);
+  background-image: url(@/images/freemap-logo.png);
   background-size: 122px 34px;
   background-repeat: no-repeat;
   margin-right: 3px;
@@ -108,7 +108,7 @@ button#freemap-logo {
 @media (max-width: 767px) {
   .full {
     button#freemap-logo {
-      background-image: url(../images/freemap-logo-small.png);
+      background-image: url(@/images/freemap-logo-small.png);
       background-size: 42px 34px;
       width: 42px;
     }

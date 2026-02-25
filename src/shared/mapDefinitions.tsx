@@ -20,9 +20,9 @@ import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
 import { SiOpenstreetmap } from 'react-icons/si';
 import { is } from 'typia';
-import black1x1 from './images/1x1-black.png';
-import transparent1x1 from './images/1x1-transparent.png';
-import white1x1 from './images/1x1-white.png';
+import black1x1 from '@/images/1x1-black.png';
+import transparent1x1 from '@/images/1x1-transparent.png';
+import white1x1 from '@/images/1x1-white.png';
 
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
