@@ -11,6 +11,7 @@ import {
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { OsmMapping } from '@osm/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -24,7 +25,6 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { colors } from '../../../constants.js';
 
 export function ObjectsResult(): ReactElement | null {
   const m = useMessages();

@@ -2,6 +2,7 @@ import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import { colors } from '@shared/constants.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -16,7 +17,6 @@ import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
-import { colors } from '../../../constants.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 
 interface GetFeatures {

@@ -1,8 +1,8 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { IsWmsLayerDef, LayerDef } from '@shared/mapDefinitions.js';
+import { Layer, wms } from '@shared/wms.js';
 import { Fragment, ReactElement, useEffect, useState } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
-import { IsWmsLayerDef, LayerDef } from '../../../shared/mapDefinitions.js';
-import { Layer, wms } from '../../../wms.js';
 
 type Props = {
   def: LayerDef<IsWmsLayerDef, IsWmsLayerDef>;

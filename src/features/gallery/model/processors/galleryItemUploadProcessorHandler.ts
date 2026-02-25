@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { parseCoordinates } from '../../../../shared/coordinatesParser.js';
+import { parseCoordinates } from '@shared/coordinatesParser.js';
 import {
   galleryRemoveItem,
   gallerySetItemError,

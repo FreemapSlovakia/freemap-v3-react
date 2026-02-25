@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { type ReactElement, useCallback } from 'react';
@@ -6,7 +7,6 @@ import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { elevationChartClose } from '../../elevationChart/model/actions.js';
 import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
 import {
   trackViewerSetData,

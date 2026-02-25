@@ -1,9 +1,9 @@
-import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaGem, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { purchase, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 

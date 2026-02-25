@@ -1,4 +1,3 @@
-import { useLazy } from '@/hooks/useLazy.js';
 import {
   Attributes,
   ComponentClass,
@@ -6,6 +5,7 @@ import {
   FunctionComponent,
   ReactElement,
 } from 'react';
+import { useLazy } from '../hooks/useLazy.js';
 
 type Factory<T> = () => Promise<{ default: T }>;
 

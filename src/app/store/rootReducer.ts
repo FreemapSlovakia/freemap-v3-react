@@ -1,9 +1,3 @@
-import { upgradeCustomLayerDefs } from '@/shared/mapDefinitions.js';
-import {
-  migrateTransportType,
-  transportTypeDefs,
-} from '@/transportTypeDefs.js';
-import type { RootState } from '@app/store/store.js';
 import {
   authInitialState,
   authReducer,
@@ -76,9 +70,15 @@ import {
 } from '@features/trackViewer/model/reducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
+import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
+import {
+  migrateTransportType,
+  transportTypeDefs,
+} from '@shared/transportTypeDefs.js';
 import { StringDates } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
+import type { RootState } from '../store/store.js';
 import { mainInitialState, mainReducer, type MainState } from './reducer.js';
 
 export const reducers = {

@@ -1,33 +1,17 @@
 import {
-  enableUpdatingUrl,
-  selectFeature,
-  setActiveModal,
-  setEmbedFeatures,
-  setTool,
-  ShowModal,
-  Tool,
-} from '@app/store/actions.js';
-import type { LatLon } from '@shared/types/common.js';
-import Color from 'color';
-import type { Dispatch } from 'redux';
-import { is } from 'typia';
-import type { RootAction } from './app/store/rootAction.js';
-import type { MyStore, RootState } from './app/store/store.js';
-import { tools } from './constants.js';
-import {
   ChangesetParams,
   changesetsSet,
   changesetsSetParams,
-} from './features/changesets/model/actions.js';
-import { documentShow } from './features/documents/model/actions.js';
+} from '@features/changesets/model/actions.js';
+import { documentShow } from '@features/documents/model/actions.js';
 import {
   drawingLineSetLines,
   Line,
-} from './features/drawing/model/actions/drawingLineActions.js';
+} from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   drawingPointAdd,
   drawingPointSetAll,
-} from './features/drawing/model/actions/drawingPointActions.js';
+} from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   galleryClear,
   galleryColorizeBy,
@@ -35,52 +19,68 @@ import {
   GalleryFilter,
   galleryRequestImage,
   gallerySetFilter,
-} from './features/gallery/model/actions.js';
-import { l10nSetChosenLanguage } from './features/l10n/model/actions.js';
+} from '@features/gallery/model/actions.js';
+import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
   mapSetShading,
-} from './features/map/model/actions.js';
-import { mapsLoad } from './features/myMaps/model/actions.js';
-import { objectsSetFilter } from './features/objects/model/actions.js';
+} from '@features/map/model/actions.js';
+import { mapsLoad } from '@features/myMaps/model/actions.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
 import {
   osmClear,
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
-} from './features/osm/model/osmActions.js';
+} from '@features/osm/model/osmActions.js';
 import {
   type ColorStop,
   type Color as ColorType,
   serializeShading,
   ShadingComponent,
-} from './features/parameterizedShading/Shading.js';
+} from '@features/parameterizedShading/Shading.js';
 import {
   routePlannerSetParams,
   RoutePoint,
-} from './features/routePlanner/model/actions.js';
-import { searchSetQuery } from './features/search/model/actions.js';
-import { trackingActions } from './features/tracking/model/actions.js';
-import type { TrackedDevice } from './features/tracking/model/types.js';
+} from '@features/routePlanner/model/actions.js';
+import { searchSetQuery } from '@features/search/model/actions.js';
+import { trackingActions } from '@features/tracking/model/actions.js';
+import type { TrackedDevice } from '@features/tracking/model/types.js';
 import {
   type ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
-} from './features/trackViewer/model/actions.js';
+} from '@features/trackViewer/model/actions.js';
+import { tools } from '@shared/constants.js';
+import {
+  integratedLayerDefMap,
+  upgradeCustomLayerDefs,
+} from '@shared/mapDefinitions.js';
+import {
+  migrateTransportType,
+  type TransportType,
+} from '@shared/transportTypeDefs.js';
+import type { LatLon } from '@shared/types/common.js';
+import Color from 'color';
+import type { Dispatch } from 'redux';
+import { is } from 'typia';
+import {
+  enableUpdatingUrl,
+  selectFeature,
+  setActiveModal,
+  setEmbedFeatures,
+  setTool,
+  ShowModal,
+  Tool,
+} from '../store/actions.js';
+import type { RootAction } from '../store/rootAction.js';
+import type { MyStore, RootState } from '../store/store.js';
 import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from './oldFreemapUtils.js';
-import {
-  integratedLayerDefMap,
-  upgradeCustomLayerDefs,
-} from './shared/mapDefinitions.js';
-import {
-  migrateTransportType,
-  type TransportType,
-} from './transportTypeDefs.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {

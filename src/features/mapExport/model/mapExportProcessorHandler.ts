@@ -1,12 +1,12 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { exportMap } from '@features/export/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { colors } from '@shared/constants.js';
 import { featureCollection, lineString, point, polygon } from '@turf/helpers';
 import { Feature } from 'geojson';
 import { assert } from 'typia';
-import { httpRequest } from '../../../app/httpRequest.js';
-import { colors } from '../../../constants.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 

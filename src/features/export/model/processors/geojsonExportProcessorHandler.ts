@@ -10,9 +10,9 @@ import {
   polygon,
 } from '@turf/helpers';
 import { FeatureCollection } from 'geojson';
-import { fetchPictures, Picture } from '../../fetchPictures.js';
-import { licenseNotice, upload } from '../../upload.js';
 import { exportMapFeatures } from '../actions.js';
+import { fetchPictures, Picture } from './fetchPictures.js';
+import { licenseNotice, upload } from './upload.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,

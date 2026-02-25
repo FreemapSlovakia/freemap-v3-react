@@ -3,6 +3,8 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import '@shared/styles/react-tags.scss';
 import {
   type ReactElement,
   useCallback,
@@ -31,8 +33,6 @@ import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
 import { assert } from 'typia';
-import { useOnline } from '../../../hooks/useOnline.js';
-import '../../../styles/react-tags.scss';
 import {
   mapsDelete,
   mapsDisconnect,

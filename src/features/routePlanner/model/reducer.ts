@@ -5,11 +5,8 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Feature, Polygon } from 'geojson';
-import {
-  TransportType,
-  transportTypeDefs,
-} from '../../../transportTypeDefs.js';
 import {
   Alternative,
   IsochroneParams,

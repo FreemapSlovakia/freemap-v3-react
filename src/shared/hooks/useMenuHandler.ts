@@ -8,6 +8,8 @@ import {
   setActiveModal,
   setTool,
 } from '@app/store/actions.js';
+import { documentShow } from '@features/documents/model/actions.js';
+import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { Submenu } from '@features/mainMenu/components/submenu.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
@@ -16,8 +18,6 @@ import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
-import { documentShow } from '../features/documents/model/actions.js';
-import { l10nSetChosenLanguage } from '../features/l10n/model/actions.js';
 
 export function useMenuHandler({
   pointTitle,

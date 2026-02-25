@@ -9,7 +9,7 @@ import {
   FaRoad,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
-import type { Messages } from './translations/messagesInterface.js';
+import type { Messages } from '../translations/messagesInterface.js';
 
 export interface ToolDefinition {
   tool: Tool;

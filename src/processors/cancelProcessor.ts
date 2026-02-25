@@ -1,5 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { cancelRegister } from '../cancelRegister.js';
+import { cancelRegister } from '@shared/cancelRegister.js';
 
 export const cancelProcessor: Processor = {
   async handle({ action }) {

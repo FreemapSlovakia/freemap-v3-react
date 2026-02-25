@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import {
   applySettings,
   saveSettings,
@@ -6,7 +7,6 @@ import {
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { httpRequest } from '../app/httpRequest.js';
 
 export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,

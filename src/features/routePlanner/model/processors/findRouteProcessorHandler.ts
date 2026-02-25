@@ -3,16 +3,13 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
+import { isPremium } from '@shared/premium.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
 import { Feature, LineString, Polygon } from 'geojson';
 import { hash } from 'ohash';
 import { assert } from 'typia';
-import { isPremium } from '../../../../premium.js';
-import {
-  TransportType,
-  transportTypeDefs,
-} from '../../../../transportTypeDefs.js';
 import {
   Alternative,
   Leg,

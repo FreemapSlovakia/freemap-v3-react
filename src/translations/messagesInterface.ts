@@ -1,3 +1,4 @@
+import { HttpError } from '@app/httpRequest.js';
 import { Changeset } from '@features/changesets/model/actions.js';
 import { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { ExportableLayer } from '@features/export/model/actions.js';
@@ -7,10 +8,9 @@ import {
 } from '@features/gallery/model/actions.js';
 import { RoutingMode } from '@features/routePlanner/model/actions.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
+import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactElement, ReactNode } from 'react';
-import { HttpError } from '../app/httpRequest.js';
-import type { TransportTypeMsgKey } from '../transportTypeDefs.js';
 
 type Err = { err: string };
 

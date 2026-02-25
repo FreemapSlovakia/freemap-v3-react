@@ -9,8 +9,8 @@ import {
   toastsAdd,
   toastsRemove,
 } from '@features/toasts/model/actions.js';
+import { HasLegacy, integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { is } from 'typia';
-import { HasLegacy, integratedLayerDefs } from '../shared/mapDefinitions.js';
 
 const TOAST_PREFIX = 'maps.legacyWarning.';
 

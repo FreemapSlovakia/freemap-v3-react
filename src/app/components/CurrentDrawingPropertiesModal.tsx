@@ -1,10 +1,9 @@
-import { colors } from '@/constants.js';
-import { setActiveModal } from '@app/store/actions.js';
 import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
@@ -18,6 +17,7 @@ import {
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 

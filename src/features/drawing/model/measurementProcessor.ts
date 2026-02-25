@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -13,7 +14,6 @@ import { area } from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import { length } from '@turf/length';
 import { assert } from 'typia';
-import { httpRequest } from '../../../app/httpRequest.js';
 import { drawingMeasure } from './actions/drawingPointActions.js';
 
 const cancelType = [

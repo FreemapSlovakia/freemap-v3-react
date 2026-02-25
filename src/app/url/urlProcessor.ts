@@ -1,15 +1,15 @@
-import { ShowModal } from '@app/store/actions.js';
-import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { drawingLineUpdatePoint } from '@features/drawing/model/actions/drawingLineActions.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { serializeShading } from '@features/parameterizedShading/Shading.js';
 import { isAnyOf } from '@reduxjs/toolkit';
+import { basicModals } from '@shared/constants.js';
+import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
 import { is } from 'typia';
-import { basicModals } from '../constants.js';
-import { integratedLayerDefMap } from '../shared/mapDefinitions.js';
-import { transportTypeDefs } from '../transportTypeDefs.js';
+import { ShowModal } from '../store/actions.js';
+import type { Processor } from '../store/middleware/processorMiddleware.js';
 
 let lastActionType: string | undefined;
 

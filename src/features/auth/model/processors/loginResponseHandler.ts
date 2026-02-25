@@ -1,13 +1,13 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
+import { isPremium } from '@shared/premium.js';
 import { StringDates } from '@shared/types/common.js';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
-import { isPremium } from '../../premium.js';
-import { upgradeCustomLayerDefs } from '../../shared/mapDefinitions.js';
-import { authSetUser } from './model/actions.js';
-import type { LoginResponse, User, UserSettings } from './model/types.js';
+import { authSetUser } from '../actions.js';
+import { LoginResponse, User, UserSettings } from '../types.js';
 
 export async function handleLoginResponse(
   res: Response,

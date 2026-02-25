@@ -1,4 +1,8 @@
 import { setActiveModal } from '@app/store/actions.js';
+import {
+  elevationChartClose,
+  elevationChartSetTrackGeojson,
+} from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
@@ -15,10 +19,6 @@ import {
 } from 'react-icons/fa';
 import { TbAngle, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import {
-  elevationChartClose,
-  elevationChartSetTrackGeojson,
-} from '../../elevationChart/model/actions.js';
 import {
   drawingLineAddPoint,
   drawingLineStopDrawing,

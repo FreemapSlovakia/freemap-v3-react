@@ -1,5 +1,5 @@
+import { SearchResult } from '@features/search/model/actions.js';
 import { FeatureId, featureIdsEqual } from '@shared/types/featureId.js';
-import { SearchResult } from '../../../search/model/actions.js';
 
 // keep display_name from nominatim
 export function copyDisplayName(

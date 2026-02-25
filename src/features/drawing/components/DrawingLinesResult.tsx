@@ -1,8 +1,8 @@
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { type ReactElement, useEffect } from 'react';
-import { colors } from '../../../constants.js';
 import { DrawingLineResult } from './DrawingLineResult.js';
 
 function useLinePointColor() {

@@ -1,9 +1,9 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { lineString } from '@turf/helpers';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
-} from '../../../elevationChart/model/actions.js';
+} from '@features/elevationChart/model/actions.js';
+import { lineString } from '@turf/helpers';
 import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerToggleElevationChart,

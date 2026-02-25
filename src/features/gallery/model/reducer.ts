@@ -1,12 +1,12 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
+import { l10nSetLanguage } from '@features/l10n/model/actions.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { latLonToString } from '@shared/geoutils.js';
 import type { LatLon } from '@shared/types/common.js';
-import { parseCoordinates } from '../../../shared/coordinatesParser.js';
-import { l10nSetLanguage } from '../../l10n/model/actions.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 import {
   galleryAddItem,

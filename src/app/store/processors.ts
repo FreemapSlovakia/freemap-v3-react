@@ -1,3 +1,11 @@
+import { cancelProcessor } from '@/processors/cancelProcessor.js';
+import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
+import { deleteProcessor } from '@/processors/deleteProcessor.js';
+import { errorProcessor } from '@/processors/errorProcessor.js';
+import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
+import { saveSettingsProcessor } from '@/processors/saveSettingsProcessor.js';
+import { setActiveModalTransformer } from '@/processors/setActiveModalProcessor.js';
+import { setToolProcessor } from '@/processors/setToolProcessor.js';
 import { authDeleteAccountProcessor } from '@features/auth/model/processors/authDeleteAccountProcessor.js';
 import { authDisconnectProcessor } from '@features/auth/model/processors/authDisconnectProcessor.js';
 import {
@@ -11,6 +19,8 @@ import { authWithGarminProcessor } from '@features/auth/model/processors/authWit
 import { authWithGoogleProcessor } from '@features/auth/model/processors/authWithGoogleProcessor.js';
 import { authWithOsm2Processor } from '@features/auth/model/processors/authWithOsm2Processor.js';
 import { authWithOsmProcessor } from '@features/auth/model/processors/authWithOsmProcessor.js';
+import { fetchPurchasesProcessor } from '@features/auth/model/processors/fetchPurchasesProcessor.js';
+import { purchaseProcessor } from '@features/auth/model/processors/purchaseProcessor.js';
 import {
   changesetsProcessor,
   changesetsTrackProcessor,
@@ -52,6 +62,7 @@ import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
 } from '@features/objects/model/objectsFetchProcessor.js';
+import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNodeProcessor.js';
 import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
 import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayProcessor.js';
@@ -80,18 +91,7 @@ import { trackViewerToggleElevationChartProcessor } from '@features/tracking/mod
 import { trackViewerUploadTrackProcessor } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
-import { openInExternalAppProcessor } from '../../features/openInExternalApp/openInExternalAppProcessor.js';
-import { cancelProcessor } from '../../processors/cancelProcessor.js';
-import { convertToDrawingProcessor } from '../../processors/convertToDrawingProcessor.js';
-import { deleteProcessor } from '../../processors/deleteProcessor.js';
-import { errorProcessor } from '../../processors/errorProcessor.js';
-import { fetchPurchasesProcessor } from '../../processors/fetchPurchasesProcessor.js';
-import { legacyMapWarningProcessor } from '../../processors/legacyMapWarningProcessor.js';
-import { purchaseProcessor } from '../../processors/purchaseProcessor.js';
-import { saveSettingsProcessor } from '../../processors/saveSettingsProcessor.js';
-import { setActiveModalTransformer } from '../../processors/setActiveModalProcessor.js';
-import { setToolProcessor } from '../../processors/setToolProcessor.js';
-import { urlProcessor } from '../../processors/urlProcessor.js';
+import { urlProcessor } from '../url/urlProcessor.js';
 
 export const processors = [
   errorProcessor,

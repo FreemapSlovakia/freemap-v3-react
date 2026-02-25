@@ -1,11 +1,11 @@
 ///<reference types="webpack-env" />
 
-import { errorHandlingMiddleware } from '@app/store/middleware/errorHandlingMiddleware.js';
-import { createProcessorMiddleware } from '@app/store/middleware/processorMiddleware.js';
-import { statePersistingMiddleware } from '@app/store/middleware/statePersistingMiddleware.js';
 import { createTrackingMiddleware } from '@features/tracking/model/trackingMiddleware.js';
 import { createWebsocketMiddleware } from '@features/websocket/model/webSocketMiddleware.js';
 import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
+import { errorHandlingMiddleware } from '../store/middleware/errorHandlingMiddleware.js';
+import { createProcessorMiddleware } from '../store/middleware/processorMiddleware.js';
+import { statePersistingMiddleware } from '../store/middleware/statePersistingMiddleware.js';
 import { processors } from './processors.js';
 import { getInitialState, reducers } from './rootReducer.js';
 

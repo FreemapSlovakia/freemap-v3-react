@@ -1,4 +1,3 @@
-import { toggleLocate } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus, MapViewState } from '@features/map/model/actions.js';
@@ -10,6 +9,7 @@ import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
+import { toggleLocate } from '../store/actions.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
 export function MapControls(): ReactElement | null {

@@ -2,9 +2,11 @@ import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useMap } from '@features/map/hooks/useMap.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
@@ -33,8 +35,6 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { transportTypeDefs } from '../../../transportTypeDefs.js';
-import { useMap } from '../../map/hooks/useMap.js';
 import {
   routePlannerAddPoint,
   routePlannerSetActiveAlternativeIndex,

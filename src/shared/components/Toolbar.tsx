@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Card } from 'react-bootstrap';
-import { useLeftMarginAdjuster } from '../../hooks/useLeftMarginAdjuster.js';
+import { useLeftMarginAdjuster } from '../hooks/useLeftMarginAdjuster.js';
 
 type Props = { children: ReactNode; className?: string };
 

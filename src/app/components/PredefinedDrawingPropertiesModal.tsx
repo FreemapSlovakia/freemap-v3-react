@@ -1,4 +1,3 @@
-import { applySettings, setActiveModal } from '@app/store/actions.js';
 import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -12,6 +11,7 @@ import {
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { applySettings, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 

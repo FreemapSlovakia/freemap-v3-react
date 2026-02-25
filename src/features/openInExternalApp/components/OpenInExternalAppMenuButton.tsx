@@ -1,12 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { LatLon } from '@shared/types/common.js';
 import { JSX, ReactElement } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
-import { useMenuHandler } from '../../../hooks/useMenuHandler.js';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
 
 interface Props extends LatLon {

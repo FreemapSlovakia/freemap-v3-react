@@ -1,9 +1,4 @@
-import { useMouseCursor } from '@/hooks/useMouseCursor.js';
-import { useShareFile } from '@/hooks/useShareFile.js';
 import fmLogo from '@/images/freemap-logo-print.png';
-import { isPremium } from '@/premium.js';
-import { integratedLayerDefMap } from '@/shared/mapDefinitions.js';
-import { setActiveModal } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
@@ -17,6 +12,7 @@ import {
 import { HomeLocationPickingResult } from '@features/homeLocation/components/HomeLocationPickingResult.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MainMenuButton } from '@features/mainMenu/components/MainMenuButton.js';
+import { Map } from '@features/map/components/Map.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
@@ -42,13 +38,17 @@ import { Toolbar } from '@shared/components/Toolbar.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { useShareFile } from '@shared/hooks/useShareFile.js';
+import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { isPremium } from '@shared/premium.js';
 import 'leaflet/dist/leaflet.css';
 import { MouseEvent, ReactElement, useCallback } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { Map } from '../../features/map/components/Map.js';
+import { useMouseCursor } from '../hooks/useMouseCursor.js';
+import { setActiveModal } from '../store/actions.js';
 import {
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
@@ -204,7 +204,7 @@ const exportMapModalFactory = () =>
 const documentModalFactory = () =>
   import(
     /* webpackChunkName: "document-modal" */
-    '../../features/documents/components/DocumentModal.js'
+    '@features/documents/components/DocumentModal.js'
   );
 
 const aboutModalFactory = () =>

@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { useTextInputState } from '../../../hooks/useTextInputState.js';
 import { trackingActions } from '../model/actions.js';
 
 import { isInvalidInt } from '@shared/numberValidator.js';

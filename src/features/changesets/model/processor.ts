@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   selectFeature,
@@ -8,7 +9,6 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { httpRequest } from '../../../app/httpRequest.js';
 import { Changeset, changesetsSet, changesetsSetParams } from './actions.js';
 
 export const changesetsTrackProcessor: Processor = {

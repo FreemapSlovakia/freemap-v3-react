@@ -46,7 +46,7 @@ const config: Configuration = {
   mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
   entry: {
-    main: './index.tsx',
+    main: './app/index.tsx',
     sw: './sw/sw.ts',
     'upload-sw': './sw/upload-sw.ts',
   },

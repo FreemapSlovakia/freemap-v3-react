@@ -1,19 +1,8 @@
 import {
-  clearMapFeatures,
-  deleteFeature,
-  openInExternalApp,
-  selectFeature,
-  setActiveModal,
-  setSelectingHomeLocation,
-  setTool,
-} from '@app/store/actions.js';
-import { showGalleryViewerSelector } from '@app/store/selectors.js';
-import { elevationChartClose } from '@features/elevationChart/model/actions.js';
-import { MyStore, RootState } from './app/store/store.js';
-import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
-} from './features/drawing/model/actions/drawingLineActions.js';
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import {
   galleryCancelShowOnTheMap,
   galleryClear,
@@ -22,10 +11,21 @@ import {
   galleryRequestImage,
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
-} from './features/gallery/model/actions.js';
-import { mapToggleLayer } from './features/map/model/actions.js';
-import { integratedLayerDefs } from './shared/mapDefinitions.js';
-import { toolDefinitions } from './toolDefinitions.js';
+} from '@features/gallery/model/actions.js';
+import { mapToggleLayer } from '@features/map/model/actions.js';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { toolDefinitions } from '@shared/toolDefinitions.js';
+import {
+  clearMapFeatures,
+  deleteFeature,
+  openInExternalApp,
+  selectFeature,
+  setActiveModal,
+  setSelectingHomeLocation,
+  setTool,
+} from './store/actions.js';
+import { showGalleryViewerSelector } from './store/selectors.js';
+import { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
 

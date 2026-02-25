@@ -4,6 +4,7 @@ import {
   authWithGoogle,
   authWithOsm,
 } from '@features/auth/model/actions.js';
+import { documentShow } from '@features/documents/model/actions.js';
 import {
   drawingLineAddPoint,
   drawingLineContinue,
@@ -18,7 +19,6 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { documentShow } from '../../features/documents/model/actions.js';
 import {
   clearMapFeatures,
   convertToDrawing,

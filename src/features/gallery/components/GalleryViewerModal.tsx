@@ -1,9 +1,11 @@
-import { OpenInExternalAppMenuButton } from '@/features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { isPremium } from '@shared/premium.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import {
@@ -30,8 +32,6 @@ import {
 import { RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
-import { useBecomePremium } from '../../../hooks/useBecomePremium.js';
-import { isPremium } from '../../../premium.js';
 import {
   galleryClear,
   galleryDeletePicture,

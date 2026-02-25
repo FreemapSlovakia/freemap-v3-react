@@ -1,3 +1,4 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
@@ -5,7 +6,6 @@ import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { OverpassResult } from '@shared/types/overpass.js';
 import { assert } from 'typia';
-import { httpRequest } from '../../../app/httpRequest.js';
 import {
   ObjectsResult,
   objectsSetFilter,

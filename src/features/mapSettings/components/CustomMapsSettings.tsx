@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import {
   type ChangeEvent,
   type Dispatch,
@@ -8,7 +9,6 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonToolbar, Form } from 'react-bootstrap';
-import { CustomLayerDef } from '../../../shared/mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
 
 type Props = {

@@ -1,4 +1,3 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import {
   ExportTarget,
@@ -49,6 +48,7 @@ import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
+import { setActiveModal } from '../store/actions.js';
 
 const exportableDefinitions: readonly [
   type: Exportable,

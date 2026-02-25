@@ -1,10 +1,10 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
+import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { StringDates } from '@shared/types/common.js';
 import { is } from 'typia';
-import { rpcEvent, rpcResponse } from '../../rpc/model/actions.js';
-import { wsStateChanged } from '../../websocket/model/actions.js';
 import { trackingActions } from './actions.js';
 import type {
   AccessToken,

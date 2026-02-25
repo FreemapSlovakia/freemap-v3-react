@@ -1,4 +1,3 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import storage from 'local-storage-fallback';
 import {
@@ -10,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { Form } from 'react-bootstrap';
+import { setActiveModal } from '../store/actions.js';
 
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';

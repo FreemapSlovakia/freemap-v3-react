@@ -1,9 +1,9 @@
-import { hideInfoBar } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { hideInfoBar } from '../store/actions.js';
 
 export function InfoBar(): ReactElement | null {
   const m = useMessages();

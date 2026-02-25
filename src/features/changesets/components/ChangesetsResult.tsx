@@ -1,12 +1,12 @@
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Point } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { colors } from '../../../constants.js';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
 import './ChangesetsResult.scss';
 

@@ -8,7 +8,7 @@ import { type ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaPencilRuler, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { toolDefinitions } from '../../toolDefinitions.js';
+import { toolDefinitions } from '../toolDefinitions.js';
 
 type Props = {
   children?: ReactNode;

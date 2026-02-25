@@ -1,3 +1,4 @@
+import { Messages } from '@/translations/messagesInterface.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { smoothElevations } from '@shared/geoutils.js';
@@ -7,7 +8,6 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { distance } from '@turf/distance';
 import { Geometry } from 'geojson';
 import type { ReactElement } from 'react';
-import { Messages } from '../../../translations/messagesInterface.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 
 export function TrackViewerDetails(): ReactElement | null {

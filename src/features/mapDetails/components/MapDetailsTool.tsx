@@ -1,11 +1,11 @@
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { isEventOnMap } from '../../../mapUtils.js';
 
 export function MapDetailsTool(): ReactElement | null {
   const dispatch = useDispatch();

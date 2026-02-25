@@ -1,9 +1,9 @@
-import { clearMapFeatures } from '@app/store/actions.js';
 import {
   ActionCreatorMatchable,
   CancelItem,
   cancelRegister,
-} from '../cancelRegister.js';
+} from '@shared/cancelRegister.js';
+import { clearMapFeatures } from './store/actions.js';
 import type { RootState } from './store/store.js';
 
 export class HttpError extends Error {

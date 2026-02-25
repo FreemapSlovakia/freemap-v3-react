@@ -1,4 +1,5 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
+import { createWorkerPool, WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
   type DoneCallback,
@@ -6,7 +7,6 @@ import {
   type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
-import { createWorkerPool, WorkerPool } from '../../../workerPool.js';
 import { createFilter } from '../galleryUtils.js';
 import {
   type GalleryColorizeBy,

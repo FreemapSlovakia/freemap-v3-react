@@ -1,7 +1,7 @@
-import { httpRequest } from '@/app/httpRequest.js';
-import { getEffectiveChosenLanguage } from '@/langUtils.js';
+import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
+import { getEffectiveChosenLanguage } from '@shared/langUtils.js';
 import { l10nSetChosenLanguage, l10nSetLanguage } from './actions.js';
 
 export const l10nSetLanguageProcessor: Processor = {

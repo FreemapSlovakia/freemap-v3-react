@@ -1,6 +1,6 @@
+import { useLazy } from '@app/hooks/useLazy.js';
 import { ComponentType, ReactElement, useMemo } from 'react';
-import { useLazy } from '../../hooks/useLazy.js';
-import { ShowProps, useShow } from '../../hooks/useShow.js';
+import { ShowProps, useShow } from '../hooks/useShow.js';
 
 type Props<T extends ComponentType<ShowProps>> = {
   show: boolean;

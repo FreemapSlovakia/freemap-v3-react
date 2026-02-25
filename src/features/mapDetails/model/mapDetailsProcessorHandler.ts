@@ -1,9 +1,11 @@
+import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
   selectFeature,
   setTool,
 } from '@app/store/actions.js';
+import { RootState } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import {
   type SearchResult,
@@ -11,6 +13,11 @@ import {
   searchSetResults,
 } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  integratedLayerDefs,
+  IsWmsLayerDef,
+  LayerDef,
+} from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { FeatureId } from '@shared/types/featureId.js';
 import { NominatimResult } from '@shared/types/nominatimResult.js';
@@ -25,13 +32,6 @@ import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
-import { httpRequest } from '../../../app/httpRequest.js';
-import { RootState } from '../../../app/store/store.js';
-import {
-  integratedLayerDefs,
-  IsWmsLayerDef,
-  LayerDef,
-} from '../../../shared/mapDefinitions.js';
 
 const cancelType = [
   clearMapFeatures.type,

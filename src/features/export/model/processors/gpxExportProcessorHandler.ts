@@ -6,11 +6,12 @@ import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
+import { colors } from '@shared/constants.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Feature, FeatureCollection } from 'geojson';
-import { colors } from '../../../../constants.js';
-import { fetchPictures, Picture } from '../../fetchPictures.js';
+import { exportMapFeatures } from '../actions.js';
+import { fetchPictures, Picture } from './fetchPictures.js';
 import {
   addAttribute,
   createElement,
@@ -18,9 +19,8 @@ import {
   GPX_NS,
   GPX_STYLE_NS,
   LOCUS_NS,
-} from '../../gpxExporter.js';
-import { upload } from '../../upload.js';
-import { exportMapFeatures } from '../actions.js';
+} from './gpxExporter.js';
+import { upload } from './upload.js';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 

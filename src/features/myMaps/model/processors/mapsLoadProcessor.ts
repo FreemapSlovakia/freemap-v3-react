@@ -7,13 +7,13 @@ import type {
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
-import type { StringDates } from '@shared/types/common.js';
-import { assert, is } from 'typia';
 import {
   CustomLayerDef,
   upgradeCustomLayerDefs,
-} from '../../../../shared/mapDefinitions.js';
-import { migrateTransportType } from '../../../../transportTypeDefs.js';
+} from '@shared/mapDefinitions.js';
+import { migrateTransportType } from '@shared/transportTypeDefs.js';
+import type { StringDates } from '@shared/types/common.js';
+import { assert, is } from 'typia';
 import {
   type MapData,
   type MapMeta,

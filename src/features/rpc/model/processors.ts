@@ -1,7 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { wsReceived, wsSend } from '@features/websocket/model/actions.js';
 import { is } from 'typia';
-import { wsReceived, wsSend } from '../../websocket/model/actions.js';
 import { rpcCall, rpcEvent, rpcResponse } from './actions.js';
 
 // TODO implement call timeout

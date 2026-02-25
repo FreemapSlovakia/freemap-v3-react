@@ -1,5 +1,5 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { getEffectiveChosenLanguage } from '../../langUtils.js';
+import { getEffectiveChosenLanguage } from '../langUtils.js';
 
 export function useEffectiveChosenLanguage() {
   return getEffectiveChosenLanguage(

@@ -9,6 +9,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
   ChangeEvent,
   Children,
@@ -46,7 +47,6 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
-import { transportTypeDefs } from '../../../transportTypeDefs.js';
 import {
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,

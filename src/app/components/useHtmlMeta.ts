@@ -1,8 +1,8 @@
-import type { Modal } from '@app/store/actions.js';
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { MessagePaths } from '@shared/types/common.js';
 import { useEffect } from 'react';
+import type { Modal } from '../store/actions.js';
 
 // TODO Partiel because of missing documents (formerly tips)
 const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {

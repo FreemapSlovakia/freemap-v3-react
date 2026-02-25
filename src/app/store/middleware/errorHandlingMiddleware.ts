@@ -1,6 +1,6 @@
-import type { RootState } from '@app/store/store.js';
 import { Middleware } from '@reduxjs/toolkit';
-import { sendError } from '../../../globalErrorHandler.js';
+import type { RootState } from '../store.js';
+import { sendError } from './globalErrorHandler.js';
 
 export const errorHandlingMiddleware: Middleware<{}, RootState> =
   () => (next) =>

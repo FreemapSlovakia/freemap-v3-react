@@ -1,10 +1,10 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 

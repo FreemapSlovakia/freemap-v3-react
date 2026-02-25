@@ -8,6 +8,11 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import {
+  IntegratedLayerDef,
+  integratedLayerDefs,
+  IsTileLayerDef,
+} from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import bbox from '@turf/bbox';
 import { bboxPolygon } from '@turf/bbox-polygon';
@@ -39,11 +44,6 @@ import {
 } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import {
-  IntegratedLayerDef,
-  integratedLayerDefs,
-  IsTileLayerDef,
-} from '../../../shared/mapDefinitions.js';
 import { downloadMap } from '../model/actions.js';
 
 type Props = { show: boolean };

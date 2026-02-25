@@ -1,9 +1,9 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { isEventOnMap } from '../../../mapUtils.js';
 import {
   type Point,
   drawingLineAddPoint,

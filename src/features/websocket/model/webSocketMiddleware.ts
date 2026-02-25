@@ -1,5 +1,5 @@
+import type { RootState } from '@app/store/store.js';
 import { Middleware } from '@reduxjs/toolkit';
-import type { RootState } from '../../../app/store/store.js';
 import {
   wsClose,
   wsInvalidState,

@@ -4,10 +4,10 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { useState, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { integratedLayerDefs } from '../../../shared/mapDefinitions.js';
 import {
   mapDetailsExcludeSources,
   MapDetailsSource,

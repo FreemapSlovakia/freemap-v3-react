@@ -3,6 +3,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { tileToGeoJSON } from '@mapbox/tilebelt';
+import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { NominatimResult } from '@shared/types/nominatimResult.js';
@@ -11,7 +12,6 @@ import { feature, point } from '@turf/helpers';
 import { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
 import { assert } from 'typia';
-import { parseCoordinates } from '../../../../shared/coordinatesParser.js';
 import {
   SearchResult,
   searchSelectResult,

@@ -1,7 +1,7 @@
 import { getDocuments } from '@/documents/index.js';
-import { navigate } from '@/navigationUtils.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { navigate } from '@shared/navigationUtils.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';

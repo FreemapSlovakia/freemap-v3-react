@@ -1,14 +1,14 @@
-import { integratedLayerDefs } from '@/shared/mapDefinitions.js';
-import { setActiveModal } from '@app/store/actions.js';
+import { documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaList, FaLock, FaQuestion, FaRegCopyright } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { documentShow } from '../../features/documents/model/actions.js';
+import { setActiveModal } from '../store/actions.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 
 export function CopyrightButton(): ReactElement {

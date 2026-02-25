@@ -1,6 +1,3 @@
-import { basicModals, tools } from '@/constants.js';
-import type { CustomLayerDef } from '@/shared/mapDefinitions.js';
-import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import type { Purchase } from '@features/auth/model/types.js';
 import {
   applyCookieConsent,
@@ -13,6 +10,8 @@ import {
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
+import { basicModals, tools } from '@shared/constants.js';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 
 export type Tool = (typeof tools)[number];
@@ -63,8 +62,6 @@ export const setErrorTicketId = createAction<string | undefined>(
 );
 
 export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
-
-export { purchaseOnLogin };
 
 export const purchase = createAction<Purchase>('PURCHASE');
 

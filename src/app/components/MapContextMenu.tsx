@@ -1,6 +1,3 @@
-import { OpenInExternalAppDropdownItems } from '@/features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
-import { useMenuHandler } from '@/hooks/useMenuHandler.js';
-import { setTool } from '@app/store/actions.js';
 import { drawingLineAddPoint } from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   drawingMeasure,
@@ -10,12 +7,14 @@ import { galleryRequestImages } from '@features/gallery/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
+import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { LeafletMouseEvent } from 'leaflet';
 import {
@@ -40,6 +39,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
+import { setTool } from '../store/actions.js';
 
 const initialState = {
   x: 0,

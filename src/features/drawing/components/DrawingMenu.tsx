@@ -4,12 +4,12 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { ReactElement } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
-import { toolDefinitions } from '../../../toolDefinitions.js';
 
 export default DrawingMenu;
 

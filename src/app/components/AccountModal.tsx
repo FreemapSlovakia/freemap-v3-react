@@ -1,5 +1,3 @@
-import { useBecomePremium } from '@/hooks/useBecomePremium.js';
-import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { AuthProviders } from '@features/auth/components/AuthProviders.js';
 import {
   authDeleteAccount,
@@ -12,6 +10,7 @@ import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
   JSX,
@@ -35,6 +34,7 @@ import {
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { saveSettings, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 

@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SearchResult } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs } from '../../../shared/mapDefinitions.js';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 
 type Props = {
   result: SearchResult;

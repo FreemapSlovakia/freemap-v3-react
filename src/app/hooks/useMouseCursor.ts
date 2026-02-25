@@ -1,6 +1,6 @@
-import { mouseCursorSelector } from '@app/store/selectors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffect, useState } from 'react';
+import { mouseCursorSelector } from '../store/selectors.js';
 
 // TODO handle also dropdown menus (.dropdown-menu.show)
 

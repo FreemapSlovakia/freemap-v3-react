@@ -1,3 +1,4 @@
+import type { RootAction } from '@app/store/rootAction.js';
 import {
   type ReactElement,
   ReactNode,
@@ -6,7 +7,6 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
-import type { RootAction } from '../../../app/store/rootAction.js';
 import { ResolvedToast, ToastAction } from '../model/actions.js';
 import './toasts.scss';
 

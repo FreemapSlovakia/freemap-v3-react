@@ -1,7 +1,7 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { httpRequest } from '../../../app/httpRequest.js';
 import { downloadMap } from './actions.js';
 
 export const downloadMapProcessor: Processor<typeof downloadMap> = {

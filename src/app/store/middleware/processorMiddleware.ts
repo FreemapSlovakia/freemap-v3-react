@@ -1,4 +1,3 @@
-import type { RootState } from '@app/store/store.js';
 import {
   startProgress,
   stopProgress,
@@ -7,7 +6,8 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { MessagePaths } from '@shared/types/common.js';
 import type { Action, Dispatch, Middleware } from 'redux';
-import { sendError } from '../../../globalErrorHandler.js';
+import type { RootState } from '../store.js';
+import { sendError } from './globalErrorHandler.js';
 
 type BaseActionCreator<P = any, T extends string = string> = {
   (payload: P): PayloadAction<P, T>;

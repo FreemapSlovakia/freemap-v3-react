@@ -1,7 +1,7 @@
+import { Messages } from '@/translations/messagesInterface.js';
+import { useLazy } from '@app/hooks/useLazy.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMemo } from 'react';
-import { useLazy } from '../../hooks/useLazy.js';
-import { Messages } from '../../translations/messagesInterface.js';
 
 export function useLocalMessages<T>(
   factory: (language: string) => Promise<{ default: T }>,

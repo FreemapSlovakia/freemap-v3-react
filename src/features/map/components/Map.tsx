@@ -1,4 +1,4 @@
-import { useMouseCursor } from '@/hooks/useMouseCursor.js';
+import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';

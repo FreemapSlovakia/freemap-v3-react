@@ -1,7 +1,3 @@
-import { useBecomePremium } from '@/hooks/useBecomePremium.js';
-import { isPremium } from '@/premium.js';
-import { integratedLayerDefs } from '@/shared/mapDefinitions.js';
-import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
@@ -11,7 +7,10 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { isPremium } from '@shared/premium.js';
 import { Shortcut } from '@shared/types/common.js';
 import {
   Fragment,
@@ -38,6 +37,7 @@ import {
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import { setActiveModal } from '../store/actions.js';
 
 function getKbdShortcut(shortcut?: Shortcut | null) {
   return shortcut && <kbd className="ms-1">{formatShortcut(shortcut)}</kbd>;

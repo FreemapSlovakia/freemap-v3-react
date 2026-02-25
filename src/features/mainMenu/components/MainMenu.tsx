@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
@@ -22,7 +23,6 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
-import { toolDefinitions } from '../../../toolDefinitions.js';
 import { LanguageLabel } from './LanguageLabel.js';
 
 export function MainMenu(): ReactElement {

@@ -4,9 +4,11 @@ import {
   selectingModeSelector,
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { colors } from '@shared/constants.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { bearing } from '@turf/bearing';
 import { distance } from '@turf/distance';
@@ -36,8 +38,6 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { colors } from '../../../constants.js';
-import { isEventOnMap } from '../../../mapUtils.js';
 import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
