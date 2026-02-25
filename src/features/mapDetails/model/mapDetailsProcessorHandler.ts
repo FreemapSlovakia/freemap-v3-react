@@ -31,7 +31,7 @@ import {
   integratedLayerDefs,
   IsWmsLayerDef,
   LayerDef,
-} from '../../../mapDefinitions.js';
+} from '../../../shared/mapDefinitions.js';
 
 const cancelType = [
   clearMapFeatures.type,

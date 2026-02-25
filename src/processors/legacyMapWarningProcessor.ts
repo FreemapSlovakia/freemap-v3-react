@@ -10,7 +10,7 @@ import {
   toastsRemove,
 } from '@features/toasts/model/actions.js';
 import { is } from 'typia';
-import { HasLegacy, integratedLayerDefs } from '../mapDefinitions.js';
+import { HasLegacy, integratedLayerDefs } from '../shared/mapDefinitions.js';
 
 const TOAST_PREFIX = 'maps.legacyWarning.';
 

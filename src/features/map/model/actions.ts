@@ -1,7 +1,7 @@
 import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
 import { Shortcut } from '@shared/types/common.js';
-import { CustomLayerDef } from '../../../mapDefinitions.js';
+import { CustomLayerDef } from '../../../shared/mapDefinitions.js';
 
 export interface MapViewState {
   lat: number;

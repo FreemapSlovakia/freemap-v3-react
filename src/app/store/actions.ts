@@ -1,5 +1,5 @@
 import { basicModals, tools } from '@/constants.js';
-import type { CustomLayerDef } from '@/mapDefinitions.js';
+import type { CustomLayerDef } from '@/shared/mapDefinitions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import type { Purchase } from '@features/auth/model/types.js';
 import {
@@ -27,8 +27,6 @@ export type ShowModal = (typeof basicModals)[number];
 export const setTool = createAction<Tool | null>('SET_TOOL');
 
 export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
-
-export const documentShow = createAction<string | null>('DOCUMENT_SHOW');
 
 export { setLocation };
 

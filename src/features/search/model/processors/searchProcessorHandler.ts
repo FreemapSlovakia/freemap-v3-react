@@ -11,7 +11,7 @@ import { feature, point } from '@turf/helpers';
 import { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
 import { assert } from 'typia';
-import { parseCoordinates } from '../../../../coordinatesParser.js';
+import { parseCoordinates } from '../../../../shared/coordinatesParser.js';
 import {
   SearchResult,
   searchSelectResult,

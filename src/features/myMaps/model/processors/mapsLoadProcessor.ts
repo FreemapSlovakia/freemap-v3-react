@@ -12,7 +12,7 @@ import { assert, is } from 'typia';
 import {
   CustomLayerDef,
   upgradeCustomLayerDefs,
-} from '../../../../mapDefinitions.js';
+} from '../../../../shared/mapDefinitions.js';
 import { migrateTransportType } from '../../../../transportTypeDefs.js';
 import {
   type MapData,

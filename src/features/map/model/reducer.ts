@@ -5,7 +5,7 @@ import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { integratedLayerDefs } from '../../../mapDefinitions.js';
+import { integratedLayerDefs } from '../../../shared/mapDefinitions.js';
 import {
   mapRefocus,
   mapReplaceLayer,

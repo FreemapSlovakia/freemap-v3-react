@@ -1,6 +1,6 @@
 import missingTile from '@/images/missing-tile-256x256.png';
-import { integratedLayerDefs, LayerDef } from '@/mapDefinitions.js';
 import { isPremium } from '@/premium.js';
+import { integratedLayerDefs, LayerDef } from '@/shared/mapDefinitions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';

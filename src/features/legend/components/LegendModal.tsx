@@ -9,7 +9,7 @@ import {
   integratedLayerDefs,
   IsWmsLayerDef,
   LayerDef,
-} from '../../../mapDefinitions.js';
+} from '../../../shared/mapDefinitions.js';
 import LegacyMapsLegend from './LegacyMapsLegend.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';

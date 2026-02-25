@@ -16,7 +16,7 @@ import {
   CustomLayerDef,
   integratedLayerDefMap,
   integratedLayerDefs,
-} from '../../../mapDefinitions.js';
+} from '../../../shared/mapDefinitions.js';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;

@@ -8,7 +8,7 @@ import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
 import { is } from 'typia';
 import { basicModals } from '../constants.js';
-import { integratedLayerDefMap } from '../mapDefinitions.js';
+import { integratedLayerDefMap } from '../shared/mapDefinitions.js';
 import { transportTypeDefs } from '../transportTypeDefs.js';
 
 let lastActionType: string | undefined;

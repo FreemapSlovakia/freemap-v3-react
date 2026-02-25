@@ -1,8 +1,8 @@
 import { useMouseCursor } from '@/hooks/useMouseCursor.js';
 import { useShareFile } from '@/hooks/useShareFile.js';
 import fmLogo from '@/images/freemap-logo-print.png';
-import { integratedLayerDefMap } from '@/mapDefinitions.js';
 import { isPremium } from '@/premium.js';
+import { integratedLayerDefMap } from '@/shared/mapDefinitions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
@@ -204,7 +204,7 @@ const exportMapModalFactory = () =>
 const documentModalFactory = () =>
   import(
     /* webpackChunkName: "document-modal" */
-    './DocumentModal.js'
+    '../../features/documents/components/DocumentModal.js'
   );
 
 const aboutModalFactory = () =>

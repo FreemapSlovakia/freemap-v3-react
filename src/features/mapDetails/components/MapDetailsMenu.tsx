@@ -7,7 +7,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useState, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { integratedLayerDefs } from '../../../mapDefinitions.js';
+import { integratedLayerDefs } from '../../../shared/mapDefinitions.js';
 import {
   mapDetailsExcludeSources,
   MapDetailsSource,

@@ -24,7 +24,7 @@ import {
   galleryShowOnTheMap,
 } from './features/gallery/model/actions.js';
 import { mapToggleLayer } from './features/map/model/actions.js';
-import { integratedLayerDefs } from './mapDefinitions.js';
+import { integratedLayerDefs } from './shared/mapDefinitions.js';
 import { toolDefinitions } from './toolDefinitions.js';
 
 let keyTimer: number | null = null;

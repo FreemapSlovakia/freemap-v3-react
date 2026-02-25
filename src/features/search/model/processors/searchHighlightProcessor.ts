@@ -18,7 +18,7 @@ import {
   HasMaxNativeZoom,
   integratedLayerDefs,
   IsBaseLayerDef,
-} from '../../../../mapDefinitions.js';
+} from '../../../../shared/mapDefinitions.js';
 import { searchSelectResult, searchSetResults } from '../actions.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {

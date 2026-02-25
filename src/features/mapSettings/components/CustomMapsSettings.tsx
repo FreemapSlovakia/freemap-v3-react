@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonToolbar, Form } from 'react-bootstrap';
-import { CustomLayerDef } from '../../../mapDefinitions.js';
+import { CustomLayerDef } from '../../../shared/mapDefinitions.js';
 import { CustomMapForm } from './CustomMapForm.js';
 
 type Props = {

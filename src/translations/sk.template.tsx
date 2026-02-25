@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { documentShow } from '@app/store/actions.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
@@ -15,6 +14,7 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { documentShow } from '../features/documents/model/actions.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './sk-shared.js';
 

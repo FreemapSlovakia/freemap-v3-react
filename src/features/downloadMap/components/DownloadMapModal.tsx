@@ -43,7 +43,7 @@ import {
   IntegratedLayerDef,
   integratedLayerDefs,
   IsTileLayerDef,
-} from '../../../mapDefinitions.js';
+} from '../../../shared/mapDefinitions.js';
 import { downloadMap } from '../model/actions.js';
 
 type Props = { show: boolean };

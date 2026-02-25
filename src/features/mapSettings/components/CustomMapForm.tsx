@@ -18,7 +18,7 @@ import {
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
 import { useModelChangeHandlers } from '../../../hooks/useModelChangeHandlers.js';
-import { type CustomLayerDef } from '../../../mapDefinitions.js';
+import { type CustomLayerDef } from '../../../shared/mapDefinitions.js';
 import { type Layer, wms } from '../../../wms.js';
 
 type Props = {

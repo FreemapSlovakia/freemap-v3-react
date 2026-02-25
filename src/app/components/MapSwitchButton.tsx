@@ -1,6 +1,6 @@
 import { useBecomePremium } from '@/hooks/useBecomePremium.js';
-import { integratedLayerDefs } from '@/mapDefinitions.js';
 import { isPremium } from '@/premium.js';
+import { integratedLayerDefs } from '@/shared/mapDefinitions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';

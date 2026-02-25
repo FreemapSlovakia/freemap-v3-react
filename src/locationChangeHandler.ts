@@ -1,5 +1,4 @@
 import {
-  documentShow,
   enableUpdatingUrl,
   selectFeature,
   setActiveModal,
@@ -20,6 +19,7 @@ import {
   changesetsSet,
   changesetsSetParams,
 } from './features/changesets/model/actions.js';
+import { documentShow } from './features/documents/model/actions.js';
 import {
   drawingLineSetLines,
   Line,
@@ -70,13 +70,13 @@ import {
   trackViewerGpxLoad,
 } from './features/trackViewer/model/actions.js';
 import {
-  integratedLayerDefMap,
-  upgradeCustomLayerDefs,
-} from './mapDefinitions.js';
-import {
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from './oldFreemapUtils.js';
+import {
+  integratedLayerDefMap,
+  upgradeCustomLayerDefs,
+} from './shared/mapDefinitions.js';
 import {
   migrateTransportType,
   type TransportType,

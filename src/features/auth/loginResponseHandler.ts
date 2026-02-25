@@ -4,8 +4,8 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { StringDates } from '@shared/types/common.js';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
-import { upgradeCustomLayerDefs } from '../../mapDefinitions.js';
 import { isPremium } from '../../premium.js';
+import { upgradeCustomLayerDefs } from '../../shared/mapDefinitions.js';
 import { authSetUser } from './model/actions.js';
 import type { LoginResponse, User, UserSettings } from './model/types.js';
 

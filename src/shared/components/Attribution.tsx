@@ -1,9 +1,9 @@
-import { documentShow } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Fragment, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { AttributionDef, integratedLayerDefs } from '../../mapDefinitions.js';
+import { documentShow } from '../../features/documents/model/actions.js';
+import { AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 

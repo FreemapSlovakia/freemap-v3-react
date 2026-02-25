@@ -1,9 +1,9 @@
 import { MapViewState } from './features/map/model/actions.js';
-import { integratedLayerDefMap } from './mapDefinitions.js';
 import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getTrasformedParamsIfIsOldFreemapUrl,
 } from './oldFreemapUtils.js';
+import { integratedLayerDefMap } from './shared/mapDefinitions.js';
 
 const LAYERS_RE = new RegExp(
   '^(' + Object.keys(integratedLayerDefMap).join('|') + ')|[.:]\\d',

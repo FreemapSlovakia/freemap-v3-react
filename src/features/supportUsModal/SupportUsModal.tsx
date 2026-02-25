@@ -1,4 +1,4 @@
-import { documentShow, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import { useLocalMessages, useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
@@ -7,6 +7,7 @@ import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useBecomePremium } from '../../hooks/useBecomePremium.js';
 import { navigate } from '../../navigationUtils.js';
+import { documentShow } from '../documents/model/actions.js';
 import { SupportUsMessages } from './translations/SupportUsMessages.js';
 
 type Props = { show: boolean };

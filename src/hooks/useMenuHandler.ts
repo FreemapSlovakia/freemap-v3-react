@@ -3,7 +3,6 @@ import {
   Modal,
   Tool,
   clearMapFeatures,
-  documentShow,
   openInExternalApp,
   saveSettings,
   setActiveModal,
@@ -17,6 +16,7 @@ import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
+import { documentShow } from '../features/documents/model/actions.js';
 import { l10nSetChosenLanguage } from '../features/l10n/model/actions.js';
 
 export function useMenuHandler({

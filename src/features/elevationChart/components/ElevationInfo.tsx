@@ -15,7 +15,7 @@ import { is } from 'typia';
 import {
   integratedLayerDefs,
   IsTileLayerDef,
-} from '../../../mapDefinitions.js';
+} from '../../../shared/mapDefinitions.js';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;

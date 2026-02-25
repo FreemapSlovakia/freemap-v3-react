@@ -1,4 +1,4 @@
-import { upgradeCustomLayerDefs } from '@/mapDefinitions.js';
+import { upgradeCustomLayerDefs } from '@/shared/mapDefinitions.js';
 import {
   migrateTransportType,
   transportTypeDefs,

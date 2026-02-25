@@ -1,6 +1,6 @@
 import type { LayerSettings } from '@features/map/model/actions.js';
 import type { Action } from 'redux';
-import { CustomLayerDef } from '../../../mapDefinitions.js';
+import { CustomLayerDef } from '../../../shared/mapDefinitions.js';
 
 export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
 
