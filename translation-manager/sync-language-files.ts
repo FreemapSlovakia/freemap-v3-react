@@ -1,6 +1,9 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import * as babelParser from '@babel/parser';
 import {
   cloneNode,
+  type File,
   isExportNamedDeclaration,
   isFile,
   isIdentifier,
@@ -12,14 +15,11 @@ import {
   isTSTypeAnnotation,
   isTSTypeReference,
   isVariableDeclaration,
-  objectProperty,
-  ObjectProperty,
-  type File,
   type Node,
   type ObjectExpression,
+  ObjectProperty,
+  objectProperty,
 } from '@babel/types';
-import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { parse, print, types } from 'recast';
 
 type OtherLocales = [lang: string, Record<string, ObjectProperty>];

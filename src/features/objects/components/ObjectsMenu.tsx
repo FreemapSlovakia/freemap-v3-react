@@ -19,7 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { type DropdownProps, Button, Dropdown, Form } from 'react-bootstrap';
+import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
 import { FaCircle, FaMapMarker, FaSquare, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -140,7 +140,7 @@ export function ObjectsMenu(): ReactElement {
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const activeSnapshot = useMemo(() => active, [dropdownOpened]);
+  const activeSnapshot = useMemo(() => active, [active]);
 
   function makeItems(snapshot?: boolean) {
     if (!items) {
@@ -243,9 +243,9 @@ export function ObjectsMenu(): ReactElement {
         onSelect={(eventKey) => handleIconChange(eventKey as MarkerType)}
       >
         <Dropdown.Toggle variant="secondary">
-          {selectedIconValue == 'ring' ? (
+          {selectedIconValue === 'ring' ? (
             <FaCircle />
-          ) : selectedIconValue == 'square' ? (
+          ) : selectedIconValue === 'square' ? (
             <FaSquare />
           ) : (
             <FaMapMarker />

@@ -54,7 +54,7 @@ export function MapSwitchButton(): ReactElement {
     Object.values(state.gallery.filter).some((x) => x !== undefined),
   );
 
-  const isAdmin = useAppSelector((state) => !!state.auth.user?.isAdmin);
+  const isAdmin = useAppSelector((state) => Boolean(state.auth.user?.isAdmin));
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
@@ -259,11 +259,11 @@ export function MapSwitchButton(): ReactElement {
 
         const showInMenu =
           layersSettings[type]?.showInMenu ??
-          (!def.custom && !!def.defaultInMenu);
+          (!def.custom && Boolean(def.defaultInMenu));
 
         const showInToolbar =
           layersSettings[type]?.showInToolbar ??
-          (!def.custom && !!def.defaultInToolbar);
+          (!def.custom && Boolean(def.defaultInToolbar));
 
         if (
           show !== 'all' &&
@@ -334,7 +334,7 @@ export function MapSwitchButton(): ReactElement {
 
           const showInToolbar =
             layersSettings[def.type]?.showInToolbar ??
-            (!def.custom && !!def.defaultInToolbar);
+            (!def.custom && Boolean(def.defaultInToolbar));
 
           if (
             !activeLayers.includes(def.type) &&
@@ -386,7 +386,7 @@ export function MapSwitchButton(): ReactElement {
         })}
 
         <Dropdown
-          show={!!show}
+          show={Boolean(show)}
           drop="up-centered"
           onSelect={handleSelect}
           autoClose="outside"

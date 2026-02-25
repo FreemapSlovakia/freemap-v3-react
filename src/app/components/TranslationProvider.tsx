@@ -1,6 +1,6 @@
-import { Messages } from '@/translations/messagesInterface.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { createContext, ReactElement, ReactNode } from 'react';
+import { Messages } from '@/translations/messagesInterface.js';
 
 const MessagesContext = createContext<Messages | undefined>(undefined);
 

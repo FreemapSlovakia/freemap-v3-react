@@ -80,7 +80,7 @@ export function DateTime({
         value={datePart}
         onChange={handleDateChange}
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
-        required={!!timePart}
+        required={Boolean(timePart)}
       />
 
       <InputGroup.Text>
@@ -93,7 +93,7 @@ export function DateTime({
         value={timePart}
         onChange={handleTimeChange}
         pattern="[0-9]{2}:[0-9]{2}(:[0-9]{2})?"
-        required={!!datePart}
+        required={Boolean(datePart)}
         step="1"
       />
     </InputGroup>

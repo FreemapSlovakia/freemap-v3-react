@@ -26,7 +26,7 @@ import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 
-export function ObjectsResult(): ReactElement | null {
+export function ObjectsResult(): ReactElement | ReactElement[] | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -60,9 +60,9 @@ export function ObjectsResult(): ReactElement | null {
 
   const markerType = useAppSelector((state) => state.objects.selectedIcon);
 
-  return !osmMapping ? null : (
-    <>
-      {objects.map(({ id, coords, tags }) => {
+  return !osmMapping
+    ? null
+    : objects.map(({ id, coords, tags }) => {
         const name = getNameFromOsmElement(tags, language);
 
         const gn = !is<OsmFeatureId>(id)
@@ -122,7 +122,5 @@ export function ObjectsResult(): ReactElement | null {
             </Tooltip>
           </RichMarker>
         );
-      })}
-    </>
-  );
+      });
 }

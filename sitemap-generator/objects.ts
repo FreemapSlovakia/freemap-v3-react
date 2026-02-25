@@ -146,8 +146,10 @@ export async function objects(sitemapNames: string[]) {
               mapa, letecká mapa.
             </p>
 
-            ${element.tags['description'] &&
-            html`<p>${element.tags['description']}</p>`}
+            ${
+              element.tags['description'] &&
+              html`<p>${element.tags['description']}</p>`
+            }
 
             <dl>
               ${Object.entries(element.tags as Record<string, string>).map(
@@ -162,54 +164,61 @@ export async function objects(sitemapNames: string[]) {
                   </dt>
 
                   <dd>
-                    ${key === 'wikidata'
-                      ? html`<a
+                    ${
+                      key === 'wikidata'
+                        ? html`<a
                           href=${`https://www.wikidata.org/entity/${encodeURIComponent(
                             key,
                           )}`}
                           >${value}</a
                         >`
-                      : ['contact:website', 'website', 'url', 'image'].includes(
-                            key,
-                          )
-                        ? html`<a
-                            href=${/^https?:\/\//.test(value)
-                              ? value
-                              : `http://${value}`}
+                        : [
+                              'contact:website',
+                              'website',
+                              'url',
+                              'image',
+                            ].includes(key)
+                          ? html`<a
+                            href=${
+                              /^https?:\/\//.test(value)
+                                ? value
+                                : `http://${value}`
+                            }
                             >${value}</a
                           >`
-                        : ['contact:email', 'email'].includes(key)
-                          ? html`<a href=${'mailto:' + value}>${value}</a>`
-                          : [
-                                'contact:phone',
-                                'contact:mobile',
-                                'phone',
-                              ].includes(key)
-                            ? html`<a href=${'tel:' + value.replace(/ /g, '')}
+                          : ['contact:email', 'email'].includes(key)
+                            ? html`<a href=${'mailto:' + value}>${value}</a>`
+                            : [
+                                  'contact:phone',
+                                  'contact:mobile',
+                                  'phone',
+                                ].includes(key)
+                              ? html`<a href=${'tel:' + value.replace(/ /g, '')}
                                 >${value}</a
                               >`
-                            : key === 'wikipedia'
-                              ? html`<a
+                              : key === 'wikipedia'
+                                ? html`<a
                                   href=${`https://wikipedia.org/wiki/${encodeURIComponent(
                                     value.replace(/ /g, '_'),
                                   )}`}
                                   >${value}</a
                                 >`
-                              : key === 'wikimedia_commons'
-                                ? html`<a
+                                : key === 'wikimedia_commons'
+                                  ? html`<a
                                     href=${`https://commons.wikimedia.org/wiki/${encodeURIComponent(
                                       value.replace(/ /g, '_'),
                                     )}`}
                                     >${value}</a
                                   >`
-                                : categoryKeys.has(key)
-                                  ? html`<a
+                                  : categoryKeys.has(key)
+                                    ? html`<a
                                       href=${`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
                                         key,
                                       )}=${encodeURIComponent(value)}`}
                                       >${value}</a
                                     >`
-                                  : value}
+                                    : value
+                    }
                   </dd>
                 `,
               )}

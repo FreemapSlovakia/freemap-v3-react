@@ -70,64 +70,54 @@ export function PictureLegend() {
               WebkitTextStrokeColor: 'var(--bs-body-bg)',
             }}
           >
-            {colorizeBy === 'rating' ? (
-              <>
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        position: 'absolute',
-                        left: `calc(${(i * 100) / 4}% - 20px)`,
-                        top: '16%',
-                        width: '40px',
-                        textWrap: 'nowrap',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
-              </>
-            ) : byDate ? (
-              <>
-                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40].map((i, j) => (
+            {colorizeBy === 'rating'
+              ? new Array(5).fill(0).map((_, i) => (
                   <div
                     key={i}
                     style={{
-                      transform: 'rotate(90deg)',
-                      fontSize: '0.75em',
                       position: 'absolute',
-                      left: `calc(${(0.333 * i * 100) / (1 + 0.333 * i)}% - 4px)`,
-                      top: j % 2 ? '3px' : '13px',
+                      left: `calc(${(i * 100) / 4}% - 20px)`,
+                      top: '16%',
+                      width: '40px',
+                      textWrap: 'nowrap',
+                      textAlign: 'center',
                     }}
                   >
-                    {-i}
+                    {i + 1}
                   </div>
-                ))}
-              </>
-            ) : colorizeBy === 'season' ? (
-              <>
-                {Array(13)
-                  .fill(0)
-                  .map((_, i) => (
+                ))
+              : byDate
+                ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40].map((i, j) => (
                     <div
                       key={i}
                       style={{
+                        transform: 'rotate(90deg)',
+                        fontSize: '0.75em',
                         position: 'absolute',
-                        left: `calc(${(i * 100) / 12}% - 20px)`,
-                        top: '16%',
-                        width: '40px',
-                        textWrap: 'nowrap',
-                        textAlign: 'center',
+                        left: `calc(${(0.333 * i * 100) / (1 + 0.333 * i)}% - 4px)`,
+                        top: j % 2 ? '3px' : '13px',
                       }}
                     >
-                      {(i % 12) + 1}
+                      {-i}
                     </div>
-                  ))}
-              </>
-            ) : null}
+                  ))
+                : colorizeBy === 'season'
+                  ? new Array(13).fill(0).map((_, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          position: 'absolute',
+                          left: `calc(${(i * 100) / 12}% - 20px)`,
+                          top: '16%',
+                          width: '40px',
+                          textWrap: 'nowrap',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {(i % 12) + 1}
+                      </div>
+                    ))
+                  : null}
           </div>
         </div>
       </Toolbar>

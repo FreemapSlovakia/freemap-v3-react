@@ -393,7 +393,7 @@ export function RoutePlannerResult(): ReactElement {
     const handleMouseUp = (e: LeafletMouseEvent) => {
       map.dragging.enable();
 
-      let segment = dragSegment.current;
+      const segment = dragSegment.current;
 
       dragSegment.current = undefined;
 
@@ -442,7 +442,7 @@ export function RoutePlannerResult(): ReactElement {
         .getContainer()
         .removeEventListener('click', mapContainerClickHandler, true);
     };
-  }, [map]);
+  }, [map, dispatch]);
 
   const pointElements = useMemo(
     () =>
@@ -648,9 +648,9 @@ export function RoutePlannerResult(): ReactElement {
       timestamp,
       interactive,
       selectedSegment,
-      bringToFront,
       changeAlternative,
       map,
+      dispatch,
     ],
   );
 

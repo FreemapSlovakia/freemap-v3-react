@@ -1,12 +1,12 @@
 import {
+  clearMapFeatures,
   ExternalTargets,
   Modal,
-  Tool,
-  clearMapFeatures,
   openInExternalApp,
   saveSettings,
   setActiveModal,
   setTool,
+  Tool,
 } from '@app/store/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';

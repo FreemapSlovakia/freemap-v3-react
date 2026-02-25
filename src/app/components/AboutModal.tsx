@@ -93,9 +93,7 @@ export function AboutModal({ show }: Props): ReactElement {
           <li>
             {m?.contacts.secretary}
             {': '}
-            <a href="mailto:tibor.jamecny@freemap.sk">
-              Ing. Tibor Jamečný
-            </a>{' '}
+            <a href="mailto:tibor.jamecny@freemap.sk">Ing. Tibor Jamečný</a>{' '}
             (Žilina)
           </li>
         </ul>

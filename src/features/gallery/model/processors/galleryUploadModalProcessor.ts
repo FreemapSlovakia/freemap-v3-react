@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { assert } from 'typia';
-import { galleryEditPicture, gallerySetTags, GalleryTag } from '../actions.js';
+import { GalleryTag, galleryEditPicture, gallerySetTags } from '../actions.js';
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],

@@ -1,9 +1,9 @@
-import { Messages } from '@/translations/messagesInterface.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { Messages } from '@/translations/messagesInterface.js';
 import {
   ToastAction,
   toastsRemove,

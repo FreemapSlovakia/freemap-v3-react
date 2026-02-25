@@ -277,6 +277,10 @@ export function mergeLines<T extends Geometry>(
 export function shouldBeArea(tags?: GeoJsonProperties): boolean {
   return (
     // taken from https://wiki.openstreetmap.org/wiki/Key:area
-    !!tags && tags['area'] !== 'no' && !tags['barrier'] && !tags['highway']
+    tags !== null &&
+    tags !== undefined &&
+    tags['area'] !== 'no' &&
+    !tags['barrier'] &&
+    !tags['highway']
   );
 }

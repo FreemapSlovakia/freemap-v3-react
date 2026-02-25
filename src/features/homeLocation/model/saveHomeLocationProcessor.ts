@@ -5,7 +5,7 @@ import { saveHomeLocation } from './actions.js';
 export const saveHomeLocationProcessor: Processor<typeof saveHomeLocation> = {
   actionCreator: saveHomeLocation,
   errorKey: 'settings.savingError',
-  statePredicate: (state) => !!state.auth.user,
+  statePredicate: (state) => Boolean(state.auth.user),
   async handle({ getState }) {
     const { homeLocation } = getState().homeLocation;
 

@@ -111,7 +111,8 @@ export const mapsLoadProcessor: Processor = {
           .filter(Boolean)
           .map((pt) => ({ ...pt, manual: pt.manual ?? false }));
 
-        routePlanner.finishOnly = !!routePlanner.finish && !routePlanner.start;
+        routePlanner.finishOnly =
+          Boolean(routePlanner.finish) && !routePlanner.start;
 
         routePlanner.transportType = migrateTransportType(
           routePlanner.transportType,
@@ -125,12 +126,13 @@ export const mapsLoadProcessor: Processor = {
       // ignore
     }
 
-    const map = assert<
-      StringDates<{
-        meta: MapMeta;
-        data: MapData<Line | CompatLine, DrawingPoint | CompatDrawingPoint>;
-      }>
-    >(data);
+    const map =
+      assert<
+        StringDates<{
+          meta: MapMeta;
+          data: MapData<Line | CompatLine, DrawingPoint | CompatDrawingPoint>;
+        }>
+      >(data);
 
     const mapData = map.data;
 

@@ -35,8 +35,8 @@ export function TrackViewerResult({
 
   const [startPoints, finishPoints] = useStartFinishPoints();
 
-  const displayingElevationChart = useAppSelector(
-    (state) => !!state.elevationChart.elevationProfilePoints,
+  const displayingElevationChart = useAppSelector((state) =>
+    Boolean(state.elevationChart.elevationProfilePoints),
   );
 
   const colorizeTrackBy = useAppSelector(

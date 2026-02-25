@@ -13,7 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import shared from './en-shared.js';
-import { Messages, addError } from './messagesInterface.js';
+import { addError, Messages } from './messagesInterface.js';
 
 const nf00 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 0,

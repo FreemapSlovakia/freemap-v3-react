@@ -8,8 +8,8 @@ import { createReducer } from '@reduxjs/toolkit';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 import { is } from 'typia';
 import {
-  searchClear,
   SearchResult,
+  searchClear,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,

@@ -13,8 +13,8 @@ import {
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   HasMaxNativeZoom,
-  integratedLayerDefs,
   IsBaseLayerDef,
+  integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { featureIdsEqual, OsmFeatureId } from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
@@ -64,7 +64,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           dispatch(
             osmLoadNode({
               id: id.id,
-              focus: !!action.payload.focus,
+              focus: Boolean(action.payload.focus),
               showToast: action.payload.showToast,
             }),
           );
@@ -75,7 +75,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           dispatch(
             osmLoadWay({
               id: id.id,
-              focus: !!action.payload.focus,
+              focus: Boolean(action.payload.focus),
               showToast: action.payload.showToast,
             }),
           );
@@ -86,7 +86,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           dispatch(
             osmLoadRelation({
               id: id.id,
-              focus: !!action.payload.focus,
+              focus: Boolean(action.payload.focus),
               showToast: action.payload.showToast,
             }),
           );

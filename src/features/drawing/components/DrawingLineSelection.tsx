@@ -46,8 +46,8 @@ export function DrawingLineSelection(): ReactElement | null {
       : undefined,
   );
 
-  const showElevationChart = useAppSelector(
-    (state) => !!state.elevationChart.elevationProfilePoints,
+  const showElevationChart = useAppSelector((state) =>
+    Boolean(state.elevationChart.elevationProfilePoints),
   );
 
   const toggleElevationChart = useCallback(() => {

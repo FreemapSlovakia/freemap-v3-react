@@ -1,6 +1,6 @@
-import type { Messages } from '@/translations/messagesInterface.js';
 import type * as Sentry from '@sentry/browser';
 import type { PathOptions } from 'leaflet';
+import type { Messages } from '@/translations/messagesInterface.js';
 
 export interface LatLon {
   lat: number;

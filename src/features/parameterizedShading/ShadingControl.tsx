@@ -1,4 +1,3 @@
-import ColorPicker from 'react-best-gradient-color-picker';
 // import { Chrome, rgbaToHexa } from '@uiw/react-color';
 import { mapSetShading } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -6,6 +5,7 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import Color from 'color';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
+import ColorPicker from 'react-best-gradient-color-picker';
 import {
   Button,
   ButtonToolbar,
@@ -18,9 +18,9 @@ import {
 import { useDispatch } from 'react-redux';
 import {
   ColorStop,
+  type Color as ColorType,
   SHADING_COMPONENT_TYPES,
   ShadingComponent,
-  type Color as ColorType,
   type ShadingComponentType,
 } from './Shading.js';
 import {
@@ -383,8 +383,8 @@ export function ShadingControl() {
                 </Form.Group>
               )}
 
-              {(selectedComponent.type == 'hillshade-igor' ||
-                selectedComponent.type == 'hillshade-classic') && (
+              {(selectedComponent.type === 'hillshade-igor' ||
+                selectedComponent.type === 'hillshade-classic') && (
                 <Form.Group controlId="azimuth" className="mt-3">
                   <Form.Label>Azimuth</Form.Label>
 

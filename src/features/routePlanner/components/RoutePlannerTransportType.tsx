@@ -101,7 +101,7 @@ export function RoutePlannerTransportType({
                     key={type}
                     title={m?.routePlanner.transportType[key]}
                     active={value === type}
-                    disabled={withDefault && !!becomePremium}
+                    disabled={withDefault && Boolean(becomePremium)}
                   >
                     {icon}{' '}
                     {['car', 'car-toll', 'bikesharing'].includes(type) && (

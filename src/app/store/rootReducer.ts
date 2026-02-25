@@ -1,20 +1,20 @@
 import {
+  type AuthState,
   authInitialState,
   authReducer,
-  type AuthState,
 } from '@features/auth/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import {
+  type CookieConsentState,
   cookieConsentInitialState,
   cookieConsentReducer,
-  type CookieConsentState,
 } from '@features/cookieConsent/model/reducer.js';
 import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import {
+  type DrawingSettingsState,
   drawingSettingsInitialState,
   drawingSettingsReducer,
-  type DrawingSettingsState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
 import type { GalleryColorizeBy } from '@features/gallery/model/actions.js';
@@ -24,24 +24,24 @@ import {
 } from '@features/gallery/model/reducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
 import {
+  type HomeLocationState,
   homeLocationInitialState,
   homeLocationReducer,
-  type HomeLocationState,
 } from '@features/homeLocation/model/reducer.js';
 import {
+  type L10nState,
   l10nInitialState,
   l10nReducer,
-  type L10nState,
 } from '@features/l10n/model/reducer.js';
 import {
+  type LocationState,
   locationInitialState,
   locationReducer,
-  type LocationState,
 } from '@features/location/model/reducer.js';
 import {
+  type MapState,
   mapInitialState,
   mapReducer,
-  type MapState,
 } from '@features/map/model/reducer.js';
 import { MapDetailsSource } from '@features/mapDetails/model/actions.js';
 import {
@@ -50,23 +50,23 @@ import {
 } from '@features/mapDetails/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import {
+  type ObjectsState,
   objectInitialState,
   objectsReducer,
-  type ObjectsState,
 } from '@features/objects/model/reducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import {
+  type RoutePlannerState,
   routePlannerInitialState,
   routePlannerReducer,
-  type RoutePlannerState,
 } from '@features/routePlanner/model/reducer.js';
 import { searchReducer } from '@features/search/model/reducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import {
+  type TrackViewerState,
   trackViewerInitialState,
   trackViewerReducer,
-  type TrackViewerState,
 } from '@features/trackViewer/model/reducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
@@ -79,7 +79,7 @@ import { StringDates } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
 import type { RootState } from '../store/store.js';
-import { mainInitialState, mainReducer, type MainState } from './reducer.js';
+import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 
 export const reducers = {
   auth: authReducer,

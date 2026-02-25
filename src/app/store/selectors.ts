@@ -1,8 +1,8 @@
-import marker from '@/images/cursors/marker.svg';
-import pencil from '@/images/cursors/pencil.svg';
 import { PickMode } from '@features/routePlanner/model/actions.js';
 import { Track } from '@features/tracking/model/types.js';
 import { createSelector } from 'reselect';
+import marker from '@/images/cursors/marker.svg';
+import pencil from '@/images/cursors/pencil.svg';
 import { Tool } from '../store/actions.js';
 import type { RootState } from '../store/store.js';
 

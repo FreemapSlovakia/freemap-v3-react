@@ -4,12 +4,10 @@ import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { trackingActions } from '../model/actions.js';
-
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { trackingActions } from '../model/actions.js';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();

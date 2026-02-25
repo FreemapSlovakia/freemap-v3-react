@@ -7,7 +7,9 @@ import { selectFeature } from '../store/actions.js';
 export function SelectionTool(): null {
   const dispatch = useDispatch();
 
-  const selectionActive = useAppSelector((state) => !!state.main.selection);
+  const selectionActive = useAppSelector((state) =>
+    Boolean(state.main.selection),
+  );
 
   useMapEvent(
     'click',

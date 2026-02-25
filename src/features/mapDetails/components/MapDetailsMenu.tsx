@@ -5,17 +5,19 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { useState, type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import {
-  mapDetailsExcludeSources,
   MapDetailsSource,
+  mapDetailsExcludeSources,
 } from '../model/actions.js';
 
 export function MapDetailsMenu(): ReactElement | null {
   // TODO what is this?
-  const canDelete = useAppSelector((state) => !!state.trackViewer.trackGeojson);
+  const canDelete = useAppSelector((state) =>
+    Boolean(state.trackViewer.trackGeojson),
+  );
 
   const [sourcesOpen, setSourcesOpen] = useState(false);
 
@@ -50,7 +52,7 @@ export function MapDetailsMenu(): ReactElement | null {
             ),
           );
         }}
-        show={!!sourcesOpen}
+        show={Boolean(sourcesOpen)}
         autoClose="outside"
         onToggle={(open) => setSourcesOpen(open)}
       >

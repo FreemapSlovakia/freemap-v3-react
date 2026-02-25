@@ -39,7 +39,7 @@ export function usePersistentState<
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [key, cookiesEnabled],
+    [key, cookiesEnabled, serialize],
   );
 
   const setFormState = useCallback(
@@ -53,7 +53,7 @@ export function usePersistentState<
       setValue(value);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cookiesEnabled, key],
+    [cookiesEnabled, key, deserialize, serialize],
   );
 
   return [value, setState, setFormState] as const;

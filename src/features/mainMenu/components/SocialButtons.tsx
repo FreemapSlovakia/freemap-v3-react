@@ -1,6 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { useState, type ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { FaFacebook, FaGithub, FaMastodon, FaYoutube } from 'react-icons/fa';
 import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
 

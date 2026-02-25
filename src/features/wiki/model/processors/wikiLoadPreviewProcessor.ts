@@ -3,7 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { assert } from 'typia';
-import { wikiLoadPreview, WikiPreview, wikiSetPreview } from '../actions.js';
+import { WikiPreview, wikiLoadPreview, wikiSetPreview } from '../actions.js';
 
 interface WikiResponse1 {
   query: {

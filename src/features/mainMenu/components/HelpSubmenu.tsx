@@ -1,9 +1,9 @@
-import { getDocuments } from '@/documents/index.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBook, FaList, FaRegAddressCard, FaUsers } from 'react-icons/fa';
+import { getDocuments } from '@/documents/index.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {

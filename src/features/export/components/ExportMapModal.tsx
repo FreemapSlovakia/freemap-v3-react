@@ -45,7 +45,16 @@ const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
 
 const MAP_LAYERS = ['X'];
 
+function identity<T>(value: T): T {
+  return value;
+}
+
 export default ExportMapModal;
+
+const toScale = (value: string | null) => value ?? '100';
+
+const toExportFormat = (value: string | null) =>
+  is<ExportFormat>(value) ? value : 'jpeg';
 
 export function ExportMapModal({ show }: Props): ReactElement {
   const canExportByPolygon = useAppSelector(
@@ -62,15 +71,14 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
   const [scale, setScale] = usePersistentState<string>(
     'fm.exportMap.scale',
-    (value) => value,
-    (value) => value ?? '100',
+    identity,
+    toScale,
   );
 
   const [format, , setFormat] = usePersistentState<ExportFormat>(
     'fm.exportMap.format',
-
-    (value) => value,
-    (value) => (is<ExportFormat>(value) ? value : 'jpeg'),
+    identity,
+    toExportFormat,
   );
 
   const [layers, setLayers] = useState(() => {

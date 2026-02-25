@@ -10,8 +10,8 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
   IntegratedLayerDef,
-  integratedLayerDefs,
   IsTileLayerDef,
+  integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import bbox from '@turf/bbox';

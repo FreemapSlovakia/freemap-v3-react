@@ -1,4 +1,3 @@
-import { getDocuments } from '@/documents/index.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { navigate } from '@shared/navigationUtils.js';
@@ -6,6 +5,7 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { getDocuments } from '@/documents/index.js';
 import { documentShow } from '../model/actions.js';
 
 type Props = { show: boolean };
@@ -59,7 +59,7 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
   const [ref, setRef] = useState<HTMLDivElement | null>(null);
 
-  const loaded = !loading && !!content && !!ref;
+  const loaded = !loading && Boolean(content) && Boolean(ref);
 
   // effect is to handle local hrefs properly
   useEffect(() => {

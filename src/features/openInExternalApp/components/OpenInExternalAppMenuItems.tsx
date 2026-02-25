@@ -47,7 +47,7 @@ export function OpenInExternalAppDropdownItems({
 
   const hasShare = 'share' in window.navigator;
 
-  const hasClipboard = !!window.navigator.clipboard?.writeText;
+  const hasClipboard = Boolean(window.navigator.clipboard?.writeText);
 
   return (
     <>

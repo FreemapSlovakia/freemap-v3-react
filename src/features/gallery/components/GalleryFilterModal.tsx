@@ -378,7 +378,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           <Form.Check
             className="mb-3"
             id="filt-premiumOnly"
-            checked={!!premium}
+            checked={Boolean(premium)}
             onChange={handlePremiumChange}
             label={m?.gallery.filterModal.premium}
             ref={setPremiumCheck}
@@ -387,7 +387,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           <Form.Check
             className="mb-3"
             id="filt-pano"
-            checked={!!pano}
+            checked={Boolean(pano)}
             onChange={handlePanoChange}
             label={m?.gallery.filterModal.pano}
             ref={setPanoCheck}

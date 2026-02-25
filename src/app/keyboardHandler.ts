@@ -41,9 +41,9 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     state.gallery.showPosition;
 
   const showingModal =
-    !!state.main.activeModal ||
-    !!state.gallery.activeImageId ||
-    !!state.main.documentKey;
+    Boolean(state.main.activeModal) ||
+    Boolean(state.gallery.activeImageId) ||
+    Boolean(state.main.documentKey);
   //  ||
   // state.homeLocation.selectingHomeLocation ||
   // state.gallery.pickingPositionForId ||
@@ -158,10 +158,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         return (
           shortcut &&
           shortcut.code === event.code &&
-          !!shortcut.shift === event.shiftKey &&
-          !!shortcut.ctrl === event.ctrlKey &&
-          !!shortcut.alt === event.altKey &&
-          !!shortcut.meta === event.metaKey
+          Boolean(shortcut.shift) === event.shiftKey &&
+          Boolean(shortcut.ctrl) === event.ctrlKey &&
+          Boolean(shortcut.alt) === event.altKey &&
+          Boolean(shortcut.meta) === event.metaKey
         );
       },
     );

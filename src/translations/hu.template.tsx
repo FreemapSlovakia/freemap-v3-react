@@ -14,7 +14,7 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import shared from './hu-shared.js';
-import { Messages, addError } from './messagesInterface.js';
+import { addError, Messages } from './messagesInterface.js';
 
 const nf00 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,

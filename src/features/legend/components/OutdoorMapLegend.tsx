@@ -155,10 +155,12 @@ export function OutdoorMapLegend(): ReactElement {
 
                 <div className="d-flex flex-wrap gap-2">
                   {name_w_tags.map(({ name, tags }, i) => {
-                    let ts = Object.entries(tags).map(([k, v]) => k + '=' + v);
+                    const ts = Object.entries(tags).map(
+                      ([k, v]) => k + '=' + v,
+                    );
 
                     const activeIndex = activeObjects.findIndex((ao) => {
-                      let aos = ao.split(',');
+                      const aos = ao.split(',');
 
                       return (
                         aos.every((t) => ts.includes(t)) &&
@@ -175,7 +177,7 @@ export function OutdoorMapLegend(): ReactElement {
                             bordered
                             size="sm"
                             data-bs-theme={
-                              document.documentElement.dataset['bsTheme'] ==
+                              document.documentElement.dataset['bsTheme'] ===
                               'light'
                                 ? 'dark'
                                 : 'light'
@@ -193,7 +195,7 @@ export function OutdoorMapLegend(): ReactElement {
                         }
                       >
                         {({ props }) => {
-                          let next =
+                          const next =
                             activeIndex > -1
                               ? activeObjects.toSpliced(activeIndex, 1)
                               : [...activeObjects, ts.join(',')];

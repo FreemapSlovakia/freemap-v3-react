@@ -1,6 +1,6 @@
-import matter from 'gray-matter';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import matter from 'gray-matter';
 import type { Compiler, WebpackPluginInstance } from 'webpack';
 import VirtualModulesPlugin from 'webpack-virtual-modules';
 

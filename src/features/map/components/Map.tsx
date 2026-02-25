@@ -11,7 +11,7 @@ type Props = {
   children: ReactNode;
 };
 
-export function Map({ children }: Props): ReactElement {
+export function TheMap({ children }: Props): ReactElement {
   const lat = useAppSelector((state) => state.map.lat);
 
   const lon = useAppSelector((state) => state.map.lon);

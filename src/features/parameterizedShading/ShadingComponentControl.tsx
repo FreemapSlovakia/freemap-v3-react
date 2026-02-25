@@ -37,7 +37,7 @@ export function ShadingComponentControl({
 
   const domPoint = useRef<DOMPoint | null>(null);
 
-  function getCoordinates(e: MouseEvent): undefined | { x: number; y: number } {
+  const getCoordinates = useCallback((e: MouseEvent) => {
     const pt = domPoint.current;
 
     if (!pt || !svg.current) {
@@ -51,7 +51,7 @@ export function ShadingComponentControl({
     const { x, y } = pt.matrixTransform(svg.current.getScreenCTM()?.inverse());
 
     return { x, y };
-  }
+  }, []);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -97,7 +97,7 @@ export function ShadingComponentControl({
         }),
       );
     },
-    [radius, dragging, onChange, shadings],
+    [radius, dragging, onChange, shadings, getCoordinates],
   );
 
   const handleMouseDown = useCallback(
@@ -137,7 +137,7 @@ export function ShadingComponentControl({
 
       onSelect(shading.id);
     },
-    [shadings, radius, onSelect],
+    [shadings, radius, onSelect, getCoordinates],
   );
 
   const handleMouseUp = useCallback(() => {

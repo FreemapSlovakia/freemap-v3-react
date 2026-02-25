@@ -1,8 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  wikiLoadPreview,
   WikiPoint,
   WikiPreview,
+  wikiLoadPreview,
   wikiSetPoints,
   wikiSetPreview,
 } from './actions.js';

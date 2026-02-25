@@ -7,6 +7,7 @@ import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import {
+  MapStateBase,
   mapRefocus,
   mapReplaceLayer,
   mapSetBounds,
@@ -14,7 +15,6 @@ import {
   mapSetCustomLayers,
   mapSetEsriAttribution,
   mapSetShading,
-  MapStateBase,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
@@ -153,7 +153,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           gpsTracked !== undefined ||
           (lat !== undefined && lon !== undefined)
         ) {
-          state.gpsTracked = !!gpsTracked;
+          state.gpsTracked = Boolean(gpsTracked);
         }
       },
     )

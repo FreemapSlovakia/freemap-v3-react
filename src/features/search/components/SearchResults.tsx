@@ -7,8 +7,8 @@ import {
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import {
   MarkerIcon,
-  markerIconOptions,
   MarkerLeafletIcon,
+  markerIconOptions,
 } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { escapeHtml } from '@shared/stringUtils.js';
@@ -25,7 +25,7 @@ import {
 import { Fragment, ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { searchSelectResult, SearchSource } from '../model/actions.js';
+import { SearchSource, searchSelectResult } from '../model/actions.js';
 
 export function SearchResults(): ReactElement | null {
   const selectedResult = useAppSelector((state) => state.search.selectedResult);

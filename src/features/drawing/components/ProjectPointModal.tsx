@@ -38,7 +38,7 @@ export function ProjectPointModal({
     setDistance('');
 
     setAzimuth('');
-  }, [show]);
+  }, []);
 
   const m = useMessages();
 

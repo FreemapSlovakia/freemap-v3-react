@@ -14,8 +14,8 @@ import {
 } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
-  integratedLayerDefs,
   IsWmsLayerDef,
+  integratedLayerDefs,
   LayerDef,
 } from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';

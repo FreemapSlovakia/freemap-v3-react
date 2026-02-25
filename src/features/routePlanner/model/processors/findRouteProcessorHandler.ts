@@ -13,12 +13,12 @@ import { assert } from 'typia';
 import {
   Alternative,
   Leg,
+  RoutePoint,
   routePlannerPreventHint,
   routePlannerSetFinish,
   routePlannerSetIsochrones,
   routePlannerSetResult,
   routePlannerSetStart,
-  RoutePoint,
   Step,
   StepMode,
   Waypoint,
@@ -202,7 +202,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   for (let i = 0; i < datas.length; i++) {
     const data = datas[i];
 
-    if (data.status == 'rejected') {
+    if (data.status === 'rejected') {
       dispatch(
         toastsAdd({
           id: 'routePlanner',
@@ -222,7 +222,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     const value = data.value;
 
-    if (typeof value == 'boolean') {
+    if (typeof value === 'boolean') {
       alternativeSets.push([]);
       errored.push(!value);
     } else if ('code' in value) {
@@ -242,7 +242,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   let alternatives: Alternative[];
 
-  if (alternativeSets.length == 1 && alternativeSets[0].length > 1) {
+  if (alternativeSets.length === 1 && alternativeSets[0].length > 1) {
     alternatives = alternativeSets[0];
   } else {
     const tpd =

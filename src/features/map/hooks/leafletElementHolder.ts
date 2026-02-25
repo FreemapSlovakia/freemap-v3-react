@@ -1,13 +1,13 @@
-import { Map } from 'leaflet';
+import type { Map as LeafletMap } from 'leaflet';
 import './touchMouseCompat.js';
 
-let resolve: (map: Map) => void;
+let resolve: (map: LeafletMap) => void;
 
-export const mapPromise = new Promise<Map>((r) => {
+export const mapPromise = new Promise<LeafletMap>((r) => {
   resolve = r;
 });
 
-export function setMapLeafletElement(map: Map | null): void {
+export function setMapLeafletElement(map: LeafletMap | null): void {
   if (map) {
     resolve(map);
   }

@@ -26,17 +26,19 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  galleryAllPremiumOrFree,
   GalleryColorizeBy,
+  GalleryListOrder,
+  galleryAllPremiumOrFree,
   galleryColorizeBy,
   galleryList,
-  GalleryListOrder,
   galleryToggleDirection,
   galleryToggleLegend,
 } from '../model/actions.js';
 import { PictureLegend } from './PictureLegend.js';
 
 export default GalleryMenu;
+
+const isTrue = (value: string | null) => value === 'true';
 
 export function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
@@ -90,8 +92,8 @@ export function GalleryMenu() {
 
   const [hidden, setHidden] = usePersistentState<boolean>(
     'fm.galleryMenu.collapsed',
-    (value) => String(value),
-    (value) => value === 'true',
+    String,
+    isTrue,
   );
 
   return (

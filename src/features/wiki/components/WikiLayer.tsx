@@ -9,8 +9,8 @@ import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { assertGuard } from 'typia';
 import {
-  wikiLoadPreview,
   WikiPreview,
+  wikiLoadPreview,
   wikiSetPreview,
 } from '../model/actions.js';
 

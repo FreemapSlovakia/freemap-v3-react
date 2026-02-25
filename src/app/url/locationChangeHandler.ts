@@ -13,10 +13,10 @@ import {
   drawingPointSetAll,
 } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
-  galleryClear,
-  galleryColorizeBy,
   GalleryColorizeBy,
   GalleryFilter,
+  galleryClear,
+  galleryColorizeBy,
   galleryRequestImage,
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
@@ -37,12 +37,12 @@ import {
 import {
   type ColorStop,
   type Color as ColorType,
-  serializeShading,
   ShadingComponent,
+  serializeShading,
 } from '@features/parameterizedShading/Shading.js';
 import {
-  routePlannerSetParams,
   RoutePoint,
+  routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
@@ -68,11 +68,11 @@ import type { Dispatch } from 'redux';
 import { is } from 'typia';
 import {
   enableUpdatingUrl,
+  ShowModal,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setTool,
-  ShowModal,
   Tool,
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
@@ -154,7 +154,9 @@ export function handleLocationChange(store: MyStore): void {
   {
     const qPoints =
       typeof query['points'] === 'string'
-        ? query['points'].split(',').map((point) => {
+        ? query['points'].split(',').map((p) => {
+            let point = p;
+
             if (!point) {
               return null;
             }
@@ -164,9 +166,9 @@ export function handleLocationChange(store: MyStore): void {
               point = 'manual/' + point.slice(1);
             }
 
-            let parts = point.split('/');
+            const parts = point.split('/');
 
-            let transport = parts.length === 3 ? parts.shift() : undefined;
+            const transport = parts.length === 3 ? parts.shift() : undefined;
 
             return [
               transport,
@@ -363,7 +365,7 @@ export function handleLocationChange(store: MyStore): void {
       key === 'line' ||
       key === 'polygon'
     ) {
-      // eslint-disable-next-line no-control-regex
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
       const m = /([^;\x1e]*)([;\x1e].*)?/.exec(value);
 
       if (!m) {

@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* biome-ignore-all lint/correctness/useHookAtTopLevel: this is not react */
 import {
   createDefaultQuadBuffer,
   createEmptyTexture,

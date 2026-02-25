@@ -12,6 +12,8 @@ import {
   IsochroneParams,
   PickMode,
   RoundtripParams,
+  RoutePoint,
+  RoutingMode,
   routePlannerAddPoint,
   routePlannerDelete,
   routePlannerPreventHint,
@@ -31,8 +33,6 @@ import {
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
-  RoutePoint,
-  RoutingMode,
   Waypoint,
 } from './actions.js';
 

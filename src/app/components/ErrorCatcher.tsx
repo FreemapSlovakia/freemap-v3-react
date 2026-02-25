@@ -6,7 +6,7 @@ interface State {
   error?: Error;
 }
 
-function Error() {
+function TheError() {
   const m = useMessages();
 
   const errorTicketId = useAppSelector((state) => state.main.errorTicketId);
@@ -35,6 +35,6 @@ export class ErrorCatcher extends Component<Props, State> {
   }
 
   render(): ReactNode {
-    return this.state.error ? <Error /> : this.props.children;
+    return this.state.error ? <TheError /> : this.props.children;
   }
 }

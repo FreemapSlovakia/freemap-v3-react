@@ -18,7 +18,7 @@ export const routePlannerToggleElevationChartProcessor: Processor<
     routePlannerSetActiveAlternativeIndex,
   ],
   handle: async ({ dispatch, getState, action }) => {
-    const shown = !!getState().elevationChart.elevationProfilePoints;
+    const shown = Boolean(getState().elevationChart.elevationProfilePoints);
 
     const toggling = routePlannerToggleElevationChart.match(action);
 

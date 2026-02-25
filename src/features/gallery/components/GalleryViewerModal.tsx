@@ -249,14 +249,14 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     window.addEventListener('keypress', handler);
 
     return () => window.removeEventListener('keypress', handler);
-  }, [handleDelete, handleFullscreen, show]);
+  }, [handleDelete, handleFullscreen]);
 
   // fullscreen of pano fails when traversing from non-pano picture
   useEffect(() => {
     if (document.exitFullscreen && document.fullscreenElement) {
       document.exitFullscreen();
     }
-  }, [pano]);
+  }, []);
 
   const handleSave = useCallback(
     (e: SubmitEvent<HTMLFormElement>) => {
@@ -325,10 +325,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryClear());
   }, [dispatch]);
 
-  const canEdit = !!(
-    image &&
-    user &&
-    (user.isAdmin || user.id === image.user.id)
+  const canEdit = Boolean(
+    image && user && (user.isAdmin || user.id === image.user.id),
   );
 
   const handleTagAdd = (tag: string) => {
@@ -658,7 +656,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   onClick={() => {
                     dispatch(galleryEditPicture());
                   }}
-                  active={!!editModel}
+                  active={Boolean(editModel)}
                   {...props}
                 >
                   <FaPencilAlt />

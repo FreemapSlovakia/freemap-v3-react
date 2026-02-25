@@ -121,7 +121,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
   }
 
   const invalidEmail =
-    !!email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    Boolean(email.trim()) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const invalidName = !name.trim();
 

@@ -27,6 +27,12 @@ type Units = keyof typeof areaUnits;
 
 const units = Object.keys(areaUnits) as Units[];
 
+const toUnit = (value: string | null) => (is<Units>(value) ? value : 'km²');
+
+function identity<T>(value: T): T {
+  return value;
+}
+
 export function AreaInfo({
   area: length,
   areaLabel,
@@ -35,8 +41,8 @@ export function AreaInfo({
 }: Props) {
   const [unit, setUnit] = usePersistentState<Units>(
     'fm.area.unit',
-    (value) => value,
-    (value) => (is<Units>(value) ? value : 'km²'),
+    identity,
+    toUnit,
   );
 
   const handleUnitClick = () => {

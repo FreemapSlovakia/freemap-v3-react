@@ -1,10 +1,10 @@
-import missingTile from '@/images/missing-tile-256x256.png';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs, LayerDef } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
-import { useCallback, type ReactElement } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import missingTile from '@/images/missing-tile-256x256.png';
 import { setActiveModal } from '../store/actions.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';

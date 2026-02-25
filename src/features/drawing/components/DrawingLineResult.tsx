@@ -16,8 +16,8 @@ import { bearingToAzimuth } from '@turf/helpers';
 import Color from 'color';
 import {
   Direction,
-  divIcon,
   DomEvent,
+  divIcon,
   LeafletMouseEvent,
   PointExpression,
 } from 'leaflet';
@@ -100,7 +100,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const [touching, setTouching] = useState(false);
 
-  const removeCoords = !!coords && ((!selected && !joinWith) || touching);
+  const removeCoords =
+    Boolean(coords) && ((!selected && !joinWith) || touching);
 
   useEffect(() => {
     if (removeCoords) {

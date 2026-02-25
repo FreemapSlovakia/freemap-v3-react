@@ -1,4 +1,3 @@
-import { Messages } from '@/translations/messagesInterface.js';
 import { init } from '@bokuweb/zstd-wasm';
 import { createTileLayerComponent } from '@react-leaflet/core';
 import { createWorkerPool, WorkerPool } from '@shared/workerPool.js';
@@ -10,8 +9,9 @@ import {
   GridLayer as LGridLayer,
   Util,
 } from 'leaflet';
+import { Messages } from '@/translations/messagesInterface.js';
 import { DataWriter } from './DataWriter.js';
-import { Color, Shading, SHADING_COMPONENT_TYPES } from './Shading.js';
+import { Color, SHADING_COMPONENT_TYPES, Shading } from './Shading.js';
 import shadingWgslResource from './shading.wgsl';
 
 type ShadingLayerOptions = GridLayerOptions & {

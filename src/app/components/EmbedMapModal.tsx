@@ -1,4 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { isInvalidInt } from '@shared/numberValidator.js';
 import storage from 'local-storage-fallback';
 import {
   ChangeEvent,
@@ -8,16 +11,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Form } from 'react-bootstrap';
-import { setActiveModal } from '../store/actions.js';
-
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { isInvalidInt } from '@shared/numberValidator.js';
-import { Button, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
+import { setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 
@@ -27,7 +25,15 @@ const FEATURES = ['search', 'mapSwitch', 'locateMe'] as const;
 
 type Feature = (typeof FEATURES)[number];
 
+function identity<T>(value: T): T {
+  return value;
+}
+
 export default EmbedMapModal;
+
+const toWidth = (value: string | null) => value ?? '640';
+
+const toHeight = (value: string | null) => value ?? '480';
 
 export function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -36,14 +42,14 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
   const [width, , setWidth] = usePersistentState<string>(
     'fm.embedMap.width',
-    (value) => value,
-    (value) => value ?? '640',
+    identity,
+    toWidth,
   );
 
   const [height, , setHeight] = usePersistentState<string>(
     'fm.embedMap.height',
-    (value) => value,
-    (value) => value ?? '480',
+    identity,
+    toHeight,
   );
 
   const [features, setFeatures] = useState(() => {

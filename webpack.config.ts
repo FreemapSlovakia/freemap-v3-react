@@ -1,17 +1,16 @@
+import { fileURLToPath } from 'node:url';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { fileURLToPath } from 'node:url';
 import path from 'path';
 import process from 'process';
 import type SassLoader from 'sass-loader';
 import type { Configuration } from 'webpack';
 import webpack from 'webpack';
-import { MarkdownDictPlugin } from './MarkdownDictPlugin.js';
-// import ESLintPlugin from 'eslint-webpack-plugin';
 import { WebpackAssetsManifest } from 'webpack-assets-manifest';
+import { MarkdownDictPlugin } from './MarkdownDictPlugin.js';
 
 import csMessages from './src/translations/cs-shared.js';
 import deMessages from './src/translations/de-shared.js';

@@ -23,7 +23,7 @@ const ml = 50,
   mt = 10,
   mb = 44;
 
-const ticks = Array(11)
+const ticks = new Array(11)
   .fill(0)
   .flatMap((_, k) => [1, 2.5, 2, 5].map((x) => x * 10 ** k));
 

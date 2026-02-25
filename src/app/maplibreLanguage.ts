@@ -1,7 +1,9 @@
-import { Map } from 'maplibre-gl';
+import { Map as LeafletMap } from 'maplibre-gl';
 
 (
-  Map.prototype as Map & { setLanguage: (language: string) => void }
+  LeafletMap.prototype as LeafletMap & {
+    setLanguage: (language: string) => void;
+  }
 ).setLanguage = function (language: string) {
   const setLanguage = () => {
     const replacer = [

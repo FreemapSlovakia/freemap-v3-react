@@ -19,8 +19,8 @@ import {
 } from '@shared/types/featureId.js';
 import {
   ChangeEvent,
-  forwardRef,
   Fragment,
+  forwardRef,
   ReactElement,
   ReactNode,
   useCallback,
@@ -32,9 +32,9 @@ import {
   Button,
   ButtonGroup,
   Dropdown,
+  type DropdownProps,
   Form,
   InputGroup,
-  type DropdownProps,
 } from 'react-bootstrap';
 import { FaCaretDown, FaDrawPolygon, FaSearch } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
@@ -42,10 +42,10 @@ import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   SearchResult,
+  SearchSource,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
-  SearchSource,
 } from '../model/actions.js';
 import './SearchMenu.scss';
 
@@ -287,7 +287,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   <Dropdown.Item
                     eventKey={id}
                     active={
-                      !!selectedResult &&
+                      selectedResult !== null &&
                       featureIdsEqual(result.id, selectedResult.id)
                     }
                   >

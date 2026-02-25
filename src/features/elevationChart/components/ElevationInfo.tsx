@@ -6,7 +6,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { integratedLayerDefs, IsTileLayerDef } from '@shared/mapDefinitions.js';
+import { IsTileLayerDef, integratedLayerDefs } from '@shared/mapDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
@@ -26,6 +26,9 @@ export type ElevationInfoProps = ElevationInfoBaseProps & {
 };
 
 const FORMATS = ['D', 'DM', 'DMS'] as const;
+
+const toFormat = (value: string | null) =>
+  value && /^\d+$/.test(value) ? Number(value) : 0;
 
 export function ElevationInfo({
   lang,
@@ -80,7 +83,7 @@ export function ElevationInfo({
 
   const tileUrls = layers
     .map((type) => tileLayerDefs.find((def) => def.type === type))
-    .filter((def): def is (typeof tileLayerDefs)[0] => !!def)
+    .filter((def): def is (typeof tileLayerDefs)[0] => Boolean(def))
     .filter((def) => def.minZoom !== undefined && def.minZoom <= zoom) // TODO consider scale?
     .map((def) => ({
       ...def,
@@ -89,8 +92,8 @@ export function ElevationInfo({
 
   const [format, setFormat] = usePersistentState<number>(
     'fm.ele.gpsFormat',
-    (value) => String(value),
-    (value) => (value && /^\d+$/.test(value) ? Number(value) : 0),
+    String,
+    toFormat,
   );
 
   const coordinates = useMemo(

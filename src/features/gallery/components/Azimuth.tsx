@@ -16,7 +16,7 @@ export function Azimuth({ value, className, size, onChange }: Props) {
 
   const domPoint = useRef<DOMPoint | null>(null);
 
-  function getCoordinates(e: MouseEvent): undefined | { x: number; y: number } {
+  const getCoordinates = useCallback((e: MouseEvent) => {
     const pt = domPoint.current;
 
     if (!pt || !svg.current) {
@@ -30,7 +30,7 @@ export function Azimuth({ value, className, size, onChange }: Props) {
     const { x, y } = pt.matrixTransform(svg.current.getScreenCTM()?.inverse());
 
     return { x, y };
-  }
+  }, []);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -60,7 +60,7 @@ export function Azimuth({ value, className, size, onChange }: Props) {
 
       onChange((azimuth / Math.PI) * 180);
     },
-    [onChange],
+    [onChange, getCoordinates],
   );
 
   const handleMouseUp = useCallback(() => {

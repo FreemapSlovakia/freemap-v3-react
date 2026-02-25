@@ -1,11 +1,3 @@
-import { cancelProcessor } from '@/processors/cancelProcessor.js';
-import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
-import { deleteProcessor } from '@/processors/deleteProcessor.js';
-import { errorProcessor } from '@/processors/errorProcessor.js';
-import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
-import { saveSettingsProcessor } from '@/processors/saveSettingsProcessor.js';
-import { setActiveModalTransformer } from '@/processors/setActiveModalProcessor.js';
-import { setToolProcessor } from '@/processors/setToolProcessor.js';
 import { authDeleteAccountProcessor } from '@features/auth/model/processors/authDeleteAccountProcessor.js';
 import { authDisconnectProcessor } from '@features/auth/model/processors/authDisconnectProcessor.js';
 import {
@@ -91,6 +83,14 @@ import { trackViewerToggleElevationChartProcessor } from '@features/tracking/mod
 import { trackViewerUploadTrackProcessor } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
+import { cancelProcessor } from '@/processors/cancelProcessor.js';
+import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
+import { deleteProcessor } from '@/processors/deleteProcessor.js';
+import { errorProcessor } from '@/processors/errorProcessor.js';
+import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
+import { saveSettingsProcessor } from '@/processors/saveSettingsProcessor.js';
+import { setActiveModalTransformer } from '@/processors/setActiveModalProcessor.js';
+import { setToolProcessor } from '@/processors/setToolProcessor.js';
 import { urlProcessor } from '../url/urlProcessor.js';
 
 export const processors = [

@@ -42,9 +42,9 @@ import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
 import {
+  Exportable,
   ExportTarget,
   ExportType,
-  Exportable,
   exportMapFeatures,
   exportTargets,
   exportTypes,
@@ -69,6 +69,12 @@ const exportableDefinitions: readonly [
 type Props = { show: boolean };
 
 export default ExportMapFeaturesModal;
+
+const toExportType = (value: string | null) =>
+  is<ExportType>(value) ? value : 'gpx';
+
+const toExportTarget = (value: string | null) =>
+  is<ExportTarget>(value) ? value : 'download';
 
 export function ExportMapFeaturesModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -125,14 +131,14 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const [type, , setType] = usePersistentState<ExportType>(
     'fm.exportFeatures.format',
-    (value) => String(value),
-    (value) => (is<ExportType>(value) ? value : 'gpx'),
+    String,
+    toExportType,
   );
 
   const [target, , setTarget] = usePersistentState<ExportTarget>(
     'fm.exportFeatures.target',
-    (value) => String(value),
-    (value) => (is<ExportTarget>(value) ? value : 'download'),
+    String,
+    toExportTarget,
   );
 
   const [name, setName] = useState('');

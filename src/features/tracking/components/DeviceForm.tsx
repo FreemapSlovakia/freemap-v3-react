@@ -1,20 +1,19 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
-import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { trackingActions } from '../model/actions.js';
-
 import { isInvalidInt } from '@shared/numberValidator.js';
+import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import {
   Button,
   Dropdown,
   DropdownButton,
+  Form,
   InputGroup,
   Modal,
 } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { trackingActions } from '../model/actions.js';
 
 const TYPES = {
   url: 'Locus / OsmAnd / …',
@@ -71,12 +70,9 @@ export function DeviceForm(): ReactElement {
     [dispatch, name, maxCount, maxAge, type, token],
   );
 
-  const onSelect = useCallback(
-    (type: string | null) => {
-      setType(type as keyof typeof TYPES);
-    },
-    [setType],
-  );
+  const onSelect = useCallback((type: string | null) => {
+    setType(type as keyof typeof TYPES);
+  }, []);
 
   const invalidMaxCount = isInvalidInt(maxCount, false, 0);
 

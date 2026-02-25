@@ -38,12 +38,14 @@ export function TrackViewerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const hasTrack = useAppSelector((state) => !!state.trackViewer.trackGeojson);
+  const hasTrack = useAppSelector((state) =>
+    Boolean(state.trackViewer.trackGeojson),
+  );
 
   const canUpload = useAppSelector((state) => !state.trackViewer.trackUID);
 
-  const elevationChartActive = useAppSelector(
-    (state) => !!state.elevationChart.elevationProfilePoints,
+  const elevationChartActive = useAppSelector((state) =>
+    Boolean(state.elevationChart.elevationProfilePoints),
   );
 
   const colorizeTrackBy = useAppSelector(

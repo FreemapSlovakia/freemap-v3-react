@@ -255,7 +255,7 @@ export function upgradeCustomLayerDefs(
             } as CustomLayerDef<IsTileLayerDef>)
           : undefined,
     )
-    .filter((a): a is CustomLayerDef => !!a);
+    .filter((a): a is CustomLayerDef => Boolean(a));
 }
 
 function legacyFreemap(

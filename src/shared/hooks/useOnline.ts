@@ -4,14 +4,6 @@ import { useEffect, useState } from 'react';
 export function useOnline() {
   const [online, setOnline] = useState(window.navigator.onLine);
 
-  function offlineHandler() {
-    setOnline(false);
-  }
-
-  function onlineHandler() {
-    setOnline(true);
-  }
-
   const [cacheOnly, setCacheOnly] = useState(false);
 
   // TODO make event based somehow
@@ -22,6 +14,14 @@ export function useOnline() {
   }, []);
 
   useEffect(() => {
+    function offlineHandler() {
+      setOnline(false);
+    }
+
+    function onlineHandler() {
+      setOnline(true);
+    }
+
     setOnline(window.navigator.onLine);
 
     window.addEventListener('online', onlineHandler);

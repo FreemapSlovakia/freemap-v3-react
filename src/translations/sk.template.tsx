@@ -15,7 +15,7 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { Messages, addError } from './messagesInterface.js';
+import { addError, Messages } from './messagesInterface.js';
 import shared from './sk-shared.js';
 
 const nf00 = new Intl.NumberFormat('sk', {
@@ -275,7 +275,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     infoBars: {
       dp: () => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         const dispatch = useDispatch();
         return (
           <>

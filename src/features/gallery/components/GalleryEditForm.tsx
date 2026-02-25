@@ -12,7 +12,7 @@ import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
-import { galleryAddTag, GalleryTag } from '../model/actions.js';
+import { GalleryTag, galleryAddTag } from '../model/actions.js';
 import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 

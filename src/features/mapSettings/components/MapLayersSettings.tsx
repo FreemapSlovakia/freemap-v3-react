@@ -138,7 +138,7 @@ export function MapLayersSettings({
                 <Form.Check
                   checked={
                     layersSettings[type]?.showInToolbar ??
-                    !!def.defaultInToolbar
+                    Boolean(def.defaultInToolbar)
                   }
                   onChange={(e) =>
                     setLayersSettings({
@@ -155,7 +155,8 @@ export function MapLayersSettings({
               <td>
                 <Form.Check
                   checked={
-                    layersSettings[type]?.showInMenu ?? !!def.defaultInMenu
+                    layersSettings[type]?.showInMenu ??
+                    Boolean(def.defaultInMenu)
                   }
                   onChange={(e) =>
                     setLayersSettings({

@@ -14,8 +14,8 @@ import {
   ChangeEvent,
   Children,
   CSSProperties,
-  forwardRef,
   Fragment,
+  forwardRef,
   ReactElement,
   ReactNode,
   SubmitEvent,
@@ -48,6 +48,7 @@ import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import {
+  RoutingMode,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetIsochroneParams,
@@ -59,7 +60,6 @@ import {
   routePlannerSwapEnds,
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
-  RoutingMode,
 } from '../model/actions.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
@@ -380,8 +380,8 @@ export function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
-  const elevationProfileIsVisible = useAppSelector(
-    (state) => !!state.elevationChart.elevationProfilePoints,
+  const elevationProfileIsVisible = useAppSelector((state) =>
+    Boolean(state.elevationChart.elevationProfilePoints),
   );
 
   const canSwap = useAppSelector(

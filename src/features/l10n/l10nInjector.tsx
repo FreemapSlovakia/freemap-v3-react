@@ -1,7 +1,7 @@
-import { Messages } from '@/translations/messagesInterface.js';
 import { useLazy } from '@app/hooks/useLazy.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMemo } from 'react';
+import { Messages } from '@/translations/messagesInterface.js';
 
 export function useLocalMessages<T>(
   factory: (language: string) => Promise<{ default: T }>,
@@ -10,7 +10,10 @@ export function useLocalMessages<T>(
 
   // NOTE factory dependenct is disabled for simpler parent code
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const f = useMemo(() => factory.bind(undefined, language), [language]);
+  const f = useMemo(
+    () => factory.bind(undefined, language),
+    [language, factory.bind],
+  );
 
   return useLazy(f);
 }

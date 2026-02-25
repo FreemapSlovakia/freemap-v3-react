@@ -11,7 +11,7 @@ import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { TrackPoint } from '../model/types.js';
-import { tooltipText, TrackingPoint } from './TrackingPoint.js';
+import { TrackingPoint, tooltipText } from './TrackingPoint.js';
 
 // TODO functional component with hooks was causing massive re-rendering
 export function TrackingResult(): ReactElement {

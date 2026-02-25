@@ -9,16 +9,18 @@ import { latLonToString } from '@shared/geoutils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 import {
+  type GalleryColorizeBy,
+  type GalleryFilter,
+  type GalleryItem,
+  type GalleryTag,
+  type GalleryUser,
   galleryAddItem,
   galleryAddTag,
   galleryCancelShowOnTheMap,
   galleryClear,
   galleryColorizeBy,
-  type GalleryColorizeBy,
   galleryConfirmPickedPosition,
   galleryEditPicture,
-  type GalleryFilter,
-  type GalleryItem,
   galleryMergeItem,
   galleryQuickAddTag,
   galleryRemoveItem,
@@ -36,13 +38,11 @@ import {
   gallerySetTags,
   gallerySetUsers,
   galleryShowOnTheMap,
-  type GalleryTag,
   galleryToggleDirection,
   galleryToggleLegend,
   galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
-  type GalleryUser,
   type Picture,
 } from './actions.js';
 

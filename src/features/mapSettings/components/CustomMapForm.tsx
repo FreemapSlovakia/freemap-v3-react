@@ -40,34 +40,34 @@ type Model = {
   layers: string[];
 };
 
-export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
-  function valueToModel(value?: CustomLayerDef) {
-    return {
-      url: value?.url ?? '',
-      name: value?.name ?? '',
-      minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
-      maxNativeZoom:
-        value && 'maxNativeZoom' in value && value.maxNativeZoom !== undefined
-          ? value.maxNativeZoom.toString()
-          : '',
-      layer: value?.layer ?? 'base',
-      zIndex:
-        value && 'zIndex' in value && value.zIndex !== undefined
-          ? value.zIndex.toString()
-          : '',
-      scaleWithDpi:
-        value && 'scaleWithDpi' in value && value.scaleWithDpi
-          ? value.scaleWithDpi
-          : false,
-      extraScales:
-        value && 'extraScales' in value && value.extraScales
-          ? value.extraScales.map((a) => a.toString())
-          : [],
-      layers: value && 'layers' in value && value.layers ? value.layers : [],
-      technology: value?.technology ?? 'tile',
-    };
-  }
+function valueToModel(value?: CustomLayerDef) {
+  return {
+    url: value?.url ?? '',
+    name: value?.name ?? '',
+    minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
+    maxNativeZoom:
+      value && 'maxNativeZoom' in value && value.maxNativeZoom !== undefined
+        ? value.maxNativeZoom.toString()
+        : '',
+    layer: value?.layer ?? 'base',
+    zIndex:
+      value && 'zIndex' in value && value.zIndex !== undefined
+        ? value.zIndex.toString()
+        : '',
+    scaleWithDpi:
+      value && 'scaleWithDpi' in value && value.scaleWithDpi
+        ? value.scaleWithDpi
+        : false,
+    extraScales:
+      value && 'extraScales' in value && value.extraScales
+        ? value.extraScales.map((a) => a.toString())
+        : [],
+    layers: value && 'layers' in value && value.layers ? value.layers : [],
+    technology: value?.technology ?? 'tile',
+  };
+}
 
+export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   const [model, setModel] = useState<Model>(() => valueToModel(value));
 
   const localVersion = useRef(0);
@@ -205,7 +205,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   useEffect(() => {
     setWmsLayersFetchError(undefined);
-  }, [model]);
+  }, []);
 
   const [layersTree, setLayersTree] = useState<Layer[]>();
 
@@ -230,7 +230,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   useEffect(() => {
     setLayersTree(undefined);
-  }, [model.url]);
+  }, []);
 
   const handleLayerSelect = useCallback((name: string | null) => {
     if (name === null) {

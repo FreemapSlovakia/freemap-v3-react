@@ -2,8 +2,8 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
-  integratedLayerDefs,
   IsWmsLayerDef,
+  integratedLayerDefs,
   LayerDef,
 } from '@shared/mapDefinitions.js';
 import { type ReactElement, useCallback, useMemo } from 'react';

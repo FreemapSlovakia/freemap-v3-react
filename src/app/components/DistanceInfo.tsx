@@ -22,6 +22,10 @@ type Units = keyof typeof lengthUnits;
 
 const units = Object.keys(lengthUnits) as Units[];
 
+function identity<T>(value: T): T {
+  return value;
+}
+
 export function DistanceInfo(props: Props) {
   return (
     <div
@@ -33,11 +37,13 @@ export function DistanceInfo(props: Props) {
   );
 }
 
+const toUnit = (value: string | null) => (is<Units>(value) ? value : 'km');
+
 export function InnerDistanceInfo({ length, lengthLabel }: Props) {
   const [unit, setUnit] = usePersistentState<Units>(
     'fm.dist.unit',
-    (value) => value,
-    (value) => (is<Units>(value) ? value : 'km'),
+    identity,
+    toUnit,
   );
 
   const handleUnitClick = () => {

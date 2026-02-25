@@ -1,16 +1,16 @@
-import { DomEvent, Handler, Map } from 'leaflet';
+import { DomEvent, Handler, Map as LeafletMap } from 'leaflet';
 
-type TouchAwareMapType = typeof Map & {
+type TouchAwareMapType = typeof LeafletMap & {
   TouchExtend?: typeof Handler;
   _touchMouseCompatInstalled?: boolean;
 };
 
-const TouchAwareMap = Map as TouchAwareMapType;
+const TouchAwareMap = LeafletMap as TouchAwareMapType;
 
 if (!TouchAwareMap._touchMouseCompatInstalled) {
   TouchAwareMap._touchMouseCompatInstalled = true;
 
-  Map.mergeOptions({
+  LeafletMap.mergeOptions({
     touchExtend: true,
   });
 

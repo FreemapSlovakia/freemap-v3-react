@@ -1,18 +1,17 @@
-import fmLogo from '@/images/freemap-logo-print.png';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
 import { usePictureDropHandler } from '@features/gallery/hooks/usePictureDropHandler.js';
 import {
-  galleryAddItem,
   GalleryItem,
+  galleryAddItem,
   galleryMergeItem,
 } from '@features/gallery/model/actions.js';
 import { HomeLocationPickingResult } from '@features/homeLocation/components/HomeLocationPickingResult.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MainMenuButton } from '@features/mainMenu/components/MainMenuButton.js';
-import { Map } from '@features/map/components/Map.js';
+import { TheMap } from '@features/map/components/Map.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
@@ -41,6 +40,7 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
+import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import { MouseEvent, ReactElement, useCallback } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
@@ -288,9 +288,9 @@ export function Main(): ReactElement {
 
   const activeModal = useAppSelector((state) => state.main.activeModal);
 
-  const progress = useAppSelector((state) => !!state.progress.length);
+  const progress = useAppSelector((state) => Boolean(state.progress.length));
 
-  const authenticated = useAppSelector((state) => !!state.auth.user);
+  const authenticated = useAppSelector((state) => Boolean(state.auth.user));
 
   const showAds = useAppSelector(
     (state) =>
@@ -300,8 +300,8 @@ export function Main(): ReactElement {
       !isPremium(state.auth.user),
   );
 
-  const showElevationChart = useAppSelector(
-    (state) => !!state.elevationChart.elevationProfilePoints,
+  const showElevationChart = useAppSelector((state) =>
+    Boolean(state.elevationChart.elevationProfilePoints),
   );
 
   const showGalleryPicker = useAppSelector(showGalleryPickerSelector);
@@ -441,19 +441,19 @@ export function Main(): ReactElement {
 
   const scMapControls = useScrollClasses('horizontal');
 
-  const elevationChartActive = useAppSelector(
-    (state) => !!state.elevationChart.elevationProfilePoints,
+  const elevationChartActive = useAppSelector((state) =>
+    Boolean(state.elevationChart.elevationProfilePoints),
   );
 
   const trackFound = useAppSelector(trackGeojsonIsSuitableForElevationChart);
 
-  const routeFound = useAppSelector(
-    (state) => !!state.routePlanner.alternatives.length,
+  const routeFound = useAppSelector((state) =>
+    Boolean(state.routePlanner.alternatives.length),
   );
 
   useHtmlMeta();
 
-  const showMapsMenu = useAppSelector((state) => !!state.maps.activeMap);
+  const showMapsMenu = useAppSelector((state) => Boolean(state.maps.activeMap));
 
   // prevents map click action if dropdown is open
   const handleMapWrapperClick = (e: MouseEvent) => {
@@ -529,7 +529,9 @@ export function Main(): ReactElement {
                   {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                     <SearchMenu
                       hidden={!showMenu}
-                      preventShortcut={!!activeModal || !!documentKey}
+                      preventShortcut={
+                        Boolean(activeModal) || Boolean(documentKey)
+                      }
                     />
                   )}
                 </Toolbar>
@@ -700,7 +702,7 @@ export function Main(): ReactElement {
         )}
 
         <div onClickCapture={handleMapWrapperClick}>
-          <Map>
+          <TheMap>
             <Layers />
 
             <Tools />
@@ -716,13 +718,13 @@ export function Main(): ReactElement {
             {/* TODO should not be extra just because for position picking */}
 
             <GalleryResult />
-          </Map>
+          </TheMap>
         </div>
       </div>
 
       <AsyncModal
         show={
-          !!activeModal &&
+          activeModal !== null &&
           [
             ...(isUserValidated ? ['tracking-my'] : []),
             'tracking-watched',

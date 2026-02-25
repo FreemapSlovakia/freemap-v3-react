@@ -10,8 +10,8 @@ import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
 import {
-  galleryAddItem,
   GalleryItem,
+  galleryAddItem,
   galleryMergeItem,
   galleryRemoveItem,
   gallerySetItemForPositionPicking,
@@ -33,7 +33,9 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const items = useAppSelector((state) => state.gallery.items);
 
-  const uploading = useAppSelector((state) => !!state.gallery.uploadingId);
+  const uploading = useAppSelector((state) =>
+    Boolean(state.gallery.uploadingId),
+  );
 
   const allTags = useAppSelector((state) => state.gallery.tags);
 
@@ -129,7 +131,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
     const len = items.filter((item) => item.premium).length;
 
     premiumCheck.current.indeterminate = len > 0 && len !== items.length;
-  }, [premium, items]);
+  }, [items]);
 
   return (
     <Modal show={show} onHide={handleClose} size="lg">
@@ -194,7 +196,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
               type="checkbox"
               onChange={() => dispatch(galleryToggleShowPreview())}
               checked={showPreview}
-              disabled={!!items.length}
+              disabled={Boolean(items.length)}
               label={m?.gallery.uploadModal.showPreview}
             />
 

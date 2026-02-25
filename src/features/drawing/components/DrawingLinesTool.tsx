@@ -5,8 +5,8 @@ import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
-  type Point,
   drawingLineAddPoint,
+  type Point,
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
 

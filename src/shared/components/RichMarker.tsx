@@ -38,8 +38,13 @@ export const markerIconOptions = {
 
 export function RichMarker({
   autoOpenPopup,
-  cacheKey = 'default',
+  cacheKey: _cacheKey = 'default',
   markerType = 'pin',
+  color,
+  faIcon,
+  image,
+  imageOpacity,
+  label,
   ...restProps
 }: Props): ReactElement {
   const markerRef = useRef<Leaflet.Marker | null>(null);
@@ -62,10 +67,18 @@ export function RichMarker({
             ? [0, -10]
             : [0, -35],
         iconSize: markerIconOptions.iconSize,
-        icon: <MarkerIcon markerType={markerType} {...restProps} />,
+        icon: (
+          <MarkerIcon
+            color={color}
+            faIcon={faIcon}
+            image={image}
+            imageOpacity={imageOpacity}
+            label={label}
+            markerType={markerType}
+          />
+        ),
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cacheKey, restProps.color, restProps.image, restProps.label, markerType],
+    [color, faIcon, image, imageOpacity, label, markerType],
   );
 
   return <Marker {...restProps} icon={icon} key={markerType} ref={markerRef} />;
@@ -133,7 +146,7 @@ export function MarkerIcon({
             }}
           />
 
-          {!!(label || image || faIcon) && (
+          {Boolean(label || image || faIcon) && (
             <ellipse
               cx={155}
               cy={155}
@@ -186,7 +199,7 @@ export function MarkerIcon({
             }}
           />
 
-          {!!(label || image || faIcon) && (
+          {Boolean(label || image || faIcon) && (
             <rect
               x={50}
               y={50}
@@ -237,7 +250,7 @@ export function MarkerIcon({
           viewBox="0 0 310 512"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {!!(label || image || faIcon) && (
+          {Boolean(label || image || faIcon) && (
             <defs>
               <radialGradient
                 id={`gradient-${color}`}
@@ -264,7 +277,7 @@ export function MarkerIcon({
             }}
           />
 
-          {!!(label || image || faIcon) && (
+          {Boolean(label || image || faIcon) && (
             <ellipse
               cx={154.12}
               cy={163.702}
