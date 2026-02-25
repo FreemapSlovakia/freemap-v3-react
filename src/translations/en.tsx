@@ -9,6 +9,7 @@ import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
+import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
 import shared from './en-shared.js';
@@ -265,19 +266,15 @@ const messages: Messages = {
       />
     ),
     infoBars: {
-      // ua: () => (
-      //   <>
-      //     <Emoji>🇺🇦</Emoji> We stand with Ukraine.{' '}
-      //     <AlertLink
-      //       href="https://bank.gov.ua/en/about/support-the-armed-forces"
-      //       target="_blank"
-      //       rel="noopener"
-      //     >
-      //       Donate to the Ukrainian Army ›
-      //     </AlertLink>{' '}
-      //     <Emoji>🇺🇦</Emoji>
-      //   </>
-      // ),
+      ua: () => (
+        <>
+          <Emoji>🇺🇦</Emoji> We stand with Ukraine.{' '}
+          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
+            Support Ukraine ›
+          </AlertLink>{' '}
+          <Emoji>🇺🇦</Emoji>
+        </>
+      ),
     },
   },
 

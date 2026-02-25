@@ -10,6 +10,7 @@ import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
+import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
@@ -299,22 +300,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </>
         );
       },
-      // ua: () => {
-      //   return (
-      //     <>
-      //       <Emoji>🇺🇦</Emoji>&ensp;
-      //       <a
-      //         href="https://donio.sk/spolocne-pre-ukrajinu"
-      //         target="_blank"
-      //         rel="noopener"
-      //       >
-      //         Spoločne pre Ukrajinu ›
-      //       </a>
-      //       &ensp;
-      //       <Emoji>🇺🇦</Emoji>
-      //     </>
-      //   );
-      // },
+      ua: () => {
+        return (
+          <>
+            <Emoji>🇺🇦</Emoji>&ensp;
+            <AlertLink
+              href="https://donio.sk/spolocne-pre-ukrajinu"
+              target="_blank"
+              rel="noopener"
+            >
+              Spoločne pre Ukrajinu ›
+            </AlertLink>
+            &ensp;
+            <Emoji>🇺🇦</Emoji>
+          </>
+        );
+      },
     },
   },
 
