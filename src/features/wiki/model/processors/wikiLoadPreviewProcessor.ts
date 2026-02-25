@@ -1,0 +1,110 @@
+import { httpRequest } from '@app/httpRequest.js';
+import { setActiveModal } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { assert } from 'typia';
+import { wikiLoadPreview, WikiPreview, wikiSetPreview } from '../actions.js';
+
+interface WikiResponse1 {
+  query: {
+    pages: { [key: string]: { langlinks?: { lang: string; '*': string }[] } };
+  };
+  continue?: Record<string, unknown>;
+}
+
+interface WikiResponse2 {
+  query: {
+    pages: {
+      [key: string]: {
+        title: string;
+        extract: string;
+        thumbnail?: { source: string; width: number; height: number };
+      };
+    };
+  };
+  continue?: Record<string, unknown>;
+}
+
+export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
+  actionCreator: wikiLoadPreview,
+  errorKey: 'general.loadError',
+  handle: async ({ getState, dispatch, action }) => {
+    const p = action.payload.indexOf(':');
+
+    let lang = action.payload.slice(0, p);
+
+    let title = action.payload.slice(p + 1);
+
+    const { language } = getState().l10n;
+
+    if (language !== lang) {
+      let cont: Record<string, unknown> | undefined = {};
+
+      do {
+        const res = await httpRequest({
+          getState,
+          url:
+            `https://${lang}.wikipedia.org/w/api.php?` +
+            objectToURLSearchParams({
+              origin: '*',
+              action: 'query',
+              prop: 'langlinks',
+              format: 'json',
+              titles: title,
+              ...cont,
+            }),
+          expectedStatus: 200,
+          cancelActions: [setActiveModal],
+        });
+
+        const okData: WikiResponse1 = assert<WikiResponse1>(await res.json());
+
+        const item = Object.values(okData.query.pages)[0]?.langlinks?.find(
+          (ll) => ll.lang === language,
+        );
+
+        if (item) {
+          lang = item.lang;
+
+          title = item['*'];
+
+          break;
+        }
+
+        cont = okData.continue;
+      } while (cont);
+    }
+
+    const res = await httpRequest({
+      getState,
+      url:
+        `https://${lang}.wikipedia.org/w/api.php?` +
+        objectToURLSearchParams({
+          origin: '*',
+          action: 'query',
+          prop: 'extracts|pageimages',
+          format: 'json',
+          pithumbsize: 280,
+          titles: title,
+        }),
+
+      // url: `https://sk.wikipedia.org/w/api.php?action=parse&format=json&prop=text&section=0&page=${encodeURIComponent(
+      //   action.payload,
+      // )}&origin=*`,
+      expectedStatus: 200,
+      cancelActions: [setActiveModal],
+    });
+
+    const data = assert<WikiResponse2>(await res.json());
+
+    // TODO validate
+
+    const preview: WikiPreview = {
+      ...Object.values(data.query.pages)[0],
+      lang,
+      langTitle: title,
+    };
+
+    dispatch(wikiSetPreview(preview));
+  },
+};

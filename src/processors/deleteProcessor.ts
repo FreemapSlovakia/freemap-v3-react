@@ -1,17 +1,17 @@
+import { deleteFeature, selectFeature } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   drawingLineDelete,
   drawingLineDeletePoint,
-} from '../actions/drawingLineActions.js';
-import { drawingPointDelete } from '../actions/drawingPointActions.js';
-import { deleteFeature, selectFeature } from '../actions/mainActions.js';
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import { drawingPointDelete } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   routePlannerDelete,
   routePlannerRemovePoint,
-} from '../actions/routePlannerActions.js';
-import { searchSelectResult } from '../actions/searchActions.js';
-import { trackingActions } from '../actions/trackingActions.js';
-import { trackViewerDelete } from '../actions/trackViewerActions.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+} from '@features/routePlanner/model/actions.js';
+import { searchSelectResult } from '@features/search/model/actions.js';
+import { trackingActions } from '@features/tracking/model/actions.js';
+import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
 
 export const deleteProcessor: Processor = {
   actionCreator: deleteFeature,

@@ -1,16 +1,16 @@
-import { is } from 'typia';
-import { enableUpdatingUrl } from '../actions/mainActions.js';
+import { enableUpdatingUrl } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   mapReplaceLayer,
   mapSuppressLegacyMapWarning,
-} from '../actions/mapActions.js';
+} from '@features/map/model/actions.js';
 import {
   ToastAction,
   toastsAdd,
   toastsRemove,
-} from '../actions/toastsActions.js';
-import { HasLegacy, integratedLayerDefs } from '../mapDefinitions.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+} from '@features/toasts/model/actions.js';
+import { HasLegacy, integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { is } from 'typia';
 
 const TOAST_PREFIX = 'maps.legacyWarning.';
 

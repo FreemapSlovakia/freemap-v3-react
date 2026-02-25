@@ -1,0 +1,12 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Selection } from '@shared/components/Selection.js';
+import type { ReactElement } from 'react';
+import { FaBullseye } from 'react-icons/fa';
+
+export function TrackingSelection(): ReactElement {
+  const m = useMessages();
+
+  return (
+    <Selection icon={<FaBullseye />} label={m?.selections.tracking} deletable />
+  );
+}

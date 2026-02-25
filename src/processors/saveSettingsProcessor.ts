@@ -1,12 +1,12 @@
-import { authSetUser } from '../actions/authActions.js';
+import { httpRequest } from '@app/httpRequest.js';
 import {
   applySettings,
   saveSettings,
   setActiveModal,
-} from '../actions/mainActions.js';
-import { toastsAdd } from '../actions/toastsActions.js';
-import { httpRequest } from '../httpRequest.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
+} from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { authSetUser } from '@features/auth/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 
 export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,

@@ -1,16 +1,16 @@
 // import { AlertLink } from 'react-bootstrap';
 // import { FaGem, FaKey } from 'react-icons/fa';
-// import { Attribution } from '../components/Attribution.js';
-// import { ChangesetDetails } from '../components/ChangesetDetails.js';
-// import { CookieConsent } from '../components/CookieConsent.js';
-// import { ElevationInfo } from '../components/ElevationInfo.js';
-// import { Emoji } from '../components/Emoji.js';
-// import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
+// import { Attribution } from '@shared/components/Attribution.js';
+// import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
+// import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
+// import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
+// import { Emoji } from '@shared/components/Emoji.js';
+// import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 // import {
 //   ObjectDetailBasicProps,
 //   ObjectDetails,
-// } from '../components/ObjectDetails.js';
-// import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
+// } from '@features/objects/components/ObjectDetails.js';
+// import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 // import { DeepPartialWithRequiredObjects } from 'deepPartial.js';
 // import shared from './de-shared.js';
 // import { Messages, addError } from './messagesInterface.js';

@@ -1,20 +1,20 @@
+import { AreaInfo } from '@app/components/AreaInfo.js';
+import { DistanceInfo } from '@app/components/DistanceInfo.js';
+import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
+import { RovasAd } from '@features/ad/components/RovasAd.js';
+import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
+import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
+import { CreditsText } from '@features/credits/components/CreditsText.js';
+import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
+import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
+import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
+import { Attribution } from '@shared/components/Attribution.js';
+import { Emoji } from '@shared/components/Emoji.js';
+import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaGem, FaKey } from 'react-icons/fa';
-import { AreaInfo } from '../components/AreaInfo.js';
-import { Attribution } from '../components/Attribution.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { CookieConsent } from '../components/CookieConsent.js';
-import { CreditsText } from '../components/CreditsText.js';
-import { DistanceInfo } from '../components/DistanceInfo.js';
-import { ElevationInfo } from '../components/ElevationInfo.js';
-import { MaptilerAttribution } from '../components/MaptilerAttribution.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
-import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
-import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './de-shared.js';
 import { Messages, addError } from './messagesInterface.js';
-import { RovasAd } from '../components/RovasAd.js';
-import { Emoji } from '../components/Emoji.js';
 
 const nf00 = new Intl.NumberFormat('de', {
   minimumFractionDigits: 0,

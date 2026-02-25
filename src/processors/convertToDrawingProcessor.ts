@@ -1,14 +1,17 @@
+import { convertToDrawing, selectFeature } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import {
+  drawingLineAdd,
+  Point,
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
+import { searchClear } from '@features/search/model/actions.js';
+import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
+import { mergeLines } from '@shared/geoutils.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';
-import { drawingLineAdd, Point } from '../actions/drawingLineActions.js';
-import { drawingPointAdd } from '../actions/drawingPointActions.js';
-import { convertToDrawing, selectFeature } from '../actions/mainActions.js';
-import { routePlannerDelete } from '../actions/routePlannerActions.js';
-import { searchClear } from '../actions/searchActions.js';
-import { trackViewerDelete } from '../actions/trackViewerActions.js';
-import { mergeLines } from '../geoutils.js';
-import type { Processor } from '../middlewares/processorMiddleware.js';
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,
@@ -43,8 +46,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       dispatch(
         drawingLineAdd({
           type: 'line',
-          color: state.main.drawingColor,
-          width: state.main.drawingWidth,
+          color: state.drawingSettings.drawingColor,
+          width: state.drawingSettings.drawingWidth,
           points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
@@ -71,7 +74,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           drawingPointAdd({
             coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
-            color: state.main.drawingColor,
+            color: state.drawingSettings.drawingColor,
             id: getState().drawingPoints.points.length,
           }),
         );
@@ -107,7 +110,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           dispatch(
             drawingPointAdd({
               label: feature.properties?.['name'],
-              color: state.main.drawingColor,
+              color: state.drawingSettings.drawingColor,
               coords: {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
@@ -134,8 +137,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             drawingLineAdd({
               type: 'line',
               label: feature.properties?.['name'],
-              color: state.main.drawingColor,
-              width: state.main.drawingWidth,
+              color: state.drawingSettings.drawingColor,
+              width: state.drawingSettings.drawingWidth,
               points,
             }),
           );
@@ -187,7 +190,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           dispatch(
             drawingPointAdd({
               label: feature.properties?.['name'],
-              color: state.main.drawingColor,
+              color: state.drawingSettings.drawingColor,
               coords: {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
@@ -222,8 +225,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
                 geometry?.type === 'Polygon'
                   ? feature.properties?.['name']
                   : undefined, // ignore street names
-              color: state.main.drawingColor,
-              width: state.main.drawingWidth,
+              color: state.drawingSettings.drawingColor,
+              width: state.drawingSettings.drawingWidth,
               points,
             }),
           );

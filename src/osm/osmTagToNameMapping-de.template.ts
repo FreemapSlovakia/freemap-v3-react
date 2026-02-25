@@ -1,4 +1,4 @@
-import { DeepPartial } from '../deepPartial.js';
+import { DeepPartial } from '@shared/types/deepPartial.js';
 import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
@@ -827,7 +827,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           'generator:method': {
             combustion: 'Biomasse-Stromgenerator mit Verbrennung',
             gasification: 'Biomasse-Stromgenerator mit Vergasung',
-            anaerobic_digestion: 'Biomasse-Stromgenerator mit anaerober Vergärung',
+            anaerobic_digestion:
+              'Biomasse-Stromgenerator mit anaerober Vergärung',
           },
         },
 
@@ -1269,7 +1270,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     mind_body_interventions: 'Körper-Geist-Übungen (z. B. Yoga)',
     miniature_golf: 'Minigolf',
     mtb: 'Mountainbiken',
-    nine_mens_morris: 'Nine men\'s morris game',
+    nine_mens_morris: "Nine men's morris game",
     obstacle_course: 'Hindernislauf',
     paddleball: 'Paddleball',
     paddleboard: 'Stand-up-Paddling',
@@ -1278,7 +1279,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     paragliding: 'Paragliding',
     parkour: 'Parkour',
     pedal_car_racing: 'Tretauto-Rennen',
-    'pesäpallo': 'Pesäpallo (finnisches Baseball)',
+    pesäpallo: 'Pesäpallo (finnisches Baseball)',
     pickleball: 'Pickleball',
     pilates: 'Pilates',
     pole_dance: 'Pole Dance',

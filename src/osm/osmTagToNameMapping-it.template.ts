@@ -1,4 +1,4 @@
-import { DeepPartial } from '../deepPartial.js';
+import { DeepPartial } from '@shared/types/deepPartial.js';
 import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
@@ -800,7 +800,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Generatore elettrico a biomassa',
 
           'generator:method': {
-            anaerobic_digestion: 'Generatore elettrico da digestione anaerobica della biomassa',
+            anaerobic_digestion:
+              'Generatore elettrico da digestione anaerobica della biomassa',
             combustion: 'Generatore elettrico a combustione di biomassa',
             gasification: 'Generatore elettrico a gassificazione di biomassa',
           },
@@ -903,7 +904,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
           '*': 'Centrale a biomassa',
 
           'plant:method': {
-            anaerobic_digestion: 'Centrale a biomassa con digestione anaerobica',
+            anaerobic_digestion:
+              'Centrale a biomassa con digestione anaerobica',
             combustion: 'Centrale a biomassa con combustione',
             gasification: 'Centrale a biomassa con gassificazione',
           },
@@ -1339,7 +1341,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     paragliding: 'Parapendio',
     parkour: 'Parkour',
     pedal_car_racing: 'Gara auto a pedali',
-    'pesäpallo': 'Pesäpallo (baseball finlandese)',
+    pesäpallo: 'Pesäpallo (baseball finlandese)',
     pickleball: 'Pickleball',
     pilates: 'Pilates',
     pole_dance: 'Pole dance',

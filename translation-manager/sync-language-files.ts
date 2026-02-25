@@ -43,7 +43,7 @@ process(resolve(import.meta.dirname, '../src/translations/{LANG}.tsx'));
 process(
   resolve(
     import.meta.dirname,
-    '../src/components/supportUsModal/translations/{LANG}.tsx',
+    '../src/features/supportUsModal/translations/{LANG}.tsx',
   ),
 );
 
