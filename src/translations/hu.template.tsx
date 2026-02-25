@@ -14,6 +14,7 @@ import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './hu-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 import { RovasAd } from '../components/RovasAd.js';
+import { Emoji } from '../components/Emoji.js';
 
 const nf00 = new Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -265,20 +266,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Szerzői jog',
 
     infoBars: {
-      // ua: () => (
-      //   <>
-      //     <Emoji>🇺🇦</Emoji>&ensp;Ukrajnával állunk.{' '}
-      //     <AlertLink
-      //       href="https://bank.gov.ua/en/about/support-the-armed-forces"
-      //       target="_blank"
-      //       rel="noopener"
-      //     >
-      //       Adományozás az ukrán hadseregnek ›
-      //     </AlertLink>
-      //     &ensp;
-      //     <Emoji>🇺🇦</Emoji>
-      //   </>
-      // ),
+      ua: () => (
+        <>
+          <Emoji>🇺🇦</Emoji>&ensp;Ukrajnával állunk.{' '}
+          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
+            Ukrajna támogatása ›
+          </AlertLink>
+          &ensp;
+          <Emoji>🇺🇦</Emoji>
+        </>
+      ),
     },
 
     cookieConsent: () => (

@@ -14,6 +14,7 @@ import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import shared from './cs-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 import { RovasAd } from '../components/RovasAd.js';
+import { Emoji } from '../components/Emoji.js';
 
 const nf00 = new Intl.NumberFormat('cs', {
   minimumFractionDigits: 0,
@@ -269,20 +270,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       />
     ),
     infoBars: {
-      // ua: () => (
-      //   <>
-      //     <Emoji>🇺🇦</Emoji>&ensp;Stojíme za Ukrajinou.{' '}
-      //     <AlertLink
-      //       href="https://donio.cz/pomocukrajine"
-      //       target="_blank"
-      //       rel="noopener"
-      //     >
-      //       Pomozte Ukrajině ›
-      //     </AlertLink>
-      //     &ensp;
-      //     <Emoji>🇺🇦</Emoji>
-      //   </>
-      // ),
+      ua: () => (
+        <>
+          <Emoji>🇺🇦</Emoji>&ensp;Stojíme za Ukrajinou.{' '}
+          <AlertLink
+            href="https://donio.cz/pomocukrajine"
+            target="_blank"
+            rel="noopener"
+          >
+            Pomozte Ukrajině ›
+          </AlertLink>
+          &ensp;
+          <Emoji>🇺🇦</Emoji>
+        </>
+      ),
     },
   },
 

@@ -13,6 +13,7 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import shared from './en-shared.js';
 import { Messages, addError } from './messagesInterface.js';
 import { RovasAd } from '../components/RovasAd.js';
+import { Emoji } from '../components/Emoji.js';
 
 const nf00 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 0,
@@ -265,19 +266,15 @@ const messages: Messages = {
       />
     ),
     infoBars: {
-      // ua: () => (
-      //   <>
-      //     <Emoji>🇺🇦</Emoji> We stand with Ukraine.{' '}
-      //     <AlertLink
-      //       href="https://bank.gov.ua/en/about/support-the-armed-forces"
-      //       target="_blank"
-      //       rel="noopener"
-      //     >
-      //       Donate to the Ukrainian Army ›
-      //     </AlertLink>{' '}
-      //     <Emoji>🇺🇦</Emoji>
-      //   </>
-      // ),
+      ua: () => (
+        <>
+          <Emoji>🇺🇦</Emoji> We stand with Ukraine.{' '}
+          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
+            Support Ukraine ›
+          </AlertLink>{' '}
+          <Emoji>🇺🇦</Emoji>
+        </>
+      ),
     },
   },
 

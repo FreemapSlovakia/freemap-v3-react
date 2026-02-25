@@ -16,6 +16,7 @@ import shared from './sk-shared.js';
 import { RovasAd } from '../components/RovasAd.js';
 import { useDispatch } from 'react-redux';
 import { documentShow } from '../actions/mainActions.js';
+import { Emoji } from '../components/Emoji.js';
 
 const nf00 = new Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -299,22 +300,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </>
         );
       },
-      // ua: () => {
-      //   return (
-      //     <>
-      //       <Emoji>🇺🇦</Emoji>&ensp;
-      //       <a
-      //         href="https://donio.sk/spolocne-pre-ukrajinu"
-      //         target="_blank"
-      //         rel="noopener"
-      //       >
-      //         Spoločne pre Ukrajinu ›
-      //       </a>
-      //       &ensp;
-      //       <Emoji>🇺🇦</Emoji>
-      //     </>
-      //   );
-      // },
+      ua: () => {
+        return (
+          <>
+            <Emoji>🇺🇦</Emoji>&ensp;
+            <AlertLink
+              href="https://donio.sk/spolocne-pre-ukrajinu"
+              target="_blank"
+              rel="noopener"
+            >
+              Spoločne pre Ukrajinu ›
+            </AlertLink>
+            &ensp;
+            <Emoji>🇺🇦</Emoji>
+          </>
+        );
+      },
     },
   },
 

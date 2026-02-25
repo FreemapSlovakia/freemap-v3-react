@@ -14,6 +14,7 @@ import { DeepPartialWithRequiredObjects } from '../deepPartial.js';
 import { Messages, addError } from './messagesInterface.js';
 import shared from './pl-shared.js';
 import { RovasAd } from '../components/RovasAd.js';
+import { Emoji } from '../components/Emoji.js';
 
 const nf00 = new Intl.NumberFormat('pl', {
   minimumFractionDigits: 0,
@@ -238,20 +239,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   main: {
     infoBars: {
-      // ua: () => (
-      //   <>
-      //     <Emoji>🇺🇦</Emoji>&ensp;Stoimy za Ukrainą.{' '}
-      //     <AlertLink
-      //       href="https://bank.gov.ua/en/about/support-the-armed-forces"
-      //       target="_blank"
-      //       rel="noopener"
-      //     >
-      //       Wesprzyj ukraińską armię ›
-      //     </AlertLink>
-      //     &ensp;
-      //     <Emoji>🇺🇦</Emoji>
-      //   </>
-      // ),
+      ua: () => (
+        <>
+          <Emoji>🇺🇦</Emoji>&ensp;Stoimy za Ukrainą.{' '}
+          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
+            Wesprzyj Ukrainę ›
+          </AlertLink>
+          &ensp;
+          <Emoji>🇺🇦</Emoji>
+        </>
+      ),
     },
     title: shared.title,
     description: shared.description,
