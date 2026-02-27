@@ -683,6 +683,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [GKU_ATTR],
     countries: ['sk'],
     shortcut: { code: 'KeyK' },
+    premiumFromZoom: 15,
   },
   {
     layer: 'base',
@@ -694,6 +695,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [NLC_ATTR],
     countries: ['sk'],
     minZoom: 13,
+    premiumFromZoom: 15,
   },
   {
     layer: 'base',
@@ -705,6 +707,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [NLC_ATTR],
     countries: ['sk'],
     minZoom: 12,
+    premiumFromZoom: 15,
   },
   {
     layer: 'base',
@@ -716,6 +719,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyL' },
     attribution: [GEOLOGY_ATTR],
     countries: ['sk'],
+    premiumFromZoom: 15,
   },
   {
     layer: 'base',
@@ -727,6 +731,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyW' },
     attribution: [GEOLOGY_ATTR],
     countries: ['sk'],
+    premiumFromZoom: 15,
   },
   {
     layer: 'overlay',
@@ -948,6 +953,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     countries: ['sk'],
     shortcut: { code: 'KeyK', shift: true },
     zIndex: 3,
+    premiumFromZoom: 15,
   },
 ];
 
