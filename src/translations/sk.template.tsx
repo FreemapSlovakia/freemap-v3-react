@@ -1217,17 +1217,26 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <strong>Podporte dobrovoľníkov vytvárajúcich túto mapu!</strong>
         </p>
         <p className="mb-1">
-          Za <b>8 hodín</b> vašej dobrovoľníckej práce* alebo <b>8 €</b> získate
-          na rok:
+          Za <b>8 hodín</b> vašej{' '}
+          <a
+            href="https://rovas.app/freemap-web"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            dobrovoľníckej práce
+          </a>{' '}
+          alebo <b>8 €</b> získate na rok:
         </p>
         <ul>
           <li>odstránenie reklamného baneru</li>
-          <li>
-            prístup k <FaGem /> prémiovým mapovým vrstvám
+          <li
+            className="text-decoration-underline"
+            title="Strava Heatmap, hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
+          >
+            prémiovým mapovým vrstvám
           </li>
-          <li>
-            prístup k <FaGem /> prémiovým fotkám
-          </li>
+          <li>prémiovým fotkám</li>
+          <li>multimodálne vyhľadávanie trasy</li>
         </ul>
       </>
     ),
@@ -1245,26 +1254,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </p>
         </div>
       </>
-    ),
-    commonFooter: (
-      <p className="small">
-        * Svoju dobrovoľnícku prácu dokážete vytvorením pracovných výkazov v
-        aplikácii{' '}
-        <a href="https://rovas.app/" target="rovas">
-          Rováš
-        </a>
-        . Ak ste dobrovoľníkom v projekte OSM a používate aplikáciu JOSM,
-        odporúčame zapnúť{' '}
-        <a
-          href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector"
-          target="rovas_connector"
-        >
-          doplnok Rovas Connector
-        </a>
-        , ktorý výkazy vytvorí za vás. Po overení výkazu dvoma používateľmi
-        získate odmenu v komunitnej mene <i>chron</i> a tú môžte použiť na
-        získanie prémiového prístupu na www.freemap.sk alebo nákup kreditov.
-      </p>
     ),
     continue: 'Pokračovať',
     success: 'Gratulujeme, získali ste prémiový prístup!',

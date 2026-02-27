@@ -29,7 +29,6 @@ export function LoginModal({ show }: Props): ReactElement {
       <Alert variant="primary">
         {m?.premium.commonHeader}
         {m?.premium.stepsForAnonymous}
-        {m?.premium.commonFooter}
       </Alert>
     ) : null;
 

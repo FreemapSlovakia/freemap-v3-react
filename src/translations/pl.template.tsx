@@ -12,7 +12,7 @@ import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { FaGem, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './pl-shared.js';
 
@@ -1184,19 +1184,27 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <strong>Wesprzyj wolontariuszy, którzy tworzą tę mapę!</strong>
         </p>
         <p className="mb-1">
-          Za <b>8 godzin</b> swojej pracy wolontariackiej* lub <b>8 €</b>
+          Za <b>8 godzin</b> swojej{' '}
+          <a
+            href="https://rovas.app/freemap-web"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            pracy wolontariackiej
+          </a>{' '}
+          lub <b>8 €</b>
           otrzymasz roczny dostęp obejmujący:
         </p>
         <ul>
           <li>usunięcie banera reklamowego</li>
-          <li>
-            dostęp do <FaGem />
+          <li
+            className="text-decoration-underline"
+            title="Strava Heatmap, szczegółowe cieniowanie Słowacji i Czech w wysokiej rozdzielczości, najwyższe poziomy powiększenia mapy Outdoor, najwyższe poziomy powiększenia map ortofoto Słowacji i Czech, różne mapy oparte na WMS"
+          >
             warstw map premium
           </li>
-          <li>
-            dostęp do <FaGem />
-            zdjęć premium
-          </li>
+          <li>zdjęć premium</li>
+          <li>multimodalne wyznaczanie trasy</li>
         </ul>
       </>
     ),
@@ -1215,21 +1223,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </p>
         </div>
       </>
-    ),
-    commonFooter: (
-      <p className="small">
-        * Możesz potwierdzić swoją pracę wolontariacką, tworząc raporty pracy w
-        aplikacji <a href="https://rovas.app/">Rovas</a>. Jeśli jesteś
-        wolontariuszem projektu OSM i korzystasz z aplikacji JOSM, zalecamy
-        włączenie{' '}
-        <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-          wtyczki Rovas Connector
-        </a>
-        , która może tworzyć raporty automatycznie. Po weryfikacji raportu przez
-        dwóch użytkowników otrzymasz walutę społecznościową <i>Chron</i>, którą
-        możesz wykorzystać do uzyskania dostępu premium na stronie
-        www.freemap.sk lub do zakupu kredytów.
-      </p>
     ),
     continue: 'Kontynuuj',
     success: 'Gratulacje, uzyskano dostęp premium!',

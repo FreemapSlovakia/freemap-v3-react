@@ -12,7 +12,7 @@ import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { FaGem, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import shared from './hu-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -1235,17 +1235,26 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </strong>
         </p>
         <p className="mb-1">
-          <b>8 óra</b> önkéntes munkáért* vagy <b>8 €</b> összegért kap egy
-          évre:
+          <b>8 óra</b>{' '}
+          <a
+            href="https://rovas.app/freemap-web"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            önkéntes munkáért
+          </a>{' '}
+          vagy <b>8 €</b> összegért kap egy évre:
         </p>
         <ul>
           <li>reklámszalag eltávolítása</li>
-          <li>
-            hozzáférés a <FaGem /> prémium térképrétegekhez
+          <li
+            className="text-decoration-underline"
+            title="Strava Heatmap, Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, a szabadtéri térkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotó térképeinek legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
+          >
+            prémium térképrétegekhez
           </li>
-          <li>
-            hozzáférés a <FaGem /> prémium fényképekhez
-          </li>
+          <li>prémium fényképekhez</li>
+          <li>multimodális útvonaltervezés</li>
         </ul>
       </>
     ),
@@ -1264,20 +1273,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </p>
         </div>
       </>
-    ),
-    commonFooter: (
-      <p className="small">
-        * Az önkéntes munkát munkajelentések létrehozásával igazolhatod a{' '}
-        <a href="https://rovas.app/">Rovas</a> alkalmazásban. Ha az OSM projekt
-        önkéntese vagy, és a JOSM alkalmazást használod, javasoljuk a{' '}
-        <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-          Rovas Connector bővítmény
-        </a>
-        engedélyezését, amely jelentéseket tud készíteni helyetted. Ha egy
-        jelentést két felhasználó jóváhagy, közösségi valutát, <i>Chron</i>-t
-        kapsz, amelyet felhasználhatsz prémium hozzáférés megszerzéséhez a
-        www.freemap.sk oldalon, vagy krediteket is vásárolhatsz.
-      </p>
     ),
     continue: 'Folytatás',
     success: 'Gratulálunk, megszerezted a prémium hozzáférést!',

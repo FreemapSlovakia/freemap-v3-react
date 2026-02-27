@@ -11,7 +11,7 @@ import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewer
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
-import { FaGem, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import shared from './en-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -1155,17 +1155,26 @@ const messages: Messages = {
           <strong>Support the volunteers who create this map!</strong>
         </p>
         <p className="mb-1">
-          For <b>8 hours</b> of your volunteer* work or <b>8 €</b> you will have
-          a year of access with:
+          For <b>8 hours</b> of your{' '}
+          <a
+            href="https://rovas.app/freemap-web"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            volunteer work
+          </a>{' '}
+          or <b>8 €</b> you will have a year of access with:
         </p>
         <ul>
           <li>removed ad banner</li>
-          <li>
-            access to <FaGem /> premium map layers
+          <li
+            className="text-decoration-underline"
+            title="Strava Heatmap, hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
+          >
+            premium map layers
           </li>
-          <li>
-            access to <FaGem /> premium photos
-          </li>
+          <li>premium photos</li>
+          <li>multimodal routing</li>
         </ul>
       </>
     ),
@@ -1184,20 +1193,6 @@ const messages: Messages = {
           </p>
         </div>
       </>
-    ),
-    commonFooter: (
-      <p className="small">
-        * You can prove your volunteer work by creating work reports in the{' '}
-        <a href="https://rovas.app/">Rovas</a> application. If you are a
-        volunteer in the OSM project and are using the JOSM application, we
-        recommend enabling the{' '}
-        <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-          Rovas Connector plugin
-        </a>
-        , which can create reports for you. After a report is verified by two
-        users, you will receive the community currency <i>Chron</i>, which you
-        can use to obtain premium access to www.freemap.sk or purchase credits.
-      </p>
     ),
     continue: 'Continue',
     success: 'Congratulations, you have gained premium access!',

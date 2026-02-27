@@ -767,7 +767,6 @@ export type Messages = {
     title: string;
     commonHeader: ReactNode;
     stepsForAnonymous: ReactNode;
-    commonFooter: ReactNode;
     continue: string;
     success: string;
     becomePremium: string;

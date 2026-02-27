@@ -12,7 +12,7 @@ import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { FaGem, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import shared from './it-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -1191,17 +1191,26 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <strong>Sostieni i volontari che creano questa mappa!</strong>
         </p>
         <p>
-          Con <b>8 ore</b> di lavoro volontario oppure <b>8 €</b> otterrai un
-          anno di accesso con:
+          Con <b>8 ore</b> di{' '}
+          <a
+            href="https://rovas.app/freemap-web"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            lavoro volontario
+          </a>{' '}
+          oppure <b>8 €</b> otterrai un anno di accesso con:
         </p>
         <ul>
           <li>rimozione del banner pubblicitario</li>
-          <li>
-            accesso ai livelli mappa <FaGem /> premium
+          <li
+            className="text-decoration-underline"
+            title="Strava Heatmap, ombreggiatura dettagliata ad alta risoluzione di Slovacchia e Cechia, livelli di zoom più alti della mappa Outdoor, livelli di zoom più alti delle mappe ortofoto di Slovacchia e Cechia, varie mappe basate su WMS"
+          >
+            livelli mappa premium
           </li>
-          <li>
-            accesso alle foto <FaGem /> premium
-          </li>
+          <li>foto premium</li>
+          <li>routing multimodale</li>
         </ul>
       </>
     ),
@@ -1220,22 +1229,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </p>
         </div>
       </>
-    ),
-    commonFooter: (
-      <p>
-        Puoi provare il tuo lavoro di volontariato creando rapporti di lavoro
-        con l'applicazione <a href="https://rovas.app/">Rovas</a>. Se sei un
-        volontario nel progetto OSM e stai utilizzando JOSM, ti raccomandiamo di
-        abilitare il{' '}
-        <a href="https://josm.openstreetmap.de/wiki/Help/Plugin/RovasConnector">
-          plugin Rovas Connector
-        </a>
-        , che può creare rapporti di lavoro per te. Dopo che un rapporto è stato
-        verificato da due utenti, riceverai la valuta comunitaria <i>Chron</i>,
-        che puoi utilizzare per ottenere l'accesso premium a www.freemap.sk o
-        acquistare crediti, che potrai usare per rimuovere gli annunci da
-        www.freemap.sk.
-      </p>
     ),
     continue: 'Continua',
     success: 'Congratulazioni, hai ottenuto l’accesso premium!',

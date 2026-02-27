@@ -12,7 +12,7 @@ import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { FaGem, FaKey } from 'react-icons/fa';
+import { FaKey } from 'react-icons/fa';
 import shared from './cs-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -1165,17 +1165,26 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
         </p>
         <p className="mb-1">
-          Za <b>8 hodin</b> vaší dobrovolnické* práce nebo <b>8 €</b> získáte na
-          rok:
+          Za <b>8 hodin</b> vaší{' '}
+          <a
+            href="https://rovas.app/freemap-web"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            dobrovolnické práce
+          </a>{' '}
+          nebo <b>8 €</b> získáte na rok:
         </p>
         <ul>
           <li>odstranění reklamního baneru</li>
-          <li>
-            přístup k <FaGem /> prémiovým mapovým vrstvám
+          <li
+            className="text-decoration-underline"
+            title="Strava Heatmap, podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS"
+          >
+            prémiovým mapovým vrstvám
           </li>
-          <li>
-            přístup k <FaGem /> prémiovým fotkám
-          </li>
+          <li>prémiovým fotkám</li>
+          <li>multimodální vyhledávání trasy</li>
         </ul>
       </>
     ),
@@ -1193,20 +1202,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           </p>
         </div>
       </>
-    ),
-    commonFooter: (
-      <p className="small">
-        * Svou dobrovolnickou práci můžete prokázat vytvořením pracovních výkazů
-        v aplikaci <a href="https://rovas.app/">Rováš</a>. Pokud jste
-        dobrovolníkem v projektu OSM a používáte aplikaci JOSM, doporučujeme
-        zapnout{' '}
-        <a href="https://josm.openstreetmap.de/wiki/Sk%3AHelp/Plugin/RovasConnector">
-          doplněk Rovas Connector
-        </a>
-        , který výkazy vytvoří za vás. Po ověření výkazu dvěma uživateli získáte
-        odměnu v komunitní měně <i>chron</i>, kterou můžete použít k získání
-        prémiovým přístupu na www.freemap.sk nebo k nákupu kreditů.
-      </p>
     ),
     continue: 'Pokračovat',
     success: 'Gratulujeme, získali jste prémiový přístup!',
