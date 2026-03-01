@@ -268,7 +268,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     infoBars: {
       ua: () => (
         <>
-          <Emoji>🇺🇦</Emoji>&ensp;Ukrajnával állunk.{' '}
+          <Emoji>🇺🇦</Emoji>&ensp;Ukrajna mellett állunk.{' '}
           <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
             Ukrajna támogatása ›
           </AlertLink>
@@ -290,7 +290,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   ad: {
     self: (email) => (
       <>
-        Szeretnéd, ha itt lenne a saját hirdetésed? Ne habozz kapcsolatba lépni
+        Szeretnéd, ha a saját hirdetésed lenne itt? Ne habozz kapcsolatba lépni
         velünk a következő címen: {email}.
       </>
     ),
@@ -1243,17 +1243,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           >
             önkéntes munkáért
           </a>{' '}
-          vagy <b>8 €</b> összegért kap egy évre:
+          vagy <b>8 €</b> összegért a következőket kaphatod egy évre:
         </p>
         <ul>
           <li>reklámszalag eltávolítása</li>
           <li
             className="text-decoration-underline"
-            title="Strava Heatmap, Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, a szabadtéri térkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotó térképeinek legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
+            title="Strava Heatmap, Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
           >
-            prémium térképrétegekhez
+            prémium térképrétegek
           </li>
-          <li>prémium fényképekhez</li>
+          <li>prémium fényképek</li>
           <li>multimodális útvonaltervezés</li>
         </ul>
       </>
@@ -1283,11 +1283,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
-    alreadyPremium: 'Már prémium hozzáféréssel rendelkezel.',
+    alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   },
 
   credits: {
-    buyCredits: 'Kreditek vásárlása',
+    buyCredits: 'Kredit vásárlása',
     amount: 'Kreditek',
     credits: 'kredit',
     buy: 'Vásárlás',
@@ -1301,7 +1301,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Van {amount}{' '}
         {explainCredits ? (
           <CreditsText
-            credits="kredited"
+            credits="kreditjeid"
             help="A krediteket felhasználhatod [offline térképek exportjára]."
           />
         ) : (
