@@ -8,8 +8,8 @@ type Marble = LatLon & {
   userId: number;
   createdAt: number;
   takenAt?: number | null;
-  pano?: 1;
-  premium?: 1;
+  pano?: boolean;
+  premium?: boolean;
   azimuth?: number;
 };
 
@@ -84,7 +84,7 @@ export function renderGalleryTile({
         : colorizeBy === 'mine'
           ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
           : colorizeBy === 'premium'
-            ? sort(data, (a) => a.premium ?? 0)
+            ? sort(data, (a) => (a.premium ? 1 : 0))
             : sort(data, () => 0);
 
   // remove "dense" pictures

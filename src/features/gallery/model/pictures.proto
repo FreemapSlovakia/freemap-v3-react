@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+message Picture {
+  optional uint32 id = 1;
+  optional uint32 user_id = 2;
+  optional double lat = 3;
+  optional double lon = 4;
+  optional double rating = 5;
+  optional int64 taken_at = 6;
+  optional int64 created_at = 7;
+  optional bool pano = 8;
+  optional bool premium = 9;
+  optional float azimuth = 10;
+  repeated string tags = 11;
+  optional string hmac = 12;
+  optional string title = 13;
+  optional string description = 14;
+  optional string user = 15;
+}
+
+message PicturesResponse {
+  repeated Picture pictures = 1;
+}

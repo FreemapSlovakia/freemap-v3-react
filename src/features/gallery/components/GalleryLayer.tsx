@@ -12,6 +12,7 @@ import {
   type GalleryColorizeBy,
   type GalleryFilter,
 } from '../model/actions.js';
+import { PicturesResponse } from '../model/pictures.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
 
 type GalleryLayerOptions = GridLayerOptions & {
@@ -139,9 +140,12 @@ class LGalleryLayer extends LGridLayer {
           process.env['API_URL'] + '/gallery/pictures?' + sp.toString(),
           {
             signal,
-            headers: this._options?.authToken
-              ? { Authorization: 'Bearer ' + this._options?.authToken }
-              : {},
+            headers: {
+              Accept: 'application/x-protobuf',
+              ...(this._options?.authToken
+                ? { Authorization: 'Bearer ' + this._options?.authToken }
+                : {}),
+            },
           },
         );
       } catch (err) {
@@ -158,10 +162,23 @@ class LGalleryLayer extends LGridLayer {
         throw new Error('unexpected status ' + response.status);
       }
 
-      const data = await response.json();
+      const message = PicturesResponse.decode(
+        new Uint8Array(await response.arrayBuffer()),
+      );
 
       const ctx = {
-        data,
+        data:
+          message.pictures?.map((picture) => ({
+            lat: picture.lat ?? 0,
+            lon: picture.lon ?? 0,
+            rating: picture.rating ?? 0,
+            userId: picture.userId ?? 0,
+            createdAt: picture.createdAt ?? 0,
+            takenAt: picture.takenAt ?? null,
+            pano: picture.pano,
+            premium: picture.premium,
+            azimuth: picture.azimuth,
+          })) ?? [],
         dpr,
         zoom: coords.z,
         colorizeBy,
