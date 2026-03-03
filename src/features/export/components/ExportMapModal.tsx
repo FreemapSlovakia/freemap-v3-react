@@ -5,7 +5,7 @@ import { useResolvedAttribution } from '@shared/components/Attribution.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { CRS } from 'leaflet';
+import { polygon } from '@turf/helpers';
 import storage from 'local-storage-fallback';
 import {
   ChangeEvent,
@@ -158,15 +158,10 @@ export function ExportMapModal({ show }: Props): ReactElement {
       return;
     }
 
-    const coords = [...poly.points, poly.points.at(-1)!]
-      .map((point) => CRS.EPSG3857.project({ lng: point.lon, lat: point.lat }))
-      .map((point) => point.x + ' ' + point.y)
-      .join(',');
-
-    fetch(`${process.env['API_URL']}/geotools/in-count`, {
+    fetch(`${process.env['API_URL']}/geotools/covered-countries`, {
       method: 'POST',
-      body: `POLYGON((${coords}))`,
-      headers: { 'content-type': 'text/plain' },
+      body: JSON.stringify(polygon([poly.points.map((p) => [p.lon, p.lat])])),
+      headers: { 'content-type': 'application/geo+json' },
     })
       .then((res) => {
         if (res.ok) {

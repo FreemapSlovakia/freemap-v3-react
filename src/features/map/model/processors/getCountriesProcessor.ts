@@ -1,6 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { CRS } from 'leaflet';
+import bboxPolygon from '@turf/bbox-polygon';
 import { assert } from 'typia';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
 
@@ -17,15 +17,13 @@ export const getCountriesProcessor: Processor = {
           return;
         }
 
-        const min = CRS.EPSG3857.project({ lng: bounds[0], lat: bounds[1] });
-        const max = CRS.EPSG3857.project({ lng: bounds[2], lat: bounds[3] });
-
         const res = await httpRequest({
           getState,
           method: 'POST',
-          url: '/geotools/in-count',
+          url: '/geotools/covered-countries',
           expectedStatus: 200,
-          body: `POLYGON((${min.x} ${min.y}, ${max.x} ${min.y}, ${max.x} ${max.y}, ${min.x} ${max.y}, ${min.x} ${min.y}))`,
+          headers: { 'content-type': 'application/geo+json' },
+          body: JSON.stringify(bboxPolygon(bounds)),
           cancelActions: [mapSetBounds],
         });
 
