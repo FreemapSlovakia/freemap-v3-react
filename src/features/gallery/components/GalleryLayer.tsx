@@ -166,19 +166,27 @@ class LGalleryLayer extends LGridLayer {
         new Uint8Array(await response.arrayBuffer()),
       );
 
+      let lon = 0;
+      let lat = 0;
+
       const ctx = {
         data:
-          message.pictures?.map((picture) => ({
-            lat: picture.lat ?? 0,
-            lon: picture.lon ?? 0,
-            rating: picture.rating ?? 0,
-            userId: picture.userId ?? 0,
-            createdAt: picture.createdAt ?? 0,
-            takenAt: picture.takenAt ?? null,
-            pano: picture.pano,
-            premium: picture.premium,
-            azimuth: picture.azimuth,
-          })) ?? [],
+          message.pictures?.map((picture) => {
+            lon += picture.lon;
+            lat += picture.lat;
+
+            return {
+              lat: lat / 1e6,
+              lon: lon / 1e6,
+              rating: picture.rating ?? 0,
+              userId: picture.userId ?? 0,
+              createdAt: picture.createdAt ?? 0,
+              takenAt: picture.takenAt ?? null,
+              pano: picture.pano,
+              premium: picture.premium,
+              azimuth: picture.azimuth,
+            };
+          }) ?? [],
         dpr,
         zoom: coords.z,
         colorizeBy,

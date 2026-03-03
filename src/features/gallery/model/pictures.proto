@@ -3,9 +3,9 @@ syntax = "proto3";
 message Picture {
   optional uint32 id = 1;
   optional uint32 user_id = 2;
-  optional double lat = 3;
-  optional double lon = 4;
-  optional double rating = 5;
+  sint32 lat = 3;
+  sint32 lon = 4;
+  optional float rating = 5;
   optional int64 taken_at = 6;
   optional int64 created_at = 7;
   optional bool pano = 8;
