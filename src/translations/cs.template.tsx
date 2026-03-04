@@ -304,6 +304,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
+    stats: {},
+
     legend: 'Legenda',
     recentTags: 'Nedávné tagy pro přiřazení:',
     filter: 'Filtr',

@@ -14,6 +14,7 @@ export const basicModals = [
   'export-map-features',
   'gallery-filter',
   'gallery-upload',
+  'gallery-leaderboard',
   'legend',
   'login',
   'map-settings',

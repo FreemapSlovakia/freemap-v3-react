@@ -306,6 +306,9 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         case 'KeyF':
           return setActiveModal('gallery-filter');
 
+        case 'KeyB':
+          return setActiveModal('gallery-leaderboard');
+
         default:
           return undefined;
       }

@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": ["biome check", "git add"]
+    "*.{js,ts}": [
+      "biome check",
+      "git add"
+    ]
   },
   "scripts": {
     "start": "npm run build:proto && npm run sync-language-files && NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
@@ -63,6 +66,7 @@
     "@turf/simplify": "^7.3.4",
     "@types/pannellum": "^2.5.0",
     "bootstrap": "^5.3.8",
+    "clsx": "^2.1.1",
     "color": "^5.0.3",
     "exifreader": "^4.36.2",
     "htm": "^3.1.1",

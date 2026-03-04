@@ -213,6 +213,21 @@ export type Messages = {
     rovas: () => JSX.Element;
   };
   gallery: {
+    stats: {
+      leaderboard: string;
+      country: string;
+      perUserPerCountry: string;
+      perUser: string;
+      more: string;
+      less: string;
+      user: string;
+      photos: string;
+      numberOfPhotos: string;
+      timePeriod: string;
+      allTime: string;
+      last3months: string;
+      last30days: string;
+    };
     legend: string;
     recentTags: string;
     filter: string;

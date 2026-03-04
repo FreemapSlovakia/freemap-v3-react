@@ -292,6 +292,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
+    stats: {},
+
     f: {
       '-createdAt': 'od ostatnich przesłanych',
       '-takenAt': 'od najnowszych',

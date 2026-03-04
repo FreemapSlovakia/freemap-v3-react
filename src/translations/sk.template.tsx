@@ -335,6 +335,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
+    stats: {
+      leaderboard: 'Rebríček',
+      country: 'Krajina',
+      perUserPerCountry: 'Fotky na autora na krajinu',
+      perUser: 'Fotky na autora',
+      more: 'Viac',
+      less: 'Menej',
+      user: 'Autor',
+      photos: 'Fotiek',
+      numberOfPhotos: 'Počet fotiek',
+      timePeriod: 'Časové obdobie',
+      allTime: 'Celý čas',
+      last3months: 'Posledné 3 mesiace',
+      last30days: 'Posledných 30 dní',
+    },
     legend: 'Legenda',
     recentTags: 'Nedávne tagy na priradenie:',
     filter: 'Filter',

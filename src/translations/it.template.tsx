@@ -306,6 +306,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
+    stats: {},
+
     legend: 'Legenda',
     filter: 'Filtro',
     showPhotosFrom: 'Vedi le foto',

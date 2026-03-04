@@ -22,6 +22,7 @@ import {
   FaInfo,
   FaLocationArrow,
   FaPalette,
+  FaTrophy,
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -228,6 +229,28 @@ export function GalleryMenu() {
                     ))}
                   </Dropdown.Menu>
                 </Dropdown>
+
+                <LongPressTooltip
+                  label={m?.gallery.stats.leaderboard}
+                  kbd="p b"
+                  breakpoint="lg"
+                >
+                  {({ props, label, labelClassName }) => (
+                    <Button
+                      type="button"
+                      className="ms-1"
+                      variant="secondary"
+                      onClick={() =>
+                        dispatch(setActiveModal('gallery-leaderboard'))
+                      }
+                      active={filterIsActive}
+                      {...props}
+                    >
+                      <FaTrophy />{' '}
+                      <span className={labelClassName}>{label}</span>
+                    </Button>
+                  )}
+                </LongPressTooltip>
 
                 <Dropdown
                   className="ms-1"

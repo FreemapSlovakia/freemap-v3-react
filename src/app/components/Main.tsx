@@ -267,6 +267,12 @@ const galleryFilterModalFactory = () =>
     '@features/gallery/components/GalleryFilterModal.js'
   );
 
+const galleryLeaderboardModalFactory = () =>
+  import(
+    /* webpackChunkName: "gallery-leaderboard-modal" */
+    '@features/gallery/components/GalleryLeaderboardModal.js'
+  );
+
 const predefinedDrawingPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "predefined-drawing-properties-modal" */
@@ -807,6 +813,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal === 'gallery-filter'}
         factory={galleryFilterModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'gallery-leaderboard'}
+        factory={galleryLeaderboardModalFactory}
       />
 
       <AsyncModal

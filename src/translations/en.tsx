@@ -295,6 +295,21 @@ const messages: Messages = {
   },
 
   gallery: {
+    stats: {
+      leaderboard: 'Leaderboard',
+      country: 'Country',
+      perUserPerCountry: 'Photos per Author per Country',
+      perUser: 'Photos per Author',
+      more: 'More',
+      less: 'Less',
+      user: 'Author',
+      photos: 'Photos',
+      numberOfPhotos: 'Number of Photos',
+      timePeriod: 'Time Period',
+      allTime: 'All Time',
+      last3months: 'Last 3 Months',
+      last30days: 'Last 30 Days',
+    },
     legend: 'Legend',
     recentTags: 'Recent tags to assign:',
     filter: 'Filter',

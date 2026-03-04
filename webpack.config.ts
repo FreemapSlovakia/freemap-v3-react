@@ -23,6 +23,8 @@ import skMessages from './src/translations/sk-shared.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const prod = process.env['DEPLOYMENT'] && process.env['DEPLOYMENT'] !== 'dev';
+const cssModuleRegex = /\.module\.css$/;
+const scssModuleRegex = /\.module\.scss$/;
 
 const htmlPluginProps = {
   filename: 'index.html',
@@ -114,7 +116,19 @@ const config: Configuration = {
                 } satisfies MiniCssExtractPlugin.LoaderOptions,
               }
             : 'style-loader',
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: scssModuleRegex,
+                namedExport: false,
+                exportLocalsConvention: 'as-is',
+                localIdentName: prod
+                  ? '[hash:base64:6]'
+                  : '[path][name]__[local]',
+              },
+            },
+          },
           {
             loader: 'sass-loader',
             options: {
@@ -144,7 +158,19 @@ const config: Configuration = {
                 } satisfies MiniCssExtractPlugin.LoaderOptions,
               }
             : 'style-loader',
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: cssModuleRegex,
+                namedExport: false,
+                exportLocalsConvention: 'as-is',
+                localIdentName: prod
+                  ? '[hash:base64:6]'
+                  : '[path][name]__[local]',
+              },
+            },
+          },
         ],
       },
       {

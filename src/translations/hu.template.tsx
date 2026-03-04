@@ -304,6 +304,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
+    stats: {},
+
     legend: 'Jelmagyarázat',
     filter: 'Szűrő',
     showPhotosFrom: 'Fényképek megtekintése',

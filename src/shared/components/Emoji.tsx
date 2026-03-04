@@ -3,7 +3,7 @@ type EmojiProps = {
   className?: string;
 };
 
-export function Emoji({ children, className }: EmojiProps) {
+export function Emoji({ children, className = '' }: EmojiProps) {
   const codepoints = [...children]
     .map((char) => char.codePointAt(0)?.toString(16).toUpperCase())
     .join('-');

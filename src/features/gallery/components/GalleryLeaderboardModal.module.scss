@@ -1,0 +1,28 @@
+
+.body {
+  .hideable {
+    display: none;
+  }
+
+  .more {
+    .hideable {
+      display: table-row;
+    }
+
+    .more-btn {
+      display: none;
+    }
+
+    .less-btn {
+      display: block;
+    }
+  }
+
+  .less-btn {
+    display: none;
+  }
+
+  .separ {
+    border-top-width: 2px;
+  }
+}
