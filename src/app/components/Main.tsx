@@ -199,7 +199,7 @@ const exportGpxModalFactory = () =>
 const exportMapModalFactory = () =>
   import(
     /* webpackChunkName: "export-map-modal" */
-    '@features/export/components/ExportMapModal.js'
+    '@/features/mapExport/components/ExportMapModal.js'
   );
 
 const documentModalFactory = () =>
