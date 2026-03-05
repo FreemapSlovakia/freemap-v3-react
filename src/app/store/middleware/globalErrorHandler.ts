@@ -47,9 +47,7 @@ export function sendError(errDetails: ErrorDetails): void {
     return;
   }
 
-  console.error('Application error');
-
-  console.error(errDetails);
+  console.error('Application error', errDetails);
 
   const eventId = window.Sentry?.captureException(errDetails.error);
 
