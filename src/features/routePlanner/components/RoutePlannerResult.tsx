@@ -44,6 +44,8 @@ import {
   StepMode,
 } from '../model/actions.js';
 
+const pointDraggingClassName = 'fm-route-planner-point-dragging';
+
 export function RoutePlannerResult(): ReactElement {
   const m = useMessages();
 
@@ -81,9 +83,8 @@ export function RoutePlannerResult(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const [dragging, setDragging] = useState(false);
-
   const draggingRef = useRef(false);
+  const pointPointerDownRef = useRef(false);
 
   const [dragLatLng, setDragLatLng] = useState<LatLng>();
 
@@ -120,7 +121,7 @@ export function RoutePlannerResult(): ReactElement {
     'click',
     useCallback(
       ({ latlng }: LeafletMouseEvent) => {
-        if (window.fmEmbedded || dragging) {
+        if (window.fmEmbedded || draggingRef.current) {
           // nothing
         } else if (tool !== 'route-planner') {
           // nothing
@@ -140,7 +141,7 @@ export function RoutePlannerResult(): ReactElement {
           );
         }
       },
-      [pickMode, dispatch, tool, dragging, onlyStart],
+      [pickMode, dispatch, tool, onlyStart],
     ),
   );
 
@@ -307,28 +308,47 @@ export function RoutePlannerResult(): ReactElement {
   const handlePointClick = useCallback(
     (position: number) => {
       // also prevent default
-      dispatch(selectFeature({ type: 'route-point', id: position }));
+      if (selectedPoint !== position) {
+        dispatch(selectFeature({ type: 'route-point', id: position }));
+      }
     },
-    [dispatch],
+    [dispatch, selectedPoint],
   );
 
   const [pointHovering, setPointHovering] = useState<number>(-1);
 
   const handlePointMouseOver = useCallback((i: number) => {
-    if (!draggingRef.current) {
+    if (!draggingRef.current && !pointPointerDownRef.current) {
       setPointHovering(i);
     }
   }, []);
 
   const handlePointMouseOut = useCallback(() => {
-    setPointHovering(-1);
+    if (!draggingRef.current && !pointPointerDownRef.current) {
+      setPointHovering(-1);
+    }
   }, []);
 
-  const handleDragStart = useCallback(() => {
-    draggingRef.current = true;
+  const map = useMap();
 
-    setDragging(true);
-  }, []);
+  const setPointDraggingUi = useCallback(
+    (isDragging: boolean) => {
+      draggingRef.current = isDragging;
+
+      map?.getContainer().classList.toggle(pointDraggingClassName, isDragging);
+    },
+    [map],
+  );
+
+  const handlePointDragStart = useCallback(() => {
+    setPointDraggingUi(true);
+  }, [setPointDraggingUi]);
+
+  const clearPointDraggingUiDeferred = useCallback(() => {
+    setTimeout(() => {
+      setPointDraggingUi(false);
+    });
+  }, [setPointDraggingUi]);
 
   const changeAlternative = useCallback(
     (alternative: number) => {
@@ -337,13 +357,11 @@ export function RoutePlannerResult(): ReactElement {
     [dispatch],
   );
 
-  const handleRouteMarkerDragEnd = useCallback(
+  const handlePointDragEnd = useCallback(
     (position: number, event: DragEndEvent) => {
-      draggingRef.current = false;
+      pointPointerDownRef.current = false;
 
-      setTimeout(() => {
-        setDragging(false);
-      });
+      clearPointDraggingUiDeferred();
 
       const { lat, lng: lon } = event.target.getLatLng();
 
@@ -358,10 +376,8 @@ export function RoutePlannerResult(): ReactElement {
         }),
       );
     },
-    [dispatch, points],
+    [dispatch, points, clearPointDraggingUiDeferred],
   );
-
-  const map = useMap();
 
   const routePlannerToolActiveRef = useRef(routePlannerToolActive);
 
@@ -392,6 +408,10 @@ export function RoutePlannerResult(): ReactElement {
 
     const handleMouseUp = (e: LeafletMouseEvent) => {
       map.dragging.enable();
+      pointPointerDownRef.current = false;
+
+      // Fallback for cases where marker dragend is not emitted.
+      clearPointDraggingUiDeferred();
 
       const segment = dragSegment.current;
 
@@ -438,11 +458,12 @@ export function RoutePlannerResult(): ReactElement {
     return () => {
       map.removeEventListener('mouseup', handleMouseUp);
       map.removeEventListener('mousemove', handleMouseMove);
+      map.getContainer().classList.remove(pointDraggingClassName);
       map
         .getContainer()
         .removeEventListener('click', mapContainerClickHandler, true);
     };
-  }, [map, dispatch]);
+  }, [map, dispatch, clearPointDraggingUiDeferred]);
 
   const pointElements = useMemo(
     () =>
@@ -487,9 +508,12 @@ export function RoutePlannerResult(): ReactElement {
             window.fmEmbedded
               ? {}
               : {
-                  dragstart: handleDragStart,
+                  mousedown() {
+                    pointPointerDownRef.current = true;
+                  },
+                  dragstart: handlePointDragStart,
                   dragend(e) {
-                    handleRouteMarkerDragEnd(i, e);
+                    handlePointDragEnd(i, e);
                   },
                   click() {
                     handlePointClick(i);
@@ -501,7 +525,7 @@ export function RoutePlannerResult(): ReactElement {
                 }
           }
         >
-          {dragging ? null : i === points.length - 1 /* finish */ ? (
+          {i === points.length - 1 /* finish */ ? (
             mode === 'roundtrip' ? (
               <Tooltip direction="top">
                 {getPointDetails(points.length - 2)}
@@ -526,11 +550,10 @@ export function RoutePlannerResult(): ReactElement {
       mode,
       waypoints,
       finishOnly,
-      handleDragStart,
+      handlePointDragStart,
       handlePointMouseOut,
-      dragging,
       getPointDetails,
-      handleRouteMarkerDragEnd,
+      handlePointDragEnd,
       handlePointClick,
       handlePointMouseOver,
       getSummary,
@@ -675,11 +698,9 @@ export function RoutePlannerResult(): ReactElement {
           key={i}
           center={reverse(milestone.geometry.coordinates as [number, number])}
         >
-          {!dragging && (
-            <Tooltip className="compact" direction="right" permanent>
-              <div>{milestone.properties?.['label']}</div>
-            </Tooltip>
-          )}
+          <Tooltip className="compact" direction="right" permanent>
+            <div>{milestone.properties?.['label']}</div>
+          </Tooltip>
         </CircleMarker>
       ))}
 

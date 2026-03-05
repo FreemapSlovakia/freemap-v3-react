@@ -32,6 +32,12 @@
     }
   }
 
+  &.fm-route-planner-point-dragging {
+    .leaflet-tooltip {
+      display: none;
+    }
+  }
+
   .fa-icon-inside-leaflet-icon-holder {
     position: absolute;
     width: 100%;
