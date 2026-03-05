@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
 import { ResolvedToast, ToastAction } from '../model/actions.js';
-import './toasts.scss';
+import classes from './Toasts.module.scss';
 
 interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {
   actions: (Omit<ToastAction, 'nameKey'> & { name: string })[];
@@ -80,7 +80,7 @@ export function Toast({
 
   return (
     <Alert
-      className="fm-toast"
+      className={classes['toast']}
       variant={style ?? 'primary'}
       onClick={clickHandler}
       onPointerEnter={handlePointerEnter}

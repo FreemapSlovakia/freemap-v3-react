@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import { type CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
+import clsx from 'clsx';
 import {
   Fragment,
   ReactElement,
@@ -307,14 +308,17 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
               </button>
             )}
 
-            <span className={layer.children.length === 0 ? 'ms-4' : ''}>
+            <span className={clsx(layer.children.length === 0 && 'ms-4')}>
               {layer.title}
             </span>
           </ListGroupItem>
 
           {layer.children.length > 0 ? (
             <div
-              className={`fm-list-group-nested ${expanded.includes(id) ? '' : 'd-none'}`}
+              className={clsx(
+                'fm-list-group-nested',
+                expanded.includes(id) || 'd-none',
+              )}
             >
               {renderLayers(layer.children, [...path, i])}
             </div>
@@ -494,10 +498,12 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
       {/* Z-Index */}
       <Form.Label
-        className={
-          `mt-3 d-flex align-items-end ` +
-          (model.layer === 'overlay' ? 'visible' : 'invisible')
-        }
+        className={clsx(
+          'mt-3',
+          'd-flex',
+          'align-items-end',
+          model.layer === 'overlay' ? 'visible' : 'invisible',
+        )}
       >
         {m?.mapLayers.zIndex}
       </Form.Label>

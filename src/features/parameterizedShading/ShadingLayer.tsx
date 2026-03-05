@@ -12,6 +12,7 @@ import {
 import { Messages } from '@/translations/messagesInterface.js';
 import { DataWriter } from './DataWriter.js';
 import { Color, SHADING_COMPONENT_TYPES, Shading } from './Shading.js';
+import classes from './ShadingLayer.module.scss';
 import shadingWgslResource from './shading.wgsl';
 
 type ShadingLayerOptions = GridLayerOptions & {
@@ -468,7 +469,7 @@ class LShadingLayer extends LGridLayer {
 
     this.errorDiv = document.createElement('div');
 
-    this.errorDiv.classList.add('fm-shading-layer-error');
+    this.errorDiv.classList.add(classes['layer-error']);
 
     const errorTextDiv = document.createElement('div');
 
@@ -479,7 +480,7 @@ class LShadingLayer extends LGridLayer {
           ? err.message
           : String(err);
 
-    errorTextDiv.innerHTML = `<p><span class="sad">:(</span></p><p>${message}</p>`;
+    errorTextDiv.innerHTML = `<p><span class=${classes['sad']}>:(</span></p><p>${message}</p>`;
 
     this.errorDiv.appendChild(errorTextDiv);
 

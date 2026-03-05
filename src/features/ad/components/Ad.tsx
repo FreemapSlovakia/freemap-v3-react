@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
+import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
@@ -47,7 +48,12 @@ export function Ad(): ReactElement | null {
 
   return (
     <div
-      className={`mt-2 d-flex flex-column ${closed ? 'invisible' : 'visible'}`}
+      className={clsx(
+        'mt-2',
+        'd-flex',
+        'flex-column',
+        closed ? 'invisible' : 'visible',
+      )}
     >
       <div className="border rounded-top rounded-start fm-toolbar" ref={ref}>
         {ad === 'self' ? (

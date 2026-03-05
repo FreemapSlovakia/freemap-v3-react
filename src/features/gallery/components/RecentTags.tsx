@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import clsx from 'clsx';
 import { type ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 
@@ -32,7 +33,14 @@ export function RecentTags({
 
   return tags.length === 0 ? null : (
     <div
-      className={`d-flex flex-wrap f-gap-1 align-items-center overflow-auto ${className}`}
+      className={clsx(
+        'd-flex',
+        'flex-wrap',
+        'f-gap-1',
+        'align-items-center',
+        'overflow-auto',
+        className,
+      )}
     >
       <div>{prefix}</div>
 

@@ -51,6 +51,7 @@ import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
 import './gallery.scss';
+import clsx from 'clsx';
 
 type Props = { show: boolean };
 
@@ -371,7 +372,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       <Modal.Body>
         <div
           ref={fullscreenElement}
-          className={isFullscreen ? 'fullscreen' : ''}
+          className={clsx(isFullscreen && 'fullscreen')}
         >
           <div className="carousel">
             <div className="carousel-inner">
@@ -415,7 +416,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     <img
                       key={imgKey}
                       ref={setImageElement}
-                      className={`gallery-image ${loading ? 'loading' : ''}`}
+                      className={clsx('gallery-image', loading && 'loading')}
                       src={getImageUrl(activeImageId)}
                       alt={title ?? undefined}
                     />
@@ -452,9 +453,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             {imageIds && (
               <button
                 type="button"
-                className={`carousel-control-prev ${
-                  index < 1 ? 'carousel-control-disabled' : ''
-                } ${pano ? 'carousel-control-short' : ''}`}
+                className={clsx(
+                  'carousel-control-prev',
+                  index < 1 && 'carousel-control-disabled',
+                  pano && 'carousel-control-short',
+                )}
                 onClick={() => dispatch(galleryRequestImage('prev'))}
               >
                 <span className="carousel-control-prev-icon" />
@@ -464,11 +467,10 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             {imageIds && (
               <button
                 type="button"
-                className={`carousel-control-next ${
-                  index >= imageIds.length - 1
-                    ? 'carousel-control-disabled'
-                    : ''
-                }`}
+                className={clsx(
+                  'carousel-control-next',
+                  index >= imageIds.length - 1 && 'carousel-control-disabled',
+                )}
                 onClick={() => dispatch(galleryRequestImage('next'))}
               >
                 <span className="carousel-control-next-icon" />

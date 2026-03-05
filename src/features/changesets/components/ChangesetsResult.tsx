@@ -8,7 +8,7 @@ import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
-import './ChangesetsResult.scss';
+import classes from './ChangesetsResult.module.scss';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
@@ -77,7 +77,7 @@ export function ChangesetsResult(): ReactElement {
               direction="right"
               permanent
             >
-              <div className="shortened">
+              <div className={classes['shortened']}>
                 <b>
                   {changeset.userName}
                   {': '}

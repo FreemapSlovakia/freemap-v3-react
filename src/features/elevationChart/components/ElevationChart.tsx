@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import clsx from 'clsx';
 import {
   Fragment,
   ReactElement,
@@ -16,7 +17,7 @@ import {
   elevationChartClose,
   elevationChartSetActivePoint,
 } from '../model/actions.js';
-import './ElevationChart.scss';
+import classes from './ElevationChart.module.scss';
 
 const ml = 50,
   mr = 30,
@@ -177,7 +178,9 @@ export function ElevationChart(): ReactElement | null {
     const handleWindowPointerDown = (e: PointerEvent) => {
       if (
         e.target instanceof Element &&
-        e.target.matches('.fm-elevation-chart svg, .fm-elevation-chart svg *')
+        e.target.matches(
+          `.${classes['elevation-chart']} svg, .${classes['elevation-chart']} svg *`,
+        )
       ) {
         startPosRef.current = [e.clientX, e.clientY];
       }
@@ -228,7 +231,7 @@ export function ElevationChart(): ReactElement | null {
 
   return (
     <div
-      className="fm-elevation-chart m-2 p-2 rounded"
+      className={clsx(classes['elevation-chart'], 'm-2', 'p-2', 'rounded')}
       ref={setRef}
       style={pos}
     >

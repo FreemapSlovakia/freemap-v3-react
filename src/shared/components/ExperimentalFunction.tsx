@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import clsx from 'clsx';
 import { FaFlask } from 'react-icons/fa';
 import { IconBaseProps } from 'react-icons/lib';
 
@@ -9,7 +10,7 @@ export function ExperimentalFunction({ className, ...props }: IconBaseProps) {
     <FaFlask
       title={m?.general.experimentalFunction}
       {...props}
-      className={'text-warning ' + (className ?? '')}
+      className={clsx('text-warning', className)}
     />
   );
 }

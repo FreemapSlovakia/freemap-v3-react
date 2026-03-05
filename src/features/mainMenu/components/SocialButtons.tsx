@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import clsx from 'clsx';
 import { type ReactElement, useState } from 'react';
 import { FaFacebook, FaGithub, FaMastodon, FaYoutube } from 'react-icons/fa';
 import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
@@ -72,10 +73,13 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
           <LongPressTooltip key={theme} label={m?.theme[theme]}>
             {({ props }) => (
               <button
-                className={
-                  'px-1 m-0 border-0 bg-transparent ' +
-                  (currentTheme === theme ? 'text-primary' : 'text-body')
-                }
+                className={clsx(
+                  'px-1',
+                  'm-0',
+                  'border-0',
+                  'bg-transparent',
+                  currentTheme === theme ? 'text-primary' : 'text-body',
+                )}
                 type="button"
                 onClick={() => setTheme(theme)}
                 {...props}

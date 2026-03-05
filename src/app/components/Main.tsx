@@ -42,6 +42,7 @@ import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
+import clsx from 'clsx';
 import { MouseEvent, ReactElement, useCallback } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
@@ -574,7 +575,7 @@ export function Main(): ReactElement {
                       >
                         {({ label, labelClassName, props }) => (
                           <Button
-                            className={trackFound ? 'ms-1' : ''}
+                            className={clsx(trackFound && 'ms-1')}
                             variant="secondary"
                             onClick={() =>
                               dispatch(routePlannerToggleElevationChart())

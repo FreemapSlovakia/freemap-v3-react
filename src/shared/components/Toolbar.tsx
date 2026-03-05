@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { ReactNode } from 'react';
 import { Card } from 'react-bootstrap';
 import { useLeftMarginAdjuster } from '../hooks/useLeftMarginAdjuster.js';
@@ -8,7 +9,7 @@ export function Toolbar({ children, className }: Props) {
   const ref = useLeftMarginAdjuster();
 
   return (
-    <Card ref={ref} className={`fm-toolbar ${className}`}>
+    <Card ref={ref} className={clsx('fm-toolbar', className)}>
       {children}
     </Card>
   );

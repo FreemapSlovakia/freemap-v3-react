@@ -11,7 +11,7 @@ import {
   toastsStopTimeout,
 } from '../model/actions.js';
 import { Toast } from './Toast.js';
-import './toasts.scss';
+import classes from './Toasts.module.scss';
 
 function tx(m: Messages | undefined, toastAction: ToastAction) {
   if ('name' in toastAction) {
@@ -93,7 +93,7 @@ export function Toasts(): ReactElement {
   );
 
   return (
-    <div className="fm-toasts">
+    <div className={classes['toasts']}>
       {items.map(
         ({ id, actions, style, msg, noClose, timeout, timeoutSince }) => {
           return (

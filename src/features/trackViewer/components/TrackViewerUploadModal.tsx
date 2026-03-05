@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import clsx from 'clsx';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
@@ -74,7 +75,7 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
       <Modal.Body>
         <div
           {...getRootProps()}
-          className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
+          className={clsx('dropzone', isDragActive && ' dropzone-dropping')}
         >
           <input {...getInputProps()} />
 

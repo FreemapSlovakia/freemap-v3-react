@@ -9,6 +9,7 @@ import { OsmMapping } from '@osm/types.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import clsx from 'clsx';
 import {
   Fragment,
   type ReactElement,
@@ -202,12 +203,12 @@ export function OutdoorMapLegend(): ReactElement {
 
                           return (
                             <a
-                              className={
-                                'px-2 rounded ' +
-                                (activeIndex > -1
+                              className={clsx(
+                                'px-2 rounded',
+                                activeIndex > -1
                                   ? 'bg-primary text-light'
-                                  : 'bg-body-secondary')
-                              }
+                                  : 'bg-body-secondary',
+                              )}
                               href={
                                 '/#objects=' +
                                 encodeURIComponent(next.join(';'))

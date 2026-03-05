@@ -12,6 +12,7 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
 import { Shortcut } from '@shared/types/common.js';
+import clsx from 'clsx';
 import {
   Fragment,
   MouseEvent,
@@ -196,7 +197,7 @@ export function MapSwitchButton(): ReactElement {
         def.premiumFromZoom !== undefined &&
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
           <FaGem
-            className={'ms-1 ' + (premium ? 'text-success' : 'text-warning')}
+            className={clsx('ms-1', premium ? 'text-success' : 'text-warning')}
             title={premium ? undefined : m?.premium.premiumOnly}
             onClickCapture={premium ? undefined : becomePremium}
           />
@@ -289,7 +290,7 @@ export function MapSwitchButton(): ReactElement {
               href={`?layers=${type}`}
               eventKey={'layer-' + type}
               active={active}
-              className={showInMenu ? '' : 'text-secondary'}
+              className={clsx(showInMenu || 'text-secondary')}
             >
               {def.layer === 'base' ? (
                 <Checkbox value={active} />

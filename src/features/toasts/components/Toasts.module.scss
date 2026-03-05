@@ -1,0 +1,11 @@
+.toasts {
+  position: fixed;
+  right: 0px;
+  bottom: 52px;
+  max-height: calc(100dvh - 52px);
+  z-index: 1070;
+
+  overflow: auto;
+  font-size: 0.875rem;
+  background-clip: padding-box;
+}

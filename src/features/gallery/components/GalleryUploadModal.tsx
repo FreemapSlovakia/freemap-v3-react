@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import clsx from 'clsx';
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
@@ -211,7 +212,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
             <div
               {...getRootProps()}
-              className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
+              className={clsx('dropzone', isDragActive && 'dropzone-dropping')}
             >
               <input {...getInputProps()} />
               {m && (
