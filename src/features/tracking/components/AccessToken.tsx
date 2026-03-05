@@ -10,6 +10,7 @@ import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken as AccessTokenType } from '../model/types.js';
+import { useTrackingMessages } from '../translations/hook.js';
 
 type Props = {
   accessToken: AccessTokenType;
@@ -17,6 +18,8 @@ type Props = {
 
 export function AccessToken({ accessToken }: Props): ReactElement {
   const m = useMessages();
+
+  const lm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -36,7 +39,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
     dispatch(
       toastsAdd({
         id: 'tracking.deleteAccessToken',
-        messageKey: 'tracking.accessToken.delete',
+        message: lm?.accessToken.delete ?? '...',
         style: 'warning',
         cancelType: [
           trackingActions.modifyAccessToken.type,
@@ -53,7 +56,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
         ],
       }),
     );
-  }, [accessToken.id, dispatch]);
+  }, [accessToken.id, dispatch, lm]);
 
   const handleCopyClick = useCallback(() => {
     copyToClipboard(
@@ -110,7 +113,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
       {/* <td>{accessToken.listingLabel}</td> */}
       <td>{accessToken.note}</td>
       <td>
-        <LongPressTooltip label={m?.tracking.devices.watch}>
+        <LongPressTooltip label={lm?.devices.watch}>
           {({ props }) => (
             <Button size="sm" type="button" onClick={handleView} {...props}>
               <FaRegEye />

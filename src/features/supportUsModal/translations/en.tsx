@@ -1,6 +1,6 @@
-import { SupportUsMessages } from './SupportUsMessages.js';
+import { Messages } from './messagesInterface.js';
 
-const en: SupportUsMessages = {
+const en: Messages = {
   explanation:
     'Map portal Freemap is created by volunteers for free in their spare time. For the operation it still needs a hardware and services of commercial companies which costs us money.',
   account: 'Bank account',

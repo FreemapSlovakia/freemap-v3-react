@@ -47,6 +47,13 @@ process(
   ),
 );
 
+process(
+  resolve(
+    import.meta.dirname,
+    '../src/features/tracking/translations/{LANG}.tsx',
+  ),
+);
+
 function findRoot(file: File) {
   const { program } = file;
 

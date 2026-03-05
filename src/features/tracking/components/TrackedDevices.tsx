@@ -6,10 +6,13 @@ import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/hook.js';
 import { TrackedDevice } from './TrackedDevice.js';
 
 export function TrackedDevices(): ReactElement {
   const m = useMessages();
+
+  const lm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -19,27 +22,25 @@ export function TrackedDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {m?.tracking.trackedDevices.modalTitle}
+          <FaBullseye /> {lm?.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <p>{m?.tracking.trackedDevices.desc}</p>
+        <p>{lm?.trackedDevices.desc}</p>
 
-        <Alert variant="warning">
-          {m?.tracking.trackedDevices.storageWarning}
-        </Alert>
+        <Alert variant="warning">{lm?.trackedDevices.storageWarning}</Alert>
 
         <Table striped bordered responsive>
           <thead>
             <tr>
-              <th>{m?.tracking.trackedDevice.token}</th>
-              <th>{m?.tracking.trackedDevice.label}</th>
-              <th>{m?.tracking.trackedDevice.fromTime}</th>
-              <th>{m?.tracking.trackedDevice.maxAge}</th>
-              <th>{m?.tracking.trackedDevice.maxCount}</th>
-              <th>{m?.tracking.trackedDevice.splitDistance}</th>
-              <th>{m?.tracking.trackedDevice.splitDuration}</th>
+              <th>{lm?.trackedDevice.token}</th>
+              <th>{lm?.trackedDevice.label}</th>
+              <th>{lm?.trackedDevice.fromTime}</th>
+              <th>{lm?.trackedDevice.maxAge}</th>
+              <th>{lm?.trackedDevice.maxCount}</th>
+              <th>{lm?.trackedDevice.splitDistance}</th>
+              <th>{lm?.trackedDevice.splitDuration}</th>
               <th>{m?.general.actions}</th>
             </tr>
           </thead>

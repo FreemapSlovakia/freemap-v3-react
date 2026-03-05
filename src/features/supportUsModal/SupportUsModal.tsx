@@ -8,7 +8,7 @@ import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { documentShow } from '../documents/model/actions.js';
-import { SupportUsMessages } from './translations/SupportUsMessages.js';
+import { Messages } from './translations/messagesInterface.js';
 
 type Props = { show: boolean };
 
@@ -17,8 +17,8 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const lm = useLocalMessages<SupportUsMessages>(
-    () =>
+  const lm = useLocalMessages<Messages>(
+    (language) =>
       import(
         /* webpackExclude: /\.template\./ */
         /* webpackChunkName: "support-translation-[request]" */

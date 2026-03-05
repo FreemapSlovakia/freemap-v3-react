@@ -1,7 +1,7 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { SupportUsMessages } from './SupportUsMessages.js';
+import { Messages } from './messagesInterface.js';
 
-const pl: DeepPartialWithRequiredObjects<SupportUsMessages> = {
+const pl: DeepPartialWithRequiredObjects<Messages> = {
   alert: {
     line1: '<b>Uwaga!</b> Użyj tego przycisku, aby uzyskać dostęp premium:',
     line2:

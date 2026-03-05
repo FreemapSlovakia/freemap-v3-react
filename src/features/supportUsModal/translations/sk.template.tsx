@@ -1,7 +1,7 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { SupportUsMessages } from './SupportUsMessages.js';
+import { Messages } from './messagesInterface.js';
 
-const sk: DeepPartialWithRequiredObjects<SupportUsMessages> = {
+const sk: DeepPartialWithRequiredObjects<Messages> = {
   explanation:
     'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardvér a služby komerčných spoločností.',
   account: 'Bankové spojenie',

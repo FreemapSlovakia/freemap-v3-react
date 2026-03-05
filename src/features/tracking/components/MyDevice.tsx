@@ -16,6 +16,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
+import { useTrackingMessages } from '../translations/hook.js';
 
 type Props = {
   device: DeviceType;
@@ -23,6 +24,8 @@ type Props = {
 
 export function MyDevice({ device }: Props): ReactElement {
   const m = useMessages();
+
+  const lm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -42,7 +45,7 @@ export function MyDevice({ device }: Props): ReactElement {
     dispatch(
       toastsAdd({
         id: 'tracking.deleteDevice',
-        messageKey: 'tracking.devices.delete',
+        message: lm?.devices.delete ?? '...',
         style: 'warning',
         cancelType: [
           trackingActions.modifyDevice.type,
@@ -60,7 +63,7 @@ export function MyDevice({ device }: Props): ReactElement {
         ],
       }),
     );
-  }, [device.id, dispatch]);
+  }, [device.id, dispatch, lm]);
 
   const handleShowAccessTokens = useCallback(() => {
     dispatch(trackingActions.showAccessTokens(device.id));
@@ -138,7 +141,7 @@ export function MyDevice({ device }: Props): ReactElement {
           )}
         </LongPressTooltip>
 
-        <LongPressTooltip label={m?.tracking.devices.watchTokens}>
+        <LongPressTooltip label={lm?.devices.watchTokens}>
           {({ props }) => (
             <Button
               size="sm"

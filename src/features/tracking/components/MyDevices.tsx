@@ -6,10 +6,13 @@ import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/hook.js';
 import { MyDevice } from './MyDevice.js';
 
 export function MyDevices(): ReactElement {
   const m = useMessages();
+
+  const lm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -23,20 +26,20 @@ export function MyDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {m?.tracking.devices.modalTitle}
+          <FaBullseye /> {lm?.devices.modalTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <Alert variant="secondary">{m?.tracking.devices.desc()}</Alert>
+        <Alert variant="secondary">{lm?.devices.desc()}</Alert>
 
         <Table striped bordered responsive>
           <thead>
             <tr>
-              <th>{m?.tracking.device.name}</th>
-              <th>{m?.tracking.device.token}</th>
-              <th>{m?.tracking.device.maxCount}</th>
-              <th>{m?.tracking.device.maxAge}</th>
+              <th>{lm?.device.name}</th>
+              <th>{lm?.device.token}</th>
+              <th>{lm?.device.maxCount}</th>
+              <th>{lm?.device.maxAge}</th>
               <th>{m?.general.createdAt}</th>
               <th>{m?.general.actions}</th>
             </tr>

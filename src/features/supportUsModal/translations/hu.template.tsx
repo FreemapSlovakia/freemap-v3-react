@@ -1,7 +1,7 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { SupportUsMessages } from './SupportUsMessages.js';
+import { Messages } from './messagesInterface.js';
 
-const hu: DeepPartialWithRequiredObjects<SupportUsMessages> = {
+const hu: DeepPartialWithRequiredObjects<Messages> = {
   explanation:
     'A Freemap térképportált önkéntesek szerkesztik szabad idejükben. A működéshez azonban szükség van hardverre és kereskedelmi vállalatok szolgáltatásaira, ami bizony pénzbe kerül.',
   account: 'Bankszámlaszám',

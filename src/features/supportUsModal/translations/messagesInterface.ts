@@ -1,4 +1,4 @@
-export type SupportUsMessages = {
+export type Messages = {
   explanation: string;
   account: string;
   paypal: string;

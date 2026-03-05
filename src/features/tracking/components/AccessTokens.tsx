@@ -5,10 +5,13 @@ import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/hook.js';
 import { AccessToken } from './AccessToken.js';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();
+
+  const lm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -31,22 +34,20 @@ export function AccessTokens(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {m?.tracking.accessTokens.modalTitle(deviceName)}
+          <FaBullseye /> {lm?.accessTokens.modalTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="secondary">
-          {m?.tracking.accessTokens.desc(deviceName)}
-        </Alert>
+        <Alert variant="secondary">{lm?.accessTokens.desc(deviceName)}</Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>
-              <th>{m?.tracking.accessToken.token}</th>
+              <th>{lm?.accessToken.token}</th>
               <th>{m?.general.createdAt}</th>
-              <th>{m?.tracking.accessToken.timeFrom}</th>
-              <th>{m?.tracking.accessToken.timeTo}</th>
-              {/* <th>{m?.tracking.accessToken.listingLabel}</th> */}
-              <th>{m?.tracking.accessToken.note}</th>
+              <th>{lm?.accessToken.timeFrom}</th>
+              <th>{lm?.accessToken.timeTo}</th>
+              {/* <th>{lm?.accessToken.listingLabel}</th> */}
+              <th>{lm?.accessToken.note}</th>
               <th>{m?.general.actions}</th>
             </tr>
           </thead>
