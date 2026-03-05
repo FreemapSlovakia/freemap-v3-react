@@ -4,7 +4,15 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
-import { type ReactElement, useCallback, useEffect, useRef } from 'react';
+import {
+  type DragEvent as ReactDragEvent,
+  type ReactElement,
+  type MouseEvent as ReactMouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
@@ -103,7 +111,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
     handleItemMerge,
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, open } = useDropzone({
     onDrop: handleFileDrop,
     accept: { 'image/jpeg': ['.jpg', '.jpeg'] },
   });
@@ -123,6 +131,56 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
   );
 
   const premiumCheck = useRef<HTMLInputElement | null>(null);
+  const [draggingOverDropzone, setDraggingOverDropzone] = useState(false);
+
+  const handleDropzoneDragCapture = useCallback(
+    (event: ReactDragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setDraggingOverDropzone(true);
+    },
+    [],
+  );
+
+  const handleDropzoneDragLeaveCapture = useCallback(
+    (event: ReactDragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setDraggingOverDropzone(false);
+    },
+    [],
+  );
+
+  const handleDropzoneDropCapture = useCallback(
+    (event: ReactDragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setDraggingOverDropzone(false);
+
+      const droppedFiles = Array.from(event.dataTransfer?.files ?? []).filter(
+        (file) =>
+          file.type === 'image/jpeg' ||
+          /\.(jpe?g)$/i.test(file.name.toLowerCase()),
+      );
+
+      if (droppedFiles.length) {
+        handleFileDrop(droppedFiles);
+      }
+    },
+    [handleFileDrop],
+  );
+
+  const handleDropzoneMouseDown = useCallback(
+    (event: ReactMouseEvent<HTMLDivElement>) => {
+      if (event.button !== 0) {
+        return;
+      }
+
+      event.preventDefault();
+      open();
+    },
+    [open],
+  );
 
   useEffect(() => {
     if (!premiumCheck.current) {
@@ -133,6 +191,12 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
     premiumCheck.current.indeterminate = len > 0 && len !== items.length;
   }, [items]);
+
+  useEffect(() => {
+    if (!show) {
+      setDraggingOverDropzone(false);
+    }
+  }, [show]);
 
   return (
     <Modal show={show} onHide={handleClose} size="lg">
@@ -211,8 +275,17 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             />
 
             <div
-              {...getRootProps()}
-              className={clsx('dropzone', isDragActive && 'dropzone-dropping')}
+              {...getRootProps({
+                onMouseDown: handleDropzoneMouseDown,
+                onDragEnterCapture: handleDropzoneDragCapture,
+                onDragOverCapture: handleDropzoneDragCapture,
+                onDragLeaveCapture: handleDropzoneDragLeaveCapture,
+                onDropCapture: handleDropzoneDropCapture,
+              })}
+              className={clsx(
+                'dropzone',
+                draggingOverDropzone && 'dropzone-dropping',
+              )}
             >
               <input {...getInputProps()} />
               {m && (
