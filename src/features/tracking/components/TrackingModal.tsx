@@ -5,8 +5,8 @@ import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { AccessTokenForm } from './AccessTokenForm.js';
 import { AccessTokens } from './AccessTokens.js';
-import { DeviceForm } from './DeviceForm.js';
-import { Devices } from './Devices.js';
+import { MyDeviceForm } from './MyDeviceForm.js';
+import { MyDevices } from './MyDevices.js';
 import { TrackedDeviceForm } from './TrackedDeviceForm.js';
 import { TrackedDevices } from './TrackedDevices.js';
 
@@ -47,8 +47,8 @@ export function TrackingModal({ show }: Props): ReactElement {
       show={show}
       className="dynamic"
     >
-      {view === 'devices' && <Devices />}
-      {view === 'deviceForm' && <DeviceForm />}
+      {view === 'devices' && <MyDevices />}
+      {view === 'deviceForm' && <MyDeviceForm />}
       {view === 'accessTokens' && <AccessTokens />}
       {view === 'accessTokenForm' && <AccessTokenForm />}
       {view === 'trackedDevices' && <TrackedDevices />}

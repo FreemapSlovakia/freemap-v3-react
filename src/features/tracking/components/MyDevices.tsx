@@ -6,9 +6,9 @@ import { Alert, Button, Modal, Table } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-import { Device } from './Device.js';
+import { MyDevice } from './MyDevice.js';
 
-export function Devices(): ReactElement {
+export function MyDevices(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ export function Devices(): ReactElement {
 
           <tbody>
             {devices.map((device) => (
-              <Device key={device.id} device={device} />
+              <MyDevice key={device.id} device={device} />
             ))}
           </tbody>
         </Table>

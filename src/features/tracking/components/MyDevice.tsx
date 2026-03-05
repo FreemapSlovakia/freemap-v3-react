@@ -21,7 +21,7 @@ type Props = {
   device: DeviceType;
 };
 
-export function Device({ device }: Props): ReactElement {
+export function MyDevice({ device }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

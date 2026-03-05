@@ -16,12 +16,12 @@ import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 
 const TYPES = {
-  url: 'Locus / OsmAnd / …',
+  url: 'HTTP GET/POST',
   imei: 'TK102B IMEI',
   did: 'TK102B Device ID',
 };
 
-export function DeviceForm(): ReactElement {
+export function MyDeviceForm(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
