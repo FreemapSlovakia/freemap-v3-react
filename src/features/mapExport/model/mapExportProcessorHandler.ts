@@ -125,7 +125,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     }
   }
 
-  window._paq.push(['trackEvent', 'MapExport', 'export', format]);
+  window._paq.push(['trackEvent', 'map-export', 'export', format]);
 
   const res = await httpRequest({
     getState,

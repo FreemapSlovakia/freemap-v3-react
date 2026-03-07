@@ -13,7 +13,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       return;
     }
 
-    window._paq.push(['trackEvent', 'Search', 'search', query.slice(64)]);
+    window._paq.push(['trackEvent', 'search', 'search', query.slice(64)]);
 
     if (query.startsWith('@')) {
       const latlng = query

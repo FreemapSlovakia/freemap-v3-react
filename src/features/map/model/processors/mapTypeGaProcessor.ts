@@ -14,7 +14,7 @@ export const mapTypeGaProcessor: Processor = {
     const joinedLayers = [...layers].sort().join(',');
 
     if ([...prevLayers].sort().join(',') !== joinedLayers) {
-      window._paq.push(['trackEvent', 'Map', 'setLayers', joinedLayers]);
+      window._paq.push(['trackEvent', 'map', 'set-layers', joinedLayers]);
 
       prevLayers = layers;
     }

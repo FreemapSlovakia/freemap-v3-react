@@ -18,8 +18,8 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
         if (feature.geometry.type === 'LineString') {
           window._paq.push([
             'trackEvent',
-            'TrackViewer',
-            'showElevationProfile',
+            'track-viewer',
+            'show-elevation-profile',
           ]);
 
           dispatch(

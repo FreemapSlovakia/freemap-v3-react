@@ -23,7 +23,7 @@ export const objectsChangePredicateProcessor: Processor = {
   handle: ({ getState }) => {
     window._paq.push([
       'trackEvent',
-      'Objects',
+      'objects',
       'search',
       getState().objects.active.join('|'),
     ]);

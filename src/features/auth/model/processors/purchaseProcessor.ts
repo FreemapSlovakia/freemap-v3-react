@@ -28,8 +28,8 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
     window._paq.push([
       'trackEvent',
-      'Purchase',
-      'purchaseStart',
+      'purchase',
+      'purchase-start',
       JSON.stringify(action.payload),
     ]);
 
@@ -109,8 +109,8 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
       window._paq.push([
         'trackEvent',
-        'Purchase',
-        'purchaseSuccess',
+        'purchase',
+        'purchase-success',
         JSON.stringify(action.payload),
       ]);
 

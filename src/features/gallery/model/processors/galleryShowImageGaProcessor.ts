@@ -11,8 +11,8 @@ export const galleryShowImageGaProcessor: Processor = {
     if (image) {
       window._paq.push([
         'trackEvent',
-        'Gallery',
-        'showPhoto',
+        'gallery',
+        'show-photo',
         image.id.toString(),
       ]);
     }

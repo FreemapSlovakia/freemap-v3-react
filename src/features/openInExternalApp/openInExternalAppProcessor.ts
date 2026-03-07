@@ -35,7 +35,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       url,
     } = action.payload;
 
-    window._paq.push(['trackEvent', 'Main', 'openInExternalApp', where]);
+    window._paq.push(['trackEvent', 'main', 'open-in-external-app', where]);
 
     switch (where) {
       case 'window':

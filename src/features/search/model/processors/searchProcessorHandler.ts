@@ -30,8 +30,6 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
     return;
   }
 
-  window._paq.push(['trackEvent', 'Search', 'search', query.slice(64)]);
-
   // try GeoJSON
 
   try {

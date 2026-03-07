@@ -16,8 +16,8 @@ const handle: ProcessorHandler<typeof downloadMap> = async ({
 
   window._paq.push([
     'trackEvent',
-    'DownloadMap',
-    'downloadMapStart',
+    'download-map',
+    'download-map-start',
     JSON.stringify(sp.toString()),
   ]);
 

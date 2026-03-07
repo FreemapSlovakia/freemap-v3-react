@@ -27,7 +27,7 @@ export const routePlannerToggleElevationChartProcessor: Processor<
     } else if ((!shown && toggling) || (shown && !toggling)) {
       const { alternatives, activeAlternativeIndex } = getState().routePlanner;
 
-      window._paq.push(['trackEvent', 'RoutePlanner', 'toggleElevationChart']);
+      window._paq.push(['trackEvent', 'route-planner', 'toggle-elevation-chart']);
 
       dispatch(
         elevationChartSetTrackGeojson(

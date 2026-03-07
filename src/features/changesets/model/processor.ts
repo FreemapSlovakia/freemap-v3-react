@@ -27,7 +27,7 @@ export const changesetsTrackProcessor: Processor = {
       sp.append('authorName', changesets.authorName);
     }
 
-    window._paq.push(['trackEvent', 'Changesets', 'set', sp.toString()]);
+    window._paq.push(['trackEvent', 'changesets', 'set', sp.toString()]);
   },
 };
 

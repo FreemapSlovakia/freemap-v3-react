@@ -19,8 +19,8 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
 
       window._paq.push([
         'trackEvent',
-        'Gallery',
-        'submitStars',
+        'gallery',
+        'submit-stars',
         String(id),
         stars,
       ]);

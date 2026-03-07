@@ -14,8 +14,8 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
 
       window._paq.push([
         'trackEvent',
-        'Tracking',
-        'saveDevice',
+        'tracking',
+        'save-device',
         modifiedDeviceId ? 'modify' : 'create',
       ]);
 

@@ -141,7 +141,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   window._paq.push([
     'trackEvent',
-    'RoutePlanner',
+    'route-planner',
     'search',
     new URLSearchParams({ transportType, mode }).toString(),
   ]);
