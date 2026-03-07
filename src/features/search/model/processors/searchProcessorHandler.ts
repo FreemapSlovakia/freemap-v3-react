@@ -26,12 +26,6 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
 }) => {
   const { query } = action.payload;
 
-  if (!query) {
-    return;
-  }
-
-  window._paq.push(['trackEvent', 'Search', 'search', query.slice(64)]);
-
   // try GeoJSON
 
   try {
