@@ -16,7 +16,7 @@ export type Picture = {
   tags: string[];
   user: string;
   rating: number;
-  premium?: 1;
+  premium?: boolean;
   hmac?: string;
 };
 

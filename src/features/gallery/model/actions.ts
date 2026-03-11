@@ -61,8 +61,8 @@ export interface Picture extends LatLon {
   user: Pick<User, 'id' | 'name'>;
   createdAt: Date;
   takenAt: Date | null;
-  pano?: 1;
-  premium?: 1;
+  pano?: boolean;
+  premium?: boolean;
   azimuth?: number | null;
   hmac?: string;
 }
