@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
 import { ResolvedToast, ToastAction } from '../model/actions.js';
-import classes from './Toasts.module.scss';
+import classes from './Toast.module.scss';
 
 interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {
   actions: (Omit<ToastAction, 'nameKey'> & { name: string })[];
