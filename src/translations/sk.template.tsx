@@ -278,13 +278,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         const dispatch = useDispatch();
         return (
           <>
-            <span className="d-sm-none">Podporte nás prosím</span>
+            <span className="d-sm-none">Podporte prevádzku freemap.sk cez</span>
             <span className="d-none d-sm-inline d-xl-none">
-              Podporte prosím prevádzku služieb Freemap.sk vašimi
+              Podporte prevádzku freemap.sk cez
             </span>
             <span className="d-none d-xl-inline">
-              Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
-              potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
+              Podporte prevádzku freemap.sk cez
             </span>{' '}
             <AlertLink
               href="/#document=dvePercenta"
@@ -293,7 +292,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
                 dispatch(documentShow('dvePercenta'));
               }}
             >
-              2 % z dane
+              2% z vašej dane
             </AlertLink>
             .
           </>
