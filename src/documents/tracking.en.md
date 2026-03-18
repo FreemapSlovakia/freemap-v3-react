@@ -33,7 +33,7 @@ The endpoint accepts HTTP `GET` or `POST` with the following parameters:
 | `speedKmh` | Speed in km/h |
 | `acc`, `accuracy` | Accuracy in meters |
 | `hdop` | Horizontal DOP |
-| `bearing`,`heading` | Bearing in degrees |
+| `bearing`, `heading` | Bearing in degrees |
 | `battery`, `batt` | Battery level in percent |
 | `gsm_signal` | GSM signal strength in percent |
 | `message` | Note / message |
