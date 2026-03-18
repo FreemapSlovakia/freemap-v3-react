@@ -1,4 +1,4 @@
-import { createStringify } from 'typia/lib/json.js';
+import typia from 'typia';
 
 export type OsmFeatureId = {
   type: 'osm';
@@ -19,7 +19,7 @@ export type FeatureId =
       id?: unknown;
     };
 
-export const stringifyFeatureId = createStringify<FeatureId>();
+export const stringifyFeatureId = typia.json.createStringify<FeatureId>();
 
 export function featureIdsEqual(a: FeatureId, b: FeatureId) {
   return stringifyFeatureId(a) === stringifyFeatureId(b);
