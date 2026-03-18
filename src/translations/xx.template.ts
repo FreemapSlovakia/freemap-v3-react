@@ -34,7 +34,7 @@
 //       ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
 //       : ''
 //   }
-//   Chybu môžeš nahlásiť ${
+//   Chybu môžete nahlásiť ${
 //     ticketId ? 'aj ' : ''
 //   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
 //   prípadne nám môžete poslať podrobnosti na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.

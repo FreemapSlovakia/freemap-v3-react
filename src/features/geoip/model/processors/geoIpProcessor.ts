@@ -4,6 +4,7 @@ import { assert } from 'typia';
 import { GeoIpResult, invokeGeoip, processGeoipResult } from '../actions.js';
 
 export const geoipProcessor: Processor = {
+  errorKey: 'general.connectionError',
   actionCreator: invokeGeoip,
   async handle({ getState, dispatch }) {
     const res = await httpRequest({
