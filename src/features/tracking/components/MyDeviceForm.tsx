@@ -2,24 +2,11 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
-import {
-  Button,
-  Dropdown,
-  DropdownButton,
-  Form,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
+import { ReactElement, SubmitEvent, useCallback } from 'react';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-
-const TYPES = {
-  url: 'HTTP GET/POST',
-  imei: 'TK102B IMEI',
-  did: 'TK102B Device ID',
-};
 
 export function MyDeviceForm(): ReactElement {
   const m = useMessages();
@@ -33,12 +20,6 @@ export function MyDeviceForm(): ReactElement {
         )
       : null,
   );
-
-  const [type, setType] = useState<'url' | 'imei' | 'did'>(() => {
-    const m = device?.token?.match(/^(imei|did):/);
-
-    return m ? (m[1] as 'imei' | 'did') : 'url';
-  });
 
   const [token, setToken] = useTextInputState(
     device?.token?.replace(/[^:]*:/, '') ?? '',
@@ -63,27 +44,18 @@ export function MyDeviceForm(): ReactElement {
           name: name.trim(),
           maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
           maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-          token: type === 'url' ? token : `${type}:${token}`,
+          token,
         }),
       );
     },
-    [dispatch, name, maxCount, maxAge, type, token],
+    [dispatch, name, maxCount, maxAge, token],
   );
-
-  const onSelect = useCallback((type: string | null) => {
-    setType(type as keyof typeof TYPES);
-  }, []);
 
   const invalidMaxCount = isInvalidInt(maxCount, false, 0);
 
   const invalidMaxAge = isInvalidInt(maxAge, false, 0);
 
   const invalidName = !/.*\w.*/.test(name) || name.length > 255;
-
-  const pattern =
-    type === 'imei' ? '[0-9]{15}' : type === 'did' ? '[0-9]+' : undefined;
-
-  const invalidToken = pattern && !new RegExp(pattern).test(token);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -118,31 +90,12 @@ export function MyDeviceForm(): ReactElement {
         <Form.Group controlId="token" className="mb-3 ">
           <Form.Label className="required">Token</Form.Label>
 
-          <InputGroup>
-            <DropdownButton
-              variant="secondary"
-              id="input-dropdown-addon"
-              title={TYPES[type]}
-              onSelect={onSelect}
-            >
-              {Object.entries(TYPES).map(([key, value]) => (
-                <Dropdown.Item key={key} eventKey={key} active={type === key}>
-                  {value}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
-
-            <Form.Control
-              type="text"
-              pattern={pattern}
-              placeholder={
-                type === 'url' ? m?.tracking.device.generatedToken : undefined
-              }
-              value={token}
-              isInvalid={invalidToken}
-              onChange={setToken}
-            />
-          </InputGroup>
+          <Form.Control
+            type="text"
+            placeholder={m?.tracking.device.generatedToken}
+            value={token}
+            onChange={setToken}
+          />
         </Form.Group>
 
         <Form.Group controlId="maxCount" className="mb-3">
@@ -179,9 +132,7 @@ export function MyDeviceForm(): ReactElement {
       <Modal.Footer>
         <Button
           type="submit"
-          disabled={
-            invalidName || invalidMaxCount || invalidMaxAge || invalidToken
-          }
+          disabled={invalidName || invalidMaxCount || invalidMaxAge}
         >
           {m?.general.save}
         </Button>

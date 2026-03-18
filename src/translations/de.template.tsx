@@ -13,6 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './de-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -972,70 +973,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             -Symbol erstellt werden).
           </p>
           <hr />
-          <p>
-            Geben Sie die folgende URL in Ihrem Tracker ein (z. B.{' '}
-            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
-              Locus
-            </a>{' '}
-            oder OsmAnd):{' '}
-            <code>
-              {process.env['API_URL']}/tracking/track/<i>token</i>
-            </code>{' '}
-            wobei <i>token</i> in der untenstehenden Tabelle aufgelistet ist.
-          </p>
-          <p>
-            Der Endpunkt unterstützt HTTP-Methoden <code>GET</code> oder{' '}
-            <code>POST</code> mit URL-kodierten Parametern:
-          </p>
-          <ul>
-            <li>
-              <code>lat</code> – Breitengrad in Grad (erforderlich)
-            </li>
-            <li>
-              <code>lon</code> – Längengrad in Grad (erforderlich)
-            </li>
-            <li>
-              <code>time</code>, <code>timestamp</code> – in JavaScript
-              parsierbares Datum oder Unix-Zeit in Sekunden oder Millisekunden
-            </li>
-            <li>
-              <code>alt</code>, <code>altitude</code> – Höhe in Metern
-            </li>
-            <li>
-              <code>speed</code> – Geschwindigkeit in m/s
-            </li>
-            <li>
-              <code>speedKmh</code> – Geschwindigkeit in km/h
-            </li>
-            <li>
-              <code>acc</code> – Genauigkeit in Metern
-            </li>
-            <li>
-              <code>hdop</code> – horizontale Positionsgenauigkeit (HDOP)
-            </li>
-            <li>
-              <code>bearing</code> – Richtung in Grad
-            </li>
-            <li>
-              <code>battery</code> – Akkustand in Prozent
-            </li>
-            <li>
-              <code>gsm_signal</code> – GSM-Signal in Prozent
-            </li>
-            <li>
-              <code>message</code> – Nachricht (Notiz)
-            </li>
-          </ul>
-          <hr />
-          <p>
-            Im Fall eines TK102B-Trackers konfigurieren Sie die Adresse auf:{' '}
-            <code>
-              {process.env['API_URL']
-                ?.replace(/https?:\/\//, '')
-                ?.replace(/:\d+$/, '')}
-              :3030
-            </code>
-          </p>
+          <DocumentLink doc="tracking">So richten Sie Ihr verfolgtes Gerät ein</DocumentLink>
         </>
       ),
     },

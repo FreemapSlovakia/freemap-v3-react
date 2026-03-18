@@ -1,18 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import {
-  FaClipboard,
-  FaEdit,
-  FaKey,
-  FaMobileAlt,
-  FaTimes,
-} from 'react-icons/fa';
+import { Button } from 'react-bootstrap';
+import { FaEdit, FaKey, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
@@ -66,61 +59,14 @@ export function MyDevice({ device }: Props): ReactElement {
     dispatch(trackingActions.showAccessTokens(device.id));
   }, [device.id, dispatch]);
 
-  const handleCopyClick = useCallback(() => {
-    copyToClipboard(
-      dispatch,
-      `${process.env['API_URL']}/tracking/track/${device.token}`,
-    );
-  }, [device.token, dispatch]);
-
   return (
     <tr>
       <td>{device.name}</td>
-      <td>
-        {device.token.startsWith('did:')
-          ? `${device.token.slice(4)} (TK102B Device ID)`
-          : device.token.startsWith('imei:')
-            ? `${device.token.slice(5)} (TK102B IMEI)`
-            : device.token}
-        {!device.token.includes(':') && (
-          <OverlayTrigger
-            trigger={['hover', 'focus']}
-            placement="right"
-            overlay={
-              <Tooltip id={device.token}>
-                <span style={{ overflowWrap: 'break-word' }}>
-                  {process.env['API_URL']}/tracking/track/{device.token}
-                </span>
-              </Tooltip>
-            }
-          >
-            <span>
-              {/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent) ? (
-                <LongPressTooltip label={m?.general.copyUrl}>
-                  {({ props }) => (
-                    <Button
-                      variant="secondary"
-                      onClick={handleCopyClick}
-                      size="sm"
-                      type="button"
-                      {...props}
-                    >
-                      <FaClipboard />
-                    </Button>
-                  )}
-                </LongPressTooltip>
-              ) : (
-                <FaMobileAlt />
-              )}
-            </span>
-          </OverlayTrigger>
-        )}
-      </td>
+      <td>{device.token}</td>
       <td>{device.maxCount}</td>
       <td>
-        {typeof device.maxAge === 'number'
-          ? `${device.maxAge / 60} ${m?.general.minutes}`
-          : ''}
+        {typeof device.maxAge === 'number' &&
+          `${device.maxAge / 60} ${m?.general.minutes}`}
       </td>
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>

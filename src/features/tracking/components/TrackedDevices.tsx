@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, Modal, Table } from 'react-bootstrap';
-import { FaBullseye } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { TrackedDevice } from './TrackedDevice.js';
@@ -19,7 +19,7 @@ export function TrackedDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {m?.tracking.trackedDevices.modalTitle}
+          <FaEye /> {m?.tracking.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
 

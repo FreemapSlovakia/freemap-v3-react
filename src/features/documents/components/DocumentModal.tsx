@@ -1,11 +1,15 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { navigate } from '@shared/navigationUtils.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { is } from 'typia';
 import { getDocuments } from '@/documents/index.js';
+import {
+  Modal as ModalType,
+  setActiveModal,
+} from '../../../app/store/actions.js';
 import { documentShow } from '../model/actions.js';
 
 type Props = { show: boolean };
@@ -76,11 +80,27 @@ export function DocumentModal({ show }: Props): ReactElement | null {
 
           const i = href.lastIndexOf('#');
 
-          navigate(href.slice(i + 1));
+          if (i === -1) {
+            return;
+          }
+
+          const sp = new URLSearchParams(href.slice(i + 1));
+
+          if (sp.size !== 1) {
+            return;
+          }
+
+          const show = sp.get('show');
+
+          if (is<ModalType>(show)) {
+            dispatch(setActiveModal(show));
+          } else if (sp.has('document')) {
+            dispatch(documentShow(sp.get('document')));
+          }
         };
       }
     }
-  }, [loaded, ref]);
+  }, [loaded, ref, dispatch]);
 
   if (!document) {
     return null;

@@ -2,11 +2,11 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useLocalMessages, useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
-import { navigate } from '@shared/navigationUtils.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { ShowModalLink } from '../../shared/components/ShowModalLink.js';
 import { documentShow } from '../documents/model/actions.js';
 import { SupportUsMessages } from './translations/SupportUsMessages.js';
 
@@ -126,15 +126,7 @@ export function SupportUsModal({ show }: Props): ReactElement {
 
         <div className="text-end">
           {lm?.team}{' '}
-          <a
-            href="#show=about"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate('show=about');
-            }}
-          >
-            OZ Freemap Slovakia
-          </a>
+          <ShowModalLink modal="about">OZ Freemap Slovakia</ShowModalLink>
         </div>
       </Modal.Body>
 

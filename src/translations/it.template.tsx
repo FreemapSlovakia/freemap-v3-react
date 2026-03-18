@@ -13,6 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './it-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -958,70 +959,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
           </p>
           <hr />
-          <p>
-            Inserisci questo URL sul tuo tracker (eg.{' '}
-            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
-              Locus
-            </a>{' '}
-            o OsmAnd):{' '}
-            <code>
-              {process.env['API_URL']}/tracking/track/<i>token</i>
-            </code>{' '}
-            dove <i>token</i> è elencato nella tabella sotto.
-          </p>
-          <p>
-            L\'endpoint supporta HTTP<code>GET</code> o <code>POST</code>
-            con i parametri codificati URL:
-          </p>
-          <ul>
-            <li>
-              <code>lat</code> - latitudine in gradi (obbligatoria)
-            </li>
-            <li>
-              <code>lon</code> - longitudine in gradi (obbligatoria)
-            </li>
-            <li>
-              <code>time</code>, <code>timestamp</code> - datetime parsabile in
-              JavaScript o time Unix in s o ms
-            </li>
-            <li>
-              <code>alt</code>, <code>altitude</code> - altitudine in metri
-            </li>
-            <li>
-              <code>speed</code> - velocità in m/s
-            </li>
-            <li>
-              <code>speedKmh</code> - velocità in km/h
-            </li>
-            <li>
-              <code>acc</code> - precisione in metri
-            </li>
-            <li>
-              <code>hdop</code> - DOP orizzontale
-            </li>
-            <li>
-              <code>bearing</code> - gradi
-            </li>
-            <li>
-              <code>battery</code> - batteria in percentuale
-            </li>
-            <li>
-              <code>gsm_signal</code> - Segnale GSM in percentuale
-            </li>
-            <li>
-              <code>message</code> - messagggio (note)
-            </li>
-          </ul>
-          <hr />
-          <p>
-            In caso di dispositivo TK102B, configura il suo indirizzo come{' '}
-            <code>
-              {process.env['API_URL']
-                ?.replace(/https?:\/\//, '')
-                ?.replace(/:\d+$/, '')}
-              :3030
-            </code>
-          </p>
+          <DocumentLink doc="tracking">Come configurare il dispositivo tracciato</DocumentLink>
         </>
       ),
     },

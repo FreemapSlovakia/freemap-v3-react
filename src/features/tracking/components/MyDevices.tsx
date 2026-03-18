@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
 import { Alert, Button, Modal, Table } from 'react-bootstrap';
-import { FaBullseye } from 'react-icons/fa';
+import { FaMobileAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { MyDevice } from './MyDevice.js';
@@ -23,7 +23,7 @@ export function MyDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {m?.tracking.devices.modalTitle}
+          <FaMobileAlt /> {m?.tracking.devices.modalTitle}
         </Modal.Title>
       </Modal.Header>
 

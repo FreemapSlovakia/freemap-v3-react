@@ -14,6 +14,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import { useDispatch } from 'react-redux';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './sk-shared.js';
@@ -993,72 +994,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             <FaKey />.
           </p>
           <hr />
-          <p>
-            Do vášho trackera (napríklad{' '}
-            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
-              Locus
-            </a>{' '}
-            alebo OsmAnd) vložte nasledujúcu URL:{' '}
-            <code>
-              {process.env['API_URL']}/tracking/track/<i>token</i>
-            </code>{' '}
-            kde <i>token</i> je vypísaný v tabuľke nižšie.
-          </p>
-          <p>
-            Server podporuje HTTP <code>GET</code> alebo <code>POST</code> s URL
-            parametrami:
-          </p>
-          <ul>
-            <li>
-              <code>lat</code> - zemepisná dĺžka v stupňoch (povinné)
-            </li>
-            <li>
-              <code>lon</code> - zemepisná šírka v stupňoch (povinné)
-            </li>
-            <li>
-              <code>time</code>, <code>timestamp</code> - dátum a čas
-              parsovateľný JavaScript-om alebo Unixový čas v sekundách alebo
-              milisekundách
-            </li>
-            <li>
-              <code>alt</code>, <code>altitude</code> - nadmorská výška v
-              metroch
-            </li>
-            <li>
-              <code>speed</code> - rýchlosť v ㎧
-            </li>
-            <li>
-              <code>speedKmh</code> - rýchlosť v km/h
-            </li>
-            <li>
-              <code>acc</code> - presnosť v metroch
-            </li>
-            <li>
-              <code>hdop</code> - horizontálna DOP
-            </li>
-            <li>
-              <code>bearing</code> - smer v stupňoch
-            </li>
-            <li>
-              <code>battery</code> - batéria v percentách
-            </li>
-            <li>
-              <code>gsm_signal</code> - GSM signál v percentách
-            </li>
-            <li>
-              <code>message</code> - správa (poznámka)
-            </li>
-          </ul>
-          <hr />
-          <p>
-            V prípade trackera TK102B ho nakonfigurujte na adresu{' '}
-            <code>
-              {process.env['API_URL']
-                ?.replace(/https?:\/\//, '')
-                ?.replace(/:\d+$/, '')}
-              :3030
-            </code>
-          </p>
+          <DocumentLink doc="tracking">Ako nastaviť sledované zariadenie</DocumentLink>
         </>
       ),
     },

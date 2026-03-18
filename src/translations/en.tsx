@@ -12,6 +12,7 @@ import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './en-shared.js';
 import { addError, Messages } from './messagesInterface.js';
 
@@ -938,71 +939,10 @@ const messages: Messages = {
             Manage your devices so that others can watch your position if you
             give them watch token (you can create it through <FaKey /> icon).
           </p>
+
           <hr />
-          <p>
-            Enter following URL to your tracker (eg.{' '}
-            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
-              Locus
-            </a>{' '}
-            or OsmAnd):{' '}
-            <code>
-              {process.env['API_URL']}/tracking/track/<i>token</i>
-            </code>{' '}
-            where <i>token</i> is listed in the table below.
-          </p>
-          <p>
-            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with
-            URL-encoded parameters:
-          </p>
-          <ul>
-            <li>
-              <code>lat</code> - latitude in degrees (mandatory)
-            </li>
-            <li>
-              <code>lon</code> - longitude in degrees (mandatory)
-            </li>
-            <li>
-              <code>time</code>, <code>timestamp</code> - JavaScript parsable
-              datetime or Unix time in s or ms
-            </li>
-            <li>
-              <code>alt</code>, <code>altitude</code> - altitude in meters
-            </li>
-            <li>
-              <code>speed</code> - speed in m/s
-            </li>
-            <li>
-              <code>speedKmh</code> - speed in km/h
-            </li>
-            <li>
-              <code>acc</code> - accuracy in meters
-            </li>
-            <li>
-              <code>hdop</code> - horizontal DOP
-            </li>
-            <li>
-              <code>bearing</code> - bearing in degrees
-            </li>
-            <li>
-              <code>battery</code> - battery in percents
-            </li>
-            <li>
-              <code>gsm_signal</code> - GSM signal in percents
-            </li>
-            <li>
-              <code>message</code> - message (note)
-            </li>
-          </ul>
-          <hr />
-          <p>
-            In the case of tracker TK102B, configure it's address to{' '}
-            <code>
-              {process.env['API_URL']
-                ?.replace(/https?:\/\//, '')
-                ?.replace(/:\d+$/, '')}
-              :3030
-            </code>
-          </p>
+
+          <DocumentLink doc="tracking">How to set up your tracked device</DocumentLink>
         </>
       ),
     },

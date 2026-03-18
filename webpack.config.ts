@@ -45,6 +45,9 @@ const htmlPluginProps = {
 
 const config: Configuration = {
   mode: prod ? 'production' : 'development',
+  cache: {
+    type: 'filesystem',
+  },
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
