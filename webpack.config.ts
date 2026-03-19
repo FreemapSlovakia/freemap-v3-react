@@ -73,10 +73,6 @@ const config: Configuration = {
       '@shared': path.resolve(__dirname, 'src/shared'),
       '@features': path.resolve(__dirname, 'src/features'),
       '@osm': path.resolve(__dirname, 'src/osm'),
-      'lerc/lerc-wasm.wasm': path.resolve(
-        __dirname,
-        'node_modules/lerc/lerc-wasm.wasm',
-      ),
     },
     extensionAlias: {
       '.js': ['.js', '.ts', '.tsx'],
@@ -85,7 +81,6 @@ const config: Configuration = {
       url: false,
       fs: false,
       path: false,
-      module: false,
     },
   },
   optimization: {

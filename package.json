@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": ["biome check", "git add"]
+    "*.{js,ts}": [
+      "biome check",
+      "git add"
+    ]
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
@@ -42,7 +45,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@restart/ui": "^1.9.4",
     "@samchon/openapi": "^6.0.1",
-    "@sentry/browser": "^10.44.0",
+    "@sentry/browser": "^10.45.0",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/along": "^7.3.4",
     "@turf/area": "^7.3.4",
@@ -70,7 +73,7 @@
     "idb-keyval": "^6.2.2",
     "immer": "^11.1.4",
     "leaflet": "^1.9.4",
-    "lerc": "^4.1.0",
+    "lerc": "^4.1.1",
     "local-storage-fallback": "^5.0.0",
     "maplibre-gl": "^5.20.2",
     "marked": "^17.0.4",
@@ -102,7 +105,7 @@
     "@babel/parser": "^7.29.2",
     "@babel/preset-env": "^7.29.2",
     "@babel/types": "^7.29.0",
-    "@biomejs/biome": "^2.4.7",
+    "@biomejs/biome": "^2.4.8",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
     "@sentry/cli": "^3.3.3",
     "@types/color": "^4.2.1",
