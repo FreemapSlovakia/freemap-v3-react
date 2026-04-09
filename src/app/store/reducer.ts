@@ -65,7 +65,19 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
 
       state.selection =
-        action.payload === state.tool || action.payload === null
+        action.payload === state.tool ||
+        action.payload === null ||
+        (action.payload === 'route-planner' &&
+          (state.selection?.type === 'route-point' ||
+            state.selection?.type === 'route-leg')) ||
+        ((action.payload === 'draw-lines' ||
+          action.payload === 'draw-polygons') &&
+          (state.selection?.type === 'draw-line-poly' ||
+            state.selection?.type === 'line-point')) ||
+        (action.payload === 'draw-points' &&
+          state.selection?.type === 'draw-points') ||
+        (action.payload === 'objects' && state.selection?.type === 'objects') ||
+        (action.payload === 'map-details' && state.selection?.type === 'search')
           ? state.selection
           : null;
 

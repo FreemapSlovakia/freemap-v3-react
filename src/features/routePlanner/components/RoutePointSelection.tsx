@@ -2,7 +2,8 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
-import { FaMapMarkerAlt, FaMapSigns } from 'react-icons/fa';
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 
 export default RoutePointSelection;
 
@@ -20,11 +21,12 @@ export function RoutePointSelection(): ReactElement | undefined | false {
       <Selection
         icon={
           <>
-            <FaMapSigns /> <FaMapMarkerAlt />
+            <RoutePlannerToggleButton /> <FaMapMarkerAlt />
           </>
         }
         label={m?.routePlanner.point.point}
         deletable
+        noLeftMargin
       />
     )
   );

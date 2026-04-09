@@ -4,6 +4,7 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import clsx from 'clsx';
 import { type ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
@@ -12,13 +13,15 @@ import { useDispatch } from 'react-redux';
 export function Selection({
   label,
   icon,
-  deletable,
+  deletable = false,
+  noLeftMargin = false,
   children,
 }: {
   label?: string;
   icon: ReactElement;
   deletable?: boolean;
   children?: ReactNode;
+  noLeftMargin?: boolean;
 }): ReactElement {
   const dispatch = useDispatch();
 
@@ -34,7 +37,10 @@ export function Selection({
         <ButtonToolbar>
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (
-              <span className="align-self-center ms-1" {...props}>
+              <span
+                className={clsx('align-self-center', noLeftMargin || 'ms-1')}
+                {...props}
+              >
                 {icon}
                 <span className={labelClassName}> {label}</span>
               </span>

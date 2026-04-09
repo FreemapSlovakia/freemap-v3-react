@@ -4,7 +4,6 @@ import {
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -388,10 +387,6 @@ export function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.points.length > 1,
   );
 
-  const canDelete = useAppSelector(
-    (state) => state.routePlanner.points.length > 0 && !state.main.selection,
-  );
-
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
       case 'toggle-elevation-chart':
@@ -717,8 +712,6 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Menu>
         </Dropdown>
       )}
-
-      {canDelete && <DeleteButton />}
     </ToolMenu>
   );
 }
