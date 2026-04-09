@@ -563,6 +563,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     date: 'Dátum',
     item: 'Položka',
     notPremiumYet: 'Ešte nemáte prémiový prístup.',
+    awaitingBankPayment:
+      'Čakáme na potvrdenie bankového prevodu. Prémiový prístup bude aktivovaný po prijatí platby.',
+    bankPaymentFailed:
+      'Niektoré bankové prevody boli zamietnuté alebo vypršali. Ak si myslíte, že ide o omyl, kontaktujte podporu.',
     noPurchases: 'Žiadne nákupy',
     premium: 'Prémium',
     credits: (amount) => <>Kredity ({amount})</>,

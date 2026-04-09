@@ -542,6 +542,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     date: 'Datum',
     item: 'Artikel',
     notPremiumYet: 'Sie haben noch keinen Premium-Zugang.',
+    awaitingBankPayment:
+      'Wir warten auf die Bestätigung der Banküberweisung. Premium wird nach Zahlungseingang aktiviert.',
+    bankPaymentFailed:
+      'Einige Banküberweisungen wurden abgelehnt oder sind abgelaufen. Wenn Sie glauben, dass dies ein Fehler ist, kontaktieren Sie bitte den Support.',
     noPurchases: 'Keine Einkäufe',
     premium: 'Premium',
     credits: (amount) => <>Credits ({amount})</>,

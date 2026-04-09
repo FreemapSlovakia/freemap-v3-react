@@ -519,6 +519,10 @@ const messages: Messages = {
     date: 'Date',
     item: 'Item',
     notPremiumYet: 'You are not premium yet.',
+    awaitingBankPayment:
+      'We are awaiting confirmation of the bank transfer. Premium will activate once the payment is received.',
+    bankPaymentFailed:
+      'Some bank transfers were rejected or expired. If you believe this is a mistake, please contact support.',
     noPurchases: 'No purchases',
     premium: 'Premium',
     credits: (amount) => <>Credits (${amount})</>,

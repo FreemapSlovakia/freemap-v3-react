@@ -544,6 +544,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     date: 'Data',
     item: 'Elemento',
     notPremiumYet: 'Non hai ancora un accesso premium.',
+    awaitingBankPayment:
+      'Siamo in attesa della conferma del bonifico bancario. Il premium si attiverà dopo la ricezione del pagamento.',
+    bankPaymentFailed:
+      'Alcuni bonifici bancari sono stati rifiutati o sono scaduti. Se pensi che sia un errore, contatta il supporto.',
     noPurchases: 'Nessun acquisto',
     premium: 'Premium',
     credits: (amount) => <>Crediti ({amount})</>,

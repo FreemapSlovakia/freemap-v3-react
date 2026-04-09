@@ -543,6 +543,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     date: 'Dátum',
     item: 'Tétel',
     notPremiumYet: 'Még nincs prémium hozzáférésed.',
+    awaitingBankPayment:
+      'Várjuk a banki átutalás visszaigazolását. A prémium a fizetés beérkezése után aktiválódik.',
+    bankPaymentFailed:
+      'Néhány banki átutalás elutasításra került vagy lejárt. Ha úgy gondolod, hogy ez tévedés, vedd fel a kapcsolatot az ügyfélszolgálattal.',
     noPurchases: 'Nincsenek vásárlások',
     premium: 'Prémium',
     credits: (amount) => <>Kreditek ({amount})</>,

@@ -390,6 +390,8 @@ export type Messages = {
     date: string;
     item: string;
     notPremiumYet: string;
+    awaitingBankPayment: string;
+    bankPaymentFailed: string;
     noPurchases: string;
     premium: string;
     credits: (amount: ReactNode) => JSX.Element;

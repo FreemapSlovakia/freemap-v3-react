@@ -526,6 +526,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     date: 'Data',
     item: 'Pozycja',
     notPremiumYet: 'Nie masz jeszcze dostępu premium.',
+    awaitingBankPayment:
+      'Czekamy na potwierdzenie przelewu bankowego. Premium aktywuje się po otrzymaniu płatności.',
+    bankPaymentFailed:
+      'Niektóre przelewy bankowe zostały odrzucone lub wygasły. Jeśli uważasz, że to pomyłka, skontaktuj się z pomocą.',
     noPurchases: 'Brak zakupów',
     premium: 'Premium',
     credits: (amount) => <>Kredyty ({amount})</>,
