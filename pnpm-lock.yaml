@@ -25,13 +25,13 @@ importers:
         version: 2.11.8
       '@react-leaflet/core':
         specifier: ^3.0.0
-        version: 3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 3.0.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@reduxjs/toolkit':
         specifier: ^2.11.2
-        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1))(react@19.2.4)
+        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1))(react@19.2.5)
       '@restart/ui':
         specifier: ^1.9.4
-        version: 1.9.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 1.9.4(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@samchon/openapi':
         specifier: ^6.0.1
         version: 6.0.1
@@ -144,41 +144,41 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       react:
-        specifier: ^19.2.4
-        version: 19.2.4
+        specifier: ^19.2.5
+        version: 19.2.5
       react-best-gradient-color-picker:
         specifier: github:Delgado-tech/react-gradient-color-picker
-        version: https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-bootstrap:
         specifier: ^2.10.10
-        version: 2.10.10(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 2.10.10(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-dom:
-        specifier: ^19.2.4
-        version: 19.2.4(react@19.2.4)
+        specifier: ^19.2.5
+        version: 19.2.5(react@19.2.5)
       react-dropzone:
         specifier: ^15.0.0
-        version: 15.0.0(react@19.2.4)
+        version: 15.0.0(react@19.2.5)
       react-icons:
         specifier: ^5.6.0
-        version: 5.6.0(react@19.2.4)
+        version: 5.6.0(react@19.2.5)
       react-leaflet:
         specifier: ^5.0.0
-        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-leaflet-hotline:
         specifier: ^1.6.1
         version: 1.6.1
       react-redux:
         specifier: ^9.2.0
-        version: 9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1)
+        version: 9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1)
       react-responsive:
         specifier: ^10.0.1
-        version: 10.0.1(react@19.2.4)
+        version: 10.0.1(react@19.2.5)
       react-simple-star-rating:
         specifier: ^5.1.7
-        version: 5.1.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 5.1.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-tag-autocomplete:
         specifier: ^7.5.1
-        version: 7.5.1(react@19.2.4)
+        version: 7.5.1(react@19.2.5)
       redux:
         specifier: ^5.0.1
         version: 5.0.1
@@ -190,7 +190,7 @@ importers:
         version: 12.0.2(@types/node@24.12.2)(typescript@5.9.3)
       use-debounce:
         specifier: ^10.1.1
-        version: 10.1.1(react@19.2.4)
+        version: 10.1.1(react@19.2.5)
       vhtml:
         specifier: ^2.2.0
         version: 2.2.0
@@ -3770,10 +3770,10 @@ packages:
       '@types/react':
         optional: true
 
-  react-dom@19.2.4:
-    resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
+  react-dom@19.2.5:
+    resolution: {integrity: sha512-J5bAZz+DXMMwW/wV3xzKke59Af6CHY7G4uYLN1OvBcKEsWOs4pQExj86BBKamxl/Ik5bx9whOrvBlSDfWzgSag==}
     peerDependencies:
-      react: ^19.2.4
+      react: ^19.2.5
 
   react-dropzone@15.0.0:
     resolution: {integrity: sha512-lGjYV/EoqEjEWPnmiSvH4v5IoIAwQM2W4Z1C0Q/Pw2xD0eVzKPS359BQTUMum+1fa0kH2nrKjuavmTPOGhpLPg==}
@@ -3843,8 +3843,8 @@ packages:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
 
-  react@19.2.4:
-    resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
+  react@19.2.5:
+    resolution: {integrity: sha512-llUJLzz1zTUBrskt2pwZgLq59AemifIftw4aB7JxOqf1HY2FDaGDxgwpAPVzHU1kdWabH7FauP4i1oEeer2WCA==}
     engines: {node: '>=0.10.0'}
 
   readable-stream@2.3.8:
@@ -4076,8 +4076,8 @@ packages:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
 
-  side-channel-list@1.0.0:
-    resolution: {integrity: sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==}
+  side-channel-list@1.0.1:
+    resolution: {integrity: sha512-mjn/0bi/oUURjc5Xl7IaWi/OJJJumuoJFQJfDDyO46+hBWsfaVM65TBHq2eoZBhzl9EchxOijpkbRC8SVBQU0w==}
     engines: {node: '>= 0.4'}
 
   side-channel-map@1.0.1:
@@ -5770,18 +5770,18 @@ snapshots:
 
   '@protobufjs/utf8@1.1.0': {}
 
-  '@react-aria/ssr@3.9.10(react@19.2.4)':
+  '@react-aria/ssr@3.9.10(react@19.2.5)':
     dependencies:
       '@swc/helpers': 0.5.21
-      react: 19.2.4
+      react: 19.2.5
 
-  '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       leaflet: 1.9.4
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
-  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1))(react@19.2.4)':
+  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1))(react@19.2.5)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@standard-schema/utils': 0.3.0
@@ -5790,31 +5790,31 @@ snapshots:
       redux-thunk: 3.1.0(redux@5.0.1)
       reselect: 5.1.1
     optionalDependencies:
-      react: 19.2.4
-      react-redux: 9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1)
+      react: 19.2.5
+      react-redux: 9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1)
 
-  '@restart/hooks@0.4.16(react@19.2.4)':
+  '@restart/hooks@0.4.16(react@19.2.5)':
     dependencies:
       dequal: 2.0.3
-      react: 19.2.4
+      react: 19.2.5
 
-  '@restart/hooks@0.5.1(react@19.2.4)':
+  '@restart/hooks@0.5.1(react@19.2.5)':
     dependencies:
       dequal: 2.0.3
-      react: 19.2.4
+      react: 19.2.5
 
-  '@restart/ui@1.9.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@restart/ui@1.9.4(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@babel/runtime': 7.29.2
       '@popperjs/core': 2.11.8
-      '@react-aria/ssr': 3.9.10(react@19.2.4)
-      '@restart/hooks': 0.5.1(react@19.2.4)
+      '@react-aria/ssr': 3.9.10(react@19.2.5)
+      '@restart/hooks': 0.5.1(react@19.2.5)
       '@types/warning': 3.0.4
       dequal: 2.0.3
       dom-helpers: 5.2.1
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      uncontrollable: 8.0.4(react@19.2.4)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+      uncontrollable: 8.0.4(react@19.2.5)
       warning: 4.0.3
 
   '@samchon/openapi@6.0.1': {}
@@ -8170,9 +8170,9 @@ snapshots:
 
   progress@2.0.3: {}
 
-  prop-types-extra@1.1.1(react@19.2.4):
+  prop-types-extra@1.1.1(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
       react-is: 16.13.1
       warning: 4.0.3
 
@@ -8250,103 +8250,103 @@ snapshots:
     dependencies:
       quickselect: 3.0.0
 
-  react-best-gradient-color-picker@https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-best-gradient-color-picker@https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
       html2canvas: 1.4.1
       lodash.throttle: 4.1.1
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
       tinycolor2: 1.4.2
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-bootstrap@2.10.10(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-bootstrap@2.10.10(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
       '@babel/runtime': 7.29.2
-      '@restart/hooks': 0.4.16(react@19.2.4)
-      '@restart/ui': 1.9.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@restart/hooks': 0.4.16(react@19.2.5)
+      '@restart/ui': 1.9.4(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@types/prop-types': 15.7.15
       '@types/react-transition-group': 4.4.12(@types/react@19.2.14)
       classnames: 2.5.1
       dom-helpers: 5.2.1
       invariant: 2.2.4
       prop-types: 15.8.1
-      prop-types-extra: 1.1.1(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      react-transition-group: 4.4.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      uncontrollable: 7.2.1(react@19.2.4)
+      prop-types-extra: 1.1.1(react@19.2.5)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+      react-transition-group: 4.4.5(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      uncontrollable: 7.2.1(react@19.2.5)
       warning: 4.0.3
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-dom@19.2.4(react@19.2.4):
+  react-dom@19.2.5(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
       scheduler: 0.27.0
 
-  react-dropzone@15.0.0(react@19.2.4):
+  react-dropzone@15.0.0(react@19.2.5):
     dependencies:
       attr-accept: 2.2.5
       file-selector: 2.1.2
       prop-types: 15.8.1
-      react: 19.2.4
+      react: 19.2.5
 
-  react-icons@5.6.0(react@19.2.4):
+  react-icons@5.6.0(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
 
   react-is@16.13.1: {}
 
   react-leaflet-hotline@1.6.1: {}
 
-  react-leaflet@5.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-leaflet@5.0.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
-      '@react-leaflet/core': 3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@react-leaflet/core': 3.0.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       leaflet: 1.9.4
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-redux@9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1):
+  react-redux@9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1):
     dependencies:
       '@types/use-sync-external-store': 0.0.6
-      react: 19.2.4
-      use-sync-external-store: 1.6.0(react@19.2.4)
+      react: 19.2.5
+      use-sync-external-store: 1.6.0(react@19.2.5)
     optionalDependencies:
       '@types/react': 19.2.14
       redux: 5.0.1
 
   react-refresh@0.18.0: {}
 
-  react-responsive@10.0.1(react@19.2.4):
+  react-responsive@10.0.1(react@19.2.5):
     dependencies:
       hyphenate-style-name: 1.1.0
       matchmediaquery: 0.4.2
       prop-types: 15.8.1
-      react: 19.2.4
+      react: 19.2.5
       shallow-equal: 3.1.0
 
-  react-simple-star-rating@5.1.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-simple-star-rating@5.1.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
-  react-tag-autocomplete@7.5.1(react@19.2.4):
+  react-tag-autocomplete@7.5.1(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
 
-  react-transition-group@4.4.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-transition-group@4.4.5(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
       '@babel/runtime': 7.29.2
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
-  react@19.2.4: {}
+  react@19.2.5: {}
 
   readable-stream@2.3.8:
     dependencies:
@@ -8582,7 +8582,7 @@ snapshots:
 
   shell-quote@1.8.3: {}
 
-  side-channel-list@1.0.0:
+  side-channel-list@1.0.1:
     dependencies:
       es-errors: 1.3.0
       object-inspect: 1.13.4
@@ -8606,7 +8606,7 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
       object-inspect: 1.13.4
-      side-channel-list: 1.0.0
+      side-channel-list: 1.0.1
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
@@ -8870,17 +8870,17 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  uncontrollable@7.2.1(react@19.2.4):
+  uncontrollable@7.2.1(react@19.2.5):
     dependencies:
       '@babel/runtime': 7.29.2
       '@types/react': 19.2.14
       invariant: 2.2.4
-      react: 19.2.4
+      react: 19.2.5
       react-lifecycles-compat: 3.0.4
 
-  uncontrollable@8.0.4(react@19.2.4):
+  uncontrollable@8.0.4(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
 
   undici-types@7.16.0: {}
 
@@ -8907,13 +8907,13 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  use-debounce@10.1.1(react@19.2.4):
+  use-debounce@10.1.1(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
 
-  use-sync-external-store@1.6.0(react@19.2.4):
+  use-sync-external-store@1.6.0(react@19.2.5):
     dependencies:
-      react: 19.2.4
+      react: 19.2.5
 
   util-deprecate@1.0.2: {}
 
