@@ -9,9 +9,6 @@
     "titleBar.activeForeground": "#FCFAF5"
   },
   "editor.formatOnSave": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.tsserver.maxTsServerMemory": 4096,
-  "typescript.preferences.importModuleSpecifier": "relative",
   "prettier.enable": false,
   "eslint.enable": false,
   "biome.enabled": true,
@@ -24,5 +21,8 @@
   },
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }

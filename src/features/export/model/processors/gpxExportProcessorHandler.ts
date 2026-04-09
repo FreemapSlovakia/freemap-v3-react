@@ -199,7 +199,7 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     });
 
     if (takenAt) {
-      createElement(wptEle, 'time', new Date(takenAt * 1000).toISOString());
+      createElement(wptEle, 'time', takenAt.toISOString());
     }
 
     if (title) {
@@ -219,14 +219,14 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     if (createdAt) {
       lines.push([
         gm?.filterModal.createdAt ?? 'Upload date',
-        new Date(createdAt * 1000).toLocaleString(lang),
+        createdAt.toLocaleString(lang),
       ]);
     }
 
     if (takenAt) {
       lines.push([
         gm?.filterModal.takenAt ?? 'Taken at',
-        new Date(takenAt * 1000).toLocaleString(lang),
+        takenAt.toLocaleString(lang),
       ]);
     }
 

@@ -165,10 +165,8 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
 
     fc.features.push(
       point([lon, lat], {
-        takenAt: takenAt ? new Date(takenAt * 1000).toISOString() : undefined,
-        publishedAt: createdAt
-          ? new Date(createdAt * 1000).toISOString()
-          : undefined,
+        takenAt: takenAt ? takenAt.toISOString() : undefined,
+        publishedAt: createdAt ? createdAt.toISOString() : undefined,
         name: title,
         description,
         imageUrl,

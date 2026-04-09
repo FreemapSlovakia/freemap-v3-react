@@ -4,13 +4,14 @@ import { createFilter } from '@features/gallery/galleryUtils.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { assert } from 'typia';
+import { StringDates } from '../../../../shared/types/common.js';
 
 export type Picture = {
   lat: number;
   lon: number;
   id: number;
-  takenAt: number | null;
-  createdAt: number | null;
+  takenAt: Date | null;
+  createdAt: Date | null;
   title: string | null;
   description: string | null;
   tags: string[];
@@ -45,5 +46,9 @@ export async function fetchPictures(getState: () => RootState) {
     expectedStatus: 200,
   });
 
-  return assert<Picture[]>(await res.json());
+  return assert<StringDates<Picture>[]>(await res.json()).map(p => ({
+    ...p,
+    createdAt: p.createdAt == null ? p.createdAt : new Date(p.createdAt),
+    takenAt: p.takenAt == null ? p.takenAt : new Date(p.takenAt),
+  }));
 }
