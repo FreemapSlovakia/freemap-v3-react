@@ -134,21 +134,20 @@ export function AccountModal({ show }: Props): ReactElement | null {
     purchaseIntents?.some((intent) => intent.status === 'rejected'),
   );
 
-  const bankStatusMessages = useMemo(() => {
-    const statuses = new Set<string>();
+  const t = m?.purchases.bankIntentStatus;
 
-    for (const intent of purchaseIntents ?? []) {
-      if (!intent.bankIntentStatus) {
-        continue;
-      }
-      statuses.add(intent.bankIntentStatus);
+  const bankStatusMessages = useMemo(() => {
+    if (!t) {
+      return [];
     }
+
+    const statuses = new Set<string>(
+      (purchaseIntents ?? [])
+        .map((intnet) => intnet.bankIntentStatus)
+        .filter((bankIntentStatus) => bankIntentStatus !== null),
+    );
 
     const out: string[] = [];
-    const t = m?.purchases.bankIntentStatus;
-    if (!t) {
-      return out;
-    }
 
     const push = (status: string, text: string) => {
       if (statuses.has(status)) {
@@ -180,9 +179,13 @@ export function AccountModal({ show }: Props): ReactElement | null {
     }
 
     return out;
-  }, [m?.purchases.bankIntentStatus, purchaseIntents]);
+  }, [t, purchaseIntents]);
 
-  return !user ? null : (
+  if (!user) {
+    return null;
+  }
+
+  return (
     <Modal show={show} onHide={close}>
       <Form
         onSubmit={(e) => {
