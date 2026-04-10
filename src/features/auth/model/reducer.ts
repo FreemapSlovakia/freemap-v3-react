@@ -7,12 +7,13 @@ import {
   authSetUser,
 } from './actions.js';
 import { purchaseOnLogin } from './purchaseActions.js';
-import type { Purchase, PurchaseRecord, User } from './types.js';
+import type { Purchase, PurchaseIntent, PurchaseRecord, User } from './types.js';
 
 export interface AuthState {
   validated: boolean;
   user: User | null;
   purchases: PurchaseRecord[] | null;
+  purchaseIntents: PurchaseIntent[] | null;
   purchaseOnLogin: Purchase | undefined;
 }
 
@@ -20,6 +21,7 @@ export const authInitialState: AuthState = {
   validated: false,
   user: null,
   purchases: null,
+  purchaseIntents: null,
   purchaseOnLogin: undefined,
 };
 
@@ -39,14 +41,17 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         credits: action.payload.credits,
       },
       purchases: action.payload ? state.purchases : null,
+      purchaseIntents: action.payload ? state.purchaseIntents : null,
       validated: true,
     }))
     .addCase(authLogout, () => authInitialState)
     .addCase(authFetchPurchases, (state) => {
       state.purchases = null;
+      state.purchaseIntents = null;
     })
     .addCase(authSetPurchases, (state, action) => {
-      state.purchases = action.payload;
+      state.purchases = action.payload?.purchases ?? null;
+      state.purchaseIntents = action.payload?.intents ?? null;
     })
     .addCase(purchaseOnLogin, (state, action) => {
       state.purchaseOnLogin = action.payload;

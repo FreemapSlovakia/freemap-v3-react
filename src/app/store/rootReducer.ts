@@ -146,18 +146,35 @@ export function getInitialState() {
   }
 
   if (is<Partial<StringDates<Omit<AuthState, 'purchases'>>>>(persisted.auth)) {
+    const {
+      user: persistedUser,
+      purchaseIntents: persistedIntents,
+      ...persistedAuthRest
+    } = persisted.auth;
+
     initial.auth = {
       ...authInitialState,
-      ...persisted.auth,
+      ...persistedAuthRest,
       user:
-        persisted.auth.user === undefined
+        persistedUser === undefined
           ? authInitialState.user
-          : persisted.auth.user && {
-              ...persisted.auth.user,
-              premiumExpiration: persisted.auth.user.premiumExpiration
-                ? new Date(persisted.auth.user.premiumExpiration)
+          : persistedUser && {
+              ...persistedUser,
+              premiumExpiration: persistedUser.premiumExpiration
+                ? new Date(persistedUser.premiumExpiration)
                 : null,
             },
+      purchaseIntents:
+        persistedIntents === undefined
+          ? authInitialState.purchaseIntents
+          : persistedIntents === null
+            ? null
+            : persistedIntents.map((intent) => ({
+                ...intent,
+                createdAt: new Date(intent.createdAt),
+                updatedAt: new Date(intent.updatedAt),
+                expireAt: new Date(intent.expireAt),
+              })),
     };
   }
 

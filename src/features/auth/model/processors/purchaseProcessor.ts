@@ -13,6 +13,13 @@ type CallbackData = {
   };
 };
 
+type CallbackResult = {
+  success: boolean;
+  pendingBankTransfer: boolean;
+};
+
+const PURCHASE_CALLBACK_STORAGE_KEY = 'freemap.purchaseCallback';
+
 export const purchaseProcessor: Processor<typeof purchase> = {
   actionCreator: purchase,
   async handle({ getState, dispatch, action }) {
@@ -70,40 +77,87 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
-    const callbackResultPromise = new Promise<boolean>((resolve) => {
+    localStorage.removeItem(PURCHASE_CALLBACK_STORAGE_KEY);
+
+    const callbackResultPromise = new Promise<CallbackResult>(
+      (resolve, reject) => {
+        const resolveFromPayload = (payload: string) => {
+          const sp = new URLSearchParams(payload);
+          const error = sp.get('error');
+
+          if (error) {
+            reject(new Error(error));
+            return;
+          }
+
+          const pendingBankTransfer =
+            sp.has('token') &&
+            sp.has('signature') &&
+            sp.get('currency') === 'EUR' &&
+            sp.has('amount_paid');
+
+          resolve({ success: true, pendingBankTransfer });
+
+          windowProxy.close();
+        };
+
+        const resolveFromStorage = (raw: string | null) => {
+          if (!raw) {
+            return;
+          }
+
+          try {
+            const parsed = JSON.parse(raw) as {
+              freemap?: { action?: string; payload?: string };
+            };
+
+            if (
+              parsed.freemap?.action === 'purchase' &&
+              typeof parsed.freemap.payload === 'string'
+            ) {
+              resolveFromPayload(parsed.freemap.payload);
+            }
+          } finally {
+            localStorage.removeItem(PURCHASE_CALLBACK_STORAGE_KEY);
+          }
+        };
+
       const msgListener = (e: MessageEvent) => {
         const { data } = e;
 
         if (e.origin === window.location.origin && is<CallbackData>(data)) {
-          const sp = new URLSearchParams(data.freemap.payload);
-
-          const error = sp.get('error');
-
-          if (error) {
-            throw new Error(error);
-          }
-
-          resolve(true);
-
-          windowProxy.close();
+          resolveFromPayload(data.freemap.payload);
         }
       };
 
+        const storageListener = (e: StorageEvent) => {
+          if (e.key === PURCHASE_CALLBACK_STORAGE_KEY) {
+            resolveFromStorage(e.newValue);
+          }
+        };
+
       const timer = window.setInterval(() => {
+        resolveFromStorage(localStorage.getItem(PURCHASE_CALLBACK_STORAGE_KEY));
+
         if (windowProxy.closed) {
           window.clearInterval(timer);
 
           window.removeEventListener('message', msgListener);
+          window.removeEventListener('storage', storageListener);
 
-          resolve(false);
+          resolve({ success: false, pendingBankTransfer: false });
         }
       }, 500);
 
       window.addEventListener('message', msgListener);
-    });
+        window.addEventListener('storage', storageListener);
+      },
+    );
 
     try {
-      if (!(await callbackResultPromise)) {
+      const callbackResult = await callbackResultPromise;
+
+      if (!callbackResult.success) {
         return;
       }
 
@@ -116,6 +170,19 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
       // refresh user data
       dispatch(authInit());
+
+      if (callbackResult.pendingBankTransfer) {
+        dispatch(
+          toastsAdd({
+            style: 'info',
+            messageKey: 'purchases.awaitingBankPayment',
+          }),
+        );
+
+        dispatch(setActiveModal('account'));
+
+        return;
+      }
 
       const purchase = action.payload;
 
