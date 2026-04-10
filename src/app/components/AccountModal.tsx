@@ -165,14 +165,16 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
     for (const status of statuses) {
       if (
-        status !== 'pending_settlement' &&
-        status !== 'manual_review' &&
-        status !== 'paid' &&
-        status !== 'expired' &&
-        status !== 'failed' &&
-        status !== 'rejected' &&
-        status !== 'created' &&
-        status !== ''
+        ![
+          'pending_settlement',
+          'manual_review',
+          'paid',
+          'expired',
+          'failed',
+          'rejected',
+          'created',
+          '',
+        ].includes(status)
       ) {
         out.push(t.unknown.replace('{}', status));
       }
