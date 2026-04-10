@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetPurchases } from '@features/auth/model/actions.js';
-import { PurchaseRecord } from '@features/auth/model/types.js';
+import { PurchasesResponse } from '@features/auth/model/types.js';
 import { StringDates } from '@shared/types/common.js';
 import { assert } from 'typia';
 
@@ -16,15 +16,23 @@ export const fetchPurchasesProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const data = assert<StringDates<PurchaseRecord[]>>(await res.json());
+    const data = assert<StringDates<PurchasesResponse>>(await res.json());
 
     dispatch(
-      authSetPurchases(
-        data.map(({ createdAt, ...rest }) => ({
+      authSetPurchases({
+        purchases: data.purchases.map(({ createdAt, ...rest }) => ({
           ...rest,
           createdAt: new Date(createdAt),
         })),
-      ),
+        intents: data.intents.map(
+          ({ createdAt, updatedAt, expireAt, ...rest }) => ({
+            ...rest,
+            createdAt: new Date(createdAt),
+            updatedAt: new Date(updatedAt),
+            expireAt: new Date(expireAt),
+          }),
+        ),
+      }),
     );
   },
 };

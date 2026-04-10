@@ -52,6 +52,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
   }, [dispatch]);
 
   const purchasesUnsorted = useAppSelector((state) => state.auth.purchases);
+  const purchaseIntents = useAppSelector((state) => state.auth.purchaseIntents);
 
   const purchases = useMemo(
     () =>
@@ -125,6 +126,62 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
   const invalidName = !name.trim();
 
+  const showAwaitingBankPayment = Boolean(
+    purchaseIntents?.some((intent) => intent.status === 'awaiting_payment'),
+  );
+
+  const showBankPaymentFailed = Boolean(
+    purchaseIntents?.some((intent) => intent.status === 'rejected'),
+  );
+
+  const bankStatusMessages = useMemo(() => {
+    const statuses = new Set<string>();
+
+    for (const intent of purchaseIntents ?? []) {
+      if (!intent.bankIntentStatus) {
+        continue;
+      }
+      statuses.add(intent.bankIntentStatus);
+    }
+
+    const out: string[] = [];
+    const t = m?.purchases.bankIntentStatus;
+    if (!t) {
+      return out;
+    }
+
+    const push = (status: string, text: string) => {
+      if (statuses.has(status)) {
+        out.push(text);
+      }
+    };
+
+    push('pending_settlement', t.pending_settlement);
+    push('manual_review', t.manual_review);
+    push('paid', t.paid);
+    push('expired', t.expired);
+    push('failed', t.failed);
+    push('rejected', t.rejected);
+    push('created', t.created);
+
+    for (const status of statuses) {
+      if (
+        status !== 'pending_settlement' &&
+        status !== 'manual_review' &&
+        status !== 'paid' &&
+        status !== 'expired' &&
+        status !== 'failed' &&
+        status !== 'rejected' &&
+        status !== 'created' &&
+        status !== ''
+      ) {
+        out.push(t.unknown.replace('{}', status));
+      }
+    }
+
+    return out;
+  }, [m?.purchases.bankIntentStatus, purchaseIntents]);
+
   return !user ? null : (
     <Modal show={show} onHide={close}>
       <Form
@@ -181,6 +238,28 @@ export function AccountModal({ show }: Props): ReactElement | null {
                     {m?.premium.youArePremium(
                       dateFormat.format(user.premiumExpiration!),
                     )}
+                  </Alert>
+                )}
+
+                {showAwaitingBankPayment && (
+                  <Alert variant="info">
+                    <FaShoppingBasket /> {m?.purchases.awaitingBankPayment}
+                  </Alert>
+                )}
+
+                {showBankPaymentFailed && (
+                  <Alert variant="danger">
+                    <FaExclamationTriangle /> {m?.purchases.bankPaymentFailed}
+                  </Alert>
+                )}
+
+                {bankStatusMessages.length > 0 && (
+                  <Alert variant="secondary">
+                    <ul className="mb-0 ps-3">
+                      {bankStatusMessages.map((message) => (
+                        <li key={message}>{message}</li>
+                      ))}
+                    </ul>
                   </Alert>
                 )}
 

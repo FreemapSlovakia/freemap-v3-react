@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { Action } from 'redux';
-import type { AuthProvider, PurchaseRecord, User } from './types.js';
+import type { AuthProvider, PurchasesResponse, User } from './types.js';
 
 export const authWithOsm = createAction<{
   connect: boolean;
@@ -47,6 +47,6 @@ export const authDeleteAccount = createAction('AUTH_DELETE_ACCOUNT');
 
 export const authFetchPurchases = createAction('AUTH_FETCH_PURCHASES');
 
-export const authSetPurchases = createAction<PurchaseRecord[] | null>(
+export const authSetPurchases = createAction<PurchasesResponse | null>(
   'AUTH_SET_PURCHASES',
 );

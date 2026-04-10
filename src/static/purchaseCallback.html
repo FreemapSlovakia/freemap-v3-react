@@ -7,14 +7,27 @@
 
   <body>
     <script>
-      opener.postMessage(
-        {
+      (function () {
+        const payload = {
           freemap: { action: 'purchase', payload: window.location.search },
-        },
-        location.origin,
-      );
+        };
 
-      window.close();
+        try {
+          if (window.opener && !window.opener.closed) {
+            window.opener.postMessage(payload, location.origin);
+          }
+        } catch {
+          // Ignore opener-postMessage failures and use localStorage fallback.
+        }
+
+        try {
+          localStorage.setItem('freemap.purchaseCallback', JSON.stringify(payload));
+        } catch {
+          // Ignore localStorage failures.
+        }
+
+        window.close();
+      })();
     </script>
   </body>
 </html>
