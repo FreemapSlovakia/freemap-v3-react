@@ -4,21 +4,12 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { assert, is } from 'typia';
-
-type CallbackData = {
-  freemap: {
-    action: 'purchase';
-    payload: string;
-  };
-};
+import { assert } from 'typia';
 
 type CallbackResult = {
   success: boolean;
   pendingBankTransfer: boolean;
 };
-
-const PURCHASE_CALLBACK_STORAGE_KEY = 'freemap.purchaseCallback';
 
 export const purchaseProcessor: Processor<typeof purchase> = {
   actionCreator: purchase,
@@ -77,16 +68,24 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
-    localStorage.removeItem(PURCHASE_CALLBACK_STORAGE_KEY);
-
     const callbackResultPromise = new Promise<CallbackResult>(
       (resolve, reject) => {
-        const resolveFromPayload = (payload: string) => {
-          const sp = new URLSearchParams(payload);
+        const bc = new BroadcastChannel('freemap-purchase');
+
+        bc.onmessage = (e) => {
+          if (!e.data?.search) {
+            return;
+          }
+
+          bc.postMessage({ ok: true });
+
+          const sp = new URLSearchParams(e.data.search);
+
           const error = sp.get('error');
 
           if (error) {
             reject(new Error(error));
+
             return;
           }
 
@@ -97,60 +96,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
             sp.has('amount_paid');
 
           resolve({ success: true, pendingBankTransfer });
-
-          windowProxy.close();
         };
-
-        const resolveFromStorage = (raw: string | null) => {
-          if (!raw) {
-            return;
-          }
-
-          try {
-            const parsed = JSON.parse(raw) as {
-              freemap?: { action?: string; payload?: string };
-            };
-
-            if (
-              parsed.freemap?.action === 'purchase' &&
-              typeof parsed.freemap.payload === 'string'
-            ) {
-              resolveFromPayload(parsed.freemap.payload);
-            }
-          } finally {
-            localStorage.removeItem(PURCHASE_CALLBACK_STORAGE_KEY);
-          }
-        };
-
-      const msgListener = (e: MessageEvent) => {
-        const { data } = e;
-
-        if (e.origin === window.location.origin && is<CallbackData>(data)) {
-          resolveFromPayload(data.freemap.payload);
-        }
-      };
-
-        const storageListener = (e: StorageEvent) => {
-          if (e.key === PURCHASE_CALLBACK_STORAGE_KEY) {
-            resolveFromStorage(e.newValue);
-          }
-        };
-
-      const timer = window.setInterval(() => {
-        resolveFromStorage(localStorage.getItem(PURCHASE_CALLBACK_STORAGE_KEY));
-
-        if (windowProxy.closed) {
-          window.clearInterval(timer);
-
-          window.removeEventListener('message', msgListener);
-          window.removeEventListener('storage', storageListener);
-
-          resolve({ success: false, pendingBankTransfer: false });
-        }
-      }, 500);
-
-      window.addEventListener('message', msgListener);
-        window.addEventListener('storage', storageListener);
       },
     );
 
