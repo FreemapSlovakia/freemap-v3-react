@@ -13,6 +13,11 @@ type CallbackData = {
   };
 };
 
+type CallbackResult = {
+  success: boolean;
+  pendingBankTransfer: boolean;
+};
+
 export const purchaseProcessor: Processor<typeof purchase> = {
   actionCreator: purchase,
   async handle({ getState, dispatch, action }) {
@@ -70,7 +75,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
-    const callbackResultPromise = new Promise<boolean>((resolve) => {
+    const callbackResultPromise = new Promise<CallbackResult>((resolve) => {
       const msgListener = (e: MessageEvent) => {
         const { data } = e;
 
@@ -83,7 +88,13 @@ export const purchaseProcessor: Processor<typeof purchase> = {
             throw new Error(error);
           }
 
-          resolve(true);
+          const pendingBankTransfer =
+            sp.has('token') &&
+            sp.has('signature') &&
+            sp.get('currency') === 'EUR' &&
+            sp.has('amount_paid');
+
+          resolve({ success: true, pendingBankTransfer });
 
           windowProxy.close();
         }
@@ -95,7 +106,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
           window.removeEventListener('message', msgListener);
 
-          resolve(false);
+          resolve({ success: false, pendingBankTransfer: false });
         }
       }, 500);
 
@@ -103,7 +114,9 @@ export const purchaseProcessor: Processor<typeof purchase> = {
     });
 
     try {
-      if (!(await callbackResultPromise)) {
+      const callbackResult = await callbackResultPromise;
+
+      if (!callbackResult.success) {
         return;
       }
 
@@ -116,6 +129,19 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
       // refresh user data
       dispatch(authInit());
+
+      if (callbackResult.pendingBankTransfer) {
+        dispatch(
+          toastsAdd({
+            style: 'info',
+            messageKey: 'purchases.awaitingBankPayment',
+          }),
+        );
+
+        dispatch(setActiveModal('account'));
+
+        return;
+      }
 
       const purchase = action.payload;
 

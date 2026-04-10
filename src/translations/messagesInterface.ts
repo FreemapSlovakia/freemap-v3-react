@@ -392,6 +392,16 @@ export type Messages = {
     notPremiumYet: string;
     awaitingBankPayment: string;
     bankPaymentFailed: string;
+    bankIntentStatus: {
+      pending_settlement: string;
+      manual_review: string;
+      paid: string;
+      expired: string;
+      failed: string;
+      rejected: string;
+      created: string;
+      unknown: string;
+    };
     noPurchases: string;
     premium: string;
     credits: (amount: ReactNode) => JSX.Element;

@@ -13,6 +13,22 @@ export type PurchaseRecord = {
   item: Purchase;
 };
 
+export type PurchaseIntentStatus = 'created' | 'awaiting_payment' | 'rejected';
+
+export type PurchaseIntent = {
+  item: Purchase;
+  status: PurchaseIntentStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  expireAt: Date;
+  bankIntentStatus: string | null;
+};
+
+export type PurchasesResponse = {
+  purchases: PurchaseRecord[];
+  intents: PurchaseIntent[];
+};
+
 export interface UserSettings {
   layersSettings?: Record<string, LayerSettings>;
   customLayers?: CustomLayerDef[];
