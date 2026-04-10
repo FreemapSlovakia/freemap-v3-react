@@ -932,7 +932,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             ).
           </p>
           <hr />
-          <DocumentLink doc="tracking">Jak nastavit sledované zařízení</DocumentLink>
+          <DocumentLink doc="tracking">
+            Jak nastavit sledované zařízení
+          </DocumentLink>
         </>
       ),
     },
@@ -991,6 +993,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX trasu',
     },
     mapScale: 'Rozlišení mapy',
+    orders: {},
     alert: (licence) => (
       <>
         Upozornění:

@@ -33,6 +33,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { assert, is } from 'typia';
 import {
+  CustomLayerOrder,
   ExportableLayer,
   ExportFormat,
   exportMap,
@@ -56,6 +57,9 @@ const toScale = (value: string | null) => value ?? '100';
 const toExportFormat = (value: string | null) =>
   is<ExportFormat>(value) ? value : 'jpeg';
 
+const toCustomLayerOrder = (value: string | null) =>
+  is<CustomLayerOrder>(value) ? value : 'topmost';
+
 export function ExportMapModal({ show }: Props): ReactElement {
   const canExportByPolygon = useAppSelector(
     (state) =>
@@ -74,6 +78,10 @@ export function ExportMapModal({ show }: Props): ReactElement {
     identity,
     toScale,
   );
+
+  const [customLayerOrder, setCustomLayerOrder] = usePersistentState<
+    'topmost' | 'natural'
+  >('fm.exportMap.customLayerOrder', identity, toCustomLayerOrder);
 
   const [format, , setFormat] = usePersistentState<ExportFormat>(
     'fm.exportMap.format',
@@ -139,6 +147,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
       setScale(e.currentTarget.value);
     },
     [setScale],
+  );
+
+  const handleCustomLayerOrderChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      setCustomLayerOrder(e.currentTarget.value as CustomLayerOrder);
+    },
+    [setCustomLayerOrder],
   );
 
   const countries = useAppSelector((state) => state.map.countries);
@@ -231,7 +246,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           </ButtonGroup>
         </Form.Group>
 
-        <hr />
+        <div className="mt-3" />
 
         <Form.Group>
           <Form.Label className="d-block"> {m?.mapExport.format}</Form.Label>
@@ -251,7 +266,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           </ButtonGroup>
         </Form.Group>
 
-        <hr />
+        <div className="mt-3" />
 
         <Form.Group>
           <Form.Label>{m?.mapExport.layersTitle}</Form.Label>
@@ -269,7 +284,21 @@ export function ExportMapModal({ show }: Props): ReactElement {
           ))}
         </Form.Group>
 
-        <hr />
+        <div className="mt-3" />
+
+        <Form.Group controlId="customLayerOrder">
+          <Form.Label>{m?.mapExport.customLayerOrder}</Form.Label>
+
+          <Form.Select
+            value={customLayerOrder}
+            onChange={handleCustomLayerOrderChange}
+          >
+            <option value="topmost">{m?.mapExport.orders.topmost}</option>
+            <option value="natural">{m?.mapExport.orders.natural}</option>
+          </Form.Select>
+        </Form.Group>
+
+        <div className="mt-3" />
 
         <Form.Group controlId="mapScale">
           <Form.Label>{m?.mapExport.mapScale}</Form.Label>
@@ -300,6 +329,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 scale: parseInt(scale, 10) / 96,
                 format,
                 layers: [...layers],
+                customLayerOrder,
               }),
             )
           }

@@ -973,7 +973,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             -Symbol erstellt werden).
           </p>
           <hr />
-          <DocumentLink doc="tracking">So richten Sie Ihr verfolgtes Gerät ein</DocumentLink>
+          <DocumentLink doc="tracking">
+            So richten Sie Ihr verfolgtes Gerät ein
+          </DocumentLink>
         </>
       ),
     },
@@ -1040,6 +1042,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX-Track',
     },
     mapScale: 'Kartenauflösung',
+    orders: {},
 
     alert: (licence) => (
       <>

@@ -942,7 +942,9 @@ const messages: Messages = {
 
           <hr />
 
-          <DocumentLink doc="tracking">How to set up your tracked device</DocumentLink>
+          <DocumentLink doc="tracking">
+            How to set up your tracked device
+          </DocumentLink>
         </>
       ),
     },
@@ -1001,6 +1003,12 @@ const messages: Messages = {
       track: 'GPX track',
     },
     mapScale: 'Map resolution',
+    customLayerOrder: 'Drawing order',
+    orders: {
+      natural: 'Natural',
+      topmost: 'Topmost',
+    },
+
     alert: (licence) => (
       <>
         Notes:

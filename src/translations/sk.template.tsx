@@ -14,8 +14,8 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
-import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import { useDispatch } from 'react-redux';
+import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './sk-shared.js';
 
@@ -994,7 +994,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             <FaKey />.
           </p>
           <hr />
-          <DocumentLink doc="tracking">Ako nastaviť sledované zariadenie</DocumentLink>
+          <DocumentLink doc="tracking">
+            Ako nastaviť sledované zariadenie
+          </DocumentLink>
         </>
       ),
     },
@@ -1054,6 +1056,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX trasu',
     },
     mapScale: 'Rozlíšenie mapy',
+    customLayerOrder: 'Poradie kreslenia',
+    orders: {
+      natural: 'Prirodzené',
+      topmost: 'Na vrchu',
+    },
     alert: (licence) => (
       <>
         Upozornenia:

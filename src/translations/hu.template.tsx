@@ -987,7 +987,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             nekik egy figyelőkódot (amelyet a <FaKey /> ikonnal hozhat létre).
           </p>
           <hr />
-          <DocumentLink doc="tracking">A követett eszköz beállítása</DocumentLink>
+          <DocumentLink doc="tracking">
+            A követett eszköz beállítása
+          </DocumentLink>
         </>
       ),
     },
@@ -1047,6 +1049,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX-nyomvonal',
     },
     mapScale: 'Térkép felbontása',
+    orders: {},
     alert: (licence) => (
       <>
         Megjegyzések:

@@ -946,7 +946,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             ).
           </p>
           <hr />
-          <DocumentLink doc="tracking">Jak skonfigurować śledzone urządzenie</DocumentLink>
+          <DocumentLink doc="tracking">
+            Jak skonfigurować śledzone urządzenie
+          </DocumentLink>
         </>
       ),
     },
@@ -1011,6 +1013,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     format: 'Format',
     layersTitle: 'Opcjonalne warstwy',
     mapScale: 'Rozdzielczość mapy',
+    orders: {},
     alert: (licence) => (
       <>
         Uwagi:

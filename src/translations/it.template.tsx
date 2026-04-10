@@ -959,7 +959,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
           </p>
           <hr />
-          <DocumentLink doc="tracking">Come configurare il dispositivo tracciato</DocumentLink>
+          <DocumentLink doc="tracking">
+            Come configurare il dispositivo tracciato
+          </DocumentLink>
         </>
       ),
     },
@@ -1018,6 +1020,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'Traccia GPX',
     },
     mapScale: 'Risoluzione mappa',
+    orders: {},
     alert: (licence) => (
       <>
         Note:

@@ -5,7 +5,10 @@ import {
   GalleryColorizeBy,
   GalleryListOrder,
 } from '@features/gallery/model/actions.js';
-import { ExportableLayer } from '@features/mapExport/model/actions.js';
+import {
+  CustomLayerOrder,
+  ExportableLayer,
+} from '@features/mapExport/model/actions.js';
 import { RoutingMode } from '@features/routePlanner/model/actions.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
@@ -705,6 +708,8 @@ export type Messages = {
     layersTitle: string;
     layers: Record<ExportableLayer, string>;
     mapScale: string;
+    customLayerOrder: string;
+    orders: Record<CustomLayerOrder, string>;
     alert: (licence?: ReactElement[]) => JSX.Element;
     advancedSettings: string;
     styles: string;

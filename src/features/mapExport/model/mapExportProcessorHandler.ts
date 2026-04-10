@@ -15,7 +15,13 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
   getState,
   action,
 }) => {
-  const { scale, area, format, layers: exportLayers } = action.payload;
+  const {
+    scale,
+    area,
+    format,
+    layers: exportLayers,
+    customLayerOrder,
+  } = action.payload;
 
   const {
     main: { selection },
@@ -146,6 +152,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
         featureCollection: features.length
           ? featureCollection(features)
           : undefined,
+        featureCollectionOrder: customLayerOrder,
       },
     },
     expectedStatus: 200,

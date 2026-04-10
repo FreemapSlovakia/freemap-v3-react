@@ -16,8 +16,11 @@ export type ExportableLayer = (typeof LAYERS)[number];
 
 export type ExportFormat = 'jpeg' | 'png' | 'pdf' | 'svg';
 
+export type CustomLayerOrder = 'topmost' | 'natural';
+
 export interface MapExportOptions {
   layers: ExportableLayer[];
+  customLayerOrder: CustomLayerOrder;
   scale: number;
   area: 'visible' | 'selected';
   format: ExportFormat;
