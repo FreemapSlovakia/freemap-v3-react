@@ -124,6 +124,12 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
               return (
                 <Spinner className="align-self-center" animation="border" />
               );
+            case 'error':
+              return (
+                <Alert variant="danger">
+                  {m?.general.loadError({ err: state.error?.toString() ?? '' })}
+                </Alert>
+              );
             case 'success':
               return (
                 <>
@@ -312,12 +318,6 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                     )}
                   </Table>
                 </>
-              );
-            case 'error':
-              return (
-                <Alert variant="danger">
-                  {m?.general.loadError({ err: state.error?.toString() ?? '' })}
-                </Alert>
               );
           }
         })()}
