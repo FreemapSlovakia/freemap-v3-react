@@ -42,7 +42,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       ? state.drawingPoints.points[selection.id]?.color
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
         ? state.drawingLines.lines[selection.id]?.color
-        : '#ff0000';
+        : colors.normal;
   });
 
   const width = useAppSelector((state) => {
@@ -130,7 +130,11 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
       e.preventDefault();
 
-      if (polyPoints && editedLabel === 'cry me a river') {
+      if (
+        polyPoints &&
+        polyPoints.length >= 3 &&
+        editedLabel === 'cry me a river'
+      ) {
         const pixelSize = window.prompt('Pixel size?');
 
         if (pixelSize == null) {
@@ -379,6 +383,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                   onChange={(e) =>
                     setEditedType(e.currentTarget.value as 'polygon' | 'line')
                   }
+                  disabled={!polyPoints || polyPoints.length < 3}
                 >
                   <option value="line">{m?.selections.drawLines}</option>
                   <option value="polygon">{m?.selections.drawPolygons}</option>
