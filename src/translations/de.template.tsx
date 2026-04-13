@@ -514,6 +514,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       width: 'Breite',
       hint: 'Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
       type: 'Geometrietyp',
+      dashArray: 'Linienstil',
+      lineCap: 'Linienende',
+      lineCapRound: 'Rund',
+      lineCapButt: 'Flach',
+      lineCapSquare: 'Quadratisch',
+      lineJoin: 'Linienverbindung',
+      lineJoinRound: 'Rund',
+      lineJoinMiter: 'Spitz',
+      lineJoinBevel: 'Abgeschrägt',
     },
 
     defProps: {

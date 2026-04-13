@@ -38,27 +38,33 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('drawingLines')) {
-    for (const line of drawingLines.lines.filter(
-      (line) => line.type === 'line',
-    )) {
-      fc.features.push(
-        lineString(
-          line.points.map((p) => [p.lon, p.lat]),
-          { name: line.label, color: line.color },
-        ),
-      );
-    }
-  }
+    for (const line of drawingLines.lines) {
+      if (
+        (!set.has('drawingLines') && line.type === 'line') ||
+        (!set.has('drawingAreas') && line.type === 'polygon')
+      ) {
+        continue;
+      }
 
-  if (set.has('drawingAreas')) {
-    for (const line of drawingLines.lines.filter(
-      (line) => line.type === 'polygon',
-    )) {
+      const props = {
+        name: line.label,
+        color: line.color,
+        width: line.type,
+        lineCap: line.lineCap,
+        lineJoin: line.lineCap,
+        dashArray: line.dashArray,
+      };
+
       fc.features.push(
-        polygon([[...line.points, line.points[0]].map((p) => [p.lon, p.lat])], {
-          name: line.label,
-          color: line.color,
-        }),
+        line.type === 'polygon'
+          ? polygon(
+              [[...line.points, line.points[0]].map((p) => [p.lon, p.lat])],
+              props,
+            )
+          : lineString(
+              line.points.map((p) => [p.lon, p.lat]),
+              props,
+            ),
       );
     }
   }

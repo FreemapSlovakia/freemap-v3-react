@@ -985,6 +985,12 @@ function parseColorAndLabel(m: string) {
 
   let width: number | undefined;
 
+  let dashArray: number[] | undefined;
+
+  let lineCap: 'butt' | 'round' | 'square' | undefined;
+
+  let lineJoin: 'miter' | 'round' | 'bevel' | undefined;
+
   // compatibility
   if (m.startsWith(',') || m.startsWith(';')) {
     if (m[1] === '#') {
@@ -1002,11 +1008,19 @@ function parseColorAndLabel(m: string) {
         color = field.slice(1);
       } else if (field[0] === 'W') {
         width = Number(field.slice(1)) || undefined;
+      } else if (field[0] === 'D') {
+        dashArray = field.slice(1) ? field.slice(1).split(',').map(Number) : undefined;
+      } else if (field[0] === 'K') {
+        lineCap =
+          field[1] === 'b' ? 'butt' : field[1] === 's' ? 'square' : undefined;
+      } else if (field[0] === 'J') {
+        lineJoin =
+          field[1] === 'm' ? 'miter' : field[1] === 'b' ? 'bevel' : undefined;
       }
     }
   }
 
-  return { label, color, width };
+  return { label, color, width, dashArray, lineCap, lineJoin };
 }
 
 function handleInfoPoint(

@@ -41,6 +41,9 @@ type Settings = {
   customLayers?: CustomLayerDef[];
   drawingColor?: string;
   drawingWidth?: number;
+  drawingDash?: number[];
+  drawingLineCap?: 'butt' | 'round' | 'square';
+  drawingLineJoin?: 'miter' | 'round' | 'bevel';
   maxZoom?: number;
 };
 

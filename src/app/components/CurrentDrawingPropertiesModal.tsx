@@ -1,3 +1,4 @@
+import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
@@ -52,6 +53,30 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       : '';
   });
 
+  const dashArray = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? (state.drawingLines.lines[selection.id]?.dashArray ?? [])
+      : [];
+  });
+
+  const lineCap = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? (state.drawingLines.lines[selection.id]?.lineCap ?? 'round')
+      : 'round';
+  });
+
+  const lineJoin = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? (state.drawingLines.lines[selection.id]?.lineJoin ?? 'round')
+      : 'round';
+  });
+
   const type = useAppSelector((state) => {
     const { selection } = state.main;
 
@@ -81,6 +106,12 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const [editedType, setEditedType] = useState<'polygon' | 'line'>(
     type ?? 'line',
   );
+
+  const [editedDash, setEditedDash] = useState(dashArray);
+
+  const [editedLineCap, setEditedLineCap] = useState(lineCap);
+
+  const [editedLineJoin, setEditedLineJoin] = useState(lineJoin);
 
   const dispatch = useDispatch();
 
@@ -247,6 +278,10 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 color: editedColor,
                 width: parseFloat(editedWidth) || undefined,
                 type: editedType,
+                dashArray: editedDash.length ? editedDash : undefined,
+                lineCap: editedLineCap === 'round' ? undefined : editedLineCap,
+                lineJoin:
+                  editedLineJoin === 'round' ? undefined : editedLineJoin,
               },
             })
           : drawingPointChangeProperties({
@@ -267,6 +302,9 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       editedColor,
       editedWidth,
       editedType,
+      editedDash,
+      editedLineCap,
+      editedLineJoin,
       close,
       selection,
     ],
@@ -275,20 +313,6 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const handleLocalLabelChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setEditedLabel(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleLocalColorChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setEditedColor(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleLocalWidthChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setEditedWidth(e.currentTarget.value);
     },
     [],
   );
@@ -316,32 +340,35 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
             <Form.Text muted>{m?.drawing.edit.hint}</Form.Text>
           </Form.Group>
 
-          <Form.Group controlId="color" className="mt-3">
-            <Form.Label>{m?.drawing.edit.color}</Form.Label>
+          {drawType !== 'draw-line-poly' && (
+            <Form.Group controlId="color" className="mt-3">
+              <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
-            <Form.Control
-              type="color"
-              value={editedColor || colors.normal}
-              onChange={handleLocalColorChange}
-            />
+              <Form.Control
+                type="color"
+                value={editedColor || colors.normal}
+                onChange={(e) => setEditedColor(e.currentTarget.value)}
+              />
 
-            <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
-          </Form.Group>
+              <DrawingRecentColors onColor={setEditedColor} />
+            </Form.Group>
+          )}
 
           {drawType === 'draw-line-poly' && (
             <>
-              <Form.Group controlId="width" className="mt-3">
-                <Form.Label>{m?.drawing.edit.width}</Form.Label>
-
-                <Form.Control
-                  type="number"
-                  value={editedWidth}
-                  min={1}
-                  max={12}
-                  isInvalid={invalidWidth}
-                  onChange={handleLocalWidthChange}
-                />
-              </Form.Group>
+              <DrawingLineStyleFields
+                color={editedColor || colors.normal}
+                onColorChange={setEditedColor}
+                width={editedWidth}
+                onWidthChange={setEditedWidth}
+                invalidWidth={invalidWidth}
+                lineCap={editedLineCap}
+                onLineCapChange={setEditedLineCap}
+                lineJoin={editedLineJoin}
+                onLineJoinChange={setEditedLineJoin}
+                dashArray={editedDash}
+                onDashArrayChange={setEditedDash}
+              />
 
               <Form.Group controlId="type" className="mt-3">
                 <Form.Label>{m?.drawing.edit.type}</Form.Label>

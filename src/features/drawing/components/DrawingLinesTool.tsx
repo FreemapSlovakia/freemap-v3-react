@@ -31,6 +31,18 @@ export function DrawingLinesTool(): null {
 
   const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
+  const dashArray = useAppSelector(
+    (state) => state.drawingSettings.drawingDashArray,
+  );
+
+  const lineCap = useAppSelector(
+    (state) => state.drawingSettings.drawingLineCap,
+  );
+
+  const lineJoin = useAppSelector(
+    (state) => state.drawingSettings.drawingLineJoin,
+  );
+
   const linesLength = useAppSelector(
     (state) => state.drawingLines.lines.length,
   );
@@ -67,6 +79,9 @@ export function DrawingLinesTool(): null {
                 type: tool === 'draw-lines' ? 'line' : 'polygon',
                 color,
                 width,
+                dashArray: dashArray,
+                lineCap,
+                lineJoin,
               },
               point: { lat: latlng.lat, lon: latlng.lng, id },
               position: pos,
@@ -82,7 +97,18 @@ export function DrawingLinesTool(): null {
 
       dispatch(drawingMeasure({}));
     },
-    [linePoints, dispatch, selection, tool, color, width, linesLength],
+    [
+      linePoints,
+      dispatch,
+      selection,
+      tool,
+      color,
+      width,
+      dashArray,
+      lineCap,
+      lineJoin,
+      linesLength,
+    ],
   );
 
   useMapEvent('click', handleMapClick);
