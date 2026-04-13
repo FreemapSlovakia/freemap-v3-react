@@ -169,13 +169,15 @@ export function ExportMapModal({ show }: Props): ReactElement {
   const poly = area === 'selected' ? poly0 : undefined;
 
   useEffect(() => {
-    if (!poly || polyCountries) {
+    if (!poly || poly.points.length < 3 || polyCountries) {
       return;
     }
 
     fetch(`${process.env['API_URL']}/geotools/covered-countries`, {
       method: 'POST',
-      body: JSON.stringify(polygon([poly.points.map((p) => [p.lon, p.lat])])),
+      body: JSON.stringify(
+        polygon([[...poly.points, poly.points[0]].map((p) => [p.lon, p.lat])]),
+      ),
       headers: { 'content-type': 'application/geo+json' },
     })
       .then((res) => {
