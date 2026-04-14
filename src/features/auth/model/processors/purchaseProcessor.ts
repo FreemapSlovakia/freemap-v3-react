@@ -72,12 +72,22 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       (resolve, reject) => {
         const bc = new BroadcastChannel('freemap-purchase');
 
-        bc.onmessage = (e) => {
-          if (!e.data?.search) {
-            return;
+        const closedInterval = setInterval(() => {
+          if (windowProxy.closed) {
+            clearInterval(closedInterval);
+
+            bc.close();
+
+            reject(new Error('popup closed'));
           }
+        }, 500);
+
+        bc.onmessage = (e) => {
+          clearInterval(closedInterval);
 
           bc.postMessage({ ok: true });
+
+          bc.close();
 
           const sp = new URLSearchParams(e.data.search);
 
@@ -158,6 +168,10 @@ export const purchaseProcessor: Processor<typeof purchase> = {
           break;
       }
     } catch (err) {
+      if (err instanceof Error && err.message === 'popup closed') {
+        return;
+      }
+
       console.error(err);
 
       dispatch(
