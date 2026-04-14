@@ -75,7 +75,7 @@
     "leaflet": "^1.9.4",
     "lerc": "^4.1.1",
     "local-storage-fallback": "^5.0.0",
-    "maplibre-gl": "^5.22.0",
+    "maplibre-gl": "^5.23.0",
     "marked": "^18.0.0",
     "ohash": "^2.0.11",
     "pannellum": "^2.5.7",

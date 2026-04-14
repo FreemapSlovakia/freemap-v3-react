@@ -370,6 +370,15 @@ export type Messages = {
       width: string;
       hint: string;
       type: string;
+      dashArray: string;
+      lineCap: string;
+      lineCapRound: string;
+      lineCapButt: string;
+      lineCapSquare: string;
+      lineJoin: string;
+      lineJoinRound: string;
+      lineJoinMiter: string;
+      lineJoinBevel: string;
     };
     split: string;
     join: string;

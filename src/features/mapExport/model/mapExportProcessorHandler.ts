@@ -69,15 +69,20 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
         continue;
       }
 
+      const props = {
+        name: line.label || '',
+        color: line.color ?? colors.normal,
+        width: line.width ?? 4,
+        lineJoin: line.lineJoin,
+        lineCap: line.lineCap,
+        dashArray: line.dashArray,
+      };
+
       features.push(
         line.type === 'line'
           ? lineString(
               line.points.map((point) => [point.lon, point.lat]),
-              {
-                name: line.label || '',
-                color: line.color ?? colors.normal,
-                width: line.width ?? 4,
-              },
+              props,
             )
           : polygon(
               [
@@ -86,11 +91,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
                   [line.points[0].lon, line.points[0].lat],
                 ],
               ],
-              {
-                name: line.label || '',
-                color: line.color ?? colors.normal,
-                width: line.width ?? 4,
-              },
+              props,
             ),
       );
     }

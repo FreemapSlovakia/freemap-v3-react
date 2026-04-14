@@ -13,6 +13,9 @@ export interface Line {
   label?: string;
   color?: string;
   width?: number;
+  dashArray?: number[];
+  lineCap?: 'butt' | 'round' | 'square';
+  lineJoin?: 'miter' | 'round' | 'bevel';
 }
 
 export const drawingLineAdd = createAction<Line>('DRAWING_LINE_ADD');
@@ -31,6 +34,9 @@ export const drawingLineAddPoint = createAction<
           type: 'polygon' | 'line';
           color?: string;
           width?: number;
+          dashArray?: number[];
+          lineCap?: 'butt' | 'round' | 'square';
+          lineJoin?: 'miter' | 'round' | 'bevel';
         };
       }
   )
@@ -43,6 +49,9 @@ export const drawingLineChangeProperties = createAction<{
     color: string | undefined;
     width: number | undefined;
     type: 'line' | 'polygon';
+    dashArray: number[] | undefined;
+    lineCap: 'butt' | 'round' | 'square' | undefined;
+    lineJoin: 'miter' | 'round' | 'bevel' | undefined;
   };
 }>('DRAWING_LINE_CHANGE_PROPERTIES');
 

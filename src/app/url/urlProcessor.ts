@@ -253,6 +253,18 @@ export const urlProcessor: Processor = {
           line.width ? `\x1eW${line.width}` : ''
         }${line.color ? `\x1eC${line.color}` : ''}${
           line.label ? `\x1eL${line.label}` : ''
+        }${line.dashArray ? `\x1eD${line.dashArray}` : ''}${
+          line.lineCap === 'butt'
+            ? '\x1eKb'
+            : line.lineCap === 'square'
+              ? '\x1eKs'
+              : ''
+        }${
+          line.lineJoin === 'miter'
+            ? '\x1eJm'
+            : line.lineJoin === 'bevel'
+              ? '\x1eJb'
+              : ''
         }`,
       ]);
     }

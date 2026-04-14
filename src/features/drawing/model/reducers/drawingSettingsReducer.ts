@@ -7,6 +7,9 @@ export interface DrawingSettingsState {
   drawingColor: string;
   drawingWidth: number;
   drawingRecentColors: string[];
+  drawingDashArray?: number[];
+  drawingLineCap?: 'butt' | 'round' | 'square';
+  drawingLineJoin?: 'miter' | 'round' | 'bevel';
 }
 
 export const drawingSettingsInitialState: DrawingSettingsState = {
@@ -28,6 +31,18 @@ export const drawingSettingsReducer = createReducer(
 
         if (action.payload.drawingWidth) {
           state.drawingWidth = action.payload.drawingWidth;
+        }
+
+        if ('drawingDash' in action.payload) {
+          state.drawingDashArray = action.payload.drawingDash;
+        }
+
+        if ('drawingLineCap' in action.payload) {
+          state.drawingLineCap = action.payload.drawingLineCap;
+        }
+
+        if ('drawingLineJoin' in action.payload) {
+          state.drawingLineJoin = action.payload.drawingLineJoin;
         }
 
         if (color) {

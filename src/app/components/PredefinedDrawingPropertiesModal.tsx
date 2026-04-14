@@ -1,13 +1,7 @@
-import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
+import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -26,23 +20,27 @@ export function PredefinedDrawingPropertiesModal({
 
   const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
+  const dashArray = useAppSelector(
+    (state) => state.drawingSettings.drawingDashArray,
+  );
+
+  const lineCap = useAppSelector(
+    (state) => state.drawingSettings.drawingLineCap ?? 'round',
+  );
+
+  const lineJoin = useAppSelector(
+    (state) => state.drawingSettings.drawingLineJoin ?? 'round',
+  );
+
   const [editedColor, setEditedColor] = useState(color);
 
   const [editedWidth, setEditedWidth] = useState(String(width));
 
-  const handleLocalColorChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setEditedColor(e.currentTarget.value);
-    },
-    [],
-  );
+  const [editedDash, setEditedDash] = useState(dashArray ?? []);
 
-  const handleLocalWidthChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setEditedWidth(e.currentTarget.value);
-    },
-    [],
-  );
+  const [editedLineCap, setEditedLineCap] = useState(lineCap);
+
+  const [editedLineJoin, setEditedLineJoin] = useState(lineJoin);
 
   const dispatch = useDispatch();
 
@@ -51,6 +49,10 @@ export function PredefinedDrawingPropertiesModal({
       applySettings({
         drawingColor: editedColor,
         drawingWidth: Number(editedWidth) || 4,
+        drawingDash: editedDash.length ? editedDash : undefined,
+        drawingLineCap: editedLineCap === 'round' ? undefined : editedLineCap,
+        drawingLineJoin:
+          editedLineJoin === 'round' ? undefined : editedLineJoin,
         drawingApplyAll: applyToAll,
       }),
     );
@@ -80,30 +82,19 @@ export function PredefinedDrawingPropertiesModal({
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group controlId="color" className="mb-3">
-            <Form.Label>{m?.drawing.edit.color}</Form.Label>
-
-            <Form.Control
-              type="color"
-              value={editedColor}
-              onChange={handleLocalColorChange}
-            />
-
-            <DrawingRecentColors onColor={(color) => setEditedColor(color)} />
-          </Form.Group>
-
-          <Form.Group controlId="width">
-            <Form.Label>{m?.drawing.edit.width}</Form.Label>
-
-            <Form.Control
-              type="number"
-              value={editedWidth}
-              min={1}
-              max={12}
-              step={0.1}
-              onChange={handleLocalWidthChange}
-            />
-          </Form.Group>
+          <DrawingLineStyleFields
+            color={editedColor}
+            onColorChange={setEditedColor}
+            width={editedWidth}
+            onWidthChange={setEditedWidth}
+            widthStep={0.1}
+            lineCap={editedLineCap}
+            onLineCapChange={setEditedLineCap}
+            lineJoin={editedLineJoin}
+            onLineJoinChange={setEditedLineJoin}
+            dashArray={editedDash}
+            onDashArrayChange={setEditedDash}
+          />
         </Modal.Body>
 
         <Modal.Footer>

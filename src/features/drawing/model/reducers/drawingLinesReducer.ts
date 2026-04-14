@@ -71,6 +71,18 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           if (payload.drawingWidth) {
             line.width = payload.drawingWidth;
           }
+
+          if ('drawingDash' in payload) {
+            line.dashArray = payload.drawingDash;
+          }
+
+          if ('drawingLineCap' in payload) {
+            line.lineCap = payload.drawingLineCap;
+          }
+
+          if ('drawingLineJoin' in payload) {
+            line.lineJoin = payload.drawingLineJoin;
+          }
         }
       }
     })
@@ -84,6 +96,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           type: lineProps.type,
           color: lineProps.color,
           width: lineProps.width,
+          dashArray: lineProps.dashArray,
+          lineCap: lineProps.lineCap,
+          lineJoin: lineProps.lineJoin,
           points: [],
         };
 

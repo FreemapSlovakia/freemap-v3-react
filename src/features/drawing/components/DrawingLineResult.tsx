@@ -328,7 +328,16 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   }
 
   return (
-    <Fragment key={[line.type, line.width, lineIndex].join(',')}>
+    <Fragment
+      key={[
+        line.type,
+        line.width,
+        line.dashArray,
+        line.lineCap,
+        line.lineJoin,
+        lineIndex,
+      ].join(',')}
+    >
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
@@ -349,6 +358,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             weight={width}
             pathOptions={{
               color: selected ? Color(color).lighten(0.75).hex() : color,
+              dashArray: line.dashArray,
+              lineCap: line.lineCap ?? 'round',
+              lineJoin: line.lineJoin ?? 'round',
             }}
             interactive={false}
             positions={ps
@@ -370,6 +382,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           weight={width}
           pathOptions={{
             color: selected ? Color(color).lighten(0.75).hex() : color,
+            dashArray: line.dashArray,
+            lineCap: line.lineCap ?? 'round',
+            lineJoin: line.lineJoin ?? 'round',
           }}
           interactive={interactiveLine}
           bubblingMouseEvents={false}
@@ -395,9 +410,13 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
       {futureLinePositions && (
         <Polyline
-          color={Color(color).lighten(0.75).hex()}
-          weight={width}
-          dashArray="6,8"
+          pathOptions={{
+            color: Color(color).lighten(0.75).hex(),
+            dashArray: line.dashArray,
+            lineCap: line.lineCap ?? 'round',
+            lineJoin: line.lineJoin ?? 'round',
+            weight: width,
+          }}
           interactive={false}
           positions={futureLinePositions}
         >
