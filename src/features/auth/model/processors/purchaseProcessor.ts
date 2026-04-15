@@ -135,8 +135,6 @@ export const purchaseProcessor: Processor<typeof purchase> = {
           }),
         );
 
-        dispatch(setActiveModal('account'));
-
         return;
       }
 
