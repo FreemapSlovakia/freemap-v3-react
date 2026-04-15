@@ -41,21 +41,31 @@ self.addEventListener('fetch', (event) => {
       const cacheMode = (await get('cacheMode')) as undefined | CacheMode;
 
       if (!cacheMode || cacheMode === 'networkOnly') {
-        return (await serveFromNetwork(event)) ?? Response.error();
+        return (
+          (await serveFromNetwork(event)) ??
+          (await serveFallback(event)) ??
+          Response.error()
+        );
       } else if (cacheMode === 'networkFirst') {
         return (
           (await serveFromNetwork(event)) ??
           (await serveFromCache(event)) ??
+          (await serveFallback(event)) ??
           Response.error()
         );
       } else if (cacheMode === 'cacheFirst') {
         return (
           (await serveFromCache(event)) ??
           (await serveFromNetwork(event)) ??
+          (await serveFallback(event)) ??
           Response.error()
         );
       } else if (cacheMode === 'cacheOnly') {
-        return (await serveFromCache(event)) ?? Response.error();
+        return (
+          (await serveFromCache(event)) ??
+          (await serveFallback(event)) ??
+          Response.error()
+        );
       } else if (cacheMode) {
         if (
           event.request.method !== 'GET' ||
@@ -118,19 +128,23 @@ async function serveFromNetwork(event: FetchEvent) {
 
     return response;
   } catch {
-    const cache = await caches.open(FALLBACK_CACHE_NAME);
-
-    const url = new URL(request.url);
-
-    const path =
-      url.pathname === '/'
-        ? FALLBACK_HTML_URL
-        : url?.pathname === FALLBACK_LOGO_URL
-          ? FALLBACK_LOGO_URL
-          : undefined;
-
-    return path && (await cache.match(path));
+    return undefined;
   }
+}
+
+async function serveFallback(event: FetchEvent) {
+  const cache = await caches.open(FALLBACK_CACHE_NAME);
+
+  const url = new URL(event.request.url);
+
+  const path =
+    url.pathname === '/'
+      ? FALLBACK_HTML_URL
+      : url.pathname === FALLBACK_LOGO_URL
+        ? FALLBACK_LOGO_URL
+        : undefined;
+
+  return path && cache.match(path);
 }
 
 self.addEventListener('activate', (event) => {

@@ -1,25 +1,25 @@
 import { CacheMode } from '@shared/types/common.js';
 import { get, set } from 'idb-keyval';
 
-export async function initCaching() {
-  // const [cacheMode, cachingActive] = await Promise.all([
-  //   get<CacheMode>('cacheMode'),
-  //   get<boolean>('cachingActive'),
-  // ]);
-  //
-  // if (!cachingActive && (!cacheMode || cacheMode === 'networkOnly')) {
-  //   const reg = await window.navigator.serviceWorker.getRegistration('/sw.js');
-  //
-  //   reg?.unregister();
-  // } else {
-  //   await window.navigator.serviceWorker?.register('/sw.js');
-  // }
-}
+// export async function initCaching() {
+// const [cacheMode, cachingActive] = await Promise.all([
+//   get<CacheMode>('cacheMode'),
+//   get<boolean>('cachingActive'),
+// ]);
+//
+// if (!cachingActive && (!cacheMode || cacheMode === 'networkOnly')) {
+//   const reg = await window.navigator.serviceWorker.getRegistration('/sw.js');
+//
+//   reg?.unregister();
+// } else {
+//   await window.navigator.serviceWorker?.register('/sw.js');
+// }
+// }
 
 export async function setCacheMode(cacheMode: CacheMode) {
   await set('cacheMode', cacheMode);
 
-  await initCaching();
+  // await initCaching();
 }
 
 export async function setCachingActive(active: boolean) {
@@ -29,7 +29,7 @@ export async function setCachingActive(active: boolean) {
 
   await set('cachingActive', active);
 
-  await initCaching();
+  // await initCaching();
 }
 
 const OFFLINE_CACHE_NAME = 'offline';
@@ -41,7 +41,7 @@ async function cacheLocal() {
 
   const data = await res.json();
 
-  await cache.addAll(Object.values(data));
+  await cache.addAll([...new Set(Object.values(data) as string[])]);
 }
 
 export async function clearCache() {
