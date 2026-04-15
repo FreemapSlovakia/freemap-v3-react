@@ -137,8 +137,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
-        <FaDownload /> <ExperimentalFunction /> {m?.downloadMap.downloadMap}{' '}
-        <kbd>e</kbd> <kbd>m</kbd>
+        <FaDownload /> {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">

@@ -327,7 +327,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDownload /> <ExperimentalFunction /> {m?.downloadMap.downloadMap}
+            <ExperimentalFunction /> {m?.downloadMap.downloadMap}
           </Modal.Title>
         </Modal.Header>
 
