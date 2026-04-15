@@ -4,13 +4,11 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { assert, is } from 'typia';
+import { assert } from 'typia';
 
-type CallbackData = {
-  freemap: {
-    action: 'purchase';
-    payload: string;
-  };
+type CallbackResult = {
+  success: boolean;
+  pendingBankTransfer: boolean;
 };
 
 export const purchaseProcessor: Processor<typeof purchase> = {
@@ -70,40 +68,52 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
-    const callbackResultPromise = new Promise<boolean>((resolve) => {
-      const msgListener = (e: MessageEvent) => {
-        const { data } = e;
+    const callbackResultPromise = new Promise<CallbackResult>(
+      (resolve, reject) => {
+        const bc = new BroadcastChannel('freemap-purchase');
 
-        if (e.origin === window.location.origin && is<CallbackData>(data)) {
-          const sp = new URLSearchParams(data.freemap.payload);
+        const closedInterval = setInterval(() => {
+          if (windowProxy.closed) {
+            clearInterval(closedInterval);
+
+            bc.close();
+
+            reject(new Error('popup closed'));
+          }
+        }, 500);
+
+        bc.onmessage = (e) => {
+          clearInterval(closedInterval);
+
+          bc.postMessage({ ok: true });
+
+          bc.close();
+
+          const sp = new URLSearchParams(e.data.search);
 
           const error = sp.get('error');
 
           if (error) {
-            throw new Error(error);
+            reject(new Error(error));
+
+            return;
           }
 
-          resolve(true);
+          const pendingBankTransfer =
+            sp.has('token') &&
+            sp.has('signature') &&
+            sp.get('currency') === 'EUR' &&
+            sp.has('amount_paid');
 
-          windowProxy.close();
-        }
-      };
-
-      const timer = window.setInterval(() => {
-        if (windowProxy.closed) {
-          window.clearInterval(timer);
-
-          window.removeEventListener('message', msgListener);
-
-          resolve(false);
-        }
-      }, 500);
-
-      window.addEventListener('message', msgListener);
-    });
+          resolve({ success: true, pendingBankTransfer });
+        };
+      },
+    );
 
     try {
-      if (!(await callbackResultPromise)) {
+      const callbackResult = await callbackResultPromise;
+
+      if (!callbackResult.success) {
         return;
       }
 
@@ -116,6 +126,17 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
       // refresh user data
       dispatch(authInit());
+
+      if (callbackResult.pendingBankTransfer) {
+        dispatch(
+          toastsAdd({
+            style: 'info',
+            messageKey: 'purchases.awaitingBankPayment',
+          }),
+        );
+
+        return;
+      }
 
       const purchase = action.payload;
 
@@ -145,6 +166,10 @@ export const purchaseProcessor: Processor<typeof purchase> = {
           break;
       }
     } catch (err) {
+      if (err instanceof Error && err.message === 'popup closed') {
+        return;
+      }
+
       console.error(err);
 
       dispatch(

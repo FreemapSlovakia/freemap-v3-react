@@ -1,11 +1,13 @@
 import { AuthProviders } from '@features/auth/components/AuthProviders.js';
 import {
   authDeleteAccount,
-  authFetchPurchases,
   authInit,
   authStartLogout,
 } from '@features/auth/model/actions.js';
-import type { Purchase } from '@features/auth/model/types.js';
+import type {
+  Purchase,
+  PurchasesResponse,
+} from '@features/auth/model/types.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -20,7 +22,15 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Accordion, Alert, Button, Form, Modal, Table } from 'react-bootstrap';
+import {
+  Accordion,
+  Alert,
+  Button,
+  Form,
+  Modal,
+  Spinner,
+  Table,
+} from 'react-bootstrap';
 import {
   FaAddressCard,
   FaCheck,
@@ -34,6 +44,8 @@ import {
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { assert } from 'typia';
+import { StringDates } from '@/shared/types/common.js';
 import { saveSettings, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
@@ -44,22 +56,8 @@ export function AccountModal({ show }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(authFetchPurchases());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(authInit());
   }, [dispatch]);
-
-  const purchasesUnsorted = useAppSelector((state) => state.auth.purchases);
-
-  const purchases = useMemo(
-    () =>
-      [...(purchasesUnsorted ?? [])].sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-      ),
-    [purchasesUnsorted],
-  );
 
   const user = useAppSelector((state) => state.auth.user);
 
@@ -78,7 +76,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = useCallback(() => {
     dispatch(setActiveModal(null));
 
     dispatch(
@@ -99,7 +97,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
         ],
       }),
     );
-  };
+  }, [dispatch]);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -125,7 +123,131 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
   const invalidName = !name.trim();
 
-  return !user ? null : (
+  const [state, setState] = useState<
+    | { type: 'error'; error: unknown }
+    | { type: 'fetching' }
+    | {
+        type: 'success';
+        result: PurchasesResponse;
+      }
+  >({ type: 'fetching' });
+
+  const authToken = user?.authToken;
+
+  useEffect(() => {
+    const ac = new AbortController();
+
+    (async () => {
+      const res = await fetch(process.env['API_URL'] + '/auth/purchases', {
+        signal: ac.signal,
+        headers: {
+          accept: 'application/json',
+          ...(authToken ? { authorization: 'Bearer ' + authToken } : {}),
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      const raw = assert<StringDates<PurchasesResponse>>(await res.json());
+
+      setState({
+        type: 'success',
+        result: {
+          purchases: raw.purchases.map(({ createdAt, ...rest }) => ({
+            ...rest,
+            createdAt: new Date(createdAt),
+          })),
+          intents: raw.intents.map(
+            ({ createdAt, updatedAt, expireAt, ...rest }) => ({
+              ...rest,
+              createdAt: new Date(createdAt),
+              updatedAt: new Date(updatedAt),
+              expireAt: new Date(expireAt),
+            }),
+          ),
+        },
+      });
+    })().catch((error) => {
+      if (ac.signal.aborted) {
+        return;
+      }
+
+      setState({ type: 'error', error });
+    });
+
+    return () => {
+      ac.abort();
+    };
+  }, [authToken]);
+
+  const showAwaitingBankPayment = Boolean(
+    state.type === 'success' &&
+      state.result.intents?.some(
+        (intent) => intent.status === 'awaiting_payment',
+      ),
+  );
+
+  const showBankPaymentFailed = Boolean(
+    state.type === 'success' &&
+      state.result.intents?.some((intent) => intent.status === 'rejected'),
+  );
+
+  const t = m?.purchases.bankIntentStatus;
+
+  const bankStatusMessages = useMemo(() => {
+    if (!t || state.type !== 'success') {
+      return [];
+    }
+
+    const statuses = new Set<string>(
+      state.result.intents
+        .map((intnet) => intnet.bankIntentStatus)
+        .filter((bankIntentStatus) => bankIntentStatus !== null),
+    );
+
+    const out: string[] = [];
+
+    const push = (status: string, text: string) => {
+      if (statuses.has(status)) {
+        out.push(text);
+      }
+    };
+
+    push('pending_settlement', t.pending_settlement);
+    push('manual_review', t.manual_review);
+    push('paid', t.paid);
+    push('expired', t.expired);
+    push('failed', t.failed);
+    push('rejected', t.rejected);
+    push('created', t.created);
+
+    for (const status of statuses) {
+      if (
+        ![
+          'pending_settlement',
+          'manual_review',
+          'paid',
+          'expired',
+          'failed',
+          'rejected',
+          'created',
+          '',
+        ].includes(status)
+      ) {
+        out.push(t.unknown.replace('{}', status));
+      }
+    }
+
+    return out;
+  }, [t, state]);
+
+  if (!user) {
+    return null;
+  }
+
+  return (
     <Modal show={show} onHide={close}>
       <Form
         onSubmit={(e) => {
@@ -148,7 +270,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
         </Modal.Header>
 
         <Modal.Body className="bg-body-tertiary">
-          <Accordion>
+          <Accordion defaultActiveKey="payments">
             <Accordion.Item eventKey="payments">
               <Accordion.Header>
                 <span>
@@ -184,39 +306,85 @@ export function AccountModal({ show }: Props): ReactElement | null {
                   </Alert>
                 )}
 
-                <CreditsAlert buy explainCredits />
+                {(() => {
+                  switch (state.type) {
+                    case 'fetching':
+                      return (
+                        <div className="d-flex flex-column">
+                          <Spinner
+                            className="align-self-center"
+                            animation="border"
+                          />
+                        </div>
+                      );
+                    case 'error':
+                      return (
+                        <Alert variant="danger">
+                          {m?.general.loadError({
+                            err: state.error?.toString() ?? '',
+                          })}
+                        </Alert>
+                      );
+                    case 'success':
+                      return (
+                        <>
+                          {showAwaitingBankPayment && (
+                            <Alert variant="info">
+                              <FaShoppingBasket />{' '}
+                              {m?.purchases.awaitingBankPayment}
+                            </Alert>
+                          )}
 
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>{m?.purchases.date}</th>
-                      <th>{m?.purchases.item}</th>
-                    </tr>
-                  </thead>
+                          {showBankPaymentFailed && (
+                            <Alert variant="danger">
+                              <FaExclamationTriangle />{' '}
+                              {m?.purchases.bankPaymentFailed}
+                            </Alert>
+                          )}
 
-                  <tbody>
-                    {!purchases ? (
-                      <tr key="loading">
-                        <td colSpan={2} className="text-center">
-                          {m?.general.loading}
-                        </td>
-                      </tr>
-                    ) : purchases.length === 0 ? (
-                      <tr key="empty">
-                        <td colSpan={2} className="text-center">
-                          {m?.purchases.noPurchases}
-                        </td>
-                      </tr>
-                    ) : (
-                      [...purchases].sort().map((purchase, i) => (
-                        <tr key={i}>
-                          <td>{dateFormat.format(purchase.createdAt)}</td>
-                          <td>{itemToString(purchase.item)}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </Table>
+                          {bankStatusMessages.length > 0 && (
+                            <Alert variant="secondary">
+                              <ul className="mb-0 ps-3">
+                                {bankStatusMessages.map((message) => (
+                                  <li key={message}>{message}</li>
+                                ))}
+                              </ul>
+                            </Alert>
+                          )}
+
+                          <CreditsAlert buy explainCredits />
+
+                          <Table>
+                            <thead>
+                              <tr>
+                                <th>{m?.purchases.date}</th>
+                                <th>{m?.purchases.item}</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {state.result.purchases.length === 0 ? (
+                                <tr key="empty">
+                                  <td colSpan={2} className="text-center">
+                                    {m?.purchases.noPurchases}
+                                  </td>
+                                </tr>
+                              ) : (
+                                state.result.purchases.map((purchase, i) => (
+                                  <tr key={i}>
+                                    <td>
+                                      {dateFormat.format(purchase.createdAt)}
+                                    </td>
+                                    <td>{itemToString(purchase.item)}</td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </Table>
+                        </>
+                      );
+                  }
+                })()}
               </Accordion.Body>
             </Accordion.Item>
 

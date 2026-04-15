@@ -11,7 +11,6 @@ import { authWithGarminProcessor } from '@features/auth/model/processors/authWit
 import { authWithGoogleProcessor } from '@features/auth/model/processors/authWithGoogleProcessor.js';
 import { authWithOsm2Processor } from '@features/auth/model/processors/authWithOsm2Processor.js';
 import { authWithOsmProcessor } from '@features/auth/model/processors/authWithOsmProcessor.js';
-import { fetchPurchasesProcessor } from '@features/auth/model/processors/fetchPurchasesProcessor.js';
 import { purchaseProcessor } from '@features/auth/model/processors/purchaseProcessor.js';
 import {
   changesetsProcessor,
@@ -176,7 +175,6 @@ export const processors = [
   authWithOsm2Processor,
   authWithGarminProcessor,
   authWithGarmin2Processor,
-  fetchPurchasesProcessor,
   downloadMapProcessor,
   purchaseProcessor,
   urlProcessor,

@@ -145,7 +145,11 @@ export function getInitialState() {
     initial.l10n = { ...l10nInitialState, ...persisted.l10n };
   }
 
-  if (is<Partial<StringDates<Omit<AuthState, 'purchases'>>>>(persisted.auth)) {
+  if (
+    is<Partial<StringDates<Omit<AuthState, 'purchases' | 'purchaseIntents'>>>>(
+      persisted.auth,
+    )
+  ) {
     initial.auth = {
       ...authInitialState,
       ...persisted.auth,
