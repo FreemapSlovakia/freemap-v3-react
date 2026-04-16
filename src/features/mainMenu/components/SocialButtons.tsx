@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import clsx from 'clsx';
+import storage from 'local-storage-fallback';
 import { type ReactElement, useState } from 'react';
 import { FaFacebook, FaGithub, FaMastodon, FaYoutube } from 'react-icons/fa';
 import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
@@ -13,11 +14,17 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
   const m = useMessages();
 
   const [currentTheme, setCurrentTheme] = useState(
-    localStorage.getItem('fm.theme') ?? 'auto',
+    storage.getItem('fm.theme') ?? 'auto',
   );
 
   function setTheme(theme: 'dark' | 'light' | 'auto') {
     setCurrentTheme(theme);
+
+    if (theme === 'auto') {
+      storage.removeItem('fm.theme');
+    } else {
+      storage.setItem('fm.theme', theme);
+    }
 
     window.applyTheme(theme);
   }

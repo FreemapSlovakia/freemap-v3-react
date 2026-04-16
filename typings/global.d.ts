@@ -47,7 +47,17 @@ declare module '*.module.css' {
   export default classes;
 }
 
+declare module '*.css' {
+  const classes: Record<string, string>;
+  export default classes;
+}
+
 declare module '*.module.scss' {
+  const classes: Record<string, string>;
+  export default classes;
+}
+
+declare module '*.scss' {
   const classes: Record<string, string>;
   export default classes;
 }

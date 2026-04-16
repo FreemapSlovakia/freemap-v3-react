@@ -215,22 +215,8 @@
     <!-- End Facebook Pixel Code -->
 
     <script type="module">
-      function applyTheme(t) {
-        let theme;
-
-        try {
-          if (t === 'auto') {
-            localStorage.removeItem('fm.theme');
-          } else if (t) {
-            localStorage.setItem('fm.theme', t);
-
-            theme = t;
-          } else {
-            theme = localStorage.getItem('fm.theme');
-          }
-        } catch (e) {
-          // ignore
-        }
+      function applyTheme() {
+        const theme = (window.localStorage ?? window.localStorageFallback)?.getItem('fm.theme');
 
         const isDark =
           theme === 'dark' ||
@@ -245,7 +231,7 @@
 
       window
         .matchMedia?.('(prefers-color-scheme: dark)')
-        ?.addEventListener('change', applyTheme);
+        ?.addEventListener('change', (e) => applyTheme());
 
       applyTheme();
 

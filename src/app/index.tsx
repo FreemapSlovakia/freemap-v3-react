@@ -20,6 +20,8 @@ import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 
+window.localStorageFallback = storage;
+
 if (
   window.location.search === '?reset-local-storage' ||
   window.location.hash === '#reset-local-storage'
