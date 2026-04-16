@@ -46,7 +46,7 @@ export async function fetchPictures(getState: () => RootState) {
     expectedStatus: 200,
   });
 
-  return assert<StringDates<Picture>[]>(await res.json()).map(p => ({
+  return assert<StringDates<Picture>[]>(await res.json()).map((p) => ({
     ...p,
     createdAt: p.createdAt == null ? p.createdAt : new Date(p.createdAt),
     takenAt: p.takenAt == null ? p.takenAt : new Date(p.takenAt),

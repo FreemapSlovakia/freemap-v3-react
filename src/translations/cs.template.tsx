@@ -532,8 +532,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     bankPaymentFailed:
       'Některé bankovní převody byly zamítnuty nebo vypršely. Pokud si myslíte, že jde o omyl, kontaktujte prosím podporu.',
     bankIntentStatus: {
-      pending_settlement:
-        'Bankovní převod je vytvořen a čeká na vypořádání.',
+      pending_settlement: 'Bankovní převod je vytvořen a čeká na vypořádání.',
       manual_review:
         'Bankovní převod vyžaduje ruční kontrolu (např. nesoulad částky).',
       paid: 'Bankovní převod byl potvrzen jako zaplacený.',

@@ -557,16 +557,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     bankPaymentFailed:
       'Néhány banki átutalás elutasításra került vagy lejárt. Ha úgy gondolod, hogy ez tévedés, vedd fel a kapcsolatot az ügyfélszolgálattal.',
     bankIntentStatus: {
-      pending_settlement:
-        'A banki átutalás létrejött, és elszámolásra vár.',
+      pending_settlement: 'A banki átutalás létrejött, és elszámolásra vár.',
       manual_review:
         'A banki átutalás kézi ellenőrzést igényel (pl. összegeltérés).',
       paid: 'A banki átutalás fizetettként megerősítve.',
       expired: 'A banki átutalás a megerősítés előtt lejárt.',
       failed: 'A banki átutalás sikertelen volt.',
       rejected: 'A banki átutalás elutasítva.',
-      created:
-        'A fizetési szándék létrejött, de még nincs elszámolva.',
+      created: 'A fizetési szándék létrejött, de még nincs elszámolva.',
       unknown: 'A szolgáltató által jelentett banki státusz: {}.',
     },
     noPurchases: 'Nincsenek vásárlások',

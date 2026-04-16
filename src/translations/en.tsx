@@ -533,7 +533,8 @@ const messages: Messages = {
     bankPaymentFailed:
       'Some bank transfers were rejected or expired. If you believe this is a mistake, please contact support.',
     bankIntentStatus: {
-      pending_settlement: 'Bank transfer was placed and is awaiting settlement.',
+      pending_settlement:
+        'Bank transfer was placed and is awaiting settlement.',
       manual_review:
         'Bank transfer requires manual review (for example amount mismatch).',
       paid: 'Bank transfer has been confirmed as paid.',
