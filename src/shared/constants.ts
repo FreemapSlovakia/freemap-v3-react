@@ -19,6 +19,7 @@ export const basicModals = [
   'login',
   'map-settings',
   'maps',
+  'offline-maps',
   'premium',
   'support-us',
   'tracking-my',

@@ -1009,7 +1009,9 @@ function parseColorAndLabel(m: string) {
       } else if (field[0] === 'W') {
         width = Number(field.slice(1)) || undefined;
       } else if (field[0] === 'D') {
-        dashArray = field.slice(1) ? field.slice(1).split(',').map(Number) : undefined;
+        dashArray = field.slice(1)
+          ? field.slice(1).split(',').map(Number)
+          : undefined;
       } else if (field[0] === 'K') {
         lineCap =
           field[1] === 'b' ? 'butt' : field[1] === 's' ? 'square' : undefined;

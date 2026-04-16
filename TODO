@@ -1,0 +1,8 @@
+TODO:
+
+- support also overlay maps
+- rendering is low-dpi
+- attribution is not stored
+- what happens if i close tab while map is downloaded? od is map downloading done in service worker?
+- CachedTileMapDef should "extend" from LayerDef, then we could call `getLayer` in src/app/components/Layers.tsx
+- CachedTileMapDef should be composed from types in src/shared/mapDefinitions.tsx except its intristic attributes

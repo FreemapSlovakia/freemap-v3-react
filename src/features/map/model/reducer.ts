@@ -1,5 +1,13 @@
 import { applySettings } from '@app/store/actions.js';
 import { authSetUser } from '@features/auth/model/actions.js';
+import {
+  cachedMapDeleted,
+  cachedMapsLoaded,
+  cacheTilesCancel,
+  cacheTilesComplete,
+  cacheTilesProgress,
+  cacheTilesStart,
+} from '@features/cachedMaps/model/actions.js';
 import { gallerySetFilter } from '@features/gallery/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
@@ -41,6 +49,7 @@ export const mapInitialState: MapState = {
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
   customLayers: [],
+  cachedMaps: [],
   legacyMapWarningSuppressions: [],
   tempLegacyMapWarningSuppressions: [],
   esriAttribution: [],
@@ -100,7 +109,11 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
       // TODO can cache (use selector?)
       const baseTypes = new Set(
-        [...integratedLayerDefs, ...state.customLayers]
+        [
+          ...integratedLayerDefs,
+          ...state.customLayers,
+          ...state.cachedMaps.map((m) => ({ type: m.id, layer: m.layer })),
+        ]
           .filter((def) => def.layer === 'base')
           .map((def) => def.type),
       );
@@ -215,5 +228,52 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         state.lon = payload.longitude;
         state.zoom = 9;
       }
+    })
+    .addCase(cachedMapsLoaded, (state, action) => {
+      state.cachedMaps = action.payload;
+    })
+    .addCase(cacheTilesStart, (state, { payload }) => {
+      state.cachedMaps.push({
+        id: payload.id,
+        name: payload.name,
+        sourceType: payload.sourceType,
+        technology: payload.technology,
+        urlTemplate: payload.urlTemplate,
+        layer: 'base',
+        minZoom: payload.minZoom,
+        maxZoom: payload.maxZoom,
+        bounds: payload.bounds,
+        tileCount: payload.tileCount,
+        downloadedCount: 0,
+        cacheName: `tiles-${payload.id}`,
+        createdAt: new Date().toISOString(),
+        sizeBytes: 0,
+        extraScales: payload.extraScales,
+        scaleWithDpi: payload.scaleWithDpi,
+        attribution: payload.attribution,
+      });
+    })
+    .addCase(cacheTilesProgress, (state, { payload }) => {
+      const map = state.cachedMaps.find((m) => m.id === payload.id);
+
+      if (map) {
+        map.downloadedCount = payload.downloaded;
+        map.sizeBytes = payload.sizeBytes;
+      }
+    })
+    .addCase(cacheTilesComplete, (state, { payload }) => {
+      const map = state.cachedMaps.find((m) => m.id === payload.id);
+
+      if (map) {
+        map.downloadedCount = map.tileCount;
+      }
+    })
+    .addCase(cacheTilesCancel, (state, { payload }) => {
+      state.cachedMaps = state.cachedMaps.filter((m) => m.id !== payload.id);
+    })
+    .addCase(cachedMapDeleted, (state, { payload }) => {
+      state.cachedMaps = state.cachedMaps.filter((m) => m.id !== payload.id);
+
+      state.layers = state.layers.filter((l) => l !== payload.id);
     }),
 );

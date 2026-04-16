@@ -33,13 +33,21 @@ export function useResolvedAttribution(
 ): [string, ReactElement][] | null {
   const m = useMessages();
 
+  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
+  const cachedAttrs = cachedMaps
+    .filter((cm) => layers.includes(cm.id) && cm.attribution)
+    .flatMap((cm) => cm.attribution!);
+
   const categorized = categorize(
-    integratedLayerDefs
-      .filter(({ type }) => layers.includes(type))
-      .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[])
-      .filter(
-        (def) => !countries || !def.country || countries.includes(def.country),
-      ),
+    [
+      ...integratedLayerDefs
+        .filter(({ type }) => layers.includes(type))
+        .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+      ...cachedAttrs,
+    ].filter(
+      (def) => !countries || !def.country || countries.includes(def.country),
+    ),
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);

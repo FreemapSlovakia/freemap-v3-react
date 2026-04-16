@@ -2,10 +2,9 @@ import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { pointToTile, tileToGeoJSON } from '@mapbox/tilebelt';
-import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
@@ -14,9 +13,11 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import bbox from '@turf/bbox';
+import {
+  countTilesInBbox,
+  countTilesInPolygon,
+} from '@shared/tileEnumeration.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
-import { booleanIntersects } from '@turf/boolean-intersects';
 import { polygon } from '@turf/helpers';
 import { BBox } from 'geojson';
 import {
@@ -35,14 +36,7 @@ import {
   InputGroup,
   Modal,
 } from 'react-bootstrap';
-import {
-  FaDownload,
-  FaDrawPolygon,
-  FaEye,
-  FaHistory,
-  FaTimes,
-} from 'react-icons/fa';
-import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
+import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 
@@ -155,6 +149,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   const bounds = useAppSelector((state) => state.map.bounds);
 
   const tileCount = useMemo(() => {
+    const minZ = Number(minZoom);
+    const maxZ = Number(maxZoom);
+
     if (selectedLine?.type === 'polygon' && area === 'selected') {
       const poly = polygon([
         [
@@ -163,37 +160,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         ],
       ]);
 
-      const bboxExtent = bbox(poly);
-
-      let count = 0;
-
-      for (let z = Number(minZoom); z <= Number(maxZoom); z++) {
-        const minTile = pointToTile(bboxExtent[0], bboxExtent[3], z);
-        const maxTile = pointToTile(bboxExtent[2], bboxExtent[1], z);
-
-        for (let x = minTile[0]; x <= maxTile[0]; x++) {
-          for (let y = minTile[1]; y <= maxTile[1]; y++) {
-            if (booleanIntersects(poly, tileToGeoJSON([x, y, z]))) {
-              count++;
-            }
-          }
-        }
-      }
-
-      return count;
+      return countTilesInPolygon(poly, minZ, maxZ);
     }
 
     if (area === 'visible' && bounds) {
-      let count = 0;
-
-      for (let zoom = Number(minZoom); zoom <= Number(maxZoom); zoom++) {
-        const from = pointToTile(bounds[0], bounds[1], zoom);
-        const to = pointToTile(bounds[2], bounds[3], zoom);
-
-        count += (to[0] - from[0] + 1) * (from[1] - to[1] + 1);
-      }
-
-      return count > 1_000_000_000 ? Infinity : count;
+      return countTilesInBbox(bounds, minZ, maxZ);
     }
 
     return undefined;
@@ -292,34 +263,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   }, [m, mapType, nameChanged]);
 
   function getItem(def: IntegratedLayerDef) {
-    return (
-      <>
-        {def.layer === 'base' ? (
-          <TbLayersSelected className="opacity-50" />
-        ) : (
-          <TbLayersSelectedBottom className="opacity-50" />
-        )}
-
-        <span className="px-2">{def.icon}</span>
-
-        {m?.mapLayers.letters[def.type]}
-
-        {def.type !== 'X' &&
-          def.countries?.map((country) => (
-            <Emoji className="ms-1" key={country}>
-              {countryCodeToFlag(country)}
-            </Emoji>
-          ))}
-
-        {def.superseededBy && (
-          <FaHistory className="text-warning ms-1" title={m?.maps.legacy} />
-        )}
-
-        {def.experimental && (
-          <ExperimentalFunction data-interactive="1" className="ms-1" />
-        )}
-      </>
-    );
+    return <MapLayerItem def={def} />;
   }
 
   return (

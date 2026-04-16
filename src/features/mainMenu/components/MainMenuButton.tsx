@@ -1,20 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
-import { clearCache, setCacheMode, setCachingActive } from '@shared/cache.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { CacheMode } from '@shared/types/common.js';
-import { get } from 'idb-keyval';
-import {
-  Fragment,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { Fragment, ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { HelpSubmenu } from './HelpSubmenu.js';
@@ -36,59 +27,8 @@ export function MainMenuButton(): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  const [cacheMode, setCacheModeLocal] = useState<CacheMode>('networkOnly');
-
-  const [cachingActive, setCachingActiveLocal] = useState<boolean>(false);
-
-  const [cacheExists, setCacheExists] = useState(false);
-
-  const {
-    handleSelect,
-    menuShown,
-    handleMenuToggle,
-    closeMenu,
-    submenu,
-    extraHandler,
-  } = useMenuHandler();
-
-  extraHandler.current = useCallback(
-    (eventKey: string) => {
-      if (eventKey.startsWith('cacheMode-')) {
-        const cacheMode = eventKey.slice(10) as CacheMode;
-
-        setCacheMode(cacheMode);
-
-        setCacheModeLocal(cacheMode);
-      } else if (eventKey === 'caching-active-toggle') {
-        setCachingActive(!cachingActive).then(() => {
-          setCacheExists(true);
-        });
-
-        setCachingActiveLocal((a) => !a);
-      } else if (eventKey === 'cache-clear') {
-        clearCache().then(() => {
-          setCacheExists(false);
-        });
-      } else {
-        return false;
-      }
-
-      return true;
-    },
-    [cachingActive],
-  );
-
-  useEffect(() => {
-    get('cacheMode').then((cacheMode) =>
-      setCacheModeLocal(cacheMode ?? 'networkOnly'),
-    );
-
-    caches.keys().then((key) => setCacheExists(key.includes('offline')));
-  }, []);
-
-  useEffect(() => {
-    get('cachingActive').then(setCachingActiveLocal);
-  }, []);
+  const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
+    useMenuHandler();
 
   return (
     <Dropdown
@@ -115,11 +55,7 @@ export function MainMenuButton(): ReactElement {
           {submenu === null ? (
             <MainMenu />
           ) : submenu === 'offline' ? (
-            <OfflineSubmenu
-              cacheMode={cacheMode}
-              cacheExists={cacheExists}
-              cachingActive={cachingActive}
-            />
+            <OfflineSubmenu />
           ) : submenu === 'help' ? (
             <HelpSubmenu />
           ) : submenu === 'openExternally' ? (

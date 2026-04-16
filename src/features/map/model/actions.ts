@@ -1,5 +1,6 @@
 import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
+import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { Shortcut } from '@shared/types/common.js';
 
@@ -22,6 +23,7 @@ export type LayerSettings = {
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   customLayers: CustomLayerDef[];
+  cachedMaps: CachedTileMapDef[];
 }
 
 export const mapRefocus = createAction<

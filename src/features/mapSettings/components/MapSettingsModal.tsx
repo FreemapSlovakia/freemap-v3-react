@@ -42,6 +42,8 @@ export function MapSettingsModal({ show }: Props): ReactElement {
     initialCustomLayerDefs,
   );
 
+  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
   const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
 
   const [maxZoom, setMaxZoom] = useState(initialMaxZoom);
@@ -114,6 +116,7 @@ export function MapSettingsModal({ show }: Props): ReactElement {
                   layersSettings={layersSettings}
                   setLayersSettings={setLayersSettings}
                   customLayers={customLayerDefs}
+                  cachedMaps={cachedMaps}
                 />
               </Accordion.Body>
             </Accordion.Item>

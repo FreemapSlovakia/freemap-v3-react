@@ -136,6 +136,8 @@ export function MapSwitchButton(): ReactElement {
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
+  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
   const countries = useAppSelector((state) => state.map.countries);
 
   const countriesSet = countries && new Set(countries);
@@ -143,6 +145,20 @@ export function MapSwitchButton(): ReactElement {
   const layerDefs = [
     ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
     ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
+    ...cachedMaps
+      .filter((cm) => cm.downloadedCount === cm.tileCount)
+      .map((cm) => ({
+        type: cm.id,
+        name: cm.name,
+        layer: 'base' as const,
+        technology: cm.technology,
+        custom: true as const,
+        icon: undefined,
+        minZoom: cm.minZoom,
+        shortcut: undefined as undefined,
+        defaultInToolbar: false,
+        defaultInMenu: false,
+      })),
   ].map((def) => ({
     scaleWithDpi: false,
     ...def,

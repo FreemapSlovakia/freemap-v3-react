@@ -1,25 +1,56 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { Checkbox } from '@shared/components/Checkbox.js';
-import { CacheMode } from '@shared/types/common.js';
-import { JSX } from 'react';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import type { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import { FaEraser, FaRegCheckCircle, FaRegCircle } from 'react-icons/fa';
+import { FaDatabase, FaPlus } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
-type Props = {
-  className?: string;
-  cacheMode: CacheMode;
-  cachingActive: boolean;
-  cacheExists: boolean;
-};
+function formatSize(bytes: number): string {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
 
-export function OfflineSubmenu({
-  cacheMode,
-  cachingActive,
-  cacheExists,
-}: Props): JSX.Element {
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+
+  if (bytes < 1024 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+}
+
+export function OfflineSubmenu(): JSX.Element {
   const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
+  const activeDownloads = useAppSelector(
+    (state) => state.cachedMaps.activeDownloads,
+  );
+
+  const completedMaps = cachedMaps.filter(
+    (cm) => cm.downloadedCount === cm.tileCount,
+  );
+
+  const totalSize = cachedMaps.reduce((sum, cm) => sum + cm.sizeBytes, 0);
+
+  const nf = useNumberFormat({
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  const downloadingEntry = Object.entries(activeDownloads).find(
+    ([, dl]) => dl.status === 'downloading',
+  );
 
   return (
     <>
@@ -27,42 +58,38 @@ export function OfflineSubmenu({
 
       <Dropdown.Item
         as="button"
-        eventKey="caching-active-toggle"
-        disabled={cacheMode === 'cacheOnly'}
+        onClick={() => {
+          dispatch(cachedMapsSetView('list'));
+          dispatch(setActiveModal('offline-maps'));
+        }}
       >
-        <Checkbox value={cachingActive} /> {m?.offline.cachingActive}
+        <FaDatabase />{' '}
+        {completedMaps.length > 0
+          ? `${nf.format(completedMaps.length)} ${completedMaps.length === 1 ? 'map' : 'maps'} (${formatSize(totalSize)})`
+          : 'No offline maps'}
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="cache-clear" disabled={!cacheExists}>
-        <FaEraser /> {m?.offline.clearCache}
-      </Dropdown.Item>
-
-      <Dropdown.Divider />
-
-      <Dropdown.Header>{m?.offline.dataSource}</Dropdown.Header>
-
-      <Dropdown.Item as="button" eventKey="cacheMode-networkOnly">
-        {cacheMode === 'networkOnly' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.offline.networkOnly}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="cacheMode-networkFirst">
-        {cacheMode === 'networkFirst' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.offline.networkFirst}
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="cacheMode-cacheFirst">
-        {cacheMode === 'cacheFirst' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.offline.cacheFirst}
-      </Dropdown.Item>
+      {downloadingEntry && (
+        <Dropdown.Item as="button" disabled>
+          <em>
+            Caching...{' '}
+            {Math.round(
+              (downloadingEntry[1].downloaded / downloadingEntry[1].total) *
+                100,
+            )}
+            %
+          </em>
+        </Dropdown.Item>
+      )}
 
       <Dropdown.Item
         as="button"
-        eventKey="cacheMode-cacheOnly"
-        disabled={!cacheExists}
+        onClick={() => {
+          dispatch(cachedMapsSetView('add'));
+          dispatch(setActiveModal('offline-maps'));
+        }}
       >
-        {cacheMode === 'cacheOnly' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.offline.cacheOnly}
+        <FaPlus /> Cache map for offline use
       </Dropdown.Item>
     </>
   );

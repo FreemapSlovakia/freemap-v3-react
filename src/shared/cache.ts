@@ -1,41 +1,12 @@
-import { CacheMode } from '@shared/types/common.js';
-import { get, set } from 'idb-keyval';
+import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
+import { del, get, set } from 'idb-keyval';
 
-// export async function initCaching() {
-// const [cacheMode, cachingActive] = await Promise.all([
-//   get<CacheMode>('cacheMode'),
-//   get<boolean>('cachingActive'),
-// ]);
-//
-// if (!cachingActive && (!cacheMode || cacheMode === 'networkOnly')) {
-//   const reg = await window.navigator.serviceWorker.getRegistration('/sw.js');
-//
-//   reg?.unregister();
-// } else {
-//   await window.navigator.serviceWorker?.register('/sw.js');
-// }
-// }
+const STATIC_CACHE_NAME = 'offline-static';
 
-export async function setCacheMode(cacheMode: CacheMode) {
-  await set('cacheMode', cacheMode);
+const CACHED_TILE_MAPS_KEY = 'cachedTileMaps';
 
-  // await initCaching();
-}
-
-export async function setCachingActive(active: boolean) {
-  if (active) {
-    await cacheLocal();
-  }
-
-  await set('cachingActive', active);
-
-  // await initCaching();
-}
-
-const OFFLINE_CACHE_NAME = 'offline';
-
-async function cacheLocal() {
-  const cache = await caches.open(OFFLINE_CACHE_NAME);
+export async function cacheStaticAssets(): Promise<void> {
+  const cache = await caches.open(STATIC_CACHE_NAME);
 
   const res = await fetch('./assets-manifest.json');
 
@@ -44,10 +15,48 @@ async function cacheLocal() {
   await cache.addAll([...new Set(Object.values(data) as string[])]);
 }
 
-export async function clearCache() {
-  await caches.delete(OFFLINE_CACHE_NAME);
+export async function isStaticCacheReady(): Promise<boolean> {
+  return caches.has(STATIC_CACHE_NAME);
+}
 
-  if (await get('cachingActive')) {
-    await cacheLocal();
+export async function clearStaticCache(): Promise<void> {
+  await caches.delete(STATIC_CACHE_NAME);
+}
+
+export async function getCachedTileMaps(): Promise<CachedTileMapDef[]> {
+  return (await get<CachedTileMapDef[]>(CACHED_TILE_MAPS_KEY)) ?? [];
+}
+
+export async function saveCachedTileMap(meta: CachedTileMapDef): Promise<void> {
+  const maps = await getCachedTileMaps();
+
+  const idx = maps.findIndex((m) => m.id === meta.id);
+
+  if (idx >= 0) {
+    maps[idx] = meta;
+  } else {
+    maps.push(meta);
+  }
+
+  await set(CACHED_TILE_MAPS_KEY, maps);
+}
+
+export async function deleteCachedTileMap(id: string): Promise<void> {
+  const maps = await getCachedTileMaps();
+
+  const meta = maps.find((m) => m.id === id);
+
+  if (meta) {
+    await caches.delete(meta.cacheName);
+  }
+
+  const remaining = maps.filter((m) => m.id !== id);
+
+  if (remaining.length === 0) {
+    await del(CACHED_TILE_MAPS_KEY);
+
+    await clearStaticCache();
+  } else {
+    await set(CACHED_TILE_MAPS_KEY, remaining);
   }
 }

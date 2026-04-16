@@ -19,6 +19,7 @@ declare global {
     };
     Sentry?: typeof Sentry;
     applyTheme: (theme?: 'dark' | 'light' | 'auto') => void;
+    localStorageFallback?: StorageFallback;
   }
 
   interface ServiceWorkerGlobalScope {
@@ -105,12 +106,6 @@ export type MessagePaths = Leaves<Messages>;
 export interface OffscreenCanvas extends EventTarget {
   getContext: (contextId: '2d') => CanvasRenderingContext2D;
 }
-
-export type CacheMode =
-  | 'networkOnly'
-  | 'networkFirst'
-  | 'cacheFirst'
-  | 'cacheOnly';
 
 export type Shortcut = {
   code: string; // event.code of main key
