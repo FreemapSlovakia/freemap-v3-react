@@ -7,7 +7,7 @@ import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { getCachedTileMaps } from '@shared/cache.js';
+import { getCachedTileMaps, syncStaticCache } from '@shared/cache.js';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -66,6 +66,10 @@ getCachedTileMaps().then((maps) => {
   if (maps.length > 0) {
     store.dispatch(cachedMapsLoaded(maps));
   }
+});
+
+syncStaticCache().catch((err) => {
+  console.warn('Static cache sync failed:', err);
 });
 
 window.addEventListener('popstate', () => {

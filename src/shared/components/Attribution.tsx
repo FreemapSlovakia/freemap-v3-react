@@ -36,7 +36,7 @@ export function useResolvedAttribution(
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
   const cachedAttrs = cachedMaps
-    .filter((cm) => layers.includes(cm.id) && cm.attribution)
+    .filter((cm) => layers.includes(cm.type) && cm.attribution)
     .flatMap((cm) => cm.attribution!);
 
   const categorized = categorize(

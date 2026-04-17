@@ -87,12 +87,8 @@ export function MapLayersSettings({
     ...cachedMaps
       .filter((cm) => cm.downloadedCount === cm.tileCount)
       .map((cm) => ({
-        type: cm.id,
-        name: cm.name,
-        layer: cm.layer,
-        technology: cm.technology,
+        ...cm,
         countries: [] as string[],
-        adminOnly: false,
         icon: <BiWifiOff />,
         defaultInToolbar: false,
         defaultInMenu: false,

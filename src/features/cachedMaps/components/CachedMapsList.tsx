@@ -11,6 +11,7 @@ import {
   cachedMapsSetView,
   cacheTilesCancel,
   cacheTilesPause,
+  cacheTilesRestart,
   cacheTilesResume,
 } from '../model/actions.js';
 
@@ -62,7 +63,7 @@ export function CachedMapsList(): ReactElement {
           </p>
         ) : (
           <>
-            <Table striped bordered responsive size="sm">
+            <Table striped bordered responsive>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -76,7 +77,7 @@ export function CachedMapsList(): ReactElement {
 
               <tbody>
                 {cachedMaps.map((cm) => {
-                  const dl = activeDownloads[cm.id];
+                  const dl = activeDownloads[cm.type];
 
                   const isComplete = cm.downloadedCount === cm.tileCount;
 
@@ -87,10 +88,10 @@ export function CachedMapsList(): ReactElement {
                       : Math.round((cm.downloadedCount / cm.tileCount) * 100);
 
                   return (
-                    <tr key={cm.id}>
+                    <tr key={cm.type}>
                       <td>{cm.name}</td>
                       <td>
-                        {cm.minZoom}&ndash;{cm.maxZoom}
+                        {cm.minZoom}&ndash;{cm.maxNativeZoom}
                       </td>
                       <td>{nf.format(cm.tileCount)}</td>
                       <td>{formatSize(dl?.sizeBytes ?? cm.sizeBytes)}</td>
@@ -119,7 +120,7 @@ export function CachedMapsList(): ReactElement {
                             variant="outline-secondary"
                             className="me-1"
                             onClick={() =>
-                              dispatch(cacheTilesPause({ id: cm.id }))
+                              dispatch(cacheTilesPause({ id: cm.type }))
                             }
                             title="Pause"
                           >
@@ -133,7 +134,7 @@ export function CachedMapsList(): ReactElement {
                             variant="outline-secondary"
                             className="me-1"
                             onClick={() =>
-                              dispatch(cacheTilesResume({ id: cm.id }))
+                              dispatch(cacheTilesResume({ id: cm.type }))
                             }
                             title="Resume"
                           >
@@ -147,11 +148,25 @@ export function CachedMapsList(): ReactElement {
                             variant="outline-danger"
                             className="me-1"
                             onClick={() =>
-                              dispatch(cacheTilesCancel({ id: cm.id }))
+                              dispatch(cacheTilesCancel({ id: cm.type }))
                             }
                             title="Cancel"
                           >
                             <FaTimes />
+                          </Button>
+                        )}
+
+                        {!dl && !isComplete && (
+                          <Button
+                            size="sm"
+                            variant="outline-primary"
+                            className="me-1"
+                            onClick={() =>
+                              dispatch(cacheTilesRestart({ id: cm.type }))
+                            }
+                            title="Resume"
+                          >
+                            <FaPlay />
                           </Button>
                         )}
 
@@ -160,7 +175,7 @@ export function CachedMapsList(): ReactElement {
                             size="sm"
                             variant="outline-danger"
                             onClick={() =>
-                              dispatch(cachedMapDeleted({ id: cm.id }))
+                              dispatch(cachedMapDeleted({ id: cm.type }))
                             }
                             title="Delete"
                           >

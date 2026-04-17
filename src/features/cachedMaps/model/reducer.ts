@@ -7,6 +7,7 @@ import {
   cacheTilesError,
   cacheTilesPause,
   cacheTilesProgress,
+  cacheTilesRestart,
   cacheTilesResume,
   cacheTilesStart,
 } from './actions.js';
@@ -34,10 +35,10 @@ export const cachedMapsReducer = createReducer(
   (builder) =>
     builder
       .addCase(cacheTilesStart, (state, { payload }) => {
-        state.activeDownloads[payload.id] = {
+        state.activeDownloads[payload.meta.type] = {
           status: 'downloading',
           downloaded: 0,
-          total: payload.tileCount,
+          total: payload.meta.tileCount,
           sizeBytes: 0,
         };
 
@@ -50,6 +51,14 @@ export const cachedMapsReducer = createReducer(
           dl.downloaded = payload.downloaded;
           dl.sizeBytes = payload.sizeBytes;
         }
+      })
+      .addCase(cacheTilesRestart, (state, { payload }) => {
+        state.activeDownloads[payload.id] = {
+          status: 'downloading',
+          downloaded: 0,
+          total: 0,
+          sizeBytes: 0,
+        };
       })
       .addCase(cacheTilesComplete, (state, { payload }) => {
         delete state.activeDownloads[payload.id];

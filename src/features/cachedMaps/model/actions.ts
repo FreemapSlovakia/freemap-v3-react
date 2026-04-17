@@ -1,20 +1,9 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
-import type { AttributionDef } from '@shared/mapDefinitions.js';
 
 export interface CacheTilesStartPayload {
-  id: string;
-  name: string;
-  sourceType: string;
-  technology: 'tile' | 'wms';
-  urlTemplate: string;
-  minZoom: number;
-  maxZoom: number;
-  bounds: [number, number, number, number];
-  tileCount: number;
-  extraScales?: number[];
-  scaleWithDpi?: boolean;
-  attribution?: AttributionDef[];
+  /** The full CachedTileMapDef with downloadedCount=0 and sizeBytes=0 */
+  meta: CachedTileMapDef;
   boundary:
     | { type: 'bbox'; bounds: [number, number, number, number] }
     | { type: 'polygon'; points: { lat: number; lon: number }[] };
@@ -43,6 +32,10 @@ export const cacheTilesResume = createAction<{ id: string }>(
 
 export const cacheTilesCancel = createAction<{ id: string }>(
   'CACHE_TILES_CANCEL',
+);
+
+export const cacheTilesRestart = createAction<{ id: string }>(
+  'CACHE_TILES_RESTART',
 );
 
 export const cacheTilesError = createAction<{ id: string; error: string }>(

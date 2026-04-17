@@ -242,40 +242,8 @@ export function Layers(): ReactElement | null {
         .filter(({ type }) => layers.includes(type))
         .map((cm) => getLayer(cm))}
       {cachedMaps
-        .filter((cm) => layers.includes(cm.id))
-        .map((cm) => {
-          const isHdpi =
-            cm.scaleWithDpi && (window.devicePixelRatio || 1) > 1.4;
-
-          return cm.technology === 'wms' ? (
-            <WmsTileLayer
-              key={cm.id}
-              url={cm.urlTemplate}
-              layers=""
-              maxZoom={maxZoom}
-              minZoom={cm.minZoom}
-              maxNativeZoom={cm.maxZoom}
-              detectRetina={cm.scaleWithDpi}
-              zIndex={1}
-            />
-          ) : (
-            <ScaledTileLayer
-              key={cm.id}
-              url={cm.urlTemplate}
-              minZoom={cm.minZoom}
-              maxZoom={maxZoom}
-              maxNativeZoom={isHdpi ? cm.maxZoom - 1 : cm.maxZoom}
-              opacity={layersSettings[cm.id]?.opacity ?? 1}
-              zIndex={1}
-              errorTileUrl={missingTile}
-              extraScales={cm.extraScales}
-              tileSize={isHdpi ? 128 : 256}
-              zoomOffset={isHdpi ? 1 : 0}
-              cors
-              className="fm-base"
-            />
-          );
-        })}
+        .filter(({ type }) => layers.includes(type))
+        .map((cm) => getLayer(cm))}
     </>
   );
 }

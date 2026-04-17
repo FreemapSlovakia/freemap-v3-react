@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -187,23 +188,40 @@ export function CacheTilesForm(): ReactElement {
         return;
       }
 
-      const id = Math.random().toString(36).slice(2);
+      const cacheType = 'cached-' + Math.random().toString(36).slice(2);
+
+      // strip integrated-only / non-serializable fields (icon, shortcut, etc.)
+      const {
+        icon: _icon,
+        shortcut: _shortcut,
+        defaultInToolbar: _dt,
+        defaultInMenu: _dm,
+        countries: _countries,
+        superseededBy: _s,
+        experimental: _e,
+        adminOnly: _a,
+        premiumFromZoom: _p,
+        ...rest
+      } = mapDef as Record<string, unknown> & typeof mapDef;
+
+      const meta = {
+        ...rest,
+        type: cacheType,
+        name,
+        sourceType: mapDef.type,
+        minZoom: parseInt(minZoom, 10),
+        maxNativeZoom: parseInt(maxZoom, 10),
+        bounds: bounds as [number, number, number, number],
+        tileCount: tileCount ?? 0,
+        downloadedCount: 0,
+        cacheName: `tiles-${cacheType}`,
+        createdAt: new Date().toISOString(),
+        sizeBytes: 0,
+      } as CachedTileMapDef;
 
       dispatch(
         cacheTilesStart({
-          id,
-          name,
-          sourceType: mapDef.type,
-          technology: mapDef.technology === 'wms' ? 'wms' : 'tile',
-          urlTemplate: mapDef.url,
-          minZoom: parseInt(minZoom, 10),
-          maxZoom: parseInt(maxZoom, 10),
-          bounds: bounds as [number, number, number, number],
-          tileCount: tileCount ?? 0,
-          extraScales: 'extraScales' in mapDef ? mapDef.extraScales : undefined,
-          scaleWithDpi:
-            'scaleWithDpi' in mapDef ? mapDef.scaleWithDpi : undefined,
-          attribution: 'attribution' in mapDef ? mapDef.attribution : undefined,
+          meta,
           boundary:
             selectedLine?.type === 'polygon' && area === 'selected'
               ? {

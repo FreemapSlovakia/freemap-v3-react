@@ -147,18 +147,7 @@ export function MapSwitchButton(): ReactElement {
     ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
     ...cachedMaps
       .filter((cm) => cm.downloadedCount === cm.tileCount)
-      .map((cm) => ({
-        type: cm.id,
-        name: cm.name,
-        layer: 'base' as const,
-        technology: cm.technology,
-        custom: true as const,
-        icon: undefined,
-        minZoom: cm.minZoom,
-        shortcut: undefined as undefined,
-        defaultInToolbar: false,
-        defaultInMenu: false,
-      })),
+      .map((cm) => ({ ...cm, custom: true as const })),
   ].map((def) => ({
     scaleWithDpi: false,
     ...def,

@@ -16,6 +16,7 @@ import {
   cachedMapDeletedProcessor,
   cacheTilesCancelProcessor,
   cacheTilesPauseProcessor,
+  cacheTilesRestartProcessor,
   cacheTilesResumeProcessor,
   cacheTilesStartProcessor,
 } from '@features/cachedMaps/model/cacheTilesProcessor.js';
@@ -185,6 +186,7 @@ export const processors = [
   downloadMapProcessor,
   purchaseProcessor,
   cacheTilesStartProcessor,
+  cacheTilesRestartProcessor,
   cacheTilesPauseProcessor,
   cacheTilesResumeProcessor,
   cacheTilesCancelProcessor,

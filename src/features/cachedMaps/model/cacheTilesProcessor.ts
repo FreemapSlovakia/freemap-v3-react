@@ -23,6 +23,7 @@ import {
   cacheTilesError,
   cacheTilesPause,
   cacheTilesProgress,
+  cacheTilesRestart,
   cacheTilesResume,
   cacheTilesStart,
 } from './actions.js';
@@ -53,30 +54,15 @@ function buildTileUrl(
     .replace('{s}', 'a');
 }
 
-function buildMeta(
+function updateMeta(
   payload: CacheTilesStartPayload,
-  cacheName: string,
   downloadedCount: number,
   sizeBytes: number,
 ): CachedTileMapDef {
   return {
-    id: payload.id,
-    name: payload.name,
-    sourceType: payload.sourceType,
-    technology: payload.technology,
-    urlTemplate: payload.urlTemplate,
-    layer: 'base',
-    minZoom: payload.minZoom,
-    maxZoom: payload.maxZoom,
-    bounds: payload.bounds,
-    tileCount: payload.tileCount,
+    ...payload.meta,
     downloadedCount,
-    cacheName,
-    createdAt: new Date().toISOString(),
     sizeBytes,
-    extraScales: payload.extraScales,
-    scaleWithDpi: payload.scaleWithDpi,
-    attribution: payload.attribution,
   };
 }
 
@@ -84,9 +70,9 @@ async function downloadTiles(
   payload: CacheTilesStartPayload,
   dispatch: Dispatch,
 ) {
-  const { id, urlTemplate, boundary } = payload;
+  const { meta, boundary } = payload;
 
-  const cacheName = `tiles-${id}`;
+  const id = meta.type;
 
   const abortController = new AbortController();
 
@@ -99,11 +85,15 @@ async function downloadTiles(
 
   activeDownloads.set(id, state);
 
-  const cache = await caches.open(cacheName);
+  const cache = await caches.open(meta.cacheName);
+
+  const minZoom = meta.minZoom ?? 0;
+
+  const maxZoom = meta.maxNativeZoom ?? 18;
 
   const tiles =
     boundary.type === 'bbox'
-      ? enumerateTilesInBbox(boundary.bounds, payload.minZoom, payload.maxZoom)
+      ? enumerateTilesInBbox(boundary.bounds, minZoom, maxZoom)
       : enumerateTilesInPolygon(
           polygon([
             [
@@ -111,12 +101,12 @@ async function downloadTiles(
               [boundary.points[0].lon, boundary.points[0].lat],
             ],
           ]),
-          payload.minZoom,
-          payload.maxZoom,
+          minZoom,
+          maxZoom,
         );
 
   let downloaded = 0;
-  let sizeBytes = 0;
+  let sizeBytes = meta.sizeBytes;
   let lastProgressAt = 0;
 
   const tileArray: [number, number, number][] = [];
@@ -124,6 +114,15 @@ async function downloadTiles(
   for (const tile of tiles) {
     tileArray.push(tile);
   }
+
+  const extraScales = meta.technology === 'tile' ? meta.extraScales : undefined;
+
+  // pick the scale matching this screen's DPI
+  const dpr = window.devicePixelRatio || 1;
+
+  const bestScale = extraScales
+    ?.filter((s) => s <= Math.ceil(dpr))
+    .sort((a, b) => b - a)[0];
 
   for (let i = 0; i < tileArray.length; i += BATCH_SIZE) {
     if (abortController.signal.aborted) {
@@ -142,21 +141,19 @@ async function downloadTiles(
 
     const results = await Promise.allSettled(
       batch.map(async ([x, y, z]) => {
-        const baseUrl = buildTileUrl(urlTemplate, x, y, z);
+        const baseUrl = buildTileUrl(meta.url, x, y, z);
 
-        // pick the scale matching this screen's DPI
-        const dpr = window.devicePixelRatio || 1;
+        const fetchUrl =
+          bestScale !== undefined ? `${baseUrl}@${bestScale}x` : baseUrl;
 
-        const bestScale = payload.extraScales
-          ?.filter((s) => s <= Math.ceil(dpr))
-          .sort((a, b) => b - a)[0];
+        // skip tiles already in cache (resume support)
+        const existing = await cache.match(fetchUrl);
 
-        const tileUrl =
-          bestScale !== undefined
-            ? `${baseUrl}@${bestScale}x`
-            : baseUrl;
+        if (existing) {
+          return;
+        }
 
-        const response = await fetch(tileUrl, {
+        const response = await fetch(fetchUrl, {
           signal: abortController.signal,
         });
 
@@ -172,7 +169,7 @@ async function downloadTiles(
             sizeBytes += blob.size;
           }
 
-          await cache.put(tileUrl, response);
+          await cache.put(fetchUrl, response);
         }
       }),
     );
@@ -187,18 +184,14 @@ async function downloadTiles(
 
       dispatch(cacheTilesProgress({ id, downloaded, sizeBytes }));
 
-      await saveCachedTileMap(
-        buildMeta(payload, cacheName, downloaded, sizeBytes),
-      );
+      await saveCachedTileMap(updateMeta(payload, downloaded, sizeBytes));
     }
   }
 
   activeDownloads.delete(id);
 
   if (!abortController.signal.aborted) {
-    await saveCachedTileMap(
-      buildMeta(payload, cacheName, payload.tileCount, sizeBytes),
-    );
+    await saveCachedTileMap(updateMeta(payload, meta.tileCount, sizeBytes));
 
     // auto-cache static assets on first completed map
     const allMaps = await getCachedTileMaps();
@@ -221,7 +214,7 @@ async function downloadTiles(
       toastsAdd({
         style: 'success',
         timeout: 10_000,
-        message: `Map "${payload.name}" cached successfully`,
+        message: `Map "${meta.name}" cached successfully`,
         actions: [
           {
             name: 'Activate',
@@ -242,9 +235,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   errorKey: 'general.operationError',
   handle({ action, dispatch }) {
     // save initial metadata to IndexedDB
-    saveCachedTileMap(
-      buildMeta(action.payload, `tiles-${action.payload.id}`, 0, 0),
-    );
+    saveCachedTileMap(action.payload.meta);
 
     // fire and forget — runs in background
     downloadTiles(action.payload, dispatch).catch((err) => {
@@ -254,7 +245,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
 
       dispatch(
         cacheTilesError({
-          id: action.payload.id,
+          id: action.payload.meta.type,
           error: err instanceof Error ? err.message : String(err),
         }),
       );
@@ -324,6 +315,38 @@ export const cachedMapDeletedProcessor: Processor<typeof cachedMapDeleted> = {
     }
 
     await deleteCachedTileMap(action.payload.id);
+  },
+};
+
+export const cacheTilesRestartProcessor: Processor<typeof cacheTilesRestart> = {
+  actionCreator: cacheTilesRestart,
+  errorKey: 'general.operationError',
+  handle({ action, dispatch, getState }) {
+    const meta = getState().map.cachedMaps.find(
+      (m) => m.type === action.payload.id,
+    );
+
+    if (!meta) {
+      return;
+    }
+
+    const payload: CacheTilesStartPayload = {
+      meta,
+      boundary: { type: 'bbox', bounds: meta.bounds },
+    };
+
+    downloadTiles(payload, dispatch).catch((err) => {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      dispatch(
+        cacheTilesError({
+          id: meta.type,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    });
   },
 };
 
