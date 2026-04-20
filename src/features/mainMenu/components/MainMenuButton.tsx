@@ -11,7 +11,6 @@ import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
 import { MainMenu } from './MainMenu.js';
-import { OfflineSubmenu } from './OfflineSubmenu.js';
 import { SocialButtons } from './SocialButtons.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
@@ -54,8 +53,6 @@ export function MainMenuButton(): ReactElement {
 
           {submenu === null ? (
             <MainMenu />
-          ) : submenu === 'offline' ? (
-            <OfflineSubmenu />
           ) : submenu === 'help' ? (
             <HelpSubmenu />
           ) : submenu === 'openExternally' ? (

@@ -616,7 +616,7 @@ export type Messages = {
       photos: string;
     };
     attr: Record<string, ReactNode>;
-    layerSettings: string;
+    configureLayers: string;
     customMaps: string;
     base: string;
     overlay: string;
@@ -638,7 +638,7 @@ export type Messages = {
       overlay: string;
     };
     zIndex: string;
-    generalSettings: string;
+    preferences: string;
     maxZoom: string;
     loadWmsLayers: string;
   };
@@ -826,7 +826,7 @@ export type Messages = {
     youHaveCredits: (amount: ReactNode, explainCredits: boolean) => JSX.Element;
   };
   offline: {
-    offlineMode: string;
+    offlineMaps: string;
     cachingActive: string;
     clearCache: string;
     dataSource: string;

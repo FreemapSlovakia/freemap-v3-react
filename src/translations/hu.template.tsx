@@ -877,7 +877,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Extra felbontások',
     scaleWithDpi: 'Méretezés DPI alapján',
     zIndex: 'Z-index',
-    generalSettings: 'Általános beállítások',
+    preferences: 'Beállítások',
     maxZoom: 'Maximális nagyítás',
     layer: {
       layer: 'Réteg',
@@ -887,7 +887,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'További térképek megjelenítése',
     countryWarning: (countries) =>
       `Csak a következő országokat fedi le: ${countries.join(', ')}`,
-    layerSettings: 'Térképrétegek',
+    configureLayers: 'Térképrétegek beállítása',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',
@@ -1277,7 +1277,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   offline: {
-    offlineMode: 'Offline mód',
+    offlineMaps: 'Offline térképek',
     cachingActive: 'Aktív gyorsítótárazás',
     clearCache: 'Gyorsítótár törlése',
     dataSource: 'Adatforrás',

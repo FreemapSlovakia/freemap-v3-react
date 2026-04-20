@@ -833,7 +833,7 @@ const messages: Messages = {
         />
       ),
     },
-    layerSettings: 'Map layers',
+    configureLayers: 'Configure map layers',
     customMaps: 'Custom maps',
     base: 'Base layers',
     overlay: 'Overlay layers',
@@ -855,7 +855,7 @@ const messages: Messages = {
       overlay: 'Overlay',
     },
     zIndex: 'Z-Index',
-    generalSettings: 'General settings',
+    preferences: 'Preferences',
     maxZoom: 'Max zoom',
     loadWmsLayers: 'Load layers',
   },
@@ -1221,7 +1221,7 @@ const messages: Messages = {
   },
 
   offline: {
-    offlineMode: 'Offline mode',
+    offlineMaps: 'Offline maps',
     cachingActive: 'Caching active',
     clearCache: 'Clear cache',
     dataSource: 'Data source',

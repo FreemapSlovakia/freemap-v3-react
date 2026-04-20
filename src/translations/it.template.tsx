@@ -858,7 +858,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Risoluzioni extra',
     scaleWithDpi: 'Scala con DPI',
     zIndex: 'Z-Index',
-    generalSettings: 'Impostazioni generali',
+    preferences: 'Preferenze',
     maxZoom: 'Zoom massimo',
     layer: {
       layer: 'Livello',
@@ -868,7 +868,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'Mostra più mappe',
     countryWarning: (countries) =>
       `Copre solo i seguenti paesi: ${countries.join(', ')}`,
-    layerSettings: 'Livelli mappa',
+    configureLayers: 'Configura livelli mappa',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',
@@ -1237,7 +1237,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   offline: {
-    offlineMode: 'Modalità Offline',
+    offlineMaps: 'Mappe offline',
     cachingActive: 'Cache attiva',
     clearCache: 'Pulisci la cache',
     dataSource: 'Origine dati',

@@ -1,10 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaBullseye,
@@ -107,11 +105,6 @@ export function MainMenu(): ReactElement {
 
       <Dropdown.Item as="button" eventKey="submenu-tracking">
         <FaBullseye /> {m?.tools.tracking}
-        <FaChevronRight />
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="submenu-offline">
-        <BiWifiOff /> <ExperimentalFunction /> {m?.offline.offlineMode}
         <FaChevronRight />
       </Dropdown.Item>
 

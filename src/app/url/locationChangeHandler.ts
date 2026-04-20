@@ -656,8 +656,8 @@ export function handleLocationChange(store: MyStore): void {
     show = 'export-map';
   } else if (show === 'supportUs') {
     show = 'support-us';
-  } else if (show === 'mapSettings') {
-    show = 'map-settings';
+  } else if (show === 'mapSettings' || show === 'map-settings') {
+    show = 'map-layers-config';
   } else if (show === 'remove-ads') {
     show = 'premium';
   }

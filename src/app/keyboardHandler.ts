@@ -237,7 +237,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       }
 
       if (event.code === 'KeyS') {
-        return setActiveModal('map-settings');
+        return setActiveModal('map-layers-config');
       }
 
       const toolDefinition = toolDefinitions.find(

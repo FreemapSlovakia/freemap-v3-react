@@ -1,4 +1,6 @@
+import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
@@ -6,6 +8,7 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -22,8 +25,9 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import { BiWorld } from 'react-icons/bi';
+import { BiWifiOff, BiWorld } from 'react-icons/bi';
 import {
+  FaChevronRight,
   FaCog,
   FaEllipsisV,
   FaEyeSlash,
@@ -65,6 +69,8 @@ export function MapSwitchButton(): ReactElement {
 
   const [show, setShow] = useState<boolean | 'more' | 'all'>(false);
 
+  const [subview, setSubview] = useState<'mapSettings' | null>(null);
+
   const handlePossibleFilterClick = useCallback(
     (e: SyntheticEvent<unknown, unknown>) => {
       let x: unknown = e.target;
@@ -102,10 +108,34 @@ export function MapSwitchButton(): ReactElement {
         setShow('all');
       } else if (selection === 'show-more') {
         setShow('more');
-      } else if (selection === 'mapSettings') {
+      } else if (selection === 'offlineMaps') {
         setShow(false);
 
-        dispatch(setActiveModal('map-settings'));
+        dispatch(cachedMapsSetView('list'));
+
+        dispatch(setActiveModal('offline-maps'));
+      } else if (selection === 'mapSettings') {
+        setSubview('mapSettings');
+      } else if (selection === 'submenu-') {
+        setSubview(null);
+      } else if (selection === 'mapLayersConfig') {
+        setShow(false);
+
+        setSubview(null);
+
+        dispatch(setActiveModal('map-layers-config'));
+      } else if (selection === 'customMaps') {
+        setShow(false);
+
+        setSubview(null);
+
+        dispatch(setActiveModal('custom-maps'));
+      } else if (selection === 'preferences') {
+        setShow(false);
+
+        setSubview(null);
+
+        dispatch(setActiveModal('map-preferences'));
       } else if (selection.startsWith('layer-')) {
         dispatch(mapToggleLayer({ type: selection.slice(6) }));
       }
@@ -138,6 +168,11 @@ export function MapSwitchButton(): ReactElement {
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
+  const cachedMapsTotalSize = cachedMaps.reduce(
+    (sum, cm) => sum + cm.sizeBytes,
+    0,
+  );
+
   const countries = useAppSelector((state) => state.map.countries);
 
   const countriesSet = countries && new Set(countries);
@@ -161,6 +196,10 @@ export function MapSwitchButton(): ReactElement {
 
   const handleToggle = useCallback((nextShow: boolean) => {
     setShow(nextShow);
+
+    if (!nextShow) {
+      setSubview(null);
+    }
   }, []);
 
   function commonBadges(
@@ -412,30 +451,64 @@ export function MapSwitchButton(): ReactElement {
             <div className="fm-menu-scroller" ref={sc}>
               <div />
 
-              <Dropdown.Item
-                key="mapSettings"
-                as="button"
-                eventKey="mapSettings"
-              >
-                <FaCog /> {m?.mapLayers.settings} <kbd>g</kbd> <kbd>s</kbd>
-              </Dropdown.Item>
-
-              {layersMemuItems('base')}
-
-              {layersMemuItems('overlay')}
-
-              {(show === true || show === 'more') && (
+              {subview === 'mapSettings' ? (
                 <>
-                  <Dropdown.Divider />
+                  <SubmenuHeader
+                    icon={<FaCog />}
+                    title={m?.mapLayers.settings}
+                  />
 
-                  {!isWide && show === true ? (
-                    <Dropdown.Item eventKey="show-more">
-                      {m?.mapLayers.showMore}
-                    </Dropdown.Item>
-                  ) : (
-                    <Dropdown.Item eventKey="show-all">
-                      {m?.mapLayers.showAll}
-                    </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="mapLayersConfig">
+                    {m?.mapLayers.configureLayers}
+                  </Dropdown.Item>
+
+                  <Dropdown.Item as="button" eventKey="customMaps">
+                    {m?.mapLayers.customMaps}
+                  </Dropdown.Item>
+
+                  <Dropdown.Item as="button" eventKey="preferences">
+                    {m?.mapLayers.preferences}
+                  </Dropdown.Item>
+                </>
+              ) : (
+                <>
+                  <Dropdown.Item
+                    key="offlineMaps"
+                    as="button"
+                    eventKey="offlineMaps"
+                  >
+                    <BiWifiOff /> {m?.offline.offlineMaps}
+                    {cachedMapsTotalSize > 0 &&
+                      ` · ${formatSize(cachedMapsTotalSize)}`}
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    key="mapSettings"
+                    as="button"
+                    eventKey="mapSettings"
+                  >
+                    <FaCog /> {m?.mapLayers.settings}
+                    <FaChevronRight /> <kbd>g</kbd> <kbd>s</kbd>
+                  </Dropdown.Item>
+
+                  {layersMemuItems('base')}
+
+                  {layersMemuItems('overlay')}
+
+                  {(show === true || show === 'more') && (
+                    <>
+                      <Dropdown.Divider />
+
+                      {!isWide && show === true ? (
+                        <Dropdown.Item eventKey="show-more">
+                          {m?.mapLayers.showMore}
+                        </Dropdown.Item>
+                      ) : (
+                        <Dropdown.Item eventKey="show-all">
+                          {m?.mapLayers.showAll}
+                        </Dropdown.Item>
+                      )}
+                    </>
                   )}
                 </>
               )}

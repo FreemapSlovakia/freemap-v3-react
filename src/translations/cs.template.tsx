@@ -821,7 +821,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    layerSettings: 'Mapové vrstvy',
+    configureLayers: 'Nastavení mapových vrstev',
     customMaps: 'Vlastní mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
@@ -831,7 +831,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Další rozlišení',
     scaleWithDpi: 'Škálovat podle DPI',
     zIndex: 'Z-Index',
-    generalSettings: 'Obecná nastavení',
+    preferences: 'Předvolby',
     maxZoom: 'Maximální přiblížení',
     layer: {
       layer: 'Vrstva',
@@ -1208,7 +1208,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   offline: {
-    offlineMode: 'Režim offline',
+    offlineMaps: 'Offline mapy',
     cachingActive: 'Nahrávání do cache aktivní',
     clearCache: 'Smazat cache',
     dataSource: 'Zdroj dát',
