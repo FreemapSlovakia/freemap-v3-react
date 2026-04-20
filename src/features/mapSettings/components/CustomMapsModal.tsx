@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { ReactElement, useCallback, useState } from 'react';
-import { Button, ButtonToolbar, Modal, Table } from 'react-bootstrap';
+import { Button, Modal, Table } from 'react-bootstrap';
 import { FaCheck, FaPencilAlt, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -99,7 +99,11 @@ export function CustomMapsModal({ show }: Props): ReactElement {
         : '';
 
   return (
-    <Modal show={show} onHide={close} size="lg">
+    <Modal
+      show={show}
+      onHide={close}
+      size={view.mode === 'list' ? 'lg' : undefined}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <MdDashboardCustomize /> {m?.mapLayers.customMaps}
@@ -109,12 +113,6 @@ export function CustomMapsModal({ show }: Props): ReactElement {
       {view.mode === 'list' ? (
         <>
           <Modal.Body>
-            <ButtonToolbar className="justify-content-end mb-2">
-              <Button type="button" variant="primary" onClick={handleAddClick}>
-                <FaPlus /> {m?.general.add}
-              </Button>
-            </ButtonToolbar>
-
             {customLayers.length > 0 && (
               <Table striped bordered responsive>
                 <thead>
@@ -163,6 +161,10 @@ export function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
+            <Button type="button" variant="primary" onClick={handleAddClick}>
+              <FaPlus /> {m?.general.add}
+            </Button>
+
             <Button variant="dark" type="button" onClick={close}>
               <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
             </Button>

@@ -2,7 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
 import { Alert, Button, Modal, Table } from 'react-bootstrap';
-import { FaBullseye } from 'react-icons/fa';
+import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken } from './AccessToken.js';
@@ -64,8 +64,9 @@ export function AccessTokens(): ReactElement {
             dispatch(trackingActions.modifyAccessToken(null));
           }}
         >
-          {m?.general.add}
+          <FaPlus /> {m?.general.add}
         </Button>
+
         <Button
           type="button"
           variant="dark"
@@ -73,7 +74,7 @@ export function AccessTokens(): ReactElement {
             dispatch(trackingActions.showAccessTokens(undefined));
           }}
         >
-          {m?.general.back}
+          <FaChevronLeft /> {m?.general.back}
         </Button>
       </Modal.Footer>
     </>

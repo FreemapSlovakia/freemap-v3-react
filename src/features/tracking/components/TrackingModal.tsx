@@ -45,7 +45,11 @@ export function TrackingModal({ show }: Props): ReactElement {
         dispatch(setActiveModal(null));
       }}
       show={show}
-      className="dynamic"
+      size={
+        ['devices', 'accessTokens', 'trackedDevices'].includes(view)
+          ? 'xl'
+          : undefined
+      }
     >
       {view === 'devices' && <MyDevices />}
       {view === 'deviceForm' && <MyDeviceForm />}

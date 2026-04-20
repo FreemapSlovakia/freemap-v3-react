@@ -190,7 +190,7 @@ export function CachedMapsList(): ReactElement {
         </Button>
 
         <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          Close <kbd>Esc</kbd>
+          <FaTimes /> Close <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>

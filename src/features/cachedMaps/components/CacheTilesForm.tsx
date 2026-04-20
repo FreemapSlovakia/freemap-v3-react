@@ -32,7 +32,13 @@ import {
   Modal,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import { FaDrawPolygon, FaEye, FaSave, FaTimes } from 'react-icons/fa';
+import {
+  FaChevronLeft,
+  FaDrawPolygon,
+  FaEye,
+  FaSave,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
@@ -392,7 +398,7 @@ export function CacheTilesForm(): ReactElement {
           type="button"
           onClick={() => dispatch(cachedMapsSetView('list'))}
         >
-          <FaTimes /> Back
+          <FaChevronLeft /> Back
         </Button>
       </Modal.Footer>
     </form>

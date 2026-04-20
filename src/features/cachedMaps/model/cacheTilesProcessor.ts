@@ -223,10 +223,6 @@ async function downloadTiles(
             name: 'Activate',
             action: mapToggleLayer({ type: id, enable: true }),
           },
-          {
-            name: 'Manage',
-            action: { type: 'SET_ACTIVE_MODAL', payload: 'offline-maps' },
-          },
         ],
       }),
     );

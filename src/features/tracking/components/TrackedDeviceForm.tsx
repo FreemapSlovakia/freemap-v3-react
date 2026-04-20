@@ -7,7 +7,7 @@ import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaBullseye } from 'react-icons/fa';
+import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { TrackedDevice } from '../model/types.js';
@@ -236,7 +236,7 @@ export function TrackedDeviceForm(): ReactElement {
             invalidWidth
           }
         >
-          {m?.general.save}
+          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
         </Button>
 
         <Button
@@ -246,7 +246,7 @@ export function TrackedDeviceForm(): ReactElement {
             dispatch(trackingActions.modifyTrackedDevice(undefined));
           }}
         >
-          {m?.general.cancel} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Form>
