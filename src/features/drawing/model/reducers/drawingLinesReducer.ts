@@ -6,6 +6,8 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { lineString } from '@turf/helpers';
+import { simplify as turfSimplify } from '@turf/simplify';
 import {
   drawingLineAdd,
   drawingLineAddPoint,
@@ -16,7 +18,9 @@ import {
   drawingLineJoinFinish,
   drawingLineJoinStart,
   drawingLineRemovePoint,
+  drawingLineReverse,
   drawingLineSetLines,
+  drawingLineSimplify,
   drawingLineSplit,
   drawingLineStopDrawing,
   drawingLineUpdatePoint,
@@ -129,6 +133,29 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         (point) => point.id !== action.payload.id,
       );
     })
+    .addCase(drawingLineReverse, (state, { payload: { lineIndex } }) => {
+      reverse(state.lines[lineIndex].points);
+    })
+    .addCase(
+      drawingLineSimplify,
+      (state, { payload: { lineIndex, tolerance } }) => {
+        const line = state.lines[lineIndex];
+
+        if (line.points.length < 3) {
+          return;
+        }
+
+        const ls = lineString(line.points.map((p) => [p.lon, p.lat]));
+
+        turfSimplify(ls, { mutate: true, highQuality: true, tolerance });
+
+        line.points = ls.geometry.coordinates.map((c, id) => ({
+          lat: c[1],
+          lon: c[0],
+          id,
+        }));
+      },
+    )
     .addCase(drawingLineSplit, (state, action) => {
       const { lineIndex, pointId } = action.payload;
 

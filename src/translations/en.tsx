@@ -520,6 +520,8 @@ const messages: Messages = {
       azimuth: 'Azimuth',
       distance: 'Distance',
     },
+    reverse: 'Reverse direction',
+    simplify: 'Simplify',
   },
 
   purchases: {

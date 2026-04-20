@@ -6,14 +6,18 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { lineString } from '@turf/helpers';
 import { type ReactElement, useCallback, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
+  FaCompressAlt,
   FaDrawPolygon,
+  FaEllipsisV,
+  FaExchangeAlt,
   FaRegStopCircle,
   FaTag,
 } from 'react-icons/fa';
@@ -21,6 +25,8 @@ import { TbAngle, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
   drawingLineAddPoint,
+  drawingLineReverse,
+  drawingLineSimplify,
   drawingLineStopDrawing,
 } from '../model/actions/drawingLineActions.js';
 import ProjectPointModal from './ProjectPointModal.js';
@@ -100,7 +106,54 @@ export function DrawingLineSelection(): ReactElement | null {
     [dispatch, line?.points, lineIndex],
   );
 
-  return !line ? null : (
+  const handleMoreSelect = useCallback(
+    (eventKey: string | null) => {
+      if (lineIndex === undefined) {
+        return;
+      }
+
+      switch (eventKey) {
+        case 'project-point':
+          setProjectPointDialogVisible(true);
+
+          break;
+
+        case 'toggle-elevation-chart':
+          toggleElevationChart();
+
+          break;
+
+        case 'reverse':
+          dispatch(drawingLineReverse({ lineIndex }));
+
+          break;
+
+        case 'simplify': {
+          const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+
+          if (tolerance !== null) {
+            dispatch(
+              drawingLineSimplify({
+                lineIndex,
+                tolerance: Number(tolerance || '0') / 100000,
+              }),
+            );
+          }
+
+          break;
+        }
+      }
+    },
+    [dispatch, lineIndex, m, toggleElevationChart],
+  );
+
+  if (!line) {
+    return null;
+  }
+
+  const isLine = line.type === 'line';
+
+  return (
     <>
       <ProjectPointModal
         show={projectPointDialogVisible}
@@ -109,12 +162,8 @@ export function DrawingLineSelection(): ReactElement | null {
       />
 
       <Selection
-        icon={line.type === 'line' ? <TbTimeline /> : <FaDrawPolygon />}
-        label={
-          line.type === 'line'
-            ? m?.selections.drawLines
-            : m?.selections.drawPolygons
-        }
+        icon={isLine ? <TbTimeline /> : <FaDrawPolygon />}
+        label={isLine ? m?.selections.drawLines : m?.selections.drawPolygons}
         deletable
       >
         {drawing && (
@@ -153,41 +202,44 @@ export function DrawingLineSelection(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        {line.type === 'line' && line.points.length > 0 && (
-          <LongPressTooltip
-            breakpoint="sm"
-            label={m?.drawing.projection.projectPoint}
-          >
-            {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={() => setProjectPointDialogVisible(true)}
-                {...props}
-              >
-                <TbAngle />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
+        <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
+          <Dropdown.Toggle variant="secondary">
+            <FaEllipsisV />
+          </Dropdown.Toggle>
 
-        {line.type === 'line' && line.points.length > 1 && (
-          <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            {isLine && line.points.length > 1 && (
+              <Dropdown.Item
+                eventKey="toggle-elevation-chart"
                 active={showElevationChart}
-                onClick={toggleElevationChart}
-                {...props}
               >
                 <FaChartArea />
-                <span className={labelClassName}> {label}</span>
-              </Button>
+                &nbsp;{m?.general.elevationProfile ?? '…'}
+              </Dropdown.Item>
             )}
-          </LongPressTooltip>
-        )}
+
+            {isLine && line.points.length > 0 && (
+              <Dropdown.Item eventKey="project-point">
+                <TbAngle />
+                &nbsp;{m?.drawing.projection.projectPoint ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {line.points.length > 2 && (
+              <Dropdown.Item eventKey="simplify">
+                <FaCompressAlt />
+                &nbsp;{m?.drawing.simplify ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {line.points.length > 1 && (
+              <Dropdown.Item eventKey="reverse">
+                <FaExchangeAlt />
+                &nbsp;{m?.drawing.reverse ?? '…'}
+              </Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
       </Selection>
     </>
   );

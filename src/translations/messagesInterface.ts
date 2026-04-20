@@ -395,6 +395,8 @@ export type Messages = {
       distance: string;
       azimuth: string;
     };
+    reverse: string;
+    simplify: string;
   };
   purchases: {
     purchases: string;
