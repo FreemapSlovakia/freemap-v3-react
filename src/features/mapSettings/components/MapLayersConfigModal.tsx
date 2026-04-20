@@ -1,14 +1,9 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  ReactElement,
-  SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -49,7 +44,7 @@ export function MapLayersConfigModal({ show }: Props): ReactElement {
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.mapLayers.configureLayers}
+            <FaLayerGroup /> {m?.mapLayers.configureLayers}
           </Modal.Title>
         </Modal.Header>
 

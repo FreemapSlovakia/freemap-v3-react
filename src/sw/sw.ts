@@ -1,5 +1,10 @@
 /// <reference lib="webworker" />
 
+import {
+  CACHED_TILE_PATH_PREFIX,
+  parseCachedTileMapId,
+} from '@features/cachedMaps/cachedTileUrl.js';
+
 declare const self: ServiceWorkerGlobalScope;
 
 const FALLBACK_CACHE_NAME = 'offline-html';
@@ -39,13 +44,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const isStaticAsset =
-    url.origin === self.location.origin && !url.pathname.startsWith('/api/');
+  const isSameOrigin = url.origin === self.location.origin;
+
+  if (isSameOrigin && url.pathname.startsWith(CACHED_TILE_PATH_PREFIX)) {
+    event.respondWith(serveCachedTile(event));
+
+    return;
+  }
+
+  const isStaticAsset = isSameOrigin && !url.pathname.startsWith('/api/');
 
   if (isStaticAsset) {
     event.respondWith(serveStaticAsset(event));
-  } else {
-    event.respondWith(serveTileOrNetwork(event));
   }
 });
 
@@ -79,28 +89,18 @@ async function serveStaticAsset(event: FetchEvent): Promise<Response> {
   }
 }
 
-async function serveTileOrNetwork(event: FetchEvent): Promise<Response> {
-  const cacheNames = await caches.keys();
+async function serveCachedTile(event: FetchEvent): Promise<Response> {
+  const mapId = parseCachedTileMapId(new URL(event.request.url).pathname);
 
-  const tileCaches = cacheNames.filter((name) =>
-    name.startsWith(TILE_CACHE_PREFIX),
-  );
-
-  for (const cacheName of tileCaches) {
-    const cache = await caches.open(cacheName);
-
-    const cached = await cache.match(event.request);
-
-    if (cached) {
-      return cached;
-    }
+  if (!mapId) {
+    return new Response(null, { status: 404 });
   }
 
-  try {
-    return await fetch(event.request);
-  } catch {
-    return Response.error();
-  }
+  const cache = await caches.open(`${TILE_CACHE_PREFIX}${mapId}`);
+
+  const cached = await cache.match(event.request);
+
+  return cached ?? new Response(null, { status: 404 });
 }
 
 async function serveFallback(event: FetchEvent) {

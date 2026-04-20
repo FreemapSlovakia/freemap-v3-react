@@ -1,6 +1,6 @@
+import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LayerSettings } from '@features/map/model/actions.js';
-import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import {

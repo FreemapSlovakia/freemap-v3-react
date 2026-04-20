@@ -4,13 +4,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { ReactElement, useCallback, useState } from 'react';
 import { Button, ButtonToolbar, Modal, Table } from 'react-bootstrap';
-import {
-  FaCheck,
-  FaPencilAlt,
-  FaPlus,
-  FaTimes,
-  FaTrash,
-} from 'react-icons/fa';
+import { FaCheck, FaPencilAlt, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { CustomMapForm } from './CustomMapForm.js';
@@ -71,7 +65,9 @@ export function CustomMapsModal({ show }: Props): ReactElement {
 
       const next = customLayers.filter((d) => d.type !== def.type);
 
-      dispatch(saveSettings({ settings: { customLayers: next }, keepOpen: true }));
+      dispatch(
+        saveSettings({ settings: { customLayers: next }, keepOpen: true }),
+      );
     },
     [customLayers, dispatch, m],
   );
@@ -81,12 +77,11 @@ export function CustomMapsModal({ show }: Props): ReactElement {
       return;
     }
 
-    const next = [
-      ...customLayers.filter((d) => d.type !== draft.type),
-      draft,
-    ];
+    const next = [...customLayers.filter((d) => d.type !== draft.type), draft];
 
-    dispatch(saveSettings({ settings: { customLayers: next }, keepOpen: true }));
+    dispatch(
+      saveSettings({ settings: { customLayers: next }, keepOpen: true }),
+    );
 
     goToList();
   }, [customLayers, draft, dispatch, goToList]);
@@ -115,17 +110,13 @@ export function CustomMapsModal({ show }: Props): ReactElement {
         <>
           <Modal.Body>
             <ButtonToolbar className="justify-content-end mb-2">
-              <Button
-                type="button"
-                variant="primary"
-                onClick={handleAddClick}
-              >
+              <Button type="button" variant="primary" onClick={handleAddClick}>
                 <FaPlus /> {m?.general.add}
               </Button>
             </ButtonToolbar>
 
             {customLayers.length > 0 && (
-              <Table striped bordered responsive size="sm">
+              <Table striped bordered responsive>
                 <thead>
                   <tr>
                     <th>{m?.general.name}</th>

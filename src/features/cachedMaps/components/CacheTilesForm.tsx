@@ -1,5 +1,4 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -35,6 +34,7 @@ import {
 import { BiWifiOff } from 'react-icons/bi';
 import { FaDrawPolygon, FaEye, FaSave, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
 
 type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef | IsWmsLayerDef> & {
@@ -188,7 +188,7 @@ export function CacheTilesForm(): ReactElement {
         return;
       }
 
-      const cacheType = 'cached-' + Math.random().toString(36).slice(2);
+      const type = Math.random().toString(36).slice(2);
 
       // strip integrated-only / non-serializable fields (icon, shortcut, etc.)
       const {
@@ -206,7 +206,7 @@ export function CacheTilesForm(): ReactElement {
 
       const meta = {
         ...rest,
-        type: cacheType,
+        type,
         name,
         sourceType: mapDef.type,
         minZoom: parseInt(minZoom, 10),
@@ -214,7 +214,7 @@ export function CacheTilesForm(): ReactElement {
         bounds: bounds as [number, number, number, number],
         tileCount: tileCount ?? 0,
         downloadedCount: 0,
-        cacheName: `tiles-${cacheType}`,
+        cacheName: `tiles-${type}`,
         createdAt: new Date().toISOString(),
         sizeBytes: 0,
       } as CachedTileMapDef;

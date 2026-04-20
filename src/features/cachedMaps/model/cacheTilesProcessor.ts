@@ -2,18 +2,19 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
-  cacheStaticAssets,
-  deleteCachedTileMap,
-  getCachedTileMaps,
-  saveCachedTileMap,
-} from '@shared/cache.js';
-import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
-import {
   enumerateTilesInBbox,
   enumerateTilesInPolygon,
 } from '@shared/tileEnumeration.js';
 import { polygon } from '@turf/helpers';
 import type { Dispatch } from 'redux';
+import {
+  cacheStaticAssets,
+  deleteCachedTileMap,
+  getCachedTileMaps,
+  saveCachedTileMap,
+} from '../cache.js';
+import type { CachedTileMapDef } from '../cachedTileMaps.js';
+import { toCachedLayerUrl } from '../cachedTileUrl.js';
 import {
   type CacheTilesStartPayload,
   cachedMapDeleted,
@@ -146,8 +147,10 @@ async function downloadTiles(
         const fetchUrl =
           bestScale !== undefined ? `${baseUrl}@${bestScale}x` : baseUrl;
 
+        const cacheKey = toCachedLayerUrl(fetchUrl, id);
+
         // skip tiles already in cache (resume support)
-        const existing = await cache.match(fetchUrl);
+        const existing = await cache.match(cacheKey);
 
         if (existing) {
           return;
@@ -169,7 +172,7 @@ async function downloadTiles(
             sizeBytes += blob.size;
           }
 
-          await cache.put(fetchUrl, response);
+          await cache.put(cacheKey, response);
         }
       }),
     );

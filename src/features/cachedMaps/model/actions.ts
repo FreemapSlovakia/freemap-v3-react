@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
+import type { CachedTileMapDef } from '../cachedTileMaps.js';
 
 export interface CacheTilesStartPayload {
   /** The full CachedTileMapDef with downloadedCount=0 and sizeBytes=0 */

@@ -1,5 +1,5 @@
-import type { CachedTileMapDef } from '@shared/cachedTileMaps.js';
 import { del, get, set } from 'idb-keyval';
+import type { CachedTileMapDef } from './cachedTileMaps.js';
 
 const STATIC_CACHE_NAME = 'offline-static';
 

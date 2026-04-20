@@ -34,6 +34,7 @@ import {
   FaFilter,
   FaGem,
   FaHistory,
+  FaLayerGroup,
   FaRegCheckCircle,
   FaRegCircle,
   FaRegMap,
@@ -459,15 +460,15 @@ export function MapSwitchButton(): ReactElement {
                   />
 
                   <Dropdown.Item as="button" eventKey="mapLayersConfig">
-                    {m?.mapLayers.configureLayers}
+                    <FaLayerGroup /> {m?.mapLayers.configureLayers}
                   </Dropdown.Item>
 
                   <Dropdown.Item as="button" eventKey="customMaps">
-                    {m?.mapLayers.customMaps}
+                    <MdDashboardCustomize /> {m?.mapLayers.customMaps}
                   </Dropdown.Item>
 
                   <Dropdown.Item as="button" eventKey="preferences">
-                    {m?.mapLayers.preferences}
+                    <FaCog /> {m?.mapLayers.preferences}
                   </Dropdown.Item>
                 </>
               ) : (
