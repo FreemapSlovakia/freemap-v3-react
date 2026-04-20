@@ -329,48 +329,39 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   }
 
   return (
-    <div
-      className="d-grid align-items-stretch column-gap-3"
-      style={{
-        gridTemplateColumns: '1fr 1fr',
-      }}
-    >
-      {/* Name */}
+    <div>
+      <Form.Group controlId="name">
+        <Form.Label className="d-flex align-items-end fm-grid-span">
+          {m?.general.name}
+        </Form.Label>
 
-      <Form.Label className="d-flex align-items-end fm-grid-span">
-        {m?.general.name}
-      </Form.Label>
+        <Form.Control
+          className="fm-grid-span"
+          type="text"
+          value={model.name}
+          onChange={handlers.name}
+        />
+      </Form.Group>
 
-      <Form.Control
-        className="fm-grid-span"
-        type="text"
-        value={model.name}
-        onChange={handlers.name}
-      />
+      <Form.Group controlId="technology" className="mt-3">
+        <Form.Label>{m?.mapLayers.technology}</Form.Label>
 
-      {/* Technology */}
-
-      <Form.Label className="mt-3 d-flex align-items-end fm-grid-span">
-        {m?.mapLayers.technology}
-      </Form.Label>
-
-      <Form.Select
-        className="fm-grid-span"
-        value={model.technology}
-        onChange={handlers.technology}
-      >
-        <option value="tile">{m?.mapLayers.technologies.tile}</option>
-        <option value="maplibre">{m?.mapLayers.technologies.maplibre}</option>
-        <option value="wms">{m?.mapLayers.technologies.wms}</option>
-        {/* <option value="parametricShading">{m?.mapLayers.technologies.parametricShading}</option> */}
-      </Form.Select>
+        <Form.Select
+          className="fm-grid-span"
+          value={model.technology}
+          onChange={handlers.technology}
+        >
+          <option value="tile">{m?.mapLayers.technologies.tile}</option>
+          <option value="maplibre">{m?.mapLayers.technologies.maplibre}</option>
+          <option value="wms">{m?.mapLayers.technologies.wms}</option>
+          {/* <option value="parametricShading">{m?.mapLayers.technologies.parametricShading}</option> */}
+        </Form.Select>
+      </Form.Group>
 
       {/* URL */}
       {model.technology !== 'parametricShading' && (
-        <>
-          <Form.Label className="mt-3 d-flex align-items-end fm-grid-span">
-            {m?.mapLayers.url}
-          </Form.Label>
+        <Form.Group controlId="url" className="mt-3">
+          <Form.Label>{m?.mapLayers.url}</Form.Label>
 
           <Form.Control
             className="fm-grid-span"
@@ -378,7 +369,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             value={model.url}
             onChange={handlers.url}
           />
-        </>
+        </Form.Group>
       )}
 
       {model.technology === 'wms' && (
@@ -418,108 +409,89 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {/* Min/Max zoom */}
       {model.technology !== 'parametricShading' && (
         <>
-          <Form.Label className="mt-3 d-flex align-items-end">
-            {m?.mapLayers.minZoom}
-          </Form.Label>
+          <Form.Group controlId="minZoom" className="mt-3">
+            <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
 
-          <Form.Label className="mt-3 d-flex align-items-end">
-            {m?.mapLayers.maxNativeZoom}
-          </Form.Label>
+            <Form.Control
+              type="number"
+              min={0}
+              value={model.minZoom}
+              onChange={handlers.minZoom}
+            />
+          </Form.Group>
 
-          <Form.Control
-            type="number"
-            min={0}
-            value={model.minZoom}
-            onChange={handlers.minZoom}
-          />
+          <Form.Group controlId="maxNativeZoom" className="mt-3">
+            <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
 
-          <Form.Control
-            type="number"
-            min={0}
-            value={model.maxNativeZoom}
-            onChange={handlers.maxNativeZoom}
-          />
+            <Form.Control
+              type="number"
+              min={0}
+              value={model.maxNativeZoom}
+              onChange={handlers.maxNativeZoom}
+            />
+          </Form.Group>
 
           {/* Extra scales + checkbox */}
-          {model.technology === 'tile' ? (
-            <>
-              <Form.Label className="mt-3 d-flex align-items-end">
-                {m?.mapLayers.extraScales}
-              </Form.Label>
+          {model.technology === 'tile' && (
+            <div className="mt-3">
+              <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
 
-              <Form.Label className="mt-3 d-flex align-items-end">
-                &nbsp;
-              </Form.Label>
-            </>
-          ) : (
-            <div className="mt-3 fm-grid-span" />
+              <div className="d-flex gap-2 flex-wrap">
+                {model.technology === 'tile' &&
+                  [...model.extraScales, ''].map((a, i) => (
+                    <Form.Control
+                      style={{ width: '4rem' }}
+                      key={i}
+                      type="number"
+                      min={1}
+                      step={1}
+                      value={a}
+                      onChange={(e) => {
+                        const extraScales = [...model.extraScales];
+                        extraScales[i] = e.currentTarget.value;
+                        setModel((model) => ({
+                          ...model,
+                          extraScales: extraScales.filter(Boolean),
+                        }));
+                      }}
+                    />
+                  ))}
+              </div>
+            </div>
           )}
 
-          <div className="d-flex gap-2 flex-wrap">
-            {model.technology === 'tile' ? (
-              [...model.extraScales, ''].map((a, i) => (
-                <Form.Control
-                  style={{ width: '4rem' }}
-                  key={i}
-                  type="number"
-                  min={1}
-                  step={1}
-                  value={a}
-                  onChange={(e) => {
-                    const extraScales = [...model.extraScales];
-                    extraScales[i] = e.currentTarget.value;
-                    setModel((model) => ({
-                      ...model,
-                      extraScales: extraScales.filter(Boolean),
-                    }));
-                  }}
-                />
-              ))
-            ) : (
-              <>&nbsp;</>
-            )}
-          </div>
-
-          <div className="d-flex align-items-center">
-            <Form.Check
-              id="chk-scale-dpi"
-              label={m?.mapLayers.scaleWithDpi}
-              checked={model.scaleWithDpi}
-              onChange={handlers.scaleWithDpi}
-            />
-          </div>
+          <Form.Check
+            className="mt-3"
+            id="chk-scale-dpi"
+            label={m?.mapLayers.scaleWithDpi}
+            checked={model.scaleWithDpi}
+            onChange={handlers.scaleWithDpi}
+          />
         </>
       )}
 
-      {/* Layer */}
-      <Form.Label className="mt-3 d-flex align-items-end">
-        {m?.mapLayers.layer.layer}
-      </Form.Label>
+      <Form.Group controlId="layer" className="mt-3">
+        <Form.Label>{m?.mapLayers.layer.layer}</Form.Label>
 
-      {/* Z-Index */}
-      <Form.Label
-        className={clsx(
-          'mt-3',
-          'd-flex',
-          'align-items-end',
-          model.layer === 'overlay' ? 'visible' : 'invisible',
-        )}
-      >
-        {m?.mapLayers.zIndex}
-      </Form.Label>
+        <Form.Select value={model.layer} onChange={handlers.layer}>
+          <option value="base">{m?.mapLayers.layer.base}</option>
+          <option value="overlay">{m?.mapLayers.layer.overlay}</option>
+        </Form.Select>
+      </Form.Group>
 
-      <Form.Select value={model.layer} onChange={handlers.layer}>
-        <option value="base">{m?.mapLayers.layer.base}</option>
-        <option value="overlay">{m?.mapLayers.layer.overlay}</option>
-      </Form.Select>
+      {model.layer === 'overlay' && (
+        <Form.Group controlId="zIndex" className="mt-3">
+          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
 
-      <Form.Control
-        className={model.layer === 'overlay' ? 'visible' : 'invisible'}
-        type="number"
-        min={0}
-        value={model.zIndex}
-        onChange={handlers.zIndex}
-      />
+          <Form.Control
+            className={model.layer === 'overlay' ? 'visible' : 'invisible'}
+            type="number"
+            min={0}
+            value={model.zIndex}
+            onChange={handlers.zIndex}
+          />
+        </Form.Group>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LayerSettings } from '@features/map/model/actions.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
@@ -9,6 +10,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
+import { BiWifiOff } from 'react-icons/bi';
 import {
   FaEllipsisH,
   FaEye,
@@ -22,12 +24,14 @@ type Props = {
   layersSettings: Record<string, LayerSettings>;
   setLayersSettings: (s: Record<string, LayerSettings>) => void;
   customLayers: CustomLayerDef[];
+  cachedMaps: CachedTileMapDef[];
 };
 
 export function MapLayersSettings({
   layersSettings,
   setLayersSettings,
   customLayers,
+  cachedMaps,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -80,6 +84,17 @@ export function MapLayersSettings({
       superseededBy: undefined,
       custom: true,
     })),
+    ...cachedMaps
+      .filter((cm) => cm.downloadedCount === cm.tileCount)
+      .map((cm) => ({
+        ...cm,
+        countries: [] as string[],
+        icon: <BiWifiOff />,
+        defaultInToolbar: false,
+        defaultInMenu: false,
+        superseededBy: undefined,
+        custom: true,
+      })),
   ];
 
   return (

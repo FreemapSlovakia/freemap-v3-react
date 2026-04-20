@@ -13,6 +13,14 @@ import { authWithOsm2Processor } from '@features/auth/model/processors/authWithO
 import { authWithOsmProcessor } from '@features/auth/model/processors/authWithOsmProcessor.js';
 import { purchaseProcessor } from '@features/auth/model/processors/purchaseProcessor.js';
 import {
+  cachedMapDeletedProcessor,
+  cacheTilesCancelProcessor,
+  cacheTilesPauseProcessor,
+  cacheTilesRestartProcessor,
+  cacheTilesResumeProcessor,
+  cacheTilesStartProcessor,
+} from '@features/cachedMaps/model/cacheTilesProcessor.js';
+import {
   changesetsProcessor,
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
@@ -175,5 +183,11 @@ export const processors = [
   authWithGarmin2Processor,
   downloadMapProcessor,
   purchaseProcessor,
+  cacheTilesStartProcessor,
+  cacheTilesRestartProcessor,
+  cacheTilesPauseProcessor,
+  cacheTilesResumeProcessor,
+  cacheTilesCancelProcessor,
+  cachedMapDeletedProcessor,
   urlProcessor,
 ];

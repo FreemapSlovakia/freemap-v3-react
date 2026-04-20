@@ -867,7 +867,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Zusätzliche Auflösungen',
     scaleWithDpi: 'Mit DPI skalieren',
     zIndex: 'Z-Index',
-    generalSettings: 'Allgemeine Einstellungen',
+    preferences: 'Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
     layer: {
       layer: 'Ebene',
@@ -877,7 +877,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'Mehr Karten anzeigen',
     countryWarning: (countries) =>
       `Deckt nur folgende Länder ab: ${countries.join(', ')}`,
-    layerSettings: 'Kartenebenen',
+    configureLayers: 'Kartenebenen konfigurieren',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',
@@ -1260,14 +1260,30 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
   offline: {
-    offlineMode: 'Offline-Modus',
-    cachingActive: 'Zwischenspeicherung aktiv',
-    clearCache: 'Cache leeren',
-    dataSource: 'Datenquelle',
-    networkOnly: 'Nur Netzwerk',
-    networkFirst: 'Zuerst Netzwerk',
-    cacheFirst: 'Zuerst Cache',
-    cacheOnly: 'Nur Cache',
+    offlineMaps: 'Offline-Karten',
+    cacheOfflineMap: 'Karte für Offline-Nutzung speichern',
+    addOfflineMap: 'Offline-Karte hinzufügen',
+    emptyMessage:
+      'Noch keine Offline-Karten gespeichert. Fügen Sie eine hinzu, um Karten ohne Internetverbindung zu nutzen.',
+    zoom: 'Zoom',
+    tiles: 'Kacheln',
+    size: 'Größe',
+    status: 'Status',
+    ready: 'Bereit',
+    incomplete: ({ pct }) => <>Unvollständig ({pct} %)</>,
+    pause: 'Pausieren',
+    resume: 'Fortsetzen',
+    total: 'Gesamt',
+    largeDownload: ({ tiles, size }) => (
+      <>
+        Großer Download: {tiles} Kacheln (~{size}). Dies kann eine Weile dauern.
+      </>
+    ),
+    estSize: 'Geschätzte Größe',
+    startCaching: 'Speicherung starten',
+    cachedSuccess: ({ name }) =>
+      `Karte „${name}“ wurde erfolgreich gespeichert.`,
+    activate: 'Aktivieren',
   },
   errorStatus: {
     100: 'Weiter',

@@ -3,6 +3,7 @@ import {
   authInitialState,
   authReducer,
 } from '@features/auth/model/reducer.js';
+import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import {
   type CookieConsentState,
@@ -83,6 +84,7 @@ import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 
 export const reducers = {
   auth: authReducer,
+  cachedMaps: cachedMapsReducer,
   changesets: changesetReducer,
   cookieConsent: cookieConsentReducer,
   drawingSettings: drawingSettingsReducer,

@@ -1,3 +1,4 @@
+import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
@@ -22,6 +23,7 @@ export type LayerSettings = {
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   customLayers: CustomLayerDef[];
+  cachedMaps: CachedTileMapDef[];
 }
 
 export const mapRefocus = createAction<

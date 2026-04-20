@@ -1,3 +1,4 @@
+import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs, LayerDef } from '@shared/mapDefinitions.js';
@@ -230,6 +231,8 @@ export function Layers(): ReactElement | null {
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
+  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
   return window.isRobot ? null : (
     <>
       {integratedLayerDefs
@@ -239,6 +242,9 @@ export function Layers(): ReactElement | null {
       {customLayerDefs
         .filter(({ type }) => layers.includes(type))
         .map((cm) => getLayer(cm))}
+      {cachedMaps
+        .filter(({ type }) => layers.includes(type))
+        .map((cm) => getLayer({ ...cm, url: toCachedLayerUrl(cm.url, cm.type) }))}
     </>
   );
 }

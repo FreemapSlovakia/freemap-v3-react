@@ -823,7 +823,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    layerSettings: 'Mapové vrstvy',
+    configureLayers: 'Nastavení mapových vrstev',
     customMaps: 'Vlastní mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
@@ -833,7 +833,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Další rozlišení',
     scaleWithDpi: 'Škálovat podle DPI',
     zIndex: 'Z-Index',
-    generalSettings: 'Obecná nastavení',
+    preferences: 'Předvolby',
     maxZoom: 'Maximální přiblížení',
     layer: {
       layer: 'Vrstva',
@@ -1210,14 +1210,29 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   offline: {
-    offlineMode: 'Režim offline',
-    cachingActive: 'Nahrávání do cache aktivní',
-    clearCache: 'Smazat cache',
-    dataSource: 'Zdroj dát',
-    networkOnly: 'Pouze internet',
-    networkFirst: 'Nejdřív internet',
-    cacheFirst: 'Nejdřív cache',
-    cacheOnly: 'Pouze cache',
+    offlineMaps: 'Offline mapy',
+    cacheOfflineMap: 'Uložit mapu pro offline použití',
+    addOfflineMap: 'Přidat offline mapu',
+    emptyMessage:
+      'Zatím nejsou uloženy žádné offline mapy. Přidejte si jednu pro používání map bez připojení k internetu.',
+    zoom: 'Přiblížení',
+    tiles: 'Dlaždice',
+    size: 'Velikost',
+    status: 'Stav',
+    ready: 'Připravena',
+    incomplete: ({ pct }) => <>Nekompletní ({pct} %)</>,
+    pause: 'Pozastavit',
+    resume: 'Pokračovat',
+    total: 'Celkem',
+    largeDownload: ({ tiles, size }) => (
+      <>
+        Velké stahování: {tiles} dlaždic (~{size}). Může to chvíli trvat.
+      </>
+    ),
+    estSize: 'Odhadovaná velikost',
+    startCaching: 'Spustit stahování',
+    cachedSuccess: ({ name }) => `Mapa „${name}“ byla úspěšně stažena.`,
+    activate: 'Aktivovat',
   },
 
   errorStatus: {

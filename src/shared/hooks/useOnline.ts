@@ -1,17 +1,7 @@
-import { get } from 'idb-keyval';
 import { useEffect, useState } from 'react';
 
 export function useOnline() {
   const [online, setOnline] = useState(window.navigator.onLine);
-
-  const [cacheOnly, setCacheOnly] = useState(false);
-
-  // TODO make event based somehow
-  useEffect(() => {
-    get('cacheMode').then((cm) => {
-      setCacheOnly(cm === 'cacheOnly');
-    });
-  }, []);
 
   useEffect(() => {
     function offlineHandler() {
@@ -35,5 +25,5 @@ export function useOnline() {
     };
   }, []);
 
-  return online && !cacheOnly;
+  return online;
 }

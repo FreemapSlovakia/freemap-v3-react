@@ -3,5 +3,4 @@ export type Submenu =
   | 'help'
   | 'language'
   | 'tracking'
-  | 'offline'
   | null;

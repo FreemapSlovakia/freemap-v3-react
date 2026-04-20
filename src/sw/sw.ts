@@ -1,17 +1,21 @@
 /// <reference lib="webworker" />
 
-declare const self: ServiceWorkerGlobalScope;
+import {
+  CACHED_TILE_PATH_PREFIX,
+  parseCachedTileMapId,
+} from '@features/cachedMaps/cachedTileUrl.js';
 
-import { CacheMode } from '@shared/types/common.js';
-import { get } from 'idb-keyval';
+declare const self: ServiceWorkerGlobalScope;
 
 const FALLBACK_CACHE_NAME = 'offline-html';
 
-const OFFLINE_CACHE_NAME = 'offline';
+const STATIC_CACHE_NAME = 'offline-static';
 
 const FALLBACK_HTML_URL = '/offline.html';
 
 const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
+
+const TILE_CACHE_PREFIX = 'tiles-';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -36,100 +40,67 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    (async () => {
-      const cacheMode = (await get('cacheMode')) as undefined | CacheMode;
+  if (event.request.method !== 'GET' || !/^https?:/.test(event.request.url)) {
+    return;
+  }
 
-      if (!cacheMode || cacheMode === 'networkOnly') {
-        return (
-          (await serveFromNetwork(event)) ??
-          (await serveFallback(event)) ??
-          Response.error()
-        );
-      } else if (cacheMode === 'networkFirst') {
-        return (
-          (await serveFromNetwork(event)) ??
-          (await serveFromCache(event)) ??
-          (await serveFallback(event)) ??
-          Response.error()
-        );
-      } else if (cacheMode === 'cacheFirst') {
-        return (
-          (await serveFromCache(event)) ??
-          (await serveFromNetwork(event)) ??
-          (await serveFallback(event)) ??
-          Response.error()
-        );
-      } else if (cacheMode === 'cacheOnly') {
-        return (
-          (await serveFromCache(event)) ??
-          (await serveFallback(event)) ??
-          Response.error()
-        );
-      } else if (cacheMode) {
-        if (
-          event.request.method !== 'GET' ||
-          !/^https?:/.test(event.request.url)
-        ) {
-          Response.error();
-        }
+  const isSameOrigin = url.origin === self.location.origin;
 
-        const cache = await caches.open(OFFLINE_CACHE_NAME);
+  if (isSameOrigin && url.pathname.startsWith(CACHED_TILE_PATH_PREFIX)) {
+    event.respondWith(serveCachedTile(event));
 
-        const ok = await serveFromCache(event);
+    return;
+  }
 
-        if (ok) {
-          return ok;
-        }
+  const isStaticAsset = isSameOrigin && !url.pathname.startsWith('/api/');
 
-        const response = await fetch(event.request);
-
-        cache.put(event.request, response.clone()); // todo handle async error
-
-        return response;
-      }
-
-      return Response.error();
-    })(),
-  );
+  if (isStaticAsset) {
+    event.respondWith(serveStaticAsset(event));
+  }
 });
 
-async function serveFromCache(event: FetchEvent) {
-  const cache = await caches.open(OFFLINE_CACHE_NAME);
-
-  const url = new URL(event.request.url);
-
-  return cache.match(url.pathname === '/' ? 'index.html' : event.request);
-}
-
-async function serveFromNetwork(event: FetchEvent) {
-  const { request } = event;
-
+async function serveStaticAsset(event: FetchEvent): Promise<Response> {
   try {
-    const [response, cachingActive] = await Promise.all([
-      fetch(request),
-      get('cachingActive'),
-    ]);
+    const response = await fetch(event.request);
 
-    if (
-      cachingActive &&
-      response.ok &&
-      request.method === 'GET' &&
-      /^https?:/.test(request.url)
-    ) {
-      const clonedResponse = response.clone();
+    if (response.ok) {
+      const cache = await caches.open(STATIC_CACHE_NAME);
 
-      (async () => {
-        const cache = await caches.open(OFFLINE_CACHE_NAME);
-
-        await cache.put(request, clonedResponse);
-      })(); // todo handle async error
+      cache.put(event.request, response.clone());
     }
 
     return response;
   } catch {
-    return undefined;
+    const cached = await caches
+      .open(STATIC_CACHE_NAME)
+      .then((cache) =>
+        cache.match(
+          new URL(event.request.url).pathname === '/'
+            ? 'index.html'
+            : event.request,
+        ),
+      );
+
+    if (cached) {
+      return cached;
+    }
+
+    return (await serveFallback(event)) ?? Response.error();
   }
+}
+
+async function serveCachedTile(event: FetchEvent): Promise<Response> {
+  const mapId = parseCachedTileMapId(new URL(event.request.url).pathname);
+
+  if (!mapId) {
+    return new Response(null, { status: 404 });
+  }
+
+  const cache = await caches.open(`${TILE_CACHE_PREFIX}${mapId}`);
+
+  const cached = await cache.match(event.request);
+
+  return cached ?? new Response(null, { status: 404 });
 }
 
 async function serveFallback(event: FetchEvent) {
@@ -153,11 +124,12 @@ self.addEventListener('activate', (event) => {
       const cacheNames = await caches.keys();
 
       await Promise.all([
-        self.clients.claim(), // TODO maybe try to eliminate this
+        self.clients.claim(),
 
-        // remove old caches
         ...cacheNames.map((cacheName) =>
-          cacheName !== FALLBACK_CACHE_NAME && cacheName !== OFFLINE_CACHE_NAME
+          cacheName !== FALLBACK_CACHE_NAME &&
+          cacheName !== STATIC_CACHE_NAME &&
+          !cacheName.startsWith(TILE_CACHE_PREFIX)
             ? caches.delete(cacheName)
             : undefined,
         ),

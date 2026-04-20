@@ -858,7 +858,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Risoluzioni extra',
     scaleWithDpi: 'Scala con DPI',
     zIndex: 'Z-Index',
-    generalSettings: 'Impostazioni generali',
+    preferences: 'Preferenze',
     maxZoom: 'Zoom massimo',
     layer: {
       layer: 'Livello',
@@ -868,7 +868,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'Mostra più mappe',
     countryWarning: (countries) =>
       `Copre solo i seguenti paesi: ${countries.join(', ')}`,
-    layerSettings: 'Livelli mappa',
+    configureLayers: 'Configura livelli mappa',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',
@@ -1237,14 +1237,30 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   offline: {
-    offlineMode: 'Modalità Offline',
-    cachingActive: 'Cache attiva',
-    clearCache: 'Pulisci la cache',
-    dataSource: 'Origine dati',
-    networkOnly: 'Solo rete',
-    networkFirst: 'Prima la rete',
-    cacheFirst: 'Prima la cache',
-    cacheOnly: 'Solo cache',
+    offlineMaps: 'Mappe offline',
+    cacheOfflineMap: 'Salva mappa per uso offline',
+    addOfflineMap: 'Aggiungi mappa offline',
+    emptyMessage:
+      'Nessuna mappa offline ancora salvata. Aggiungine una per usare le mappe senza connessione a internet.',
+    zoom: 'Zoom',
+    tiles: 'Riquadri',
+    size: 'Dimensione',
+    status: 'Stato',
+    ready: 'Pronta',
+    incomplete: ({ pct }) => <>Incompleta ({pct} %)</>,
+    pause: 'Pausa',
+    resume: 'Riprendi',
+    total: 'Totale',
+    largeDownload: ({ tiles, size }) => (
+      <>
+        Download grande: {tiles} riquadri (~{size}). Potrebbe richiedere un po'
+        di tempo.
+      </>
+    ),
+    estSize: 'Dimensione stimata',
+    startCaching: 'Avvia salvataggio',
+    cachedSuccess: ({ name }) => `Mappa «${name}» salvata con successo.`,
+    activate: 'Attiva',
   },
 
   errorStatus: {

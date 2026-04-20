@@ -11,20 +11,6 @@
   cursor: pointer;
 }
 
-// dynamic modal width
-@media (min-width: 768px) {
-  .modal.dynamic {
-    display: flex !important;
-
-    .modal-dialog {
-      min-width: 600px;
-      max-width: 100%;
-      width: auto !important;
-      display: inline-block;
-    }
-  }
-}
-
 .carousel-control-prev,
 .carousel-control-next {
   border: 0;

@@ -54,6 +54,7 @@ export const saveSettings = createAction<{
     email?: string | null;
     sendGalleryEmails?: boolean;
   };
+  keepOpen?: boolean;
 }>('SAVE_SETTINGS');
 
 export const applySettings = createAction<

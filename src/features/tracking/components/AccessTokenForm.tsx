@@ -5,7 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { FaBullseye } from 'react-icons/fa';
+import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 
@@ -103,7 +103,9 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button type="submit">{m?.general.save}</Button>
+        <Button type="submit">
+          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
+        </Button>
 
         <Button
           variant="dark"
@@ -112,7 +114,7 @@ export function AccessTokenForm(): ReactElement {
             dispatch(trackingActions.modifyAccessToken(undefined));
           }}
         >
-          {m?.general.cancel} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Form>

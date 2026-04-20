@@ -2,7 +2,6 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import { StringDates } from '@shared/types/common.js';
-import { get } from 'idb-keyval';
 import { assert, is } from 'typia';
 import { authInit, authSetUser } from '../actions.js';
 import type { User, UserSettings } from '../types.js';
@@ -86,12 +85,11 @@ export const authInitProcessor: Processor = {
           throw err;
         }
 
-        const cm = await get('cacheMode');
-
-        if (!cm || cm === 'networkOnly' || cm === 'networkFirst') {
+        if (navigator.onLine) {
           throw err;
         }
 
+        // offline — keep the cached user
         dispatch(authSetUser(user));
       }
     }

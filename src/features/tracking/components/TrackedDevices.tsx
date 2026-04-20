@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, Modal, Table } from 'react-bootstrap';
-import { FaEye } from 'react-icons/fa';
+import { FaEye, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { TrackedDevice } from './TrackedDevice.js';
@@ -59,7 +59,7 @@ export function TrackedDevices(): ReactElement {
             dispatch(trackingActions.modifyTrackedDevice(null));
           }}
         >
-          {m?.general.add}
+          <FaPlus /> {m?.general.add}
         </Button>
 
         <Button
@@ -69,7 +69,7 @@ export function TrackedDevices(): ReactElement {
             dispatch(setActiveModal(null));
           }}
         >
-          {m?.general.close} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>

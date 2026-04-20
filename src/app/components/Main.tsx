@@ -178,10 +178,28 @@ const downloadMapModalFactory = () =>
     '@features/downloadMap/components/DownloadMapModal.js'
   );
 
-const mapSettingsModalFactory = () =>
+const offlineMapsModalFactory = () =>
   import(
-    /* webpackChunkName: "map-settings-modal" */
-    '@features/mapSettings/components/MapSettingsModal.js'
+    /* webpackChunkName: "offline-maps-modal" */
+    '@features/cachedMaps/components/OfflineMapsModal.js'
+  );
+
+const mapLayersConfigModalFactory = () =>
+  import(
+    /* webpackChunkName: "map-layers-config-modal" */
+    '@features/mapSettings/components/MapLayersConfigModal.js'
+  );
+
+const customMapsModalFactory = () =>
+  import(
+    /* webpackChunkName: "custom-maps-modal" */
+    '@features/mapSettings/components/CustomMapsModal.js'
+  );
+
+const mapPreferencesModalFactory = () =>
+  import(
+    /* webpackChunkName: "map-preferences-modal" */
+    '@features/mapSettings/components/MapPreferencesModal.js'
   );
 
 const embedMapModalFactory = () =>
@@ -751,8 +769,23 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'map-settings'}
-        factory={mapSettingsModalFactory}
+        show={activeModal === 'offline-maps'}
+        factory={offlineMapsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'map-layers-config'}
+        factory={mapLayersConfigModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'custom-maps'}
+        factory={customMapsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'map-preferences'}
+        factory={mapPreferencesModalFactory}
       />
 
       <AsyncModal

@@ -4,7 +4,7 @@ import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useCallback } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaBullseye } from 'react-icons/fa';
+import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 
@@ -134,7 +134,7 @@ export function MyDeviceForm(): ReactElement {
           type="submit"
           disabled={invalidName || invalidMaxCount || invalidMaxAge}
         >
-          {m?.general.save}
+          <FaCheck /> {m?.general.save}
         </Button>
 
         <Button
@@ -144,7 +144,7 @@ export function MyDeviceForm(): ReactElement {
             dispatch(trackingActions.modifyDevice(undefined));
           }}
         >
-          {m?.general.cancel} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Form>

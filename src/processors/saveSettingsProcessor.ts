@@ -12,7 +12,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
   errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
-    const { settings, user } = action.payload;
+    const { settings, user, keepOpen } = action.payload;
 
     if (getState().auth.user) {
       await httpRequest({
@@ -45,6 +45,8 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       }),
     );
 
-    dispatch(setActiveModal(null));
+    if (!keepOpen) {
+      dispatch(setActiveModal(null));
+    }
   },
 };

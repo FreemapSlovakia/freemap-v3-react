@@ -618,7 +618,7 @@ export type Messages = {
       photos: string;
     };
     attr: Record<string, ReactNode>;
-    layerSettings: string;
+    configureLayers: string;
     customMaps: string;
     base: string;
     overlay: string;
@@ -640,7 +640,7 @@ export type Messages = {
       overlay: string;
     };
     zIndex: string;
-    generalSettings: string;
+    preferences: string;
     maxZoom: string;
     loadWmsLayers: string;
   };
@@ -828,14 +828,27 @@ export type Messages = {
     youHaveCredits: (amount: ReactNode, explainCredits: boolean) => JSX.Element;
   };
   offline: {
-    offlineMode: string;
-    cachingActive: string;
-    clearCache: string;
-    dataSource: string;
-    networkOnly: string;
-    networkFirst: string;
-    cacheFirst: string;
-    cacheOnly: string;
+    offlineMaps: string;
+    cacheOfflineMap: string;
+    addOfflineMap: string;
+    emptyMessage: string;
+    zoom: string;
+    tiles: string;
+    size: string;
+    status: string;
+    ready: string;
+    incomplete: (props: { pct: ReactNode }) => JSX.Element;
+    pause: string;
+    resume: string;
+    total: string;
+    largeDownload: (props: {
+      tiles: ReactNode;
+      size: ReactNode;
+    }) => JSX.Element;
+    estSize: string;
+    startCaching: string;
+    cachedSuccess: (props: { name: string }) => string;
+    activate: string;
   };
   errorStatus: Record<number, string>;
   gpu: {

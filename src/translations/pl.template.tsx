@@ -840,7 +840,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     extraScales: 'Dodatkowe rozdzielczości',
     scaleWithDpi: 'Skaluj z DPI',
     zIndex: 'Z-indeks',
-    generalSettings: 'Ustawienia ogólne',
+    preferences: 'Preferencje',
     maxZoom: 'Maksymalne powiększenie',
     layer: {
       layer: 'Warstwa',
@@ -850,7 +850,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showMore: 'Pokaż więcej map',
     countryWarning: (countries) =>
       `Obejmuje tylko następujące kraje: ${countries.join(', ')}`,
-    layerSettings: 'Warstwy mapy',
+    configureLayers: 'Konfiguruj warstwy mapy',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',
       maplibre: 'Wektor (MapLibre)',
@@ -1232,14 +1232,29 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   offline: {
-    offlineMode: 'Tryb offline',
-    cachingActive: 'Buforowanie aktywne',
-    clearCache: 'Wyczyść pamięć podręczną',
-    dataSource: 'Źródło danych',
-    networkOnly: 'Tylko sieć',
-    networkFirst: 'Najpierw sieć',
-    cacheFirst: 'Najpierw pamięć podręczna',
-    cacheOnly: 'Tylko pamięć podręczna',
+    offlineMaps: 'Mapy offline',
+    cacheOfflineMap: 'Zapisz mapę do użycia offline',
+    addOfflineMap: 'Dodaj mapę offline',
+    emptyMessage:
+      'Nie zapisano jeszcze żadnych map offline. Dodaj jedną, aby używać map bez połączenia z internetem.',
+    zoom: 'Powiększenie',
+    tiles: 'Płytki',
+    size: 'Rozmiar',
+    status: 'Status',
+    ready: 'Gotowa',
+    incomplete: ({ pct }) => <>Niekompletna ({pct} %)</>,
+    pause: 'Wstrzymaj',
+    resume: 'Wznów',
+    total: 'Łącznie',
+    largeDownload: ({ tiles, size }) => (
+      <>
+        Duże pobieranie: {tiles} płytek (~{size}). Może to chwilę potrwać.
+      </>
+    ),
+    estSize: 'Szacowany rozmiar',
+    startCaching: 'Rozpocznij pobieranie',
+    cachedSuccess: ({ name }) => `Mapa „${name}” została pomyślnie pobrana.`,
+    activate: 'Aktywuj',
   },
 
   errorStatus: {
