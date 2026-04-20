@@ -564,6 +564,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       distance: 'Vzdialenosť',
       azimuth: 'Azimut',
     },
+    reverse: 'Obrátiť smer',
+    simplify: 'Zjednodušiť',
   },
 
   purchases: {

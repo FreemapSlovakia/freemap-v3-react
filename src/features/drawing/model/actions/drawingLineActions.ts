@@ -103,3 +103,12 @@ export const drawingLineDeletePoint = createAction<{
   lineIndex: number;
   pointId: number;
 }>('DRAWING_LINE_DELETE_POINT');
+
+export const drawingLineReverse = createAction<{
+  lineIndex: number;
+}>('DRAWING_LINE_REVERSE');
+
+export const drawingLineSimplify = createAction<{
+  lineIndex: number;
+  tolerance: number;
+}>('DRAWING_LINE_SIMPLIFY');

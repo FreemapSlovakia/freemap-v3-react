@@ -32,9 +32,9 @@ export const homeLocationReducer = createReducer(
         state.selectingHomeLocation =
           action.payload === true ? state.homeLocation : action.payload;
       })
-      .addCase(saveHomeLocation, (state) => {
-        state.selectingHomeLocation = false;
+      .addCase(saveHomeLocation, (state, action) => {
+        state.homeLocation = action.payload;
 
-        state.homeLocation = state.selectingHomeLocation || null;
+        state.selectingHomeLocation = false;
       }),
 );
