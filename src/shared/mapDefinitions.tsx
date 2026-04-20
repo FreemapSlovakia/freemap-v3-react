@@ -288,7 +288,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'tile',
     icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
-    extraScales: [2, 3],
+    extraScales: [2, 3, 4],
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
