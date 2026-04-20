@@ -19,6 +19,7 @@ declare global {
     };
     Sentry?: typeof Sentry;
     applyTheme: (theme?: 'dark' | 'light' | 'auto') => void;
+    localStorageFallback: StorageFallback;
   }
 
   interface ServiceWorkerGlobalScope {

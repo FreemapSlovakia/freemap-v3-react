@@ -37,7 +37,6 @@ import { gallerySubmitCommentProcessor } from '@features/gallery/model/processor
 import { gallerySubmitStarsProcessor } from '@features/gallery/model/processors/gallerySubmitStarsProcessor.js';
 import { galleryUploadModalProcessor } from '@features/gallery/model/processors/galleryUploadModalProcessor.js';
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
-import { saveHomeLocationProcessor } from '@features/homeLocation/model/saveHomeLocationProcessor.js';
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
@@ -109,7 +108,6 @@ export const processors = [
   searchProcessor,
   searchHighlightTrafo,
   searchHighlightProcessor,
-  saveHomeLocationProcessor,
   locateProcessor,
   saveSettingsProcessor,
   measurementProcessor,

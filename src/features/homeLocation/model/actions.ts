@@ -5,4 +5,4 @@ export const setSelectingHomeLocation = createAction<LatLon | boolean>(
   'SET_SELECTING_HOME_LOCATION',
 );
 
-export const saveHomeLocation = createAction('SAVE_HOME_LOCATION');
+export const saveHomeLocation = createAction<LatLon>('SAVE_HOME_LOCATION');
