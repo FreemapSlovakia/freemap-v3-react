@@ -66,8 +66,7 @@ export async function syncStaticCache(): Promise<void> {
   const oldUrls = new Set(Object.values(oldManifest));
 
   const sameSize = newUrls.size === oldUrls.size;
-  const allMatch =
-    sameSize && [...newUrls].every((u) => oldUrls.has(u));
+  const allMatch = sameSize && [...newUrls].every((u) => oldUrls.has(u));
 
   if (allMatch) {
     return;
@@ -77,9 +76,7 @@ export async function syncStaticCache(): Promise<void> {
 
   // prune removed URLs
   await Promise.all(
-    [...oldUrls]
-      .filter((u) => !newUrls.has(u))
-      .map((u) => cache.delete(u)),
+    [...oldUrls].filter((u) => !newUrls.has(u)).map((u) => cache.delete(u)),
   );
 
   // add new URLs (ignore failures so one bad asset doesn't abort the whole sync)

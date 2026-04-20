@@ -217,10 +217,11 @@ async function downloadTiles(
       toastsAdd({
         style: 'success',
         timeout: 10_000,
-        message: `Map "${meta.name}" cached successfully`,
+        messageKey: 'offline.cachedSuccess',
+        messageParams: { name: meta.name },
         actions: [
           {
-            name: 'Activate',
+            nameKey: 'offline.activate',
             action: mapToggleLayer({ type: id, enable: true }),
           },
         ],

@@ -1280,13 +1280,28 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   offline: {
     offlineMaps: 'Offline mapy',
-    cachingActive: 'Nahrávanie do cache aktívne',
-    clearCache: 'Vymazať cache',
-    dataSource: 'Zdroj dát',
-    networkOnly: 'Iba internet',
-    networkFirst: 'Najprv internet',
-    cacheFirst: 'Najprv cache',
-    cacheOnly: 'Iba cache',
+    cacheOfflineMap: 'Uložiť mapu pre offline použitie',
+    addOfflineMap: 'Pridať offline mapu',
+    emptyMessage:
+      'Zatiaľ nie sú uložené žiadne offline mapy. Pridajte si jednu na používanie máp bez pripojenia k internetu.',
+    zoom: 'Priblíženie',
+    tiles: 'Dlaždice',
+    size: 'Veľkosť',
+    status: 'Stav',
+    ready: 'Pripravená',
+    incomplete: ({ pct }) => <>Nekompletná ({pct} %)</>,
+    pause: 'Pozastaviť',
+    resume: 'Pokračovať',
+    total: 'Spolu',
+    largeDownload: ({ tiles, size }) => (
+      <>
+        Veľké sťahovanie: {tiles} dlaždíc (~{size}). Môže to chvíľu trvať.
+      </>
+    ),
+    estSize: 'Odhadovaná veľkosť',
+    startCaching: 'Spustiť sťahovanie',
+    cachedSuccess: ({ name }) => `Mapa „${name}“ bola úspešne stiahnutá.`,
+    activate: 'Aktivovať',
   },
 
   errorStatus: {

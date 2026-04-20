@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -17,6 +18,8 @@ import {
 } from '../model/actions.js';
 
 export function CachedMapsList(): ReactElement {
+  const m = useMessages();
+
   const dispatch = useDispatch();
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
@@ -36,26 +39,23 @@ export function CachedMapsList(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> Offline Maps
+          <BiWifiOff /> {m?.offline.offlineMaps}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         {cachedMaps.length === 0 ? (
-          <p className="text-muted">
-            No offline maps cached yet. Add one to use maps without internet
-            connection.
-          </p>
+          <p className="text-muted">{m?.offline.emptyMessage}</p>
         ) : (
           <>
             <Table striped bordered responsive>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Zoom</th>
-                  <th>Tiles</th>
-                  <th>Size</th>
-                  <th>Status</th>
+                  <th>{m?.general.name}</th>
+                  <th>{m?.offline.zoom}</th>
+                  <th>{m?.offline.tiles}</th>
+                  <th>{m?.offline.size}</th>
+                  <th>{m?.offline.status}</th>
                   <th />
                 </tr>
               </thead>
@@ -91,10 +91,12 @@ export function CachedMapsList(): ReactElement {
                             }
                           />
                         ) : isComplete ? (
-                          <span className="text-success">Ready</span>
+                          <span className="text-success">
+                            {m?.offline.ready}
+                          </span>
                         ) : (
                           <span className="text-warning">
-                            Incomplete ({pct}%)
+                            {m?.offline.incomplete({ pct })}
                           </span>
                         )}
                       </td>
@@ -107,7 +109,7 @@ export function CachedMapsList(): ReactElement {
                             onClick={() =>
                               dispatch(cacheTilesPause({ id: cm.type }))
                             }
-                            title="Pause"
+                            title={m?.offline.pause}
                           >
                             <FaPause />
                           </Button>
@@ -121,7 +123,7 @@ export function CachedMapsList(): ReactElement {
                             onClick={() =>
                               dispatch(cacheTilesResume({ id: cm.type }))
                             }
-                            title="Resume"
+                            title={m?.offline.resume}
                           >
                             <FaPlay />
                           </Button>
@@ -135,7 +137,7 @@ export function CachedMapsList(): ReactElement {
                             onClick={() =>
                               dispatch(cacheTilesCancel({ id: cm.type }))
                             }
-                            title="Cancel"
+                            title={m?.general.cancel}
                           >
                             <FaTimes />
                           </Button>
@@ -149,7 +151,7 @@ export function CachedMapsList(): ReactElement {
                             onClick={() =>
                               dispatch(cacheTilesRestart({ id: cm.type }))
                             }
-                            title="Resume"
+                            title={m?.offline.resume}
                           >
                             <FaPlay />
                           </Button>
@@ -162,7 +164,7 @@ export function CachedMapsList(): ReactElement {
                             onClick={() =>
                               dispatch(cachedMapDeleted({ id: cm.type }))
                             }
-                            title="Delete"
+                            title={m?.general.delete}
                           >
                             <FaTrash />
                           </Button>
@@ -175,7 +177,7 @@ export function CachedMapsList(): ReactElement {
             </Table>
 
             <div className="text-muted text-end">
-              Total: {formatSize(totalSize)}
+              {m?.offline.total}: {formatSize(totalSize)}
             </div>
           </>
         )}
@@ -186,11 +188,11 @@ export function CachedMapsList(): ReactElement {
           variant="primary"
           onClick={() => dispatch(cachedMapsSetView('add'))}
         >
-          <FaPlus /> Add offline map
+          <FaPlus /> {m?.offline.addOfflineMap}
         </Button>
 
         <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> Close <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>

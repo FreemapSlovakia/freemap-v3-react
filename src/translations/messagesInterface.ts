@@ -829,13 +829,26 @@ export type Messages = {
   };
   offline: {
     offlineMaps: string;
-    cachingActive: string;
-    clearCache: string;
-    dataSource: string;
-    networkOnly: string;
-    networkFirst: string;
-    cacheFirst: string;
-    cacheOnly: string;
+    cacheOfflineMap: string;
+    addOfflineMap: string;
+    emptyMessage: string;
+    zoom: string;
+    tiles: string;
+    size: string;
+    status: string;
+    ready: string;
+    incomplete: (props: { pct: ReactNode }) => JSX.Element;
+    pause: string;
+    resume: string;
+    total: string;
+    largeDownload: (props: {
+      tiles: ReactNode;
+      size: ReactNode;
+    }) => JSX.Element;
+    estSize: string;
+    startCaching: string;
+    cachedSuccess: (props: { name: string }) => string;
+    activate: string;
   };
   errorStatus: Record<number, string>;
   gpu: {

@@ -32,13 +32,7 @@ import {
   Modal,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import {
-  FaChevronLeft,
-  FaDrawPolygon,
-  FaEye,
-  FaSave,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaChevronLeft, FaDrawPolygon, FaEye, FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
@@ -262,13 +256,13 @@ export function CacheTilesForm(): ReactElement {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> Cache Map for Offline Use
+          <BiWifiOff /> {m?.offline.cacheOfflineMap}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group controlId="mapType">
-          <Form.Label>{m?.downloadMap.map ?? 'Map'}</Form.Label>
+          <Form.Label>{m?.downloadMap.map}</Form.Label>
 
           <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
             <Dropdown.Toggle className="text-start w-100">
@@ -286,7 +280,7 @@ export function CacheTilesForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
-          <Form.Label>{m?.downloadMap.downloadArea ?? 'Area'}</Form.Label>
+          <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
           <ButtonGroup className="d-flex mb-3">
             <Button
@@ -295,7 +289,7 @@ export function CacheTilesForm(): ReactElement {
               active={area === 'visible'}
               onClick={() => setArea('visible')}
             >
-              <FaEye /> {m?.downloadMap.area.visible ?? 'Visible'}
+              <FaEye /> {m?.downloadMap.area.visible}
             </Button>
 
             <Button
@@ -305,13 +299,13 @@ export function CacheTilesForm(): ReactElement {
               onClick={() => setArea('selected')}
               disabled={selectedLine?.type !== 'polygon'}
             >
-              <FaDrawPolygon /> {m?.downloadMap.area.byPolygon ?? 'By polygon'}
+              <FaDrawPolygon /> {m?.downloadMap.area.byPolygon}
             </Button>
           </ButtonGroup>
         </Form.Group>
 
         <Form.Group controlId="name" className="mb-3">
-          <Form.Label>{m?.downloadMap.name ?? 'Name'}</Form.Label>
+          <Form.Label>{m?.general.name}</Form.Label>
 
           <Form.Control
             type="text"
@@ -326,7 +320,7 @@ export function CacheTilesForm(): ReactElement {
         {mapDef && (
           <Form.Group controlId="zoomRange" className="mb-3">
             <Form.Label className="required">
-              {m?.downloadMap.zoomRange ?? 'Zoom range'}
+              {m?.downloadMap.zoomRange}
             </Form.Label>
 
             <InputGroup>
@@ -359,9 +353,11 @@ export function CacheTilesForm(): ReactElement {
           !invalidMaxZoom &&
           tileCount > 50_000 && (
             <Alert variant="warning">
-              Large download: {cnf.format(tileCount)} tiles (~
-              {estimatedSize !== undefined ? formatSize(estimatedSize) : '?'}
-              ). This may take a while.
+              {m?.offline.largeDownload({
+                tiles: cnf.format(tileCount),
+                size:
+                  estimatedSize !== undefined ? formatSize(estimatedSize) : '?',
+              })}
             </Alert>
           )}
       </Modal.Body>
@@ -369,11 +365,11 @@ export function CacheTilesForm(): ReactElement {
       <Modal.Footer className="flex-wrap">
         {tileCount !== undefined && (
           <div className="w-100 text-end">
-            Tiles: <b>{cnf.format(tileCount)}</b>
+            {m?.offline.tiles}: <b>{cnf.format(tileCount)}</b>
             {estimatedSize !== undefined && (
               <>
                 {' '}
-                | Est. size: <b>{formatSize(estimatedSize)}</b>
+                | {m?.offline.estSize}: <b>{formatSize(estimatedSize)}</b>
               </>
             )}
           </div>
@@ -390,7 +386,7 @@ export function CacheTilesForm(): ReactElement {
             !name.trim()
           }
         >
-          <FaSave /> Start caching <kbd>Enter</kbd>
+          <FaSave /> {m?.offline.startCaching} <kbd>Enter</kbd>
         </Button>
 
         <Button
@@ -398,7 +394,7 @@ export function CacheTilesForm(): ReactElement {
           type="button"
           onClick={() => dispatch(cachedMapsSetView('list'))}
         >
-          <FaChevronLeft /> Back
+          <FaChevronLeft /> {m?.general.back}
         </Button>
       </Modal.Footer>
     </form>
