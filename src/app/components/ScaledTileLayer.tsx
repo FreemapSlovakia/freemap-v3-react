@@ -4,6 +4,7 @@ import { TileLayerProps } from 'react-leaflet';
 
 type Props = TileLayerProps & {
   extraScales?: number[];
+  forcedScale?: number;
   cors?: boolean;
   premiumFromZoom?: number;
   premiumOnlyText?: string;
@@ -12,6 +13,7 @@ type Props = TileLayerProps & {
 
 class LScaledTileLayer extends TileLayer {
   private extraScales;
+  private forcedScale;
   private cors;
   private premiumFromZoom;
   private premiumOnlyText;
@@ -20,6 +22,7 @@ class LScaledTileLayer extends TileLayer {
   constructor(
     urlTemplate: string,
     extraScales?: number[],
+    forcedScale?: number,
     cors = true,
     premiumFromZoom?: number,
     premiumOnlyText?: string,
@@ -29,6 +32,8 @@ class LScaledTileLayer extends TileLayer {
     super(urlTemplate, options);
 
     this.extraScales = extraScales;
+
+    this.forcedScale = forcedScale;
 
     this.cors = cors;
 
@@ -80,16 +85,22 @@ class LScaledTileLayer extends TileLayer {
       img.crossOrigin = 'anonymous';
     }
 
-    if (this.extraScales?.length) {
+    if (this.forcedScale !== undefined) {
+      if (this.forcedScale > 1) {
+        img.src += `@${this.forcedScale}x`;
+      }
+    } else if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
         .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
         .join(', ')}`;
 
-      img.onerror = () => {
-        img.removeAttribute('srcset');
-
-        img.onerror = null;
-      };
+      img.addEventListener(
+        'error',
+        () => {
+          img.removeAttribute('srcset');
+        },
+        { once: true },
+      );
     }
 
     return img;
@@ -101,6 +112,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
     const {
       url,
       extraScales,
+      forcedScale,
       cors = true,
       premiumFromZoom,
       premiumOnlyText,
@@ -112,6 +124,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
       instance: new LScaledTileLayer(
         url,
         extraScales,
+        forcedScale,
         cors,
         premiumFromZoom,
         premiumOnlyText,
@@ -128,6 +141,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         [
           'url',
           'extraScales',
+          'forcedScale',
           'cors',
           'premiumFromZoom',
           'premiumOnlyText',

@@ -22,6 +22,7 @@ import {
   mapSetCountries,
   mapSetCustomLayers,
   mapSetEsriAttribution,
+  mapSetLocalPrefs,
   mapSetShading,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
@@ -34,6 +35,8 @@ export interface MapState extends MapStateBase {
   tempLegacyMapWarningSuppressions: string[];
   esriAttribution: string[];
   maxZoom: number;
+  resolutionScale: number | null;
+  featureScale: number;
   shading: Shading;
 }
 
@@ -54,6 +57,8 @@ export const mapInitialState: MapState = {
   tempLegacyMapWarningSuppressions: [],
   esriAttribution: [],
   maxZoom: 20,
+  resolutionScale: null,
+  featureScale: 1,
   shading: {
     backgroundColor: [0x00, 0x00, 0x00, 1],
     components: [
@@ -213,6 +218,15 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapSetShading, (state, action) => {
       state.shading = action.payload;
+    })
+    .addCase(mapSetLocalPrefs, (state, { payload }) => {
+      if (payload.resolutionScale !== undefined) {
+        state.resolutionScale = payload.resolutionScale;
+      }
+
+      if (payload.featureScale !== undefined) {
+        state.featureScale = payload.featureScale;
+      }
     })
     .addCase(processGeoipResult, (state, { payload }) => {
       if (state.lat !== LAT || state.lon !== LON) {

@@ -860,6 +860,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Preferenze',
     maxZoom: 'Zoom massimo',
+    resolutionScale: 'Scala di risoluzione',
+    resolutionScaleAuto: 'Automatica (predefinita del dispositivo)',
+    resolutionScaleHelp:
+      'Simula la densità di pixel del display. Influisce su quale variante di tile viene caricata. Se un livello non offre la variante richiesta, viene utilizzata la più alta disponibile.',
+    featureScale: 'Dimensione degli elementi',
+    featureScaleHelp:
+      'Ingrandisce etichette e linee renderizzate. Non ha effetto sui livelli satellitari, di ombreggiatura, WMS o vettoriali (MapLibre).',
     layer: {
       layer: 'Livello',
       base: 'Base',

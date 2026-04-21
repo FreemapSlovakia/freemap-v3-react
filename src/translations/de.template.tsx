@@ -869,6 +869,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    resolutionScale: 'Auflösungsskala',
+    resolutionScaleAuto: 'Automatisch (Gerätestandard)',
+    resolutionScaleHelp:
+      'Simuliert die Pixeldichte des Displays. Beeinflusst, welche Kachelvariante geladen wird. Wenn eine Ebene die angeforderte Variante nicht anbietet, wird stattdessen die höchste verfügbare verwendet.',
+    featureScale: 'Objektgröße',
+    featureScaleHelp:
+      'Vergrößert gerenderte Beschriftungen und Linien. Hat keine Auswirkung auf Satelliten-, Schattierungs-, WMS- oder Vektor-Ebenen (MapLibre).',
     layer: {
       layer: 'Ebene',
       base: 'Basis',

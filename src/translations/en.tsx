@@ -859,6 +859,14 @@ const messages: Messages = {
     zIndex: 'Z-Index',
     preferences: 'Preferences',
     maxZoom: 'Max zoom',
+    forcedScale: 'Forced scale',
+    resolutionScale: 'Resolution scale',
+    resolutionScaleAuto: 'Auto (device default)',
+    resolutionScaleHelp:
+      "Simulates display pixel density. Affects which tile variant is fetched. If a layer doesn't offer the requested variant, the highest available one is used instead.",
+    featureScale: 'Feature size',
+    featureScaleHelp:
+      'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
     loadWmsLayers: 'Load layers',
   },
 

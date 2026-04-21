@@ -642,6 +642,12 @@ export type Messages = {
     zIndex: string;
     preferences: string;
     maxZoom: string;
+    forcedScale: string;
+    resolutionScale: string;
+    resolutionScaleAuto: string;
+    resolutionScaleHelp: string;
+    featureScale: string;
+    featureScaleHelp: string;
     loadWmsLayers: string;
   };
   elevationChart: {

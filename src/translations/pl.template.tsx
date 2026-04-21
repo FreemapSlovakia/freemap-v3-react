@@ -842,6 +842,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-indeks',
     preferences: 'Preferencje',
     maxZoom: 'Maksymalne powiększenie',
+    resolutionScale: 'Skala rozdzielczości',
+    resolutionScaleAuto: 'Automatycznie (domyślna urządzenia)',
+    resolutionScaleHelp:
+      'Symuluje gęstość pikseli wyświetlacza. Wpływa na to, który wariant kafelków jest pobierany. Jeśli warstwa nie oferuje żądanego wariantu, używany jest najwyższy dostępny.',
+    featureScale: 'Rozmiar elementów',
+    featureScaleHelp:
+      'Powiększa renderowane etykiety i linie. Nie ma wpływu na warstwy satelitarne, cieniowania, WMS ani wektorowe (MapLibre).',
     layer: {
       layer: 'Warstwa',
       base: 'Podstawowa',

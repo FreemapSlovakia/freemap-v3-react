@@ -53,6 +53,11 @@ export const mapSetEsriAttribution = createAction<string[]>(
 
 export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
 
+export const mapSetLocalPrefs = createAction<{
+  resolutionScale?: number | null;
+  featureScale?: number;
+}>('MAP_SET_LOCAL_PREFS');
+
 export const mapSetBounds =
   createAction<[number, number, number, number]>('MAP_SET_BOUNDS');
 

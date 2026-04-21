@@ -69,6 +69,8 @@ function persistSelectedState(state: RootState) {
         legacyMapWarningSuppressions: state.map.legacyMapWarningSuppressions,
         shading: state.map.shading,
         maxZoom: state.map.maxZoom,
+        resolutionScale: state.map.resolutionScale,
+        featureScale: state.map.featureScale,
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,

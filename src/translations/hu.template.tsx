@@ -879,6 +879,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-index',
     preferences: 'Beállítások',
     maxZoom: 'Maximális nagyítás',
+    resolutionScale: 'Felbontás skála',
+    resolutionScaleAuto: 'Automatikus (eszköz alapértelmezett)',
+    resolutionScaleHelp:
+      'Szimulálja a kijelző pixelsűrűségét. Befolyásolja, hogy melyik csempe-változat töltődik be. Ha egy réteg nem kínálja a kért változatot, helyette a legmagasabb elérhető kerül felhasználásra.',
+    featureScale: 'Elemek mérete',
+    featureScaleHelp:
+      'Megnöveli a megjelenített feliratokat és vonalakat. Nincs hatással a műholdas, árnyékolt, WMS és vektoros (MapLibre) rétegekre.',
     layer: {
       layer: 'Réteg',
       base: 'Alap',

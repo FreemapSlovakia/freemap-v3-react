@@ -907,6 +907,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Predvoľby',
     maxZoom: 'Maximálne priblíženie',
+    forcedScale: 'Vynútené rozlíšenie',
+    resolutionScale: 'Škála rozlíšenia',
+    resolutionScaleAuto: 'Automaticky (podľa zariadenia)',
+    resolutionScaleHelp:
+      'Simuluje hustotu pixelov displeja. Ovplyvňuje, ktorý variant dlaždíc sa načíta. Ak vrstva neponúka požadovaný variant, použije sa najvyšší dostupný.',
+    featureScale: 'Veľkosť prvkov',
+    featureScaleHelp:
+      'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
     layer: {
       layer: 'Vrstva',
       base: 'Základná',
