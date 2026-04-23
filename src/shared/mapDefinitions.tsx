@@ -94,7 +94,11 @@ const CUZK_ATTR: AttributionDef = {
   country: 'cz',
 };
 
-const LLS_URL = 'https://www.geoportal.sk/sk/udaje/lls-dmr/';
+const LLS_URL =
+  'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#lls';
+
+const OFM_URL =
+  'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
 export type HasUrl = {
   url: string;
@@ -326,7 +330,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         type: 'data',
         country: 'sk',
         name: 'DMR 5.0: ÚGKK SR',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        url: LLS_URL,
       },
       {
         type: 'data',
@@ -427,7 +431,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       {
         type: 'map',
         name: '©\xa0GKÚ, NLC',
-        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+        url: OFM_URL,
         country: 'sk',
       },
       CUZK_ATTR,
@@ -472,7 +476,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       {
         type: 'map',
         name: '©\xa0GKÚ, NLC',
-        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+        url: OFM_URL,
       },
     ],
     errorTileUrl: white1x1,
@@ -493,7 +497,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       {
         type: 'map',
         name: '©\xa0GKÚ, NLC',
-        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+        url: OFM_URL,
       },
     ],
     errorTileUrl: white1x1,
