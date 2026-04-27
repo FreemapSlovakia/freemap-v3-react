@@ -13,32 +13,29 @@ import {
   useState,
 } from 'react';
 import {
-  Accordion,
   Button,
+  Dropdown,
   Form,
   InputGroup,
   Modal,
+  SplitButton,
   Table,
 } from 'react-bootstrap';
 import {
   FaCloudDownloadAlt,
+  FaEdit,
   FaFilter,
+  FaPlus,
   FaRegMap,
   FaSave,
   FaTimes,
   FaTrash,
-  FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
 import { assert } from 'typia';
-import {
-  mapsDelete,
-  mapsDisconnect,
-  mapsLoad,
-  mapsSave,
-} from '../model/actions.js';
+import { mapsDelete, mapsLoad, mapsSave } from '../model/actions.js';
 
 type Props = { show: boolean };
 
@@ -154,6 +151,8 @@ export function MapsModal({ show }: Props): ReactElement {
     setWriters((writers) => writers?.filter((_, i) => i !== index));
   };
 
+  const [formVisible, setFormVisible] = useState(false);
+
   return (
     <Modal show={show} onHide={close} size="lg">
       <Modal.Header closeButton>
@@ -162,233 +161,220 @@ export function MapsModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-body-tertiary">
-        <Accordion defaultActiveKey="my-maps">
-          <Accordion.Item eventKey="new-map">
-            <Accordion.Header>
-              {activeMap ? (
-                m ? (
-                  <m.maps.SomeMap name={activeMap.name} />
-                ) : (
-                  activeMap.name
-                )
-              ) : (
-                m?.maps.newMap
-              )}
-            </Accordion.Header>
+      <Modal.Body>
+        {formVisible ? (
+          <Form>
+            {(isOwnMap || !activeMap) && (
+              <Form.Group controlId="mapName" className="mb-3">
+                <Form.Label className="required">{m?.general.name}</Form.Label>
 
-            <Accordion.Body>
-              <Form>
-                {(isOwnMap || !activeMap) && (
-                  <Form.Group controlId="mapName" className="mb-3">
-                    <Form.Label className="required">
-                      {m?.general.name}
-                    </Form.Label>
+                <Form.Control
+                  disabled={!online}
+                  value={name}
+                  onChange={(e) => setName(e.currentTarget.value)}
+                />
+              </Form.Group>
+            )}
+
+            {(isOwnMap || !activeMap) && (
+              <Form.Group controlId="writers" className="mb-3">
+                <Form.Label>{m?.maps.writers}</Form.Label>
+
+                <ReactTags
+                  placeholderText={m?.maps.addWriter}
+                  newOptionText={m?.general.newOptionText}
+                  deleteButtonText={m?.general.deleteButtonText}
+                  selected={writers?.map((id) => ({
+                    value: id,
+                    label: userMap.get(id) ?? '???',
+                  }))}
+                  suggestions={
+                    users
+                      ?.filter(
+                        (user) =>
+                          user.id !== myUserId && !writers?.includes(user.id),
+                      )
+                      .map((user) => ({
+                        label: user.name,
+                        value: user.id,
+                      })) ?? []
+                  }
+                  onAdd={handleWriterAddition}
+                  onDelete={handleWriterDelete}
+                  collapseOnSelect
+                />
+              </Form.Group>
+            )}
+          </Form>
+        ) : (
+          <Table responsive hover striped>
+            <thead>
+              <tr>
+                <th>{m?.general.name}</th>
+
+                <th>{m?.general.createdAt}</th>
+
+                <th>{m?.general.modifiedAt}</th>
+              </tr>
+
+              <tr>
+                <th>
+                  <InputGroup className="col-auto">
+                    <InputGroup.Text>
+                      <FaFilter />
+                    </InputGroup.Text>
 
                     <Form.Control
-                      disabled={!online}
-                      value={name}
-                      onChange={(e) => setName(e.currentTarget.value)}
+                      value={filter}
+                      onChange={(e) => setFilter(e.currentTarget.value)}
                     />
-                  </Form.Group>
-                )}
+                  </InputGroup>
+                </th>
+              </tr>
+            </thead>
 
-                {(isOwnMap || !activeMap) && (
-                  <Form.Group controlId="writers" className="mb-3">
-                    <Form.Label>{m?.maps.writers}</Form.Label>
-
-                    <ReactTags
-                      placeholderText={m?.maps.addWriter}
-                      newOptionText={m?.general.newOptionText}
-                      deleteButtonText={m?.general.deleteButtonText}
-                      selected={writers?.map((id) => ({
-                        value: id,
-                        label: userMap.get(id) ?? '???',
-                      }))}
-                      suggestions={
-                        users
-                          ?.filter(
-                            (user) =>
-                              user.id !== myUserId &&
-                              !writers?.includes(user.id),
-                          )
-                          .map((user) => ({
-                            label: user.name,
-                            value: user.id,
-                          })) ?? []
+            <tbody>
+              {filteredMaps
+                ? filteredMaps.map((map) => (
+                    <tr
+                      role="button"
+                      key={map.id}
+                      className={
+                        map === selectedMap
+                          ? 'table-primary'
+                          : map.id === activeMap?.id
+                            ? 'table-success'
+                            : undefined
                       }
-                      onAdd={handleWriterAddition}
-                      onDelete={handleWriterDelete}
-                      collapseOnSelect
-                    />
-                  </Form.Group>
-                )}
-
-                <div className="d-flex flex-row flex-wrap align-items-baseline">
-                  {(!activeMap || activeMap?.canWrite) && (
-                    <Button
-                      type="button"
-                      className="mb-1 me-1"
                       onClick={() =>
-                        dispatch(
-                          mapsSave({
-                            name,
-                            writers,
-                          }),
-                        )
+                        setSelected((s) => (s === map.id ? undefined : map.id))
                       }
-                      disabled={!name || !online}
                     >
-                      <FaSave /> {m?.maps.save}
-                    </Button>
-                  )}
+                      <td>{map.name}</td>
 
-                  {activeMap && (
-                    <Button
-                      type="button"
-                      className="mb-1"
-                      onClick={() => dispatch(mapsDisconnect())}
-                    >
-                      <FaUnlink /> {m?.maps.disconnect}
-                    </Button>
-                  )}
-                </div>
-              </Form>
-            </Accordion.Body>
-          </Accordion.Item>
+                      <td>{dateFormat.format(map.createdAt)}</td>
 
-          <Accordion.Item eventKey="my-maps">
-            <Accordion.Header>{m?.maps.savedMaps}</Accordion.Header>
-
-            <Accordion.Body>
-              <div
-                className="overflow-auto"
-                style={{ maxHeight: '50dvh', minHeight: '8rem' }}
-              >
-                <Table responsive hover striped className="mt-2">
-                  <thead>
-                    <tr>
-                      <th>{m?.general.name}</th>
-
-                      <th>{m?.general.createdAt}</th>
-
-                      <th>{m?.general.modifiedAt}</th>
+                      <td>{dateFormat.format(map.modifiedAt)}</td>
                     </tr>
-
-                    <tr>
-                      <th>
-                        <InputGroup className="col-auto">
-                          <InputGroup.Text>
-                            <FaFilter />
-                          </InputGroup.Text>
-
-                          <Form.Control
-                            value={filter}
-                            onChange={(e) => setFilter(e.currentTarget.value)}
-                          />
-                        </InputGroup>
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {filteredMaps
-                      ? filteredMaps.map((map) => (
-                          <tr
-                            role="button"
-                            key={map.id}
-                            className={
-                              map === selectedMap
-                                ? 'table-primary'
-                                : map.id === activeMap?.id
-                                  ? 'table-success'
-                                  : undefined
-                            }
-                            onClick={() =>
-                              setSelected((s) =>
-                                s === map.id ? undefined : map.id,
-                              )
-                            }
-                          >
-                            <td>{map.name}</td>
-
-                            <td>{dateFormat.format(map.createdAt)}</td>
-
-                            <td>{dateFormat.format(map.modifiedAt)}</td>
-                          </tr>
-                        ))
-                      : m?.maps.noMapFound}
-                  </tbody>
-                </Table>
-              </div>
-
-              <Form.Check
-                className="mb-3"
-                id="clear"
-                type="checkbox"
-                checked={clear}
-                onChange={() => setClear((b) => !b)}
-                label={m?.maps.loadToEmpty}
-              />
-
-              <Form.Check
-                className="mb-3"
-                id="inclPosition"
-                type="checkbox"
-                checked={inclPosition}
-                onChange={() => setInclPosition((b) => !b)}
-                label={m?.maps.loadInclMapAndPosition}
-              />
-
-              <div className="mt-2">
-                <Button
-                  disabled={!selectedMap}
-                  onClick={() =>
-                    selectedMap &&
-                    dispatch(
-                      mapsLoad({
-                        id: selectedMap.id,
-                        merge: !clear,
-                        ignoreLayers: !inclPosition,
-                        ignoreMap: !inclPosition,
-                      }),
-                    )
-                  }
-                >
-                  <FaCloudDownloadAlt /> {m?.general.load}
-                </Button>
-
-                <Button
-                  className="ms-2"
-                  variant="danger"
-                  disabled={
-                    !myUserId ||
-                    (selectedMap ?? activeMap)?.userId !== myUserId ||
-                    !online
-                  }
-                  onClick={() => {
-                    const map = selectedMap ?? activeMap;
-
-                    if (
-                      map &&
-                      window.confirm(m?.maps.deleteConfirm(map.name))
-                    ) {
-                      dispatch(mapsDelete(map.id));
-                    }
-                  }}
-                >
-                  <FaTrash /> {m?.general.delete}
-                </Button>
-              </div>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+                  ))
+                : m?.maps.noMapFound}
+            </tbody>
+          </Table>
+        )}
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
+        {formVisible ? (
+          <>
+            {(!activeMap || activeMap?.canWrite) && (
+              <Button
+                type="button"
+                onClick={() => {
+                  dispatch(
+                    mapsSave({
+                      name,
+                      writers,
+                    }),
+                  );
+
+                  setFormVisible(false);
+                }}
+                disabled={!name || !online}
+              >
+                <FaSave /> {m?.maps.save}
+              </Button>
+            )}
+
+            <Button
+              variant="dark"
+              onClick={() => {
+                setFormVisible(false);
+              }}
+            >
+              <FaTimes /> {m?.general.cancel}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              onClick={() => {
+                setFormVisible(true);
+              }}
+            >
+              {activeMap ? (
+                <>
+                  <FaEdit /> {m?.general.modify}
+                </>
+              ) : (
+                <>
+                  <FaPlus /> {m?.general.add}
+                </>
+              )}
+            </Button>
+
+            <SplitButton
+              title={
+                <>
+                  <FaCloudDownloadAlt /> {m?.general.load}
+                </>
+              }
+              disabled={!selectedMap}
+              onClick={() =>
+                selectedMap &&
+                dispatch(
+                  mapsLoad({
+                    id: selectedMap.id,
+                    merge: !clear,
+                    ignoreLayers: !inclPosition,
+                    ignoreMap: !inclPosition,
+                  }),
+                )
+              }
+            >
+              <Dropdown.ItemText style={{ width: 'max-content' }}>
+                <Form.Check
+                  id="clear"
+                  type="checkbox"
+                  checked={clear}
+                  onChange={() => setClear((b) => !b)}
+                  label={m?.maps.loadToEmpty}
+                />
+              </Dropdown.ItemText>
+
+              <Dropdown.ItemText>
+                <Form.Check
+                  id="inclPosition"
+                  type="checkbox"
+                  checked={inclPosition}
+                  onChange={() => setInclPosition((b) => !b)}
+                  label={m?.maps.loadInclMapAndPosition}
+                />
+              </Dropdown.ItemText>
+            </SplitButton>
+
+            <Button
+              variant="danger"
+              disabled={
+                !myUserId ||
+                (selectedMap ?? activeMap)?.userId !== myUserId ||
+                !online
+              }
+              onClick={() => {
+                const map = selectedMap ?? activeMap;
+
+                if (map && window.confirm(m?.maps.deleteConfirm(map.name))) {
+                  dispatch(mapsDelete(map.id));
+                }
+              }}
+            >
+              <FaTrash /> {m?.general.delete}
+            </Button>
+
+            <Button variant="dark" onClick={close}>
+              <FaTimes /> {m?.general.close}
+            </Button>
+          </>
+        )}
       </Modal.Footer>
     </Modal>
   );

@@ -1070,9 +1070,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Nastala chyba při ukládání mapy', err),
     saveError: ({ err }) =>
       addError(messages, 'Nastala chyba při ukládání mapy', err),
-    loadToEmpty: 'Načíst do čisté mapy',
-    loadInclMapAndPosition:
-      'Načíst včetně uložené podkladové mapy a její pozice',
+    loadToEmpty: 'Do čisté mapy',
+    loadInclMapAndPosition: 'Včetně uložené podkladové mapy a pozice',
     savedMaps: 'Uložené mapy',
     newMap: 'Nová mapa',
     SomeMap: ({ name }) => (

@@ -1134,9 +1134,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     disconnect: 'Leválasztás',
-    loadToEmpty: 'Betöltés üres térképre',
-    loadInclMapAndPosition:
-      'Betöltés a mentett alaptérképpel és annak pozíciójával együtt',
+    loadToEmpty: 'Üres térképre',
+    loadInclMapAndPosition: 'A mentett alaptérképpel és pozíciójával',
     savedMaps: 'Mentett térképek',
     newMap: 'Új térkép',
     SomeMap: ({ name }) => (

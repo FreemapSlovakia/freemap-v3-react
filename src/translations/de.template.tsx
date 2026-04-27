@@ -1120,9 +1120,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Fehler beim Speichern der Karte', err),
     saveError: ({ err }) =>
       addError(messages, 'Fehler beim Speichern der Karte', err),
-    loadToEmpty: 'In leere Karte laden',
-    loadInclMapAndPosition:
-      'Mit gespeicherter Hintergrundkarte und Position laden',
+    loadToEmpty: 'In leere Karte',
+    loadInclMapAndPosition: 'Mit gespeicherter Hintergrundkarte und Position',
     savedMaps: 'Gespeicherte Karten',
     newMap: 'Neue Karte',
     SomeMap: ({ name }) => (

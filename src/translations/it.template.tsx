@@ -1097,9 +1097,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Errore salvando la mappa:', err),
     saveError: ({ err }) =>
       addError(messages, 'Errore salvando la mappa:', err),
-    loadToEmpty: 'Carica su mappa vuota',
-    loadInclMapAndPosition:
-      'Carica inclusa la mappa di sfondo salvata e la sua posizione',
+    loadToEmpty: 'Su mappa vuota',
+    loadInclMapAndPosition: 'Inclusa la mappa di sfondo salvata e posizione',
     savedMaps: 'Mappe salvate',
     newMap: 'Nuova mappa',
     SomeMap: ({ name }) => (

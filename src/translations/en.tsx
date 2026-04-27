@@ -1084,9 +1084,9 @@ const messages: Messages = {
     renameError: ({ err }) => addError(messages, 'Error renaming map', err),
     createError: ({ err }) => addError(messages, 'Error saving map', err),
     saveError: ({ err }) => addError(messages, 'Error saving map', err),
-    loadToEmpty: 'Load to empty map',
+    loadToEmpty: 'To empty map',
     loadInclMapAndPosition:
-      'Load including saved background map and its position',
+      'Include saved background map and position',
     savedMaps: 'Saved maps',
     newMap: 'New map',
     SomeMap: ({ name }) => (

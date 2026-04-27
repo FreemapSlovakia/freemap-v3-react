@@ -1092,8 +1092,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Błąd podczas zapisywania mapy', err),
     saveError: ({ err }) =>
       addError(messages, 'Błąd podczas zapisywania mapy', err),
-    loadToEmpty: 'Załaduj do pustej mapy',
-    loadInclMapAndPosition: 'Załaduj wraz z zapisaną mapą tła i jej pozycją',
+    loadToEmpty: 'Do pustej mapy',
+    loadInclMapAndPosition: 'Wraz z zapisaną mapą tła i pozycją',
     savedMaps: 'Zapisane mapy',
     newMap: 'Nowa mapa',
     SomeMap: ({ name }) => (
