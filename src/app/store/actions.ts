@@ -52,6 +52,7 @@ export const saveSettings = createAction<{
   user?: {
     name?: string;
     email?: string | null;
+    description?: string | null;
     sendGalleryEmails?: boolean;
   };
   keepOpen?: boolean;

@@ -562,6 +562,7 @@ const messages: Messages = {
     account: {
       name: 'Name',
       email: 'Email',
+      description: 'About me',
       sendGalleryEmails: 'Notify photos comments via email',
       delete: 'Delete account',
       deleteWarning:

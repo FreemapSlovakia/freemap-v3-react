@@ -67,10 +67,15 @@ export function AccountModal({ show }: Props): ReactElement | null {
 
   const [email, setEmail] = useState(user?.email ?? '');
 
+  const [description, setDescription] = useState(user?.description ?? '');
+
   const becomePremium = useBecomePremium();
 
   const userMadeChanges =
-    user && (name !== user.name || email !== (user.email ?? ''));
+    user &&
+    (name !== user.name ||
+      email !== (user.email ?? '') ||
+      description !== (user.description ?? ''));
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -258,6 +263,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
               user: {
                 name: name.trim(),
                 email: email.trim() || null,
+                description: description.trim() || null,
               },
             }),
           );
@@ -423,6 +429,19 @@ export function AccountModal({ show }: Props): ReactElement | null {
                       setEmail(e.target.value);
                     }}
                     maxLength={255}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="description">
+                  <Form.Label>{m?.settings.account.description}</Form.Label>
+
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={description}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
                   />
                 </Form.Group>
 

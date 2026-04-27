@@ -23,6 +23,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
       user: action.payload && {
         name: action.payload.name,
         email: action.payload.email,
+        description: action.payload.description,
         sendGalleryEmails: action.payload.sendGalleryEmails,
         id: action.payload.id,
         authToken: action.payload.authToken,
@@ -30,6 +31,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         premiumExpiration: action.payload.premiumExpiration,
         authProviders: action.payload.authProviders,
         credits: action.payload.credits,
+        coordinates: action.payload.coordinates,
       },
       validated: true,
     }))

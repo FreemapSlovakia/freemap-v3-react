@@ -40,11 +40,14 @@ export interface User {
   authToken: string;
   credits: number;
   email: string | null;
+  description: string | null;
   id: number;
   isAdmin: boolean;
   language?: string | null;
-  lat?: number | null;
-  lon?: number | null;
+  coordinates: {
+    lat: number;
+    lon: number;
+  } | null;
   name: string;
   premiumExpiration: Date | null;
   sendGalleryEmails: boolean;

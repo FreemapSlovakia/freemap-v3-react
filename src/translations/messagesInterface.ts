@@ -436,6 +436,7 @@ export type Messages = {
       deleteWarning: string;
       personalInfo: string;
       authProviders: string;
+      description: string;
     };
     general: {
       tips: string;

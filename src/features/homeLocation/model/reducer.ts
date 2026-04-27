@@ -18,11 +18,8 @@ export const homeLocationReducer = createReducer(
   (builder) =>
     builder
       .addCase(authSetUser, (state, action) => {
-        if (action.payload?.lat != null && action.payload?.lon != null) {
-          state.homeLocation = {
-            lat: action.payload.lat,
-            lon: action.payload.lon,
-          };
+        if (action.payload?.coordinates) {
+          state.homeLocation = action.payload.coordinates;
         }
       })
       .addCase(authLogout, (state) => {
