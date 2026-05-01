@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pravidlá ochrany súkromia - Freemap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f9fafb;
+            --text-color: #374151;
+            --heading-color: #111827;
+            --primary-color: #2563eb;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --header-bg: #f3f4f6;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #111827;
+                --text-color: #d1d5db;
+                --heading-color: #f9fafb;
+                --border-color: #374151;
+                --card-bg: #1f2937;
+                --header-bg: #374151;
+            }
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 10;
+        }
+
+        .lang-switch {
+            display: inline-flex;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 9999px;
+            padding: 0.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .lang-switch a {
+            padding: 0.5rem 1.25rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+        }
+
+        .lang-switch a.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .lang-switch a:not(.active):hover {
+            background-color: var(--header-bg);
+        }
+
+        .content {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            color: var(--heading-color);
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            color: var(--heading-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: var(--heading-color);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+        }
+
+        ul {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .contact-block {
+            background-color: var(--bg-color);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .contact-block h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .contact-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 640px) {
+            .content {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.875rem;
+            }
+            .header-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Language Switcher -->
+        <div class="header-actions">
+            <div class="lang-switch">
+                <a href="#sk" class="active" id="btn-sk">Slovenčina</a>
+                <a href="#en" id="btn-en">English</a>
+            </div>
+        </div>
+
+        <!-- Slovak Content -->
+        <div class="content" id="content-sk">
+            <h1>Pravidlá ochrany súkromia</h1>
+            
+            <div class="contact-block">
+                <h2>Prevádzkovateľ</h2>
+                <p><strong>Názov prevádzkovateľa:</strong> Občianske združenie Freemap Slovakia<br>
+                <strong>Adresa sídla:</strong> Chrenovec-Brusno 351, 972 32 Chrenovec-Brusno, Slovenská republika<br>
+                <strong>Registrácia:</strong> občianske združenie vedené na MV SR pod číslom VVS/1-900/90-34343 dňa 2. 10. 2009<br>
+                <strong>IČO:</strong> 42173639<br>
+                <strong>DIČ:</strong> 2022912870<br>
+                <strong>E-mailová adresa:</strong> <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a></p>
+
+                <p><strong>Webové sídlo:</strong> <a href="https://www.freemap.sk" target="_blank">www.freemap.sk</a></p>
+
+                <p><strong>Všeobecné kontakty:</strong><br>
+                Predstavenstvo: <a href="mailto:oz@freemap.sk">oz@freemap.sk</a></p>
+
+                <p><strong>Členovia predstavenstva:</strong><br>
+                Predseda: Michal Bellovič<br>
+                Podpredseda: Ing. Martin Ždila<br>
+                Tajomník: Ing. Tibor Jamečný</p>
+            </div>
+
+            <div class="contact-block">
+                <h2>Vývojár mobilnej aplikácie</h2>
+                <p><strong>BIGWARE, spol. s r.o.</strong><br>
+                <strong>Adresa sídla:</strong> Ožvoldíkova 11, 841 02 Bratislava - Dúbravka<br>
+                <strong>IČO:</strong> 44690452<br>
+                <strong>IČ DPH:</strong> SK2022818182</p>
+
+                <p><strong>Kontaktná osoba vývojára:</strong><br>
+                Ing. Ladislav Nagy, konateľ<br>
+                <strong>E-mailová adresa:</strong> <a href="mailto:ladislav.nagy@bigware.sk">ladislav.nagy@bigware.sk</a></p>
+
+                <p><em>Vývojár zabezpečuje technickú prípravu, údržbu a podporu mobilnej aplikácie na základe poverenia prevádzkovateľa.</em></p>
+            </div>
+
+            <h2>Mobilná aplikácia Freemap</h2>
+            <p>Táto politika ochrany súkromia vysvetľuje, ako Občianske združenie Freemap Slovakia spracúva osobné údaje používateľov mobilnej aplikácie Freemap.</p>
+            
+            <p>Mobilná aplikácia slúži na používanie mapových služieb portálu freemap.sk v mobilnom zariadení. Umožňuje najmä zobrazovanie máp, vyhľadávanie miest a bodov záujmu, prácu s mapovými vrstvami, kreslenie a zobrazovanie objektov na mape, nahrávanie trás z GPS zariadenia a používanie ďalších funkcií súvisiacich s mapovými službami Freemap.</p>
+            
+            <p>Aplikácia nie je cielene určená osobám mladším ako 16 rokov. Ak by sme zistili, že spracúvame osobné údaje osoby mladšej ako 16 rokov bez potrebného súhlasu alebo schválenia zákonného zástupcu, prijmeme primerané opatrenia na ich vymazanie.</p>
+            
+            <p>Trasy nahraté z GPS zariadenia môžu obsahovať polohové údaje. Podľa spôsobu použitia aplikácie môžu byť tieto trasy uložené iba lokálne v mobilnom zariadení používateľa alebo môžu byť uložené aj na serveroch služby freemap.sk, najmä ak ich používateľ vedome uloží, synchronizuje, zdieľa alebo odošle prostredníctvom aplikácie.</p>
+            
+            <p>Aplikácia môže umožňovať aj výber fotografií z galérie zariadenia a ich priradenie ku konkrétnej trase, miestu, bodu na mape alebo inému mapovému objektu. Takéto fotografie môžu slúžiť na dokumentáciu miest v teréne, orientáciu v priestore, doplnenie mapových informácií alebo zdieľanie vizuálnych informácií s ostatnými používateľmi služby Freemap.</p>
+            
+            <p>Pokiaľ používateľ fotografiu iba vyberie alebo pripravuje na odoslanie, môže byť spracúvaná lokálne v jeho zariadení. Ak používateľ fotografiu odošle, nahrá, zverejní alebo synchronizuje prostredníctvom aplikácie, fotografia bude uložená na serveroch služby freemap.sk a môže byť dostupná ostatným používateľom alebo verejnosti podľa nastavení služby a spôsobu jej zverejnenia.</p>
+            
+            <p>Aplikácia je navrhnutá tak, aby spracúvala len nevyhnutné minimum osobných údajov. Väčšina funkcií aplikácie využíva priamo služby portálu freemap.sk.</p>
+
+            <h2>Aké osobné údaje spracúvame</h2>
+            <p>Pri používaní aplikácie môžu byť spracúvané najmä tieto údaje:</p>
+
+            <h3>Údaje používateľského účtu</h3>
+            <p>Ak sa používateľ prihlási prostredníctvom externého prihlasovacieho systému, napríklad OAuth2 poskytovateľa, aplikácia alebo služby portálu Freemap môžu spracúvať údaje, ktoré poskytovateľ prihlásenia odovzdá.</p>
+            
+            <p>Ide najmä o:</p>
+            <ul>
+                <li>e-mailovú adresu,</li>
+                <li>meno alebo zobrazované meno používateľa,</li>
+                <li>technický identifikátor účtu poskytnutý prihlasovacou službou.</li>
+            </ul>
+            
+            <p>Prevádzkovateľ neeviduje ďalšie osobné údaje používateľa v rámci mobilnej aplikácie, pokiaľ ich používateľ sám dobrovoľne neposkytne alebo nevytvorí pri používaní služieb.</p>
+
+            <h3>Údaje vytvorené používaním aplikácie</h3>
+            <p>Pri používaní mapových funkcií môže používateľ vytvárať alebo upravovať obsah, napríklad kresby, body, trasy, poznámky, nastavenia vrstiev, fotografie alebo iné mapové prvky.</p>
+            
+            <p>Ak sú tieto údaje ukladané na serveroch Freemap alebo priradené k používateľskému účtu, môžu byť spojené s používateľským účtom, ktorý ich vytvoril alebo upravil.</p>
+            
+            <p>GPS trasy môžu obsahovať údaje o polohe, čase, priebehu pohybu a ďalšie technické údaje zaznamenané GPS zariadením alebo mobilným zariadením. Tieto údaje môžu byť uložené iba lokálne v zariadení používateľa alebo aj na serveroch služby freemap.sk, ak používateľ využije funkciu uloženia, synchronizácie, zdieľania alebo odoslania trasy.</p>
+            
+            <p>Fotografie vybrané používateľom z galérie zariadenia môžu obsahovať obrazové informácie o mieste, objekte alebo okolí, ako aj technické metadáta, napríklad dátum vytvorenia, informácie o zariadení alebo údaje o polohe, ak sú vo fotografii uložené alebo ak ich používateľ k fotografii doplní. Používateľ môže fotografie priradiť ku konkrétnej polohe, trase alebo bodu na mape.</p>
+            
+            <p>Ak používateľ fotografiu odošle, nahrá alebo zverejní prostredníctvom služby Freemap, môže byť dostupná ostatným používateľom alebo verejnosti v rozsahu podľa nastavení služby a spôsobu zverejnenia.</p>
+
+            <h3>Technické údaje</h3>
+            <p>Z dôvodu zabezpečenia, prevádzky a diagnostiky služieb môžu byť spracúvané technické údaje, napríklad:</p>
+            <ul>
+                <li>IP adresa zariadenia,</li>
+                <li>dátum a čas požiadavky,</li>
+                <li>typ požiadavky,</li>
+                <li>verzia aplikácie,</li>
+                <li>typ zariadenia a operačného systému,</li>
+                <li>technické chybové hlásenia,</li>
+                <li>serverové logy.</li>
+            </ul>
+            
+            <p>Tieto údaje sa používajú najmä na zabezpečenie prevádzky aplikácie, ochranu pred zneužitím, riešenie technických problémov a zlepšovanie stability služieb.</p>
+            
+            <p>Na účely zvyšovania stability a odstraňovania chýb môže aplikácia zhromažďovať diagnostické údaje o pádoch aplikácie a technických chybách, napríklad informácie o verzii aplikácie, type zariadenia, operačnom systéme a technickom priebehu chyby.</p>
+
+            <h3>Poloha zariadenia</h3>
+            <p>Aplikácia môže požiadať o prístup k polohe zariadenia, ak používateľ využíva funkcie ako zobrazenie aktuálnej polohy na mape, navigácia v mape, nahrávanie GPS trasy alebo práca s objektmi v okolí aktuálnej polohy.</p>
+            
+            <p>Prístup k polohe je možný iba po povolení používateľom v nastaveniach zariadenia. Používateľ môže toto povolenie kedykoľvek zmeniť alebo odobrať.</p>
+            
+            <p>Aktuálna poloha sa používa na zobrazenie a prácu s mapou alebo na zaznamenanie GPS trasy. Poloha sa neukladá ako osobný údaj používateľa, pokiaľ používateľ sám vedome nevytvorí alebo neuloží mapový objekt, GPS trasu alebo fotografiu s polohovými údajmi.</p>
+
+            <h2>Účely spracúvania osobných údajov</h2>
+            <p>Osobné údaje používateľov aplikácie Freemap sú spracúvané na tieto účely:</p>
+            <ul>
+                <li>poskytovanie služieb mobilnej aplikácie,</li>
+                <li>umožnenie prihlásenia používateľa,</li>
+                <li>správa používateľského účtu,</li>
+                <li>zobrazovanie a používanie mapových služieb,</li>
+                <li>vyhľadávanie miest, trás a bodov záujmu,</li>
+                <li>práca s mapovými vrstvami,</li>
+                <li>kreslenie, ukladanie alebo zobrazovanie mapových objektov,</li>
+                <li>nahrávanie, zobrazovanie, ukladanie alebo zdieľanie GPS trás,</li>
+                <li>výber, nahrávanie, geotagovanie, zobrazovanie, ukladanie alebo zverejňovanie fotografií súvisiacich s mapou, trasami, miestami alebo objektmi v teréne,</li>
+                <li>dokumentácia miest, trás a objektov v teréne pre potreby mapových služieb Freemap,</li>
+                <li>technická prevádzka aplikácie a serverových služieb,</li>
+                <li>zabezpečenie aplikácie a ochrana pred zneužitím,</li>
+                <li>riešenie chýb, incidentov a podpora používateľov.</li>
+            </ul>
+
+            <h2>Právne základy spracúvania</h2>
+            <p>Osobné údaje sú spracúvané na základe týchto právnych základov:</p>
+
+            <h3>Plnenie zmluvy alebo poskytovanie služby</h3>
+            <p>Spracúvanie je potrebné na to, aby používateľ mohol používať mobilnú aplikáciu a služby Freemap, najmä prihlásenie, zobrazenie mapy, prácu s mapovými objektmi, GPS trasami, fotografiami a ďalšími funkciami aplikácie.</p>
+            <p><em>Právny základ: čl. 6 ods. 1 písm. b) GDPR.</em></p>
+
+            <h3>Oprávnený záujem prevádzkovateľa</h3>
+            <p>Prevádzkovateľ má oprávnený záujem na bezpečnej, stabilnej a spoľahlivej prevádzke aplikácie a služieb Freemap, na ochrane pred zneužitím a na riešení technických problémov.</p>
+            <p><em>Právny základ: čl. 6 ods. 1 písm. f) GDPR.</em></p>
+
+            <h3>Súhlas používateľa</h3>
+            <p>Niektoré funkcie aplikácie môžu vyžadovať súhlas používateľa, napríklad prístup k polohe zariadenia, prístup k fotografiám alebo iným funkciám zariadenia.</p>
+            <p>Používateľ môže udelený súhlas alebo povolenie kedykoľvek odvolať v nastaveniach svojho zariadenia alebo v nastaveniach aplikácie, ak to aplikácia umožňuje.</p>
+            <p><em>Právny základ: čl. 6 ods. 1 písm. a) GDPR.</em></p>
+
+            <h2>Prístup aplikácie k funkciám zariadenia</h2>
+            <p>Aplikácia môže požadovať prístup k niektorým funkciám zariadenia, najmä:</p>
+
+            <h3>Poloha</h3>
+            <p>Používa sa na zobrazenie aktuálnej polohy používateľa na mape, nahrávanie GPS trasy a na súvisiace mapové funkcie.</p>
+
+            <h3>Fotografie a galéria</h3>
+            <p>Aplikácia môže požiadať o prístup k fotografiám alebo galérii zariadenia, ak používateľ využije funkciu výberu a nahrania fotografie k trase, miestu, bodu na mape alebo inému mapovému objektu.</p>
+            <p>Fotografie sa používajú na účely mapovej dokumentácie, orientácie v teréne, doplnenia informácií o miestach a objektoch alebo na zdieľanie obsahu v rámci služby Freemap, ak sa používateľ rozhodne fotografiu odoslať, uložiť alebo zverejniť.</p>
+            <p>Používateľ môže prístup k fotografiám alebo galérii kedykoľvek povoliť alebo zakázať v nastaveniach svojho zariadenia.</p>
+
+            <h3>Úložisko alebo súbory</h3>
+            <p>Môže sa používať napríklad pri importe, exporte alebo ukladaní mapových dát, trás, kresieb, fotografií alebo iných súborov, ak aplikácia takúto funkciu poskytuje.</p>
+
+            <h3>Internetové pripojenie</h3>
+            <p>Je potrebné na komunikáciu so službami portálu freemap.sk, načítanie mapových podkladov, vyhľadávanie a používanie online funkcií aplikácie.</p>
+            <p>Používateľ môže oprávnenia aplikácie spravovať v nastaveniach svojho mobilného zariadenia.</p>
+
+            <h2>Prihlásenie cez externých poskytovateľov</h2>
+            <p>Ak sa používateľ prihlasuje prostredníctvom externého poskytovateľa identity, napríklad pomocou OAuth2, samotné overenie identity zabezpečuje tento poskytovateľ.</p>
+            <p>Prevádzkovateľ spracúva iba údaje, ktoré sú potrebné na vytvorenie alebo priradenie používateľského účtu v službách Freemap, najmä e-mailovú adresu, meno alebo zobrazované meno a technický identifikátor účtu.</p>
+            <p>Externý poskytovateľ prihlásenia môže spracúvať údaje podľa vlastných pravidiel ochrany súkromia.</p>
+
+            <h2>Obsah nahrávaný používateľom</h2>
+            <p>Používateľ zodpovedá za obsah, ktorý prostredníctvom aplikácie nahrá, uloží alebo zverejní.</p>
+            <p>Pri nahrávaní fotografií by používateľ nemal zverejňovať fotografie, ktoré neprimerane zasahujú do súkromia iných osôb, obsahujú citlivé osobné údaje alebo obsah, na ktorého zverejnenie nemá oprávnenie.</p>
+            <p>Ak fotografia obsahuje osoby, evidenčné čísla vozidiel, súkromné objekty alebo iné identifikovateľné údaje, používateľ je povinný zvážiť, či je jej zverejnenie primerané a oprávnené.</p>
+            <p>Prevádzkovateľ si môže vyhradiť právo odstrániť obsah, ktorý je v rozpore s pravidlami služby, právnymi predpismi alebo oprávnenými záujmami tretích osôb.</p>
+
+            <h2>Príjemcovia osobných údajov</h2>
+            <p>Prístup k osobným údajom majú iba osoby, ktoré ho potrebujú na zabezpečenie prevádzky, podpory, údržby alebo bezpečnosti aplikácie a služieb Freemap.</p>
+            <p>Príjemcami osobných údajov môžu byť najmä:</p>
+            <ul>
+                <li>poverené osoby prevádzkovateľa,</li>
+                <li>technický správca alebo vývojár aplikácie,</li>
+                <li>poskytovatelia serverovej infraštruktúry alebo hostingových služieb,</li>
+                <li>externí poskytovatelia prihlásenia, ak používateľ využije ich prihlasovaciu službu.</li>
+            </ul>
+            <p>Osobné údaje sa neposkytujú tretím stranám na marketingové účely.</p>
+
+            <h2>Cezhraničný prenos osobných údajov</h2>
+            <p>Prevádzkovateľ sa usiluje spracúvať osobné údaje v rámci Európskej únie alebo Európskeho hospodárskeho priestoru.</p>
+            <p>Ak používateľ využije externého poskytovateľa prihlásenia, diagnostiky, infraštruktúry alebo inú službu tretej strany, môže dôjsť k spracúvaniu údajov aj mimo Európskej únie alebo Európskeho hospodárskeho priestoru, vždy v súlade s pravidlami GDPR a podmienkami príslušného poskytovateľa.</p>
+
+            <h2>Doba uchovávania údajov</h2>
+            <p>Osobné údaje sa uchovávajú iba po dobu potrebnú na splnenie účelov, na ktoré boli získané.</p>
+            <p>Údaje používateľského účtu sa uchovávajú počas trvania používateľského účtu alebo používania služieb Freemap.</p>
+            <p>Technické a serverové logy sa uchovávajú po dobu nevyhnutnú na zabezpečenie prevádzky, bezpečnosti, diagnostiky a riešenia incidentov.</p>
+            <p>Údaje, ktoré používateľ sám vytvorí alebo uloží v rámci mapových funkcií, sa uchovávajú podľa nastavení služby alebo dovtedy, kým ich používateľ neodstráni, ak je odstránenie používateľovi umožnené.</p>
+            <p>GPS trasy uložené iba lokálne v mobilnom zariadení sa uchovávajú v zariadení používateľa, kým ich používateľ nevymaže alebo neodinštaluje aplikáciu, ak tým dôjde k odstráneniu lokálnych údajov.</p>
+            <p>GPS trasy uložené alebo synchronizované na serveroch služby freemap.sk sa uchovávajú podľa nastavení používateľského účtu a služby Freemap, prípadne do ich odstránenia používateľom, ak je táto možnosť dostupná.</p>
+            <p>Fotografie vybrané z galérie a spracúvané iba lokálne v mobilnom zariadení sa uchovávajú v zariadení používateľa, kým ich používateľ nevymaže alebo neodinštaluje aplikáciu, ak tým dôjde k odstráneniu lokálnych údajov.</p>
+            <p>Fotografie nahrané alebo zverejnené prostredníctvom služby freemap.sk sa uchovávajú podľa nastavení používateľského účtu a služby Freemap, prípadne do ich odstránenia používateľom, ak je táto možnosť dostupná.</p>
+
+            <h2>Práva dotknutej osoby</h2>
+            <p>Ako používateľ aplikácie Freemap máte právo:</p>
+            <ul>
+                <li>požiadať o prístup k svojim osobným údajom,</li>
+                <li>požiadať o opravu nesprávnych alebo neúplných údajov,</li>
+                <li>požiadať o vymazanie osobných údajov,</li>
+                <li>požiadať o obmedzenie spracúvania,</li>
+                <li>namietať proti spracúvaniu na základe oprávneného záujmu,</li>
+                <li>požiadať o prenosnosť údajov,</li>
+                <li>kedykoľvek odvolať súhlas, ak je spracúvanie založené na súhlase,</li>
+                <li>podať sťažnosť dozornému orgánu, ktorým je Úrad na ochranu osobných údajov Slovenskej republiky.</li>
+            </ul>
+            
+            <p>Používateľ môže požiadať o zrušenie účtu a vymazanie osobných údajov spojených s účtom, ak ich ďalšie uchovávanie nie je potrebné alebo vyžadované právnymi predpismi, priamo v nastaveniach aplikácie, ak je táto funkcia dostupná, alebo zaslaním požiadavky na e-mailovú adresu <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>
+            
+            <p>Žiadosti týkajúce sa ochrany osobných údajov je možné posielať na e-mailovú adresu:</p>
+            <p><a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a></p>
+            
+            <p>alebo na všeobecný kontakt predstavenstva:</p>
+            <p><a href="mailto:oz@freemap.sk">oz@freemap.sk</a></p>
+
+            <h2>Automatizované rozhodovanie a profilovanie</h2>
+            <p>V rámci mobilnej aplikácie Freemap sa nevykonáva automatizované rozhodovanie ani profilovanie používateľov na marketingové alebo obdobné účely.</p>
+
+            <h2>Zmeny pravidiel ochrany súkromia</h2>
+            <p>Prevádzkovateľ môže tieto pravidlá ochrany súkromia priebežne aktualizovať, najmä pri zmene funkcií aplikácie, technického riešenia alebo právnych požiadaviek.</p>
+            <p>Aktuálna verzia dokumentu bude dostupná v mobilnej aplikácii Freemap a/alebo na webovom sídle prevádzkovateľa.</p>
+
+            <h2>Dostupnosť dokumentu</h2>
+            <p>Tento dokument je dostupný v rámci mobilnej aplikácie Freemap v sekcii týkajúcej sa pravidiel ochrany súkromia a môže byť zverejnený aj na webovom sídle prevádzkovateľa.</p>
+        </div>
+
+        <!-- Placeholder for English Content -->
+        <div class="content" id="content-en" style="display: none;">
+            <h1>Privacy Policy</h1>
+            
+            <div class="contact-block">
+                <h2>Controller</h2>
+                <p><strong>Name of the controller:</strong> Civic Association Freemap Slovakia<br>
+                <strong>Registered office:</strong> Chrenovec-Brusno 351, 972 32 Chrenovec-Brusno, Slovak Republic<br>
+                <strong>Registration:</strong> civic association registered with the Ministry of Interior of the Slovak Republic under No. VVS/1-900/90-34343 on 2 October 2009<br>
+                <strong>Company ID:</strong> 42173639<br>
+                <strong>Tax ID:</strong> 2022912870<br>
+                <strong>E-mail address:</strong> <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a></p>
+
+                <p><strong>Website:</strong> <a href="https://www.freemap.sk" target="_blank">www.freemap.sk</a></p>
+
+                <p><strong>General contacts:</strong><br>
+                Board: <a href="mailto:oz@freemap.sk">oz@freemap.sk</a></p>
+
+                <p><strong>Members of the Board:</strong><br>
+                Chairman: Michal Bellovič<br>
+                Vice-Chairman: Ing. Martin Ždila<br>
+                Secretary: Ing. Tibor Jamečný</p>
+            </div>
+
+            <div class="contact-block">
+                <h2>Mobile Application Developer</h2>
+                <p><strong>BIGWARE, spol. s r.o.</strong><br>
+                <strong>Registered office:</strong> Ožvoldíkova 11, 841 02 Bratislava - Dúbravka, Slovak Republic<br>
+                <strong>Company ID:</strong> 44690452<br>
+                <strong>VAT ID:</strong> SK2022818182</p>
+
+                <p><strong>Developer contact person:</strong><br>
+                Ing. Ladislav Nagy, Managing Director<br>
+                <strong>E-mail address:</strong> <a href="mailto:ladislav.nagy@bigware.sk">ladislav.nagy@bigware.sk</a></p>
+
+                <p><em>The developer provides technical preparation, maintenance and support of the mobile application on behalf of the controller.</em></p>
+            </div>
+
+            <h2>Freemap Mobile Application</h2>
+            <p>This Privacy Policy explains how the Civic Association Freemap Slovakia processes personal data of users of the Freemap mobile application.</p>
+            
+            <p>The mobile application is used to access the map services of the freemap.sk portal on a mobile device. It allows users, in particular, to display maps, search for places and points of interest, work with map layers, draw and display objects on the map, record tracks from a GPS device and use other functions related to Freemap map services.</p>
+            
+            <p>The application is not specifically intended for persons under the age of 16. If we become aware that we process personal data of a person under the age of 16 without the required consent or approval of their legal guardian, we will take reasonable steps to delete such data.</p>
+            
+            <p>Tracks recorded from a GPS device may contain location data. Depending on how the application is used, these tracks may be stored only locally on the user’s mobile device or may also be stored on the servers of the freemap.sk service, especially if the user knowingly saves, synchronizes, shares or uploads them through the application.</p>
+            
+            <p>The application may also allow users to select photos from the device gallery and assign them to a specific track, place, point on the map or other map object. Such photos may be used to document places in the field, support orientation in the terrain, supplement map information or share visual information with other users of the Freemap service.</p>
+            
+            <p>If the user only selects a photo or prepares it for upload, it may be processed locally on the user’s device. If the user sends, uploads, publishes or synchronizes the photo through the application, the photo will be stored on the servers of the freemap.sk service and may be available to other users or to the public according to the service settings and the method of publication.</p>
+            
+            <p>The application is designed to process only the minimum necessary amount of personal data. Most functions of the application directly use the services of the freemap.sk portal.</p>
+
+            <h2>What Personal Data We Process</h2>
+            <p>When using the application, the following data may be processed in particular:</p>
+
+            <h3>User Account Data</h3>
+            <p>If the user logs in through an external login system, such as an OAuth2 provider, the application or Freemap portal services may process data provided by that login provider.</p>
+            
+            <p>This mainly includes:</p>
+            <ul>
+                <li>e-mail address,</li>
+                <li>name or display name of the user,</li>
+                <li>technical account identifier provided by the login service.</li>
+            </ul>
+            
+            <p>The controller does not record any other personal data of the user within the mobile application unless the user voluntarily provides or creates such data while using the services.</p>
+
+            <h3>Data Created by Using the Application</h3>
+            <p>When using map functions, the user may create or edit content such as drawings, points, tracks, notes, layer settings, photos or other map elements.</p>
+            
+            <p>If such data is stored on Freemap servers or assigned to a user account, it may be associated with the user account that created or edited it.</p>
+            
+            <p>GPS tracks may contain data about location, time, movement history and other technical data recorded by a GPS device or mobile device. These data may be stored only locally on the user’s device or also on the servers of the freemap.sk service if the user uses the function to save, synchronize, share or upload the track.</p>
+            
+            <p>Photos selected by the user from the device gallery may contain visual information about a place, object or surroundings, as well as technical metadata, such as the date of creation, information about the device or location data, if such data is stored in the photo or added by the user. The user may assign photos to a specific location, track or point on the map.</p>
+            
+            <p>If the user sends, uploads or publishes a photo through the Freemap service, it may be available to other users or to the public to the extent defined by the service settings and the method of publication.</p>
+
+            <h3>Technical Data</h3>
+            <p>For the purposes of security, operation and diagnostics of the services, technical data may be processed, for example:</p>
+            <ul>
+                <li>IP address of the device,</li>
+                <li>date and time of the request,</li>
+                <li>type of request,</li>
+                <li>application version,</li>
+                <li>type of device and operating system,</li>
+                <li>technical error messages,</li>
+                <li>server logs.</li>
+            </ul>
+            
+            <p>These data are used mainly to ensure the operation of the application, protect against misuse, resolve technical problems and improve the stability of the services.</p>
+            
+            <p>For the purpose of improving stability and fixing errors, the application may collect diagnostic data about application crashes and technical errors, such as information about the application version, device type, operating system and the technical course of the error.</p>
+
+            <h3>Device Location</h3>
+            <p>The application may request access to the device location if the user uses functions such as displaying the current location on the map, navigation on the map, recording a GPS track or working with objects near the current location.</p>
+            
+            <p>Access to location is possible only after permission is granted by the user in the device settings. The user may change or revoke this permission at any time.</p>
+            
+            <p>The current location is used to display and work with the map or to record a GPS track. The location is not stored as the user’s personal data unless the user knowingly creates or saves a map object, GPS track or photo with location data.</p>
+
+            <h2>Purposes of Personal Data Processing</h2>
+            <p>Personal data of Freemap application users are processed for the following purposes:</p>
+            <ul>
+                <li>providing the services of the mobile application,</li>
+                <li>enabling user login,</li>
+                <li>managing the user account,</li>
+                <li>displaying and using map services,</li>
+                <li>searching for places, tracks and points of interest,</li>
+                <li>working with map layers,</li>
+                <li>drawing, saving or displaying map objects,</li>
+                <li>recording, displaying, saving or sharing GPS tracks,</li>
+                <li>selecting, uploading, geotagging, displaying, saving or publishing photos related to the map, tracks, places or objects in the field,</li>
+                <li>documenting places, tracks and objects in the field for the purposes of Freemap map services,</li>
+                <li>technical operation of the application and server services,</li>
+                <li>securing the application and protecting it against misuse,</li>
+                <li>resolving errors, incidents and providing user support.</li>
+            </ul>
+
+            <h2>Legal Bases for Processing</h2>
+            <p>Personal data are processed on the following legal bases:</p>
+
+            <h3>Performance of a Contract or Provision of a Service</h3>
+            <p>Processing is necessary so that the user can use the Freemap mobile application and services, in particular login, map display, work with map objects, GPS tracks, photos and other application functions.</p>
+            <p><em>Legal basis: Article 6(1)(b) GDPR.</em></p>
+
+            <h3>Legitimate Interest of the Controller</h3>
+            <p>The controller has a legitimate interest in the secure, stable and reliable operation of the Freemap application and services, protection against misuse and solving technical problems.</p>
+            <p><em>Legal basis: Article 6(1)(f) GDPR.</em></p>
+
+            <h3>User Consent</h3>
+            <p>Some application functions may require the user’s consent, such as access to the device location, access to photos or other device functions.</p>
+            <p>The user may withdraw the granted consent or permission at any time in the device settings or in the application settings, if the application allows this.</p>
+            <p><em>Legal basis: Article 6(1)(a) GDPR.</em></p>
+
+            <h2>Application Access to Device Functions</h2>
+            <p>The application may request access to certain device functions, in particular:</p>
+
+            <h3>Location</h3>
+            <p>Used to display the user’s current location on the map, record a GPS track and provide related map functions.</p>
+
+            <h3>Photos and Gallery</h3>
+            <p>The application may request access to photos or the device gallery if the user uses the function to select and upload a photo to a track, place, point on the map or other map object.</p>
+            <p>Photos are used for map documentation, orientation in the field, supplementing information about places and objects or sharing content within the Freemap service if the user decides to send, save or publish the photo.</p>
+            <p>The user may allow or deny access to photos or the gallery at any time in the device settings.</p>
+
+            <h3>Storage or Files</h3>
+            <p>This may be used, for example, when importing, exporting or storing map data, tracks, drawings, photos or other files, if the application provides such a function.</p>
+
+            <h3>Internet Connection</h3>
+            <p>An internet connection is required for communication with the freemap.sk portal services, loading map data, searching and using the online functions of the application.</p>
+            <p>The user may manage application permissions in the settings of their mobile device.</p>
+
+            <h2>Login via External Providers</h2>
+            <p>If the user logs in through an external identity provider, for example using OAuth2, the authentication itself is performed by that provider.</p>
+            <p>The controller processes only the data necessary to create or assign a user account in the Freemap services, in particular the e-mail address, name or display name and technical account identifier.</p>
+            <p>The external login provider may process data according to its own privacy policy.</p>
+
+            <h2>Content Uploaded by the User</h2>
+            <p>The user is responsible for the content they upload, save or publish through the application.</p>
+            <p>When uploading photos, the user should not publish photos that disproportionately interfere with the privacy of other persons, contain sensitive personal data or content for which the user does not have the right to publish.</p>
+            <p>If a photo contains persons, vehicle registration numbers, private objects or other identifiable data, the user is obliged to consider whether its publication is appropriate and lawful.</p>
+            <p>The controller may reserve the right to remove content that is contrary to the rules of the service, legal regulations or legitimate interests of third parties.</p>
+
+            <h2>Recipients of Personal Data</h2>
+            <p>Access to personal data is granted only to persons who need it to ensure the operation, support, maintenance or security of the Freemap application and services.</p>
+            <p>Recipients of personal data may include in particular:</p>
+            <ul>
+                <li>authorized persons of the controller,</li>
+                <li>technical administrator or application developer,</li>
+                <li>providers of server infrastructure or hosting services,</li>
+                <li>external login providers, if the user uses their login service.</li>
+            </ul>
+            <p>Personal data are not provided to third parties for marketing purposes.</p>
+
+            <h2>Cross-Border Transfer of Personal Data</h2>
+            <p>The controller strives to process personal data within the European Union or the European Economic Area.</p>
+            <p>If the user uses an external login provider, diagnostics provider, infrastructure provider or another third-party service, data may also be processed outside the European Union or the European Economic Area, always in accordance with GDPR rules and the terms of the respective provider.</p>
+
+            <h2>Data Retention Period</h2>
+            <p>Personal data are stored only for the period necessary to fulfil the purposes for which they were collected.</p>
+            <p>User account data are stored for the duration of the user account or the use of Freemap services.</p>
+            <p>Technical and server logs are stored for the period necessary to ensure operation, security, diagnostics and incident resolution.</p>
+            <p>Data that the user creates or saves within map functions are stored according to the service settings or until the user deletes them, if deletion is available to the user.</p>
+            <p>GPS tracks stored only locally on the mobile device are stored on the user’s device until the user deletes them or uninstalls the application, if this results in the removal of local data.</p>
+            <p>GPS tracks stored or synchronized on the servers of the freemap.sk service are stored according to the user account settings and the Freemap service settings, or until they are deleted by the user, if this option is available.</p>
+            <p>Photos selected from the gallery and processed only locally on the mobile device are stored on the user’s device until the user deletes them or uninstalls the application, if this results in the removal of local data.</p>
+            <p>Photos uploaded or published through the freemap.sk service are stored according to the user account settings and the Freemap service settings, or until they are deleted by the user, if this option is available.</p>
+
+            <h2>Rights of the Data Subject</h2>
+            <p>As a user of the Freemap application, you have the right to:</p>
+            <ul>
+                <li>request access to your personal data,</li>
+                <li>request correction of incorrect or incomplete data,</li>
+                <li>request deletion of personal data,</li>
+                <li>request restriction of processing,</li>
+                <li>object to processing based on legitimate interest,</li>
+                <li>request data portability,</li>
+                <li>withdraw consent at any time, if processing is based on consent,</li>
+                <li>lodge a complaint with the supervisory authority, which is the Office for Personal Data Protection of the Slovak Republic.</li>
+            </ul>
+            
+            <p>The user may request cancellation of the account and deletion of personal data associated with the account, provided that further retention is not necessary or required by law, directly in the application settings, if this function is available, or by sending a request to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>
+            
+            <p>Requests concerning personal data protection may be sent to:</p>
+            <p><a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a></p>
+            
+            <p>or to the general contact of the Board:</p>
+            <p><a href="mailto:oz@freemap.sk">oz@freemap.sk</a></p>
+
+            <h2>Automated Decision-Making and Profiling</h2>
+            <p>The Freemap mobile application does not use automated decision-making or user profiling for marketing or similar purposes.</p>
+
+            <h2>Changes to the Privacy Policy</h2>
+            <p>The controller may update this Privacy Policy from time to time, especially in the event of changes to application functions, technical solutions or legal requirements.</p>
+            <p>The current version of this document will be available in the Freemap mobile application and/or on the controller’s website.</p>
+
+            <h2>Availability of the Document</h2>
+            <p>This document is available within the Freemap mobile application in the section concerning the Privacy Policy and may also be published on the controller’s website.</p>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnSk = document.getElementById('btn-sk');
+            const btnEn = document.getElementById('btn-en');
+            const contentSk = document.getElementById('content-sk');
+            const contentEn = document.getElementById('content-en');
+
+            btnSk.addEventListener('click', function(e) {
+                e.preventDefault();
+                btnSk.classList.add('active');
+                btnEn.classList.remove('active');
+                contentSk.style.display = 'block';
+                contentEn.style.display = 'none';
+            });
+
+            btnEn.addEventListener('click', function(e) {
+                e.preventDefault();
+                btnEn.classList.add('active');
+                btnSk.classList.remove('active');
+                contentEn.style.display = 'block';
+                contentSk.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
