@@ -45,7 +45,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@restart/ui": "^1.9.4",
     "@samchon/openapi": "^6.0.1",
-    "@sentry/browser": "^10.50.0",
+    "@sentry/browser": "^10.51.0",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/along": "^7.3.5",
     "@turf/area": "^7.3.5",
@@ -79,7 +79,7 @@
     "marked": "^18.0.2",
     "ohash": "^2.0.11",
     "pannellum": "^2.5.7",
-    "protobufjs": "^8.0.1",
+    "protobufjs": "^8.0.3",
     "rbush": "^4.0.1",
     "react": "^19.2.5",
     "react-best-gradient-color-picker": "github:Delgado-tech/react-gradient-color-picker",
@@ -102,12 +102,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/parser": "^7.29.2",
-    "@babel/preset-env": "^7.29.2",
+    "@babel/parser": "^7.29.3",
+    "@babel/preset-env": "^7.29.3",
     "@babel/types": "^7.29.0",
     "@biomejs/biome": "^2.4.13",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
-    "@sentry/cli": "^3.4.0",
+    "@sentry/cli": "^3.4.1",
     "@types/color": "^4.2.1",
     "@types/facebook-js-sdk": "^3.3.12",
     "@types/facebook-pixel": "^0.0.31",
@@ -158,7 +158,7 @@
     "webpack": "^5.106.2",
     "webpack-cli": "^7.0.2",
     "webpack-dev-server": "^5.2.3",
-    "webpack-sources": "^3.4.0",
+    "webpack-sources": "^3.4.1",
     "webpack-virtual-modules": "^0.6.2"
   }
 }
