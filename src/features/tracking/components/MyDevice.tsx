@@ -4,8 +4,10 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaEdit, FaKey, FaTimes } from 'react-icons/fa';
+import { SiTraccar } from 'react-icons/si';
+import QRCode from 'react-qr-code';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
@@ -62,7 +64,33 @@ export function MyDevice({ device }: Props): ReactElement {
   return (
     <tr>
       <td>{device.name}</td>
-      <td>{device.token}</td>
+      <td>
+        <div className="d-flex gap-1 justify-content-between">
+          <div>{device.token}</div>
+
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            overlay={
+              <Tooltip>
+                <div className="bg-white p-3">
+                  <QRCode
+                    size={120}
+                    value={
+                      'https://traccar.freemap.sk?accuracy=high&interval=10&id=' +
+                      encodeURIComponent(device.token)
+                    }
+                  />
+                </div>
+              </Tooltip>
+            }
+          >
+            <Button variant="secondary" size="sm">
+              <SiTraccar />
+            </Button>
+          </OverlayTrigger>
+        </div>
+      </td>
       <td>{device.maxCount}</td>
       <td>
         {typeof device.maxAge === 'number' &&
