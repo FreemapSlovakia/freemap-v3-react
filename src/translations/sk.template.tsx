@@ -606,6 +606,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     account: {
       name: 'Meno',
       email: 'E-Mail',
+      description: 'O mne',
       sendGalleryEmails: 'Upozorniť emailom na komentáre k fotkám',
       delete: 'Zmazať účet',
       deleteWarning:
