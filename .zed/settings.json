@@ -6,7 +6,7 @@
     "JSONC": { "formatter": { "language_server": { "name": "biome" } } },
     "JavaScript": { "formatter": { "language_server": { "name": "biome" } } },
     "TSX": { "formatter": { "language_server": { "name": "biome" } } },
-    "TypeScript": { "formatter": { "language_server": { "name": "biome" } } },
+    "TypeScript": { "formatter": { "language_server": { "name": "biome" } } }
   },
-  "format_on_save": "on",
+  "format_on_save": "on"
 }

@@ -803,6 +803,7 @@ const messages: Messages = {
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
+      M: 'Wikimedia Commons photos',
       '5': 'Terrain shading',
       '6': 'Surface shading',
       '7': 'Detailed terrain shading',
@@ -1085,8 +1086,7 @@ const messages: Messages = {
     createError: ({ err }) => addError(messages, 'Error saving map', err),
     saveError: ({ err }) => addError(messages, 'Error saving map', err),
     loadToEmpty: 'To empty map',
-    loadInclMapAndPosition:
-      'Include saved background map and position',
+    loadInclMapAndPosition: 'Include saved background map and position',
     savedMaps: 'Saved maps',
     newMap: 'New map',
     SomeMap: ({ name }) => (
@@ -1347,6 +1347,13 @@ const messages: Messages = {
       'The map is being prepared. Once ready, a download link will be sent to your email.',
     summaryTiles: 'Tiles',
     summaryPrice: (amount) => <>Total price: {amount} credits</>,
+  },
+  wikimediaCommons: {
+    artist: 'Author',
+    license: 'License',
+    dateTime: 'Date',
+    moreResults:
+      'More photos are available. Zoom in to see results not shown here.',
   },
 };
 

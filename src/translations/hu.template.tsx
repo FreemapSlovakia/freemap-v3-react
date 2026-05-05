@@ -1304,8 +1304,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     estSize: 'Becsült méret',
     startCaching: 'Letöltés indítása',
-    cachedSuccess: ({ name }) =>
-      `A(z) „${name}” térkép sikeresen letöltődött.`,
+    cachedSuccess: ({ name }) => `A(z) „${name}” térkép sikeresen letöltődött.`,
     activate: 'Aktiválás',
   },
   errorStatus: {
@@ -1400,6 +1399,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     summaryTiles: 'Csempe',
     summaryPrice: (amount) => <>Teljes ár: {amount} kredit</>,
   },
+  wikimediaCommons: {},
 };
 
 export default messages;

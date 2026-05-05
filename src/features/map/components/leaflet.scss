@@ -95,6 +95,14 @@ a.leaflet-control-layers-toggle {
   }
 }
 
+.leaflet-marker-wm-photo-icon {
+  border-radius: 4px;
+  border: 2px solid var(--bs-body-bg);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  object-fit: cover;
+  background-color: var(--bs-body-bg);
+}
+
 @media (max-width: 720px) {
   .leaflet-control-scale {
     margin-bottom: 4rem !important;

@@ -31,6 +31,7 @@ export const urlProcessor: Processor = {
       maps,
       search,
       objects,
+      wikimediaCommons,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -72,6 +73,8 @@ export const urlProcessor: Processor = {
       maps.activeMap,
       main.tool,
       objects.active,
+      wikimediaCommons.preview?.pageId,
+      wikimediaCommons.loading,
     ];
 
     if (
@@ -225,6 +228,13 @@ export const urlProcessor: Processor = {
 
     if (gallery.activeImageId) {
       queryParts.push(['image', gallery.activeImageId]);
+    }
+
+    const wmcPageId =
+      wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
+
+    if (wmcPageId) {
+      queryParts.push(['wmc', wmcPageId]);
     }
 
     if (changesets.days) {

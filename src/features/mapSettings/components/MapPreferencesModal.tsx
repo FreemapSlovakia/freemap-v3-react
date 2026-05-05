@@ -69,7 +69,8 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
       ) {
         dispatch(
           mapSetLocalPrefs({
-            resolutionScale: resolutionScale === '' ? null : Number(resolutionScale),
+            resolutionScale:
+              resolutionScale === '' ? null : Number(resolutionScale),
             featureScale: Number(featureScale),
           }),
         );

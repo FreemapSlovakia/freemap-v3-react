@@ -1332,6 +1332,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     summaryTiles: 'Dlaždic',
     summaryPrice: (amount) => <>Celková cena: {amount} kreditů</>,
   },
+  wikimediaCommons: {},
 };
 
 export default messages;

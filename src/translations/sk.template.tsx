@@ -854,6 +854,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       s3: 'Strava (Vodné aktivity)',
       s4: 'Strava (Zimné aktivity)',
       w: 'Wikipedia',
+      M: 'Fotografie z Wikimedia Commons',
       '5': 'Tieňovanie terénu',
       '6': 'Tieňovanie povrchu',
       '7': 'Detailné tieňovanie terénu',
@@ -1400,6 +1401,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Mapa sa pripravuje. Po dokončení vám bude emailom doručený odkaz na jej stiahnutie.',
     summaryTiles: 'Dlaždíc',
     summaryPrice: (amount) => <>Celková cena: {amount} kreditov</>,
+  },
+  wikimediaCommons: {
+    artist: 'Autor',
+    license: 'Licencia',
+    dateTime: 'Dátum',
+    moreResults:
+      'K dispozícii sú ďalšie fotografie. Priblížte mapu pre zobrazenie nezobrazených výsledkov.',
   },
 };
 

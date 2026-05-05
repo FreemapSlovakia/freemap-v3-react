@@ -1,7 +1,10 @@
 import { attachGarminLoginMessageHandler } from '@features/auth/garminLoginMessageHandler.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { attachOsmLoginMessageHandler } from '@features/auth/osmLoginMessageHandler.js';
-import { getCachedTileMaps, syncStaticCache } from '@features/cachedMaps/cache.js';
+import {
+  getCachedTileMaps,
+  syncStaticCache,
+} from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
 import { applyCookieConsent } from '@features/cookieConsent/model/actions.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';

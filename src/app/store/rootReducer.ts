@@ -71,6 +71,7 @@ import {
 } from '@features/trackViewer/model/reducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
+import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
 import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import {
   migrateTransportType,
@@ -109,6 +110,7 @@ export const reducers = {
   websocket: websocketReducer,
   maps: mapsReducer,
   wiki: wikiReducer,
+  wikimediaCommons: wikimediaCommonsReducer,
 };
 
 export function getInitialState() {

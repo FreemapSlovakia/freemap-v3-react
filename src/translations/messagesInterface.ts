@@ -880,6 +880,12 @@ export type Messages = {
     summaryTiles: string;
     summaryPrice: (amount: ReactNode) => JSX.Element;
   };
+  wikimediaCommons: {
+    artist: string;
+    license: string;
+    dateTime: string;
+    moreResults: string;
+  };
 };
 
 export function addError(

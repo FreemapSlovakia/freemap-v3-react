@@ -1,0 +1,24 @@
+.wmc-image-container {
+  width: 100%;
+  max-height: calc(100dvh - 300px);
+
+  @media screen and (max-height: 600px) {
+    max-height: 300px;
+  }
+}
+
+.wmc-license {
+  background-color: #fffa;
+  padding: 0 8px;
+  border-top-left-radius: 4px;
+  z-index: 2;
+  color: #008;
+
+  &:hover {
+    color: #22c;
+  }
+
+  &.wmc-license-text {
+    color: #333;
+  }
+}

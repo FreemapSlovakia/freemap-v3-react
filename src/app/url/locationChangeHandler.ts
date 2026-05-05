@@ -53,6 +53,10 @@ import {
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
 } from '@features/trackViewer/model/actions.js';
+import {
+  wikimediaCommonsLoadPreview,
+  wikimediaCommonsSetPreview,
+} from '@features/wikimediaCommons/model/actions.js';
 import { tools } from '@shared/constants.js';
 import {
   integratedLayerDefMap,
@@ -969,6 +973,25 @@ function handleGallery(
     }
   } else if (getState().gallery.activeImageId) {
     dispatch(galleryClear());
+  }
+
+  if (typeof query['wmc'] === 'string') {
+    const pageId = Number(query['wmc']);
+
+    const wmcState = getState().wikimediaCommons;
+
+    if (
+      Number.isFinite(pageId) &&
+      wmcState.preview?.pageId !== pageId &&
+      wmcState.loading !== pageId
+    ) {
+      dispatch(wikimediaCommonsLoadPreview(pageId));
+    }
+  } else if (
+    getState().wikimediaCommons.preview ||
+    getState().wikimediaCommons.loading
+  ) {
+    dispatch(wikimediaCommonsSetPreview(null));
   }
 
   const cb = query['gallery-cb'];

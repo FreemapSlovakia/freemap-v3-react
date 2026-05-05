@@ -70,6 +70,12 @@ const objectsMenuFactory = () =>
     '@features/objects/components/ObjectsMenu.js'
   );
 
+const wikimediaCommonsLayerFactory = () =>
+  import(
+    /* webpackChunkName: "wikimedia-commons-layer" */
+    '@features/wikimediaCommons/components/WikimediaCommonsLayer.js'
+  );
+
 const routePlannerMenuFactory = () =>
   import(
     /* webpackChunkName: "route-planner-menu" */
@@ -340,6 +346,13 @@ export function Main(): ReactElement {
 
   const showResults = useAppSelector(
     (state) => !state.map.layers.includes('i'),
+  );
+
+  const showWikimediaCommonsLayer = useAppSelector(
+    (state) =>
+      state.map.layers.includes('M') ||
+      state.wikimediaCommons.preview !== null ||
+      state.wikimediaCommons.loading !== null,
   );
 
   const showPictures = useAppSelector((state) =>
@@ -735,6 +748,10 @@ export function Main(): ReactElement {
             {showMenu && showResults && <Results />}
 
             {showMenu && <WikiLayer />}
+
+            {showMenu && showWikimediaCommonsLayer && (
+              <AsyncComponent factory={wikimediaCommonsLayerFactory} />
+            )}
 
             {showGalleryPicker && <GalleryPicker />}
 

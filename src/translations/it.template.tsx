@@ -1361,6 +1361,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     summaryTiles: 'Riquadri',
     summaryPrice: (amount) => <>Prezzo totale: {amount} crediti</>,
   },
+  wikimediaCommons: {},
 };
 
 export default messages;

@@ -18,7 +18,7 @@ import {
 } from 'react-icons/fa';
 import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
-import { SiOpenstreetmap } from 'react-icons/si';
+import { SiOpenstreetmap, SiWikimediacommons } from 'react-icons/si';
 import { is } from 'typia';
 import black1x1 from '@/images/1x1-black.png';
 import transparent1x1 from '@/images/1x1-transparent.png';
@@ -148,6 +148,10 @@ type IsWikipediaLayerDef = HasZIndex & {
   technology: 'wikipedia';
 };
 
+type IsWikimediaCommonsLayerDef = HasZIndex & {
+  technology: 'wikimediaCommons';
+};
+
 type IsInteractiveLayerDef = {
   technology: 'interactive';
 };
@@ -193,7 +197,8 @@ export type IsAllTechnologiesLayerDef =
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
-  | IsWikipediaLayerDef;
+  | IsWikipediaLayerDef
+  | IsWikimediaCommonsLayerDef;
 
 export type IsCustomLayer = {
   name?: string;
@@ -766,12 +771,30 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layer: 'overlay',
     type: 'w',
     defaultInMenu: true,
+    defaultInToolbar: true,
     technology: 'wikipedia',
     icon: <FaWikipediaW />,
     minZoom: 8,
     shortcut: { code: 'KeyW', shift: true },
     zIndex: 4,
     attribution: [],
+  },
+  {
+    layer: 'overlay',
+    type: 'M',
+    defaultInMenu: true,
+    defaultInToolbar: true,
+    technology: 'wikimediaCommons',
+    icon: <SiWikimediacommons />,
+    minZoom: 13,
+    zIndex: 4,
+    attribution: [
+      {
+        type: 'photos',
+        name: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/',
+      },
+    ],
   },
   {
     layer: 'overlay',
