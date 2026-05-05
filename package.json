@@ -17,10 +17,7 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": [
-      "biome check",
-      "git add"
-    ]
+    "*.{js,ts}": ["biome check", "git add"]
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
@@ -32,7 +29,7 @@
     "postinstall": "patch-package",
     "sentry-login": "sentry-cli --url https://bugsink.freemap.sk login",
     "sentry-sourcemaps": "sentry-cli sourcemaps inject dist && sentry-cli --url https://bugsink.freemap.sk sourcemaps --org freemap  --project 1 upload dist",
-    "dep": "reset; DEPLOYMENT=www pnpm build; pnpm sentry-sourcemaps; rsync -av dist/ fm3:WEB",
+    "dep": "reset; DEPLOYMENT=www pnpm build && pnpm sentry-sourcemaps && rsync -av dist/ fm3:WEB",
     "build:proto": "protoc -I=src --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=src --ts_proto_opt=esModuleInterop=true,env=browser,outputServices=none,useDate=false,importSuffix=.js features/gallery/model/pictures.proto"
   },
   "dependencies": {
@@ -71,7 +68,7 @@
     "exifreader": "^4.38.1",
     "htm": "^3.1.1",
     "idb-keyval": "^6.2.2",
-    "immer": "^11.1.4",
+    "immer": "^11.1.6",
     "leaflet": "^1.9.4",
     "lerc": "^4.1.1",
     "local-storage-fallback": "^5.0.0",
@@ -151,10 +148,10 @@
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.7",
     "ts-node": "^10.9.2",
-    "ts-patch": "^3.3.0",
+    "ts-patch": "^4.0.1",
     "ts-proto": "^2.11.7",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "utility-types": "^3.11.0",
     "webpack": "^5.106.2",
     "webpack-cli": "^7.0.2",
