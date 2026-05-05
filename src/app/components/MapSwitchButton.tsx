@@ -460,15 +460,18 @@ export function MapSwitchButton(): ReactElement {
                   />
 
                   <Dropdown.Item as="button" eventKey="mapLayersConfig">
-                    <FaLayerGroup /> {m?.mapLayers.configureLayers}
+                    <FaLayerGroup /> {m?.mapLayers.configureLayers} <kbd>m</kbd>{' '}
+                    <kbd>y</kbd>
                   </Dropdown.Item>
 
                   <Dropdown.Item as="button" eventKey="customMaps">
-                    <MdDashboardCustomize /> {m?.mapLayers.customMaps}
+                    <MdDashboardCustomize /> {m?.mapLayers.customMaps}{' '}
+                    <kbd>m</kbd> <kbd>c</kbd>
                   </Dropdown.Item>
 
                   <Dropdown.Item as="button" eventKey="preferences">
-                    <FaCog /> {m?.mapLayers.preferences}
+                    <FaCog /> {m?.mapLayers.preferences} <kbd>m</kbd>{' '}
+                    <kbd>p</kbd>
                   </Dropdown.Item>
                 </>
               ) : (
@@ -480,7 +483,8 @@ export function MapSwitchButton(): ReactElement {
                   >
                     <BiWifiOff /> {m?.offline.offlineMaps}
                     {cachedMapsTotalSize > 0 &&
-                      ` · ${formatSize(cachedMapsTotalSize)}`}
+                      ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
+                    <kbd>m</kbd> <kbd>o</kbd>
                   </Dropdown.Item>
 
                   <Dropdown.Item
@@ -489,7 +493,7 @@ export function MapSwitchButton(): ReactElement {
                     eventKey="mapSettings"
                   >
                     <FaCog /> {m?.mapLayers.settings}
-                    <FaChevronRight /> <kbd>g</kbd> <kbd>s</kbd>
+                    <FaChevronRight />
                   </Dropdown.Item>
 
                   {layersMemuItems('base')}

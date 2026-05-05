@@ -29,7 +29,7 @@ import { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
 
-let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | null = null;
+let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | 'KeyM' | null = null;
 
 function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
@@ -213,7 +213,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     (event.code === 'KeyG' ||
       event.code === 'KeyE' ||
       event.code === 'KeyP' ||
-      event.code === 'KeyJ')
+      event.code === 'KeyJ' ||
+      event.code === 'KeyM')
   ) {
     initCode = event.code;
 
@@ -236,10 +237,6 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         return setActiveModal('maps');
       }
 
-      if (event.code === 'KeyS') {
-        return setActiveModal('map-layers-config');
-      }
-
       const toolDefinition = toolDefinitions.find(
         (td) => td.kbd === event.code,
       );
@@ -248,8 +245,12 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
         return setTool(toolDefinition.tool);
       }
 
+      if (event.code === 'KeyW') {
+        return setActiveModal('tracking-watched');
+      }
+
       if (event.code === 'KeyD') {
-        return setActiveModal('legend');
+        return setActiveModal('tracking-my');
       }
 
       return undefined;
@@ -333,6 +334,27 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
         case 'KeyM':
           return setActiveModal('download-map');
+      }
+
+      return undefined;
+    }
+
+    if (initCode === 'KeyM') {
+      switch (event.code) {
+        case 'KeyP':
+          return setActiveModal('map-preferences');
+
+        case 'KeyO':
+          return setActiveModal('offline-maps');
+
+        case 'KeyY':
+          return setActiveModal('map-layers-config');
+
+        case 'KeyC':
+          return setActiveModal('custom-maps');
+
+        case 'KeyL':
+          return setActiveModal('legend');
       }
 
       return undefined;

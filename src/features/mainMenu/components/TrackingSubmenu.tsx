@@ -27,11 +27,12 @@ export function TrackingSubmenu(): ReactElement {
         href="#show=tracking-watched"
         eventKey="modal-tracking-watched"
       >
-        <FaRegEye /> {m?.tracking.trackedDevices.button}
+        <FaRegEye /> {m?.tracking.trackedDevices.button} <kbd>g</kbd>{' '}
+        <kbd>w</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item href="#show=tracking-my" eventKey="modal-tracking-my">
-        <FaMobileAlt /> {m?.tracking.devices.button}
+        <FaMobileAlt /> {m?.tracking.devices.button} <kbd>g</kbd> <kbd>d</kbd>
       </Dropdown.Item>
 
       <Dropdown.Divider />
