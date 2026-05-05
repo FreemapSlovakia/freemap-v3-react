@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="12" width="12">
-    <path d="M3 1L2 2v8h.656s.101 1 .813 1c.69 0 .781-1 .781-1h3.5s.114 1 .781 1c.816 0 .813-1 .813-1H10V2L9 1zm1 1h4v1H4zM3 4h6v3H3zm0 4h1v1H3zm5 0h1v1H8z" opacity=".5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M3 1L2 2v8h.656s.101 1 .813 1c.69 0 .781-1 .781-1h3.5s.114 1 .781 1c.816 0 .813-1 .813-1H10V2L9 1zm1 1h4v1H4zM3 4h6v3H3zm0 4h1v1H3zm5 0h1v1H8z"/>
+<svg height="13" width="11" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+
+  <path
+    d="M 2.5,1.5 L 1.5,2.5 V 10.5 H 2.156 C 2.156,10.5 2.257,11.5 2.969,11.5 C 3.659,11.5 3.75,10.5 3.75,10.5 H 7.25 C 7.25,10.5 7.364,11.5 8.031,11.5 C 8.847,11.5 8.844,10.5 8.844,10.5 H 9.5 V 2.5 L 8.5,1.5 Z M 3.5,2.5 H 7.5 V 3.5 H 3.5 Z M 2.5,4.5 H 8.5 V 7.5 H 2.5 Z M 2.5,8.5 H 3.5 V 9.5 H 2.5 Z M 7.5,8.5 H 8.5 V 9.5 H 7.5 Z"
+  />
 </svg>

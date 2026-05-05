@@ -123,16 +123,32 @@ export function ObjectsMenu(): ReactElement {
   const handleToggle: DropdownProps['onToggle'] = (nextShow, metadata) => {
     if (justOpenedRef.current) {
       justOpenedRef.current = false;
-    } else if (!nextShow && metadata.source !== 'select') {
-      setDropdownOpened(false);
-      setFilter('');
 
-      metadata.originalEvent?.preventDefault();
-
-      metadata.originalEvent?.stopPropagation();
-
-      inputRef.current?.blur();
+      return;
     }
+
+    if (nextShow || metadata.source === 'select') {
+      return;
+    }
+
+    const target = metadata.originalEvent?.target;
+
+    if (
+      metadata.source === 'rootClose' &&
+      target instanceof Node &&
+      inputRef.current?.contains(target)
+    ) {
+      return;
+    }
+
+    setDropdownOpened(false);
+    setFilter('');
+
+    metadata.originalEvent?.preventDefault();
+
+    metadata.originalEvent?.stopPropagation();
+
+    inputRef.current?.blur();
   };
 
   const sc = useScrollClasses('vertical');

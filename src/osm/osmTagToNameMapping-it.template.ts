@@ -519,7 +519,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     sports_hall: 'Palazzetto dello Sport',
     stadium: 'Stadio',
     swimming_pool: 'Piscina',
-    track: 'Pista',
+    track: { '*': 'Pista' },
     water_park: 'Parco acquatico',
     adult_gaming_centre: 'Sala giochi per adulti',
     amusement_arcade: 'Sala giochi',

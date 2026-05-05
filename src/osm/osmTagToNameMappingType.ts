@@ -4,6 +4,21 @@ export type OsmTagToNameMapping = {
     private: string;
     no: string;
   };
+  aerialway: {
+    '*': string;
+    cable_car: string;
+    chair_lift: string;
+    goods: string;
+    'j-bar': string;
+    magic_carpet: string;
+    mixed_lift: string;
+    platter: string;
+    pylon: string;
+    rope_tow: string;
+    station: string;
+    't-bar': string;
+    zip_line: string;
+  };
   aeroway: {
     aerodrome: string;
     airstrip: string;
@@ -23,21 +38,6 @@ export type OsmTagToNameMapping = {
     threshold: string;
     tower: string;
     windsock: string;
-  };
-  aerialway: {
-    '*': string;
-    cable_car: string;
-    chair_lift: string;
-    goods: string;
-    'j-bar': string;
-    magic_carpet: string;
-    mixed_lift: string;
-    platter: string;
-    pylon: string;
-    rope_tow: string;
-    station: string;
-    't-bar': string;
-    zip_line: string;
   };
   amenity: {
     '*': string;
@@ -353,6 +353,24 @@ export type OsmTagToNameMapping = {
     warehouse: string;
     yes: string;
   };
+  emergency: {
+    defibrillator: string;
+    phone: string;
+  };
+  entrance: {
+    '*': string;
+    main: string;
+    secondary: string;
+    service: string;
+    exit: string;
+    entrance: string;
+    emergency: string;
+    staircase: string;
+    home: string;
+    garage: string;
+    shop: string;
+    no: string;
+  };
   fixme: {
     '*': string;
   };
@@ -439,6 +457,7 @@ export type OsmTagToNameMapping = {
     primary_link: string;
     raceway: string;
     residential: string;
+    rest_area: string;
     road: string;
     secondary: string;
     secondaty_link: string;
@@ -528,6 +547,7 @@ export type OsmTagToNameMapping = {
     greenfield: string;
     industrial: string;
     landfill: string;
+    logging: string;
     meadow: string;
     military: string;
     orchard: string;
@@ -604,7 +624,14 @@ export type OsmTagToNameMapping = {
     swimming_area: string;
     swimming_pool: string;
     tanning_salon: string;
-    track: string;
+    track: {
+      '*': string;
+      sport: {
+        cycling: string;
+        equestrian: string;
+        horse_racing: string;
+      };
+    };
     trampoline_park: string;
     water_park: string;
     wildlife_hide: string;
@@ -803,6 +830,7 @@ export type OsmTagToNameMapping = {
     };
     tree_row: string;
     valley: string;
+    volcano: string;
     water: string;
     wetland: {
       '*': string;

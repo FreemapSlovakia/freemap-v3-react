@@ -1,4 +1,51 @@
+import warehouse from '../images/poiIcons/warehouse.svg';
+import steps from '../images/poiIcons/stairs.svg';
+import wetland from '../images/poiIcons/wetland.svg';
+import watermill from '../images/poiIcons/watermill.svg';
+import windmill from '../images/poiIcons/windmill.svg';
+import watches from '../images/poiIcons/watch.svg';
+import tunnel from '../images/poiIcons/tunnel.svg';
+import volleyball from '../images/poiIcons/volleyball.svg';
+import volcano from '../images/poiIcons/volcano.svg';
+import city from '../images/poiIcons/city.svg';
+import town from '../images/poiIcons/town.svg';
+import village from '../images/poiIcons/village.svg';
+import slipway from '../images/poiIcons/slipway.svg';
+import terminal from '../images/poiIcons/terminal.svg';
+import toll from '../images/poiIcons/toll.svg';
+import table_tennis from '../images/poiIcons/table-tennis.svg';
+import stadium from '../images/poiIcons/stadium.svg';
+import shop from '../images/poiIcons/shop.svg';
+import skateboard from '../images/poiIcons/skateboard.svg';
+import residential from '../images/poiIcons/residential-community.svg';
+import rail from '../images/poiIcons/rail.svg';
+import ranger_station from '../images/poiIcons/ranger-station.svg';
+import rail_light from '../images/poiIcons/rail-light.svg';
+import rail_metro from '../images/poiIcons/rail-metro.svg';
+import racetrack from '../images/poiIcons/racetrack.svg';
+import racetrack_cycling from '../images/poiIcons/racetrack-cycling.svg';
+import racetrack_horse from '../images/poiIcons/racetrack-horse.svg';
+import pitch from '../images/poiIcons/pitch.svg';
+import park from '../images/poiIcons/park.svg';
+import logging from '../images/poiIcons/logging.svg';
+import information from '../images/poiIcons/information.svg';
+import industry from '../images/poiIcons/industry.svg';
+import heliport from '../images/poiIcons/heliport.svg';
+import hardware from '../images/poiIcons/hardware.svg';
+import farm from '../images/poiIcons/farm.svg';
+import entrance from '../images/poiIcons/entrance.svg';
+import embassy from '../images/poiIcons/embassy.svg';
+import dog_park from '../images/poiIcons/dog_park.svg';
+import defibrillator from '../images/poiIcons/defibrillator.svg';
+import dam from '../images/poiIcons/dam.svg';
+import danger from '../images/poiIcons/danger.svg';
+import cricket from '../images/poiIcons/cricket.svg';
+import construction from '../images/poiIcons/construction.svg';
+import commercial from '../images/poiIcons/commercial.svg';
 import aerodrome from '../images/poiIcons/aerodrome.svg';
+import bridge from '../images/poiIcons/bridge.svg';
+import animal_shelter from '../images/poiIcons/animal_shelter.svg';
+import bowling_alley from '../images/poiIcons/bowling_alley.svg';
 import alpine_hut from '../images/poiIcons/alpine_hut.svg';
 import apartment from '../images/poiIcons/apartment.svg';
 import arch from '../images/poiIcons/arch.svg';
@@ -12,6 +59,7 @@ import bar from '../images/poiIcons/bar.svg';
 import basic_hut from '../images/poiIcons/basic_hut.svg';
 import bbq from '../images/poiIcons/bbq.svg';
 import beach_resort from '../images/poiIcons/beach_resort.svg';
+import beach from '../images/poiIcons/beach.svg';
 import beehive from '../images/poiIcons/beehive.svg';
 import bell_tower from '../images/poiIcons/bell_tower.svg';
 import bench from '../images/poiIcons/bench.svg';
@@ -20,6 +68,7 @@ import bicycle_repair_station from '../images/poiIcons/bicycle_repair_station.sv
 import biergarten from '../images/poiIcons/biergarten.svg';
 import bird_hide from '../images/poiIcons/bird_hide.svg';
 import board from '../images/poiIcons/board.svg';
+import fence from '../images/poiIcons/fence.svg';
 import boat_rental from '../images/poiIcons/boat_rental.svg';
 import boundary_stone from '../images/poiIcons/boundary_stone.svg';
 import building from '../images/poiIcons/building.svg';
@@ -74,7 +123,7 @@ import free_flying from '../images/poiIcons/free_flying.svg';
 import fuel from '../images/poiIcons/fuel.svg';
 import gate from '../images/poiIcons/gate.svg';
 import golf from '../images/poiIcons/golf.svg';
-import cemetery from '../images/poiIcons/grave.svg';
+import cemetery from '../images/poiIcons/cemetery.svg';
 import guest_house from '../images/poiIcons/guest_house.svg';
 import guidepost from '../images/poiIcons/guidepost.svg';
 import gully from '../images/poiIcons/gully.svg';
@@ -259,17 +308,35 @@ import watering_place from '../images/poiIcons/watering_place.svg';
 import wayside_shrine from '../images/poiIcons/wayside_shrine.svg';
 import weather_shelter from '../images/poiIcons/weather_shelter.svg';
 import wilderness_hut from '../images/poiIcons/wilderness_hut.svg';
+import american_football from '../images/poiIcons/american_football.svg';
+import aerialway from '../images/poiIcons/aerialway.svg';
+import rest_area from '../images/poiIcons/highway-rest-area.svg';
+import basketball from '../images/poiIcons/basketball.svg';
 import zoo from '../images/poiIcons/zoo.svg';
 import { Node } from './types.js';
 
 // hack to have only single icon for churches...
-const buildingMapping = { '*': building, hut, church, chapel: church };
+const buildingMapping = {
+  '*': building,
+  hut,
+  church,
+  chapel: church,
+  farm,
+  parking,
+  warehouse,
+};
 
 export const osmTagToIconMapping: Node = {
+  aerialway: {
+    '*': aerialway,
+  },
   aeroway: {
     aerodrome,
+    helipad: heliport,
+    terminal,
   },
   amenity: {
+    animal_shelter,
     atm,
     arts_centre,
     bank,
@@ -296,6 +363,7 @@ export const osmTagToIconMapping: Node = {
     dentist,
     doctors,
     drinking_water,
+    embassy,
     emergency_phone,
     excrement_bags,
     fast_food,
@@ -305,6 +373,7 @@ export const osmTagToIconMapping: Node = {
     fire_station,
     fountain,
     fuel,
+    grave_yard: cemetery,
     hospital,
     hunting_stand,
     ice_cream,
@@ -314,6 +383,8 @@ export const osmTagToIconMapping: Node = {
     motorcycle_parking,
     nightclub,
     parking,
+    parking_entrance: parking,
+    parking_space: parking,
     pharmacy,
     place_of_worship: {
       '*': place_of_worship,
@@ -326,6 +397,7 @@ export const osmTagToIconMapping: Node = {
     pub,
     public_bath,
     public_bookcase,
+    ranger_station,
     recycling,
     restaurant,
     school,
@@ -363,6 +435,8 @@ export const osmTagToIconMapping: Node = {
   },
   barrier: {
     cycle_barrier,
+    entrance,
+    fence,
     gate,
     kissing_gate,
     lift_gate,
@@ -371,7 +445,33 @@ export const osmTagToIconMapping: Node = {
     toll_booth,
     cattle_grid,
   },
-  highway: { bus_stop, elevator, ford, traffic_signals },
+  bridge: {
+    '*': bridge,
+  },
+  boundary: {
+    administrative: {
+      admin_level: {
+        6: city,
+        9: village,
+      },
+    },
+  },
+  emergency: {
+    defibrillator,
+    phone: emergency_phone,
+  },
+  entrance: {
+    '*': entrance,
+    // no: no_entrance, // TODO
+  },
+  highway: {
+    bus_stop,
+    elevator,
+    ford,
+    rest_area,
+    steps,
+    traffic_signals,
+  },
   historic: {
     archaeological_site,
     boundary_stone,
@@ -403,28 +503,54 @@ export const osmTagToIconMapping: Node = {
   },
   landuse: {
     cemetery,
-    industrial: { industrial: mine },
+    commercial,
+    construction,
+    farmland: farm,
+    farmyard: farm,
+    industrial: {
+      '*': industry,
+      industrial: mine,
+    },
+    logging,
+    residential,
   },
   leisure: {
     beach_resort,
     bird_hide,
+    bowling_alley,
+    dog_park,
     firepit,
     fishing,
     horse_riding,
     golf_course: golf,
     miniature_golf,
     outdoor_seating,
+    park,
     picnic_table,
+    pitch,
     playground,
     sauna,
+    slipway,
+    stadium,
     swimming_pool: water_park,
+    swimming_area: swimming,
+    track: {
+      '*': racetrack,
+      sport: {
+        cycling: racetrack_cycling,
+        equestrian: racetrack_horse,
+        horse_racing: racetrack_horse,
+      },
+    },
     water_park,
   },
   man_made: {
     adit: mine,
     beehive,
+    bridge,
     chimney,
     cross,
+    clearcut: logging,
     dyke,
     embankment,
     foresters_lodge,
@@ -443,12 +569,16 @@ export const osmTagToIconMapping: Node = {
     water_tower,
     water_well,
     water_works,
+    watermill,
+    windmill,
   },
-  millitary: {
+  military: {
     bunker,
+    danger_area: danger,
   },
   natural: {
     arch,
+    beach,
     cave_entrance,
     earth_bank,
     fell,
@@ -484,6 +614,19 @@ export const osmTagToIconMapping: Node = {
         yes: tree_protected,
       },
     },
+    volcano,
+    wetland,
+  },
+  place: {
+    city,
+    town,
+    farm,
+    village,
+  },
+  railway: {
+    '*': rail,
+    light_rail: rail_light,
+    subway: rail_metro,
   },
   route: {
     horse: horse_riding,
@@ -493,8 +636,8 @@ export const osmTagToIconMapping: Node = {
     '*': ruins,
   },
   shop: {
+    '*': shop,
     alcohol: shop_alcohol,
-    books,
     art: shop_art,
     bag: shop_bag,
     bakery: shop_bakery,
@@ -503,6 +646,7 @@ export const osmTagToIconMapping: Node = {
     beverages: shop_beverages,
     bicycle: shop_bicycle,
     bookmaker: shop_bookmaker,
+    books,
     butcher: shop_butcher,
     car_parts: shop_car_parts,
     carpet: shop_carpet,
@@ -522,12 +666,14 @@ export const osmTagToIconMapping: Node = {
     diy: shop_diy,
     electronics: shop_electronics,
     fabric: shop_fabric,
+    farm: shop_greengrocer,
     florist: shop_florist,
     furniture: shop_furniture,
     garden_centre: shop_garden_centre,
     gift: shop_gift,
     greengrocer: shop_greengrocer,
     hairdresser: shop_hairdresser,
+    hardware,
     hifi: shop_hifi,
     houseware: shop_houseware,
     ice_cream,
@@ -563,11 +709,21 @@ export const osmTagToIconMapping: Node = {
     variety_store: shop_variety_store,
     video_games: shop_video_games,
     video: shop_video,
+    watches,
   },
   sport: {
+    '8pin': bowling_alley,
+    '9pin': bowling_alley,
+    '10pin': bowling_alley,
     archery,
+    american_football,
     baseball,
+    basketball,
+    beachvolleyball: volleyball,
+    bowling: bowling_alley,
+    candlepin: bowling_alley,
     climbing,
+    cricket,
     cycling: shop_bicycle,
     diving,
     equestrian: horse_riding,
@@ -576,13 +732,21 @@ export const osmTagToIconMapping: Node = {
     gym,
     gymnastics,
     horse_racing: horse_riding,
+    horse_riding,
+    ice_skating: skating,
     motor,
+    skateboard,
     skating,
     ski_jumping: skiing,
     skiing,
     soccer,
     swimming,
+    table_tennis,
     tennis,
+    volleyball,
+  },
+  toll: {
+    '*': toll,
   },
   tourism: {
     alpine_hut,
@@ -600,6 +764,7 @@ export const osmTagToIconMapping: Node = {
     hostel,
     hotel,
     information: {
+      '*': information,
       information: {
         board,
         guidepost,
@@ -614,7 +779,12 @@ export const osmTagToIconMapping: Node = {
     wilderness_hut,
     zoo,
   },
+  tunnel: {
+    '*': tunnel,
+    // no: '', TODO
+  },
   waterway: {
+    dam,
     waterfall,
   },
 

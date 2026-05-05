@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-    <path d="M2 1l2 12h6l2-12zm1.25 1h7.5l-.33 2H3.56z" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".5"/>
-    <path d="M2 1l2 12h6l2-12zm1.25 1h7.5l-.33 2H3.56z"/>
+<svg width="12.999946" height="15" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+
+  <path
+    d="M 1.4999729,1.5 L 3.4999729,13.5 H 9.4999729 L 11.499973,1.5 Z M 2.7499729,2.5 H 10.249973 L 9.9199729,4.5 H 3.0599729 Z"
+  />
 </svg>

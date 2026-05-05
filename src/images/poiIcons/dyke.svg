@@ -1,3 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <path d="M.25 8.8V15m6-6.2V13M0 9h12M.25 6.2V0m6 6.2V2M0 6h12" fill="none" stroke="#404040" stroke-width=".5"/>
+<svg width="12" height="15" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+
+  <path d="M 11.75,6.2 V 0 M 5.75,6.2 V 2 M 12,6 H 0 M 11.75,8.8 V 15 M 5.75,8.8 V 13 M 12,9 H 0"
+    fill="none" stroke="#404040" stroke-width="0.5" />
 </svg>

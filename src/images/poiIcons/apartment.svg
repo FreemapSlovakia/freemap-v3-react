@@ -1,5 +1,9 @@
-<svg xml:space="preserve" height="14" width="14" xmlns="http://www.w3.org/2000/svg">
-  <path d="M0 0v2h14V0H0zm.5 3c-.277 0-.5.223-.5.5V11h1V9h12v2h1V5.5a.499.499 0 1 0-1 0V8H1V3.5C1 3.223.777 3 .5 3zm3 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM6 5v2h6c0-1-1.036-2-2-2H6zm-6 7v2h14v-2H0z" style="fill:#fff;fill-opacity:1;stroke:#fff;stroke-opacity:1;opacity:.5;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round" />
-  <path d="M.5 3c-.277 0-.5.223-.5.5V11h1V9h12v2h1V5.5a.499.499 0 1 0-1 0V8H1V3.5C1 3.223.777 3 .5 3Zm3 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM6 5v2h6c0-1-1.036-2-2-2Z" />
-  <path style="opacity:.5;fill:#000;fill-opacity:1;stroke:none;stroke-width:.07990667;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" d="M0 0h14v2H0zM0 12h14v2H0z" />
+<svg height="17" width="17" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+  <path
+    d="M 1.5,1.5 H 15.5 V 3.5 H 1.5 Z M 1.5,13.5 H 15.5 V 15.5 H 1.5 Z M 2,4.5 C 1.723,4.5 1.5,4.723 1.5,5 V 12.5 H 2.5 V 10.5 H 14.5 V 12.5 H 15.5 V 7 A 0.5,0.5 0 1 0 14.5,7 V 9.5 H 2.5 V 5 C 2.5,4.723 2.277,4.5 2,4.5 Z M 5,5.5 A 1.5,1.5 0 1 0 5,8.5 A 1.5,1.5 0 0 0 5,5.5 Z M 7.5,6.5 V 8.5 H 13.5 C 13.5,7.5 12.464,6.5 11.5,6.5 Z" />
+  <path
+    fill="#808080"
+    d="M 1.5,1.5 H 15.5 V 3.5 H 1.5 Z M 1.5,13.5 H 15.5 V 15.5 H 1.5 Z" />
 </svg>

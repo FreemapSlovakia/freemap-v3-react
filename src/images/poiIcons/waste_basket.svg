@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
-    <path d="M4 2H3L2 3h6L7 2H6L5 1zM2 4l1 5h4l1-5z" fill="none" stroke="#fff" opacity=".5" stroke-linejoin="round" stroke-linecap="round" stroke-width="3"/>
-    <path d="M4 2H3L2 3h6L7 2H6L5 1zM2 4l1 5h4l1-5z"/>
+<svg width="8.9999342" height="10.999938" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+
+  <path
+    d="M 3.499967,2.4999379 H 2.499967 L 1.499967,3.4999379 H 7.499967 L 6.499967,2.4999379 H 5.499967 L 4.499967,1.4999379 Z M 1.499967,4.4999379 L 2.499967,9.4999379 H 6.499967 L 7.499967,4.4999379 Z"
+  />
 </svg>
