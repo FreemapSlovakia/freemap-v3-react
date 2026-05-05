@@ -198,7 +198,7 @@ import shop_bakery from '../images/poiIcons/shop/bakery.svg';
 import shop_beauty from '../images/poiIcons/shop/beauty.svg';
 import shop_bed from '../images/poiIcons/shop/bed.svg';
 import shop_beverages from '../images/poiIcons/shop/beverages.svg';
-import shop_bicycle from '../images/poiIcons/shop/bicycle.svg';
+import bicycle from '../images/poiIcons/shop/bicycle.svg';
 import books from '../images/poiIcons/shop/book.svg';
 import shop_bookmaker from '../images/poiIcons/shop/bookmaker.svg';
 import shop_butcher from '../images/poiIcons/shop/butcher.svg';
@@ -465,6 +465,9 @@ export const osmTagToIconMapping: Node = {
     '*': entrance,
     // no: no_entrance, // TODO
   },
+  ford: {
+    yes: ford,
+  },
   highway: {
     bus_stop,
     elevator,
@@ -647,7 +650,7 @@ export const osmTagToIconMapping: Node = {
     beauty: shop_beauty,
     bed: shop_bed,
     beverages: shop_beverages,
-    bicycle: shop_bicycle,
+    bicycle: bicycle,
     bookmaker: shop_bookmaker,
     books,
     butcher: shop_butcher,
@@ -723,11 +726,12 @@ export const osmTagToIconMapping: Node = {
     baseball,
     basketball,
     beachvolleyball: volleyball,
+    bicycle,
     bowling: bowling_alley,
     candlepin: bowling_alley,
     climbing,
     cricket,
-    cycling: shop_bicycle,
+    cycling: bicycle,
     diving,
     equestrian: horse_riding,
     free_flying,

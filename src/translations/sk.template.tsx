@@ -275,31 +275,31 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       />
     ),
     infoBars: {
-      dp: () => {
-        const dispatch = useDispatch();
-        return (
-          <>
-            <span className="d-sm-none">Podporte nás prosím</span>
-            <span className="d-none d-sm-inline d-xl-none">
-              Podporte prosím prevádzku služieb Freemap.sk vašimi
-            </span>
-            <span className="d-none d-xl-inline">
-              Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
-              potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
-            </span>{' '}
-            <AlertLink
-              href="/#document=dvePercenta"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(documentShow('dvePercenta'));
-              }}
-            >
-              2 % z dane
-            </AlertLink>
-            .
-          </>
-        );
-      },
+      // dp: () => {
+      //   const dispatch = useDispatch();
+      //   return (
+      //     <>
+      //       <span className="d-sm-none">Podporte nás prosím</span>
+      //       <span className="d-none d-sm-inline d-xl-none">
+      //         Podporte prosím prevádzku služieb Freemap.sk vašimi
+      //       </span>
+      //       <span className="d-none d-xl-inline">
+      //         Freemap.sk je nekomerčný projekt a preto na svoju prevádzku
+      //         potrebuje podporu dobrovoľníkov. Pomôžte mu prosím vašimi
+      //       </span>{' '}
+      //       <AlertLink
+      //         href="/#document=dvePercenta"
+      //         onClick={(e) => {
+      //           e.preventDefault();
+      //           dispatch(documentShow('dvePercenta'));
+      //         }}
+      //       >
+      //         2 % z dane
+      //       </AlertLink>
+      //       .
+      //     </>
+      //   );
+      // },
       ua: () => {
         return (
           <>
