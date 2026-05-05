@@ -1,4 +1,5 @@
 import warehouse from '../images/poiIcons/warehouse.svg';
+import antenna from '../images/poiIcons/antenna.svg';
 import steps from '../images/poiIcons/stairs.svg';
 import wetland from '../images/poiIcons/wetland.svg';
 import watermill from '../images/poiIcons/watermill.svg';
@@ -546,6 +547,8 @@ export const osmTagToIconMapping: Node = {
   },
   man_made: {
     adit: mine,
+    antenna,
+    apiary: beehive,
     beehive,
     bridge,
     chimney,

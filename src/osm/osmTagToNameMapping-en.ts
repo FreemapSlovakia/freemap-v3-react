@@ -1228,7 +1228,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     beachtennis: 'Beach tennis',
     beachvolleyball: 'Beach volleyball',
     biathlon: 'Biathlon',
-    bicycle: 'Bicycle',
+    bicycle: 'Bicycle (sport)',
     billards: 'Billiards',
     billiards: 'Billiards',
     bmx: 'BMX',
