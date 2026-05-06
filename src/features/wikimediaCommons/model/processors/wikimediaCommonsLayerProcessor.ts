@@ -6,6 +6,8 @@ import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { cancelRegister } from '@shared/cancelRegister.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import distance from '@turf/distance';
+import { point } from '@turf/helpers';
 import { assert } from 'typia';
 import {
   WikimediaCommonsPhoto,
@@ -39,6 +41,36 @@ interface CommonsResponse {
     pages?: CommonsPage[];
   };
   continue?: Record<string, unknown>;
+}
+
+const MAX_DIAGONAL_M = 9000;
+
+function clampBbox(
+  north: number,
+  west: number,
+  south: number,
+  east: number,
+): { north: number; west: number; south: number; east: number } {
+  const diag = distance(point([west, south]), point([east, north]), {
+    units: 'meters',
+  });
+
+  if (diag <= MAX_DIAGONAL_M) {
+    return { north, west, south, east };
+  }
+
+  const scale = MAX_DIAGONAL_M / diag;
+  const centerLat = (north + south) / 2;
+  const centerLon = (east + west) / 2;
+  const halfLat = ((north - south) / 2) * scale;
+  const halfLon = ((east - west) / 2) * scale;
+
+  return {
+    north: centerLat + halfLat,
+    west: centerLon - halfLon,
+    south: centerLat - halfLat,
+    east: centerLon + halfLon,
+  };
 }
 
 let initial = true;
@@ -108,6 +140,13 @@ export const wikimediaCommonsLayerProcessor: Processor = {
 
     const bb = (await mapPromise).getBounds();
 
+    const clamped = clampBbox(
+      bb.getNorth(),
+      bb.getWest(),
+      bb.getSouth(),
+      bb.getEast(),
+    );
+
     const { language } = getState().l10n;
 
     const res = await httpRequest({
@@ -122,7 +161,7 @@ export const wikimediaCommonsLayerProcessor: Processor = {
           formatversion: '2',
           generator: 'geosearch',
           ggsnamespace: '6',
-          ggsbbox: `${bb.getNorth()}|${bb.getWest()}|${bb.getSouth()}|${bb.getEast()}`,
+          ggsbbox: `${clamped.north}|${clamped.west}|${clamped.south}|${clamped.east}`,
           ggslimit: 'max',
           ggsprimary: 'all',
           prop: 'coordinates|imageinfo',

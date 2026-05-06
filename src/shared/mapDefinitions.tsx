@@ -787,6 +787,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'wikimediaCommons',
     icon: <SiWikimediacommons />,
     minZoom: 13,
+    shortcut: { code: 'KeyM', shift: true },
     zIndex: 4,
     attribution: [
       {
