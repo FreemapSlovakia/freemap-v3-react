@@ -2,11 +2,12 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
-import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { FaApple, FaFacebook, FaGoogle } from 'react-icons/fa';
 import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
   authDisconnect,
+  authWithApple,
   authWithFacebook,
   authWithGarmin,
   authWithGoogle,
@@ -50,6 +51,18 @@ export function AuthProviders({ mode }: Props): ReactElement {
       mode === 'disconnect'
         ? authDisconnect({ provider: 'google' })
         : authWithGoogle({ connect: mode === 'connect' }),
+    );
+  }, [dispatch, mode, m]);
+
+  const loginWithApple = useCallback(() => {
+    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+      return;
+    }
+
+    dispatch(
+      mode === 'disconnect'
+        ? authDisconnect({ provider: 'apple' })
+        : authWithApple({ connect: mode === 'connect' }),
     );
   }, [dispatch, mode, m]);
 
@@ -109,7 +122,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
           disabled={disabled('facebook')}
         >
           <FaFacebook />
-          &ensp;{m?.auth.provider.facebook}
+          &ensp;Facebook
         </Button>
       )}
 
@@ -121,7 +134,19 @@ export function AuthProviders({ mode }: Props): ReactElement {
           disabled={disabled('google')}
         >
           <FaGoogle />
-          &ensp;{m?.auth.provider.google}
+          &ensp;Google
+        </Button>
+      )}
+
+      {show('apple') && (
+        <Button
+          onClick={loginWithApple}
+          size="lg"
+          style={{ backgroundColor: '#000', color: '#fff' }}
+          disabled={disabled('apple')}
+        >
+          <FaApple />
+          &ensp;Apple
         </Button>
       )}
 
@@ -133,7 +158,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
           disabled={disabled('osm')}
         >
           <SiOpenstreetmap />
-          &ensp;{m?.auth.provider.osm}
+          &ensp;OpenStreetMap
         </Button>
       )}
 
@@ -145,8 +170,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
           disabled={disabled('garmin')}
         >
           <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />
-          &ensp;
-          {m?.auth.provider.garmin}
+          &ensp;Garmin
         </Button>
       )}
     </div>

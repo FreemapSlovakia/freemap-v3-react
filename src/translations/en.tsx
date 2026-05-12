@@ -740,12 +740,6 @@ const messages: Messages = {
   },
 
   auth: {
-    provider: {
-      facebook: 'Facebook',
-      google: 'Google',
-      osm: 'OpenStreetMap',
-      garmin: 'Garmin',
-    },
     connect: {
       label: 'Connect',
       success: 'Connected',

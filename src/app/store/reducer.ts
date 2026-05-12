@@ -1,4 +1,5 @@
 import {
+  authWithApple,
   authWithFacebook,
   authWithGarmin,
   authWithGoogle,
@@ -193,7 +194,13 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
           : null;
     })
     .addMatcher(
-      isAnyOf(authWithFacebook, authWithGoogle, authWithOsm, authWithGarmin),
+      isAnyOf(
+        authWithFacebook,
+        authWithGoogle,
+        authWithOsm,
+        authWithGarmin,
+        authWithApple,
+      ),
       (state) => {
         state.activeModal = null; // state.activeModal === 'login' ? null : state.activeModal
       },

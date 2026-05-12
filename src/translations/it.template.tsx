@@ -760,12 +760,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   auth: {
-    provider: {
-      facebook: 'Facebook',
-      google: 'Google',
-      osm: 'OpenStreetMap',
-      garmin: 'Garmin',
-    },
     logIn: {
       with: 'Scegli un provider di accesso',
       success: 'Accesso eseguito correttamente.',

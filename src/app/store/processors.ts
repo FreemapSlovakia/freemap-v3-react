@@ -5,6 +5,7 @@ import {
   authTrackProcessor,
 } from '@features/auth/model/processors/authInitProcessor.js';
 import { authLogoutProcessor } from '@features/auth/model/processors/authLogoutProcessor.js';
+import { authWithAppleProcessor } from '@features/auth/model/processors/authWithAppleProcessor.js';
 import { authWithFacebookProcessor } from '@features/auth/model/processors/authWithFacebookProcessor.js';
 import { authWithGarmin2Processor } from '@features/auth/model/processors/authWithGarmin2Processor.js';
 import { authWithGarminProcessor } from '@features/auth/model/processors/authWithGarminProcessor.js';
@@ -181,6 +182,7 @@ export const processors = [
   exportMapProcessor,
   authWithFacebookProcessor,
   authWithGoogleProcessor,
+  authWithAppleProcessor,
   authWithOsmProcessor,
   authWithOsm2Processor,
   authWithGarminProcessor,

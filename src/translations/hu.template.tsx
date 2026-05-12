@@ -774,12 +774,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   auth: {
-    provider: {
-      facebook: 'Facebook',
-      google: 'Google',
-      osm: 'OpenStreetMap',
-      garmin: 'Garmin',
-    },
     connect: {
       label: 'Csatlakozás',
       success: 'Csatlakoztatva',

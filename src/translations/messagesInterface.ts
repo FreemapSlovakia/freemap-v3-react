@@ -583,12 +583,6 @@ export type Messages = {
       label: string;
       success: string;
     };
-    provider: {
-      facebook: string;
-      google: string;
-      osm: string;
-      garmin: string;
-    };
     logIn: {
       with: string;
       success: string;

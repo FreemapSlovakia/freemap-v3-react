@@ -464,7 +464,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
               </Accordion.Header>
 
               <Accordion.Body>
-                {user.authProviders.length < 4 && (
+                {user.authProviders.length < 5 && (
                   <>
                     <p>{m?.auth.connect.label}</p>
 

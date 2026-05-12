@@ -2,7 +2,7 @@ import type { LayerSettings } from '@features/map/model/actions.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { Action } from 'redux';
 
-export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google';
+export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google' | 'apple';
 
 export type Purchase =
   | { type: 'premium' }

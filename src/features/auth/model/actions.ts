@@ -19,6 +19,10 @@ export const authWithGoogle = createAction<{
   connect: boolean;
 }>('AUTH_WITH_GOOGLE');
 
+export const authWithApple = createAction<{
+  connect: boolean;
+}>('AUTH_WITH_APPLE');
+
 export const authWithGarmin = createAction<{
   connect: boolean;
   successAction?: Action;
