@@ -98,6 +98,8 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
         )}
       </LongPressTooltip>
 
+      <div className="vr" />
+
       <LongPressTooltip label={m?.mainMenu.googlePlay}>
         {({ props }) => (
           <a
