@@ -179,7 +179,10 @@ export function TrackingResult(): ReactElement {
                     )
                   }
                 >
-                  <Tooltip direction="top" permanent>
+                  <Tooltip
+                    direction="top"
+                    permanent={track.token === activeTrackId}
+                  >
                     {tooltipText(df, nf, tp, track.label)}
                   </Tooltip>
                 </RichMarker>
