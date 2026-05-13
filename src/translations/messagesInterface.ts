@@ -863,6 +863,7 @@ export type Messages = {
     downloadMap: string;
     format: string;
     map: string;
+    unknownMapType: string;
     downloadArea: string;
     area: { visible: string; byPolygon: string };
     name: string;
@@ -873,6 +874,18 @@ export type Messages = {
     success: string;
     summaryTiles: string;
     summaryPrice: (amount: ReactNode) => JSX.Element;
+    usageIntro: string;
+    usageDesktop: string;
+    usageAndroid: string;
+    usageIos: string;
+    usageWeb: string;
+    usageWebLead: string;
+    usageWebMid: string;
+    usageWebTrail: string;
+    formatMbtiles: string;
+    formatSqlitedb: string;
+    formatMbtilesTooltip: string;
+    formatSqlitedbTooltip: string;
   };
   wikimediaCommons: {
     artist: string;

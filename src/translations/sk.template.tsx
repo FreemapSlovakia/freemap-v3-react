@@ -1381,6 +1381,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadMap: 'Export offline máp',
     format: 'Formát',
     map: 'Mapa',
+    unknownMapType: 'Neznáma mapa',
     downloadArea: 'Exportovať',
     area: {
       visible: 'Viditeľnú oblasť',
@@ -1395,6 +1396,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Mapa sa pripravuje. Po dokončení vám bude emailom doručený odkaz na jej stiahnutie.',
     summaryTiles: 'Dlaždíc',
     summaryPrice: (amount) => <>Celková cena: {amount} kreditov</>,
+    usageIntro: 'Kde môžete používať stiahnuté mapy MBTiles:',
+    usageDesktop: 'Počítač:',
+    usageAndroid: 'Android:',
+    usageIos: 'iOS:',
+    usageWeb: 'Web:',
+    usageWebLead:
+      'Leaflet, MapLibre GL JS alebo OpenLayers (cez tile server, napríklad',
+    usageWebMid: 'alebo',
+    usageWebTrail: ')',
+    formatMbtiles: 'MBTiles',
+    formatSqlitedb: 'SQLiteDB',
+    formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
+    formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
   wikimediaCommons: {
     artist: 'Autor',

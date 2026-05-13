@@ -1377,6 +1377,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadMap: 'Offline térképek exportja',
     format: 'Formátum',
     map: 'Térkép',
+    unknownMapType: 'Ismeretlen térkép',
     downloadArea: 'Exportálni',
     area: {
       visible: 'Látható terület',
@@ -1392,6 +1393,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'A térkép előkészítése folyamatban van. A letöltési hivatkozást e-mailben kapja meg, miután elkészült.',
     summaryTiles: 'Csempe',
     summaryPrice: (amount) => <>Teljes ár: {amount} kredit</>,
+    usageIntro: 'Hol használhatja a letöltött MBTiles térképeket:',
+    usageDesktop: 'Számítógép:',
+    usageAndroid: 'Android:',
+    usageIos: 'iOS:',
+    usageWeb: 'Web:',
+    usageWebLead:
+      'Leaflet, MapLibre GL JS vagy OpenLayers (csempe-kiszolgálón keresztül, például',
+    usageWebMid: 'vagy',
+    usageWebTrail: ')',
+    formatMbtiles: 'MBTiles',
+    formatSqlitedb: 'SQLiteDB',
+    formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
+    formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
   wikimediaCommons: {},
 };

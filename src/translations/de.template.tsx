@@ -1361,6 +1361,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadMap: 'Export von Offline-Karten',
     format: 'Format',
     map: 'Karte',
+    unknownMapType: 'Unbekannte Karte',
     downloadArea: 'Exportieren',
     area: {
       visible: 'Sichtbarer Bereich',
@@ -1376,6 +1377,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Die Karte wird vorbereitet. Sobald sie fertig ist, erhalten Sie einen Download-Link per E-Mail.',
     summaryTiles: 'Kacheln',
     summaryPrice: (amount) => <>Gesamtpreis: {amount} Credits</>,
+    usageIntro: 'Wo Sie heruntergeladene MBTiles-Karten nutzen können:',
+    usageDesktop: 'Desktop:',
+    usageAndroid: 'Android:',
+    usageIos: 'iOS:',
+    usageWeb: 'Web:',
+    usageWebLead:
+      'Leaflet, MapLibre GL JS oder OpenLayers (über einen Tile-Server wie',
+    usageWebMid: 'oder',
+    usageWebTrail: ')',
+    formatMbtiles: 'MBTiles',
+    formatSqlitedb: 'SQLiteDB',
+    formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
+    formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
   wikimediaCommons: {},
 };
