@@ -1,6 +1,8 @@
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@sentry/cli'
-  - core-js-pure
-  - esbuild
-  - exifreader
+allowBuilds:
+  "@parcel/watcher": true
+  "@sentry/cli": true
+  core-js-pure: true
+  esbuild: true
+  exifreader: true
+  protobufjs: true
+  react-best-gradient-color-picker: true
