@@ -3,7 +3,14 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import clsx from 'clsx';
 import storage from 'local-storage-fallback';
 import { type ReactElement, useState } from 'react';
-import { FaFacebook, FaGithub, FaMastodon, FaYoutube } from 'react-icons/fa';
+import {
+  FaAndroid,
+  FaApple,
+  FaFacebook,
+  FaGithub,
+  FaMastodon,
+  FaYoutube,
+} from 'react-icons/fa';
 import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
 
 type Props = {
@@ -31,49 +38,95 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
 
   return (
     <div className="mx-3 d-flex gap-2 fs-5">
-      <a
-        onClick={closeMenu}
-        href="https://en.osm.town/@FreemapSlovakia"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fm-mastodonb-icon"
-        title="Mastodon"
-      >
-        <FaMastodon />
-      </a>
+      <LongPressTooltip label={m?.mainMenu.mastodon}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://en.osm.town/@FreemapSlovakia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-mastodonb-icon"
+            {...props}
+          >
+            <FaMastodon />
+          </a>
+        )}
+      </LongPressTooltip>
 
-      <a
-        onClick={closeMenu}
-        href="https://www.facebook.com/FreemapSlovakia"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fm-fb-icon"
-        title={m?.mainMenu.facebook}
-      >
-        <FaFacebook />
-      </a>
+      <LongPressTooltip label={m?.mainMenu.facebook}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://www.facebook.com/FreemapSlovakia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-fb-icon"
+            {...props}
+          >
+            <FaFacebook />
+          </a>
+        )}
+      </LongPressTooltip>
 
-      <a
-        onClick={closeMenu}
-        href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fm-yt-icon"
-        title={m?.mainMenu.youtube}
-      >
-        <FaYoutube />
-      </a>
+      <LongPressTooltip label={m?.mainMenu.youtube}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-yt-icon"
+            {...props}
+          >
+            <FaYoutube />
+          </a>
+        )}
+      </LongPressTooltip>
 
-      <a
-        onClick={closeMenu}
-        href="https://github.com/FreemapSlovakia"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fm-gh-icon flex-grow-1"
-        title={m?.mainMenu.github}
-      >
-        <FaGithub />
-      </a>
+      <LongPressTooltip label={m?.mainMenu.github}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://github.com/FreemapSlovakia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-github-icon"
+            {...props}
+          >
+            <FaGithub />
+          </a>
+        )}
+      </LongPressTooltip>
+
+      <LongPressTooltip label={m?.mainMenu.googlePlay}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://play.google.com/store/apps/details?id=sk.bigware.freemap"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-android-icon"
+            {...props}
+          >
+            <FaAndroid />
+          </a>
+        )}
+      </LongPressTooltip>
+
+      <LongPressTooltip label={m?.mainMenu.appStore}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://apps.apple.com/sk/app/freemap/id6760855105"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-apple-icon flex-grow-1"
+            {...props}
+          >
+            <FaApple />
+          </a>
+        )}
+      </LongPressTooltip>
 
       <div className="d-flex border rounded px-1">
         {(['light', 'dark', 'auto'] as const).map((theme) => (

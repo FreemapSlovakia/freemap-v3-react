@@ -191,6 +191,9 @@ export type Messages = {
     twitter: string;
     youtube: string;
     github: string;
+    mastodon: string;
+    googlePlay: string;
+    appStore: string;
     automaticLanguage: string;
     mapExport: string;
     osmWiki: string;
