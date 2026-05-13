@@ -278,11 +278,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         <Modal.Body>
           <div>
             <p>
-              <strong>Where you can use downloaded MBTiles maps:</strong>
+              <strong>{m?.downloadMap.usageIntro}</strong>
             </p>
             <ul>
               <li>
-                <strong>Desktop:</strong>{' '}
+                <strong>{m?.downloadMap.usageDesktop}</strong>{' '}
                 <a href="https://qgis.org/" target="_blank">
                   QGIS
                 </a>{' '}
@@ -293,7 +293,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </li>
 
               <li>
-                <strong>Android:</strong>{' '}
+                <strong>{m?.downloadMap.usageAndroid}</strong>{' '}
                 <a
                   href="https://play.google.com/store/apps/details?id=menion.android.locus"
                   target="_blank"
@@ -324,7 +324,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </li>
 
               <li>
-                <strong>iOS:</strong>{' '}
+                <strong>{m?.downloadMap.usageIos}</strong>{' '}
                 <a
                   href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
                   target="_blank"
@@ -348,22 +348,24 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </li>
 
               <li>
-                <strong>Web:</strong> Leaflet, MapLibre GL JS or OpenLayers (via
-                a tile server such as{' '}
+                <strong>{m?.downloadMap.usageWeb}</strong>{' '}
+                {m?.downloadMap.usageWebLead}{' '}
                 <a
                   href="https://github.com/consbio/mbtileserver"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   mbtileserver
                 </a>{' '}
-                or{' '}
+                {m?.downloadMap.usageWebMid}{' '}
                 <a
                   href="https://github.com/maptiler/tileserver-gl"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   TileServer GL
                 </a>
-                )
+                {m?.downloadMap.usageWebTrail}
               </li>
             </ul>
           </div>
@@ -377,7 +379,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle className="text-start w-100">
-                {mapDef ? getItem(mapDef) : '???'}
+                {mapDef ? getItem(mapDef) : m?.downloadMap.unknownMapType}
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
@@ -432,7 +434,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Label>{m?.downloadMap.format}</Form.Label>
 
             <ButtonGroup className="d-block">
-              <LongPressTooltip label="Locus Map, Guru Maps, OruxMaps">
+              <LongPressTooltip label={m?.downloadMap.formatMbtilesTooltip}>
                 {({ props }) => (
                   <Button
                     variant="secondary"
@@ -440,12 +442,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                     onClick={() => setFormat('mbtiles')}
                     {...props}
                   >
-                    MBTiles
+                    {m?.downloadMap.formatMbtiles}
                   </Button>
                 )}
               </LongPressTooltip>
 
-              <LongPressTooltip label="OSMAnd, Locus Map">
+              <LongPressTooltip label={m?.downloadMap.formatSqlitedbTooltip}>
                 {({ props }) => (
                   <Button
                     variant="secondary"
@@ -453,7 +455,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                     onClick={() => setFormat('sqlitedb')}
                     {...props}
                   >
-                    SQLiteDB
+                    {m?.downloadMap.formatSqlitedb}
                   </Button>
                 )}
               </LongPressTooltip>
