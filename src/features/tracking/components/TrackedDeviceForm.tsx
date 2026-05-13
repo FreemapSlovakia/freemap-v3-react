@@ -22,13 +22,15 @@ export function TrackedDeviceForm(): ReactElement {
 
     let forceNew = false;
 
-    if (state.tracking.modifiedTrackedDeviceId != null) {
+    const modified = state.tracking.modifiedTrackedDevice;
+
+    if (modified != null) {
       device = state.tracking.trackedDevices.find(
-        (device) => device.token === state.tracking.modifiedTrackedDeviceId,
+        (d) => d.token === modified.token,
       );
 
       if (!device) {
-        device = { token: state.tracking.modifiedTrackedDeviceId };
+        device = modified;
 
         forceNew = true;
       }

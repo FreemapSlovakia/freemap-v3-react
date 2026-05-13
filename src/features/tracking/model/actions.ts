@@ -12,7 +12,7 @@ export const trackingActions = {
     'TRACKING_SET_TRACKED_DEVICES',
   ),
 
-  modifyTrackedDevice: createAction<string | null | undefined>(
+  modifyTrackedDevice: createAction<TrackedDevice | null | undefined>(
     'TRACKING_MODIFY_TRACKED_DEVICE',
   ),
 

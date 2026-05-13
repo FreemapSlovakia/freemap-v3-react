@@ -26,8 +26,8 @@ export function TrackedDevice({ device }: Props): ReactElement {
   });
 
   const handleModify = useCallback(() => {
-    dispatch(trackingActions.modifyTrackedDevice(device.token));
-  }, [device.token, dispatch]);
+    dispatch(trackingActions.modifyTrackedDevice(device));
+  }, [device, dispatch]);
 
   const handleDelete = useCallback(() => {
     dispatch(trackingActions.deleteTrackedDevice(device.token));

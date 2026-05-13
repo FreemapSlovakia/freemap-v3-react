@@ -13,9 +13,10 @@ import { AccessToken as AccessTokenType } from '../model/types.js';
 
 type Props = {
   accessToken: AccessTokenType;
+  deviceName: string;
 };
 
-export function AccessToken({ accessToken }: Props): ReactElement {
+export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -67,8 +68,13 @@ export function AccessToken({ accessToken }: Props): ReactElement {
   const handleView = useCallback(() => {
     dispatch(setActiveModal('tracking-watched'));
 
-    dispatch(trackingActions.modifyTrackedDevice(accessToken.token));
-  }, [accessToken.token, dispatch]);
+    dispatch(
+      trackingActions.modifyTrackedDevice({
+        token: accessToken.token,
+        label: deviceName,
+      }),
+    );
+  }, [accessToken.token, deviceName, dispatch]);
 
   return (
     <tr>

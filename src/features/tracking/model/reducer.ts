@@ -20,7 +20,7 @@ export interface TrackingState {
   accessTokensDeviceId: number | undefined;
   modifiedDeviceId: number | null | undefined;
   modifiedAccessTokenId: number | null | undefined;
-  modifiedTrackedDeviceId: undefined | null | string;
+  modifiedTrackedDevice: TrackedDevice | null | undefined;
   trackedDevices: TrackedDevice[];
   tracks: Track[];
   showLine: boolean;
@@ -33,7 +33,7 @@ const initialState: TrackingState = {
   accessTokensDeviceId: undefined,
   modifiedDeviceId: undefined,
   modifiedAccessTokenId: undefined,
-  modifiedTrackedDeviceId: undefined,
+  modifiedTrackedDevice: undefined,
   trackedDevices: [],
   tracks: [],
   showLine: true,
@@ -56,7 +56,7 @@ export const trackingReducer = createReducer(initialState, (builder) =>
       accessTokensDeviceId: undefined,
       modifiedDeviceId: undefined,
       modifiedAccessTokenId: undefined,
-      modifiedTrackedDeviceId: undefined,
+      modifiedTrackedDevice: undefined,
     }))
     .addCase(trackingActions.setDevices, (state, { payload }) => ({
       ...state,
@@ -85,17 +85,17 @@ export const trackingReducer = createReducer(initialState, (builder) =>
     }))
     .addCase(trackingActions.modifyTrackedDevice, (state, { payload }) => ({
       ...state,
-      modifiedTrackedDeviceId: payload,
+      modifiedTrackedDevice: payload,
     }))
     .addCase(trackingActions.saveTrackedDevice, (state, { payload }) => ({
       ...state,
       trackedDevices: [
         ...state.trackedDevices.filter(
-          (d) => d.token !== state.modifiedTrackedDeviceId,
+          (d) => d.token !== state.modifiedTrackedDevice?.token,
         ),
         payload,
       ],
-      modifiedTrackedDeviceId: undefined,
+      modifiedTrackedDevice: undefined,
     }))
     .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
       ...state,

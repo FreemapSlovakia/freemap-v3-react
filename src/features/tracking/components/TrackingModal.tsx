@@ -32,7 +32,7 @@ export function TrackingModal({ show }: Props): ReactElement {
             ? 'accessTokenForm'
             : 'accessTokens'
           : 'devices'
-      : state.tracking.modifiedTrackedDeviceId !== undefined
+      : state.tracking.modifiedTrackedDevice !== undefined
         ? 'trackedDeviceForm'
         : 'trackedDevices',
   );

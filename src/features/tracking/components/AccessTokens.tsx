@@ -52,7 +52,11 @@ export function AccessTokens(): ReactElement {
           </thead>
           <tbody>
             {accessTokens.map((accessToken) => (
-              <AccessToken key={accessToken.id} accessToken={accessToken} />
+              <AccessToken
+                key={accessToken.id}
+                accessToken={accessToken}
+                deviceName={deviceName}
+              />
             ))}
           </tbody>
         </Table>
