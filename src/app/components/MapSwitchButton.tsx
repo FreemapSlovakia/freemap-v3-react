@@ -14,9 +14,11 @@ import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
+import { removeAccents } from '@shared/stringUtils.js';
 import { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
 import {
+  ChangeEvent,
   Fragment,
   MouseEvent,
   ReactElement,
@@ -24,7 +26,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
+import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
 import { BiWifiOff, BiWorld } from 'react-icons/bi';
 import {
   FaChevronRight,
@@ -71,6 +73,14 @@ export function MapSwitchButton(): ReactElement {
   const [show, setShow] = useState<boolean | 'more' | 'all'>(false);
 
   const [subview, setSubview] = useState<'mapSettings' | null>(null);
+
+  const [filter, setFilter] = useState('');
+
+  const handleFilterChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.currentTarget.value);
+  }, []);
+
+  const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
   const handlePossibleFilterClick = useCallback(
     (e: SyntheticEvent<unknown, unknown>) => {
@@ -200,6 +210,7 @@ export function MapSwitchButton(): ReactElement {
 
     if (!nextShow) {
       setSubview(null);
+      setFilter('');
     }
   }, []);
 
@@ -291,7 +302,10 @@ export function MapSwitchButton(): ReactElement {
     );
   }
 
-  function layersMemuItems(layer: 'base' | 'overlay') {
+  function layersMemuItems(
+    layer: 'base' | 'overlay',
+    showLeadingDivider: boolean,
+  ) {
     let first = true;
 
     return layerDefs
@@ -311,7 +325,17 @@ export function MapSwitchButton(): ReactElement {
           layersSettings[type]?.showInToolbar ??
           (!def.custom && Boolean(def.defaultInToolbar));
 
-        if (
+        const layerName = def.custom
+          ? def.name || (m?.mapLayers.customBase ?? '') + ' ' + type
+          : (m?.mapLayers.letters[type] ?? '');
+
+        if (normalizedFilter) {
+          if (
+            !removeAccents(layerName.toLowerCase()).includes(normalizedFilter)
+          ) {
+            return null;
+          }
+        } else if (
           show !== 'all' &&
           !activeLayers.includes(type) &&
           (!(show === true && !isWide ? showInToolbar : showInMenu) ||
@@ -329,7 +353,7 @@ export function MapSwitchButton(): ReactElement {
 
         return (
           <Fragment key={type}>
-            {wasFirst && <Dropdown.Divider />}
+            {wasFirst && showLeadingDivider && <Dropdown.Divider />}
 
             <Dropdown.Item
               href={`?layers=${type}`}
@@ -476,45 +500,81 @@ export function MapSwitchButton(): ReactElement {
                 </>
               ) : (
                 <>
-                  <Dropdown.Item
-                    key="offlineMaps"
-                    as="button"
-                    eventKey="offlineMaps"
-                  >
-                    <BiWifiOff /> {m?.offline.offlineMaps}
-                    {cachedMapsTotalSize > 0 &&
-                      ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
-                    <kbd>m</kbd> <kbd>o</kbd>
-                  </Dropdown.Item>
-
-                  <Dropdown.Item
-                    key="mapSettings"
-                    as="button"
-                    eventKey="mapSettings"
-                  >
-                    <FaCog /> {m?.mapLayers.settings}
-                    <FaChevronRight />
-                  </Dropdown.Item>
-
-                  {layersMemuItems('base')}
-
-                  {layersMemuItems('overlay')}
-
-                  {(show === true || show === 'more') && (
+                  {!normalizedFilter && (
                     <>
-                      <Dropdown.Divider />
+                      <Dropdown.Item
+                        key="offlineMaps"
+                        as="button"
+                        eventKey="offlineMaps"
+                      >
+                        <BiWifiOff /> {m?.offline.offlineMaps}
+                        {cachedMapsTotalSize > 0 &&
+                          ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
+                        <kbd>m</kbd> <kbd>o</kbd>
+                      </Dropdown.Item>
 
-                      {!isWide && show === true ? (
-                        <Dropdown.Item eventKey="show-more">
-                          {m?.mapLayers.showMore}
-                        </Dropdown.Item>
-                      ) : (
-                        <Dropdown.Item eventKey="show-all">
-                          {m?.mapLayers.showAll}
-                        </Dropdown.Item>
-                      )}
+                      <Dropdown.Item
+                        key="mapSettings"
+                        as="button"
+                        eventKey="mapSettings"
+                      >
+                        <FaCog /> {m?.mapLayers.settings}
+                        <FaChevronRight />
+                      </Dropdown.Item>
                     </>
                   )}
+
+                  {(() => {
+                    const baseItems = layersMemuItems(
+                      'base',
+                      !normalizedFilter,
+                    );
+                    const baseHasItems = baseItems.some(Boolean);
+                    const overlayItems = layersMemuItems(
+                      'overlay',
+                      !normalizedFilter || baseHasItems,
+                    );
+                    const noMatches =
+                      normalizedFilter &&
+                      !baseHasItems &&
+                      !overlayItems.some(Boolean);
+
+                    return (
+                      <>
+                        {baseItems}
+                        {overlayItems}
+                        {noMatches && (
+                          <Dropdown.ItemText className="text-muted text-center">
+                            {m?.mapLayers.noMapsFound}
+                          </Dropdown.ItemText>
+                        )}
+                      </>
+                    );
+                  })()}
+
+                  <Dropdown.Divider />
+
+                  {!normalizedFilter &&
+                    (show === true || show === 'more') &&
+                    (!isWide && show === true ? (
+                      <Dropdown.Item eventKey="show-more">
+                        {m?.mapLayers.showMore}
+                      </Dropdown.Item>
+                    ) : (
+                      <Dropdown.Item eventKey="show-all">
+                        {m?.mapLayers.showAll}
+                      </Dropdown.Item>
+                    ))}
+
+                  <div className="px-2 pb-1">
+                    <Form.Control
+                      type="search"
+                      size="sm"
+                      placeholder={m?.mapLayers.filterMaps}
+                      value={filter}
+                      onChange={handleFilterChange}
+                    />
+                  </div>
                 </>
               )}
             </div>

@@ -819,6 +819,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   mapLayers: {
     showMore: 'Ukázať viac máp',
     showAll: 'Ukázať všetky mapy',
+    filterMaps: 'Filtrovať mapy',
+    noMapsFound: 'Žiadne mapy nenájdené',
     settings: 'Nastavenia máp',
     layers: 'Mapy',
     switch: 'Mapy',

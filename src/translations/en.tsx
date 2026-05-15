@@ -768,6 +768,8 @@ const messages: Messages = {
   mapLayers: {
     showMore: 'Show more maps',
     showAll: 'Show all maps',
+    filterMaps: 'Filter maps',
+    noMapsFound: 'No maps found',
     settings: 'Map settings',
     layers: 'Maps',
     switch: 'Maps',

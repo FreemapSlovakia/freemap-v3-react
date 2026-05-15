@@ -601,6 +601,8 @@ export type Messages = {
   mapLayers: {
     showMore: string;
     showAll: string;
+    filterMaps: string;
+    noMapsFound: string;
     settings: string;
     layers: string;
     switch: string;
