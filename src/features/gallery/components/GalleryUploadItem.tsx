@@ -1,5 +1,5 @@
+import { Button } from '@mantine/core';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import spinnerbar from '@/images/spinnerbar.gif';
 import { Messages } from '@/translations/messagesInterface.js';
@@ -92,6 +92,7 @@ export function GalleryUploadItem({
       ) : (
         <Button
           className="mb-3 d-block mx-auto"
+          size="sm"
           onClick={handleLoadPreviewClick}
         >
           {m?.gallery.uploadModal.loadPreview}
@@ -107,8 +108,13 @@ export function GalleryUploadItem({
         />
 
         <div className="d-flex justify-content-between align-items-end">
-          <Button onClick={handleRemove} variant="danger">
-            <FaTimes /> {m?.general.remove}
+          <Button
+            color="red"
+            size="sm"
+            leftSection={<FaTimes />}
+            onClick={handleRemove}
+          >
+            {m?.general.remove}
           </Button>
 
           <small className="text-muted lh-1">{file.name}</small>

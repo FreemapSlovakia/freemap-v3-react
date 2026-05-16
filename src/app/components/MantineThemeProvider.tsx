@@ -1,4 +1,4 @@
-import { createTheme, MantineProvider, Tooltip } from '@mantine/core';
+import { createTheme, MantineProvider, Popover, Tooltip } from '@mantine/core';
 import { ReactNode, useEffect, useState } from 'react';
 
 function readBsTheme(): 'light' | 'dark' {
@@ -11,6 +11,11 @@ const theme = createTheme({
   defaultRadius: '3px',
   components: {
     Tooltip: Tooltip.extend({
+      defaultProps: {
+        zIndex: 2000,
+      },
+    }),
+    Popover: Popover.extend({
       defaultProps: {
         zIndex: 2000,
       },

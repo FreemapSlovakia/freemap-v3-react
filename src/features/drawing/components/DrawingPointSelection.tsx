@@ -1,12 +1,12 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { type ReactElement, useCallback, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
 import { TbAngle } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
@@ -80,38 +80,68 @@ export function DrawingPointSelection(): ReactElement | null {
         label={m?.selections.drawPoints}
         deletable
       >
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() =>
-                dispatch(setActiveModal('current-drawing-properties'))
-              }
-              {...props}
-            >
-              <FaTag />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() =>
+                  dispatch(setActiveModal('current-drawing-properties'))
+                }
+                {...props}
+              >
+                <FaTag />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<FaTag />}
+                onClick={() =>
+                  dispatch(setActiveModal('current-drawing-properties'))
+                }
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip
+        <MantineLongPressTooltip
           breakpoint="sm"
           label={m?.drawing.projection.projectPoint}
         >
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => setProjectPointDialogVisible(true)}
-              {...props}
-            >
-              <TbAngle />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => setProjectPointDialogVisible(true)}
+                {...props}
+              >
+                <TbAngle />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<TbAngle />}
+                onClick={() => setProjectPointDialogVisible(true)}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
 
         <OpenInExternalAppMenuButton
           className="ms-1"

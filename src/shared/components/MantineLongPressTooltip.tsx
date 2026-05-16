@@ -1,4 +1,4 @@
-import { Tooltip } from '@mantine/core';
+import { Kbd, Tooltip } from '@mantine/core';
 import {
   Fragment,
   MouseEvent,
@@ -28,6 +28,7 @@ type Props = {
     label: ReactNode;
     labelClassName: string;
     labelHidden: boolean;
+    kbdEl: ReactNode;
   }) => ReactElement;
 };
 
@@ -127,10 +128,23 @@ export function MantineLongPressTooltip({
     e.stopPropagation();
   }, []);
 
-  const kbdEl = (kbd?.split(' ') ?? []).map((k) => (
+  const kbdParts = kbd?.split(' ') ?? [];
+
+  const kbdEl = kbdParts.length ? (
+    <>
+      {kbdParts.map((k, i) => (
+        <Fragment key={k}>
+          {i > 0 && ' '}
+          <Kbd>{k}</Kbd>
+        </Fragment>
+      ))}
+    </>
+  ) : null;
+
+  const tooltipKbdEl = kbdParts.map((k) => (
     <Fragment key={k}>
       {' '}
-      <kbd>{k}</kbd>
+      <Kbd>{k}</Kbd>
     </Fragment>
   ));
 
@@ -141,15 +155,10 @@ export function MantineLongPressTooltip({
       onClickCapture: handleClickCapture,
       onContextMenuCapture: handleContextMenuCapture,
     },
-    label: kbd ? (
-      <>
-        {label} {kbdEl}
-      </>
-    ) : (
-      label
-    ),
+    label,
     labelClassName: breakpoint ? `d-none d-${breakpoint}-inline` : 'd-none',
     labelHidden,
+    kbdEl,
   });
 
   return (
@@ -157,7 +166,7 @@ export function MantineLongPressTooltip({
       label={
         <>
           {label}
-          {kbdEl}
+          {tooltipKbdEl}
         </>
       }
       opened={labelHidden && show}

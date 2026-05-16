@@ -1,14 +1,16 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon, Button } from '@mantine/core';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useCallback } from 'react';
-import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import { ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaCamera,
@@ -114,44 +116,84 @@ export function GalleryMenu() {
 
             {!hidden && (
               <>
-                <LongPressTooltip
+                <MantineLongPressTooltip
                   label={m?.gallery.upload}
                   kbd="p u"
                   breakpoint="md"
                 >
-                  {({ props, label, labelClassName }) => (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="ms-1"
-                      onClick={() => dispatch(setActiveModal('gallery-upload'))}
-                      {...props}
-                    >
-                      <FaUpload />{' '}
-                      <span className={labelClassName}>{label}</span>
-                    </Button>
-                  )}
-                </LongPressTooltip>
+                  {({ props, label, labelHidden, kbdEl }) =>
+                    labelHidden ? (
+                      <ActionIcon
+                        variant="filled"
+                        color="gray"
+                        size="input-sm"
+                        type="button"
+                        className="ms-1"
+                        onClick={() =>
+                          dispatch(setActiveModal('gallery-upload'))
+                        }
+                        {...props}
+                      >
+                        <FaUpload />
+                      </ActionIcon>
+                    ) : (
+                      <Button
+                        color="gray"
+                        size="sm"
+                        type="button"
+                        className="ms-1"
+                        leftSection={<FaUpload />}
+                        rightSection={kbdEl}
+                        onClick={() =>
+                          dispatch(setActiveModal('gallery-upload'))
+                        }
+                        {...props}
+                      >
+                        {label}
+                      </Button>
+                    )
+                  }
+                </MantineLongPressTooltip>
 
-                <LongPressTooltip
+                <MantineLongPressTooltip
                   label={m?.gallery.filter}
                   kbd="p f"
                   breakpoint="lg"
                 >
-                  {({ props, label, labelClassName }) => (
-                    <Button
-                      type="button"
-                      className="ms-1"
-                      variant="secondary"
-                      onClick={() => dispatch(setActiveModal('gallery-filter'))}
-                      active={filterIsActive}
-                      {...props}
-                    >
-                      <FaFilter />{' '}
-                      <span className={labelClassName}>{label}</span>
-                    </Button>
-                  )}
-                </LongPressTooltip>
+                  {({ props, label, labelHidden, kbdEl }) =>
+                    labelHidden ? (
+                      <ActionIcon
+                        variant={filterIsActive ? 'light' : 'filled'}
+                        color="gray"
+                        size="input-sm"
+                        type="button"
+                        className="ms-1"
+                        onClick={() =>
+                          dispatch(setActiveModal('gallery-filter'))
+                        }
+                        {...props}
+                      >
+                        <FaFilter />
+                      </ActionIcon>
+                    ) : (
+                      <Button
+                        color="gray"
+                        size="sm"
+                        type="button"
+                        className="ms-1"
+                        variant={filterIsActive ? 'light' : 'filled'}
+                        leftSection={<FaFilter />}
+                        rightSection={kbdEl}
+                        onClick={() =>
+                          dispatch(setActiveModal('gallery-filter'))
+                        }
+                        {...props}
+                      >
+                        {label}
+                      </Button>
+                    )
+                  }
+                </MantineLongPressTooltip>
 
                 <Dropdown
                   className="ms-1"
@@ -230,27 +272,44 @@ export function GalleryMenu() {
                   </Dropdown.Menu>
                 </Dropdown>
 
-                <LongPressTooltip
+                <MantineLongPressTooltip
                   label={m?.gallery.stats.leaderboard}
                   kbd="p b"
                   breakpoint="lg"
                 >
-                  {({ props, label, labelClassName }) => (
-                    <Button
-                      type="button"
-                      className="ms-1"
-                      variant="secondary"
-                      onClick={() =>
-                        dispatch(setActiveModal('gallery-leaderboard'))
-                      }
-                      active={filterIsActive}
-                      {...props}
-                    >
-                      <FaTrophy />{' '}
-                      <span className={labelClassName}>{label}</span>
-                    </Button>
-                  )}
-                </LongPressTooltip>
+                  {({ props, label, labelHidden, kbdEl }) =>
+                    labelHidden ? (
+                      <ActionIcon
+                        variant="filled"
+                        color="gray"
+                        size="input-sm"
+                        type="button"
+                        className="ms-1"
+                        onClick={() =>
+                          dispatch(setActiveModal('gallery-leaderboard'))
+                        }
+                        {...props}
+                      >
+                        <FaTrophy />
+                      </ActionIcon>
+                    ) : (
+                      <Button
+                        color="gray"
+                        size="sm"
+                        type="button"
+                        className="ms-1"
+                        leftSection={<FaTrophy />}
+                        rightSection={kbdEl}
+                        onClick={() =>
+                          dispatch(setActiveModal('gallery-leaderboard'))
+                        }
+                        {...props}
+                      >
+                        {label}
+                      </Button>
+                    )
+                  }
+                </MantineLongPressTooltip>
 
                 <Dropdown
                   className="ms-1"
@@ -295,13 +354,15 @@ export function GalleryMenu() {
               </>
             )}
 
-            <Button
+            <ActionIcon
               className="ms-1"
-              variant={hidden ? 'primary' : 'dark'}
+              variant="filled"
+              color={hidden ? 'blue' : 'dark'}
+              size="input-sm"
               onClick={() => setHidden((hidden) => !hidden)}
             >
               {hidden ? <FaCaretRight /> : <FaCaretLeft />}
-            </Button>
+            </ActionIcon>
           </ButtonToolbar>
         </Toolbar>
       </div>

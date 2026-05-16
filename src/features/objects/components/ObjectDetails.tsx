@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SearchResult } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { Button } from '@mantine/core';
 import {
   categoryKeys,
   getNameFromOsmElement,
@@ -11,7 +12,7 @@ import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 import { Fragment, ReactElement } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
 import { SourceName } from './SourceName.js';
@@ -189,7 +190,12 @@ export function ObjectDetails({
       )}
 
       {!window.fmEmbedded && isOsm && (
-        <Button type="button" onClick={handleEditInJosm} className="mb-4">
+        <Button
+          type="button"
+          size="sm"
+          className="mb-4"
+          onClick={handleEditInJosm}
+        >
           {editInJosmText}
         </Button>
       )}

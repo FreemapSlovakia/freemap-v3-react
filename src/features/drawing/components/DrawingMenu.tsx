@@ -1,12 +1,14 @@
 import { setActiveModal, setTool, Tool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon, Button } from '@mantine/core';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { ReactElement } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
@@ -60,23 +62,40 @@ export function DrawingMenu(): ReactElement | undefined {
           </Dropdown.Menu>
         </Dropdown>
 
-        <LongPressTooltip
+        <MantineLongPressTooltip
           label={m?.drawing.defProps.menuItem}
           breakpoint="md"
           kbd="e d"
         >
-          {({ props, label, labelClassName }) => (
-            <Button
-              variant="secondary"
-              type="button"
-              className="ms-1"
-              onClick={() => dispatch(setActiveModal('drawing-properties'))}
-              {...props}
-            >
-              <FaPalette /> <span className={labelClassName}>{label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+          {({ props, label, labelHidden, kbdEl }) =>
+            labelHidden ? (
+              <ActionIcon
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                type="button"
+                className="ms-1"
+                onClick={() => dispatch(setActiveModal('drawing-properties'))}
+                {...props}
+              >
+                <FaPalette />
+              </ActionIcon>
+            ) : (
+              <Button
+                color="gray"
+                size="sm"
+                type="button"
+                className="ms-1"
+                leftSection={<FaPalette />}
+                rightSection={kbdEl}
+                onClick={() => dispatch(setActiveModal('drawing-properties'))}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       </ToolMenu>
     )
   );

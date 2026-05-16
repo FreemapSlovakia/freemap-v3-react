@@ -1,6 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { Button, Kbd } from '@mantine/core';
+import { Button, ColorInput, Kbd } from '@mantine/core';
 import { DateTime } from '@shared/components/DateTime.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -47,7 +47,7 @@ export function TrackedDeviceForm(): ReactElement {
 
   const [label, setLabel] = useTextInputState(device?.label ?? '');
 
-  const [color, setColor] = useTextInputState(device?.color ?? '#7239a8');
+  const [color, setColor] = useState(device?.color ?? '#7239a8');
 
   const [width, setWidth] = useTextInputState(device?.width?.toString() ?? '');
 
@@ -137,10 +137,12 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="color" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.color}</Form.Label>
-          <InputGroup>
-            <Form.Control type="color" value={color} onChange={setColor} />
-          </InputGroup>
+          <ColorInput
+            label={m?.tracking.trackedDevice.color}
+            format="hex"
+            value={color}
+            onChange={setColor}
+          />
         </Form.Group>
 
         <Form.Group controlId="width" className="mb-3">

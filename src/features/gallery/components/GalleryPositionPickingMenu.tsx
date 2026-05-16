@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -22,30 +22,60 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
       <Toolbar className="mt-2">
         <div className="m-2">{m?.gallery.locationPicking.title}</div>
 
-        <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="me-1"
-              onClick={() => dispatch(galleryConfirmPickedPosition())}
-              {...props}
-            >
-              <FaCheck />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.general.ok}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="me-1"
+                variant="filled"
+                size="input-sm"
+                onClick={() => dispatch(galleryConfirmPickedPosition())}
+                {...props}
+              >
+                <FaCheck />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="me-1"
+                size="sm"
+                leftSection={<FaCheck />}
+                onClick={() => dispatch(galleryConfirmPickedPosition())}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip breakpoint="sm" label={m?.general.cancel} kbd="Esc">
-          {({ label, labelClassName, props }) => (
-            <Button
-              onClick={() => dispatch(gallerySetItemForPositionPicking(null))}
-              {...props}
-            >
-              <FaTimes />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip
+          breakpoint="sm"
+          label={m?.general.cancel}
+          kbd="Esc"
+        >
+          {({ label, labelHidden, kbdEl, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                variant="filled"
+                size="input-sm"
+                onClick={() => dispatch(gallerySetItemForPositionPicking(null))}
+                {...props}
+              >
+                <FaTimes />
+              </ActionIcon>
+            ) : (
+              <Button
+                size="sm"
+                leftSection={<FaTimes />}
+                rightSection={kbdEl}
+                onClick={() => dispatch(gallerySetItemForPositionPicking(null))}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       </Toolbar>
     </div>
   );

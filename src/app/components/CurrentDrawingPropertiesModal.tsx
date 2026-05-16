@@ -1,10 +1,9 @@
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
-import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { Button, Kbd } from '@mantine/core';
+import { Button, ColorInput, Kbd } from '@mantine/core';
 import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
@@ -35,6 +34,10 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         ? (state.drawingLines.lines[selection.id]?.label ?? '')
         : '???';
   });
+
+  const recentColors = useAppSelector(
+    (state) => state.drawingSettings.drawingRecentColors,
+  );
 
   const color = useAppSelector((state) => {
     const { selection } = state.main;
@@ -347,15 +350,13 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
           {drawType !== 'draw-line-poly' && (
             <Form.Group controlId="color" className="mt-3">
-              <Form.Label>{m?.drawing.edit.color}</Form.Label>
-
-              <Form.Control
-                type="color"
+              <ColorInput
+                label={m?.drawing.edit.color}
+                format="hex"
                 value={editedColor || colors.normal}
-                onChange={(e) => setEditedColor(e.currentTarget.value)}
+                onChange={setEditedColor}
+                swatches={recentColors}
               />
-
-              <DrawingRecentColors onColor={setEditedColor} />
             </Form.Group>
           )}
 

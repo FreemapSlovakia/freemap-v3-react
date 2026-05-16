@@ -1,10 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
 import { CgArrowsMergeAltH } from 'react-icons/cg';
 import { FaDrawPolygon, FaRegPlayCircle, FaTimes } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
@@ -44,20 +44,40 @@ export function DrawingLinePointSelection(): ReactElement | null {
       <Toolbar className="mt-2">
         <span className="me-2">{m?.drawing.selectPointToJoin}</span>
 
-        <LongPressTooltip breakpoint="sm" kbd="Esc" label={m?.general.cancel}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(drawingLineJoinStart(undefined));
-              }}
-              {...props}
-            >
-              <FaTimes />
-              <span className={labelClassName}>{label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip
+          breakpoint="sm"
+          kbd="Esc"
+          label={m?.general.cancel}
+        >
+          {({ label, labelHidden, kbdEl, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => {
+                  dispatch(drawingLineJoinStart(undefined));
+                }}
+                {...props}
+              >
+                <FaTimes />
+              </ActionIcon>
+            ) : (
+              <Button
+                color="gray"
+                size="sm"
+                leftSection={<FaTimes />}
+                rightSection={kbdEl}
+                onClick={() => {
+                  dispatch(drawingLineJoinStart(undefined));
+                }}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       </Toolbar>
     );
   }
@@ -82,51 +102,93 @@ export function DrawingLinePointSelection(): ReactElement | null {
       deletable={line.points.length > (line.type === 'line' ? 2 : 3)}
     >
       {line.type === 'line' && !end && (
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.split}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(drawingLineSplit(pt))}
-              {...props}
-            >
-              <RiScissorsFill />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.drawing.split}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => dispatch(drawingLineSplit(pt))}
+                {...props}
+              >
+                <RiScissorsFill />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<RiScissorsFill />}
+                onClick={() => dispatch(drawingLineSplit(pt))}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
 
       {line.type === 'line' && end && (
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.join}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(drawingLineJoinStart(pt))}
-              {...props}
-            >
-              <CgArrowsMergeAltH />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.drawing.join}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => dispatch(drawingLineJoinStart(pt))}
+                {...props}
+              >
+                <CgArrowsMergeAltH />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<CgArrowsMergeAltH />}
+                onClick={() => dispatch(drawingLineJoinStart(pt))}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
 
       {line.type === 'line' && end && (
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.continue}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(drawingLineContinue(pt))}
-              {...props}
-            >
-              <FaRegPlayCircle />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.drawing.continue}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => dispatch(drawingLineContinue(pt))}
+                {...props}
+              >
+                <FaRegPlayCircle />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<FaRegPlayCircle />}
+                onClick={() => dispatch(drawingLineContinue(pt))}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
     </Selection>
   );

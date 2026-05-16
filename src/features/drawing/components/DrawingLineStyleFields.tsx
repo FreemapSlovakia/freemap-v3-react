@@ -1,5 +1,6 @@
-import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ColorInput } from '@mantine/core';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 
@@ -33,6 +34,10 @@ export function DrawingLineStyleFields({
   onDashArrayChange,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const recentColors = useAppSelector(
+    (state) => state.drawingSettings.drawingRecentColors,
+  );
 
   const [inputs, setInputs] = useState<string[]>(() => [
     ...dashArray.map(String),
@@ -73,15 +78,13 @@ export function DrawingLineStyleFields({
   return (
     <>
       <Form.Group controlId="color" className="mt-3">
-        <Form.Label>{m?.drawing.edit.color}</Form.Label>
-
-        <Form.Control
-          type="color"
+        <ColorInput
+          label={m?.drawing.edit.color}
+          format="hex"
           value={color}
-          onChange={(e) => onColorChange(e.currentTarget.value)}
+          onChange={onColorChange}
+          swatches={recentColors}
         />
-
-        <DrawingRecentColors onColor={onColorChange} />
       </Form.Group>
 
       <Form.Group controlId="width" className="mt-3">

@@ -1,10 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon, Button, Kbd } from '@mantine/core';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
-import { Button, Modal, ProgressBar, Table } from 'react-bootstrap';
+import { Modal, ProgressBar, Table } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaPause, FaPlay, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -102,9 +103,10 @@ export function CachedMapsList(): ReactElement {
                       </td>
                       <td className="text-nowrap">
                         {dl && dl.status === 'downloading' && (
-                          <Button
-                            size="sm"
-                            variant="outline-secondary"
+                          <ActionIcon
+                            variant="outline"
+                            color="gray"
+                            size="input-sm"
                             className="me-1"
                             onClick={() =>
                               dispatch(cacheTilesPause({ id: cm.type }))
@@ -112,13 +114,14 @@ export function CachedMapsList(): ReactElement {
                             title={m?.offline.pause}
                           >
                             <FaPause />
-                          </Button>
+                          </ActionIcon>
                         )}
 
                         {dl && dl.status === 'paused' && (
-                          <Button
-                            size="sm"
-                            variant="outline-secondary"
+                          <ActionIcon
+                            variant="outline"
+                            color="gray"
+                            size="input-sm"
                             className="me-1"
                             onClick={() =>
                               dispatch(cacheTilesResume({ id: cm.type }))
@@ -126,13 +129,14 @@ export function CachedMapsList(): ReactElement {
                             title={m?.offline.resume}
                           >
                             <FaPlay />
-                          </Button>
+                          </ActionIcon>
                         )}
 
                         {dl && (
-                          <Button
-                            size="sm"
-                            variant="outline-danger"
+                          <ActionIcon
+                            variant="outline"
+                            color="red"
+                            size="input-sm"
                             className="me-1"
                             onClick={() =>
                               dispatch(cacheTilesCancel({ id: cm.type }))
@@ -140,13 +144,13 @@ export function CachedMapsList(): ReactElement {
                             title={m?.general.cancel}
                           >
                             <FaTimes />
-                          </Button>
+                          </ActionIcon>
                         )}
 
                         {!dl && !isComplete && (
-                          <Button
-                            size="sm"
-                            variant="outline-primary"
+                          <ActionIcon
+                            variant="outline"
+                            size="input-sm"
                             className="me-1"
                             onClick={() =>
                               dispatch(cacheTilesRestart({ id: cm.type }))
@@ -154,20 +158,21 @@ export function CachedMapsList(): ReactElement {
                             title={m?.offline.resume}
                           >
                             <FaPlay />
-                          </Button>
+                          </ActionIcon>
                         )}
 
                         {!dl && (
-                          <Button
-                            size="sm"
-                            variant="outline-danger"
+                          <ActionIcon
+                            variant="outline"
+                            color="red"
+                            size="input-sm"
                             onClick={() =>
                               dispatch(cachedMapDeleted({ id: cm.type }))
                             }
                             title={m?.general.delete}
                           >
                             <FaTrash />
-                          </Button>
+                          </ActionIcon>
                         )}
                       </td>
                     </tr>
@@ -185,14 +190,21 @@ export function CachedMapsList(): ReactElement {
 
       <Modal.Footer>
         <Button
-          variant="primary"
+          size="sm"
+          leftSection={<FaPlus />}
           onClick={() => dispatch(cachedMapsSetView('add'))}
         >
-          <FaPlus /> {m?.offline.addOfflineMap}
+          {m?.offline.addOfflineMap}
         </Button>
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
+          onClick={() => dispatch(setActiveModal(null))}
+        >
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </>

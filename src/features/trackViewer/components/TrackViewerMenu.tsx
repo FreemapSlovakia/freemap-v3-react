@@ -6,13 +6,14 @@ import {
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { ActionIcon, Button } from '@mantine/core';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCloudUploadAlt,
@@ -71,39 +72,74 @@ export function TrackViewerMenu(): ReactElement {
 
   return (
     <ToolMenu>
-      <LongPressTooltip breakpoint="sm" label={m?.trackViewer.upload}>
-        {({ label, labelClassName, props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => {
-              dispatch(setActiveModal('upload-track'));
-            }}
-            {...props}
-          >
-            <FaUpload />
-            <span className={labelClassName}> {label}</span>
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      {enableElevationChart && (
-        <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
-          {({ label, labelClassName, props }) => (
-            <Button
+      <MantineLongPressTooltip breakpoint="sm" label={m?.trackViewer.upload}>
+        {({ label, labelHidden, props }) =>
+          labelHidden ? (
+            <ActionIcon
               className="ms-1"
-              variant="secondary"
-              active={elevationChartActive}
+              variant="filled"
+              color="gray"
+              size="input-sm"
               onClick={() => {
-                dispatch(trackViewerToggleElevationChart());
+                dispatch(setActiveModal('upload-track'));
               }}
               {...props}
             >
-              <FaChartArea />
-              <span className={labelClassName}> {label}</span>
+              <FaUpload />
+            </ActionIcon>
+          ) : (
+            <Button
+              className="ms-1"
+              color="gray"
+              size="sm"
+              leftSection={<FaUpload />}
+              onClick={() => {
+                dispatch(setActiveModal('upload-track'));
+              }}
+              {...props}
+            >
+              {label}
             </Button>
-          )}
-        </LongPressTooltip>
+          )
+        }
+      </MantineLongPressTooltip>
+
+      {enableElevationChart && (
+        <MantineLongPressTooltip
+          breakpoint="sm"
+          label={m?.general.elevationProfile}
+        >
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant={elevationChartActive ? 'light' : 'filled'}
+                color="gray"
+                size="input-sm"
+                onClick={() => {
+                  dispatch(trackViewerToggleElevationChart());
+                }}
+                {...props}
+              >
+                <FaChartArea />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                variant={elevationChartActive ? 'light' : 'filled'}
+                leftSection={<FaChartArea />}
+                onClick={() => {
+                  dispatch(trackViewerToggleElevationChart());
+                }}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
 
       {enableElevationChart && (
@@ -137,63 +173,123 @@ export function TrackViewerMenu(): ReactElement {
       )}
 
       {enableElevationChart && (
-        <LongPressTooltip breakpoint="sm" label={m?.trackViewer.moreInfo}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => {
-                dispatch(
-                  toastsAdd({
-                    id: 'trackViewer.trackInfo',
-                    messageKey: 'trackViewer.info',
-                    cancelType: [
-                      clearMapFeatures.type,
-                      trackViewerSetData.type,
-                    ],
-                    color: 'cyan',
-                  }),
-                );
-              }}
-              {...props}
-            >
-              <FaInfoCircle />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip
+          breakpoint="sm"
+          label={m?.trackViewer.moreInfo}
+        >
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => {
+                  dispatch(
+                    toastsAdd({
+                      id: 'trackViewer.trackInfo',
+                      messageKey: 'trackViewer.info',
+                      cancelType: [
+                        clearMapFeatures.type,
+                        trackViewerSetData.type,
+                      ],
+                      color: 'cyan',
+                    }),
+                  );
+                }}
+                {...props}
+              >
+                <FaInfoCircle />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<FaInfoCircle />}
+                onClick={() => {
+                  dispatch(
+                    toastsAdd({
+                      id: 'trackViewer.trackInfo',
+                      messageKey: 'trackViewer.info',
+                      cancelType: [
+                        clearMapFeatures.type,
+                        trackViewerSetData.type,
+                      ],
+                      color: 'cyan',
+                    }),
+                  );
+                }}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
 
       {canUpload && (
-        <LongPressTooltip breakpoint="sm" label={m?.trackViewer.share}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(trackViewerUploadTrack())}
-              {...props}
-            >
-              <FaCloudUploadAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.trackViewer.share}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => dispatch(trackViewerUploadTrack())}
+                {...props}
+              >
+                <FaCloudUploadAlt />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<FaCloudUploadAlt />}
+                onClick={() => dispatch(trackViewerUploadTrack())}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
 
       {hasTrack && (
-        <LongPressTooltip breakpoint="sm" label={m?.general.convertToDrawing}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={handleConvertToDrawing}
-              {...props}
-            >
-              <FaPencilAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip
+          breakpoint="sm"
+          label={m?.general.convertToDrawing}
+        >
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={handleConvertToDrawing}
+                {...props}
+              >
+                <FaPencilAlt />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<FaPencilAlt />}
+                onClick={handleConvertToDrawing}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       )}
 
       {hasTrack && <DeleteButton />}

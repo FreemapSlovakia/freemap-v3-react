@@ -1,9 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon } from '@mantine/core';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
-import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
+import { Dropdown, Form, InputGroup } from 'react-bootstrap';
 import { FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsSetParams } from '../model/actions.js';
@@ -61,8 +62,10 @@ export function ChangesetsMenu(): ReactElement {
             value={authorName ?? ''}
           />
 
-          <Button
-            variant="secondary"
+          <ActionIcon
+            variant="filled"
+            color="gray"
+            size="input-sm"
             disabled={!authorName}
             onClick={() => {
               setAuthorName(null);
@@ -71,7 +74,7 @@ export function ChangesetsMenu(): ReactElement {
             }}
           >
             <FaEraser />
-          </Button>
+          </ActionIcon>
         </InputGroup>
       </Form>
     </ToolMenu>

@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -18,7 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Alert, Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Alert, Badge, Form, InputGroup, Modal } from 'react-bootstrap';
 import {
   FaCamera,
   FaExternalLinkAlt,
@@ -405,8 +406,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     {becomePremium && (
                       <>
                         <br />
-                        <Button onClick={becomePremium} className="mt-3">
-                          <FaGem /> {m?.premium.becomePremium}
+                        <Button
+                          className="mt-3"
+                          size="sm"
+                          leftSection={<FaGem />}
+                          onClick={becomePremium}
+                        >
+                          {m?.premium.becomePremium}
                         </Button>
                       </>
                     )}
@@ -550,8 +556,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     onModelChange={handleEditModelChange}
                   />
 
-                  <Button variant="primary" type="submit">
-                    <FaSave /> {m?.general.save}
+                  <Button type="submit" size="sm" leftSection={<FaSave />}>
+                    {m?.general.save}
                   </Button>
                 </Form>
               )}
@@ -593,7 +599,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                           />
 
                           <Button
-                            variant="secondary"
+                            color="gray"
+                            size="sm"
                             type="submit"
                             disabled={comment.length < 1 || disabledPremium}
                           >
@@ -651,73 +658,140 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       <Modal.Footer>
         {canEdit && (
           <>
-            <LongPressTooltip breakpoint="sm" label={m?.general.modify} kbd="m">
-              {({ label, labelClassName, props }) => (
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    dispatch(galleryEditPicture());
-                  }}
-                  active={Boolean(editModel)}
-                  {...props}
-                >
-                  <FaPencilAlt />
+            <MantineLongPressTooltip
+              breakpoint="sm"
+              label={m?.general.modify}
+              kbd="m"
+            >
+              {({ label, labelHidden, kbdEl, props }) =>
+                labelHidden ? (
+                  <ActionIcon
+                    variant={editModel ? 'light' : 'filled'}
+                    color="gray"
+                    size="input-sm"
+                    onClick={() => {
+                      dispatch(galleryEditPicture());
+                    }}
+                    {...props}
+                  >
+                    <FaPencilAlt />
+                  </ActionIcon>
+                ) : (
+                  <Button
+                    color="gray"
+                    size="sm"
+                    variant={editModel ? 'light' : 'filled'}
+                    leftSection={<FaPencilAlt />}
+                    rightSection={kbdEl}
+                    onClick={() => {
+                      dispatch(galleryEditPicture());
+                    }}
+                    {...props}
+                  >
+                    {label}
+                  </Button>
+                )
+              }
+            </MantineLongPressTooltip>
 
-                  <span className={labelClassName}> {label}</span>
-                </Button>
-              )}
-            </LongPressTooltip>
-
-            <LongPressTooltip breakpoint="sm" label={m?.general.delete}>
-              {({ label, labelClassName, props }) => (
-                <Button onClick={handleDelete} variant="danger" {...props}>
-                  <FaTrash />
-
-                  <span className={labelClassName}> {label}</span>
-                </Button>
-              )}
-            </LongPressTooltip>
+            <MantineLongPressTooltip breakpoint="sm" label={m?.general.delete}>
+              {({ label, labelHidden, props }) =>
+                labelHidden ? (
+                  <ActionIcon
+                    variant="filled"
+                    color="red"
+                    size="input-sm"
+                    onClick={handleDelete}
+                    {...props}
+                  >
+                    <FaTrash />
+                  </ActionIcon>
+                ) : (
+                  <Button
+                    color="red"
+                    size="sm"
+                    leftSection={<FaTrash />}
+                    onClick={handleDelete}
+                    {...props}
+                  >
+                    {label}
+                  </Button>
+                )
+              }
+            </MantineLongPressTooltip>
           </>
         )}
 
-        <LongPressTooltip
+        <MantineLongPressTooltip
           breakpoint="md"
           label={m?.gallery.viewer.showOnTheMap}
           kbd="s"
         >
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(galleryShowOnTheMap());
-              }}
-              {...props}
-            >
-              <FaRegDotCircle />
-
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+          {({ label, labelHidden, kbdEl, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() => {
+                  dispatch(galleryShowOnTheMap());
+                }}
+                {...props}
+              >
+                <FaRegDotCircle />
+              </ActionIcon>
+            ) : (
+              <Button
+                color="gray"
+                size="sm"
+                leftSection={<FaRegDotCircle />}
+                rightSection={kbdEl}
+                onClick={() => {
+                  dispatch(galleryShowOnTheMap());
+                }}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
 
         {'exitFullscreen' in document && (
-          <LongPressTooltip
+          <MantineLongPressTooltip
             breakpoint="md"
             label={m?.general.fullscreen}
             kbd="f"
           >
-            {({ label, labelClassName, props }) => (
-              <Button variant="secondary" onClick={handleFullscreen} {...props}>
-                <RiFullscreenLine />
-
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
+            {({ label, labelHidden, kbdEl, props }) =>
+              labelHidden ? (
+                <ActionIcon
+                  variant="filled"
+                  color="gray"
+                  size="input-sm"
+                  onClick={handleFullscreen}
+                  {...props}
+                >
+                  <RiFullscreenLine />
+                </ActionIcon>
+              ) : (
+                <Button
+                  color="gray"
+                  size="sm"
+                  leftSection={<RiFullscreenLine />}
+                  rightSection={kbdEl}
+                  onClick={handleFullscreen}
+                  {...props}
+                >
+                  {label}
+                </Button>
+              )
+            }
+          </MantineLongPressTooltip>
         )}
 
         {lat !== undefined && lon !== undefined && (
-          <LongPressTooltip
+          <MantineLongPressTooltip
             breakpoint="md"
             label={m?.gallery.viewer.openInNewWindow}
           >
@@ -736,22 +810,39 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 <span className={labelClassName}> {label}</span>
               </OpenInExternalAppMenuButton>
             )}
-          </LongPressTooltip>
+          </MantineLongPressTooltip>
         )}
 
-        <LongPressTooltip
+        <MantineLongPressTooltip
           label={m?.general.close}
           breakpoint="md"
           kbd={editModel ? undefined : 'Esc'}
         >
-          {({ label, labelClassName, props }) => (
-            <Button variant="dark" onClick={close} {...props}>
-              <FaTimes />
-
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+          {({ label, labelHidden, kbdEl, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                variant="filled"
+                color="dark"
+                size="input-sm"
+                onClick={close}
+                {...props}
+              >
+                <FaTimes />
+              </ActionIcon>
+            ) : (
+              <Button
+                color="dark"
+                size="sm"
+                leftSection={<FaTimes />}
+                rightSection={kbdEl}
+                onClick={close}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
       </Modal.Footer>
     </Modal>
   );

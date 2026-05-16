@@ -4,12 +4,12 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { center } from '@turf/center';
 import { ReactElement } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import './SearchMenu.scss';
@@ -27,12 +27,13 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   return selectedResult && !window.fmEmbedded && !hidden ? (
     <Selection icon={<FaSearch />} label={m?.search.result} deletable>
-      <ButtonGroup className="ms-1">
-        <LongPressTooltip label={m?.search.routeFrom}>
+      <Button.Group className="ms-1">
+        <MantineLongPressTooltip label={m?.search.routeFrom}>
           {({ props }) => (
             <Button
-              variant="secondary"
-              {...props}
+              color="gray"
+              size="sm"
+              leftSection={<FaPlay color="#32CD32" />}
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
@@ -47,16 +48,17 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
                   );
                 }
               }}
-            >
-              <FaPlay color="#32CD32" />
-            </Button>
+              {...props}
+            />
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.search.routeTo}>
+        <MantineLongPressTooltip label={m?.search.routeTo}>
           {({ props }) => (
             <Button
-              variant="secondary"
+              color="gray"
+              size="sm"
+              leftSection={<FaStop color="#FF6347" />}
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
@@ -72,18 +74,18 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
                 }
               }}
               {...props}
-            >
-              <FaStop color="#FF6347" />
-            </Button>
+            />
           )}
-        </LongPressTooltip>
-      </ButtonGroup>
+        </MantineLongPressTooltip>
+      </Button.Group>
 
-      <LongPressTooltip label={m?.general.convertToDrawing}>
+      <MantineLongPressTooltip label={m?.general.convertToDrawing}>
         {({ props }) => (
-          <Button
+          <ActionIcon
             className="ms-1"
-            variant="secondary"
+            variant="filled"
+            color="gray"
+            size="input-sm"
             onClick={() => {
               const ask =
                 (selectedResult.geojson?.type === 'FeatureCollection' &&
@@ -109,9 +111,9 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
             {...props}
           >
             <FaPencilAlt />
-          </Button>
+          </ActionIcon>
         )}
-      </LongPressTooltip>
+      </MantineLongPressTooltip>
     </Selection>
   ) : null;
 }

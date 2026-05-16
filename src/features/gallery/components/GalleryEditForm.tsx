@@ -1,4 +1,5 @@
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { DateTime } from '@shared/components/DateTime.js';
 import '@shared/styles/react-tags.scss';
 import {
@@ -8,7 +9,7 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
-import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
+import { Alert, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
@@ -189,8 +190,12 @@ export function GalleryEditForm({
             value={model.dirtyPosition}
           />
 
-          <Button onClick={onPositionPick}>
-            <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
+          <Button
+            size="sm"
+            leftSection={<FaRegDotCircle />}
+            onClick={onPositionPick}
+          >
+            {m?.gallery.editForm.setLocation}
           </Button>
         </InputGroup>
       </Form.Group>

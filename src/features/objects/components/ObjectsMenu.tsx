@@ -1,9 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
+import { Button } from '@mantine/core';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { Node, OsmMapping } from '@osm/types.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -19,7 +20,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
+import { Dropdown, type DropdownProps, Form } from 'react-bootstrap';
 import { FaCircle, FaMapMarker, FaSquare, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -285,20 +286,22 @@ export function ObjectsMenu(): ReactElement {
         </Dropdown.Menu>
 
         {active.length > 0 && (
-          <LongPressTooltip label={m?.general.delete} kbd="Del">
+          <MantineLongPressTooltip label={m?.general.delete} kbd="Del">
             {({ props }) => (
               <Button
                 className="ms-1"
-                variant="danger"
+                color="red"
+                size="sm"
+                rightSection={<FaTrash />}
                 onClick={() => {
                   dispatch(objectsSetFilter([]));
                 }}
                 {...props}
               >
-                {active.length} <FaTrash />
+                {active.length}
               </Button>
             )}
-          </LongPressTooltip>
+          </MantineLongPressTooltip>
         )}
       </Dropdown>
     </ToolMenu>

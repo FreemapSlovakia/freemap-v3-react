@@ -173,7 +173,7 @@ export function DrawingLineSelection(): ReactElement | null {
             label={m?.drawing.stopDrawing}
             kbd="Esc"
           >
-            {({ label, labelHidden, props }) =>
+            {({ label, labelHidden, kbdEl, props }) =>
               labelHidden ? (
                 <ActionIcon
                   className="ms-1"
@@ -191,6 +191,7 @@ export function DrawingLineSelection(): ReactElement | null {
                   color="gray"
                   size="sm"
                   leftSection={<FaRegStopCircle />}
+                  rightSection={kbdEl}
                   onClick={() => dispatch(drawingLineStopDrawing())}
                   {...props}
                 >
