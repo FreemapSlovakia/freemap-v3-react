@@ -1,10 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { DateTime } from '@shared/components/DateTime.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -103,18 +104,26 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button type="submit">
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
+        <Button
+          type="submit"
+          size="sm"
+          leftSection={<FaCheck />}
+          rightSection={<Kbd>Enter</Kbd>}
+        >
+          {m?.general.save}
         </Button>
 
         <Button
-          variant="dark"
+          color="dark"
+          size="sm"
           type="button"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(undefined));
           }}
         >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          {m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Form>

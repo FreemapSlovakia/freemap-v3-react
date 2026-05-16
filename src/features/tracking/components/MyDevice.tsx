@@ -1,10 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaEdit, FaKey, FaTimes } from 'react-icons/fa';
 import { SiTraccar } from 'react-icons/si';
 import QRCode from 'react-qr-code';
@@ -85,9 +86,9 @@ export function MyDevice({ device }: Props): ReactElement {
               </Tooltip>
             }
           >
-            <Button variant="secondary" size="sm">
+            <ActionIcon variant="filled" color="gray" size="input-sm">
               <SiTraccar />
-            </Button>
+            </ActionIcon>
           </OverlayTrigger>
         </div>
       </td>
@@ -98,49 +99,52 @@ export function MyDevice({ device }: Props): ReactElement {
       </td>
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>
-        <LongPressTooltip label={m?.general.modify}>
+        <MantineLongPressTooltip label={m?.general.modify}>
           {({ props }) => (
-            <Button
-              size="sm"
+            <ActionIcon
+              variant="filled"
+              color="gray"
+              size="input-sm"
               type="button"
-              variant="secondary"
               onClick={handleModify}
               {...props}
             >
               <FaEdit />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.tracking.devices.watchTokens}>
+        <MantineLongPressTooltip label={m?.tracking.devices.watchTokens}>
           {({ props }) => (
-            <Button
-              size="sm"
+            <ActionIcon
+              variant="filled"
+              color="gray"
+              size="input-sm"
               type="button"
-              variant="secondary"
               onClick={handleShowAccessTokens}
               className="ms-1"
               {...props}
             >
               <FaKey />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.general.delete}>
+        <MantineLongPressTooltip label={m?.general.delete}>
           {({ props }) => (
-            <Button
-              variant="danger"
-              size="sm"
+            <ActionIcon
+              variant="filled"
+              color="red"
+              size="input-sm"
               type="button"
               onClick={handleDelete}
               className="ms-1"
               {...props}
             >
               <FaTimes />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
       </td>
     </tr>
   );

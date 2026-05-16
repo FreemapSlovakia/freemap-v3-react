@@ -1,11 +1,12 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { ActionIcon } from '@mantine/core';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -94,19 +95,20 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
           <span>
             <span>{accessToken.token}</span>
 
-            <LongPressTooltip label={m?.general.copyUrl}>
+            <MantineLongPressTooltip label={m?.general.copyUrl}>
               {({ props }) => (
-                <Button
-                  onClick={handleCopyClick}
-                  size="sm"
+                <ActionIcon
+                  variant="filled"
+                  size="input-sm"
                   type="button"
+                  onClick={handleCopyClick}
                   className="ms-1"
                   {...props}
                 >
                   <FaClipboard />
-                </Button>
+                </ActionIcon>
               )}
-            </LongPressTooltip>
+            </MantineLongPressTooltip>
           </span>
         </OverlayTrigger>
       </td>
@@ -116,42 +118,50 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
       {/* <td>{accessToken.listingLabel}</td> */}
       <td>{accessToken.note}</td>
       <td>
-        <LongPressTooltip label={m?.tracking.devices.watch}>
+        <MantineLongPressTooltip label={m?.tracking.devices.watch}>
           {({ props }) => (
-            <Button size="sm" type="button" onClick={handleView} {...props}>
+            <ActionIcon
+              variant="filled"
+              size="input-sm"
+              type="button"
+              onClick={handleView}
+              {...props}
+            >
               <FaRegEye />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.general.modify}>
+        <MantineLongPressTooltip label={m?.general.modify}>
           {({ props }) => (
-            <Button
-              size="sm"
+            <ActionIcon
+              variant="filled"
+              size="input-sm"
               type="button"
               onClick={handleModify}
               className="ms-1"
               {...props}
             >
               <FaEdit />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.general.delete}>
+        <MantineLongPressTooltip label={m?.general.delete}>
           {({ props }) => (
-            <Button
-              variant="danger"
-              size="sm"
+            <ActionIcon
+              variant="filled"
+              color="red"
+              size="input-sm"
               type="button"
               onClick={handleDelete}
               className="ms-1"
               {...props}
             >
               <FaTimes />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
       </td>
     </tr>
   );

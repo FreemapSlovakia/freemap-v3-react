@@ -1,12 +1,13 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { DateTime } from '@shared/components/DateTime.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useState } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -229,6 +230,9 @@ export function TrackedDeviceForm(): ReactElement {
       <Modal.Footer>
         <Button
           type="submit"
+          size="sm"
+          leftSection={<FaCheck />}
+          rightSection={<Kbd>Enter</Kbd>}
           disabled={
             !id.trim() ||
             invalidSplitDistance ||
@@ -238,17 +242,20 @@ export function TrackedDeviceForm(): ReactElement {
             invalidWidth
           }
         >
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
+          {m?.general.save}
         </Button>
 
         <Button
-          variant="dark"
+          color="dark"
+          size="sm"
           type="button"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
           onClick={() => {
             dispatch(trackingActions.modifyTrackedDevice(undefined));
           }}
         >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          {m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Form>

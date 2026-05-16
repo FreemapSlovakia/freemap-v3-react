@@ -1,9 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useCallback } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -132,19 +133,24 @@ export function MyDeviceForm(): ReactElement {
       <Modal.Footer>
         <Button
           type="submit"
+          size="sm"
+          leftSection={<FaCheck />}
           disabled={invalidName || invalidMaxCount || invalidMaxAge}
         >
-          <FaCheck /> {m?.general.save}
+          {m?.general.save}
         </Button>
 
         <Button
           type="button"
-          variant="dark"
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
           onClick={() => {
             dispatch(trackingActions.modifyDevice(undefined));
           }}
         >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          {m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Form>

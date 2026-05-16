@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -60,28 +60,35 @@ export function TrackedDevice({ device }: Props): ReactElement {
       <td>{device.splitDistance}</td>
       <td>{device.splitDuration}</td>
       <td>
-        <LongPressTooltip label={m?.general.modify}>
+        <MantineLongPressTooltip label={m?.general.modify}>
           {({ props }) => (
-            <Button size="sm" type="button" onClick={handleModify} {...props}>
+            <ActionIcon
+              variant="filled"
+              size="input-sm"
+              type="button"
+              onClick={handleModify}
+              {...props}
+            >
               <FaEdit />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.general.delete}>
+        <MantineLongPressTooltip label={m?.general.delete}>
           {({ props }) => (
-            <Button
-              variant="danger"
-              size="sm"
+            <ActionIcon
+              variant="filled"
+              color="red"
+              size="input-sm"
               type="button"
               onClick={handleDelete}
               className="ms-1"
               {...props}
             >
               <FaTimes />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
       </td>
     </tr>
   );
