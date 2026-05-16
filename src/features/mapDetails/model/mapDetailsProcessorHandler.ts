@@ -389,7 +389,7 @@ export async function handle(
         messageKey: 'mapDetails.notFound',
         cancelType,
         timeout: 5000,
-        style: 'warning',
+        color: 'yellow',
       }),
     );
   }

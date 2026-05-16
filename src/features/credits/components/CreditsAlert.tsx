@@ -1,9 +1,10 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement } from 'react';
-import { Alert, Button } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { FaCoins } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -37,10 +38,12 @@ export function CreditsAlert({
         {buy && (
           <Button
             type="button"
+            size="xs"
             className="m-n2 ms-2"
+            leftSection={<FaCoins />}
             onClick={() => dispatch(setActiveModal('buy-credits'))}
           >
-            <FaCoins /> {m?.credits.buyCredits}
+            {m?.credits.buyCredits}
           </Button>
         )}
       </div>

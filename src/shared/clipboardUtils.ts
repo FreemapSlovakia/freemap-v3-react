@@ -10,7 +10,7 @@ export function copyToClipboard(
       dispatch(
         toastsAdd({
           messageKey: 'general.copyOk',
-          style: 'success',
+          color: 'green',
         }),
       );
     },
@@ -19,7 +19,7 @@ export function copyToClipboard(
         toastsAdd({
           messageKey: 'general.operationError',
           messageParams: { err },
-          style: 'danger',
+          color: 'red',
         }),
       );
     },

@@ -1,9 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
 import { AdItem, useAd } from '../hooks/useAd.js';
 
@@ -87,8 +87,8 @@ export function Ad(): ReactElement | null {
           <Button
             className="py-0 rounded-bottom me-1"
             style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-            variant="warning"
-            size="sm"
+            color="yellow"
+            size="xs"
             onClick={() => setClosed(true)}
             disabled={closeTime > 0}
           >
@@ -99,8 +99,8 @@ export function Ad(): ReactElement | null {
         <Button
           className="py-0 rounded-bottom"
           style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-          variant="warning"
-          size="sm"
+          color="yellow"
+          size="xs"
           onClick={becomePremium}
         >
           {m?.general.remove}

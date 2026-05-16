@@ -46,7 +46,7 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
         toastsAdd({
           id: 'gallery.noPicturesFound',
           timeout: 5000,
-          style: 'warning',
+          color: 'yellow',
           messageKey: 'gallery.noPicturesFound',
           cancelType: [galleryRequestImages.type],
         }),

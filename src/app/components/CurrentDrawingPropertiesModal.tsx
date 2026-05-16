@@ -201,7 +201,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 toastsAdd({
                   messageKey: 'general.operationError',
                   messageParams: { err },
-                  style: 'danger',
+                  color: 'red',
                 }),
               );
             });
@@ -257,7 +257,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 toastsAdd({
                   messageKey: 'general.operationError',
                   messageParams: { err },
-                  style: 'danger',
+                  color: 'red',
                 }),
               );
             });

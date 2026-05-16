@@ -9,7 +9,7 @@ export const errorProcessor: Processor<typeof setErrorTicketId> = {
       toastsAdd({
         messageKey: 'general.internalError',
         messageParams: { ticketId: action.payload },
-        style: 'danger',
+        color: 'red',
       }),
     );
   },

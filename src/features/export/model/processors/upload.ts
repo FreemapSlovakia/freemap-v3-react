@@ -33,7 +33,7 @@ export async function upload(
           toastsAdd({
             id: 'enablePopup',
             messageKey: 'general.enablePopup',
-            style: 'danger',
+            color: 'red',
             timeout: 5000,
           }),
         );
@@ -102,7 +102,7 @@ export async function upload(
       dispatch(
         toastsAdd({
           id: 'mapFeaturesExport',
-          style: 'info',
+          color: 'cyan',
           timeout: 5000,
           messageKey: 'exportMapFeatures.exportedToDropbox',
         }),
@@ -211,7 +211,7 @@ export async function upload(
       dispatch(
         toastsAdd({
           id: 'mapFeaturesExport',
-          style: 'info',
+          color: 'cyan',
           timeout: 5000,
           messageKey: 'exportMapFeatures.exportedToGdrive',
         }),

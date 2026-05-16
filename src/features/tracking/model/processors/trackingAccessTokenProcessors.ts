@@ -45,7 +45,7 @@ export const saveAccessTokenProcessor: Processor<
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.saved',
       }),
@@ -93,7 +93,7 @@ export const deleteAccessTokenProcessor: Processor<
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.deleted',
       }),

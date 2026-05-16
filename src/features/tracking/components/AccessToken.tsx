@@ -38,7 +38,7 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
       toastsAdd({
         id: 'tracking.deleteAccessToken',
         messageKey: 'tracking.accessToken.delete',
-        style: 'warning',
+        color: 'yellow',
         cancelType: [
           trackingActions.modifyAccessToken.type,
           trackingActions.showAccessTokens.type,
@@ -48,7 +48,7 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
           {
             nameKey: 'general.yes',
             action: trackingActions.deleteAccessToken(accessToken.id),
-            style: 'danger',
+            color: 'red',
           },
           { nameKey: 'general.no' },
         ],

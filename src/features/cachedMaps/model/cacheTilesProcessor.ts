@@ -215,7 +215,7 @@ async function downloadTiles(
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 10_000,
         messageKey: 'offline.cachedSuccess',
         messageParams: { name: meta.name },

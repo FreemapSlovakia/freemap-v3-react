@@ -55,7 +55,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
           id: 'homeLocation.savingError',
           messageKey: 'settings.savingError',
           messageParams: { err: error },
-          style: 'danger',
+          color: 'red',
         }),
       );
     } finally {

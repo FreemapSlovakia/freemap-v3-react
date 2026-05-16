@@ -22,7 +22,7 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.deleted',
       }),

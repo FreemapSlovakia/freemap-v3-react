@@ -42,7 +42,7 @@ export function useLazy<T>(
         (err) => {
           dispatch(
             toastsAdd({
-              style: 'danger',
+              color: 'red',
               messageKey: 'general.componentLoadingError',
               messageParams: { err },
             }),

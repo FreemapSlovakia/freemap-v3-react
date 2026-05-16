@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
 import { type ReactElement, ReactNode } from 'react';
-import { Button } from 'react-bootstrap';
 
 export interface PictureModel {
   title: string;
@@ -51,10 +51,10 @@ export function RecentTags({
           <Button
             key={tag}
             type="button"
-            onClick={() => onAdd(tag)}
-            variant="secondary"
-            size="sm"
+            color="gray"
+            size="xs"
             className="py-0 ms-1"
+            onClick={() => onAdd(tag)}
           >
             {tag}
           </Button>

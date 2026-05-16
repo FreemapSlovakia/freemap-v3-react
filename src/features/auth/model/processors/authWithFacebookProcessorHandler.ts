@@ -25,7 +25,7 @@ const handle: ProcessorHandler<typeof authWithFacebook> = async ({
       dispatch(
         toastsAdd({
           messageKey: 'auth.logIn.logInError2',
-          style: 'danger',
+          color: 'red',
         }),
       );
 

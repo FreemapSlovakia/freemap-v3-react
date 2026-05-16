@@ -1,6 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
-import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
+import { CreditsAlert } from '@/features/credits/components/CreditsAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';

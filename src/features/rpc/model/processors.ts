@@ -102,7 +102,7 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
     } else if (is<JsonRpcErrorResponse>(object) && object.id == null) {
       dispatch(
         toastsAdd({
-          style: 'danger',
+          color: 'red',
           messageKey: 'general.operationError',
           messageParams: { err: object.error.message },
         }),
@@ -116,7 +116,7 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
       if (!call) {
         dispatch(
           toastsAdd({
-            style: 'danger',
+            color: 'red',
             messageKey: 'general.operationError',
             messageParams: { err: 'No such call.' },
           }),

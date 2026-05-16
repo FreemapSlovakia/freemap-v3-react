@@ -26,7 +26,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     dispatch(
       toastsAdd({
         id: 'mapFeaturesExport',
-        style: 'danger',
+        color: 'red',
         message: result || 'Error exporting to Garmin',
       }),
     );
@@ -57,7 +57,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (res.status === 204) {
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         id: 'mapFeaturesExport',
         messageKey: 'general.success',
       }),
@@ -77,7 +77,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       toastsAdd({
         id: 'mapFeaturesExport',
         timeout: 5000,
-        style: 'danger',
+        color: 'red',
         messageKey: 'exportMapFeatures.garmin.revoked',
       }),
     );

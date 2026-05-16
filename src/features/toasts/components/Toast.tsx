@@ -1,4 +1,5 @@
 import type { RootAction } from '@app/store/rootAction.js';
+import { Button } from '@mantine/core';
 import {
   type ReactElement,
   ReactNode,
@@ -6,11 +7,30 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
-import { ResolvedToast, ToastAction } from '../model/actions.js';
+import { Alert, ButtonToolbar, CloseButton } from 'react-bootstrap';
+import { ResolvedToast, ToastAction, ToastColor } from '../model/actions.js';
 import classes from './Toast.module.scss';
 
-interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {
+function colorToBsVariant(color: ToastColor): string {
+  switch (color) {
+    case 'blue':
+      return 'primary';
+    case 'gray':
+      return 'secondary';
+    case 'green':
+      return 'success';
+    case 'red':
+      return 'danger';
+    case 'yellow':
+      return 'warning';
+    case 'cyan':
+      return 'info';
+    case 'dark':
+      return 'dark';
+  }
+}
+
+interface Props extends Pick<ResolvedToast, 'id' | 'color' | 'noClose'> {
   actions: (Omit<ToastAction, 'nameKey'> & { name: string })[];
   onAction: (id: string, action?: RootAction | RootAction[]) => void;
   onTimeoutStop: (id: string) => void;
@@ -25,7 +45,7 @@ export function Toast({
   actions,
   onAction,
   id,
-  style,
+  color,
   onTimeoutStop,
   onTimeoutRestart,
   noClose,
@@ -81,7 +101,7 @@ export function Toast({
   return (
     <Alert
       className={classes['toast']}
-      variant={style ?? 'primary'}
+      variant={colorToBsVariant(color)}
       onClick={clickHandler}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
@@ -98,12 +118,12 @@ export function Toast({
 
       {buttonActions.length > 0 && (
         <ButtonToolbar className="mt-2">
-          {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
+          {buttonActions.map(({ name, action, color: buttonColor }, i) => (
             <Button
-              size="sm"
+              size="xs"
               className={i > 0 ? 'ms-2' : ''}
               key={i}
-              variant={buttonStyle}
+              color={buttonColor}
               onClick={() => onAction(id, action)}
             >
               {name}

@@ -430,7 +430,7 @@ export function Main(): ReactElement {
         toastsAdd({
           id: 'trackViewer.loadError',
           message,
-          style: 'danger',
+          color: 'red',
           timeout: 5000,
         }),
       );

@@ -22,7 +22,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
           id: 'gallery.upload',
           messageKey: 'gallery.uploadModal.success',
           timeout: 5000,
-          style: 'info',
+          color: 'cyan',
         }),
       );
 

@@ -28,7 +28,7 @@ export async function handleLoginResponse(
     toastsAdd({
       id: 'lcd',
       messageKey: connect ? 'auth.connect.success' : 'auth.logIn.success',
-      style: 'info',
+      color: 'cyan',
       timeout: 5000,
     }),
   );
@@ -66,7 +66,7 @@ export async function handleLoginResponse(
         toastsAdd({
           id: 'premiumAlready',
           messageKey: 'premium.alreadyPremium',
-          style: 'info',
+          color: 'cyan',
           timeout: 5000,
         }),
       );

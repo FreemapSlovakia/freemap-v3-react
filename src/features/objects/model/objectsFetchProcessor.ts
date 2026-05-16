@@ -59,7 +59,7 @@ export const objectsFetchProcessor: Processor = {
             id: 'objects.lowZoomAlert',
             messageKey: 'objects.lowZoomAlert.message',
             messageParams: { minZoom },
-            style: 'warning',
+            color: 'yellow',
             actions: [
               {
                 nameKey: 'objects.lowZoomAlert.zoom',
@@ -143,7 +143,7 @@ export const objectsFetchProcessor: Processor = {
           messageParams: {
             limit,
           },
-          style: 'warning',
+          color: 'yellow',
           cancelType: [
             clearMapFeatures.type,
             mapRefocus.type,

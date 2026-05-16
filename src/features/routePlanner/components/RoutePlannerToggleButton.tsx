@@ -1,11 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaMapSigns } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setTool } from '@/app/store/actions.js';
-import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@/shared/components/MantineLongPressTooltip.js';
 
 export function RoutePlannerToggleButton(): ReactElement | undefined | false {
   const tool = useAppSelector((state) => state.main.tool);
@@ -15,16 +15,18 @@ export function RoutePlannerToggleButton(): ReactElement | undefined | false {
   const dispatch = useDispatch();
 
   return (
-    <LongPressTooltip label={m?.tools.routePlanner}>
+    <MantineLongPressTooltip label={m?.tools.routePlanner}>
       {({ props }) => (
-        <Button
+        <ActionIcon
+          variant="filled"
+          size="input-sm"
           {...props}
           disabled={tool === 'route-planner'}
           onClick={() => dispatch(setTool('route-planner'))}
         >
           <FaMapSigns />
-        </Button>
+        </ActionIcon>
       )}
-    </LongPressTooltip>
+    </MantineLongPressTooltip>
   );
 }

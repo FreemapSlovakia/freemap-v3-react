@@ -167,7 +167,7 @@ export function useAttributionInfo() {
       toastsAdd({
         id: 'attribution',
         messageKey: 'general.attribution',
-        style: 'info',
+        color: 'cyan',
         timeout: 5000,
       }),
     );

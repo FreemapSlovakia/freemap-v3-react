@@ -37,7 +37,7 @@ const handle: ProcessorHandler<typeof authWithOsm> = async ({
     dispatch(
       toastsAdd({
         id: 'enablePopup',
-        style: 'warning',
+        color: 'yellow',
         messageKey: 'general.enablePopup',
         timeout: 5000,
       }),

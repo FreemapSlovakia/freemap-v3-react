@@ -38,7 +38,7 @@ export function MyDevice({ device }: Props): ReactElement {
       toastsAdd({
         id: 'tracking.deleteDevice',
         messageKey: 'tracking.devices.delete',
-        style: 'warning',
+        color: 'yellow',
         cancelType: [
           trackingActions.modifyDevice.type,
           trackingActions.modifyTrackedDevice.type,
@@ -49,7 +49,7 @@ export function MyDevice({ device }: Props): ReactElement {
           {
             nameKey: 'general.yes',
             action: trackingActions.deleteDevice(device.id),
-            style: 'danger',
+            color: 'red',
           },
           { nameKey: 'general.no' },
         ],

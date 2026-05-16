@@ -52,7 +52,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       dispatch(
         toastsAdd({
           id: 'maps.conflictError',
-          style: 'danger',
+          color: 'red',
           messageKey: 'maps.conflictError',
         }),
       );
@@ -62,7 +62,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.saved',
       }),

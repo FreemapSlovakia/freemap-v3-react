@@ -148,7 +148,7 @@ export function createProcessorMiddleware() {
                     id: id ?? Math.random().toString(36).slice(2),
                     messageKey: errorKey ?? 'general.operationError',
                     messageParams: { err },
-                    style: 'danger',
+                    color: 'red',
                   }),
                 );
               }
@@ -215,7 +215,7 @@ export function createProcessorMiddleware() {
 
             dispatch(
               toastsAdd({
-                style: 'danger',
+                color: 'red',
                 messageKey: 'general.processorError',
                 messageParams: {
                   err: error,

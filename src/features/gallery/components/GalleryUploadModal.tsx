@@ -82,12 +82,12 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
         toastsAdd({
           id: 'galleryUploadModal.close',
           messageKey: 'general.closeWithoutSaving',
-          style: 'warning',
+          color: 'yellow',
           actions: [
             {
               nameKey: 'general.yes',
               action: setActiveModal(null),
-              style: 'danger',
+              color: 'red',
             },
             { nameKey: 'general.no' },
           ],

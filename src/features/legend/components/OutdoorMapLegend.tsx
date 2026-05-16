@@ -91,7 +91,7 @@ export function OutdoorMapLegend(): ReactElement {
       .catch((err) => {
         dispatch(
           toastsAdd({
-            style: 'danger',
+            color: 'red',
             messageKey: 'general.loadError',
             messageParams: { err },
           }),

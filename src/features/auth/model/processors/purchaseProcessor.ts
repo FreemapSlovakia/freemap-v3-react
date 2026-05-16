@@ -59,7 +59,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       dispatch(
         toastsAdd({
           id: 'enablePopup',
-          style: 'warning',
+          color: 'yellow',
           messageKey: 'general.enablePopup',
           timeout: 5000,
         }),
@@ -130,7 +130,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       if (callbackResult.pendingBankTransfer) {
         dispatch(
           toastsAdd({
-            style: 'info',
+            color: 'cyan',
             messageKey: 'purchases.awaitingBankPayment',
           }),
         );
@@ -144,7 +144,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
         case 'premium':
           dispatch(
             toastsAdd({
-              style: 'success',
+              color: 'green',
               messageKey: 'premium.success',
             }),
           );
@@ -153,7 +153,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
         case 'credits':
           dispatch(
             toastsAdd({
-              style: 'success',
+              color: 'green',
               messageKey: 'credits.purchase.success',
               messageParams: {
                 amount: purchase.amount,
@@ -174,7 +174,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
       dispatch(
         toastsAdd({
-          style: 'danger',
+          color: 'red',
           messageKey: 'general.operationError',
           messageParams: { err },
         }),

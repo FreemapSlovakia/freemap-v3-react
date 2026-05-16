@@ -167,7 +167,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     toastsAdd({
       id: 'mapExport.export',
       messageKey: 'mapExport.exporting',
-      style: 'info',
+      color: 'cyan',
     }),
   );
 
@@ -196,7 +196,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
       messageParams: {
         url: `${fmMapserverUrl}/export?token=${data.token}`,
       },
-      style: 'info',
+      color: 'cyan',
     }),
   );
 };

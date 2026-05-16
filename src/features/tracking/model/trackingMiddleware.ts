@@ -37,7 +37,7 @@ export function createTrackingMiddleware(): Middleware<
                     ? payload.params.token
                     : payload.params.deviceId, // TODO use different message key
               },
-              style: payload.error.code === 404 ? 'warning' : 'danger',
+              color: payload.error.code === 404 ? 'yellow' : 'red',
             }),
           );
         }

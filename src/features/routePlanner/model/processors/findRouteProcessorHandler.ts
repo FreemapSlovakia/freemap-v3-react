@@ -100,7 +100,7 @@ type OsrmResult = {
 const rnfToastAction = toastsAdd({
   id: 'routePlanner',
   messageKey: 'routePlanner.routeNotFound',
-  style: 'warning',
+  color: 'yellow',
   timeout: 5000,
 });
 
@@ -208,7 +208,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           id: 'routePlanner',
           messageKey: 'routePlanner.fetchingError',
           messageParams: { err: data.reason },
-          style: 'danger',
+          color: 'red',
           timeout: 5000,
         }),
       );
@@ -353,7 +353,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       toastsAdd({
         id: 'routePlanner.showMidpointHint',
         messageKey: 'routePlanner.showMidpointHint',
-        style: 'info',
+        color: 'cyan',
         actions,
       }),
     );
@@ -420,7 +420,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
               id: 'routePlanner',
               messageKey: 'general.operationError',
               messageParams: { err },
-              style: 'danger',
+              color: 'red',
               timeout: 5000,
             }),
           );

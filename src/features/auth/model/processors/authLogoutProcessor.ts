@@ -27,7 +27,7 @@ export const authLogoutProcessor: Processor = {
       toastsAdd({
         id: 'lcd',
         messageKey: 'auth.logOut.success',
-        style: 'info',
+        color: 'cyan',
         timeout: 5000,
       }),
     );

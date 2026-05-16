@@ -39,7 +39,7 @@ export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
     dispatch(
       toastsAdd({
         id: 'enablePopup',
-        style: 'warning',
+        color: 'yellow',
         messageKey: 'general.enablePopup',
         timeout: 5000,
       }),

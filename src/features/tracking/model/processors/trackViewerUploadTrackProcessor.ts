@@ -35,7 +35,7 @@ export async function handleTrackUpload({
           messageParams: {
             maxSize,
           },
-          style: 'danger',
+          color: 'red',
         }),
       );
 
@@ -63,7 +63,7 @@ export async function handleTrackUpload({
   dispatch(
     toastsAdd({
       messageKey: 'trackViewer.shareToast',
-      style: 'info',
+      color: 'cyan',
       id: 'trackViewer.shareToast',
       timeout: 5000,
     }),

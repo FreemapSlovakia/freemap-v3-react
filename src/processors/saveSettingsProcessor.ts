@@ -40,7 +40,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       toastsAdd({
         id: 'settings.saved',
         messageKey: 'settings.saveSuccess',
-        style: 'info',
+        color: 'cyan',
         timeout: 5000,
       }),
     );

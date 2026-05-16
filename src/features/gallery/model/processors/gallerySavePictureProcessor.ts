@@ -38,7 +38,7 @@ export const gallerySavePictureProcessor: Processor = {
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.saved',
       }),

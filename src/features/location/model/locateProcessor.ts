@@ -50,7 +50,7 @@ export const locateProcessor: Processor = {
             toastsAdd({
               id: 'main.locationError',
               messageKey: 'main.locationError',
-              style: 'danger',
+              color: 'red',
               timeout: 5000,
             }),
           );

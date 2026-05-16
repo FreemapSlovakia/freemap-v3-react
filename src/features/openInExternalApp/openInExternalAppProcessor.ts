@@ -135,7 +135,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               toastsAdd({
                 messageKey: 'general.operationError',
                 messageParams: { err },
-                style: 'danger',
+                color: 'red',
               }),
             );
           });
@@ -206,7 +206,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               toastsAdd({
                 messageKey: 'general.operationError',
                 messageParams: { err },
-                style: 'danger',
+                color: 'red',
               }),
             );
           });
@@ -244,7 +244,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               toastsAdd({
                 messageKey: 'general.operationError',
                 messageParams: { err },
-                style: 'danger',
+                color: 'red',
               }),
             );
           });

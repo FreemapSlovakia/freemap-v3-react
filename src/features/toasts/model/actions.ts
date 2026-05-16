@@ -2,9 +2,18 @@ import type { RootAction } from '@app/store/rootAction.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { MessagePaths } from '@shared/types/common.js';
 
+export type ToastColor =
+  | 'blue'
+  | 'gray'
+  | 'green'
+  | 'red'
+  | 'yellow'
+  | 'cyan'
+  | 'dark';
+
 export type ToastAction = {
   action?: RootAction | RootAction[];
-  style?: string;
+  color?: ToastColor;
 } & ({ name: string } | { nameKey: MessagePaths });
 
 export type Toast = (
@@ -12,15 +21,7 @@ export type Toast = (
   | { messageKey: MessagePaths; messageParams?: Record<string, unknown> }
 ) & {
   timeout?: number;
-  style:
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'danger'
-    | 'warning'
-    | 'info'
-    | 'light'
-    | 'dark';
+  color: ToastColor;
   actions?: ToastAction[];
   id?: string;
   cancelType?: string | string[] | RegExp;

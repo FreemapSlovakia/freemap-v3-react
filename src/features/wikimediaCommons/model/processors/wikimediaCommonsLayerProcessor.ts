@@ -227,7 +227,7 @@ export const wikimediaCommonsLayerProcessor: Processor = {
         toastsAdd({
           id: 'wikimediaCommons.moreResults',
           messageKey: 'wikimediaCommons.moreResults',
-          style: 'warning',
+          color: 'yellow',
           cancelType: [
             clearMapFeatures.type,
             mapRefocus.type,

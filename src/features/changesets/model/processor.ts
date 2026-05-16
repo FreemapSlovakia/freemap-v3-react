@@ -68,7 +68,7 @@ export const changesetsProcessor: Processor = {
             clearMapFeatures.type,
           ],
           timeout: 5000,
-          style: 'warning',
+          color: 'yellow',
         }),
       );
 
@@ -187,7 +187,7 @@ export const changesetsProcessor: Processor = {
               mapRefocus.type,
             ],
             timeout: 5000,
-            style: 'warning',
+            color: 'yellow',
           }),
         );
       }

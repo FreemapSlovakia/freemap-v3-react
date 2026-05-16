@@ -90,7 +90,7 @@ export const legacyMapWarningProcessor: Processor = {
             from: def.type,
             to: def.superseededBy!,
           },
-          style: 'warning',
+          color: 'yellow',
           actions,
         }),
       );

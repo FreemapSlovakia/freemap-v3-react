@@ -32,7 +32,7 @@ const handle: ProcessorHandler<typeof authDisconnect> = async ({
     toastsAdd({
       messageKey: 'auth.disconnect.success',
       messageParams: { provider },
-      style: 'info',
+      color: 'cyan',
     }),
   );
 };

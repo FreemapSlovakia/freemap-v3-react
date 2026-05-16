@@ -151,7 +151,7 @@ export function TrackViewerMenu(): ReactElement {
                       clearMapFeatures.type,
                       trackViewerSetData.type,
                     ],
-                    style: 'info',
+                    color: 'cyan',
                   }),
                 );
               }}

@@ -41,7 +41,7 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
 
       dispatch(
         toastsAdd({
-          style: 'success',
+          color: 'green',
           timeout: 5000,
           messageKey: 'general.saved',
         }),
@@ -89,7 +89,7 @@ export const deleteDeviceProcessor: Processor<
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.deleted',
       }),

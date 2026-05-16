@@ -97,12 +97,12 @@ if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
   store.dispatch(
     toastsAdd({
       messageKey: 'main.cookieConsent',
-      style: 'warning',
+      color: 'yellow',
       actions: [
         {
           nameKey: 'general.ok',
           action: applyCookieConsent(),
-          style: 'secondary',
+          color: 'gray',
         },
       ],
     }),

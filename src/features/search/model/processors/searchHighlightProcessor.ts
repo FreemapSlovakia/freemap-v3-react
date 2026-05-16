@@ -139,7 +139,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             convertToDrawing.type,
             selectFeature.type,
           ],
-          style: 'info',
+          color: 'cyan',
         }),
       );
     }

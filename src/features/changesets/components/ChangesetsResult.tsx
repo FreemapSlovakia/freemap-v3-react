@@ -48,7 +48,7 @@ export function ChangesetsResult(): ReactElement {
           changeset,
         },
         cancelType: changesetsSetParams.type,
-        style: 'info',
+        color: 'cyan',
       }),
     );
   }

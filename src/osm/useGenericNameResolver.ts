@@ -30,7 +30,7 @@ export function useGenericNameResolver(
     ).then(setGenericName, (err) => {
       dispatch(
         toastsAdd({
-          style: 'danger',
+          color: 'red',
           id: 'tag-lang-load-err',
           messageKey: 'general.loadError',
           messageParams: { err },

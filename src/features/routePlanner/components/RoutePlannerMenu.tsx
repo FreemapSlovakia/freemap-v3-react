@@ -436,13 +436,13 @@ export function RoutePlannerMenu(): ReactElement {
         toastsAdd({
           id: 'routePlanner.noHomeAlert',
           messageKey: 'routePlanner.noHomeAlert.msg',
-          style: 'warning',
+          color: 'yellow',
           actions: [
             {
               nameKey: 'routePlanner.noHomeAlert.setHome',
               action: setSelectingHomeLocation(true),
             },
-            { nameKey: 'general.close', style: 'dark' },
+            { nameKey: 'general.close', color: 'dark' },
           ],
         }),
       );

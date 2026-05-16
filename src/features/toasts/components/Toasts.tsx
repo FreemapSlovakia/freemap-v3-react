@@ -42,7 +42,7 @@ export function Toasts(): ReactElement {
     () =>
       Object.values(toasts)
         .map(
-          ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
+          ({ id, actions, color, noClose, timeout, timeoutSince, ...rest }) => {
             let msg: ReactNode;
 
             if ('message' in rest) {
@@ -62,7 +62,7 @@ export function Toasts(): ReactElement {
             return {
               id,
               actions,
-              style,
+              color,
               msg,
               noClose,
               timeout,
@@ -95,13 +95,13 @@ export function Toasts(): ReactElement {
   return (
     <div className={classes['toasts']}>
       {items.map(
-        ({ id, actions, style, msg, noClose, timeout, timeoutSince }) => {
+        ({ id, actions, color, msg, noClose, timeout, timeoutSince }) => {
           return (
             <Toast
               key={id}
               id={id}
               message={msg}
-              style={style}
+              color={color}
               noClose={noClose}
               onAction={handleAction}
               actions={actions.map((action) => ({

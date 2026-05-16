@@ -72,7 +72,7 @@ export function ObjectDetails({
           toastsAdd({
             messageKey: 'general.operationError',
             messageParams: { err },
-            style: 'danger',
+            color: 'red',
           }),
         );
       });

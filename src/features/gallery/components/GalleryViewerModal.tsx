@@ -216,13 +216,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       toastsAdd({
         id: 'gallery.deletePicture',
         messageKey: 'gallery.viewer.deletePrompt',
-        style: 'warning',
+        color: 'yellow',
         cancelType: [galleryClear.type, galleryRequestImage.type],
         actions: [
           {
             nameKey: 'general.yes',
             action: galleryDeletePicture(),
-            style: 'danger',
+            color: 'red',
           },
           { nameKey: 'general.no' },
         ],

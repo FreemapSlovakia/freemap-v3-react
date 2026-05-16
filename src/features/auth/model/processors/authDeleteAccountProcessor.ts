@@ -23,7 +23,7 @@ export const authDeleteAccountProcessor: Processor<typeof authDeleteAccount> = {
       toastsAdd({
         id: 'account.deleted',
         messageKey: 'general.deleted', // TODO use non-generic message
-        style: 'info',
+        color: 'cyan',
         timeout: 5000,
       }),
     );

@@ -19,7 +19,7 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
       anonymous
       ? toastsAdd({
           messageKey: 'general.unauthenticatedError',
-          style: 'danger',
+          color: 'red',
           cancelType: authSetUser.type,
         })
       : action;

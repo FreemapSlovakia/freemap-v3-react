@@ -8,7 +8,7 @@ import type {
   Purchase,
   PurchasesResponse,
 } from '@features/auth/model/types.js';
-import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
+import { CreditsAlert } from '@/features/credits/components/CreditsAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -88,16 +88,16 @@ export function AccountModal({ show }: Props): ReactElement | null {
       toastsAdd({
         id: 'account.delete',
         messageKey: 'settings.account.deleteWarning',
-        style: 'danger',
+        color: 'red',
         actions: [
           {
             nameKey: 'general.delete',
-            style: 'danger',
+            color: 'red',
             action: authDeleteAccount(),
           },
           {
             nameKey: 'general.cancel',
-            style: 'dark',
+            color: 'dark',
           },
         ],
       }),

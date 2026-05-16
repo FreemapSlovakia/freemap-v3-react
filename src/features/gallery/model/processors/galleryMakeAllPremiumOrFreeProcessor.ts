@@ -31,7 +31,7 @@ export const galleryMakeAllPremiumOrFreeProcessor: Processor<
 
     dispatch(
       toastsAdd({
-        style: 'success',
+        color: 'green',
         timeout: 5000,
         messageKey: 'general.saved',
       }),

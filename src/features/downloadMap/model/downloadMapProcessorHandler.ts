@@ -33,7 +33,7 @@ const handle: ProcessorHandler<typeof downloadMap> = async ({
 
   dispatch(
     toastsAdd({
-      style: 'success',
+      color: 'green',
       messageKey: 'general.success', // TODO add specific message key for success
     }),
   );
