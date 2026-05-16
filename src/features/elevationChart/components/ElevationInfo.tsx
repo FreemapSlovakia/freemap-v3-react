@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
+import { Button } from '@mantine/core';
 import { pointToTile } from '@mapbox/tilebelt';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -9,7 +10,7 @@ import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { IsTileLayerDef, integratedLayerDefs } from '@shared/mapDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
-import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
@@ -120,15 +121,22 @@ export function ElevationInfo({
         </div>
       )}
 
-      <InputGroup size="sm" className="my-2">
-        <Form.Control readOnly className="fm-fs-content" value={coordinates} />
+      <Button.Group className="my-2">
+        <Button.GroupSection variant="default" size="xs">
+          {coordinates}
+        </Button.GroupSection>
 
-        <Button type="button" onClick={handleNextFormatClick}>
+        <Button
+          type="button"
+          size="xs"
+          variant="filled"
+          onClick={handleNextFormatClick}
+        >
           <TbDecimal />
         </Button>
 
         {copyButton}
-      </InputGroup>
+      </Button.Group>
 
       {!window.fmEmbedded && (
         <div>

@@ -1,7 +1,7 @@
+import { Button } from '@mantine/core';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { Button, Form, InputGroup } from 'react-bootstrap';
 import { is } from 'typia';
 
 type Props = {
@@ -68,24 +68,24 @@ export function InnerDistanceInfo({ length, lengthLabel }: Props) {
 
   return (
     <>
-      <label htmlFor="length" className="text-nowrap">
-        {lengthLabel}
-      </label>
+      <span className="text-nowrap">{lengthLabel}</span>
 
-      <InputGroup size="sm" className="flex-nowrap">
-        <Form.Control
-          id="length"
-          readOnly
-          className="fm-fs-content"
-          value={value}
-        />
+      <Button.Group>
+        <Button.GroupSection variant="default" size="xs">
+          {value}
+        </Button.GroupSection>
 
-        <Button type="button" onClick={handleUnitClick} className="w-10">
+        <Button
+          type="button"
+          size="xs"
+          variant="filled"
+          onClick={handleUnitClick}
+        >
           {unit}
         </Button>
 
         {copyButton}
-      </InputGroup>
+      </Button.Group>
     </>
   );
 }

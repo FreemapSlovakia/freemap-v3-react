@@ -1,6 +1,6 @@
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaCheck, FaCopy } from 'react-icons/fa';
 
 export function useCopyButton(text: string) {
@@ -34,12 +34,18 @@ export function useCopyButton(text: string) {
   );
 
   return (
-    <LongPressTooltip label="Copy to clipboard">
+    <MantineLongPressTooltip label="Copy to clipboard">
       {({ props }) => (
-        <Button type="button" onClick={handleCopyClick} {...props}>
+        <Button
+          type="button"
+          size="xs"
+          variant="filled"
+          onClick={handleCopyClick}
+          {...props}
+        >
           {checked ? <FaCheck /> : <FaCopy />}
         </Button>
       )}
-    </LongPressTooltip>
+    </MantineLongPressTooltip>
   );
 }

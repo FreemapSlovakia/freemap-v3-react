@@ -1,0 +1,168 @@
+import { Tooltip } from '@mantine/core';
+import {
+  Fragment,
+  MouseEvent,
+  PointerEvent,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+type Props = {
+  label?: ReactNode;
+  delay?: number;
+  breakpoint?: Breakpoint;
+  kbd?: string;
+  children: (props: {
+    props: {
+      onPointerEnter: (e: PointerEvent) => void;
+      onPointerLeave: (e: PointerEvent) => void;
+      onClickCapture: (e: MouseEvent) => void;
+      onContextMenuCapture: (e: MouseEvent) => void;
+    };
+    label: ReactNode;
+    labelClassName: string;
+  }) => ReactElement;
+};
+
+function getMinWidthForBreakpoint(breakpoint: Breakpoint): number {
+  switch (breakpoint) {
+    case 'xs':
+      return 0;
+    case 'sm':
+      return 576;
+    case 'md':
+      return 768;
+    case 'lg':
+      return 992;
+    case 'xl':
+      return 1200;
+    case 'xxl':
+      return 1400;
+  }
+}
+
+export function MantineLongPressTooltip({
+  label = '…',
+  kbd,
+  delay = 500,
+  breakpoint,
+  children,
+}: Props) {
+  const preventClickRef = useRef(false);
+
+  const [show, setShow] = useState(false);
+
+  const [labelHidden, setLabelHidden] = useState(false);
+
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!breakpoint) {
+      setLabelHidden(true);
+      return;
+    }
+
+    const bp = breakpoint;
+
+    function checkVisibility() {
+      setLabelHidden(window.innerWidth < getMinWidthForBreakpoint(bp));
+    }
+
+    checkVisibility();
+
+    window.addEventListener('resize', checkVisibility);
+
+    return () => window.removeEventListener('resize', checkVisibility);
+  }, [breakpoint]);
+
+  const handleStart = useCallback(
+    (e: PointerEvent) => {
+      if (!labelHidden || timeoutRef.current) {
+        return;
+      }
+
+      const type = e.type;
+
+      timeoutRef.current = setTimeout(() => {
+        preventClickRef.current = type !== 'pointerenter';
+
+        setShow(true);
+      }, delay);
+    },
+    [delay, labelHidden],
+  );
+
+  const handleClear = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = null;
+
+    setTimeout(() => {
+      preventClickRef.current = false;
+    });
+
+    setShow(false);
+  }, []);
+
+  const handleClickCapture = useCallback((e: MouseEvent) => {
+    if (preventClickRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      setShow(false);
+    }
+  }, []);
+
+  const handleContextMenuCapture = useCallback((e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const kbdEl = (kbd?.split(' ') ?? []).map((k) => (
+    <Fragment key={k}>
+      {' '}
+      <kbd>{k}</kbd>
+    </Fragment>
+  ));
+
+  const trigger = children({
+    props: {
+      onPointerEnter: handleStart,
+      onPointerLeave: handleClear,
+      onClickCapture: handleClickCapture,
+      onContextMenuCapture: handleContextMenuCapture,
+    },
+    label: kbd ? (
+      <>
+        {label} {kbdEl}
+      </>
+    ) : (
+      label
+    ),
+    labelClassName: breakpoint ? `d-none d-${breakpoint}-inline` : 'd-none',
+  });
+
+  return (
+    <Tooltip
+      label={
+        <>
+          {label}
+          {kbdEl}
+        </>
+      }
+      opened={labelHidden && show}
+      disabled={!labelHidden}
+      position="top"
+    >
+      {trigger}
+    </Tooltip>
+  );
+}

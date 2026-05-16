@@ -1,4 +1,4 @@
-import { MantineProvider } from '@mantine/core';
+import { createTheme, MantineProvider, Tooltip } from '@mantine/core';
 import { ReactNode, useEffect, useState } from 'react';
 
 function readBsTheme(): 'light' | 'dark' {
@@ -6,6 +6,17 @@ function readBsTheme(): 'light' | 'dark' {
     ? 'dark'
     : 'light';
 }
+
+const theme = createTheme({
+  defaultRadius: '3px',
+  components: {
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        zIndex: 2000,
+      },
+    }),
+  },
+});
 
 export function MantineThemeProvider({ children }: { children: ReactNode }) {
   const [colorScheme, setColorScheme] = useState<'light' | 'dark'>(readBsTheme);
@@ -24,6 +35,8 @@ export function MantineThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <MantineProvider forceColorScheme={colorScheme}>{children}</MantineProvider>
+    <MantineProvider theme={theme} forceColorScheme={colorScheme}>
+      {children}
+    </MantineProvider>
   );
 }

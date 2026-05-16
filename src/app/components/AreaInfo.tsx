@@ -1,7 +1,7 @@
+import { Button } from '@mantine/core';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { Button, Form, InputGroup } from 'react-bootstrap';
 import { is } from 'typia';
 import { InnerDistanceInfo } from './DistanceInfo.js';
 
@@ -70,24 +70,24 @@ export function AreaInfo({
       className="d-inline-grid gap-2 align-items-center"
       style={{ gridTemplateColumns: 'auto 1fr' }}
     >
-      <label htmlFor="area" className="text-nowrap">
-        {areaLabel}
-      </label>
+      <span className="text-nowrap">{areaLabel}</span>
 
-      <InputGroup size="sm">
-        <Form.Control
-          id="area"
-          readOnly
-          className="fm-fs-content"
-          value={value}
-        />
+      <Button.Group>
+        <Button.GroupSection variant="default" size="xs">
+          {value}
+        </Button.GroupSection>
 
-        <Button type="button" onClick={handleUnitClick} className="w-10">
+        <Button
+          type="button"
+          size="xs"
+          variant="filled"
+          onClick={handleUnitClick}
+        >
           {unit}
         </Button>
 
         {copyButton}
-      </InputGroup>
+      </Button.Group>
 
       <InnerDistanceInfo length={perimeter} lengthLabel={perimeterLabel} />
     </div>
