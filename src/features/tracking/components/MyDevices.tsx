@@ -1,8 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import { Alert, Modal, Table } from 'react-bootstrap';
 import { FaMobileAlt, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -53,17 +54,22 @@ export function MyDevices(): ReactElement {
       <Modal.Footer>
         <Button
           type="button"
+          size="sm"
+          leftSection={<FaPlus />}
           onClick={() => dispatch(trackingActions.modifyDevice(null))}
         >
-          <FaPlus /> {m?.general.add}
+          {m?.general.add}
         </Button>
 
         <Button
-          variant="dark"
+          color="dark"
+          size="sm"
           type="button"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
           onClick={() => dispatch(setActiveModal(null))}
         >
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </>

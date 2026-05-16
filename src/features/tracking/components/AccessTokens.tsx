@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import { Alert, Modal, Table } from 'react-bootstrap';
 import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -64,21 +65,25 @@ export function AccessTokens(): ReactElement {
       <Modal.Footer>
         <Button
           type="button"
+          size="sm"
+          leftSection={<FaPlus />}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(null));
           }}
         >
-          <FaPlus /> {m?.general.add}
+          {m?.general.add}
         </Button>
 
         <Button
           type="button"
-          variant="dark"
+          color="dark"
+          size="sm"
+          leftSection={<FaChevronLeft />}
           onClick={() => {
             dispatch(trackingActions.showAccessTokens(undefined));
           }}
         >
-          <FaChevronLeft /> {m?.general.back}
+          {m?.general.back}
         </Button>
       </Modal.Footer>
     </>
