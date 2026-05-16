@@ -1,20 +1,14 @@
 // import { Chrome, rgbaToHexa } from '@uiw/react-color';
 import { mapSetShading } from '@features/map/model/actions.js';
+import { Button, Menu } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import Color from 'color';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
 import ColorPicker from 'react-best-gradient-color-picker';
-import {
-  Button,
-  ButtonToolbar,
-  Card,
-  Dropdown,
-  DropdownButton,
-  Form,
-  ListGroup,
-} from 'react-bootstrap';
+import { ButtonToolbar, Card, Form, ListGroup } from 'react-bootstrap';
+import { FaCaretDown } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   ColorStop,
@@ -86,6 +80,106 @@ export function ShadingControl() {
     };
   }, [card, sc, rf]);
 
+  function addShadingComponent(type0: ShadingComponentType | 'contour') {
+    const id = Math.random();
+
+    let shadingComponent: ShadingComponent;
+
+    if (type0 === 'contour') {
+      const eleWidth = window.prompt(
+        'Enter elevation[,width[,opacity]] (eg: "430.5,1,50")',
+      );
+
+      if (!eleWidth) {
+        return;
+      }
+
+      const parts = eleWidth.split(',').map((v) => Number(v));
+
+      const ele = parts[0];
+      const hwidth = parts[1] / 2 || 1;
+      const opacity = parts[2] / 100 || 1;
+
+      shadingComponent = {
+        id,
+        type: 'color-relief',
+        colorStops: [
+          { value: ele - hwidth, color: [0, 0, 0, 0] },
+          { value: ele - hwidth, color: [0, 0, 0, opacity] },
+          { value: ele + hwidth, color: [0, 0, 0, opacity] },
+          { value: ele + hwidth, color: [0, 0, 0, 0] },
+        ],
+        brightness: 0,
+        contrast: 1,
+      };
+    } else {
+      function interpolate(
+        ratio: number,
+        from = type0 === 'aspect' ? 0 : 90,
+        to = type0 === 'aspect' ? 2 * Math.PI : 2660,
+      ) {
+        return (to - from) * ratio + from;
+      }
+
+      const type = type0 as ShadingComponentType;
+
+      const base: Omit<ShadingComponent, 'elevation' | 'azimuth' | 'type'> = {
+        id,
+        brightness: 0,
+        contrast: 1,
+        colorStops:
+          type0 === 'color-relief' || type0 === 'aspect'
+            ? [
+                { value: interpolate(0 / 6), color: [255, 0, 0, 1] },
+                { value: interpolate(1 / 6), color: [255, 255, 0, 1] },
+                { value: interpolate(2 / 6), color: [0, 255, 0, 1] },
+                { value: interpolate(3 / 6), color: [0, 255, 255, 1] },
+                { value: interpolate(4 / 6), color: [0, 0, 255, 1] },
+                { value: interpolate(5 / 6), color: [255, 0, 255, 1] },
+                { value: interpolate(6 / 6), color: [255, 0, 0, 1] },
+              ]
+            : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
+      };
+
+      shadingComponent =
+        type === 'hillshade-classic'
+          ? {
+              type,
+              ...base,
+              elevation: 45 * (Math.PI / 180),
+              azimuth: 315 * (Math.PI / 180),
+              exaggeration: 1,
+            }
+          : type === 'slope-classic'
+            ? {
+                type,
+                ...base,
+                elevation: 45 * (Math.PI / 180),
+                exaggeration: 1,
+              }
+            : type === 'hillshade-igor'
+              ? {
+                  type,
+                  ...base,
+                  azimuth: 315 * (Math.PI / 180),
+                  exaggeration: 1,
+                }
+              : type === 'slope-igor'
+                ? { type, ...base, exaggeration: 1 }
+                : { type, ...base };
+    }
+
+    dispatch(
+      mapSetShading(
+        produce(shading, (draft) => {
+          draft.components.push(shadingComponent);
+        }),
+      ),
+    );
+
+    setId(id);
+  }
+
   return (
     <Card body className="fm-shading-control mt-2 ms-2">
       <div className="fm-menu-scroller" ref={setCard}>
@@ -98,156 +192,34 @@ export function ShadingControl() {
           style={{ width: '250px' }}
         >
           <ButtonToolbar>
-            <DropdownButton
-              id="add-shading-button"
-              title="Add"
-              variant="success"
-              onSelect={(type0) => {
-                const id = Math.random();
+            <Menu>
+              <Menu.Target>
+                <Button color="green" size="sm" rightSection={<FaCaretDown />}>
+                  Add
+                </Button>
+              </Menu.Target>
 
-                let shadingComponent: ShadingComponent;
+              <Menu.Dropdown>
+                {SHADING_COMPONENT_TYPES.map((st) => (
+                  <Menu.Item key={st} onClick={() => addShadingComponent(st)}>
+                    {st}
+                  </Menu.Item>
+                ))}
 
-                if (type0 === 'contour') {
-                  const eleWidth = window.prompt(
-                    'Enter elevation[,width[,opacity]] (eg: "430.5,1,50")',
-                  );
+                <Menu.Divider />
 
-                  if (!eleWidth) {
-                    return;
-                  }
-
-                  const parts = eleWidth.split(',').map((v) => Number(v));
-
-                  const ele = parts[0];
-                  const hwidth = parts[1] / 2 || 1;
-                  const opacity = parts[2] / 100 || 1;
-
-                  shadingComponent = {
-                    id,
-                    type: 'color-relief',
-                    colorStops: [
-                      { value: ele - hwidth, color: [0, 0, 0, 0] },
-                      { value: ele - hwidth, color: [0, 0, 0, opacity] },
-                      { value: ele + hwidth, color: [0, 0, 0, opacity] },
-                      { value: ele + hwidth, color: [0, 0, 0, 0] },
-                    ],
-                    brightness: 0,
-                    contrast: 1,
-                  };
-                } else {
-                  function interpolate(
-                    ratio: number,
-                    from = type0 === 'aspect' ? 0 : 90,
-                    to = type0 === 'aspect' ? 2 * Math.PI : 2660,
-                  ) {
-                    return (to - from) * ratio + from;
-                  }
-
-                  const type = type0 as ShadingComponentType;
-
-                  const base: Omit<
-                    ShadingComponent,
-                    'elevation' | 'azimuth' | 'type'
-                  > = {
-                    id,
-                    brightness: 0,
-                    contrast: 1,
-                    colorStops:
-                      type0 === 'color-relief' || type0 === 'aspect'
-                        ? [
-                            {
-                              value: interpolate(0 / 6),
-                              color: [255, 0, 0, 1],
-                            },
-                            {
-                              value: interpolate(1 / 6),
-                              color: [255, 255, 0, 1],
-                            },
-                            {
-                              value: interpolate(2 / 6),
-                              color: [0, 255, 0, 1],
-                            },
-                            {
-                              value: interpolate(3 / 6),
-                              color: [0, 255, 255, 1],
-                            },
-                            {
-                              value: interpolate(4 / 6),
-                              color: [0, 0, 255, 1],
-                            },
-                            {
-                              value: interpolate(5 / 6),
-                              color: [255, 0, 255, 1],
-                            },
-                            {
-                              value: interpolate(6 / 6),
-                              color: [255, 0, 0, 1],
-                            },
-                          ]
-                        : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
-                  };
-
-                  shadingComponent =
-                    type === 'hillshade-classic'
-                      ? {
-                          type,
-                          ...base,
-                          elevation: 45 * (Math.PI / 180),
-                          azimuth: 315 * (Math.PI / 180),
-                          exaggeration: 1,
-                        }
-                      : type === 'slope-classic'
-                        ? {
-                            type,
-                            ...base,
-                            elevation: 45 * (Math.PI / 180),
-                            exaggeration: 1,
-                          }
-                        : type === 'hillshade-igor'
-                          ? {
-                              type,
-                              ...base,
-                              azimuth: 315 * (Math.PI / 180),
-                              exaggeration: 1,
-                            }
-                          : type === 'slope-igor'
-                            ? {
-                                type,
-                                ...base,
-                                exaggeration: 1,
-                              }
-                            : {
-                                type,
-                                ...base,
-                              };
-                }
-
-                dispatch(
-                  mapSetShading(
-                    produce(shading, (draft) => {
-                      draft.components.push(shadingComponent);
-                    }),
-                  ),
-                );
-
-                setId(id);
-              }}
-            >
-              {SHADING_COMPONENT_TYPES.map((st) => (
-                <Dropdown.Item key={st} eventKey={st}>
-                  {st}
-                </Dropdown.Item>
-              ))}
-
-              <Dropdown.Divider />
-              <Dropdown.Item eventKey="contour">contour</Dropdown.Item>
-            </DropdownButton>
+                <Menu.Item onClick={() => addShadingComponent('contour')}>
+                  contour
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
 
             <Button
               className="ms-1"
               type="button"
               disabled={id === undefined}
-              variant="danger"
+              color="red"
+              size="sm"
               onClick={() => {
                 dispatch(
                   mapSetShading(

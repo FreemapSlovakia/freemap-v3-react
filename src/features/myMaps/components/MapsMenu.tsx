@@ -1,20 +1,19 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ActionIcon, Button } from '@mantine/core';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button, Menu } from '@mantine/core';
 import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { ReactElement } from 'react';
+import { ButtonToolbar } from 'react-bootstrap';
 import {
-  ButtonGroup,
-  ButtonToolbar,
-  Dropdown,
-  Button as RBButton,
-} from 'react-bootstrap';
-import { FaEraser, FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
+  FaCaretDown,
+  FaEraser,
+  FaRegMap,
+  FaSave,
+  FaUnlink,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapsDisconnect, mapsSave } from '../model/actions.js';
 
@@ -91,37 +90,53 @@ export function MapsMenu(): ReactElement {
             </MantineLongPressTooltip>
           )}
 
-          <LongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
-            {({ label, labelClassName, props }) => (
-              <Dropdown as={ButtonGroup} align="end" {...props}>
-                <RBButton
-                  className="ms-1"
-                  variant="secondary"
-                  onClick={() => dispatch(mapsDisconnect())}
-                >
-                  <FaUnlink />
-                  <span className={labelClassName}> {label}</span>
-                </RBButton>
-
-                <Dropdown.Toggle
-                  split
-                  variant="secondary"
-                  id="dropdown-split-basic"
-                />
-
-                <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                  <Dropdown.Item
-                    onClick={() => {
-                      dispatch(mapsDisconnect());
-                      dispatch(clearMapFeatures());
-                    }}
+          <Button.Group className="ms-1">
+            <MantineLongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
+              {({ label, labelHidden, props }) =>
+                labelHidden ? (
+                  <ActionIcon
+                    variant="filled"
+                    color="gray"
+                    size="input-sm"
+                    onClick={() => dispatch(mapsDisconnect())}
+                    {...props}
                   >
-                    <FaEraser /> {m?.maps.disconnectAndClear}
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
-          </LongPressTooltip>
+                    <FaUnlink />
+                  </ActionIcon>
+                ) : (
+                  <Button
+                    color="gray"
+                    size="sm"
+                    leftSection={<FaUnlink />}
+                    onClick={() => dispatch(mapsDisconnect())}
+                    {...props}
+                  >
+                    {label}
+                  </Button>
+                )
+              }
+            </MantineLongPressTooltip>
+
+            <Menu position="bottom-end">
+              <Menu.Target>
+                <ActionIcon variant="filled" color="gray" size="input-sm">
+                  <FaCaretDown />
+                </ActionIcon>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<FaEraser />}
+                  onClick={() => {
+                    dispatch(mapsDisconnect());
+                    dispatch(clearMapFeatures());
+                  }}
+                >
+                  {m?.maps.disconnectAndClear}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Button.Group>
         </ButtonToolbar>
       </Toolbar>
     </div>

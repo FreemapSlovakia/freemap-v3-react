@@ -1,12 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { ActionIcon, Button, Menu } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { Fragment, ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
+import { Fragment, type ReactElement } from 'react';
+import { FaCaretDown, FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
 
 type Props = {
   onChange: (value?: TransportType) => void;
@@ -31,86 +30,107 @@ export function RoutePlannerTransportType({
 
   const sc = useScrollClasses('vertical');
 
+  const tooltipLabel = activeTTDef ? (
+    <>
+      {ttLabel ?? '…'}
+
+      {activeTTDef.api !== 'manual' && (
+        <>
+          {' '}
+          <small className="text-dark">
+            {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
+          </small>
+        </>
+      )}
+    </>
+  ) : (
+    (ttLabel ?? '…')
+  );
+
+  const triggerIcon = !value ? <FaEquals /> : (activeTTDef?.icon ?? '');
+
   return (
-    <Dropdown
-      className="ms-1"
-      id="transport-type"
-      onSelect={(transportType) =>
-        onChange((transportType || undefined) as TransportType)
-      }
-    >
-      <LongPressTooltip
-        breakpoint="lg"
-        label={
-          activeTTDef ? (
-            <>
-              {ttLabel ?? '…'}
+    <Menu>
+      <Menu.Target>
+        <MantineLongPressTooltip breakpoint="lg" label={tooltipLabel}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                {...props}
+              >
+                {triggerIcon}
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={
+                  <>
+                    {triggerIcon}
+                    {value &&
+                      ['car', 'car-toll', 'bikesharing'].includes(value) && (
+                        <>
+                          {' '}
+                          <FaMoneyBill />
+                        </>
+                      )}
+                  </>
+                }
+                rightSection={<FaCaretDown />}
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
+      </Menu.Target>
 
-              {activeTTDef.api !== 'manual' && (
-                <>
-                  {' '}
-                  <small className="text-dark">
-                    {activeTTDef.api === 'osrm' ? 'OSRM' : 'GraphHopper'}
-                  </small>
-                </>
-              )}
-            </>
-          ) : (
-            (ttLabel ?? '…')
-          )
-        }
-      >
-        {({ label, labelClassName, props }) => (
-          <Dropdown.Toggle variant="secondary" {...props}>
-            {!value ? <FaEquals /> : (activeTTDef?.icon ?? '')}{' '}
-            {value && ['car', 'car-toll', 'bikesharing'].includes(value) && (
-              <FaMoneyBill />
-            )}
-            <span className={labelClassName}> {label}</span>
-          </Dropdown.Toggle>
-        )}
-      </LongPressTooltip>
-
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
-      >
+      <Menu.Dropdown>
         <div className="dropdown-long" ref={sc}>
           <div />
 
           {withDefault && (
-            <Dropdown.Item as="button" eventKey="" active={!value}>
-              <FaEquals /> {m?.routePlanner.default}
-            </Dropdown.Item>
+            <Menu.Item
+              leftSection={<FaEquals />}
+              color={!value ? 'blue' : undefined}
+              onClick={() => onChange(undefined)}
+            >
+              {m?.routePlanner.default}
+            </Menu.Item>
           )}
 
           {(['manual', 'gh', 'osrm'] as const).map((api) => (
             <Fragment key={api}>
               {api !== 'manual' && (
-                <Dropdown.Header>
+                <Menu.Label>
                   {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
-                </Dropdown.Header>
+                </Menu.Label>
               )}
 
               {Object.entries(transportTypeDefs)
                 .filter(([, def]) => !def.hidden && def.api === api)
                 .map(([type, { icon, msgKey: key }]) => (
-                  <Dropdown.Item
-                    as="button"
-                    eventKey={type}
+                  <Menu.Item
                     key={type}
-                    title={m?.routePlanner.transportType[key]}
-                    active={value === type}
-                    disabled={withDefault && Boolean(becomePremium)}
-                  >
-                    {icon}{' '}
-                    {['car', 'car-toll', 'bikesharing'].includes(type) && (
-                      <FaMoneyBill />
-                    )}{' '}
-                    {m?.routePlanner.transportType[key] ?? '…'}
-                    {withDefault && (
+                    leftSection={
                       <>
-                        {' '}
+                        {icon}
+                        {['car', 'car-toll', 'bikesharing'].includes(type) && (
+                          <>
+                            {' '}
+                            <FaMoneyBill />
+                          </>
+                        )}
+                      </>
+                    }
+                    rightSection={
+                      withDefault ? (
                         <FaGem
                           style={{ pointerEvents: 'initial' }}
                           className={
@@ -122,14 +142,20 @@ export function RoutePlannerTransportType({
                           }
                           onClick={becomePremium}
                         />
-                      </>
-                    )}
-                  </Dropdown.Item>
+                      ) : null
+                    }
+                    color={value === type ? 'blue' : undefined}
+                    disabled={withDefault && Boolean(becomePremium)}
+                    title={m?.routePlanner.transportType[key]}
+                    onClick={() => onChange(type as TransportType)}
+                  >
+                    {m?.routePlanner.transportType[key] ?? '…'}
+                  </Menu.Item>
                 ))}
             </Fragment>
           ))}
         </div>
-      </Dropdown.Menu>
-    </Dropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
