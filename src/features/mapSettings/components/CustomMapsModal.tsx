@@ -1,9 +1,10 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon, Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { ReactElement, useCallback, useState } from 'react';
-import { Button, Modal, Table } from 'react-bootstrap';
+import { Modal, Table } from 'react-bootstrap';
 import { FaCheck, FaPencilAlt, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -134,24 +135,26 @@ export function CustomMapsModal({ show }: Props): ReactElement {
                       </td>
                       <td>{m?.mapLayers.layer[def.layer]}</td>
                       <td className="text-nowrap">
-                        <Button
-                          size="sm"
-                          variant="outline-secondary"
+                        <ActionIcon
+                          variant="outline"
+                          color="gray"
+                          size="input-xs"
                           className="me-1"
                           onClick={() => handleEditClick(def.type)}
                           title={m?.general.modify}
                         >
                           <FaPencilAlt />
-                        </Button>
+                        </ActionIcon>
 
-                        <Button
-                          size="sm"
-                          variant="outline-danger"
+                        <ActionIcon
+                          variant="outline"
+                          color="red"
+                          size="input-xs"
                           onClick={() => handleDeleteClick(def)}
                           title={m?.general.delete}
                         >
                           <FaTrash />
-                        </Button>
+                        </ActionIcon>
                       </td>
                     </tr>
                   ))}
@@ -161,12 +164,24 @@ export function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button type="button" variant="primary" onClick={handleAddClick}>
-              <FaPlus /> {m?.general.add}
+            <Button
+              type="button"
+              size="sm"
+              leftSection={<FaPlus />}
+              onClick={handleAddClick}
+            >
+              {m?.general.add}
             </Button>
 
-            <Button variant="dark" type="button" onClick={close}>
-              <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+            <Button
+              type="button"
+              color="dark"
+              size="sm"
+              leftSection={<FaTimes />}
+              rightSection={<Kbd>Esc</Kbd>}
+              onClick={close}
+            >
+              {m?.general.close}
             </Button>
           </Modal.Footer>
         </>
@@ -183,16 +198,23 @@ export function CustomMapsModal({ show }: Props): ReactElement {
 
           <Modal.Footer>
             <Button
-              variant="primary"
               type="button"
+              size="sm"
+              leftSection={<FaCheck />}
               onClick={handleSave}
               disabled={!draft}
             >
-              <FaCheck /> {m?.general.save}
+              {m?.general.save}
             </Button>
 
-            <Button variant="dark" type="button" onClick={goToList}>
-              <FaTimes /> {m?.general.cancel}
+            <Button
+              type="button"
+              color="dark"
+              size="sm"
+              leftSection={<FaTimes />}
+              onClick={goToList}
+            >
+              {m?.general.cancel}
             </Button>
           </Modal.Footer>
         </>

@@ -27,6 +27,7 @@ type Props = {
     };
     label: ReactNode;
     labelClassName: string;
+    labelHidden: boolean;
   }) => ReactElement;
 };
 
@@ -148,6 +149,7 @@ export function MantineLongPressTooltip({
       label
     ),
     labelClassName: breakpoint ? `d-none d-${breakpoint}-inline` : 'd-none',
+    labelHidden,
   });
 
   return (

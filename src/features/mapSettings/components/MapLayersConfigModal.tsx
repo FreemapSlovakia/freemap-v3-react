@@ -1,8 +1,9 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { MapLayersSettings } from './MapLayersSettings.js';
@@ -59,15 +60,23 @@ export function MapLayersConfigModal({ show }: Props): ReactElement {
 
         <Modal.Footer>
           <Button
-            variant="primary"
             type="submit"
+            size="sm"
+            leftSection={<FaCheck />}
             disabled={layersSettings === initLayersSettings}
           >
-            <FaCheck /> {m?.general.save}
+            {m?.general.save}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          <Button
+            type="button"
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            rightSection={<Kbd>Esc</Kbd>}
+            onClick={close}
+          >
+            {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </Form>

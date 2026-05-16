@@ -1,12 +1,14 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ActionIcon } from '@mantine/core';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
 import { type ReactElement, ReactNode } from 'react';
-import { Button, ButtonToolbar } from 'react-bootstrap';
+import { ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -51,18 +53,20 @@ export function Selection({
 
           {!window.fmEmbedded && deletable && <DeleteButton />}
 
-          <LongPressTooltip label={m?.general.close} kbd="Esc">
+          <MantineLongPressTooltip label={m?.general.close} kbd="Esc">
             {({ props }) => (
-              <Button
+              <ActionIcon
                 className="ms-1"
-                variant="dark"
+                variant="filled"
+                color="dark"
+                size="input-sm"
                 onClick={() => dispatch(selectFeature(null))}
                 {...props}
               >
                 <FaTimes />
-              </Button>
+              </ActionIcon>
             )}
-          </LongPressTooltip>
+          </MantineLongPressTooltip>
         </ButtonToolbar>
       </Toolbar>
     </div>

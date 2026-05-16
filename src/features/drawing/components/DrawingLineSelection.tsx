@@ -4,14 +4,15 @@ import {
   elevationChartSetTrackGeojson,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { lineString } from '@turf/helpers';
 import { type ReactElement, useCallback, useState } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCompressAlt,
@@ -167,40 +168,70 @@ export function DrawingLineSelection(): ReactElement | null {
         deletable
       >
         {drawing && (
-          <LongPressTooltip
+          <MantineLongPressTooltip
             breakpoint="sm"
             label={m?.drawing.stopDrawing}
             kbd="Esc"
           >
-            {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={() => dispatch(drawingLineStopDrawing())}
-                {...props}
-              >
-                <FaRegStopCircle />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
+            {({ label, labelHidden, props }) =>
+              labelHidden ? (
+                <ActionIcon
+                  className="ms-1"
+                  variant="filled"
+                  color="gray"
+                  size="input-sm"
+                  onClick={() => dispatch(drawingLineStopDrawing())}
+                  {...props}
+                >
+                  <FaRegStopCircle />
+                </ActionIcon>
+              ) : (
+                <Button
+                  className="ms-1"
+                  color="gray"
+                  size="sm"
+                  leftSection={<FaRegStopCircle />}
+                  onClick={() => dispatch(drawingLineStopDrawing())}
+                  {...props}
+                >
+                  {label}
+                </Button>
+              )
+            }
+          </MantineLongPressTooltip>
         )}
 
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() =>
-                dispatch(setActiveModal('current-drawing-properties'))
-              }
-              {...props}
-            >
-              <FaTag />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <MantineLongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
+          {({ label, labelHidden, props }) =>
+            labelHidden ? (
+              <ActionIcon
+                className="ms-1"
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                onClick={() =>
+                  dispatch(setActiveModal('current-drawing-properties'))
+                }
+                {...props}
+              >
+                <FaTag />
+              </ActionIcon>
+            ) : (
+              <Button
+                className="ms-1"
+                color="gray"
+                size="sm"
+                leftSection={<FaTag />}
+                onClick={() =>
+                  dispatch(setActiveModal('current-drawing-properties'))
+                }
+                {...props}
+              >
+                {label}
+              </Button>
+            )
+          }
+        </MantineLongPressTooltip>
 
         <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
           <Dropdown.Toggle variant="secondary">

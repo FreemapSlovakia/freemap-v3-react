@@ -105,7 +105,7 @@ export function PredefinedDrawingPropertiesModal({
 
           <Button
             type="button"
-            variant="default"
+            color="gray"
             size="sm"
             leftSection={<FaFill />}
             onClick={handleApplyToAllClick}

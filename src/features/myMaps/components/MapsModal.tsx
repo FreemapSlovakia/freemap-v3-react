@@ -5,6 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
+import { Button } from '@mantine/core';
 import {
   type ReactElement,
   useCallback,
@@ -13,7 +14,6 @@ import {
   useState,
 } from 'react';
 import {
-  Button,
   Dropdown,
   Form,
   InputGroup,
@@ -269,6 +269,8 @@ export function MapsModal({ show }: Props): ReactElement {
             {(!activeMap || activeMap?.canWrite) && (
               <Button
                 type="button"
+                size="sm"
+                leftSection={<FaSave />}
                 onClick={() => {
                   dispatch(
                     mapsSave({
@@ -281,35 +283,31 @@ export function MapsModal({ show }: Props): ReactElement {
                 }}
                 disabled={!name || !online}
               >
-                <FaSave /> {m?.maps.save}
+                {m?.maps.save}
               </Button>
             )}
 
             <Button
-              variant="dark"
+              color="dark"
+              size="sm"
+              leftSection={<FaTimes />}
               onClick={() => {
                 setFormVisible(false);
               }}
             >
-              <FaTimes /> {m?.general.cancel}
+              {m?.general.cancel}
             </Button>
           </>
         ) : (
           <>
             <Button
+              size="sm"
+              leftSection={activeMap ? <FaEdit /> : <FaPlus />}
               onClick={() => {
                 setFormVisible(true);
               }}
             >
-              {activeMap ? (
-                <>
-                  <FaEdit /> {m?.general.modify}
-                </>
-              ) : (
-                <>
-                  <FaPlus /> {m?.general.add}
-                </>
-              )}
+              {activeMap ? m?.general.modify : m?.general.add}
             </Button>
 
             <SplitButton
@@ -353,7 +351,9 @@ export function MapsModal({ show }: Props): ReactElement {
             </SplitButton>
 
             <Button
-              variant="danger"
+              color="red"
+              size="sm"
+              leftSection={<FaTrash />}
               disabled={
                 !myUserId ||
                 (selectedMap ?? activeMap)?.userId !== myUserId ||
@@ -367,11 +367,16 @@ export function MapsModal({ show }: Props): ReactElement {
                 }
               }}
             >
-              <FaTrash /> {m?.general.delete}
+              {m?.general.delete}
             </Button>
 
-            <Button variant="dark" onClick={close}>
-              <FaTimes /> {m?.general.close}
+            <Button
+              color="dark"
+              size="sm"
+              leftSection={<FaTimes />}
+              onClick={close}
+            >
+              {m?.general.close}
             </Button>
           </>
         )}
