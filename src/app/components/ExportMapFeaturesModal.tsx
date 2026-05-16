@@ -8,6 +8,7 @@ import {
   exportTypes,
 } from '@features/export/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useMediaQuery } from '@mantine/hooks';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -46,7 +47,6 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
 import { is } from 'typia';
 import { setActiveModal } from '../store/actions.js';
 
@@ -270,7 +270,9 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     setExportables(e);
   }, [initExportables, garminSingleEnabled]);
 
-  const isWide = useMediaQuery({ query: '(min-width: 992px)' });
+  const isWide = useMediaQuery('(min-width: 992px)', false, {
+    getInitialValueInEffect: false,
+  });
 
   return (
     <Modal show={show} onHide={close} size="lg">

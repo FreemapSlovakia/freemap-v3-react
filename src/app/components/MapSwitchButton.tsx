@@ -2,6 +2,7 @@ import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { useMediaQuery } from '@mantine/hooks';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
@@ -44,7 +45,6 @@ import {
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../store/actions.js';
 
 function getKbdShortcut(shortcut?: Shortcut | null) {
@@ -169,7 +169,9 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, handlePossibleFilterClick],
   );
 
-  const isWide = useMediaQuery({ query: '(min-width: 576px)' });
+  const isWide = useMediaQuery('(min-width: 576px)', false, {
+    getInitialValueInEffect: false,
+  });
 
   const sc = useScrollClasses('vertical');
 
