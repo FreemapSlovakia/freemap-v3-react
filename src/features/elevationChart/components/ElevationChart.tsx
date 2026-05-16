@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { CloseButton } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
@@ -11,7 +12,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import {
   elevationChartClose,

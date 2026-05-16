@@ -11,12 +11,14 @@ import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import '@mantine/core/styles.css';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { ErrorCatcher } from './components/ErrorCatcher.js';
 import { Main } from './components/Main.js';
+import { MantineThemeProvider } from './components/MantineThemeProvider.js';
 import { MessagesProvider } from './components/TranslationProvider.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { enableUpdatingUrl, setEmbedFeatures } from './store/actions.js';
@@ -119,17 +121,19 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <Provider store={store}>
-    <IconContext.Provider
-      value={{
-        style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
-      }}
-    >
-      <MessagesProvider>
-        <ErrorCatcher>
-          <Main />
-        </ErrorCatcher>
-      </MessagesProvider>
-    </IconContext.Provider>
+    <MantineThemeProvider>
+      <IconContext.Provider
+        value={{
+          style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
+        }}
+      >
+        <MessagesProvider>
+          <ErrorCatcher>
+            <Main />
+          </ErrorCatcher>
+        </MessagesProvider>
+      </IconContext.Provider>
+    </MantineThemeProvider>
   </Provider>,
 );
 
