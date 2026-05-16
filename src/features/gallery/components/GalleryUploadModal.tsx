@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { Button, Kbd } from '@mantine/core';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
@@ -13,7 +14,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -302,19 +303,26 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
       <Modal.Footer>
         <Button
+          size="sm"
+          leftSection={<FaUpload />}
           onClick={() => {
             dispatch(galleryUpload());
           }}
           disabled={uploading}
         >
-          <FaUpload />{' '}
           {uploading
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
 
-        <Button onClick={handleClose} variant="dark">
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
+          onClick={handleClose}
+        >
+          {m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Modal>

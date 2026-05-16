@@ -4,6 +4,7 @@ import { drawingLineChangeProperties } from '@features/drawing/model/actions/dra
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { Button, Kbd } from '@mantine/core';
 import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
@@ -15,7 +16,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';
@@ -394,12 +395,25 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" variant="info" disabled={invalidWidth}>
-            <FaCheck /> {m?.general.save}
+          <Button
+            type="submit"
+            color="cyan"
+            size="sm"
+            leftSection={<FaCheck />}
+            disabled={invalidWidth}
+          >
+            {m?.general.save}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          <Button
+            type="button"
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            rightSection={<Kbd>Esc</Kbd>}
+            onClick={close}
+          >
+            {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </Form>

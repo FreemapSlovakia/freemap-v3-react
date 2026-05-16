@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -15,14 +16,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import {
-  Alert,
-  Button,
-  ButtonGroup,
-  Form,
-  Modal,
-  ToggleButton,
-} from 'react-bootstrap';
+import { Alert, ButtonGroup, Form, Modal, ToggleButton } from 'react-bootstrap';
 import {
   FaBullseye,
   FaCamera,
@@ -495,17 +489,25 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
         <Modal.Footer>
           <Button
             type="submit"
-            variant="primary"
+            size="sm"
+            leftSection={<FaFileExport />}
             disabled={
               !exportables.length ||
               (target === 'garmin' && (!name.trim() || !activity))
             }
           >
-            <FaFileExport /> {m?.general.export}
+            {m?.general.export}
           </Button>
 
-          <Button type="button" variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          <Button
+            type="button"
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            rightSection={<Kbd>Esc</Kbd>}
+            onClick={close}
+          >
+            {m?.general.close}
           </Button>
         </Modal.Footer>
       </Form>

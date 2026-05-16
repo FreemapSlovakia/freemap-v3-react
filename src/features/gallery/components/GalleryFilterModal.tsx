@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -10,7 +11,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gallerySetFilter } from '../model/actions.js';
@@ -395,16 +396,33 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
-            <FaCheck /> {m?.general.apply}
+          <Button
+            type="submit"
+            size="sm"
+            leftSection={<FaCheck />}
+            disabled={invalidRatingFrom || invalidRatingTo}
+          >
+            {m?.general.apply}
           </Button>
 
-          <Button variant="warning" type="button" onClick={handleEraseClick}>
-            <FaEraser /> {m?.general.clear}
+          <Button
+            type="button"
+            color="yellow"
+            size="sm"
+            leftSection={<FaEraser />}
+            onClick={handleEraseClick}
+          >
+            {m?.general.clear}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
+          <Button
+            type="button"
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            onClick={close}
+          >
+            {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </Form>

@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import type { ReactElement } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { FaGem, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { purchase, setActiveModal } from '../store/actions.js';
@@ -28,18 +29,24 @@ export function PremiumActivationModal({ show }: Props): ReactElement {
 
       <Modal.Footer>
         <Button
-          variant="primary"
+          size="sm"
+          leftSection={<FaGem />}
           onClick={() => {
             dispatch(setActiveModal(null));
 
             dispatch(purchase({ type: 'premium' }));
           }}
         >
-          <FaGem /> {m?.premium.continue}
+          {m?.premium.continue}
         </Button>
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.cancel}
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          onClick={close}
+        >
+          {m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Modal>

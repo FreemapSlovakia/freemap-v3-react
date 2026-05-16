@@ -1,9 +1,10 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useLocalMessages, useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { type ReactElement, useCallback } from 'react';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ShowModalLink } from '../../shared/components/ShowModalLink.js';
@@ -51,8 +52,13 @@ export function SupportUsModal({ show }: Props): ReactElement {
         {becomePremium && (
           <Alert variant="warning">
             <span dangerouslySetInnerHTML={{ __html: lm?.alert.line1 ?? '' }} />
-            <Button onClick={becomePremium} className="my-3 mx-auto d-block">
-              <FaGem /> {m?.premium.becomePremium}
+            <Button
+              size="sm"
+              leftSection={<FaGem />}
+              onClick={becomePremium}
+              className="my-3 mx-auto d-block"
+            >
+              {m?.premium.becomePremium}
             </Button>
             {lm?.alert.line2}
           </Alert>
@@ -85,8 +91,8 @@ export function SupportUsModal({ show }: Props): ReactElement {
                 type="hidden"
               />
 
-              <Button type="submit">
-                <FaPaypal /> {lm?.paypal}
+              <Button type="submit" size="sm" leftSection={<FaPaypal />}>
+                {lm?.paypal}
               </Button>
             </Form>
           </div>
@@ -131,8 +137,14 @@ export function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
+          onClick={close}
+        >
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </Modal>

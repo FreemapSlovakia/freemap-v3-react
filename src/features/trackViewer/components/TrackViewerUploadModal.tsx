@@ -2,9 +2,10 @@ import { setActiveModal } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { Button, Kbd } from '@mantine/core';
 import clsx from 'clsx';
 import { type ReactElement, useCallback } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -84,8 +85,14 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
+          onClick={close}
+        >
+          {m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Modal>

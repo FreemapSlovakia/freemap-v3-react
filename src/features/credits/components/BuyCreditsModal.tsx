@@ -1,9 +1,10 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCoins, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { CreditsAlert } from './CredistAlert.js';
@@ -69,12 +70,23 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={invalidCredits}>
-            <FaCheck /> {m?.credits.buy}
+          <Button
+            type="submit"
+            size="sm"
+            leftSection={<FaCheck />}
+            disabled={invalidCredits}
+          >
+            {m?.credits.buy}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
+          <Button
+            type="button"
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            onClick={close}
+          >
+            {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </Form>

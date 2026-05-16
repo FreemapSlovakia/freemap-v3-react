@@ -1,8 +1,9 @@
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { applySettings, setActiveModal } from '../store/actions.js';
@@ -98,20 +99,28 @@ export function PredefinedDrawingPropertiesModal({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit">
-            <FaCheck /> {m?.general.save}
+          <Button type="submit" size="sm" leftSection={<FaCheck />}>
+            {m?.general.save}
           </Button>
 
           <Button
             type="button"
-            variant="secondary"
+            variant="default"
+            size="sm"
+            leftSection={<FaFill />}
             onClick={handleApplyToAllClick}
           >
-            <FaFill /> {m?.drawing.defProps.applyToAll}
+            {m?.drawing.defProps.applyToAll}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
+          <Button
+            type="button"
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            onClick={close}
+          >
+            {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </Form>
