@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -11,7 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
@@ -310,14 +311,22 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
       <Modal.Footer>
         <Button
+          size="sm"
+          leftSection={<FaClipboard />}
           onClick={handleCopyClick}
           disabled={invalidWidth || invalidHeight}
         >
-          <FaClipboard /> {m?.general.copyCode}
+          {m?.general.copyCode}
         </Button>
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
+          onClick={close}
+        >
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';
@@ -102,7 +103,9 @@ export function AboutModal({ show }: Props): ReactElement {
       <Modal.Footer>
         {(language === 'sk' || language === 'cs') && (
           <Button
-            variant="link"
+            component="a"
+            variant="subtle"
+            size="sm"
             href="https://oz.freemap.sk/"
             target="_blank"
             rel="noopener noreferrer"
@@ -111,8 +114,13 @@ export function AboutModal({ show }: Props): ReactElement {
           </Button>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          onClick={close}
+        >
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </Modal>

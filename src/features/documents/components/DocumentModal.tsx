@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { is } from 'typia';
@@ -143,8 +144,14 @@ export function DocumentModal({ show }: Props): ReactElement | null {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+        <Button
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          rightSection={<Kbd>Esc</Kbd>}
+          onClick={close}
+        >
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Kbd } from '@mantine/core';
 import {
   type ReactElement,
   SubmitEvent,
@@ -7,7 +8,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -91,12 +92,18 @@ export function ProjectPointModal({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={!isValid()}>
+          <Button type="submit" size="sm" disabled={!isValid()}>
             Add
           </Button>
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          <Button
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            rightSection={<Kbd>Esc</Kbd>}
+            onClick={close}
+          >
+            {m?.general.close}
           </Button>
         </Modal.Footer>
       </Form>
