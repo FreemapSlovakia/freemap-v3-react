@@ -1,10 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
+import { Button } from '@mantine/core';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
 import { SiWikimediacommons } from 'react-icons/si';
 import { Marker, Pane } from 'react-leaflet';
@@ -177,8 +178,13 @@ export function WikimediaCommonsLayer(): ReactElement {
             </LongPressTooltip>
           )}
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close}
+          <Button
+            color="dark"
+            size="sm"
+            leftSection={<FaTimes />}
+            onClick={close}
+          >
+            {m?.general.close}
           </Button>
         </Modal.Footer>
       </Modal>

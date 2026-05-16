@@ -1,5 +1,5 @@
+import { Button } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaBan, FaCircle } from 'react-icons/fa';
 import { Shortcut } from '../types/common.js';
 
@@ -146,8 +146,8 @@ export function ShortcutRecorder({
   return (
     <Button
       type="button"
-      size="sm"
-      variant="light"
+      size="xs"
+      variant="default"
       tabIndex={0}
       onClick={handleClick}
       className="text-nowrap"

@@ -1,8 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { clsx } from 'clsx';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
+import { Alert, Form, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
@@ -192,8 +193,8 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                         <tr>
                           <td colSpan={3}>
                             <Button
-                              className="p-0"
-                              variant="link"
+                              variant="subtle"
+                              size="compact-sm"
                               onClick={(e) => {
                                 e.currentTarget.parentElement?.parentElement?.parentElement?.classList.toggle(
                                   classes['more'],
@@ -294,8 +295,8 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               <tr>
                                 <td colSpan={3}>
                                   <Button
-                                    className="p-0"
-                                    variant="link"
+                                    variant="subtle"
+                                    size="compact-sm"
                                     onClick={(e) => {
                                       e.currentTarget.parentElement?.parentElement?.parentElement?.classList.toggle(
                                         classes['more'],
@@ -323,8 +324,14 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
         })()}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="dark" type="button" onClick={close}>
-          <FaTimes /> {m?.general.close}
+        <Button
+          type="button"
+          color="dark"
+          size="sm"
+          leftSection={<FaTimes />}
+          onClick={close}
+        >
+          {m?.general.close}
         </Button>
       </Modal.Footer>
     </Modal>

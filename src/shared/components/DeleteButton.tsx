@@ -1,8 +1,8 @@
 import { deleteFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Button } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -12,11 +12,12 @@ export function DeleteButton(): ReactElement {
   const dispatch = useDispatch();
 
   return (
-    <LongPressTooltip label={m?.general.delete} kbd="Del">
+    <MantineLongPressTooltip label={m?.general.delete} kbd="Del">
       {({ props }) => (
         <Button
           className="ms-1"
-          variant="danger"
+          color="red"
+          size="sm"
           onClick={() => {
             dispatch(deleteFeature());
           }}
@@ -25,6 +26,6 @@ export function DeleteButton(): ReactElement {
           <FaTrash />
         </Button>
       )}
-    </LongPressTooltip>
+    </MantineLongPressTooltip>
   );
 }

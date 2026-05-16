@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaApple, FaFacebook, FaGoogle } from 'react-icons/fa';
 import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
@@ -116,61 +116,63 @@ export function AuthProviders({ mode }: Props): ReactElement {
     <div className="d-grid gap-2">
       {show('facebook') && (
         <Button
-          onClick={loginWithFacebook}
           size="lg"
+          leftSection={<FaFacebook />}
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
+          onClick={loginWithFacebook}
           disabled={disabled('facebook')}
         >
-          <FaFacebook />
-          &ensp;Facebook
+          Facebook
         </Button>
       )}
 
       {show('google') && (
         <Button
-          onClick={loginWithGoogle}
           size="lg"
+          leftSection={<FaGoogle />}
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
+          onClick={loginWithGoogle}
           disabled={disabled('google')}
         >
-          <FaGoogle />
-          &ensp;Google
+          Google
         </Button>
       )}
 
       {show('apple') && (
         <Button
-          onClick={loginWithApple}
           size="lg"
+          leftSection={<FaApple />}
           style={{ backgroundColor: '#000', color: '#fff' }}
+          onClick={loginWithApple}
           disabled={disabled('apple')}
         >
-          <FaApple />
-          &ensp;Apple
+          Apple
         </Button>
       )}
 
       {show('osm') && (
         <Button
-          onClick={loginWithOsm}
           size="lg"
+          leftSection={<SiOpenstreetmap />}
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
+          onClick={loginWithOsm}
           disabled={disabled('osm')}
         >
-          <SiOpenstreetmap />
-          &ensp;OpenStreetMap
+          OpenStreetMap
         </Button>
       )}
 
       {show('garmin') && (
         <Button
-          onClick={loginWithGarmin}
           size="lg"
+          leftSection={
+            <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />
+          }
           style={{ backgroundColor: '#1791FF', color: '#fff' }}
+          onClick={loginWithGarmin}
           disabled={disabled('garmin')}
         >
-          <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />
-          &ensp;Garmin
+          Garmin
         </Button>
       )}
     </div>
