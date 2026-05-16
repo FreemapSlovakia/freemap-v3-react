@@ -1,11 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { MapViewState, mapRefocus } from '@features/map/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
@@ -64,11 +64,13 @@ export function MapControls(): ReactElement | null {
         <MapSwitchButton />
       )}
 
-      <ButtonGroup className="ms-1">
-        <LongPressTooltip label={m?.main.zoomIn}>
+      <ActionIcon.Group className="ms-1">
+        <MantineLongPressTooltip label={m?.main.zoomIn}>
           {({ props }) => (
-            <Button
-              variant="secondary"
+            <ActionIcon
+              variant="filled"
+              color="gray"
+              size="input-sm"
               onClick={() => {
                 onMapRefocus({ zoom: zoom + 1 });
               }}
@@ -76,14 +78,16 @@ export function MapControls(): ReactElement | null {
               {...props}
             >
               <FaPlus />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
 
-        <LongPressTooltip label={m?.main.zoomOut}>
+        <MantineLongPressTooltip label={m?.main.zoomOut}>
           {({ props }) => (
-            <Button
-              variant="secondary"
+            <ActionIcon
+              variant="filled"
+              color="gray"
+              size="input-sm"
               onClick={() => {
                 onMapRefocus({ zoom: zoom - 1 });
               }}
@@ -91,31 +95,32 @@ export function MapControls(): ReactElement | null {
               {...props}
             >
               <FaMinus />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
-      </ButtonGroup>
+        </MantineLongPressTooltip>
+      </ActionIcon.Group>
 
       {(!window.fmEmbedded || !embedFeatures.includes('noLocateMe')) && (
-        <LongPressTooltip label={m?.main.locateMe}>
+        <MantineLongPressTooltip label={m?.main.locateMe}>
           {({ props }) => (
-            <Button
+            <ActionIcon
               className="ms-1"
+              variant={locate ? 'light' : 'filled'}
+              color={gpsTracked ? 'yellow' : 'gray'}
+              size="input-sm"
               onClick={() => {
                 dispatch(toggleLocate(undefined));
               }}
-              active={locate}
-              variant={gpsTracked ? 'warning' : 'secondary'}
               {...props}
             >
               <FaRegDotCircle />
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
       )}
 
       {'exitFullscreen' in document && (
-        <LongPressTooltip
+        <MantineLongPressTooltip
           label={
             document.fullscreenElement
               ? m?.general.exitFullscreen
@@ -123,9 +128,11 @@ export function MapControls(): ReactElement | null {
           }
         >
           {({ props }) => (
-            <Button
+            <ActionIcon
               className="ms-1"
-              variant="secondary"
+              variant="filled"
+              color="gray"
+              size="input-sm"
               onClick={handleFullscreenClick}
               {...props}
             >
@@ -134,9 +141,9 @@ export function MapControls(): ReactElement | null {
               ) : (
                 <RiFullscreenLine />
               )}
-            </Button>
+            </ActionIcon>
           )}
-        </LongPressTooltip>
+        </MantineLongPressTooltip>
       )}
     </Toolbar>
   );

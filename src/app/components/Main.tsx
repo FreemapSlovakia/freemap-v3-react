@@ -31,8 +31,9 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
+import { Button, UnstyledButton } from '@mantine/core';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -44,7 +45,7 @@ import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
 import { MouseEvent, ReactElement, useCallback } from 'react';
-import { Button, ButtonToolbar } from 'react-bootstrap';
+import { ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -556,7 +557,7 @@ export function Main(): ReactElement {
                 <div />
 
                 <Toolbar className="mt-2">
-                  <Button
+                  <UnstyledButton
                     id="freemap-logo"
                     className={progress ? 'in-progress' : 'idle'}
                     onClick={handleLogoClick}
@@ -579,46 +580,48 @@ export function Main(): ReactElement {
                 <Toolbar className="mx-2 mt-2">
                   <ButtonToolbar>
                     {trackFound && (
-                      <LongPressTooltip
+                      <MantineLongPressTooltip
                         breakpoint="sm"
                         label={m?.general.elevationProfile}
                       >
-                        {({ label, labelClassName, props }) => (
+                        {({ label, props }) => (
                           <Button
-                            variant="secondary"
-                            active={elevationChartActive}
+                            color="gray"
+                            size="sm"
+                            variant={elevationChartActive ? 'light' : 'filled'}
+                            leftSection={<FaChartArea />}
                             onClick={() =>
                               dispatch(trackViewerToggleElevationChart())
                             }
                             {...props}
                           >
-                            <FaChartArea />
-                            <span className={labelClassName}> {label}</span>
+                            {label}
                           </Button>
                         )}
-                      </LongPressTooltip>
+                      </MantineLongPressTooltip>
                     )}
 
                     {routeFound && (
-                      <LongPressTooltip
+                      <MantineLongPressTooltip
                         breakpoint="sm"
                         label={m?.general.elevationProfile}
                       >
-                        {({ label, labelClassName, props }) => (
+                        {({ label, props }) => (
                           <Button
                             className={clsx(trackFound && 'ms-1')}
-                            variant="secondary"
+                            color="gray"
+                            size="sm"
+                            variant={elevationChartActive ? 'light' : 'filled'}
+                            leftSection={<FaChartArea />}
                             onClick={() =>
                               dispatch(routePlannerToggleElevationChart())
                             }
-                            active={elevationChartActive}
                             {...props}
                           >
-                            <FaChartArea />
-                            <span className={labelClassName}> {label}</span>
+                            {label}
                           </Button>
                         )}
-                      </LongPressTooltip>
+                      </MantineLongPressTooltip>
                     )}
                   </ButtonToolbar>
                 </Toolbar>
