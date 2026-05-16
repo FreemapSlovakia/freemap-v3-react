@@ -1,11 +1,11 @@
 import { documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Kbd, Menu } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import { FaList, FaLock, FaQuestion, FaRegCopyright } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';
@@ -44,58 +44,64 @@ export function CopyrightButton(): ReactElement {
 
   return (
     <Toolbar className="me-2 mb-2">
-      <Dropdown>
-        <LongPressTooltip
-          label={(m?.mainMenu.mapLegend ?? '…') + ', Privacy policy'}
-        >
-          {({ props }) => (
-            <Dropdown.Toggle
-              bsPrefix="fm-dropdown-toggle-nocaret"
-              id="dropdown-basic"
-              variant="secondary"
-              {...props}
-            >
-              <FaQuestion />
-            </Dropdown.Toggle>
-          )}
-        </LongPressTooltip>
+      <Menu>
+        <Menu.Target>
+          <MantineLongPressTooltip
+            label={(m?.mainMenu.mapLegend ?? '…') + ', Privacy policy'}
+          >
+            {({ props }) => (
+              <ActionIcon
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                {...props}
+              >
+                <FaQuestion />
+              </ActionIcon>
+            )}
+          </MantineLongPressTooltip>
+        </Menu.Target>
 
-        <Dropdown.Menu style={{ width: 'max-content' }}>
-          <Dropdown.Item
-            key="attribution"
-            as="button"
+        <Menu.Dropdown>
+          <Menu.Item
+            leftSection={<FaRegCopyright />}
             onClick={() => showAttribution()}
           >
-            <FaRegCopyright /> {m?.main.copyright}
-          </Dropdown.Item>
+            {m?.main.copyright}
+          </Menu.Item>
 
           {showLegendButton && (
-            <Dropdown.Item
-              key="legend"
+            <Menu.Item
+              component="a"
               href="#show=legend"
+              leftSection={<FaList />}
+              rightSection={
+                <>
+                  <Kbd>m</Kbd> <Kbd>l</Kbd>
+                </>
+              }
               onClick={(e) => {
                 e.preventDefault();
-
                 dispatch(setActiveModal('legend'));
               }}
             >
-              <FaList /> {m?.mainMenu.mapLegend} <kbd>m</kbd> <kbd>l</kbd>
-            </Dropdown.Item>
+              {m?.mainMenu.mapLegend}
+            </Menu.Item>
           )}
 
-          <Dropdown.Item
-            key="privacyPolicy"
+          <Menu.Item
+            component="a"
             href="#document=privacyPolicy"
+            leftSection={<FaLock />}
             onClick={(e) => {
               e.preventDefault();
-
               dispatch(documentShow('privacyPolicy'));
             }}
           >
-            <FaLock /> {m?.general.privacyPolicy}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+            {m?.general.privacyPolicy}
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </Toolbar>
   );
 }

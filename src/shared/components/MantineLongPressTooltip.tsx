@@ -5,6 +5,7 @@ import {
   PointerEvent,
   ReactElement,
   ReactNode,
+  Ref,
   useCallback,
   useEffect,
   useRef,
@@ -18,13 +19,9 @@ type Props = {
   delay?: number;
   breakpoint?: Breakpoint;
   kbd?: string;
+  ref?: Ref<HTMLElement>;
   children: (props: {
-    props: {
-      onPointerEnter: (e: PointerEvent) => void;
-      onPointerLeave: (e: PointerEvent) => void;
-      onClickCapture: (e: MouseEvent) => void;
-      onContextMenuCapture: (e: MouseEvent) => void;
-    };
+    props: { ref?: Ref<any> } & Record<string, any>;
     label: ReactNode;
     labelClassName: string;
     labelHidden: boolean;
@@ -54,7 +51,9 @@ export function MantineLongPressTooltip({
   kbd,
   delay = 500,
   breakpoint,
+  ref: forwardedRef,
   children,
+  ...rest
 }: Props) {
   const preventClickRef = useRef(false);
 
@@ -130,16 +129,14 @@ export function MantineLongPressTooltip({
 
   const kbdParts = kbd?.split(' ') ?? [];
 
-  const kbdEl = kbdParts.length ? (
-    <>
-      {kbdParts.map((k, i) => (
+  const kbdEl = kbdParts.length
+    ? kbdParts.map((k, i) => (
         <Fragment key={k}>
           {i > 0 && ' '}
           <Kbd>{k}</Kbd>
         </Fragment>
-      ))}
-    </>
-  ) : null;
+      ))
+    : null;
 
   const tooltipKbdEl = kbdParts.map((k) => (
     <Fragment key={k}>
@@ -150,6 +147,8 @@ export function MantineLongPressTooltip({
 
   const trigger = children({
     props: {
+      ...rest,
+      ref: forwardedRef,
       onPointerEnter: handleStart,
       onPointerLeave: handleClear,
       onClickCapture: handleClickCapture,
