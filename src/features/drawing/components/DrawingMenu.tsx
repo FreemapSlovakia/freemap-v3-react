@@ -1,17 +1,13 @@
 import { setActiveModal, setTool, Tool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ActionIcon, Button } from '@mantine/core';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Button, Kbd, Menu } from '@mantine/core';
 import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
-import { ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { FaPalette } from 'react-icons/fa';
+import type { ReactElement } from 'react';
+import { FaCaretDown, FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
 
 export default DrawingMenu;
 
@@ -29,38 +25,61 @@ export function DrawingMenu(): ReactElement | undefined {
   return (
     activeToolDef && (
       <ToolMenu>
-        <Dropdown
-          className="ms-1"
-          onSelect={(tool) => dispatch(setTool(assert<Tool>(tool)))}
-        >
-          <LongPressTooltip
-            breakpoint="lg"
-            label={m?.selections[activeToolDef.msgKey as 'drawPoints']}
-          >
-            {({ label, labelClassName, props }) => (
-              <Dropdown.Toggle variant="secondary" {...props}>
-                {activeToolDef.icon}{' '}
-                <span className={labelClassName}> {label}</span>
-              </Dropdown.Toggle>
-            )}
-          </LongPressTooltip>
+        <Menu>
+          <Menu.Target>
+            <MantineLongPressTooltip
+              breakpoint="lg"
+              label={m?.selections[activeToolDef.msgKey as 'drawPoints']}
+            >
+              {({ label, labelHidden, props }) =>
+                labelHidden ? (
+                  <ActionIcon
+                    className="ms-1"
+                    variant="filled"
+                    color="gray"
+                    size="input-sm"
+                    {...props}
+                  >
+                    {activeToolDef.icon}
+                  </ActionIcon>
+                ) : (
+                  <Button
+                    className="ms-1"
+                    color="gray"
+                    size="sm"
+                    leftSection={activeToolDef.icon}
+                    rightSection={<FaCaretDown />}
+                    {...props}
+                  >
+                    {label}
+                  </Button>
+                )
+              }
+            </MantineLongPressTooltip>
+          </Menu.Target>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <Menu.Dropdown>
             {toolDefinitions
               .filter((td) => td.draw)
               .map(({ tool, icon, msgKey: key, kbd }) => (
-                <Dropdown.Item
-                  as="button"
-                  eventKey={tool}
+                <Menu.Item
                   key={tool}
-                  active={tool === activeTool}
+                  leftSection={icon}
+                  color={tool === activeTool ? 'blue' : undefined}
+                  rightSection={
+                    kbd ? (
+                      <>
+                        <Kbd>g</Kbd> <Kbd>{kbd.slice(3).toLowerCase()}</Kbd>
+                      </>
+                    ) : null
+                  }
+                  onClick={() => dispatch(setTool(tool as Tool))}
                 >
-                  {icon} {m?.selections[key as 'drawPoints'] ?? '…'}{' '}
-                  <kbd>g</kbd> <kbd>{kbd?.slice(3).toLowerCase()}</kbd>
-                </Dropdown.Item>
+                  {m?.selections[key as 'drawPoints'] ?? '…'}
+                </Menu.Item>
               ))}
-          </Dropdown.Menu>
-        </Dropdown>
+          </Menu.Dropdown>
+        </Menu>
 
         <MantineLongPressTooltip
           label={m?.drawing.defProps.menuItem}

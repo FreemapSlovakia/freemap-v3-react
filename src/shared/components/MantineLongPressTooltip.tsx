@@ -1,4 +1,5 @@
 import { Kbd, Tooltip } from '@mantine/core';
+import type { CSSProperties } from 'react';
 import {
   Fragment,
   MouseEvent,
@@ -145,9 +146,23 @@ export function MantineLongPressTooltip({
     </Fragment>
   ));
 
+  // Don't propagate `className`/`style` from parent cloneElement (e.g.
+  // Menu.Target / Popover.Target) — they are usually empty merges that
+  // would otherwise override the styling/spacing the consumer sets on the
+  // inner element via `{...props}`.
+  const {
+    className: _ignoredClassName,
+    style: _ignoredStyle,
+    ...restProps
+  } = rest as {
+    className?: string;
+    style?: CSSProperties;
+    [key: string]: unknown;
+  };
+
   const trigger = children({
     props: {
-      ...rest,
+      ...restProps,
       ref: forwardedRef,
       onPointerEnter: handleStart,
       onPointerLeave: handleClear,

@@ -1,11 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Button, Menu } from '@mantine/core';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
-import { Dropdown, Form, InputGroup } from 'react-bootstrap';
-import { FaEraser } from 'react-icons/fa';
+import { Form, InputGroup } from 'react-bootstrap';
+import { FaCaretDown, FaEraser } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsSetParams } from '../model/actions.js';
 
@@ -24,24 +23,30 @@ export function ChangesetsMenu(): ReactElement {
 
   return (
     <ToolMenu>
-      <Dropdown
-        className="ms-1"
-        onSelect={(d) => {
-          dispatch(changesetsSetParams({ days: Number(d) }));
-        }}
-      >
-        <Dropdown.Toggle variant="secondary" id="days">
-          {m?.changesets.olderThanFull({ days }) ?? '…'}
-        </Dropdown.Toggle>
+      <Menu>
+        <Menu.Target>
+          <Button
+            className="ms-1"
+            color="gray"
+            size="sm"
+            rightSection={<FaCaretDown />}
+          >
+            {m?.changesets.olderThanFull({ days }) ?? '…'}
+          </Button>
+        </Menu.Target>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <Menu.Dropdown>
           {[3, 7, 14, 30].map((d) => (
-            <Dropdown.Item key={d} eventKey={String(d)} active={d === days}>
+            <Menu.Item
+              key={d}
+              color={d === days ? 'blue' : undefined}
+              onClick={() => dispatch(changesetsSetParams({ days: d }))}
+            >
               {m?.changesets.olderThan({ days: d })}
-            </Dropdown.Item>
+            </Menu.Item>
           ))}
-        </Dropdown.Menu>
-      </Dropdown>
+        </Menu.Dropdown>
+      </Menu>
 
       <Form
         className="ms-1 d-flex flex-nowrap"

@@ -6,15 +6,14 @@ import {
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { ActionIcon, Button } from '@mantine/core';
+import { ActionIcon, Button, Menu } from '@mantine/core';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import {
+  FaCaretDown,
   FaChartArea,
   FaCloudUploadAlt,
   FaInfoCircle,
@@ -23,7 +22,6 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
 import {
   ColorizingMode,
   trackViewerColorizeTrackBy,
@@ -143,33 +141,38 @@ export function TrackViewerMenu(): ReactElement {
       )}
 
       {enableElevationChart && (
-        <Dropdown
-          className="ms-1"
-          onSelect={(approach) => {
-            dispatch(
-              trackViewerColorizeTrackBy(
-                assert<ColorizingMode | null>(approach),
-              ),
-            );
-          }}
-        >
-          <Dropdown.Toggle id="colorizing_mode" variant="secondary">
-            <FaPaintBrush />{' '}
-            {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
-          </Dropdown.Toggle>
+        <Menu>
+          <Menu.Target>
+            <Button
+              className="ms-1"
+              color="gray"
+              size="sm"
+              leftSection={<FaPaintBrush />}
+              rightSection={<FaCaretDown />}
+            >
+              {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
+            </Button>
+          </Menu.Target>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
-              <Dropdown.Item
-                eventKey={mode}
+          <Menu.Dropdown>
+            {(
+              [undefined, 'elevation', 'steepness'] as (
+                | ColorizingMode
+                | undefined
+              )[]
+            ).map((mode) => (
+              <Menu.Item
                 key={mode || 'none'}
-                active={mode === colorizeTrackBy}
+                color={mode === colorizeTrackBy ? 'blue' : undefined}
+                onClick={() =>
+                  dispatch(trackViewerColorizeTrackBy(mode ?? null))
+                }
               >
                 {m?.trackViewer.colorizingMode[mode ?? 'none']}
-              </Dropdown.Item>
+              </Menu.Item>
             ))}
-          </Dropdown.Menu>
-        </Dropdown>
+          </Menu.Dropdown>
+        </Menu>
       )}
 
       {enableElevationChart && (

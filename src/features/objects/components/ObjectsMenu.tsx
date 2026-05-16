@@ -1,6 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
-import { Button } from '@mantine/core';
+import { ActionIcon, Button, Menu } from '@mantine/core';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { Node, OsmMapping } from '@osm/types.js';
@@ -255,55 +255,69 @@ export function ObjectsMenu(): ReactElement {
         </Dropdown.Menu>
       </Dropdown>
 
-      <Dropdown
-        className="ms-1"
-        onSelect={(eventKey) => handleIconChange(eventKey as MarkerType)}
-      >
-        <Dropdown.Toggle variant="secondary">
-          {selectedIconValue === 'ring' ? (
-            <FaCircle />
-          ) : selectedIconValue === 'square' ? (
-            <FaSquare />
-          ) : (
-            <FaMapMarker />
-          )}
-        </Dropdown.Toggle>
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          <Dropdown.Item eventKey="pin" active={selectedIconValue === 'pin'}>
-            <FaMapMarker /> {m?.objects.icon.pin}
-          </Dropdown.Item>
-
-          <Dropdown.Item eventKey="ring" active={selectedIconValue === 'ring'}>
-            <FaCircle /> {m?.objects.icon.ring}
-          </Dropdown.Item>
-
-          <Dropdown.Item
-            eventKey="square"
-            active={selectedIconValue === 'square'}
+      <Menu>
+        <Menu.Target>
+          <ActionIcon
+            className="ms-1"
+            variant="filled"
+            color="gray"
+            size="input-sm"
           >
-            <FaSquare /> {m?.objects.icon.square}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-
-        {active.length > 0 && (
-          <MantineLongPressTooltip label={m?.general.delete} kbd="Del">
-            {({ props }) => (
-              <Button
-                className="ms-1"
-                color="red"
-                size="sm"
-                rightSection={<FaTrash />}
-                onClick={() => {
-                  dispatch(objectsSetFilter([]));
-                }}
-                {...props}
-              >
-                {active.length}
-              </Button>
+            {selectedIconValue === 'ring' ? (
+              <FaCircle />
+            ) : selectedIconValue === 'square' ? (
+              <FaSquare />
+            ) : (
+              <FaMapMarker />
             )}
-          </MantineLongPressTooltip>
-        )}
-      </Dropdown>
+          </ActionIcon>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item
+            leftSection={<FaMapMarker />}
+            color={selectedIconValue === 'pin' ? 'blue' : undefined}
+            onClick={() => handleIconChange('pin')}
+          >
+            {m?.objects.icon.pin}
+          </Menu.Item>
+
+          <Menu.Item
+            leftSection={<FaCircle />}
+            color={selectedIconValue === 'ring' ? 'blue' : undefined}
+            onClick={() => handleIconChange('ring')}
+          >
+            {m?.objects.icon.ring}
+          </Menu.Item>
+
+          <Menu.Item
+            leftSection={<FaSquare />}
+            color={selectedIconValue === 'square' ? 'blue' : undefined}
+            onClick={() => handleIconChange('square')}
+          >
+            {m?.objects.icon.square}
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+
+      {active.length > 0 && (
+        <MantineLongPressTooltip label={m?.general.delete} kbd="Del">
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              color="red"
+              size="sm"
+              rightSection={<FaTrash />}
+              onClick={() => {
+                dispatch(objectsSetFilter([]));
+              }}
+              {...props}
+            >
+              {active.length}
+            </Button>
+          )}
+        </MantineLongPressTooltip>
+      )}
     </ToolMenu>
   );
 }
