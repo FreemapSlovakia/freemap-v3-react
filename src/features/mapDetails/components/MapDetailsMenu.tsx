@@ -1,12 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Button, Menu } from '@mantine/core';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { type ReactElement, useState } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import type { ReactElement } from 'react';
+import { FaCaretDown } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   MapDetailsSource,
@@ -18,8 +18,6 @@ export function MapDetailsMenu(): ReactElement | null {
   const canDelete = useAppSelector((state) =>
     Boolean(state.trackViewer.trackGeojson),
   );
-
-  const [sourcesOpen, setSourcesOpen] = useState(false);
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
@@ -38,29 +36,31 @@ export function MapDetailsMenu(): ReactElement | null {
 
   const dispatch = useDispatch();
 
+  const toggleSource = (source: MapDetailsSource) => {
+    dispatch(
+      mapDetailsExcludeSources(
+        excludeSources.has(source)
+          ? [...excludeSources].filter((s) => s !== source)
+          : [...excludeSources, source],
+      ),
+    );
+  };
+
   return (
     <ToolMenu>
-      <Dropdown
-        className="ms-1"
-        onSelect={(selection, e) => {
-          e.preventDefault();
-          dispatch(
-            mapDetailsExcludeSources(
-              excludeSources.has(selection as 'wms:')
-                ? [...excludeSources].filter((source) => source !== selection)
-                : [...excludeSources, selection as 'wms:'],
-            ),
-          );
-        }}
-        show={Boolean(sourcesOpen)}
-        autoClose="outside"
-        onToggle={(open) => setSourcesOpen(open)}
-      >
-        <Dropdown.Toggle variant="secondary">
-          {m?.mapDetails.sources}
-        </Dropdown.Toggle>
+      <Menu closeOnItemClick={false}>
+        <Menu.Target>
+          <Button
+            className="ms-1"
+            color="gray"
+            size="sm"
+            rightSection={<FaCaretDown />}
+          >
+            {m?.mapDetails.sources}
+          </Button>
+        </Menu.Target>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <Menu.Dropdown>
           {(
             [
               'nominatim-reverse',
@@ -68,32 +68,30 @@ export function MapDetailsMenu(): ReactElement | null {
               'overpass-surrounding',
             ] as MapDetailsSource[]
           ).map((source) => (
-            <Dropdown.Item
-              as="button"
+            <Menu.Item
               key={source}
-              eventKey={source}
-              active={!excludeSources.has(source as MapDetailsSource)}
+              leftSection={<Checkbox value={!excludeSources.has(source)} />}
+              onClick={() => toggleSource(source)}
             >
-              <Checkbox
-                value={!excludeSources.has(source as MapDetailsSource)}
-              />{' '}
               {m?.search.sources[source]}
-            </Dropdown.Item>
+            </Menu.Item>
           ))}
 
-          {activeWmsLayerDefs.map((def) => (
-            <Dropdown.Item
-              as="button"
-              key={def.type}
-              eventKey={`wms:${def.type}`}
-              active={!excludeSources.has(`wms:${def.type}`)}
-            >
-              <Checkbox value={!excludeSources.has(`wms:${def.type}`)} />{' '}
-              {def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+          {activeWmsLayerDefs.map((def) => {
+            const source = `wms:${def.type}` as MapDetailsSource;
+
+            return (
+              <Menu.Item
+                key={def.type}
+                leftSection={<Checkbox value={!excludeSources.has(source)} />}
+                onClick={() => toggleSource(source)}
+              >
+                {def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)
+              </Menu.Item>
+            );
+          })}
+        </Menu.Dropdown>
+      </Menu>
 
       {canDelete ? <DeleteButton /> : null}
     </ToolMenu>
