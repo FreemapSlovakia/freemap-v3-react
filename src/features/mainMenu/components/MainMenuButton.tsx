@@ -1,12 +1,18 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { ActionIcon, Menu, ScrollArea } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
+import { MenuSelectContext } from '@shared/components/menuSelectContext.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { Fragment, ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { useSubmenuScrollMemory } from '@shared/hooks/useSubmenuScrollMemory.js';
+import {
+  Fragment,
+  type ReactElement,
+  type SyntheticEvent,
+  useMemo,
+  useRef,
+} from 'react';
 import { FaBars, FaExternalLinkAlt } from 'react-icons/fa';
 import { HelpSubmenu } from './HelpSubmenu.js';
 import { LanguageSubmenu } from './LanguageSubmenu.js';
@@ -14,6 +20,10 @@ import { MainMenu } from './MainMenu.js';
 import { SocialButtons } from './SocialButtons.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 import { TrackingSubmenu } from './TrackingSubmenu.js';
+
+const SYNTH_EVENT = {
+  preventDefault() {},
+} as SyntheticEvent<unknown, Event>;
 
 export function MainMenuButton(): ReactElement {
   const lat = useAppSelector((state) => state.map.lat);
@@ -24,66 +34,81 @@ export function MainMenuButton(): ReactElement {
 
   const m = useMessages();
 
-  const sc = useScrollClasses('vertical');
-
   const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
     useMenuHandler();
 
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  useSubmenuScrollMemory(viewportRef, submenu);
+
+  const select = useMemo(
+    () => (eventKey: string) => handleSelect(eventKey, SYNTH_EVENT),
+    [handleSelect],
+  );
+
   return (
-    <Dropdown
-      onSelect={handleSelect}
-      autoClose="outside"
-      show={menuShown}
-      onToggle={handleMenuToggle}
-    >
-      <LongPressTooltip label={m?.mainMenu.title}>
-        {({ props }) => (
-          <Dropdown.Toggle bsPrefix="fm-dropdown-toggle-nocaret" {...props}>
-            <FaBars />
-          </Dropdown.Toggle>
-        )}
-      </LongPressTooltip>
-
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
+    <MenuSelectContext.Provider value={select}>
+      <Menu
+        opened={menuShown}
+        onChange={handleMenuToggle}
+        closeOnItemClick={false}
       >
-        <div className="fm-menu-scroller" ref={sc}>
-          <div />
+        <Menu.Target>
+          <MantineLongPressTooltip label={m?.mainMenu.title}>
+            {({ props }) => (
+              <ActionIcon
+                variant="filled"
+                color="gray"
+                size="input-sm"
+                {...props}
+              >
+                <FaBars />
+              </ActionIcon>
+            )}
+          </MantineLongPressTooltip>
+        </Menu.Target>
 
-          {submenu === null ? (
-            <MainMenu />
-          ) : submenu === 'help' ? (
-            <HelpSubmenu />
-          ) : submenu === 'openExternally' ? (
-            <Fragment key="openExternally">
-              <SubmenuHeader
-                icon={<FaExternalLinkAlt />}
-                title={m?.external.openInExternal}
-              />
+        <Menu.Dropdown>
+          <ScrollArea.Autosize
+            mah="calc(100dvh - 160px)"
+            type="auto"
+            viewportRef={viewportRef}
+          >
+            {submenu === null ? (
+              <MainMenu />
+            ) : submenu === 'help' ? (
+              <HelpSubmenu />
+            ) : submenu === 'openExternally' ? (
+              <Fragment key="openExternally">
+                <SubmenuHeader
+                  icon={<FaExternalLinkAlt />}
+                  title={m?.external.openInExternal}
+                />
 
-              <OpenInExternalAppDropdownItems
-                lat={lat}
-                lon={lon}
-                zoom={zoom}
-                showKbdShortcut
-              />
-            </Fragment>
-          ) : submenu === 'language' ? (
-            <LanguageSubmenu />
-          ) : submenu === 'tracking' ? (
-            <TrackingSubmenu />
-          ) : null}
+                <OpenInExternalAppDropdownItems
+                  lat={lat}
+                  lon={lon}
+                  zoom={zoom}
+                  showKbdShortcut
+                  onSelect={select}
+                />
+              </Fragment>
+            ) : submenu === 'language' ? (
+              <LanguageSubmenu />
+            ) : submenu === 'tracking' ? (
+              <TrackingSubmenu />
+            ) : null}
 
-          {submenu === null && (
-            <>
-              <Dropdown.Divider />
+            {submenu === null && (
+              <>
+                <Menu.Divider />
 
-              <SocialButtons closeMenu={closeMenu} />
-            </>
-          )}
-        </div>
-      </Dropdown.Menu>
-    </Dropdown>
+                <SocialButtons closeMenu={closeMenu} />
+              </>
+            )}
+          </ScrollArea.Autosize>
+        </Menu.Dropdown>
+      </Menu>
+    </MenuSelectContext.Provider>
   );
 }

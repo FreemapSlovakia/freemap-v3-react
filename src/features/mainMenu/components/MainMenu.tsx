@@ -1,8 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Kbd, Menu } from '@mantine/core';
+import { useMenuSelect } from '@shared/components/menuSelectContext.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { type ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaBullseye,
@@ -36,116 +37,240 @@ export function MainMenu(): ReactElement {
 
   const m = useMessages();
 
+  const select = useMenuSelect();
+
   return (
     <>
-      <Dropdown.Item as="button" eventKey="submenu-language">
-        <LanguageLabel>
-          {(language) => (
-            <>
-              <IoLanguage /> {language} <FaChevronRight />
-            </>
-          )}
-        </LanguageLabel>
-      </Dropdown.Item>
+      <Menu.Item
+        leftSection={<IoLanguage />}
+        rightSection={<FaChevronRight />}
+        onClick={() => select('submenu-language')}
+      >
+        <LanguageLabel>{(language) => language}</LanguageLabel>
+      </Menu.Item>
 
       {user ? (
-        <Dropdown.Item eventKey="modal-account" href="#show=account">
-          <FaUser /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
-        </Dropdown.Item>
+        <Menu.Item
+          component="a"
+          href="#show=account"
+          leftSection={<FaUser />}
+          rightSection={
+            <>
+              <Kbd>e</Kbd> <Kbd>a</Kbd>
+            </>
+          }
+          onClick={(e) => {
+            e.preventDefault();
+            select('modal-account');
+          }}
+        >
+          {m?.mainMenu.account}
+        </Menu.Item>
       ) : (
-        <Dropdown.Item eventKey="modal-login">
-          <FaSignInAlt /> {m?.mainMenu.logIn}
-        </Dropdown.Item>
+        <Menu.Item
+          leftSection={<FaSignInAlt />}
+          onClick={() => select('modal-login')}
+        >
+          {m?.mainMenu.logIn}
+        </Menu.Item>
       )}
 
-      <Dropdown.Divider />
+      <Menu.Divider />
 
-      <Dropdown.Item as="button" eventKey="clear-map-features">
-        <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href="?layers=I"
-        key="gallery"
-        eventKey="gallery"
-        active={galleryActive}
+      <Menu.Item
+        leftSection={<FaEraser />}
+        rightSection={
+          <>
+            <Kbd>g</Kbd> <Kbd>c</Kbd>
+          </>
+        }
+        onClick={() => select('clear-map-features')}
       >
-        <FaCamera /> {m?.tools.photos} <kbd>⇧f</kbd>
-      </Dropdown.Item>
+        {m?.main.clearMap}
+      </Menu.Item>
 
-      <Dropdown.Item as="button" eventKey="modal-maps">
-        <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href="?layers=I"
+        leftSection={<FaCamera />}
+        rightSection={<Kbd>⇧f</Kbd>}
+        color={galleryActive ? 'blue' : undefined}
+        onClick={(e) => {
+          e.preventDefault();
+          select('gallery');
+        }}
+      >
+        {m?.tools.photos}
+      </Menu.Item>
 
-      <Dropdown.Item as="button" eventKey="drawing">
-        <FaPencilRuler /> {m?.tools.measurement}
-      </Dropdown.Item>
+      <Menu.Item
+        leftSection={<FaRegMap />}
+        rightSection={
+          <>
+            <Kbd>g</Kbd> <Kbd>m</Kbd>
+          </>
+        }
+        onClick={() => select('modal-maps')}
+      >
+        {m?.tools.maps}
+      </Menu.Item>
+
+      <Menu.Item
+        leftSection={<FaPencilRuler />}
+        onClick={() => select('drawing')}
+      >
+        {m?.tools.measurement}
+      </Menu.Item>
 
       {toolDefinitions
         .filter(({ draw }) => !draw)
         .map(
           ({ tool: newTool, icon, msgKey, kbd }) =>
             newTool && (
-              <Dropdown.Item
-                href={`?tool=${tool}`}
+              <Menu.Item
                 key={newTool}
-                eventKey={'tool-' + newTool}
-                active={toolDef?.tool === newTool}
+                component="a"
+                href={`?tool=${tool}`}
+                leftSection={icon}
+                rightSection={
+                  kbd ? (
+                    <>
+                      <Kbd>g</Kbd>{' '}
+                      <Kbd>{kbd.replace(/Key/, '').toLowerCase()}</Kbd>
+                    </>
+                  ) : null
+                }
+                color={toolDef?.tool === newTool ? 'blue' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  select('tool-' + newTool);
+                }}
               >
-                {icon} {m?.tools[msgKey]}{' '}
-                {kbd && (
-                  <>
-                    <kbd>g</kbd>{' '}
-                    <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
-                  </>
-                )}
-              </Dropdown.Item>
+                {m?.tools[msgKey]}
+              </Menu.Item>
             ),
         )}
 
-      <Dropdown.Item as="button" eventKey="submenu-tracking">
-        <FaBullseye /> {m?.tools.tracking}
-        <FaChevronRight />
-      </Dropdown.Item>
-
-      <Dropdown.Divider />
-
-      <Dropdown.Item as="button" eventKey="submenu-openExternally">
-        <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
-      </Dropdown.Item>
-
-      <Dropdown.Item href="#show=export-map" eventKey="modal-export-map">
-        <FaPrint /> {m?.mainMenu.mapExport} <kbd>e</kbd> <kbd>p</kbd>
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        eventKey="modal-export-map-features"
-        href="#show=export-map-features"
+      <Menu.Item
+        leftSection={<FaBullseye />}
+        rightSection={<FaChevronRight />}
+        onClick={() => select('submenu-tracking')}
       >
-        <FaDownload /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd> <kbd>g</kbd>
-      </Dropdown.Item>
+        {m?.tools.tracking}
+      </Menu.Item>
 
-      <Dropdown.Item eventKey="document-exports" href="#document=exports">
-        <FaMobileAlt /> {m?.mainMenu.mapExports}
-      </Dropdown.Item>
+      <Menu.Divider />
 
-      <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
-        <FaDownload /> {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
-      </Dropdown.Item>
+      <Menu.Item
+        leftSection={<FaExternalLinkAlt />}
+        rightSection={<FaChevronRight />}
+        onClick={() => select('submenu-openExternally')}
+      >
+        {m?.external.openInExternal}
+      </Menu.Item>
 
-      <Dropdown.Item eventKey="modal-embed" href="#show=embed">
-        <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href="#show=export-map"
+        leftSection={<FaPrint />}
+        rightSection={
+          <>
+            <Kbd>e</Kbd> <Kbd>p</Kbd>
+          </>
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-export-map');
+        }}
+      >
+        {m?.mainMenu.mapExport}
+      </Menu.Item>
 
-      <Dropdown.Divider />
+      <Menu.Item
+        component="a"
+        href="#show=export-map-features"
+        leftSection={<FaDownload />}
+        rightSection={
+          <>
+            <Kbd>e</Kbd> <Kbd>g</Kbd>
+          </>
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-export-map-features');
+        }}
+      >
+        {m?.mainMenu.mapFeaturesExport}
+      </Menu.Item>
 
-      <Dropdown.Item as="button" eventKey="submenu-help">
-        <FaBook /> {m?.mainMenu.help} <FaChevronRight />
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href="#document=exports"
+        leftSection={<FaMobileAlt />}
+        onClick={(e) => {
+          e.preventDefault();
+          select('document-exports');
+        }}
+      >
+        {m?.mainMenu.mapExports}
+      </Menu.Item>
 
-      <Dropdown.Item href="#show=support-us" eventKey="modal-support-us">
-        <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href="#show=download-map"
+        leftSection={<FaDownload />}
+        rightSection={
+          <>
+            <Kbd>e</Kbd> <Kbd>m</Kbd>
+          </>
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-download-map');
+        }}
+      >
+        {m?.downloadMap.downloadMap}
+      </Menu.Item>
+
+      <Menu.Item
+        component="a"
+        href="#show=embed"
+        leftSection={<FaCode />}
+        rightSection={
+          <>
+            <Kbd>e</Kbd> <Kbd>e</Kbd>
+          </>
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-embed');
+        }}
+      >
+        {m?.mainMenu.embedMap}
+      </Menu.Item>
+
+      <Menu.Divider />
+
+      <Menu.Item
+        leftSection={<FaBook />}
+        rightSection={<FaChevronRight />}
+        onClick={() => select('submenu-help')}
+      >
+        {m?.mainMenu.help}
+      </Menu.Item>
+
+      <Menu.Item
+        component="a"
+        href="#show=support-us"
+        leftSection={<FaHeart color="red" />}
+        rightSection={<FaHeart color="red" />}
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-support-us');
+        }}
+      >
+        {m?.mainMenu.supportUs}
+      </Menu.Item>
     </>
   );
 }

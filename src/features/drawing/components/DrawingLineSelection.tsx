@@ -4,15 +4,13 @@ import {
   elevationChartSetTrackGeojson,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ActionIcon, Button } from '@mantine/core';
+import { ActionIcon, Button, Menu } from '@mantine/core';
 import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { lineString } from '@turf/helpers';
 import { type ReactElement, useCallback, useState } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCompressAlt,
@@ -107,46 +105,22 @@ export function DrawingLineSelection(): ReactElement | null {
     [dispatch, line?.points, lineIndex],
   );
 
-  const handleMoreSelect = useCallback(
-    (eventKey: string | null) => {
-      if (lineIndex === undefined) {
-        return;
-      }
+  const handleSimplify = useCallback(() => {
+    if (lineIndex === undefined) {
+      return;
+    }
 
-      switch (eventKey) {
-        case 'project-point':
-          setProjectPointDialogVisible(true);
+    const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
-          break;
-
-        case 'toggle-elevation-chart':
-          toggleElevationChart();
-
-          break;
-
-        case 'reverse':
-          dispatch(drawingLineReverse({ lineIndex }));
-
-          break;
-
-        case 'simplify': {
-          const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
-
-          if (tolerance !== null) {
-            dispatch(
-              drawingLineSimplify({
-                lineIndex,
-                tolerance: Number(tolerance || '0') / 100000,
-              }),
-            );
-          }
-
-          break;
-        }
-      }
-    },
-    [dispatch, lineIndex, m, toggleElevationChart],
-  );
+    if (tolerance !== null) {
+      dispatch(
+        drawingLineSimplify({
+          lineIndex,
+          tolerance: Number(tolerance || '0') / 100000,
+        }),
+      );
+    }
+  }, [dispatch, lineIndex, m]);
 
   if (!line) {
     return null;
@@ -234,44 +208,60 @@ export function DrawingLineSelection(): ReactElement | null {
           }
         </MantineLongPressTooltip>
 
-        <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
-          <Dropdown.Toggle variant="secondary">
-            <FaEllipsisV />
-          </Dropdown.Toggle>
+        <Menu>
+          <Menu.Target>
+            <ActionIcon
+              className="ms-1"
+              variant="filled"
+              color="gray"
+              size="input-sm"
+            >
+              <FaEllipsisV />
+            </ActionIcon>
+          </Menu.Target>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <Menu.Dropdown>
             {isLine && line.points.length > 1 && (
-              <Dropdown.Item
-                eventKey="toggle-elevation-chart"
-                active={showElevationChart}
+              <Menu.Item
+                leftSection={<FaChartArea />}
+                color={showElevationChart ? 'blue' : undefined}
+                onClick={toggleElevationChart}
               >
-                <FaChartArea />
-                &nbsp;{m?.general.elevationProfile ?? '…'}
-              </Dropdown.Item>
+                {m?.general.elevationProfile ?? '…'}
+              </Menu.Item>
             )}
 
             {isLine && line.points.length > 0 && (
-              <Dropdown.Item eventKey="project-point">
-                <TbAngle />
-                &nbsp;{m?.drawing.projection.projectPoint ?? '…'}
-              </Dropdown.Item>
+              <Menu.Item
+                leftSection={<TbAngle />}
+                onClick={() => setProjectPointDialogVisible(true)}
+              >
+                {m?.drawing.projection.projectPoint ?? '…'}
+              </Menu.Item>
             )}
 
             {line.points.length > 2 && (
-              <Dropdown.Item eventKey="simplify">
-                <FaCompressAlt />
-                &nbsp;{m?.drawing.simplify ?? '…'}
-              </Dropdown.Item>
+              <Menu.Item
+                leftSection={<FaCompressAlt />}
+                onClick={handleSimplify}
+              >
+                {m?.drawing.simplify ?? '…'}
+              </Menu.Item>
             )}
 
             {line.points.length > 1 && (
-              <Dropdown.Item eventKey="reverse">
-                <FaExchangeAlt />
-                &nbsp;{m?.drawing.reverse ?? '…'}
-              </Dropdown.Item>
+              <Menu.Item
+                leftSection={<FaExchangeAlt />}
+                onClick={() =>
+                  lineIndex !== undefined &&
+                  dispatch(drawingLineReverse({ lineIndex }))
+                }
+              >
+                {m?.drawing.reverse ?? '…'}
+              </Menu.Item>
             )}
-          </Dropdown.Menu>
-        </Dropdown>
+          </Menu.Dropdown>
+        </Menu>
       </Selection>
     </>
   );

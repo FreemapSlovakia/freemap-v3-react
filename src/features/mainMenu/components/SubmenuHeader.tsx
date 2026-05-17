@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { JSX, ReactNode } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { Kbd, Menu } from '@mantine/core';
+import { useMenuSelect } from '@shared/components/menuSelectContext.js';
+import type { JSX, ReactNode } from 'react';
 import { FaChevronLeft } from 'react-icons/fa';
 
 type SubmenuHeaderProps = {
@@ -14,17 +15,23 @@ export function SubmenuHeader({
 }: SubmenuHeaderProps): JSX.Element {
   const m = useMessages();
 
+  const select = useMenuSelect();
+
   return (
     <>
-      <Dropdown.Header>
+      <Menu.Label>
         {icon} {title}
-      </Dropdown.Header>
+      </Menu.Label>
 
-      <Dropdown.Item as="button" eventKey="submenu-">
-        <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
-      </Dropdown.Item>
+      <Menu.Item
+        leftSection={<FaChevronLeft />}
+        rightSection={<Kbd>Esc</Kbd>}
+        onClick={() => select('submenu-')}
+      >
+        {m?.mainMenu.back}
+      </Menu.Item>
 
-      <Dropdown.Divider />
+      <Menu.Divider />
     </>
   );
 }

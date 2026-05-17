@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Kbd, Menu } from '@mantine/core';
+import { useMenuSelect } from '@shared/components/menuSelectContext.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import {
   FaBullseye,
   FaMobileAlt,
@@ -19,54 +20,90 @@ export function TrackingSubmenu(): ReactElement {
     (state) => state.tracking.showPoints + ',' + state.tracking.showLine,
   );
 
+  const select = useMenuSelect();
+
   return (
     <>
       <SubmenuHeader icon={<FaBullseye />} title={m?.tools.tracking} />
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href="#show=tracking-watched"
-        eventKey="modal-tracking-watched"
+        leftSection={<FaRegEye />}
+        rightSection={
+          <>
+            <Kbd>g</Kbd> <Kbd>w</Kbd>
+          </>
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-tracking-watched');
+        }}
       >
-        <FaRegEye /> {m?.tracking.trackedDevices.button} <kbd>g</kbd>{' '}
-        <kbd>w</kbd>
-      </Dropdown.Item>
+        {m?.tracking.trackedDevices.button}
+      </Menu.Item>
 
-      <Dropdown.Item href="#show=tracking-my" eventKey="modal-tracking-my">
-        <FaMobileAlt /> {m?.tracking.devices.button} <kbd>g</kbd> <kbd>d</kbd>
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href="#show=tracking-my"
+        leftSection={<FaMobileAlt />}
+        rightSection={
+          <>
+            <Kbd>g</Kbd> <Kbd>d</Kbd>
+          </>
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-tracking-my');
+        }}
+      >
+        {m?.tracking.devices.button}
+      </Menu.Item>
 
-      <Dropdown.Divider />
+      <Menu.Divider />
 
-      <Dropdown.Header>
+      <Menu.Label>
         <FaPaintBrush /> {m?.general.visual}
-      </Dropdown.Header>
+      </Menu.Label>
 
-      <Dropdown.Item as="button" eventKey="tracking-visual-10">
-        {trackingDisplay === 'true,false' ? (
-          <FaRegCheckCircle />
-        ) : (
-          <FaRegCircle />
-        )}{' '}
+      <Menu.Item
+        leftSection={
+          trackingDisplay === 'true,false' ? (
+            <FaRegCheckCircle />
+          ) : (
+            <FaRegCircle />
+          )
+        }
+        onClick={() => select('tracking-visual-10')}
+      >
         {m?.tracking.visual.points}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item as="button" eventKey="tracking-visual-01">
-        {trackingDisplay === 'false,true' ? (
-          <FaRegCheckCircle />
-        ) : (
-          <FaRegCircle />
-        )}{' '}
+      <Menu.Item
+        leftSection={
+          trackingDisplay === 'false,true' ? (
+            <FaRegCheckCircle />
+          ) : (
+            <FaRegCircle />
+          )
+        }
+        onClick={() => select('tracking-visual-01')}
+      >
         {m?.tracking.visual.line}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item as="button" eventKey="tracking-visual-11">
-        {trackingDisplay === 'true,true' ? (
-          <FaRegCheckCircle />
-        ) : (
-          <FaRegCircle />
-        )}{' '}
+      <Menu.Item
+        leftSection={
+          trackingDisplay === 'true,true' ? (
+            <FaRegCheckCircle />
+          ) : (
+            <FaRegCircle />
+          )
+        }
+        onClick={() => select('tracking-visual-11')}
+      >
         {m?.tracking.visual['line+points']}
-      </Dropdown.Item>
+      </Menu.Item>
     </>
   );
 }

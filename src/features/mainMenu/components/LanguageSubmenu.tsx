@@ -1,8 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Menu } from '@mantine/core';
 import { Emoji } from '@shared/components/Emoji.js';
+import { useMenuSelect } from '@shared/components/menuSelectContext.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { JSX } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import type { JSX } from 'react';
 import { IoLanguage } from 'react-icons/io5';
 import { LanguageLabel } from './LanguageLabel.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
@@ -12,6 +13,8 @@ export function LanguageSubmenu(): JSX.Element {
 
   const chosenLanguage = useAppSelector((state) => state.l10n.chosenLanguage);
 
+  const select = useMenuSelect();
+
   return (
     <>
       <SubmenuHeader
@@ -19,69 +22,68 @@ export function LanguageSubmenu(): JSX.Element {
         title={<LanguageLabel>{(language) => language}</LanguageLabel>}
       />
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-"
-        active={chosenLanguage === null}
+      <Menu.Item
+        color={chosenLanguage === null ? 'blue' : undefined}
+        onClick={() => select('lang-')}
       >
         {m?.mainMenu.automaticLanguage}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-sk"
-        active={chosenLanguage === 'sk'}
+      <Menu.Item
+        leftSection={<Emoji>🇸🇰</Emoji>}
+        color={chosenLanguage === 'sk' ? 'blue' : undefined}
+        onClick={() => select('lang-sk')}
       >
-        <Emoji>🇸🇰</Emoji>&ensp;Slovensky
-      </Dropdown.Item>
+        Slovensky
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-cs"
-        active={chosenLanguage === 'cs'}
+      <Menu.Item
+        leftSection={<Emoji>🇨🇿</Emoji>}
+        color={chosenLanguage === 'cs' ? 'blue' : undefined}
+        onClick={() => select('lang-cs')}
       >
-        <Emoji>🇨🇿</Emoji>&ensp;Česky
-      </Dropdown.Item>
+        Česky
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-pl"
-        active={chosenLanguage === 'pl'}
+      <Menu.Item
+        leftSection={<Emoji>🇵🇱</Emoji>}
+        color={chosenLanguage === 'pl' ? 'blue' : undefined}
+        onClick={() => select('lang-pl')}
       >
-        <Emoji>🇵🇱</Emoji>&ensp;Polski
-      </Dropdown.Item>
+        Polski
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-hu"
-        active={chosenLanguage === 'hu'}
+      <Menu.Item
+        leftSection={<Emoji>🇭🇺</Emoji>}
+        color={chosenLanguage === 'hu' ? 'blue' : undefined}
+        onClick={() => select('lang-hu')}
       >
-        <Emoji>🇭🇺</Emoji>&ensp;Magyar
-      </Dropdown.Item>
+        Magyar
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-en"
-        active={chosenLanguage === 'en'}
+      <Menu.Item
+        leftSection={<Emoji>🇬🇧</Emoji>}
+        color={chosenLanguage === 'en' ? 'blue' : undefined}
+        onClick={() => select('lang-en')}
       >
-        <Emoji>🇬🇧</Emoji>&ensp;English
-      </Dropdown.Item>
+        English
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-de"
-        active={chosenLanguage === 'de'}
+      <Menu.Item
+        leftSection={<Emoji>🇩🇪</Emoji>}
+        color={chosenLanguage === 'de' ? 'blue' : undefined}
+        onClick={() => select('lang-de')}
       >
-        <Emoji>🇩🇪</Emoji>&ensp;Deutsch
-      </Dropdown.Item>
+        Deutsch
+      </Menu.Item>
 
-      <Dropdown.Item
-        as="button"
-        eventKey="lang-it"
-        active={chosenLanguage === 'it'}
+      <Menu.Item
+        leftSection={<Emoji>🇮🇹</Emoji>}
+        color={chosenLanguage === 'it' ? 'blue' : undefined}
+        onClick={() => select('lang-it')}
       >
-        <Emoji>🇮🇹</Emoji>&ensp;Italiano
-      </Dropdown.Item>
+        Italiano
+      </Menu.Item>
     </>
   );
 }

@@ -1,12 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { Button, Menu, ScrollArea } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { LatLon } from '@shared/types/common.js';
-import { JSX, ReactElement } from 'react';
+import type { JSX, ReactElement, SyntheticEvent } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
-import { Dropdown } from 'react-bootstrap';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
 
 interface Props extends LatLon {
@@ -31,6 +29,7 @@ export function OpenInExternalAppMenuButton({
   url,
   children,
   className,
+  ...rest
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -41,35 +40,40 @@ export function OpenInExternalAppMenuButton({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const sc = useScrollClasses('vertical');
-
   return (
-    <Dropdown
-      placement={placement}
-      className={className}
-      onSelect={handleSelect}
-      show={menuShown}
-      onToggle={handleMenuToggle}
+    <Menu
+      position={placement === 'top' ? 'top' : undefined}
+      opened={menuShown}
+      onChange={handleMenuToggle}
     >
-      <Dropdown.Toggle variant="secondary" title={m?.external.openInExternal}>
-        {children}
-      </Dropdown.Toggle>
+      <Menu.Target>
+        <Button
+          color="gray"
+          size="sm"
+          className={className}
+          title={m?.external.openInExternal}
+          {...rest}
+        >
+          {children}
+        </Button>
+      </Menu.Target>
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
-      >
-        <div className="fm-menu-scroller" ref={sc}>
-          <div />
+      <Menu.Dropdown>
+        <ScrollArea.Autosize mah="calc(100dvh - 160px)" type="auto">
           <OpenInExternalAppDropdownItems
             lat={lat}
             lon={lon}
             zoom={zoom}
             includePoint={includePoint}
             url={url}
+            onSelect={(eventKey) =>
+              handleSelect(eventKey, {
+                preventDefault() {},
+              } as SyntheticEvent<unknown, Event>)
+            }
           />
-        </div>
-      </Dropdown.Menu>
-    </Dropdown>
+        </ScrollArea.Autosize>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

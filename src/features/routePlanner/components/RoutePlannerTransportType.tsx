@@ -1,8 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ActionIcon, Button, Menu } from '@mantine/core';
+import { ActionIcon, Button, Menu, ScrollArea } from '@mantine/core';
 import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement } from 'react';
 import { FaCaretDown, FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
@@ -27,8 +26,6 @@ export function RoutePlannerTransportType({
     : m?.routePlanner.default;
 
   const becomePremium = useBecomePremium();
-
-  const sc = useScrollClasses('vertical');
 
   const tooltipLabel = activeTTDef ? (
     <>
@@ -92,9 +89,7 @@ export function RoutePlannerTransportType({
       </Menu.Target>
 
       <Menu.Dropdown>
-        <div className="dropdown-long" ref={sc}>
-          <div />
-
+        <ScrollArea.Autosize mah="calc(100dvh - 150px)" type="auto">
           {withDefault && (
             <Menu.Item
               leftSection={<FaEquals />}
@@ -154,7 +149,7 @@ export function RoutePlannerTransportType({
                 ))}
             </Fragment>
           ))}
-        </div>
+        </ScrollArea.Autosize>
       </Menu.Dropdown>
     </Menu>
   );

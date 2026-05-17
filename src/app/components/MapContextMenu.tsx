@@ -13,18 +13,19 @@ import {
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
+import { Kbd, Menu, ScrollArea, UnstyledButton } from '@mantine/core';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { useSubmenuScrollMemory } from '@shared/hooks/useSubmenuScrollMemory.js';
 import { LeafletMouseEvent } from 'leaflet';
 import {
   type ReactElement,
+  type SyntheticEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,
   FaChevronLeft,
@@ -49,6 +50,10 @@ const initialState = {
   maxHeight: 100000,
 };
 
+const SYNTH_EVENT = {
+  preventDefault() {},
+} as SyntheticEvent<unknown, Event>;
+
 export function MapContextMenu(): ReactElement {
   const m = useMessages();
 
@@ -70,6 +75,10 @@ export function MapContextMenu(): ReactElement {
     submenu,
     extraHandler,
   } = useMenuHandler();
+
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  useSubmenuScrollMemory(viewportRef, submenu);
 
   useEffect(() => {
     if (!map) {
@@ -109,8 +118,6 @@ export function MapContextMenu(): ReactElement {
   }, [menuShown]);
 
   const zoom = useAppSelector((state) => state.map.zoom);
-
-  const sc = useScrollClasses('vertical');
 
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
@@ -267,57 +274,53 @@ export function MapContextMenu(): ReactElement {
     ],
   );
 
+  const select = (eventKey: string) => () =>
+    handleSelect(eventKey, SYNTH_EVENT);
+
   return (
-    <Dropdown
-      show={menuShown}
-      onToggle={handleMenuToggle}
-      onSelect={handleSelect}
-      autoClose="outside"
+    <Menu
+      opened={menuShown}
+      onChange={handleMenuToggle}
+      closeOnItemClick={false}
     >
-      <Dropdown.Toggle
-        bsPrefix="fm-dropdown-toggle-nocaret"
-        ref={toggleRef}
-        style={{
-          width: 0,
-          height: 0,
-          margin: 0,
-          padding: 0,
-          border: 0,
-          position: 'absolute',
-          left: contextMenu.x,
-          top: contextMenu.y,
-          pointerEvents: 'none',
-        }}
-      />
+      <Menu.Target>
+        <UnstyledButton
+          ref={toggleRef}
+          style={{
+            width: 0,
+            height: 0,
+            margin: 0,
+            padding: 0,
+            border: 0,
+            position: 'absolute',
+            left: contextMenu.x,
+            top: contextMenu.y,
+            pointerEvents: 'none',
+          }}
+        />
+      </Menu.Target>
 
-      <Dropdown.Menu
-        className="fm-dropdown-with-scroller"
-        // this modifier somehow fixes menu
-        popperConfig={{
-          modifiers: [
-            {
-              name: 'fixFlashing',
-              phase: 'afterMain',
-              enabled: true,
-              effect() {},
-            },
-          ],
-        }}
-      >
-        <div className="fm-menu-scroller" ref={sc}>
-          <div />
-
+      <Menu.Dropdown>
+        <ScrollArea.Autosize
+          mah="calc(100dvh - 160px)"
+          type="auto"
+          viewportRef={viewportRef}
+        >
           {submenu === 'openExternally' ? (
             <>
-              <Dropdown.Header>
+              <Menu.Label>
                 <FaExternalLinkAlt /> {m?.external.openInExternal}
-              </Dropdown.Header>
+              </Menu.Label>
 
-              <Dropdown.Item as="button" eventKey="submenu-">
-                <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
-              </Dropdown.Item>
+              <Menu.Item
+                leftSection={<FaChevronLeft />}
+                rightSection={<Kbd>Esc</Kbd>}
+                onClick={select('submenu-')}
+              >
+                {m?.mainMenu.back}
+              </Menu.Item>
 
-              <Dropdown.Divider />
+              <Menu.Divider />
 
               <OpenInExternalAppDropdownItems
                 lat={contextMenu.lat}
@@ -325,63 +328,85 @@ export function MapContextMenu(): ReactElement {
                 zoom={zoom}
                 includePoint
                 copy={false}
+                onSelect={(eventKey) => handleSelect(eventKey, SYNTH_EVENT)}
               />
             </>
           ) : (
             <>
-              <Dropdown.Item as="button" eventKey="center">
-                <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
-              </Dropdown.Item>
+              <Menu.Item
+                leftSection={<FaRegDotCircle />}
+                onClick={select('center')}
+              >
+                {m?.mapCtxMenu.centerMap}
+              </Menu.Item>
 
-              <Dropdown.Item as="button" eventKey="measure">
-                <FaRuler /> {m?.mapCtxMenu.measurePosition}
-              </Dropdown.Item>
+              <Menu.Item leftSection={<FaRuler />} onClick={select('measure')}>
+                {m?.mapCtxMenu.measurePosition}
+              </Menu.Item>
 
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
-                <Dropdown.Item as="button" eventKey="details">
-                  <FaInfo /> {m?.mapCtxMenu.queryFeatures}
-                </Dropdown.Item>
+                <Menu.Item leftSection={<FaInfo />} onClick={select('details')}>
+                  {m?.mapCtxMenu.queryFeatures}
+                </Menu.Item>
               )}
 
               {(!window.fmEmbedded ||
                 !embedFeatures.includes('noMapSwitch')) && (
-                <Dropdown.Item as="button" eventKey="photos">
-                  <FaCamera /> {m?.mapCtxMenu.showPhotos}
-                </Dropdown.Item>
+                <Menu.Item
+                  leftSection={<FaCamera />}
+                  onClick={select('photos')}
+                >
+                  {m?.mapCtxMenu.showPhotos}
+                </Menu.Item>
               )}
 
               {!window.fmEmbedded && (
                 <>
-                  <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                    <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
-                    <FaChevronRight />
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<FaExternalLinkAlt />}
+                    rightSection={<FaChevronRight />}
+                    onClick={select('submenu-openExternally')}
+                  >
+                    {m?.external.openInExternal}
+                  </Menu.Item>
 
-                  <Dropdown.Divider />
+                  <Menu.Divider />
 
-                  <Dropdown.Item as="button" eventKey="addPoint">
-                    <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<FaMapMarkerAlt />}
+                    onClick={select('addPoint')}
+                  >
+                    {m?.mapCtxMenu.addPoint}
+                  </Menu.Item>
 
-                  <Dropdown.Item as="button" eventKey="startLine">
-                    <MdTimeline /> {m?.mapCtxMenu.startLine}
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<MdTimeline />}
+                    onClick={select('startLine')}
+                  >
+                    {m?.mapCtxMenu.startLine}
+                  </Menu.Item>
 
-                  <Dropdown.Divider />
+                  <Menu.Divider />
 
-                  <Dropdown.Item as="button" eventKey="startRoute">
-                    <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<FaPlay color="#409a40" />}
+                    onClick={select('startRoute')}
+                  >
+                    {m?.mapCtxMenu.startRoute}
+                  </Menu.Item>
 
-                  <Dropdown.Item as="button" eventKey="finishRoute">
-                    <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<FaStop color="#d9534f" />}
+                    onClick={select('finishRoute')}
+                  >
+                    {m?.mapCtxMenu.finishRoute}
+                  </Menu.Item>
                 </>
               )}
             </>
           )}
-        </div>
-      </Dropdown.Menu>
-    </Dropdown>
+        </ScrollArea.Autosize>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

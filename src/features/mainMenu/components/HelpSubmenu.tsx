@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Menu } from '@mantine/core';
+import { useMenuSelect } from '@shared/components/menuSelectContext.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { JSX, useMemo } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { type JSX, useMemo } from 'react';
 import { FaBook, FaList, FaRegAddressCard, FaUsers } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
@@ -20,48 +21,77 @@ export function HelpSubmenu(): JSX.Element {
 
   const layers = useAppSelector((state) => state.map.layers);
 
+  const select = useMenuSelect();
+
   return (
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
       {layers.some((layer) => legendLayers.has(layer)) && (
-        <Dropdown.Item href="#show=legend" eventKey="modal-legend">
-          <FaList /> {m?.mainMenu.mapLegend}
-        </Dropdown.Item>
+        <Menu.Item
+          component="a"
+          href="#show=legend"
+          leftSection={<FaList />}
+          onClick={(e) => {
+            e.preventDefault();
+            select('modal-legend');
+          }}
+        >
+          {m?.mainMenu.mapLegend}
+        </Menu.Item>
       )}
 
-      <Dropdown.Item eventKey="modal-about" href="#show=about">
-        <FaRegAddressCard /> {m?.mainMenu.contacts}
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href="#show=about"
+        leftSection={<FaRegAddressCard />}
+        onClick={(e) => {
+          e.preventDefault();
+          select('modal-about');
+        }}
+      >
+        {m?.mainMenu.contacts}
+      </Menu.Item>
 
-      <Dropdown.Item href={m?.mainMenu.wikiLink} eventKey="url" target="_blank">
-        <FaBook /> {m?.mainMenu.osmWiki}
-      </Dropdown.Item>
+      <Menu.Item
+        component="a"
+        href={m?.mainMenu.wikiLink}
+        target="_blank"
+        leftSection={<FaBook />}
+      >
+        {m?.mainMenu.osmWiki}
+      </Menu.Item>
 
       {skCs && (
         <>
-          <Dropdown.Item
+          <Menu.Item
+            component="a"
             href="https://groups.google.com/forum/#!forum/osm_sk"
-            eventKey="url"
             target="_blank"
+            leftSection={<FaUsers />}
           >
-            <FaUsers /> Fórum slovenskej OSM komunity
-          </Dropdown.Item>
+            Fórum slovenskej OSM komunity
+          </Menu.Item>
 
-          <Dropdown.Divider />
+          <Menu.Divider />
         </>
       )}
 
       {getDocuments(language)
         .filter((item) => item.listed !== false)
         .map(({ key, icon, title }) => (
-          <Dropdown.Item
+          <Menu.Item
             key={key}
+            component="a"
             href={`?document=${key}`}
-            eventKey={'document-' + key}
+            leftSection={icon}
+            onClick={(e) => {
+              e.preventDefault();
+              select('document-' + key);
+            }}
           >
-            {icon} {title}
-          </Dropdown.Item>
+            {title}
+          </Menu.Item>
         ))}
     </>
   );

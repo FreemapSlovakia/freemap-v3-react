@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Kbd, Menu } from '@mantine/core';
 import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import {
   FaClipboard,
   FaLink,
@@ -32,6 +32,7 @@ interface Props extends LatLon {
   url?: string;
   showKbdShortcut?: boolean;
   copy?: boolean;
+  onSelect?: (eventKey: string) => void;
 }
 
 export function OpenInExternalAppDropdownItems({
@@ -42,6 +43,7 @@ export function OpenInExternalAppDropdownItems({
   url,
   showKbdShortcut,
   copy = true,
+  onSelect,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -49,219 +51,259 @@ export function OpenInExternalAppDropdownItems({
 
   const hasClipboard = Boolean(window.navigator.clipboard?.writeText);
 
+  const select = (eventKey: string) => () => onSelect?.(eventKey);
+
   return (
     <>
       {url && (
         <>
-          <Dropdown.Item href={url} target="_blank" eventKey="url">
-            <FaWindowMaximize /> {m?.external.window}
-          </Dropdown.Item>
+          <Menu.Item
+            component="a"
+            href={url}
+            target="_blank"
+            leftSection={<FaWindowMaximize />}
+            onClick={select('url')}
+          >
+            {m?.external.window}
+          </Menu.Item>
 
           {hasShare && (
-            <Dropdown.Item as="button" eventKey="open-url">
-              <FaLink /> {m?.external.url}
-            </Dropdown.Item>
+            <Menu.Item leftSection={<FaLink />} onClick={select('open-url')}>
+              {m?.external.url}
+            </Menu.Item>
           )}
 
           {'canShare' in window.navigator && (
-            <Dropdown.Item as="button" eventKey="open-image">
-              <FaShareAlt /> {m?.external.image}
-            </Dropdown.Item>
+            <Menu.Item
+              leftSection={<FaShareAlt />}
+              onClick={select('open-image')}
+            >
+              {m?.external.image}
+            </Menu.Item>
           )}
 
-          <Dropdown.Divider />
+          <Menu.Divider />
         </>
       )}
 
       {!url && hasClipboard && copy && (
-        <Dropdown.Item as="button" eventKey="open-copy">
-          <FaClipboard /> {m?.general.copyPageUrl}
-          {showKbdShortcut && (
-            <>
-              {' '}
-              <kbd>j</kbd> <kbd>c</kbd>
-            </>
-          )}
-        </Dropdown.Item>
+        <Menu.Item
+          leftSection={<FaClipboard />}
+          rightSection={
+            showKbdShortcut ? (
+              <>
+                <Kbd>j</Kbd> <Kbd>c</Kbd>
+              </>
+            ) : null
+          }
+          onClick={select('open-copy')}
+        >
+          {m?.general.copyPageUrl}
+        </Menu.Item>
       )}
 
       {!url && hasShare && (
-        <Dropdown.Item as="button" eventKey="open-url">
-          <FaLink /> {m?.external.url}
-        </Dropdown.Item>
+        <Menu.Item leftSection={<FaLink />} onClick={select('open-url')}>
+          {m?.external.url}
+        </Menu.Item>
       )}
 
-      {!url && ((hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
+      {!url && ((hasClipboard && copy) || hasShare) && <Menu.Divider />}
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>o</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         {m?.external.osm}
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>o</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>m</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         {m?.external.mapy_cz}
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>m</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getGoogleUrl(lat, lon, zoom, includePoint)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>g</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         {m?.external.googleMaps}
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>g</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getGeocachingUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        onClick={select('url')}
       >
         Geocaching
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getF4mapUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>4</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         F4Map
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>4</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getPeakfinderUrl(lat, lon)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>p</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         Peakfinder
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>p</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getMapillaryUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>l</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         Mapillary
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>l</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getOpenStreetCamUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        onClick={select('url')}
       >
         OpenStreetCam
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getWazeUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        onClick={select('url')}
       >
         Waze
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getOmaUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        onClick={select('url')}
       >
         {m?.external.oma} (SK)
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getHikingSkUrl(lat, lon, zoom, includePoint)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>h</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         {m?.external.hiking_sk} (SK)
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>h</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getZbgisUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>z</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         {m?.external.zbgis} (SK)
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>z</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Divider />
+      <Menu.Divider />
 
-      <Dropdown.Item as="button" eventKey="open-josm">
+      <Menu.Item
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>j</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('open-josm')}
+      >
         {m?.external.josm}
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>j</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
 
-      <Dropdown.Item
+      <Menu.Item
+        component="a"
         href={getIdUrl(lat, lon, zoom)}
         target="_blank"
-        eventKey="url"
+        rightSection={
+          showKbdShortcut ? (
+            <>
+              <Kbd>j</Kbd> <Kbd>i</Kbd>
+            </>
+          ) : null
+        }
+        onClick={select('url')}
       >
         {m?.external.id}
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>i</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+      </Menu.Item>
     </>
   );
 }

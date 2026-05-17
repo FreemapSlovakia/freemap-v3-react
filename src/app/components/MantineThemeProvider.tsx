@@ -24,18 +24,22 @@ const theme = createTheme({
     Popover: Popover.extend({
       defaultProps: {
         zIndex: 2000,
-        // Match react-bootstrap: close on click. The map-wrapper's
-        // onClickCapture in Main.tsx intercepts clicks while a dropdown is
-        // open (detected via aria-expanded=true), stops propagation, and
-        // forwards a synthetic click to body so the popover closes itself.
-        // Default ['mousedown', 'touchstart'] fires before click, defeating
-        // that scheme.
-        clickOutsideEvents: ['click', 'touchend'],
+        // Match react-bootstrap useRootClose: close on click only. The
+        // map-wrapper's onClickCapture in Main.tsx intercepts clicks while a
+        // dropdown is open (detected via aria-expanded=true), stops
+        // propagation, and forwards a synthetic click to body so the
+        // popover closes itself. Default ['mousedown', 'touchstart'] fires
+        // before click, defeating that scheme. 'touchend' would close the
+        // MapContextMenu the moment the user releases a long-press, since
+        // long-press fires touchend but no synthesized click — sticking to
+        // 'click' lets the long-press menu stay open until the user taps.
+        clickOutsideEvents: ['click'],
       },
     }),
     Menu: Menu.extend({
       defaultProps: {
-        clickOutsideEvents: ['click', 'touchend'],
+        clickOutsideEvents: ['click'],
+        withArrow: true,
       },
     }),
   },
