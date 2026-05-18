@@ -1,7 +1,6 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
 import { Dispatch } from 'redux';
 import { authSetUser } from '../actions.js';
@@ -9,7 +8,7 @@ import {
   LoginResponseSchema,
   RawUserSchema,
   UserSettings,
-  UserSettingsSchema,
+  UserSettingsCompatSchema,
 } from '../types.js';
 
 const RawLoginResponseSchema = LoginResponseSchema.omit({ user: true }).extend({
@@ -36,18 +35,7 @@ export async function handleLoginResponse(
 
   let settings: UserSettings | undefined;
 
-  if (
-    typeof user.settings === 'object' &&
-    user.settings !== null &&
-    'customLayers' in user.settings &&
-    Array.isArray(user.settings.customLayers)
-  ) {
-    user.settings.customLayers = upgradeCustomLayerDefs(
-      user.settings.customLayers,
-    );
-  }
-
-  const settingsResult = UserSettingsSchema.safeParse(user.settings);
+  const settingsResult = UserSettingsCompatSchema.safeParse(user.settings);
 
   if (settingsResult.success) {
     settings = settingsResult.data;

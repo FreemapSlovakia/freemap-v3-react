@@ -1,13 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
-import { is } from 'typia';
 import { authInit, authSetUser } from '../actions.js';
 import {
   RawUserSchema,
   type User,
   type UserSettings,
-  UserSettingsSchema,
+  UserSettingsCompatSchema,
 } from '../types.js';
 
 function track(id: number | undefined) {
@@ -55,13 +53,9 @@ export const authInitProcessor: Processor = {
 
           let settings: UserSettings | undefined;
 
-          if (is<{ customLayers: unknown[] }>(rawUser.settings)) {
-            rawUser.settings.customLayers = upgradeCustomLayerDefs(
-              rawUser.settings.customLayers,
-            );
-          }
-
-          const settingsResult = UserSettingsSchema.safeParse(rawUser.settings);
+          const settingsResult = UserSettingsCompatSchema.safeParse(
+            rawUser.settings,
+          );
 
           if (settingsResult.success) {
             settings = settingsResult.data;

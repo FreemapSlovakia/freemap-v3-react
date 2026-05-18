@@ -1,5 +1,8 @@
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
-import { CustomLayerDefSchema } from '@shared/mapDefinitions.js';
+import {
+  CustomLayerDefSchema,
+  upgradeCustomLayerDefs,
+} from '@shared/mapDefinitions.js';
 import z from 'zod';
 import { IsoDateSchema, LatLonSchema } from '@/shared/types/common.js';
 
@@ -60,6 +63,22 @@ export const UserSettingsSchema = z.object({
 });
 
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
+
+// Strict UserSettingsSchema preceded by a legacy customLayers migration step.
+// Use this for parsing settings from persisted/server payloads that may
+// contain older customLayer shapes.
+export const UserSettingsCompatSchema = z.preprocess((s) => {
+  if (
+    typeof s === 'object' &&
+    s !== null &&
+    'customLayers' in s &&
+    Array.isArray(s.customLayers)
+  ) {
+    return { ...s, customLayers: upgradeCustomLayerDefs(s.customLayers) };
+  }
+
+  return s;
+}, UserSettingsSchema);
 
 export const UserSchema = z.object({
   authProviders: z.array(AuthProviderSchema),

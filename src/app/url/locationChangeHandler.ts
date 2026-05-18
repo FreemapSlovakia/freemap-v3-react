@@ -61,20 +61,19 @@ import {
 import {
   migrateTransportType,
   type TransportType,
+  TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
-import { is } from 'typia';
 import {
   enableUpdatingUrl,
-  ShowModal,
+  ShowModalSchema,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setTool,
   ToolSchema,
-  ShowModalSchema,
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
@@ -183,7 +182,7 @@ export function handleLocationChange(store: MyStore): void {
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
             (point.length === 3 &&
-              is<TransportType | undefined>(point[0]) &&
+              TransportTypeSchema.optional().safeParse(point[0]).success &&
               !Number.isNaN(point[1]) &&
               !Number.isNaN(point[2]))),
       );
@@ -197,7 +196,7 @@ export function handleLocationChange(store: MyStore): void {
           ? 'rel'
           : false;
 
-    if (is<TransportType>(query['transport']) && pointsOk) {
+    if (TransportTypeSchema.safeParse(query['transport']).success && pointsOk) {
       const {
         points,
         finishOnly,
