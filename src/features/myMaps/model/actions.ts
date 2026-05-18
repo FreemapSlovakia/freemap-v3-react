@@ -25,18 +25,22 @@ export type MapMeta = z.infer<typeof MapMetaSchema>;
 export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];
   points?: PT[];
-  tracking?: Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>;
-  routePlanner?: Pick<
-    RoutePlannerState,
-    | 'transportType'
-    | 'points'
-    | 'finishOnly'
-    | 'pickMode'
-    | 'mode'
-    | 'milestones'
+  tracking?: Partial<
+    Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>
+  >;
+  routePlanner?: Partial<
+    Pick<
+      RoutePlannerState,
+      | 'transportType'
+      | 'points'
+      | 'finishOnly'
+      | 'pickMode'
+      | 'mode'
+      | 'milestones'
+    >
   >;
   galleryFilter?: GalleryFilter;
-  trackViewer?: TrackViewerState;
+  trackViewer?: Partial<TrackViewerState>;
   map?: Partial<
     Pick<
       MapState,
