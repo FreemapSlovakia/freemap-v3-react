@@ -173,27 +173,28 @@ export const convertToDrawing = createAction<
   | { type: 'search-result'; tolerance: number }
 >('CONVERT_TO_DRAWING');
 
-export type ExternalTargets =
-  | 'copy'
-  | 'f4map'
-  | 'google'
-  | 'hiking.sk'
-  | 'image'
-  | 'josm'
-  | 'mapillary'
-  | 'mapy.com'
-  | 'oma.sk'
-  | 'openstreetcam'
-  | 'osm.org'
-  | 'osm.org/id'
-  | 'peakfinder'
-  | 'url'
-  | 'waze'
-  | 'window'
-  | 'zbgis';
+export const ExternalTargetSchema = z.enum([
+  'copy',
+  'f4map',
+  'google',
+  'hiking.sk',
+  'image',
+  'josm',
+  'mapillary',
+  'mapy.com',
+  'oma.sk',
+  'openstreetcam',
+  'osm.org',
+  'osm.org/id',
+  'peakfinder',
+  'url',
+  'waze',
+  'window',
+  'zbgis',
+]);
 
 export const openInExternalApp = createAction<{
-  where: ExternalTargets;
+  where: z.infer<typeof ExternalTargetSchema>;
   lat?: number;
   lon?: number;
   zoom?: number;

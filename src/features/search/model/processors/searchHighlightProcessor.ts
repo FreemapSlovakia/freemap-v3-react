@@ -16,7 +16,10 @@ import {
   IsBaseLayerDef,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
-import { featureIdsEqual, OsmFeatureId } from '@shared/types/featureId.js';
+import {
+  featureIdsEqual,
+  OsmFeatureIdSchema,
+} from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
 import { is } from 'typia';
 import { searchSelectResult, searchSetResults } from '../actions.js';
@@ -58,12 +61,14 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
 
     const { id, geojson, incomplete } = action.payload.result;
 
-    if (incomplete && is<OsmFeatureId>(id)) {
-      switch (id.elementType) {
+    const parsed = incomplete ? OsmFeatureIdSchema.safeParse(id) : undefined;
+
+    if (parsed?.success) {
+      switch (parsed.data.elementType) {
         case 'node':
           dispatch(
             osmLoadNode({
-              id: id.id,
+              id: parsed.data.id,
               focus: Boolean(action.payload.focus),
               showToast: action.payload.showToast,
             }),
@@ -74,7 +79,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
         case 'way':
           dispatch(
             osmLoadWay({
-              id: id.id,
+              id: parsed.data.id,
               focus: Boolean(action.payload.focus),
               showToast: action.payload.showToast,
             }),
@@ -85,7 +90,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
         case 'relation':
           dispatch(
             osmLoadRelation({
-              id: id.id,
+              id: parsed.data.id,
               focus: Boolean(action.payload.focus),
               showToast: action.payload.showToast,
             }),

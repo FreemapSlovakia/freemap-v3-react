@@ -1,12 +1,13 @@
 import {
   clearMapFeatures,
-  ExternalTargets,
+  ExternalTargetSchema,
   Modal,
   openInExternalApp,
   saveSettings,
   setActiveModal,
   setTool,
   Tool,
+  ToolSchema,
 } from '@app/store/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
@@ -17,7 +18,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 
 export function useMenuHandler({
   pointTitle,
@@ -115,9 +115,9 @@ export function useMenuHandler({
 
         setShow(false);
       } else if (eventKey === 'drawing') {
-        const tool = storage.getItem('fm.drawingTool');
+        const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
-        dispatch(setTool(is<Tool>(tool) ? tool : 'draw-points'));
+        dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
 
         setShow(false);
       } else if (eventKey === 'clear-map-features') {
@@ -133,10 +133,12 @@ export function useMenuHandler({
       } else if (eventKey.startsWith('open-')) {
         const where = eventKey.slice(5);
 
-        if (is<ExternalTargets>(where)) {
+        const parsed = ExternalTargetSchema.safeParse(where);
+
+        if (parsed.success) {
           dispatch(
             openInExternalApp({
-              where,
+              where: parsed.data,
               lat,
               lon,
               zoom,

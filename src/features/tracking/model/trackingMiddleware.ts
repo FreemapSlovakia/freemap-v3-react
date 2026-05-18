@@ -3,8 +3,13 @@ import { rpcCall, rpcResponse } from '@features/rpc/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { wsClose, wsOpen } from '@features/websocket/model/actions.js';
 import { Dispatch, Middleware } from 'redux';
-import { is } from 'typia';
+import z from 'zod';
 import { TrackedDevice } from './types.js';
+
+const TrackingParamsSchema = z.union([
+  z.object({ token: z.string() }),
+  z.object({ deviceId: z.number() }),
+]);
 
 export function createTrackingMiddleware(): Middleware<
   {},
@@ -16,31 +21,37 @@ export function createTrackingMiddleware(): Middleware<
   return ({ dispatch, getState }) =>
     (next) =>
     (action) => {
-      if (rpcResponse.match(action)) {
+      _if: if (rpcResponse.match(action)) {
         const { payload } = action;
 
         if (
-          payload.method === 'tracking.subscribe' &&
-          payload.type === 'error' &&
-          is<{ token: string } | { deviceId: number }>(payload.params)
+          payload.method !== 'tracking.subscribe' ||
+          payload.type !== 'error'
         ) {
-          dispatch(
-            toastsAdd({
-              id: 'tracking.subscribeError',
-              messageKey:
-                payload.error.code === 404
-                  ? 'tracking.subscribeNotFound'
-                  : 'tracking.subscribeError',
-              messageParams: {
-                id:
-                  'token' in payload.params
-                    ? payload.params.token
-                    : payload.params.deviceId, // TODO use different message key
-              },
-              style: payload.error.code === 404 ? 'warning' : 'danger',
-            }),
-          );
+          break _if;
         }
+
+        const paramsResult = TrackingParamsSchema.safeParse(payload.params);
+
+        if (!paramsResult.success) {
+          break _if;
+        }
+
+        const params = paramsResult.data;
+
+        dispatch(
+          toastsAdd({
+            id: 'tracking.subscribeError',
+            messageKey:
+              payload.error.code === 404
+                ? 'tracking.subscribeNotFound'
+                : 'tracking.subscribeError',
+            messageParams: {
+              id: 'token' in params ? params.token : params.deviceId, // TODO use different message key
+            },
+            style: payload.error.code === 404 ? 'warning' : 'danger',
+          }),
+        );
       }
 
       const prevState = getState().websocket.state;

@@ -3,7 +3,6 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
 import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { is } from 'typia';
 import z from 'zod';
 import { trackingActions } from './actions.js';
 import {
@@ -123,7 +122,9 @@ export const trackingReducer = createReducer(initialState, (builder) =>
 
       const { params } = payload;
 
-      if (!is<{ token: string }>(params)) {
+      const parsedParams = z.object({ token: z.string() }).safeParse(params);
+
+      if (!parsedParams.success) {
         return state;
       }
 
@@ -131,10 +132,10 @@ export const trackingReducer = createReducer(initialState, (builder) =>
         payload.method === 'tracking.subscribe' &&
         payload.type === 'result'
       ) {
-        const parsed = TrackPointsSchema.safeParse(payload.result);
+        const parsedTrackPoint = TrackPointsSchema.safeParse(payload.result);
 
-        if (parsed.success) {
-          const { token } = params;
+        if (parsedTrackPoint.success) {
+          const { token } = parsedParams.data;
 
           if (token === undefined) {
             throw new Error();
@@ -144,23 +145,21 @@ export const trackingReducer = createReducer(initialState, (builder) =>
             ...state,
             tracks: [
               ...state.tracks.filter(({ token: id }) => id !== token),
-              { token, trackPoints: parsed.data },
+              { token, trackPoints: parsedTrackPoint.data },
             ],
           };
         }
       }
 
-      if (
-        payload.method === 'tracking.unsubscribe' &&
+      return payload.method === 'tracking.unsubscribe' &&
         payload.type === 'result'
-      ) {
-        return {
-          ...state,
-          tracks: state.tracks.filter((track) => track.token !== params.token),
-        };
-      }
-
-      return state;
+        ? {
+            ...state,
+            tracks: state.tracks.filter(
+              (track) => track.token !== parsedParams.data.token,
+            ),
+          }
+        : state;
     })
     .addCase(rpcEvent, (state, { payload: { method, params } }) => {
       if (method === 'tracking.addPoint') {

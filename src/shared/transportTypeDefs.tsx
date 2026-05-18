@@ -7,25 +7,31 @@ import {
   FaPen,
   FaWalking,
 } from 'react-icons/fa';
-import { is } from 'typia';
+import z from 'zod';
 
-export type TransportType =
-  | 'bike-osrm'
-  | 'car-osrm'
-  | 'foot-osrm'
-  | 'car'
-  | 'car4wd'
-  | 'foot'
-  | 'hiking'
-  | 'motorcycle'
-  | 'mtb'
-  | 'racingbike'
-  | 'manual';
+export const TransportTypeSchema = z.enum([
+  'bike-osrm',
+  'car-osrm',
+  'foot-osrm',
+  'car',
+  'car4wd',
+  'foot',
+  'hiking',
+  'motorcycle',
+  'mtb',
+  'racingbike',
+  'manual',
+]);
+
+export type TransportType = z.infer<typeof TransportTypeSchema>;
 
 export function migrateTransportType(transportType: unknown): TransportType {
-  return is<TransportType>(transportType)
-    ? transportType
-    : typeof transportType === 'string'
+  const parsed = TransportTypeSchema.safeParse(transportType);
+
+  return parsed.success
+    ? parsed.data
+    : // backward compatibility
+      typeof transportType === 'string'
       ? (({
           'car-toll': 'car',
           'car-free': 'car',
