@@ -5,7 +5,7 @@ import {
   getGenericNameFromOsmElementSync,
   getOsmMapping,
 } from '@osm/osmNameResolver.js';
-import { OsmMapping } from '@osm/types.js';
+import type { OsmMapping } from '@osm/types.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';

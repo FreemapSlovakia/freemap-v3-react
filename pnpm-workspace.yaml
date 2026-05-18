@@ -1,6 +1,7 @@
 allowBuilds:
   "@parcel/watcher": true
   "@sentry/cli": true
+  '@swc/core': true
   core-js-pure: true
   esbuild: true
   exifreader: true

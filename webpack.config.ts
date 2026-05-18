@@ -2,10 +2,13 @@ import { fileURLToPath } from 'node:url';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 import process from 'process';
+import * as sass from 'sass-embedded';
+import TerserPlugin from 'terser-webpack-plugin';
 import type SassLoader from 'sass-loader';
 import type { Configuration } from 'webpack';
 import webpack from 'webpack';
@@ -86,7 +89,13 @@ const config: Configuration = {
   optimization: {
     // moduleIds: 'deterministic',
     // chunkIds: 'named',
-    minimizer: ['...', new CssMinimizerPlugin()],
+    minimizer: [
+      new TerserPlugin({
+        minify: TerserPlugin.swcMinify,
+        // Optional: you can pass SWC-specific options here
+      }),
+      new CssMinimizerPlugin(),
+    ],
   },
   // more info: https://webpack.js.org/configuration/devtool/
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
@@ -95,9 +104,20 @@ const config: Configuration = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        loader: 'swc-loader',
         options: {
-          experimentalWatchApi: true,
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+              tsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+                refresh: !prod,
+              },
+            },
+          },
         },
       },
       {
@@ -135,6 +155,7 @@ const config: Configuration = {
           {
             loader: 'sass-loader',
             options: {
+              implementation: sass,
               sassOptions: {
                 quietDeps: true,
               },
@@ -199,6 +220,12 @@ const config: Configuration = {
     ],
   },
   plugins: [
+    !prod &&
+      new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          configFile: path.resolve(__dirname, 'tsconfig.json'),
+        },
+      }),
     new MarkdownDictPlugin({ dir: 'src/documents' }),
     !prod &&
       new ReactRefreshWebpackPlugin({
