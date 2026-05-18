@@ -807,10 +807,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
 
     letters: {
-      A: 'Autó',
-      T: 'Túrázás',
-      C: 'Kerékpározás',
-      K: 'Síelés',
       S: 'Légifelvétel',
       Z: 'Légifelvétel',
       J1: 'Ortofotomozaika SR (1. ciklus)',
@@ -822,8 +818,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Fényképek',
       l1: 'Erdészeti utak NLC (2017)',
       l2: 'Erdészeti utak NLC',
-      t: 'Turistautak',
-      c: 'Kerékpáros útvonalak',
       s0: 'Strava (minden)',
       s1: 'Strava (lovaglás)',
       s2: 'Strava (futás)',

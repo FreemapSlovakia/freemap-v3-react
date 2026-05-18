@@ -830,10 +830,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     countryWarning: (countries) =>
       `Pokrýva len tieto krajiny: ${countries.join(', ')}`,
     letters: {
-      A: 'Automapa',
-      T: 'Turistická',
-      C: 'Cyklomapa',
-      K: 'Bežkárska',
       S: 'Letecká',
       Z: 'Letecká',
       J1: 'Ortofotomozaika SR (1. cyklus)',
@@ -845,8 +841,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Fotografie',
       l1: 'Lesné cesty NLC (2017)',
       l2: 'Lesné cesty NLC',
-      t: 'Turistické trasy',
-      c: 'Cyklotrasy',
       s0: 'Strava (Všetko)',
       s1: 'Strava (Cyklojazdy)',
       s2: 'Strava (Beh)',

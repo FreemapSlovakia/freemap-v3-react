@@ -1,31 +1,11 @@
 import { MapViewState } from '@features/map/model/actions.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
-import {
-  getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
-  getTrasformedParamsIfIsOldFreemapUrl,
-} from './oldFreemapUtils.js';
 
 const LAYERS_RE = new RegExp(
   '^(' + Object.keys(integratedLayerDefMap).join('|') + ')|[.:]\\d',
 );
 
 export function getMapStateFromUrl(): Partial<MapViewState> {
-  {
-    const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
-
-    if (transformedParams) {
-      return transformedParams;
-    }
-  }
-
-  {
-    const transformedParams = getTrasformedParamsIfIsOldFreemapUrl();
-
-    if (transformedParams) {
-      return transformedParams;
-    }
-  }
-
   const query = new URLSearchParams(
     (location.hash || location.search).slice(1),
   );
@@ -67,7 +47,21 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     }
   }
 
-  return { lat, lon, zoom, layers };
+  layers = layers?.filter((layer) => layer in integratedLayerDefMap);
+
+  if (
+    layers &&
+    !layers.some((layer) => integratedLayerDefMap[layer]?.layer === 'base')
+  ) {
+    layers.push('X'); // fallback
+  }
+
+  return {
+    lat,
+    lon,
+    zoom,
+    layers,
+  };
 }
 
 function undefineNaN(val: number): number | undefined {

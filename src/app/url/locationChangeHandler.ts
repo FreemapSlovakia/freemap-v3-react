@@ -8,10 +8,7 @@ import {
   drawingLineSetLines,
   Line,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import {
-  drawingPointAdd,
-  drawingPointSetAll,
-} from '@features/drawing/model/actions/drawingPointActions.js';
+import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   GalleryColorizeBy,
   GalleryFilter,
@@ -81,10 +78,6 @@ import {
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
-import {
-  getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
-  getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
-} from './oldFreemapUtils.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 
 function parseQuery(search: string) {
@@ -405,33 +398,6 @@ export function handleLocationChange(store: MyStore): void {
     getState().drawingLines.lines.map(serializePoints).join(';')
   ) {
     dispatch(drawingLineSetLines(lines));
-  }
-
-  const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl();
-
-  if (transformed) {
-    const { lat, lon } = transformed;
-
-    dispatch(
-      drawingPointAdd({
-        coords: { lat, lon },
-        id: getState().drawingPoints.points.length,
-      }),
-    );
-  }
-
-  const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2();
-
-  if (f2) {
-    const { lat, lon, label } = f2;
-
-    dispatch(
-      drawingPointAdd({
-        coords: { lat, lon },
-        label,
-        id: getState().drawingPoints.points.length,
-      }),
-    );
   }
 
   const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */

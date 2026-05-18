@@ -455,7 +455,7 @@ _Placeholders:_ Fill `countries`, zooms, premium and pricing fields from your `m
 
 These codes are used in URLs via `layers=` and may help programmatic agents interpret deep links. They are **advisory** and do not grant permission to scrape data. See Restrictions.
 
-- A, T, C, K, S, Z, J1, J2, O, d, X, i, I, l, t, c, s0, s1, s2, s3, s4, w, 5, 6, 7, 8, VO, VS, VD, VT, h, z, WDZ, WLT, WGE, WKA, wka, WHC
+- S, Z, J1, J2, O, d, X, i, I, l, s0, s1, s2, s3, s4, w, 5, 6, 7, 8, VO, VS, VD, VT, h, z, WDZ, WLT, WGE, WKA, wka, WHC
 
 ---|---|---|---|---|---|---|---|---|---|
 |5|Terrain shading|base|tile|0|18|||sk|DMR 5.0: © ÚGKK SR, © Freemap Slovakia|
@@ -477,12 +477,10 @@ These codes are used in URLs via `layers=` and may help programmatic agents inte
 |WLT|Forest Types|base|wms|12||||© NLC Zvolen|sk|
 |X|Outdoor|base|tile|6|19||KeyX|sk, cz, hu, hr, si, ro, bg, ba, at, ch, it (north), ua (parts), rs (parts), md (parts), pl (parts), de (parts), xk|FM_ATTR, OSM data, CUZK DMR 5G|
 |Z|Aerial|base|tile|0|20||KeyZ|sk, cz|© GKÚ, NLC, © ČÚZK|
-|c|Bicycle trails|overlay|tile|8|16|||sk|© Freemap Slovakia, OSM data|
 |d|Public transport (ÖPNV)|base|tile|0|18||KeyQ||© MeMoMaps, OSM data|
 |h|Parametric shading|overlay|parametricShading||19|||sk|LLS DMR: © ÚGKK SR, © Freemap Slovakia|
 |i|Data layer|overlay|interactive||||KeyD|||
 |l|Forest tracks NLC|overlay|tile|11|15||KeyN|sk|© NLC Zvolen|
-|t|Hiking trails|overlay|tile|8|16|||sk|© Freemap Slovakia, OSM data|
 |w|Wikipedia|overlay|wikipedia|8|||KeyW|||
 |wka|Cadastre|overlay|wms|||KeyK|sk|© GKÚ|
 |z|Parametric shading|overlay|parametricShading||18|||cz|© Freemap Slovakia, © ČÚZK|

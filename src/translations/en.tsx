@@ -779,10 +779,6 @@ const messages: Messages = {
     countryWarning: (countries) =>
       `Covers only following countries: ${countries.join(', ')}`,
     letters: {
-      A: 'Car',
-      T: 'Hiking',
-      C: 'Bicycle',
-      K: 'Crosscountry Ski',
       S: 'Aerial',
       Z: 'Aerial',
       J1: 'Ortofotomozaika SR (1st cycle)',
@@ -794,8 +790,6 @@ const messages: Messages = {
       I: 'Photos',
       l1: 'Forest tracks NLC (2017)',
       l2: 'Forest tracks NLC',
-      t: 'Hiking trails',
-      c: 'Bicycle trails',
       s0: 'Strava (all)',
       s1: 'Strava (rides)',
       s2: 'Strava (runs)',

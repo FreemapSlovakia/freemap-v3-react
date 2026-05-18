@@ -795,10 +795,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     letters: {
-      A: 'Auto',
-      T: 'Wandern',
-      C: 'Fahrrad',
-      K: 'Skilanglauf',
       S: 'Luftbild',
       Z: 'Luftbild',
       J1: 'Ortofotomozaika SR (1. Zyklus)',
@@ -810,8 +806,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Fotos',
       l1: 'Forststraßen NLC (2017)',
       l2: 'Forststraßen NLC',
-      t: 'Wanderwege',
-      c: 'Radwege',
       s0: 'Strava (alle)',
       s1: 'Strava (Fahrten)',
       s2: 'Strava (Läufe)',

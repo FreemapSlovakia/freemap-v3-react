@@ -768,13 +768,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       error: ({ err }) => addError(messages, 'Błąd wylogowania', err),
     },
   },
-
   mapLayers: {
     letters: {
-      A: 'Auto',
-      T: 'Turystyka piesza',
-      C: 'Rowerowa',
-      K: 'Narciarstwo biegowe',
       S: 'Lotnicza',
       Z: 'Lotnicza',
       J1: 'Ortofotomozaika SR (1. cykl)',
@@ -786,8 +781,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Zdjęcia',
       l1: 'Leśne drogi NLC (2017)',
       l2: 'Leśne drogi NLC',
-      t: 'Szlaki piesze',
-      c: 'Szlaki rowerowe',
       s0: 'Strava (wszystko)',
       s1: 'Strava (jazdy)',
       s2: 'Strava (biegi)',

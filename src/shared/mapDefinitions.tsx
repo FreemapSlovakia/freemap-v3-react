@@ -1,15 +1,11 @@
 import { Shortcut } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
-  FaBicycle,
   FaBus,
   FaCamera,
-  FaCar,
-  FaHiking,
   FaMap,
   FaPencilAlt,
   FaPlane,
-  FaSkiingNordic,
   FaStrava,
   FaTractor,
   FaTree,
@@ -55,12 +51,6 @@ const FM_ATTR: AttributionDef = {
   url: 'https://www.freemap.sk',
 };
 
-const SRTM_ATTR: AttributionDef = {
-  type: 'data',
-  name: 'SRTM1: USGS EarthExplorer',
-  url: 'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1',
-};
-
 const STRAVA_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0Strava',
@@ -80,6 +70,7 @@ const GKU_ATTR: AttributionDef = {
   url: 'https://www.gku.sk/',
   country: 'sk',
 };
+
 const GEOLOGY_ATTR: AttributionDef = {
   type: 'map',
   name: '© Štátny geologický ústav Dionýza Štúra',
@@ -267,27 +258,6 @@ export function upgradeCustomLayerDefs(
     .filter((a): a is CustomLayerDef => Boolean(a));
 }
 
-function legacyFreemap(
-  type: string,
-  icon: ReactElement,
-  defaultInMenu?: boolean,
-): IntegratedBaseLayerDef {
-  return {
-    technology: 'tile',
-    layer: 'base',
-    type,
-    defaultInMenu,
-    icon,
-    url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
-    attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-    superseededBy: type === 'A' ? 'O' : 'X',
-  };
-}
-
 export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
@@ -428,10 +398,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       'xk',
     ],
   },
-  legacyFreemap('A', <FaCar />),
-  legacyFreemap('T', <FaHiking />, true),
-  legacyFreemap('C', <FaBicycle />, true),
-  legacyFreemap('K', <FaSkiingNordic />),
   {
     layer: 'base',
     type: 'O',
@@ -953,32 +919,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         premiumFromZoom: 13,
       }) satisfies IntegratedOverlayLayerDef,
   ),
-  {
-    layer: 'overlay',
-    type: 't',
-    technology: 'tile',
-    icon: <FaHiking />,
-    url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
-    attribution: [FM_ATTR, OSM_DATA_ATTR],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    zIndex: 3,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-  },
-  {
-    layer: 'overlay',
-    type: 'c',
-    technology: 'tile',
-    icon: <FaBicycle />,
-    url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
-    attribution: [FM_ATTR, OSM_DATA_ATTR],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    zIndex: 3,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-  },
   {
     layer: 'overlay',
     type: 'wka',

@@ -10,7 +10,6 @@ import { type ReactElement, useCallback, useMemo } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import LegacyMapsLegend from './LegacyMapsLegend.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';
 
@@ -59,8 +58,6 @@ export function LegendModal({ show }: Props): ReactElement {
   function getSingleLegend(type: string) {
     return type === 'X' ? (
       <OutdoorMapLegend />
-    ) : ['A', 'T', 'C', 'K'].includes(type) ? (
-      <LegacyMapsLegend />
     ) : (
       <WmsMapLegend def={wmsLayerDefs.find((def) => def.type === type)!} />
     );
