@@ -20,12 +20,12 @@
     "*.{js,ts}": ["biome check", "git add"]
   },
   "scripts": {
-    "start": "pnpm build:proto && pnpm sync-language-files && NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
+    "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
     "lint": "biome check",
     "lint:fix": "biome check --write",
-    "build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts",
-    "rspack:build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && rspack build --config rspack.config.ts",
-    "rspack:start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
+    "build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && rspack build --config rspack.config.ts",
+    "webpack:start": "pnpm build:proto && pnpm sync-language-files && NODE_OPTIONS='--max-old-space-size=16384' tsx node_modules/webpack/bin/webpack.js serve --hot --no-client-overlay --server-type https --server-options-key ssl/freemap.sk.key --server-options-cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --no-static --no-live-reload --allowed-hosts all",
+    "webpack:build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && tsx node_modules/webpack/bin/webpack.js --config webpack.config.ts",
     "sync-language-files": "tsgo -p translation-manager/tsconfig.json && node --enable-source-maps translation-manager/sync-language-files.js",
     "postinstall": "patch-package",
     "sentry-login": "sentry-cli --url https://bugsink.freemap.sk login",

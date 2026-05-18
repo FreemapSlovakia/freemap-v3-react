@@ -1,11 +1,18 @@
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import type { Configuration } from '@rspack/core';
+import type {
+  Configuration,
+  CssExtractRspackLoaderOptions,
+} from '@rspack/core';
 import { rspack } from '@rspack/core';
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlRspackPlugin from 'html-rspack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
+import * as sass from 'sass-embedded';
+import type SassLoader from 'sass-loader';
+import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
 
@@ -20,6 +27,8 @@ import skMessages from './src/translations/sk-shared.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const prod = 'DEPLOYMENT' in process.env && process.env['DEPLOYMENT'] !== 'dev';
+const cssModuleRegex = /\.module\.css$/;
+const scssModuleRegex = /\.module\.scss$/;
 
 const htmlPluginProps = {
   filename: 'index.html',
@@ -70,14 +79,17 @@ const config: Configuration = {
       '.js': ['.js', '.ts', '.tsx'],
     },
   },
-  experiments: {
-    css: true,
-  },
   optimization: {
-    minimize: prod,
+    minimizer: [
+      new TerserPlugin({
+        minify: TerserPlugin.swcMinify,
+      }),
+      new CssMinimizerPlugin(),
+    ],
   },
   devServer: {
     hot: true,
+    liveReload: false,
     server: {
       type: 'https',
       options: {
@@ -88,7 +100,6 @@ const config: Configuration = {
     host: '0.0.0.0',
     port: 9000,
     allowedHosts: 'all',
-    historyApiFallback: true,
     client: {
       overlay: false,
     },
@@ -96,24 +107,6 @@ const config: Configuration = {
   },
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
-    parser: {
-      'css/auto': {
-        namedExports: false,
-      },
-      'css/module': {
-        namedExports: false,
-      },
-    },
-    generator: {
-      'css/auto': {
-        exportsConvention: 'as-is',
-        localIdentName: prod ? '[hash:base64:6]' : '[path][name]__[local]',
-      },
-      'css/module': {
-        exportsConvention: 'as-is',
-        localIdentName: prod ? '[hash:base64:6]' : '[path][name]__[local]',
-      },
-    },
     rules: [
       {
         test: /\.tsx?$/,
@@ -142,17 +135,41 @@ const config: Configuration = {
       {
         test: /\.scss$/,
         use: [
+          prod
+            ? {
+                loader: rspack.CssExtractRspackPlugin.loader,
+                options: {
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + '/'
+                    );
+                  },
+                } satisfies CssExtractRspackLoaderOptions,
+              }
+            : 'style-loader',
           {
-            loader: 'sass-loader',
+            loader: 'css-loader',
             options: {
-              api: 'modern-compiler',
-              sassOptions: {
-                quietDeps: true,
+              modules: {
+                auto: scssModuleRegex,
+                namedExport: false,
+                exportLocalsConvention: 'as-is',
+                localIdentName: prod
+                  ? '[hash:base64:6]'
+                  : '[path][name]__[local]',
               },
             },
           },
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: sass,
+              sassOptions: {
+                quietDeps: true,
+              },
+            } satisfies SassLoader.Options,
+          },
         ],
-        type: 'css/module',
       },
       {
         test: /\.overpass$/,
@@ -160,7 +177,33 @@ const config: Configuration = {
       },
       {
         test: /\.css$/,
-        type: 'css/module',
+        use: [
+          prod
+            ? {
+                loader: rspack.CssExtractRspackPlugin.loader,
+                options: {
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + '/'
+                    );
+                  },
+                } satisfies CssExtractRspackLoaderOptions,
+              }
+            : 'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: cssModuleRegex,
+                namedExport: false,
+                exportLocalsConvention: 'as-is',
+                localIdentName: prod
+                  ? '[hash:base64:6]'
+                  : '[path][name]__[local]',
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.md$/,
@@ -207,7 +250,7 @@ const config: Configuration = {
     new rspack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: 'true',
-      PREVENT_ADS: 'PREVENT_ADS' in process.env,
+      PREVENT_ADS: String('PREVENT_ADS' in process.env),
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
@@ -320,7 +363,7 @@ const config: Configuration = {
         description: plMessages.description,
         errorHtml:
           '<h1>Nie udało się uruchomić aplikacji</h1>' +
-          '<p>Upewnij sa, že używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+          '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
         nojsMessage:
           'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
         loadingMessage: 'Ładowanie…',
@@ -335,10 +378,11 @@ const config: Configuration = {
         },
       ],
     }),
-    new rspack.ContextReplacementPlugin(
-      /intl\/locale-data\/jsonp$/,
-      /(sk|cs|en)\.tsx/,
-    ),
+    prod &&
+      new rspack.CssExtractRspackPlugin({
+        filename: '[name].[chunkhash].css',
+        chunkFilename: '[name].[chunkhash].css',
+      }),
   ].filter(Boolean),
 };
 

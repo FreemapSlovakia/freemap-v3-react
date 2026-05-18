@@ -380,10 +380,6 @@ const config: Configuration = {
         filename: '[name].[chunkhash].css',
         chunkFilename: '[name].[chunkhash].css',
       }),
-    new webpack.ContextReplacementPlugin(
-      /intl\/locale-data\/jsonp$/,
-      /(sk|cs|en)\.tsx/,
-    ),
   ].filter(Boolean),
 };
 
