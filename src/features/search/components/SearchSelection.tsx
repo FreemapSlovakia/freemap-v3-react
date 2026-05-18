@@ -4,7 +4,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
-import { ActionIcon, Button } from '@mantine/core';
+import { ActionIcon, ActionIconGroup } from '@mantine/core';
 import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -26,13 +26,12 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   return selectedResult && !window.fmEmbedded && !hidden ? (
     <Selection icon={<FaSearch />} label={m?.search.result} deletable>
-      <Button.Group className="ms-1">
+      <ActionIconGroup className="ms-1">
         <MantineLongPressTooltip label={m?.search.routeFrom}>
           {({ props }) => (
-            <Button
+            <ActionIcon
               color="gray"
-              size="sm"
-              leftSection={<FaPlay color="#32CD32" />}
+              size="input-sm"
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
@@ -48,16 +47,17 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
                 }
               }}
               {...props}
-            />
+            >
+              <FaPlay color="#32CD32" />
+            </ActionIcon>
           )}
         </MantineLongPressTooltip>
 
         <MantineLongPressTooltip label={m?.search.routeTo}>
           {({ props }) => (
-            <Button
+            <ActionIcon
               color="gray"
-              size="sm"
-              leftSection={<FaStop color="#FF6347" />}
+              size="input-sm"
               onClick={() => {
                 dispatch(setTool('route-planner'));
 
@@ -73,10 +73,12 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
                 }
               }}
               {...props}
-            />
+            >
+              <FaStop color="#FF6347" />
+            </ActionIcon>
           )}
         </MantineLongPressTooltip>
-      </Button.Group>
+      </ActionIconGroup>
 
       <MantineLongPressTooltip label={m?.general.convertToDrawing}>
         {({ props }) => (
