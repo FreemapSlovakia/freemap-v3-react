@@ -1,10 +1,17 @@
 import typia from 'typia';
+import z from 'zod';
 
-export type OsmFeatureId = {
-  type: 'osm';
-  elementType: 'node' | 'way' | 'relation';
-  id: number;
-};
+export const OsmFeatureIdSchema = z.object({
+  type: z.literal('osm'),
+  elementType: z.union([
+    z.literal('node'),
+    z.literal('way'),
+    z.literal('relation'),
+  ]),
+  id: z.number(),
+});
+
+export type OsmFeatureId = z.infer<typeof OsmFeatureIdSchema>;
 
 export type FeatureId =
   | OsmFeatureId

@@ -4,7 +4,6 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
 import { Dispatch } from 'redux';
-import { is } from 'typia';
 import { authSetUser } from '../actions.js';
 import {
   LoginResponseSchema,
@@ -37,7 +36,12 @@ export async function handleLoginResponse(
 
   let settings: UserSettings | undefined;
 
-  if (is<{ customLayers: unknown[] }>(user.settings)) {
+  if (
+    typeof user.settings === 'object' &&
+    user.settings !== null &&
+    'customLayers' in user.settings &&
+    Array.isArray(user.settings.customLayers)
+  ) {
     user.settings.customLayers = upgradeCustomLayerDefs(
       user.settings.customLayers,
     );

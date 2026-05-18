@@ -17,14 +17,13 @@ import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLang
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
   featureIdsEqual,
-  OsmFeatureId,
+  OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 
 export function ObjectsResult(): ReactElement | ReactElement[] | null {
   const m = useMessages();
@@ -65,14 +64,16 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
     : objects.map(({ id, coords, tags }) => {
         const name = getNameFromOsmElement(tags, language);
 
-        const gn = !is<OsmFeatureId>(id)
-          ? ''
-          : getGenericNameFromOsmElementSync(
+        const parsed = OsmFeatureIdSchema.safeParse(id);
+
+        const gn = parsed.success
+          ? getGenericNameFromOsmElementSync(
               tags,
-              id.elementType,
+              parsed.data.elementType,
               osmMapping.osmTagToNameMapping,
               osmMapping.colorNames,
-            );
+            )
+          : '';
 
         const img = resolveGenericName(osmTagToIconMapping, tags);
 

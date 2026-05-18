@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import z from 'zod';
 
 export type Exportable =
   | 'plannedRoute'
@@ -12,18 +13,18 @@ export type Exportable =
   | 'gpx'
   | 'search';
 
-export const exportTargets = [
+export const ExportTargetSchema = z.enum([
   'download',
   'gdrive',
   'dropbox',
   'garmin',
-] as const;
+]);
 
-export type ExportTarget = (typeof exportTargets)[number];
+export type ExportTarget = z.infer<typeof ExportTargetSchema>;
 
-export const exportTypes = ['gpx', 'geojson'] as const;
+export const ExportTypeSchema = z.enum(['gpx', 'geojson']);
 
-export type ExportType = (typeof exportTypes)[number];
+export type ExportType = z.infer<typeof ExportTypeSchema>;
 
 export const exportMapFeatures = createAction<{
   exportables: Exportable[];

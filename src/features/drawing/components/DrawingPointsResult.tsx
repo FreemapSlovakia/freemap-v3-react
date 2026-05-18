@@ -8,7 +8,6 @@ import { DragEndEvent, LeafletEvent } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import {
   drawingMeasure,
   drawingPointChangePosition,
@@ -27,17 +26,18 @@ export function DrawingPointsResult(): ReactElement {
 
   const handleMove = useCallback(
     (e: LeafletEvent) => {
-      if (
-        activeIndex !== null &&
+      if (activeIndex !== null) {
         // see https://github.com/PaulLeCam/react-leaflet/issues/981
-        is<{ latlng: { lat: number; lng: number } }>(e)
-      ) {
+        const { latlng } = e as unknown as {
+          latlng: { lat: number; lng: number };
+        };
+
         dispatch(
           drawingPointChangePosition({
             index: activeIndex,
             coords: {
-              lat: e.latlng.lat,
-              lon: e.latlng.lng,
+              lat: latlng.lat,
+              lon: latlng.lng,
             },
           }),
         );

@@ -129,11 +129,17 @@ export function getInitialState() {
 
   const initial: Partial<RootState> = {};
 
-  if (is<{ mapType: string; overlays: string[] }>(persisted.map)) {
-    (persisted.map as unknown as { layers: string[] }).layers = [
-      persisted.map.mapType,
-      ...persisted.map.overlays,
-    ];
+  {
+    const m = z
+      .object({ mapType: z.string(), overlays: z.string().array() })
+      .safeParse(persisted.map);
+
+    if (m.success) {
+      (persisted.map as unknown as { layers: string[] }).layers = [
+        m.data.mapType,
+        ...m.data.overlays,
+      ];
+    }
   }
 
   if (!is<{ customLayers: unknown }>(persisted.map)) {
