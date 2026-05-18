@@ -13,6 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './de-shared.js';
 import { addError, Messages } from './messagesInterface.js';
@@ -88,7 +89,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Gespeichert.',
     visual: 'Anzeige',
     copyOk: 'In Zwischenablage kopiert.',
-    noCookies: 'Diese Funktion erfordert die Zustimmung zu Cookies.',
+    noCookies: () => (
+      <>
+        Diese Funktion erfordert die{' '}
+        <CookiesConsentText>Zustimmung zu Cookies</CookiesConsentText>.
+      </>
+    ),
     name: 'Name',
     load: 'Laden',
     unnamed: 'Kein Name',
@@ -111,6 +117,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     privacyPolicy: 'Datenschutzrichtlinie',
     newOptionText: '%value% hinzufügen',
     deleteButtonText: '%value% aus der Liste entfernen',
+    accept: 'Akzeptieren',
   },
 
   theme: {
@@ -281,7 +288,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Urheberrecht',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Einige Funktionen erfordern Cookies. Akzeptieren:"
+        prompt="Einige Funktionen erfordern Cookies."
         local="Cookies für lokale Einstellungen und Anmeldung über soziale Netzwerke"
         analytics="Analytische Cookies"
       />
@@ -797,8 +804,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     letters: {
       S: 'Luftbild',
       Z: 'Luftbild',
-      J1: 'Ortofotomozaika SR (1. Zyklus)',
-      J2: 'Ortofotomozaika SR (2. Zyklus)',
+      J1: 'Luftbild (2017-2019)',
+      J2: 'Luftbild (2020-2022)',
       O: 'OpenStreetMap',
       d: 'Öffentlicher Verkehr (ÖPNV)',
       X: outdoorMap,

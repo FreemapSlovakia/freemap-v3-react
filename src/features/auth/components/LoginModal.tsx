@@ -43,7 +43,7 @@ export function LoginModal({ show }: Props): ReactElement {
       <Modal.Body>
         {cookieConsentResult === null && (
           <Alert variant="warning">
-            <FaExclamationTriangle /> {m?.general.noCookies}
+            <FaExclamationTriangle /> {m?.general.noCookies()}
           </Alert>
         )}
 

@@ -13,6 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './cs-shared.js';
 import { addError, Messages } from './messagesInterface.js';
@@ -88,7 +89,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Uložené.',
     visual: 'Zobrazení',
     copyOk: 'Zkopírováno do schránky.',
-    noCookies: 'Tato funkcionalita vyžaduje přijetí souhlasu cookies.',
+    noCookies: () => (
+      <>
+        Tato funkcionalita vyžaduje přijetí{' '}
+        <CookiesConsentText>souhlasu cookies</CookiesConsentText>.
+      </>
+    ),
     name: 'Název',
     load: 'Načíst',
     unnamed: 'Bez názvu',
@@ -110,6 +116,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     privacyPolicy: 'Zásady ochrany osobních údajů',
     newOptionText: 'Přidat %value%',
     deleteButtonText: 'Odebrat %value% ze seznamu',
+    accept: 'Přijmout',
   },
 
   theme: {
@@ -268,7 +275,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Licence mapy',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Některé funkce mohou vyžadovat cookies. Přijmout:"
+        prompt="Některé funkce mohou vyžadovat cookies."
         local="Cookies lokálních nastavení a přihlášení pomocí sociálních sítí"
         analytics="Analytické cookies"
       />
@@ -772,8 +779,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     letters: {
       S: 'Letecká',
       Z: 'Letecká',
-      J1: 'Ortofotomozaika SR (1. cyklus)',
-      J2: 'Ortofotomozaika SR (2. cyklus)',
+      J1: 'Letecká (2017-2019)',
+      J2: 'Letecká (2020-2022)',
       O: 'OpenStreetMap',
       d: 'Veřejná doprava (ÖPNV)',
       X: outdoorMap,

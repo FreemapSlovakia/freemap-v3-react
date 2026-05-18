@@ -51,6 +51,7 @@ import { useDispatch } from 'react-redux';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
 import { setActiveModal } from '../store/actions.js';
 import {
+  askingCookieConsentSelector,
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
@@ -525,12 +526,7 @@ export function Main(): ReactElement {
     (state) => state.gallery.pickingPositionForId !== null,
   );
 
-  const askingCookieConsent = useAppSelector((state) =>
-    Object.values(state.toasts.toasts).some(
-      (toast) =>
-        'messageKey' in toast && toast.messageKey === 'main.cookieConsent',
-    ),
-  );
+  const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
 
   return (
     <>

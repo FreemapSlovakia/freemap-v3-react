@@ -13,6 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './hu-shared.js';
 import { addError, Messages } from './messagesInterface.js';
@@ -91,7 +92,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     modifiedAt: 'Módosítva',
     operationError: ({ err }) => addError(messages, 'Műveleti hiba', err),
     copyOk: 'Vágólapra másolva.',
-    noCookies: 'Ez a funkció a sütik elfogadását igényli.',
+    noCookies: () => (
+      <>
+        Ez a funkció a{' '}
+        <CookiesConsentText>sütik elfogadását</CookiesConsentText> igényli.
+      </>
+    ),
     name: 'Név',
     load: 'Betöltés',
     unnamed: 'Névtelen',
@@ -109,6 +115,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     privacyPolicy: 'Adatvédelmi irányelvek',
     newOptionText: '%value% hozzáadása',
     deleteButtonText: '%value% eltávolítása a listáról',
+    accept: 'Elfogadod',
   },
 
   theme: {
@@ -284,7 +291,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     cookieConsent: () => (
       <CookieConsent
-        prompt="Egyes funkciók sütiket igényelhetnek. Elfogadod:"
+        prompt="Egyes funkciók sütiket igényelhetnek."
         local="Helyi beállítások és közösségi hálós bejelentkezés sütijei"
         analytics="Analitikus sütik"
       />
@@ -809,8 +816,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     letters: {
       S: 'Légifelvétel',
       Z: 'Légifelvétel',
-      J1: 'Ortofotomozaika SR (1. ciklus)',
-      J2: 'Ortofotomozaika SR (2. ciklus)',
+      J1: 'Légifelvétel (2017-2019)',
+      J2: 'Légifelvétel (2020-2022)',
       O: 'OpenStreetMap',
       d: 'Tömegközlekedés',
       X: outdoorMap,

@@ -6,11 +6,9 @@ import {
   syncStaticCache,
 } from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
-import { applyCookieConsent } from '@features/cookieConsent/model/actions.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -23,6 +21,7 @@ import { enableUpdatingUrl, setEmbedFeatures } from './store/actions.js';
 import { setStore as setErrorHandlerStore } from './store/middleware/globalErrorHandler.js';
 import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
+import { createCookieConsentToastAction } from '@/features/cookieConsent/action.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 
 window.localStorageFallback = storage;
@@ -92,19 +91,7 @@ store.dispatch(enableUpdatingUrl(true));
 const cookieConsentResult = store.getState().cookieConsent.cookieConsentResult;
 
 if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
-  store.dispatch(
-    toastsAdd({
-      messageKey: 'main.cookieConsent',
-      style: 'warning',
-      actions: [
-        {
-          nameKey: 'general.ok',
-          action: applyCookieConsent(),
-          style: 'secondary',
-        },
-      ],
-    }),
-  );
+  store.dispatch(createCookieConsentToastAction());
 }
 
 if (cookieConsentResult) {

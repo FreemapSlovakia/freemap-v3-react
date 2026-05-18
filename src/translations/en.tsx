@@ -12,6 +12,7 @@ import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './en-shared.js';
 import { addError, Messages } from './messagesInterface.js';
@@ -85,7 +86,12 @@ const messages: Messages = {
     saved: 'Saved.',
     visual: 'Display',
     copyOk: 'Copied to clipboard.',
-    noCookies: 'This functionality requires accepting the cookies consent.',
+    noCookies: () => (
+      <>
+        This functionality requires accepting the{' '}
+        <CookiesConsentText>cookies consent</CookiesConsentText>.
+      </>
+    ),
     name: 'Name',
     load: 'Load',
     unnamed: 'No name',
@@ -104,6 +110,7 @@ const messages: Messages = {
     privacyPolicy: 'Privacy policy',
     newOptionText: 'Add %value%',
     deleteButtonText: 'Remove %value% from the list',
+    accept: 'Accept',
   },
 
   theme: {
@@ -264,7 +271,7 @@ const messages: Messages = {
     copyright: 'Copyright',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Some features may require cookies. Accept:"
+        prompt="Some features may require cookies."
         local="Cookies of local settings and login via social networks"
         analytics="Analytics cookies"
       />
@@ -781,8 +788,8 @@ const messages: Messages = {
     letters: {
       S: 'Aerial',
       Z: 'Aerial',
-      J1: 'Ortofotomozaika SR (1st cycle)',
-      J2: 'Ortofotomozaika SR (2nd cycle)',
+      J1: 'Aerial (2017-2019)',
+      J2: 'Aerial (2020-2022)',
       O: 'OpenStreetMap',
       d: 'Public transport (ÖPNV)',
       X: outdoorMap,

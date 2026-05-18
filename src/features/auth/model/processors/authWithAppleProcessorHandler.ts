@@ -83,7 +83,9 @@ const handle: ProcessorHandler<typeof authWithApple> = async ({
         if (popup.closed) {
           cleanup();
 
-          reject(Object.assign(new Error('Popup closed'), { type: 'popup_closed' }));
+          reject(
+            Object.assign(new Error('Popup closed'), { type: 'popup_closed' }),
+          );
         }
       }, 500);
 

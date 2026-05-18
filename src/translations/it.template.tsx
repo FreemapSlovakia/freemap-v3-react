@@ -13,6 +13,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { FaKey } from 'react-icons/fa';
+import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { DocumentLink } from '../features/documents/components/DocumentLink.js';
 import shared from './it-shared.js';
 import { addError, Messages } from './messagesInterface.js';
@@ -95,7 +96,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Salvato.',
     visual: 'Visualizza',
     copyOk: 'Copiato negli appunti.',
-    noCookies: "Questa funzionalità richiede l'accettazione dei cookies.",
+    noCookies: () => (
+      <>
+        Questa funzionalità richiede{' '}
+        <CookiesConsentText>l'accettazione dei cookies</CookiesConsentText>.
+      </>
+    ),
     name: 'Nome',
     load: 'Carica',
     unnamed: 'Nessun nome',
@@ -116,6 +122,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     privacyPolicy: 'Informativa sulla privacy',
     newOptionText: 'Aggiungi %value%',
     deleteButtonText: 'Rimuovi %value% dalla lista',
+    accept: 'Accetta',
   },
 
   theme: {
@@ -274,7 +281,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Copyright',
     cookieConsent: () => (
       <CookieConsent
-        prompt="Alcune funzionalità richiedono i cookies. Accetta:"
+        prompt="Alcune funzionalità richiedono i cookies."
         local="Cookies su impostazioni locali e accesso tramite social networks"
         analytics="Cookies analitici"
       />
@@ -796,8 +803,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     letters: {
       S: 'Aereo',
       Z: 'Aereo',
-      J1: 'Ortofotomozaika SR (1° ciclo)',
-      J2: 'Ortofotomozaika SR (2° ciclo)',
+      J1: 'Aereo (2017-2019)',
+      J2: 'Aereo (2020-2022)',
       O: 'OpenStreetMap',
       d: 'Trasporti pubblici (ÖPNV)',
       X: outdoorMap,

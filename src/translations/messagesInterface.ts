@@ -61,7 +61,7 @@ export type Messages = {
     deleted: string;
     visual: string;
     copyOk: string;
-    noCookies: string;
+    noCookies: () => JSX.Element;
     name: string;
     load: string;
     unnamed: string;
@@ -79,6 +79,7 @@ export type Messages = {
     privacyPolicy: string;
     newOptionText: string;
     deleteButtonText: string;
+    accept: string;
   };
   theme: {
     light: string;

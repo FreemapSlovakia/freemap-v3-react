@@ -161,3 +161,6 @@ export const trackGeojsonIsSuitableForElevationChart = (
 
   return false;
 };
+
+export const askingCookieConsentSelector = (state: RootState): boolean =>
+  'cookieConsent' in state.toasts.toasts;
