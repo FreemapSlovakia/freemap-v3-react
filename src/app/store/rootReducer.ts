@@ -13,6 +13,7 @@ import {
   drawingSettingsReducer,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
+import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import {
   galleryInitialState,
   galleryReducer,
@@ -27,6 +28,7 @@ import {
   locationInitialState,
   locationReducer,
 } from '@features/location/model/reducer.js';
+import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import { mapInitialState, mapReducer } from '@features/map/model/reducer.js';
 import {
   mapDetailsInitialState,
@@ -37,6 +39,7 @@ import {
   objectInitialState,
   objectsReducer,
 } from '@features/objects/model/reducer.js';
+import { ShadingSchema } from '@features/parameterizedShading/Shading.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import {
   routePlannerInitialState,
@@ -53,10 +56,8 @@ import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
-import {
-  TransportTypeCompatSchema,
-  transportTypeDefs,
-} from '@shared/transportTypeDefs.js';
+import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
+import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import z from 'zod';
 import type { RootState } from '../store/store.js';
@@ -72,9 +73,112 @@ const PersistedAuthSchema = z.object({
     .optional(),
 });
 
-function isObject(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null;
-}
+const PersistedMapSchema = z
+  .object({
+    lat: z.number(),
+    lon: z.number(),
+    zoom: z.number(),
+    layers: z.array(z.string()),
+    layersSettings: z.record(z.string(), LayerSettingsSchema),
+    customLayers: CustomLayerDefArrayCompatSchema,
+    legacyMapWarningSuppressions: z.array(z.string()),
+    shading: ShadingSchema,
+    maxZoom: z.number(),
+    resolutionScale: z.number().nullable(),
+    featureScale: z.number(),
+  })
+  .partial();
+
+const PersistedL10nSchema = z
+  .object({
+    chosenLanguage: z.string().nullable(),
+  })
+  .partial();
+
+const PersistedCookieConsentSchema = z
+  .object({
+    cookieConsentResult: z.boolean().nullable(),
+    analyticCookiesAllowed: z.boolean(),
+  })
+  .partial();
+
+const PersistedDrawingSettingsSchema = z
+  .object({
+    drawingColor: z.string(),
+    drawingWidth: z.number(),
+    drawingRecentColors: z.array(z.string()),
+  })
+  .partial();
+
+const PersistedHomeLocationSchema = z
+  .object({
+    homeLocation: LatLonSchema.nullable(),
+  })
+  .partial();
+
+const PersistedLocationSchema = z
+  .object({
+    locate: z.boolean(),
+    location: z
+      .object({
+        lat: z.number(),
+        lon: z.number(),
+        accuracy: z.number(),
+      })
+      .nullable(),
+  })
+  .partial();
+
+const PersistedMainSchema = z
+  .object({
+    hiddenInfoBars: z.record(z.string(), z.number()),
+  })
+  .partial();
+
+const PersistedObjectsSchema = z
+  .object({
+    selectedIcon: z.enum(['pin', 'square', 'ring']),
+  })
+  .partial();
+
+const PersistedRoutePlannerSchema = z
+  .object({
+    preventHint: z.boolean(),
+    transportType: TransportTypeCompatSchema,
+    milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
+  })
+  .partial();
+
+const PersistedTrackViewerSchema = z
+  .object({
+    colorizeTrackBy: z.enum(['elevation', 'steepness']).nullable(),
+  })
+  .partial();
+
+const MapDetailsSourceSchema = z.union([
+  z.literal('nominatim-reverse'),
+  z.literal('overpass-nearby'),
+  z.literal('overpass-surrounding'),
+  z.custom<`wms:${string}`>(
+    (v) => typeof v === 'string' && v.startsWith('wms:'),
+  ),
+]);
+
+const PersistedMapDetailsSchema = z
+  .object({
+    excludeSources: z.array(MapDetailsSourceSchema),
+  })
+  .partial();
+
+const PersistedGallerySchema = z
+  .object({
+    colorizeBy: GalleryColorizeBySchema.nullable(),
+    showDirection: z.boolean(),
+    showLegend: z.boolean(),
+    recentTags: z.array(z.string()),
+    premium: z.boolean(),
+  })
+  .partial();
 
 export const reducers = {
   auth: authReducer,
@@ -117,6 +221,7 @@ export function getInitialState() {
 
   const initial: Partial<RootState> = {};
 
+  // Legacy: { mapType, overlays } → { layers }
   {
     const m = z
       .object({ mapType: z.string(), overlays: z.string().array() })
@@ -130,150 +235,129 @@ export function getInitialState() {
     }
   }
 
-  if (isObject(persisted.map) && 'customLayers' in persisted.map) {
-    const parsed = CustomLayerDefArrayCompatSchema.safeParse(
-      persisted.map['customLayers'],
-    );
+  const map = PersistedMapSchema.safeParse(persisted.map);
 
-    if (parsed.success) {
-      persisted.map['customLayers'] = parsed.data;
-    } else {
-      delete persisted.map['customLayers'];
-    }
+  if (map.success) {
+    initial.map = { ...mapInitialState, ...map.data };
   }
 
-  if (isObject(persisted.map)) {
-    initial.map = { ...mapInitialState, ...persisted.map };
+  const l10n = PersistedL10nSchema.safeParse(persisted.l10n);
+
+  if (l10n.success) {
+    initial.l10n = { ...l10nInitialState, ...l10n.data };
   }
 
-  if (isObject(persisted.l10n)) {
-    initial.l10n = { ...l10nInitialState, ...persisted.l10n };
-  }
+  const auth = PersistedAuthSchema.safeParse(persisted.auth);
 
-  const persistedAuth = PersistedAuthSchema.safeParse(persisted.auth);
-
-  if (persistedAuth.success) {
-    const u = persistedAuth.data.user;
-
+  if (auth.success) {
     initial.auth = {
       ...authInitialState,
-      user: u === undefined ? authInitialState.user : u,
+      user:
+        auth.data.user === undefined ? authInitialState.user : auth.data.user,
     };
   }
 
-  if (isObject(persisted.cookieConsent)) {
-    initial.cookieConsent = {
-      ...cookieConsentInitialState,
-      ...persisted.cookieConsent,
-    };
-  } else if (isObject(persisted.main)) {
-    initial.cookieConsent = {
-      ...cookieConsentInitialState,
-      ...persisted.main,
-    };
+  const cookieConsent = parseWithFallback(
+    PersistedCookieConsentSchema,
+    persisted.cookieConsent,
+    persisted.main,
+  );
+
+  if (cookieConsent) {
+    initial.cookieConsent = { ...cookieConsentInitialState, ...cookieConsent };
   }
 
-  if (isObject(persisted.drawingSettings)) {
+  const drawingSettings = parseWithFallback(
+    PersistedDrawingSettingsSchema,
+    persisted.drawingSettings,
+    persisted.main,
+  );
+
+  if (drawingSettings) {
     initial.drawingSettings = {
       ...drawingSettingsInitialState,
-      ...persisted.drawingSettings,
-    };
-  } else if (isObject(persisted.main)) {
-    initial.drawingSettings = {
-      ...drawingSettingsInitialState,
-      ...persisted.main,
+      ...drawingSettings,
     };
   }
 
-  if (isObject(persisted.homeLocation)) {
-    initial.homeLocation = {
-      ...homeLocationInitialState,
-      ...persisted.homeLocation,
-    };
-  } else if (isObject(persisted.main)) {
-    initial.homeLocation = {
-      ...homeLocationInitialState,
-      ...persisted.main,
-    };
+  const homeLocation = parseWithFallback(
+    PersistedHomeLocationSchema,
+    persisted.homeLocation,
+    persisted.main,
+  );
+
+  if (homeLocation) {
+    initial.homeLocation = { ...homeLocationInitialState, ...homeLocation };
   }
 
-  if (isObject(persisted.location)) {
-    initial.location = {
-      ...locationInitialState,
-      ...persisted.location,
-    };
-  } else if (isObject(persisted.main)) {
-    initial.location = {
-      ...locationInitialState,
-      ...persisted.main,
-    };
+  const location = parseWithFallback(
+    PersistedLocationSchema,
+    persisted.location,
+    persisted.main,
+  );
+
+  if (location) {
+    initial.location = { ...locationInitialState, ...location };
   }
 
-  if (isObject(persisted.main)) {
-    for (const k of [
-      'cookieConsentResult',
-      'analyticCookiesAllowed',
-      'drawingColor',
-      'drawingWidth',
-      'drawingRecentColors',
-      'homeLocation',
-      'selectingHomeLocation',
-      'locate',
-      'location',
-      'purchaseOnLogin',
-    ]) {
-      delete persisted.main[k];
-    }
+  const main = PersistedMainSchema.safeParse(persisted.main);
 
-    initial.main = { ...mainInitialState, ...persisted.main };
+  if (main.success) {
+    initial.main = { ...mainInitialState, ...main.data };
   }
 
-  if (isObject(persisted.objects)) {
-    initial.objects = { ...objectInitialState, ...persisted.objects };
+  const objects = PersistedObjectsSchema.safeParse(persisted.objects);
+
+  if (objects.success) {
+    initial.objects = { ...objectInitialState, ...objects.data };
   }
 
-  if (isObject(persisted.routePlanner)) {
-    if ('transportType' in persisted.routePlanner) {
-      persisted.routePlanner['transportType'] = TransportTypeCompatSchema.parse(
-        persisted.routePlanner['transportType'],
-      );
-    }
+  const routePlanner = PersistedRoutePlannerSchema.safeParse(
+    persisted.routePlanner,
+  );
 
+  if (routePlanner.success) {
     initial.routePlanner = {
       ...routePlannerInitialState,
-      ...persisted.routePlanner,
+      ...routePlanner.data,
     };
   }
 
-  if (isObject(persisted.trackViewer)) {
-    initial.trackViewer = {
-      ...trackViewerInitialState,
-      ...persisted.trackViewer,
-    };
+  const trackViewer = PersistedTrackViewerSchema.safeParse(
+    persisted.trackViewer,
+  );
+
+  if (trackViewer.success) {
+    initial.trackViewer = { ...trackViewerInitialState, ...trackViewer.data };
   }
 
-  if (
-    isObject(persisted.mapDetails) &&
-    Array.isArray(persisted.mapDetails['sources'])
-  ) {
-    initial.mapDetails = {
-      ...mapDetailsInitialState,
-      ...persisted.mapDetails,
-    };
+  const mapDetails = PersistedMapDetailsSchema.safeParse(persisted.mapDetails);
+
+  if (mapDetails.success) {
+    initial.mapDetails = { ...mapDetailsInitialState, ...mapDetails.data };
   }
 
-  if (isObject(persisted.gallery)) {
-    initial.gallery = {
-      ...galleryInitialState,
-      ...persisted.gallery,
-    };
-  }
+  const gallery = PersistedGallerySchema.safeParse(persisted.gallery);
 
-  const tt = initial.routePlanner?.transportType;
-
-  if (initial.routePlanner && tt && !transportTypeDefs[tt]) {
-    initial.routePlanner.transportType = 'hiking';
+  if (gallery.success) {
+    initial.gallery = { ...galleryInitialState, ...gallery.data };
   }
 
   return initial;
+}
+
+function parseWithFallback<T extends object>(
+  schema: z.ZodType<T>,
+  primary: unknown,
+  fallback: unknown,
+): T | undefined {
+  const a = schema.safeParse(primary);
+
+  if (a.success && Object.keys(a.data).length > 0) {
+    return a.data;
+  }
+
+  const b = schema.safeParse(fallback);
+
+  return b.success && Object.keys(b.data).length > 0 ? b.data : undefined;
 }
